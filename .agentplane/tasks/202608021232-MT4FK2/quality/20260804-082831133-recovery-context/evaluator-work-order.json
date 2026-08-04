@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608021232-MT4FK2-9d378c43ed81f63635a5c7f0",
+  "prepared_at": "2026-08-04T08:28:31.133Z",
+  "task": {
+    "id": "202608021232-MT4FK2",
+    "revision": 6,
+    "objective": "Audit and remove obsolete AgentPlane branches before v0.7.1\n\nClassify local and remote branches by merged state, unique commits, active worktrees, open pull requests, and release relevance; preserve recoverable evidence; then remove branches confirmed unnecessary, including agentplane-loops, without deleting active or unmerged work.",
+    "acceptance_criteria": [
+      "git branch --merged main",
+      "git branch -r --merged origin/main",
+      "- In scope: Classify local and remote branches by merged state, unique commits, active worktrees, open pull requests, and release relevance; preserve recoverable evidence; then remove branches confirmed unnecessary, including agentplane-loops, without deleting active or unmerged work.\n- Out of scope: unrelated refactors not required for \"Audit and remove obsolete AgentPlane branches before v0.7.1\".",
+      "1. Inventory every local and remote branch/worktree, map each to task state and hosted PR state, and protect active, blocked, dirty, or explicitly retained checkouts. 2. Remove only worktrees and branches whose tasks are DONE and whose hosted changes are merged or otherwise proven obsolete; preserve the protected integration worktree and all stashes. 3. Audit the loops branch separately against main and delete it only after proving its needed changes are already integrated or intentionally superseded. 4. Record exact removed and retained targets plus rollback limits. 5. Verify git worktree integrity, branch inventory, base status, and absence of lost active work.",
+      "1. Run `git worktree list --porcelain` in the release control checkout. Expected: only main, the protected detached integration checkout, BLOCKED 72A55V, DOING EH2A15, this cleanup task, and DOING RWW0ND remain.\n2. Fetch/prune origin, list local and remote refs, and run `gh pr list --state open`. Expected: `agentplane-loops` and every recorded obsolete branch are absent; only cleanup PR #4772 and deferred Dependabot PR #4752 remain open.\n3. Inspect base and outer checkout status plus `git stash list`. Expected: no tracked changes were introduced, the two protected base untracked artifacts remain, and all 39 pre-existing stashes remain untouched.\n4. Resolve `archive/agentplane-loops-final-20260804^{}` and inspect the canonical CLI help. Expected: the archive resolves to loop head 14d0bd8f5, current main exposes `task advance` and `task run`, and no loop command is part of the canonical release surface.\n5. Run `git worktree prune --dry-run -v` and inspect retained branch/task states. Expected: no stale worktree registrations remain and active, blocked, dirty, release-maintenance, open-PR, or uniquely unassimilated refs were not deleted."
+    ]
+  },
+  "evaluated_sha": "5b9ceeddc76b5e3b524f45d3ed7edd8ba2413d36",
+  "diff_base_sha": "c65c646c4f548e2729058698f1a85a435b6ba561",
+  "blueprint_digest": "4abb6f221634ef94f3f6e1a7feac654c2bf336a398b79762418beec9cc0e3284",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608021232-MT4FK2/quality/20260804-082831133-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:abb39bf03586b7243daf750da6571b55a9819479d8e4aa50381b3bd868d674d7",
+    "prompt_path": ".agentplane/tasks/202608021232-MT4FK2/quality/objects/sha256/79c3cc20b5aaf43a90bfc39450fff2949b13441f01163967d5c2c157666fb768.md",
+    "result_schema_path": ".agentplane/tasks/202608021232-MT4FK2/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608021232-MT4FK2/README.md",
+      "sha256": "sha256:4d739e22a815cdaa53bb14311aa673e80a371cffafb023f599a290fd0525330e",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608021232-MT4FK2/quality/objects/sha256/0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5.patch",
+      "sha256": "sha256:0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608021232-MT4FK2/quality/objects/sha256/1f54a003e93f56a50706690b05600da81019e7a578c61364b5af3d5fc230ee5b.json",
+      "sha256": "sha256:1f54a003e93f56a50706690b05600da81019e7a578c61364b5af3d5fc230ee5b",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608021232-MT4FK2/verification/20260804082736348-32cd232eb647a84b.json",
+      "sha256": "sha256:1517452819595ffffbdb850cbf634bb1c09605b5a4ef8be435c2222ab39d7a3c",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608021232-MT4FK2/quality/objects/sha256/5ccafad56942ffd33f97873645bc997f2afaa032a9456f326f2004832fc7f533.json",
+      "sha256": "sha256:5ccafad56942ffd33f97873645bc997f2afaa032a9456f326f2004832fc7f533",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

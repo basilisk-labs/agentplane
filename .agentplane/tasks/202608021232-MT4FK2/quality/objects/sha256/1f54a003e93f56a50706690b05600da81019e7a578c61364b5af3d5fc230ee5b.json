@@ -1,0 +1,27 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "git branch --merged main",
+    "git branch -r --merged origin/main"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-04T08:27:36.348Z",
+    "updated_by": "TESTER",
+    "note": "Branch and worktree cleanup verified against current local and hosted state."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608021232-MT4FK2/verification/20260804082736348-32cd232eb647a84b.json",
+      "sha256": "sha256:1517452819595ffffbdb850cbf634bb1c09605b5a4ef8be435c2222ab39d7a3c"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
