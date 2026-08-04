@@ -1,10 +1,11 @@
 ---
 id: "202608040748-7Z0401"
 title: "Harden stale runner reclaim regression after semantic plan enforcement"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -56,9 +57,23 @@ quality_review:
   findings:
     - "The helper records a non-placeholder plan and asserts plan approval plus start-ready success, so the recovery assertions can no longer pass or fail before reaching reclaim."
     - "The claimed stale run proves cancellation, active-claim retirement, deterministic retry routing, and no E_INTERNAL; the unclaimed run proves typed E_RUNTIME fail-closed behavior and no handoff."
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-04T08:00:43.433Z"
 commit:
-  hash: "fea0506ca8b6f3d23edc5c1a471009779629976e"
-  message: "🐛 7Z0401 recovery: assert claimed reclaim safety"
+  hash: "b99f5568d0d8a554162a127ab24aa9bd9f8cb218"
+  message: "🧩 7Z0401 task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -69,6 +84,9 @@ comments:
   -
     author: "CODER"
     body: "Start: refreshed implementation head adds explicit no-E_INTERNAL proof for both claimed and unclaimed stale runner recovery."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -127,8 +145,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Stale runner reclaim regression verified against implementation fea0506ca."
+  -
+    type: "status"
+    at: "2026-08-04T08:00:43.433Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-04T07:59:29.768Z"
+doc_updated_at: "2026-08-04T08:00:43.442Z"
 doc_updated_by: "CODER"
 description: "Reproduce GitHub issue #4773 on current main with a valid task and stale runner PID, repair the stale reclaim regression fixture or implementation as required, and prove deterministic typed recovery without E_INTERNAL."
 sections:
@@ -309,6 +334,9 @@ sections:
       Impact: Issue #4773 is protected by executable current-main regression evidence.
       Resolution: Accept implementation fea0506ca for independent quality review and hosted verification.
 extensions:
+  implementation_commit:
+    hash: "fea0506ca8b6f3d23edc5c1a471009779629976e"
+    message: "🐛 7Z0401 recovery: assert claimed reclaim safety"
   workflow_route_baseline:
     start_head_sha: "1f0024cf22d743bfdeb7a5554ae306b0fe1b4680"
     version: 1
@@ -504,3 +532,16 @@ DecisionContextRef:
 - Observation: Both stale-runner branches now explicitly assert absence of E_INTERNAL after a valid semantic plan and DOING transition.
   Impact: Issue #4773 is protected by executable current-main regression evidence.
   Resolution: Accept implementation fea0506ca for independent quality review and hosted verification.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-04T08:00:43.433Z`
