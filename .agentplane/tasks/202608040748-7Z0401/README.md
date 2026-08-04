@@ -4,7 +4,7 @@ title: "Harden stale runner reclaim regression after semantic plan enforcement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -25,13 +25,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-04T07:57:44.184Z"
+  updated_at: "2026-08-04T07:59:28.769Z"
   updated_by: "TESTER"
-  note: |-
-    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts; bun run typecheck; node .agentplane/policy/check-routing.mjs
-    Result: pass
-    Evidence: 4/4 focused tests passed against implementation fea0506ca; both claimed and unclaimed nonexistent-PID paths explicitly reject E_INTERNAL; typecheck and routing passed.
-    Scope: implementation fea0506ca and stale runner reclaim recovery contract.
+  note: "Stale runner reclaim regression verified against implementation fea0506ca."
   attempts: 0
 commit:
   hash: "fea0506ca8b6f3d23edc5c1a471009779629976e"
@@ -98,8 +94,14 @@ events:
       Result: pass
       Evidence: 4/4 focused tests passed against implementation fea0506ca; both claimed and unclaimed nonexistent-PID paths explicitly reject E_INTERNAL; typecheck and routing passed.
       Scope: implementation fea0506ca and stale runner reclaim recovery contract.
+  -
+    type: "verify"
+    at: "2026-08-04T07:59:28.769Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Stale runner reclaim regression verified against implementation fea0506ca."
 doc_version: 3
-doc_updated_at: "2026-08-04T07:57:45.086Z"
+doc_updated_at: "2026-08-04T07:59:29.768Z"
 doc_updated_by: "CODER"
 description: "Reproduce GitHub issue #4773 on current main with a valid task and stale runner PID, repair the stale reclaim regression fixture or implementation as required, and prove deterministic typed recovery without E_INTERNAL."
 sections:
@@ -197,6 +199,41 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T07:57:13.315Z, excerpt_hash=sha256:f4f3febeec3e46d38aded33c3a9b762fafa94225aab2ab481357dc7f1a1db38d
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040748-7Z0401-harden-stale-runner-reclaim-regression-after-sem/.agentplane/tasks/202608040748-7Z0401/blueprint/resolved-snapshot.json
+    - old_digest: 9e0586971f7c3d905cdd8e94ec512e54ecababb1c7eaac0bd3c93276c097d8ec
+    - current_digest: 9e0586971f7c3d905cdd8e94ec512e54ecababb1c7eaac0bd3c93276c097d8ec
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608040748-7Z0401
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608040748-7Z0401
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-04T07:59:28.769Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Stale runner reclaim regression verified against implementation fea0506ca.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T07:57:45.086Z, excerpt_hash=sha256:f4f3febeec3e46d38aded33c3a9b762fafa94225aab2ab481357dc7f1a1db38d
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts; bun run typecheck; node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: 4/4 focused tests passed; both claimed and unclaimed nonexistent-PID paths explicitly reject E_INTERNAL; TypeScript 7 typecheck and policy routing passed.
+    Scope: implementation fea0506ca and the task reclaim stale-runner recovery contract.
 
     BlueprintSnapshotRef:
     - state: current
@@ -354,6 +391,41 @@ Attempts: 0
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T07:57:13.315Z, excerpt_hash=sha256:f4f3febeec3e46d38aded33c3a9b762fafa94225aab2ab481357dc7f1a1db38d
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040748-7Z0401-harden-stale-runner-reclaim-regression-after-sem/.agentplane/tasks/202608040748-7Z0401/blueprint/resolved-snapshot.json
+- old_digest: 9e0586971f7c3d905cdd8e94ec512e54ecababb1c7eaac0bd3c93276c097d8ec
+- current_digest: 9e0586971f7c3d905cdd8e94ec512e54ecababb1c7eaac0bd3c93276c097d8ec
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608040748-7Z0401
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608040748-7Z0401
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-04T07:59:28.769Z — VERIFY — ok
+
+By: TESTER
+
+Note: Stale runner reclaim regression verified against implementation fea0506ca.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T07:57:45.086Z, excerpt_hash=sha256:f4f3febeec3e46d38aded33c3a9b762fafa94225aab2ab481357dc7f1a1db38d
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts; bun run typecheck; node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: 4/4 focused tests passed; both claimed and unclaimed nonexistent-PID paths explicitly reject E_INTERNAL; TypeScript 7 typecheck and policy routing passed.
+Scope: implementation fea0506ca and the task reclaim stale-runner recovery contract.
 
 BlueprintSnapshotRef:
 - state: current

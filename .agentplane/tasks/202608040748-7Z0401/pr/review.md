@@ -13,10 +13,7 @@ Created: 2026-08-04T07:49:53.454Z
 ## Verification
 
 - State: ok
-- Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts; bun run typecheck; node .agentplane/policy/check-routing.mjs
-Result: pass
-Evidence: 4/4 focused tests passed against implementation fea0506ca; both claimed and unclaimed nonexistent-PID paths explicitly reject E_INTERNAL; typecheck and routing passed.
-Scope: implementation fea0506ca and stale runner reclaim recovery contract.
+- Note: Stale runner reclaim regression verified against implementation fea0506ca.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
