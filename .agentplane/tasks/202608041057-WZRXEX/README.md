@@ -23,9 +23,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-04T12:47:50.392Z"
-  updated_by: "TESTER"
-  note: "P1 fix verified against refreshed release blueprint snapshot"
+  updated_at: "2026-08-04T13:09:19.816Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.7.2."
   attempts: 0
 quality_review:
   state: "pass"
@@ -169,8 +169,8 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-04T12:49:00.208Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-04T13:09:19.816Z"
+doc_updated_by: "DEUS"
 description: "Make post-publish evidence select the unique release task touched by the exact release commit before falling back to version-wide registry matching; add regression coverage for multiple DONE release tasks sharing one version, record v0.7.1 publication evidence, and ship the corrective patch release."
 sections:
   Summary: |-
@@ -399,6 +399,27 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    <!-- BEGIN HOSTED PUBLISH EVIDENCE -->
+    ### Hosted publish
+
+    - State: ok
+    - Note: Hosted publish confirmed for v0.7.2.
+    - Details:
+      - release_sha: 09d90582c0686610b52287e7527e6fafc9ae5c60
+      - version: 0.7.2
+      - tag: v0.7.2
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.7.2
+      - ghcr: published
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/30911823733
+      - external_homebrew: published | basilisk-labs/homebrew-tap | 439f9afa4ac7a5a543eac2a355f47fb8612ab9ef | https://github.com/basilisk-labs/homebrew-tap/pull/35
+      - external_scoop: published | basilisk-labs/scoop-bucket | a136558cfdbe56223304381421a4ffb28d0ddbe2 | https://github.com/basilisk-labs/scoop-bucket/pull/35
+      - external_setup-agentplane: published | basilisk-labs/setup-agentplane | 7b3c46f4497b05b722d88dfb1e062f7910291f91 | https://github.com/basilisk-labs/setup-agentplane/pull/35
+    <!-- END HOSTED PUBLISH EVIDENCE -->
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -652,6 +673,27 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+<!-- BEGIN HOSTED PUBLISH EVIDENCE -->
+### Hosted publish
+
+- State: ok
+- Note: Hosted publish confirmed for v0.7.2.
+- Details:
+  - release_sha: 09d90582c0686610b52287e7527e6fafc9ae5c60
+  - version: 0.7.2
+  - tag: v0.7.2
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.7.2
+  - ghcr: published
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/30911823733
+  - external_homebrew: published | basilisk-labs/homebrew-tap | 439f9afa4ac7a5a543eac2a355f47fb8612ab9ef | https://github.com/basilisk-labs/homebrew-tap/pull/35
+  - external_scoop: published | basilisk-labs/scoop-bucket | a136558cfdbe56223304381421a4ffb28d0ddbe2 | https://github.com/basilisk-labs/scoop-bucket/pull/35
+  - external_setup-agentplane: published | basilisk-labs/setup-agentplane | 7b3c46f4497b05b722d88dfb1e062f7910291f91 | https://github.com/basilisk-labs/setup-agentplane/pull/35
+<!-- END HOSTED PUBLISH EVIDENCE -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
