@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -64,10 +64,10 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-04T12:05:26.810Z"
+  updated_at: "2026-08-04T12:31:49.510Z"
 commit:
-  hash: "f0d58a4092e7a659538a32359a4d57a86ae17645"
-  message: "🧪 WZRXEX release: align v0.7.2 compatibility fixture"
+  hash: "1c1307cee71af7947c8039404384c376e17b86da"
+  message: "🧩 WZRXEX task: record final quality review"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -118,8 +121,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Final v0.7.2 candidate verification passed"
+  -
+    type: "status"
+    at: "2026-08-04T12:31:49.510Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-04T12:30:23.031Z"
+doc_updated_at: "2026-08-04T12:31:49.536Z"
 doc_updated_by: "CODER"
 description: "Make post-publish evidence select the unique release task touched by the exact release commit before falling back to version-wide registry matching; add regression coverage for multiple DONE release tasks sharing one version, record v0.7.1 publication evidence, and ship the corrective patch release."
 sections:
@@ -255,6 +265,9 @@ sections:
       Promotion: incident-candidate
       Fixability: repo-fixable
 extensions:
+  implementation_commit:
+    hash: "f3000de59d32d425f4dda4eeea91cb8882e1872e"
+    message: "🛡️ WZRXEX release: archive resolved evidence incident"
   workflow_route_baseline:
     start_head_sha: "f519d9518c34226075a61d2b01b936127a77e587"
     version: 1
@@ -417,4 +430,4 @@ DecisionContextRef:
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-04T12:05:26.810Z`
+- Updated at: `2026-08-04T12:31:49.510Z`

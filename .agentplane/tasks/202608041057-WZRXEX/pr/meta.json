@@ -8,10 +8,10 @@
   "pr_number": 4776,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4776",
   "pre_merge_closure": {
-    "basis_commit": "f0d58a4092e7a659538a32359a4d57a86ae17645",
+    "basis_commit": "1c1307cee71af7947c8039404384c376e17b86da",
     "branch": "task/202608041057-WZRXEX/disambiguate-hosted-release-evidence-task-select",
     "pr_number": 4776,
-    "recorded_at": "2026-08-04T12:05:26.893Z",
+    "recorded_at": "2026-08-04T12:31:49.593Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
