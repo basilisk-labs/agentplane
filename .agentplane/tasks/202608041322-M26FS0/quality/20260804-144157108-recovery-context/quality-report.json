@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202608041322-M26FS0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-04T14:43:04.809Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "8005cbc506c4c944c33a096a4ad4d6fdf4a210c0",
+  "blueprint_digest": "3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045",
+  "findings": [
+    "The declared terminal-routing regression was not implemented or executed. The patch tests preservation of verification metadata during evidence application, but does not close a branch_pr task, advance main with an evidence-only README commit, query next-action for terminal.done, or prove that a real implementation commit still makes verification stale."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/21f9f0e7d834a7229ec6244e8178eaa2816c3b5379e206b6eeae77026ab2f5ca.patch",
+    ".agentplane/tasks/202608041322-M26FS0/verification/20260804143934380-b5263d23d37a83fe.json",
+    ".agentplane/tasks/202608041322-M26FS0/README.md"
+  ],
+  "missing_tests": [
+    "An end-to-end route regression that closes a branch_pr task, commits only hosted release evidence to its README on main, and asserts next-action remains terminal.done.",
+    "A negative companion case that advances main with a real implementation change and asserts verification becomes stale rather than terminal.done."
+  ],
+  "hidden_assumptions": [
+    "Preserving the existing verification frontmatter during hosted-evidence application is assumed to be sufficient for next-action routing to classify the later README-only commit as non-semantic.",
+    "The broad local CI run is assumed to cover the exact route transition even though the recorded focused command names only release-task-evidence and publish-workflow contract tests."
+  ],
+  "residual_risks": [
+    "Add and record the exact terminal.done and stale-verification route regressions required by Verify Step 1, then rerun the declared verification gates."
+  ]
+}

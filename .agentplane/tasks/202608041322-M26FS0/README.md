@@ -4,7 +4,7 @@ title: "Stabilize hosted release evidence closeout"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -25,6 +25,33 @@ verification:
   updated_by: "TESTER"
   note: "Release-tail closeout fixes pass all declared local gates for semantic implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-04T14:43:04.809Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "8005cbc506c4c944c33a096a4ad4d6fdf4a210c0"
+  blueprint_digest: "3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045"
+  evidence_refs:
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-144157108-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-144157108-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/96f830c5e543458739af5f2ad888d04246c5fdedfb178513094388a908e74377.md"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-144157108-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-144157108-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-144157108-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-144157108-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608041322-M26FS0/README.md"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/21f9f0e7d834a7229ec6244e8178eaa2816c3b5379e206b6eeae77026ab2f5ca.patch"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/05e8d39fea825a7fa3ce270bd4cbc34e5ba18e14ca26425300a9266b4b2dbd10.json"
+    - ".agentplane/tasks/202608041322-M26FS0/verification/20260804143934380-b5263d23d37a83fe.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/57c0cb8505a309b1962f197839c8b5eb2908748355f96e19842360232b470d88.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.release.md"
+  findings:
+    - "The declared terminal-routing regression was not implemented or executed. The patch tests preservation of verification metadata during evidence application, but does not close a branch_pr task, advance main with an evidence-only README commit, query next-action for terminal.done, or prove that a real implementation commit still makes verification stale."
 commit:
   hash: "8005cbc506c4c944c33a096a4ad4d6fdf4a210c0"
   message: "🧩 M26FS0 task: stabilize release evidence closeout"
@@ -95,7 +122,7 @@ events:
     state: "ok"
     note: "Release-tail closeout fixes pass all declared local gates for semantic implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0."
 doc_version: 3
-doc_updated_at: "2026-08-04T14:39:35.820Z"
+doc_updated_at: "2026-08-04T15:12:03.833Z"
 doc_updated_by: "CODER"
 description: "Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release."
 sections:
@@ -260,22 +287,12 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: |-
-    - v0.7.2 publish run 30911823733 created release-evidence PR #4777 and dispatched Core CI, but the workflow_dispatch run did not attach the required `PR verification` context to the PR head. The PR required a close/reopen repair before merge.
-    - Hosted evidence apply replaced the accepted TESTER verification metadata for task 202608041057-WZRXEX with DEUS publish metadata without creating a matching immutable verification record. The route therefore regressed from `terminal.done` to `verification_required` after the evidence merge.
-    - The 0.7.3 fix preserves canonical verification metadata, validates the exact evidence closure SHA, waits for Core CI, publishes the required GitHub Actions-owned check, and fails closed until the evidence PR is merged.
-    - Restoring the original TESTER metadata for 202608041057-WZRXEX returned the live route to `terminal.done`. Final acceptance still requires the autonomous v0.7.3 hosted release path.
-
-    - Observation: Focused release tests passed 20/20; compatibility critical passed 9/9; ci:contract passed; release:prepublish passed 101/101 release-ci chunks, 50 workflow coverage tests, 204 significant coverage tests, and 16 release-critical tests.
-      Impact: Hosted evidence now preserves immutable TESTER verification and cannot merge until the exact closure SHA has a successful GitHub Actions-owned PR verification check.
-      Resolution: Accept the implementation for hosted CI, integration, and the live v0.7.3 release-tail proof.
-
-    - Observation: Focused release tests passed 20/20; compatibility critical passed 9/9; ci:contract passed; release:prepublish passed 101/101 release-ci chunks, 50 workflow coverage tests, 204 significant coverage tests, and 16 release-critical tests.
-      Impact: Hosted evidence preserves immutable TESTER verification and the evidence PR cannot merge until its exact SHA has the required GitHub Actions-owned verification check.
-      Resolution: Accept for hosted CI, integration, and live v0.7.3 release-tail proof.
-
-    - Observation: Passed: focused release-tail contracts (20 tests), critical efficiency baseline (9 tests), ci:contract, release:prepublish, full-fast unit suite (538 files / 3794 tests), and all 12 critical CLI/E2E chunks.
-      Impact: The current canonical implementation target is covered by concrete deterministic evidence; hosted publish and evidence-merge behavior remains the release-time acceptance gate.
-      Resolution: Accept local verification and proceed to independent evaluator review plus hosted PR and release validation.
+    - v0.7.2 publish run 30911823733 created release-evidence PR #4777 and dispatched Core CI, but the workflow_dispatch run did not attach the required PR verification context to the PR head. The PR required a close/reopen repair before merge.
+    - Hosted evidence apply replaced accepted TESTER verification metadata for task 202608041057-WZRXEX without creating a matching immutable verification record. The route regressed from terminal.done to verification_required after the evidence merge.
+    - The 0.7.3 release workflow preserves canonical verification metadata, validates the exact evidence closure SHA, waits for Core CI, publishes the required GitHub Actions-owned check, and fails closed until the evidence PR is merged.
+    - Independent evaluator finding RCI-001 exposed a missing exact terminal-routing regression. The expanded hosted-close E2E now closes a branch_pr task, records fresh verification and quality, applies an evidence-only README commit, deletes the merged task branch, confirms the live provider state, and requires terminal.done. The negative route regression still requires verification after a semantic implementation advance.
+    - Root cause discovered during RCI-001 rework: close-tail detection recognized only the legacy full task ID in a close-scoped subject, while the current close-message builder emits a task-scoped subject and puts the full task ID in the structured Agentplane run body reference. Detection now accepts both legacy commits and current structured commits only when the suffix, exact run ID, and DONE task snapshot all match.
+    - Focused rework evidence: six CLI route/hosted-close tests passed with 98 assertions, nine close-tail unit tests passed, targeted ESLint passed, and TypeScript build passed. Full release and evaluator gates must be repeated against the new semantic commit.
 extensions:
   workflow_route_baseline:
     start_head_sha: "9d0e0089dd83487defa8950d787a5fa67f53db10"
@@ -457,19 +474,9 @@ DecisionContextRef:
 
 ## Findings
 
-- v0.7.2 publish run 30911823733 created release-evidence PR #4777 and dispatched Core CI, but the workflow_dispatch run did not attach the required `PR verification` context to the PR head. The PR required a close/reopen repair before merge.
-- Hosted evidence apply replaced the accepted TESTER verification metadata for task 202608041057-WZRXEX with DEUS publish metadata without creating a matching immutable verification record. The route therefore regressed from `terminal.done` to `verification_required` after the evidence merge.
-- The 0.7.3 fix preserves canonical verification metadata, validates the exact evidence closure SHA, waits for Core CI, publishes the required GitHub Actions-owned check, and fails closed until the evidence PR is merged.
-- Restoring the original TESTER metadata for 202608041057-WZRXEX returned the live route to `terminal.done`. Final acceptance still requires the autonomous v0.7.3 hosted release path.
-
-- Observation: Focused release tests passed 20/20; compatibility critical passed 9/9; ci:contract passed; release:prepublish passed 101/101 release-ci chunks, 50 workflow coverage tests, 204 significant coverage tests, and 16 release-critical tests.
-  Impact: Hosted evidence now preserves immutable TESTER verification and cannot merge until the exact closure SHA has a successful GitHub Actions-owned PR verification check.
-  Resolution: Accept the implementation for hosted CI, integration, and the live v0.7.3 release-tail proof.
-
-- Observation: Focused release tests passed 20/20; compatibility critical passed 9/9; ci:contract passed; release:prepublish passed 101/101 release-ci chunks, 50 workflow coverage tests, 204 significant coverage tests, and 16 release-critical tests.
-  Impact: Hosted evidence preserves immutable TESTER verification and the evidence PR cannot merge until its exact SHA has the required GitHub Actions-owned verification check.
-  Resolution: Accept for hosted CI, integration, and live v0.7.3 release-tail proof.
-
-- Observation: Passed: focused release-tail contracts (20 tests), critical efficiency baseline (9 tests), ci:contract, release:prepublish, full-fast unit suite (538 files / 3794 tests), and all 12 critical CLI/E2E chunks.
-  Impact: The current canonical implementation target is covered by concrete deterministic evidence; hosted publish and evidence-merge behavior remains the release-time acceptance gate.
-  Resolution: Accept local verification and proceed to independent evaluator review plus hosted PR and release validation.
+- v0.7.2 publish run 30911823733 created release-evidence PR #4777 and dispatched Core CI, but the workflow_dispatch run did not attach the required PR verification context to the PR head. The PR required a close/reopen repair before merge.
+- Hosted evidence apply replaced accepted TESTER verification metadata for task 202608041057-WZRXEX without creating a matching immutable verification record. The route regressed from terminal.done to verification_required after the evidence merge.
+- The 0.7.3 release workflow preserves canonical verification metadata, validates the exact evidence closure SHA, waits for Core CI, publishes the required GitHub Actions-owned check, and fails closed until the evidence PR is merged.
+- Independent evaluator finding RCI-001 exposed a missing exact terminal-routing regression. The expanded hosted-close E2E now closes a branch_pr task, records fresh verification and quality, applies an evidence-only README commit, deletes the merged task branch, confirms the live provider state, and requires terminal.done. The negative route regression still requires verification after a semantic implementation advance.
+- Root cause discovered during RCI-001 rework: close-tail detection recognized only the legacy full task ID in a close-scoped subject, while the current close-message builder emits a task-scoped subject and puts the full task ID in the structured Agentplane run body reference. Detection now accepts both legacy commits and current structured commits only when the suffix, exact run ID, and DONE task snapshot all match.
+- Focused rework evidence: six CLI route/hosted-close tests passed with 98 assertions, nine close-tail unit tests passed, targeted ESLint passed, and TypeScript build passed. Full release and evaluator gates must be repeated against the new semantic commit.

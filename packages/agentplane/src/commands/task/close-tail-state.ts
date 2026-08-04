@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { extractTaskSuffix } from "@agentplaneorg/core/commit";
+import { extractTaskSuffix, parseTaskSubjectTemplate } from "@agentplaneorg/core/commit";
 import { normalizeTaskStatus, parseTaskReadme } from "@agentplaneorg/core/tasks";
 
 import { execFileAsync } from "@agentplaneorg/core/process";
@@ -77,10 +77,14 @@ export async function taskCloseAlreadyRecordedOnBase(opts: {
   taskId: string;
   baseBranch: string;
 }): Promise<boolean> {
-  const readmePath = path.join(opts.gitRoot, opts.workflowDir, opts.taskId, "README.md");
+  const readmePath = path.posix.join(
+    opts.workflowDir.replaceAll("\\", "/"),
+    opts.taskId,
+    "README.md",
+  );
   const { stdout } = await execFileAsync(
     "git",
-    ["log", opts.baseBranch, "--format=%s", "--", readmePath],
+    ["log", opts.baseBranch, "--format=%H%x00%s%x00%b%x00", "--", readmePath],
     {
       cwd: opts.gitRoot,
       env: gitProofEnv(),
@@ -90,8 +94,41 @@ export async function taskCloseAlreadyRecordedOnBase(opts: {
   const suffix = extractTaskSuffix(opts.taskId);
   const closeNeedle = `${suffix} close:`;
   const taskNeedle = `(${opts.taskId})`;
-  return stdout
+  const legacyCloseRecorded = stdout
     .split("\n")
     .map((line) => line.trim())
     .some((line) => line.includes(closeNeedle) && line.includes(taskNeedle));
+  if (legacyCloseRecorded) return true;
+
+  const fields = stdout.split("\0");
+  for (let index = 0; index + 2 < fields.length; index += 3) {
+    const commit = fields[index]?.trim() ?? "";
+    const subject = fields[index + 1]?.trim() ?? "";
+    const body = fields[index + 2] ?? "";
+    if (!isCanonicalFullCommitOid(commit)) continue;
+
+    const parsed = parseTaskSubjectTemplate(subject);
+    if (parsed?.suffix.toLowerCase() !== suffix.toLowerCase()) continue;
+    if (!new Set(["task", "close", "integrate", "formatting"]).has(parsed.scope.toLowerCase())) {
+      continue;
+    }
+    const hasExactRunReference = body
+      .split("\n")
+      .some((line) => line.trim() === `- Agentplane run: ${opts.taskId}`);
+    if (!hasExactRunReference) continue;
+
+    const taskRaw = await gitShowText({
+      gitRoot: opts.gitRoot,
+      baseBranch: commit,
+      repoPath: readmePath,
+    });
+    if (!taskRaw) continue;
+    try {
+      const task = parseTaskReadme(taskRaw).frontmatter;
+      if (task.id === opts.taskId && normalizeTaskStatus(task.status) === "DONE") return true;
+    } catch {
+      // Continue scanning older task-history entries when one candidate is malformed.
+    }
+  }
+  return false;
 }

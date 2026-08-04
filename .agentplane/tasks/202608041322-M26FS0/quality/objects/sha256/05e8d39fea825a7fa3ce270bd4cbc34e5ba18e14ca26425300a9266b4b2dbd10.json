@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-04T14:39:34.380Z",
+    "updated_by": "TESTER",
+    "note": "Release-tail closeout fixes pass all declared local gates for semantic implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608041322-M26FS0/verification/20260804143934380-b5263d23d37a83fe.json",
+      "sha256": "sha256:7eacbbeb2f79e6fbb4afa6efa8f2be2d4fff88524516f812e69d5015f5746db6"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

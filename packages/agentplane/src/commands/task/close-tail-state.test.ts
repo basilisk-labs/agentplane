@@ -49,6 +49,75 @@ describe("taskCloseAlreadyRecordedOnBase", () => {
       }),
     ).resolves.toBe(false);
   });
+
+  it("detects the structured close commit emitted by the current close-message builder", async () => {
+    const taskId = "202604191200-G7YHZY";
+    const commit = "a".repeat(40);
+    mocks.execFileAsync
+      .mockResolvedValueOnce({
+        stdout: [
+          commit,
+          "✅ G7YHZY task: finish hosted close",
+          [
+            "Summary:",
+            "- Finished hosted close.",
+            "Refs:",
+            "- Agentplane task: G7YHZY",
+            `- Agentplane run: ${taskId}`,
+          ].join("\n"),
+          "",
+        ].join("\0"),
+        stderr: "",
+      })
+      .mockResolvedValueOnce({
+        stdout: ["---", `id: "${taskId}"`, 'status: "DONE"', "---", "# Task", ""].join("\n"),
+        stderr: "",
+      });
+
+    const { taskCloseAlreadyRecordedOnBase } = await import("./close-tail-state.js");
+    await expect(
+      taskCloseAlreadyRecordedOnBase({
+        gitRoot: "/repo",
+        workflowDir: ".agentplane/tasks",
+        taskId,
+        baseBranch: "main",
+      }),
+    ).resolves.toBe(true);
+    expect(mocks.execFileAsync).toHaveBeenLastCalledWith(
+      "git",
+      ["show", `${commit}:.agentplane/tasks/${taskId}/README.md`],
+      expect.any(Object),
+    );
+  });
+
+  it("rejects a structured task message when the task was not DONE in that commit", async () => {
+    const taskId = "202604191200-G7YHZY";
+    const commit = "a".repeat(40);
+    mocks.execFileAsync
+      .mockResolvedValueOnce({
+        stdout: [
+          commit,
+          "✅ G7YHZY task: finish hosted close",
+          `Refs:\n- Agentplane run: ${taskId}`,
+          "",
+        ].join("\0"),
+        stderr: "",
+      })
+      .mockResolvedValueOnce({
+        stdout: ["---", `id: "${taskId}"`, 'status: "DOING"', "---", "# Task", ""].join("\n"),
+        stderr: "",
+      });
+
+    const { taskCloseAlreadyRecordedOnBase } = await import("./close-tail-state.js");
+    await expect(
+      taskCloseAlreadyRecordedOnBase({
+        gitRoot: "/repo",
+        workflowDir: ".agentplane/tasks",
+        taskId,
+        baseBranch: "main",
+      }),
+    ).resolves.toBe(false);
+  });
 });
 
 describe("taskPreMergeClosureRecordedOnBase", () => {
