@@ -789,9 +789,11 @@ jobs:
           fi
           ci_run_id="${ci_run_url##*/}"
           gh run watch "$ci_run_id" --exit-status --interval 15
-          echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
-          echo "closure_sha=$closure_sha" >> "$GITHUB_OUTPUT"
-          echo "ci_run_url=$ci_run_url" >> "$GITHUB_OUTPUT"
+          {
+            echo "pr_url=$pr_url"
+            echo "closure_sha=$closure_sha"
+            echo "ci_run_url=$ci_run_url"
+          } >> "$GITHUB_OUTPUT"
       - name: Publish required release evidence verification
         if: steps.verify_release_evidence.outputs.closure_sha != ''
         uses: actions/github-script@v8
@@ -839,6 +841,7 @@ jobs:
               echo "Release evidence PR closed without merge: $pr_url" >&2
               exit 1
             fi
+            echo "Waiting for release evidence PR merge ($attempt/40): $pr_url"
             sleep 15
           done
           echo "Release evidence PR did not merge within 10 minutes: $pr_url" >&2
