@@ -13,7 +13,7 @@ Created: 2026-08-03T20:39:56.146Z
 ## Verification
 
 - State: ok
-- Note: PASS: integration verification now validates the immutable recorded provider gate without starting a new provider episode.
+- Note: PASS: committed integration-safe validator confirms the immutable recorded gate without provider execution.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

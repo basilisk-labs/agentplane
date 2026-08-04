@@ -16,12 +16,7 @@ Produce a release-blocking, reproducible qualification record for the final v0.7
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-PASS: integration verification now validates the immutable recorded provider gate without starting a
-new provider episode.
-```
+- Note: PASS: committed integration-safe validator confirms the immutable recorded gate without provider execution.
 - Canonical workflow state lives in the task README.
 
 <details>
