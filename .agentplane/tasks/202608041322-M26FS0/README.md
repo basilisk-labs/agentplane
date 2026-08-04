@@ -4,7 +4,7 @@ title: "Stabilize hosted release evidence closeout"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-04T14:25:18.886Z"
+  updated_at: "2026-08-04T14:27:34.212Z"
   updated_by: "TESTER"
-  note: "Release-tail fixes verified against implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0."
+  note: "Release-tail fixes verified against semantic task head 92097f3ba42c432580de5b8bc75f558f012a2849; product implementation is 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0."
   attempts: 0
 commit:
   hash: "92097f3ba42c432580de5b8bc75f558f012a2849"
@@ -66,8 +66,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Verification baseline: include the committed task-local implementation and evidence artifacts; product implementation remains 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0."
+  -
+    type: "verify"
+    at: "2026-08-04T14:27:34.212Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Release-tail fixes verified against semantic task head 92097f3ba42c432580de5b8bc75f558f012a2849; product implementation is 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0."
 doc_version: 3
-doc_updated_at: "2026-08-04T14:27:07.492Z"
+doc_updated_at: "2026-08-04T14:27:35.458Z"
 doc_updated_by: "CODER"
 description: "Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release."
 sections:
@@ -117,6 +123,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-04T14:27:34.212Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Release-tail fixes verified against semantic task head 92097f3ba42c432580de5b8bc75f558f012a2849; product implementation is 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T14:27:07.492Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+    - old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608041322-M26FS0
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -130,6 +166,10 @@ sections:
     - Observation: Focused release tests passed 20/20; compatibility critical passed 9/9; ci:contract passed; release:prepublish passed 101/101 release-ci chunks, 50 workflow coverage tests, 204 significant coverage tests, and 16 release-critical tests.
       Impact: Hosted evidence now preserves immutable TESTER verification and cannot merge until the exact closure SHA has a successful GitHub Actions-owned PR verification check.
       Resolution: Accept the implementation for hosted CI, integration, and the live v0.7.3 release-tail proof.
+
+    - Observation: Focused release tests passed 20/20; compatibility critical passed 9/9; ci:contract passed; release:prepublish passed 101/101 release-ci chunks, 50 workflow coverage tests, 204 significant coverage tests, and 16 release-critical tests.
+      Impact: Hosted evidence preserves immutable TESTER verification and the evidence PR cannot merge until its exact SHA has the required GitHub Actions-owned verification check.
+      Resolution: Accept for hosted CI, integration, and live v0.7.3 release-tail proof.
 extensions:
   workflow_route_baseline:
     start_head_sha: "9d0e0089dd83487defa8950d787a5fa67f53db10"
@@ -192,6 +232,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-04T14:27:34.212Z — VERIFY — ok
+
+By: TESTER
+
+Note: Release-tail fixes verified against semantic task head 92097f3ba42c432580de5b8bc75f558f012a2849; product implementation is 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T14:27:07.492Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+- old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608041322-M26FS0
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -209,3 +279,7 @@ DecisionContextRef:
 - Observation: Focused release tests passed 20/20; compatibility critical passed 9/9; ci:contract passed; release:prepublish passed 101/101 release-ci chunks, 50 workflow coverage tests, 204 significant coverage tests, and 16 release-critical tests.
   Impact: Hosted evidence now preserves immutable TESTER verification and cannot merge until the exact closure SHA has a successful GitHub Actions-owned PR verification check.
   Resolution: Accept the implementation for hosted CI, integration, and the live v0.7.3 release-tail proof.
+
+- Observation: Focused release tests passed 20/20; compatibility critical passed 9/9; ci:contract passed; release:prepublish passed 101/101 release-ci chunks, 50 workflow coverage tests, 204 significant coverage tests, and 16 release-critical tests.
+  Impact: Hosted evidence preserves immutable TESTER verification and the evidence PR cannot merge until its exact SHA has the required GitHub Actions-owned verification check.
+  Resolution: Accept for hosted CI, integration, and live v0.7.3 release-tail proof.

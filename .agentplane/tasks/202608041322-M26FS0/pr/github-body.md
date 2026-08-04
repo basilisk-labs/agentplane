@@ -16,7 +16,12 @@ Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created re
 ## Verification
 
 - State: ok
-- Note: Release-tail fixes verified against implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0.
+- Note:
+
+```text
+Release-tail fixes verified against semantic task head 92097f3ba42c432580de5b8bc75f558f012a2849;
+product implementation is 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
