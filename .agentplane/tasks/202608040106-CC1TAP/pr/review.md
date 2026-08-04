@@ -6,7 +6,7 @@ Created: 2026-08-04T01:06:52.139Z
 
 - Task: `202608040106-CC1TAP`
 - Title: Remove calendar-date flake from merge token-usage unit test
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608040106-CC1TAP/fix-token-usage-date-flake`
 - Canonical task record: `.agentplane/tasks/202608040106-CC1TAP/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-04T01:06:52.139Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-04T01:06:52.139Z
+- Updated: 2026-08-04T01:10:13.218Z
 - Branch: task/202608040106-CC1TAP/fix-token-usage-date-flake
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
