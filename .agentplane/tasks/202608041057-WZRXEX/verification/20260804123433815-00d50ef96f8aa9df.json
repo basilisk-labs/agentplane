@@ -1,0 +1,15 @@
+{
+  "details": "Command: git diff --exit-code f3000de59d32d425f4dda4eeea91cb8882e1872e..8dc72497a25202a38b50ea09a8332a0cb59c7dcf excluding task artifacts; bun test packages/agentplane/src/commands/release/release-task-evidence-script.test.ts; node scripts/check-release-incidents.mjs; node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: non-task repository tree is identical to f3000de59d32d425f4dda4eeea91cb8882e1872e, where final release:prepublish passed 101/101 base chunks, 50/50 workflow, 204/204 significant, 16/16 release-critical, and 8/8 migrations; current targeted regression passed 9/9; active incident gate passed; archived finding no longer promotes\nScope: final implementation head 8dc72497a25202a38b50ea09a8332a0cb59c7dcf",
+  "digest": "sha256:00d50ef96f8aa9df79cc74e8b73ead40d5634fcf85fc0f9a4d61ef703b9fc73b",
+  "implementation_sha": "8dc72497a25202a38b50ea09a8332a0cb59c7dcf",
+  "kind": "task_verification_record",
+  "note": "Final v0.7.2 candidate and archived-incident state verified",
+  "recorded_at": "2026-08-04T12:34:33.815Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bun test packages/agentplane/src/commands/release/release-task-evidence-script.test.ts`. Expected: exact-commit task selection, version fallback, and genuine ambiguity cases pass.\n2. Run the `prepare` command against the archived v0.7.1 `publish-result.json`. Expected: task `202608021232-YCNM1S` is selected despite other DONE v0.7.1 release tasks.\n3. Run `bun run ci:contract` and `bun run release:prepublish`. Expected: all blocking contracts and release gates pass on the final v0.7.2 candidate.\n4. Verify task `202608021232-YCNM1S` contains hosted publish evidence for SHA `f519d9518c34226075a61d2b01b936127a77e587` and retains explicit unavailable token provenance.\n5. After merge and publish, verify npm `latest` for all three packages is `0.7.2`, tag and GitHub Release `v0.7.2` point to the exact merged SHA, a clean install reports `0.7.2`, postpublish audit passes from the workflow artifact, release evidence follow-up succeeds, main is clean and matches origin, and merged branches/worktrees are removed.",
+  "scope_digest": "sha256:e86b3757a66971cef08f3b690d4b91196253d5eccc3a044a9eb9a1b21ec16452",
+  "task_id": "202608041057-WZRXEX",
+  "verification_command": "agentplane verify 202608041057-WZRXEX --ok --by TESTER",
+  "verifier": "TESTER"
+}

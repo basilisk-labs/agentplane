@@ -3,7 +3,7 @@
   "branch": "task/202608041057-WZRXEX/disambiguate-hosted-release-evidence-task-select",
   "created_at": "2026-08-04T10:58:31.949Z",
   "diffstat_sha256": "sha256:f85b691c6b71fec65ec1d881d66a6706c949d966e9787f1a6c19066944674099",
-  "last_verified_at": "2026-08-04T12:28:47.188Z",
+  "last_verified_at": "2026-08-04T12:34:33.815Z",
   "last_verified_diffstat_sha256": "sha256:f85b691c6b71fec65ec1d881d66a6706c949d966e9787f1a6c19066944674099",
   "pr_number": 4776,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4776",
