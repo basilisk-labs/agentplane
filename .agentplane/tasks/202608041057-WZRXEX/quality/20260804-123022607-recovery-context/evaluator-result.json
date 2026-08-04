@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Exact release-commit task identity selects 202608021232-YCNM1S before version fallback; version fallback remains available when no commit identity exists; multiple unresolved candidates remain a hard ambiguity.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/cf081c6680303ba29542f6c493b6ccd9764c0271fcec900f4d29e436cfbfc5ac.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
