@@ -16,7 +16,7 @@ import {
   assertCodexBinary,
   CODEX_REPLAY_CLI_VERSION_ENV,
 } from "../bench/internal/agent-efficiency-codex-runtime.mjs";
-import { checkRuntimeBridge } from "../bench/capture-agent-efficiency-runtime-bridge.mjs";
+import { readPinnedQualificationBaseline } from "../bench/capture-agent-efficiency-candidate.mjs";
 import { isDirectRun, parseScriptArgs } from "../lib/script-runtime.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -26,6 +26,12 @@ const defaultManifestPath = path.join(
   "scripts",
   "qualification",
   "v0.7.1-release-qualification.json",
+);
+const defaultProviderBaselineEvidencePath = path.join(
+  repoRoot,
+  "scripts",
+  "baselines",
+  "agent-efficiency-v0.7-beta1-candidate.json",
 );
 
 function helpText() {
@@ -108,6 +114,7 @@ function parseArgs(argv) {
     manifestPath: path.resolve(flags.manifest ?? defaultManifestPath),
     mode,
     outputDirectory: flags["out-dir"] ? path.resolve(flags["out-dir"]) : null,
+    providerBaselineEvidencePath: defaultProviderBaselineEvidencePath,
     profile,
     provider: flags.provider === true,
     scenarioIds,
@@ -211,11 +218,14 @@ export function preflightQualificationProviderRuntime(
   options,
   scenarios,
   verify = assertCodexBinary,
-  verifyBridge = checkRuntimeBridge,
+  verifyBaseline = readPinnedQualificationBaseline,
 ) {
   if (options.dryRun || !scenarios.some((scenario) => scenario.tier === "provider")) return null;
   const runtime = verify({ [CODEX_REPLAY_CLI_VERSION_ENV]: options.codexVersion });
-  verifyBridge({ codexCliVersion: options.codexVersion });
+  verifyBaseline({
+    codexCliVersion: options.codexVersion,
+    evidencePath: options.providerBaselineEvidencePath ?? defaultProviderBaselineEvidencePath,
+  });
   return runtime;
 }
 
@@ -245,11 +255,12 @@ async function main(argv = process.argv.slice(2)) {
           "cache",
           "rf04-candidate",
           options.subject,
-          `measurement.runtime-bridge-codex-${options.codexVersion}.json`,
+          `measurement.pinned-baseline-codex-${options.codexVersion}.json`,
         )
       : path.join("scripts", "baselines", "agent-efficiency-v0.7-beta1-candidate.json"),
     codexVersion: options.codexVersion,
     evidenceDir: relativeOutputDirectory,
+    providerBaselineEvidence: path.relative(repoRoot, options.providerBaselineEvidencePath),
     repoRoot: ".",
     subject: options.subject,
   };

@@ -40,8 +40,10 @@ async function loadCandidateFixture() {
   const candidate = (await import(CANDIDATE_URL)) as {
     assertCandidateCaptureMode(options: Json): void;
     buildCandidateMeasurement(input: Json): Json;
+    buildCandidateMeasurementFromPinnedBaseline(input: Json): Json;
     captureCandidate(options: Json): Json;
     createCandidateHarnessManifest(driver: Json, dependency: Json): Json;
+    readPinnedQualificationBaseline(input: Json): Json;
     validateCandidatePilotCapture(input: Json): Json;
   };
   const replay = (await import(REPLAY_URL)) as {
@@ -138,6 +140,7 @@ describeCritical("critical: RF-04 candidate measurement", () => {
     const fixture = await loadCandidateFixture();
     const common = {
       capture: false,
+      baselineEvidencePath: null,
       check: false,
       pilot: true,
       replace: false,
@@ -158,7 +161,21 @@ describeCritical("critical: RF-04 candidate measurement", () => {
     ).toThrow("--pilot cannot be combined with --replace");
     expect(() =>
       fixture.candidate.assertCandidateCaptureMode({ ...common, pilot: false, capture: true }),
-    ).toThrow("--capture requires --runtime-bridge");
+    ).toThrow("--capture requires --runtime-bridge or --baseline-evidence");
+    expect(() =>
+      fixture.candidate.assertCandidateCaptureMode({
+        ...common,
+        pilot: false,
+        baselineEvidencePath: "scripts/baselines/evidence.json",
+        runtimeBridgeVersion: "0.146.0-alpha.3.1",
+      }),
+    ).toThrow("--runtime-bridge cannot be combined with --baseline-evidence");
+    expect(() =>
+      fixture.candidate.assertCandidateCaptureMode({
+        ...common,
+        baselineEvidencePath: "scripts/baselines/evidence.json",
+      }),
+    ).toThrow("--pilot cannot be combined with --baseline-evidence");
     expect(() =>
       fixture.candidate.assertCandidateCaptureMode({
         ...common,
@@ -332,5 +349,49 @@ describeCritical("critical: RF-04 candidate measurement", () => {
     expect(measurement.verdict).toBe("fail");
     expect(measurement.failure_ids as string[]).toEqual(["runtime.profile"]);
     expect((measurement.runtime_comparison as Json).profile_match).toBe(false);
+  });
+
+  it("rebuilds a candidate comparison from reviewed Git-tracked runtime baseline evidence", async () => {
+    const fixture = await loadCandidateFixture();
+    const evidencePath = path.join(
+      REPO_ROOT,
+      "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json",
+    );
+    const pinned = fixture.candidate.readPinnedQualificationBaseline({
+      codexCliVersion: "0.146.0-alpha.3.1",
+      evidencePath,
+    }) as Json;
+    const candidateMeasurement = fixture.candidate.buildCandidateMeasurement({
+      candidateAnchor: CANDIDATE_SHA,
+      candidateDependencyClaim: fixture.dependency,
+      candidateDriverIdentity: fixture.driver,
+      candidateEnvelopeRecords: fixture.envelopes,
+      candidateEvidenceRecords: fixture.evidence,
+      candidateHarnessManifest: fixture.harness,
+      candidateRegistry: fixture.candidateRegistry,
+    }) as Json;
+    (candidateMeasurement.candidate as Json).runtime_profile = clone(
+      (pinned.baseline as Json).runtime_profile,
+    );
+
+    const measurement = fixture.candidate.buildCandidateMeasurementFromPinnedBaseline({
+      candidateMeasurement,
+      pinnedBaseline: pinned,
+    }) as Json;
+
+    expect((measurement.baseline as Json).source).toBe("pinned_runtime_bridge");
+    expect((measurement.baseline as Json).pinned_evidence_path).toBe(
+      "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json",
+    );
+    expect((measurement.runtime_comparison as Json).profile_match).toBe(true);
+    expect(
+      (measurement.comparisons as Json[]).some((entry) => entry.id === "runtime.profile"),
+    ).toBe(true);
+    expect(() =>
+      fixture.candidate.readPinnedQualificationBaseline({
+        codexCliVersion: "0.146.0-alpha.3.2",
+        evidencePath,
+      }),
+    ).toThrow("does not match the declared Codex runtime");
   });
 });

@@ -103,8 +103,11 @@ function helpText() {
     "  --root <path>     Candidate evidence root under .agentplane/cache/rf04-candidate/.",
     "  --runtime-bridge <version>  Materialize or validate a no-provider comparison against the",
     "                              historical runtime bridge for this exact Codex CLI version.",
+    "  --baseline-evidence <path>  Materialize or validate against a reviewed, Git-tracked",
+    "                              qualification baseline for the exact Codex CLI version.",
     "  --capture         With --runtime-bridge, capture one candidate generation and then",
-    "                    materialize the comparison against the preflighted runtime bridge.",
+    "                    materialize the comparison against the preflighted runtime bridge;",
+    "                    with --baseline-evidence, capture once and compare to that evidence.",
     "  --pilot           Run only direct/run-01 against the exact candidate and persist nothing.",
     "  --replace         Replace one complete previous candidate capture generation.",
     "  --check           Rebuild and validate an existing capture without provider calls.",
@@ -118,7 +121,15 @@ function helpText() {
 
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
-    valueFlags: ["subject", "runs", "driver", "root", "codex-version", "runtime-bridge"],
+    valueFlags: [
+      "subject",
+      "runs",
+      "driver",
+      "root",
+      "codex-version",
+      "runtime-bridge",
+      "baseline-evidence",
+    ],
     booleanFlags: ["capture", "check", "help", "pilot", "replace"],
     aliases: { h: "help" },
   });
@@ -127,6 +138,9 @@ function parseArgs(argv) {
   }
   return {
     capture: flags.capture === true,
+    baselineEvidencePath: flags["baseline-evidence"]
+      ? path.resolve(flags["baseline-evidence"])
+      : null,
     check: flags.check === true,
     codexCliVersion: flags["codex-version"] ?? "",
     driverPath: path.resolve(flags.driver ?? DEFAULT_DRIVER_PATH),
@@ -141,8 +155,13 @@ function parseArgs(argv) {
 }
 
 export function assertCandidateCaptureMode(options) {
-  if (options.capture && options.runtimeBridgeVersion === null) {
-    throw new Error("--capture requires --runtime-bridge");
+  const usesRuntimeBridge = options.runtimeBridgeVersion != null;
+  const usesBaselineEvidence = options.baselineEvidencePath != null;
+  if (usesRuntimeBridge && usesBaselineEvidence) {
+    throw new Error("--runtime-bridge cannot be combined with --baseline-evidence");
+  }
+  if (options.capture && !usesRuntimeBridge && !usesBaselineEvidence) {
+    throw new Error("--capture requires --runtime-bridge or --baseline-evidence");
   }
   if (options.capture && options.check) {
     throw new Error("--capture cannot be combined with --check");
@@ -151,6 +170,9 @@ export function assertCandidateCaptureMode(options) {
   if (options.check) throw new Error("--pilot cannot be combined with --check");
   if (options.runtimeBridgeVersion !== null) {
     throw new Error("--pilot cannot be combined with --runtime-bridge");
+  }
+  if (usesBaselineEvidence) {
+    throw new Error("--pilot cannot be combined with --baseline-evidence");
   }
   if (options.replace) throw new Error("--pilot cannot be combined with --replace");
 }
@@ -642,6 +664,58 @@ function comparisonTimingPolicy(runtimeBridgeVersion) {
   return baseline.comparison_policy?.timing ?? null;
 }
 
+function buildMeasurementComparisons({
+  baselineRuntimeProfile,
+  baselineValues,
+  candidateRuntimeProfile,
+  candidateValues,
+}) {
+  return [
+    ...Object.entries(candidateValues.provider_tokens).map(([field, candidate]) =>
+      atMostComparison(
+        `provider_tokens.${field}`,
+        baselineValues.provider_tokens[field],
+        candidate,
+      ),
+    ),
+    ...Object.keys(candidateValues.latency_ms).flatMap((field) => {
+      const baselineLatency = baselineValues.latency_ms[field];
+      const candidateLatency = candidateValues.latency_ms[field];
+      return [
+        atLeastComparison(
+          `latency.${field}.sample_count`,
+          baselineLatency.sample_count,
+          candidateLatency.sample_count,
+        ),
+        atMostComparison(`latency.${field}.mean_ms`, baselineLatency.mean, candidateLatency.mean),
+      ];
+    }),
+    atLeastComparison(
+      "outcomes.verified_success",
+      baselineValues.outcomes.verified_success,
+      candidateValues.outcomes.verified_success,
+    ),
+    atMostComparison(
+      "outcomes.rework_required",
+      baselineValues.outcomes.rework_required,
+      candidateValues.outcomes.rework_required,
+      0,
+    ),
+    atMostComparison(
+      "outcomes.golden_mismatch_count",
+      baselineValues.golden_mismatch_count,
+      candidateValues.golden_mismatch_count,
+      0,
+    ),
+    exactComparison(
+      "provider_episodes",
+      baselineValues.provider_episodes,
+      candidateValues.provider_episodes,
+    ),
+    identityComparison("runtime.profile", baselineRuntimeProfile, candidateRuntimeProfile),
+  ];
+}
+
 function readComparisonBaseline({ baselineSource, runs }) {
   const baselineRegistry = readFixtureRegistry(baselineSource.registryPath, {
     historicalBaseline: true,
@@ -745,50 +819,12 @@ export function buildCandidateMeasurement({
     candidate: candidateRuntimeProfile.runtime_version,
     profile_match: stableJson(baselineRuntimeProfile) === stableJson(candidateRuntimeProfile),
   };
-  const comparisons = [
-    ...Object.entries(candidateValues.provider_tokens).map(([field, candidate]) =>
-      atMostComparison(
-        `provider_tokens.${field}`,
-        baselineValues.provider_tokens[field],
-        candidate,
-      ),
-    ),
-    ...Object.keys(candidateValues.latency_ms).flatMap((field) => {
-      const baselineLatency = baselineValues.latency_ms[field];
-      const candidateLatency = candidateValues.latency_ms[field];
-      return [
-        atLeastComparison(
-          `latency.${field}.sample_count`,
-          baselineLatency.sample_count,
-          candidateLatency.sample_count,
-        ),
-        atMostComparison(`latency.${field}.mean_ms`, baselineLatency.mean, candidateLatency.mean),
-      ];
-    }),
-    atLeastComparison(
-      "outcomes.verified_success",
-      baselineValues.outcomes.verified_success,
-      candidateValues.outcomes.verified_success,
-    ),
-    atMostComparison(
-      "outcomes.rework_required",
-      baselineValues.outcomes.rework_required,
-      candidateValues.outcomes.rework_required,
-      0,
-    ),
-    atMostComparison(
-      "outcomes.golden_mismatch_count",
-      baselineValues.golden_mismatch_count,
-      candidateValues.golden_mismatch_count,
-      0,
-    ),
-    exactComparison(
-      "provider_episodes",
-      baselineValues.provider_episodes,
-      candidateValues.provider_episodes,
-    ),
-    identityComparison("runtime.profile", baselineRuntimeProfile, candidateRuntimeProfile),
-  ];
+  const comparisons = buildMeasurementComparisons({
+    baselineRuntimeProfile,
+    baselineValues,
+    candidateRuntimeProfile,
+    candidateValues,
+  });
   const failures = comparisons.filter((comparison) => comparison.verdict !== "pass");
   return {
     baseline: {
@@ -1165,6 +1201,165 @@ function runtimeBridgeMeasurementPath(paths, runtimeBridgeVersion) {
   return path.join(paths.root, `measurement.runtime-bridge-codex-${runtimeBridgeVersion}.json`);
 }
 
+function pinnedBaselineMeasurementPath(paths, codexCliVersion) {
+  return path.join(paths.root, `measurement.pinned-baseline-codex-${codexCliVersion}.json`);
+}
+
+export function readPinnedQualificationBaseline({ codexCliVersion, evidencePath }) {
+  const resolvedPath = path.resolve(evidencePath);
+  assertRepoPathNoSymlinkEscape(repoRoot, resolvedPath, "pinned qualification baseline", {
+    kind: "file",
+  });
+  const bytes = readFileSync(resolvedPath, "utf8");
+  const evidence = JSON.parse(bytes);
+  const measurement = evidence?.measurement;
+  const expectedRuntimeVersion = `0.6.24/${codexCliVersion}`;
+  if (
+    evidence?.schema_version !== 1 ||
+    evidence?.kind !== "agentplane.rf04.qualification_candidate_evidence" ||
+    measurement?.schema_version !== 1 ||
+    measurement?.kind !== "agent_efficiency_candidate_measurement_v1"
+  ) {
+    throw new Error("pinned qualification baseline has an unsupported evidence contract");
+  }
+  if (
+    measurement.baseline?.source !== "runtime_bridge" ||
+    measurement.baseline?.runtime_profile?.runtime_version !== expectedRuntimeVersion ||
+    measurement.runtime_comparison?.baseline !== expectedRuntimeVersion ||
+    measurement.runtime_comparison?.candidate !== expectedRuntimeVersion ||
+    measurement.runtime_comparison?.profile_match !== true
+  ) {
+    throw new Error("pinned qualification baseline does not match the declared Codex runtime");
+  }
+  if (
+    measurement.baseline?.actual_values?.provider_episodes !== 55 ||
+    !/^sha256:[a-f0-9]{64}$/u.test(measurement.baseline?.replay_baseline_sha256 ?? "") ||
+    !/^sha256:[a-f0-9]{64}$/u.test(evidence.source?.measurement_source_sha256 ?? "") ||
+    !/^[a-f0-9]{40}$/u.test(evidence.source?.task_artifact_commit ?? "")
+  ) {
+    throw new Error("pinned qualification baseline provenance is incomplete");
+  }
+  return {
+    baseline: structuredClone(measurement.baseline),
+    evidence_path: relativeRepoPath(repoRoot, resolvedPath, "pinned qualification baseline"),
+    evidence_sha256: sha256(bytes),
+  };
+}
+
+export function buildCandidateMeasurementFromPinnedBaseline({
+  candidateMeasurement,
+  pinnedBaseline,
+}) {
+  if (
+    candidateMeasurement?.schema_version !== 1 ||
+    candidateMeasurement?.kind !== "agent_efficiency_candidate_measurement_v1"
+  ) {
+    throw new Error("candidate raw measurement has an unsupported evidence contract");
+  }
+  const baseline = pinnedBaseline?.baseline;
+  const candidate = candidateMeasurement.candidate;
+  if (!baseline?.actual_values || !baseline.runtime_profile || !candidate?.actual_values) {
+    throw new Error("pinned baseline comparison omits actual baseline or candidate values");
+  }
+  const runtimeComparison = {
+    baseline: baseline.runtime_profile.runtime_version,
+    candidate: candidate.runtime_profile?.runtime_version ?? null,
+    profile_match: stableJson(baseline.runtime_profile) === stableJson(candidate.runtime_profile),
+  };
+  const comparisons = buildMeasurementComparisons({
+    baselineRuntimeProfile: baseline.runtime_profile,
+    baselineValues: baseline.actual_values,
+    candidateRuntimeProfile: candidate.runtime_profile,
+    candidateValues: candidate.actual_values,
+  });
+  const failures = comparisons.filter((comparison) => comparison.verdict !== "pass");
+  return {
+    baseline: {
+      ...structuredClone(baseline),
+      pinned_evidence_path: pinnedBaseline.evidence_path,
+      pinned_evidence_sha256: pinnedBaseline.evidence_sha256,
+      source: "pinned_runtime_bridge",
+    },
+    candidate: structuredClone(candidate),
+    comparisons,
+    failure_ids: failures.map((comparison) => comparison.id),
+    kind: "agent_efficiency_candidate_measurement_v1",
+    runtime_comparison: runtimeComparison,
+    schema_version: 1,
+    verdict: failures.length === 0 ? "pass" : "fail",
+  };
+}
+
+export function materializePinnedBaselineMeasurement(options) {
+  const subject = assertCandidateSubject(options.subject);
+  const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
+  const runs = assertRuns(options.runs);
+  if (options.baselineEvidencePath == null) {
+    throw new Error("pinned qualification baseline evidence is required");
+  }
+  const paths = resolveCandidatePaths(subject, options.outputRoot);
+  assertCandidatePaths(paths);
+  const measurementPath = pinnedBaselineMeasurementPath(paths, codexCliVersion);
+  assertRepoPathNoSymlinkEscape(repoRoot, measurementPath, "pinned baseline measurement", {
+    kind: "file",
+  });
+  const rawMeasurement = rebuildCandidateMeasurement({
+    codexCliVersion,
+    driverPath: options.driverPath,
+    paths,
+    runs,
+    subject,
+    useRecordedCandidateInputs: true,
+  });
+  const pinnedBaseline = readPinnedQualificationBaseline({
+    codexCliVersion,
+    evidencePath: options.baselineEvidencePath,
+  });
+  const measurement = buildCandidateMeasurementFromPinnedBaseline({
+    candidateMeasurement: rawMeasurement,
+    pinnedBaseline,
+  });
+  const bytes = canonicalBytes(measurement);
+  if (targetExists(measurementPath) && readFileSync(measurementPath, "utf8") !== bytes) {
+    throw new Error("pinned baseline measurement already exists with different immutable bytes");
+  }
+  if (!targetExists(measurementPath)) {
+    writeFileSync(measurementPath, bytes, { encoding: "utf8", mode: 0o600 });
+  }
+  return measurement;
+}
+
+export function captureCandidateWithPinnedBaseline(options) {
+  assertCandidateCaptureMode(options);
+  readPinnedQualificationBaseline({
+    codexCliVersion: assertCandidateCodexCliVersion(options.codexCliVersion),
+    evidencePath: options.baselineEvidencePath,
+  });
+  captureCandidate({
+    ...options,
+    baselineEvidencePath: null,
+    capture: false,
+  });
+  return materializePinnedBaselineMeasurement({ ...options, capture: false });
+}
+
+export function checkPinnedBaselineMeasurement(options) {
+  const subject = assertCandidateSubject(options.subject);
+  const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
+  const paths = resolveCandidatePaths(subject, options.outputRoot);
+  const measurementPath = pinnedBaselineMeasurementPath(paths, codexCliVersion);
+  if (!targetExists(measurementPath)) {
+    throw new Error(
+      "pinned baseline measurement is absent; materialize it after candidate capture",
+    );
+  }
+  const rebuilt = materializePinnedBaselineMeasurement(options);
+  if (readFileSync(measurementPath, "utf8") !== canonicalBytes(rebuilt)) {
+    throw new Error("pinned baseline measurement is not the deterministic rebuild of raw evidence");
+  }
+  return rebuilt;
+}
+
 export function materializeRuntimeBridgeMeasurement(options) {
   const subject = assertCandidateSubject(options.subject);
   const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
@@ -1279,24 +1474,45 @@ const main = defineCheck({
       return;
     }
     const runtimeBridge = options.runtimeBridgeVersion !== null;
-    const measurement = runtimeBridge
+    const pinnedBaseline = options.baselineEvidencePath !== null;
+    const measurement = pinnedBaseline
       ? options.capture
-        ? captureCandidateWithRuntimeBridge(options)
+        ? captureCandidateWithPinnedBaseline(options)
         : options.check
-          ? checkRuntimeBridgeMeasurement(options)
-          : materializeRuntimeBridgeMeasurement(options)
-      : options.check
-        ? checkCandidateCapture(options)
-        : captureCandidate(options);
+          ? checkPinnedBaselineMeasurement(options)
+          : materializePinnedBaselineMeasurement(options)
+      : runtimeBridge
+        ? options.capture
+          ? captureCandidateWithRuntimeBridge(options)
+          : options.check
+            ? checkRuntimeBridgeMeasurement(options)
+            : materializeRuntimeBridgeMeasurement(options)
+        : options.check
+          ? checkCandidateCapture(options)
+          : captureCandidate(options);
     stdout.write(
-      `RF-04 candidate ${runtimeBridge ? "runtime bridge measurement" : "measurement"} ` +
-        `${options.check ? "validated" : runtimeBridge ? "materialized" : "captured"} ` +
+      `RF-04 candidate ${
+        pinnedBaseline
+          ? "pinned baseline measurement"
+          : runtimeBridge
+            ? "runtime bridge measurement"
+            : "measurement"
+      } ` +
+        `${
+          options.check
+            ? "validated"
+            : runtimeBridge || pinnedBaseline
+              ? "materialized"
+              : "captured"
+        } ` +
         `(subject=${measurement.candidate.subject_sha}; runs=${measurement.candidate.coverage.replay_runs}; ` +
         `episodes=${measurement.candidate.actual_values.provider_episodes}; verdict=${measurement.verdict})\n`,
     );
     const blockingFailureIds = blockingCandidateFailureIds(
       measurement,
-      comparisonTimingPolicy(options.runtimeBridgeVersion),
+      pinnedBaseline
+        ? "diagnostic_only_never_gated"
+        : comparisonTimingPolicy(options.runtimeBridgeVersion),
     );
     if (blockingFailureIds.length > 0) {
       throw new Error(`RF-04 candidate comparison failed: ${blockingFailureIds.join(", ")}`);
