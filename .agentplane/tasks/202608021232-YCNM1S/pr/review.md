@@ -12,8 +12,8 @@ Created: 2026-08-04T08:36:16.971Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Release-ci chunk 19 exposed a stale semantic-plan fixture before the intended finish closeout boundary.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -88,9 +88,10 @@ Created: 2026-08-04T08:36:16.971Z
  docs/releases/v0.7.1.md                            | 337 +++++++++++++++++++
  .../src/cli/run-cli.core.agent-mode.test.ts        |  11 +-
  .../run-cli.core.direct-task-supervision.test.ts   |  15 +
+ ...-cli.core.lifecycle.finish-close-commit.test.ts |  12 +
  website/static/img/social/docs/releases/v0.7.1.png | Bin 0 -> 52228 bytes
  website/static/img/social/manifest.json            |   8 +
- 61 files changed, 372 insertions(+), 1701 deletions(-)
+ 62 files changed, 384 insertions(+), 1701 deletions(-)
 ```
 
 </details>

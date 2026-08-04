@@ -1,0 +1,15 @@
+{
+  "details": "Command: ap release candidate --plan .agentplane/.release/plan/2026-08-04T08-36-29-987Z --push --yes\nResult: fail\nEvidence: release-ci-base chunk 19/101; finish-close-commit expected the stale-quality-review stop but the task never replaced the generated semantic planning placeholder, so finish exited at an earlier usage boundary.\nScope: test fixture only; no runtime or product-source behavior changed.",
+  "digest": "sha256:d8a602443b93d712785b6ccffb70021b3c9da6f9c087aed8bc53dfb3928cbf37",
+  "implementation_sha": "e656c493251b1f2677bfdfa5156d0e975d0ceaff",
+  "kind": "task_verification_record",
+  "note": "Release-ci chunk 19 exposed a stale semantic-plan fixture before the intended finish closeout boundary.",
+  "recorded_at": "2026-08-04T09:35:12.227Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Inspect `git diff 82a0ffea3af6a1ca811a824e24289d9a68c4d684...HEAD` and the worktree status. Expected: the candidate contains release metadata, notes, generated release assets, and task evidence only; no runtime or product-source drift is present.\n2. Run `node scripts/release/check-release-notes.mjs --tag v0.7.1 --min-bullets 287` and `bun run format:check`. Expected: the concise release summary and complete collapsed commit ledger pass the repository contract.\n3. Run `node scripts/qualification/check-v0.7.1-product-contract.mjs`. Expected: the v0.7.1 product contract passes, including the shared supervisor default, compact agent packet, TypeScript 7 toolchain, and zero unused CLI exports.\n4. Run `bun run release:prepublish`. Expected: release parity, builds, static contracts, critical suites, package tarball checks, and installed-package smoke all pass for version 0.7.1.\n5. Reconfirm dependency task `202608021232-6BTB6D`. Expected: the frozen product candidate retains the single completed gate of 50 runs / 55 provider episodes with 0 blockers and 29.921280763879005% token reduction; do not rerun unless product code changes.\n6. Complete independent task verification, evaluator pass, hosted PR checks, and merge through the integration queue. Expected: every required check is green and the merged SHA is the exact publish input.\n7. Dispatch `Publish to npm` for the exact merged SHA, then run `bun run release:smoke:published` and `bun run release:postpublish:audit`. Expected: tag and GitHub Release `v0.7.1`, npm versions/dist-tags for all three public packages, installed CLI smoke, and local/remote `main` parity are confirmed.",
+  "scope_digest": "sha256:48af4cd80adb0012d6612a511df32d0950f6fee1cfbba7d1a6f713897c8eb042",
+  "task_id": "202608021232-YCNM1S",
+  "verification_command": "agentplane verify 202608021232-YCNM1S --rework --by TESTER",
+  "verifier": "TESTER"
+}

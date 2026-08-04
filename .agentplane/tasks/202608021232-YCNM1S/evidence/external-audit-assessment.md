@@ -37,4 +37,4 @@ No new release-blocking product defect was confirmed against the current `v0.7.1
 
 ## Gate regression found while assessing the candidate
 
-The release-ci suite exposed a stale direct-supervision fixture that created a task without a semantic plan but expected the approval boundary. The current contract correctly returned `semantic_input_required`. The fixture now records a task-specific unapproved plan before asserting `approval_required`; no runtime code changed and the targeted test passes.
+The release-ci suite exposed two stale semantic-planning fixtures. The direct-supervision case created a task without a semantic plan but expected the approval boundary. The commit-from-comment closeout case attempted approval without replacing the generated placeholder, so it never reached the intended stale-quality-review boundary. Both fixtures now record task-specific PLANNER plans before exercising their downstream boundary; no runtime code changed.
