@@ -16,6 +16,13 @@ const COVERAGE_DIMENSIONS = [
 const TIERS = new Set(["core", "full", "provider"]);
 const RELEASE_DISPOSITIONS = new Set(["block", "advisory"]);
 const TASK_ID_PATTERN = /^\d{12}-[A-Z0-9]{6}$/u;
+const PROVIDER_EQUIVALENT_QUALIFICATION_PATHS = new Set([
+  "scripts/qualification/check-v0.7.1-efficiency-evidence.mjs",
+  "scripts/qualification/release-qualification.mjs",
+  "scripts/qualification/release-qualification.test.mjs",
+  "scripts/qualification/run-v0.7.1-release-qualification.mjs",
+  "scripts/qualification/v0.7.1-release-qualification.json",
+]);
 
 function assertNonEmptyString(value, label) {
   if (typeof value !== "string" || value.trim().length === 0) {
@@ -71,6 +78,72 @@ export function stableJson(value) {
 
 export function sha256(value) {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
+}
+
+export function assertProviderEquivalentChangedPaths(changedPaths) {
+  if (!Array.isArray(changedPaths)) {
+    throw new TypeError("provider evidence changed paths must be an array");
+  }
+  const normalized = changedPaths.map((filePath) => {
+    assertNonEmptyString(filePath, "provider evidence changed path");
+    return filePath.split(path.sep).join("/");
+  });
+  const unexpected = normalized.filter(
+    (filePath) => !PROVIDER_EQUIVALENT_QUALIFICATION_PATHS.has(filePath),
+  );
+  if (unexpected.length > 0) {
+    throw new Error(
+      `provider evidence cannot cross runtime-affecting changes: ${unexpected.join(", ")}`,
+    );
+  }
+  return normalized.toSorted();
+}
+
+export function readProviderEvidenceEquivalence(repoRoot, sourceSubject, targetSubject) {
+  for (const [label, value] of [
+    ["provider evidence source subject", sourceSubject],
+    ["provider evidence target subject", targetSubject],
+  ]) {
+    if (!/^[a-f0-9]{40}$/u.test(value ?? "")) {
+      throw new Error(`${label} must be a full 40-character Git commit SHA`);
+    }
+  }
+  if (sourceSubject === targetSubject) {
+    return {
+      schema_version: 1,
+      kind: "agentplane.provider_runtime_equivalence",
+      policy: "exact_subject_v1",
+      source_subject: sourceSubject,
+      target_subject: targetSubject,
+      changed_paths: [],
+      provider_runtime_unchanged: true,
+    };
+  }
+  try {
+    execFileSync("git", ["merge-base", "--is-ancestor", sourceSubject, targetSubject], {
+      cwd: repoRoot,
+      stdio: "ignore",
+    });
+  } catch {
+    throw new Error("provider evidence source must be an ancestor of the qualification subject");
+  }
+  const changedPaths = execFileSync(
+    "git",
+    ["diff", "--name-only", "--diff-filter=ACDMRTUXB", sourceSubject, targetSubject, "--"],
+    { cwd: repoRoot, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
+  )
+    .trim()
+    .split("\n")
+    .filter(Boolean);
+  return {
+    schema_version: 1,
+    kind: "agentplane.provider_runtime_equivalence",
+    policy: "qualification_only_descendant_v1",
+    source_subject: sourceSubject,
+    target_subject: targetSubject,
+    changed_paths: assertProviderEquivalentChangedPaths(changedPaths),
+    provider_runtime_unchanged: true,
+  };
 }
 
 export function assertQualificationSubjectIdentity({ subject, head, tree, statusPorcelain }) {

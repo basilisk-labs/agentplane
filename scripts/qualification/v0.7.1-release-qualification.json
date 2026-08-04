@@ -227,6 +227,8 @@
         "{candidateEvidence}",
         "--subject",
         "{subject}",
+        "--provider-source-subject",
+        "{providerSubject}",
         "--out",
         "{evidenceDir}/efficiency-evidence.json"
       ],
@@ -407,14 +409,14 @@
         "node",
         "scripts/bench/capture-agent-efficiency-candidate.mjs",
         "--subject",
-        "{subject}",
+        "{providerSubject}",
         "--codex-version",
         "{codexVersion}",
         "--runs",
         "5",
         "--baseline-evidence",
         "{providerBaselineEvidence}",
-        "--capture"
+        "{providerAction}"
       ],
       "timeout_ms": 7200000,
       "coverage": {
@@ -424,8 +426,8 @@
       },
       "failure": {
         "classification": "semantic_provider_qualification_failure",
-        "impact": "The exact candidate lacks complete no-retry semantic quality and token telemetry.",
-        "proposed_fix": "Classify the failed episode without retrying it, repair the attributable product defect, and run a new explicitly versioned candidate generation.",
+        "impact": "The candidate lacks complete no-retry semantic quality and token telemetry from the exact runtime or a proven qualification-only descendant.",
+        "proposed_fix": "Classify the failed episode without retrying it, repair the attributable product defect, and run a new explicitly versioned candidate generation unless the runtime is provably unchanged.",
         "owner_task": "202608021232-6BTB6D",
         "release_disposition": "block"
       }

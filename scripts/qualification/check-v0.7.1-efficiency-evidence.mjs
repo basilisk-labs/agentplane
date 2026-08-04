@@ -1,7 +1,9 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { isDirectRun, parseScriptArgs } from "../lib/script-runtime.mjs";
+import { readProviderEvidenceEquivalence } from "./release-qualification.mjs";
 
 const TOKEN_FIELDS = ["input_tokens", "output_tokens", "reasoning_tokens", "total_tokens"];
 const LATENCY_FIELDS = [
@@ -11,10 +13,12 @@ const LATENCY_FIELDS = [
 ];
 const TIMING_POLICY = "diagnostic_only_never_gated";
 const SHA256_PATTERN = /^sha256:[a-f0-9]{64}$/u;
+const scriptPath = fileURLToPath(import.meta.url);
+const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
 
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
-    valueFlags: ["evidence", "subject", "out"],
+    valueFlags: ["evidence", "subject", "provider-source-subject", "out"],
   });
   if (positionals.length > 0) {
     throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
@@ -25,9 +29,14 @@ function parseArgs(argv) {
   if (!/^[a-f0-9]{40}$/u.test(flags.subject)) {
     throw new Error("--subject must be a full 40-character Git commit SHA");
   }
+  const providerSourceSubject = flags["provider-source-subject"] ?? flags.subject;
+  if (!/^[a-f0-9]{40}$/u.test(providerSourceSubject)) {
+    throw new Error("--provider-source-subject must be a full 40-character Git commit SHA");
+  }
   return {
     evidencePath: path.resolve(flags.evidence),
     outputPath: path.resolve(flags.out),
+    providerSourceSubject,
     subject: flags.subject,
   };
 }
@@ -128,12 +137,20 @@ export function evaluateEfficiencyMeasurement(measurement, subject) {
   for (const field of LATENCY_FIELDS) {
     const before = baseline.latency_ms?.[field];
     const after = candidate.latency_ms?.[field];
-    assertAtLeast(
-      failures,
-      `latency.${field}.sample_count`,
-      after?.sample_count,
-      before?.sample_count,
-    );
+    if (
+      !finite(after?.sample_count) ||
+      (finite(before?.sample_count) && after.sample_count < before.sample_count)
+    ) {
+      latencyDiagnostics.push({
+        metric: `latency.${field}.sample_count`,
+        baseline: before?.sample_count ?? null,
+        candidate: after?.sample_count ?? null,
+        delta:
+          finite(before?.sample_count) && finite(after?.sample_count)
+            ? after.sample_count - before.sample_count
+            : null,
+      });
+    }
     if (finite(before?.mean) && finite(after?.mean) && after.mean > before.mean) {
       latencyDiagnostics.push({
         metric: `latency.${field}.mean`,
@@ -202,7 +219,20 @@ export function evaluateEfficiencyMeasurement(measurement, subject) {
 function main(argv = process.argv.slice(2)) {
   const options = parseArgs(argv);
   const measurement = readMeasurement(options.evidencePath);
-  const result = evaluateEfficiencyMeasurement(measurement, options.subject);
+  const runtimeEquivalence = readProviderEvidenceEquivalence(
+    repoRoot,
+    options.providerSourceSubject,
+    options.subject,
+  );
+  const evaluated = evaluateEfficiencyMeasurement(measurement, options.providerSourceSubject);
+  const result = {
+    ...evaluated,
+    subject: options.subject,
+    provider_evidence: {
+      source_subject: options.providerSourceSubject,
+      runtime_equivalence: runtimeEquivalence,
+    },
+  };
   mkdirSync(path.dirname(options.outputPath), { recursive: true });
   writeFileSync(options.outputPath, `${JSON.stringify(result, null, 2)}\n`, "utf8");
   process.stdout.write(

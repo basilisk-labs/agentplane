@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 import {
   assertQualificationSubjectIdentity,
   buildQualificationReport,
+  assertProviderEquivalentChangedPaths,
   qualificationExitCode,
   qualificationEvidenceStatusPathspec,
   readQualificationManifest,
@@ -149,7 +150,13 @@ describe("v0.7.1 release qualification contract", () => {
       baselineCalls.push(source);
       return {};
     };
-    const base = { codexVersion: "0.146.0-alpha.3.1", dryRun: false, provider: false };
+    const base = {
+      codexVersion: "0.146.0-alpha.3.1",
+      dryRun: false,
+      provider: false,
+      providerEvidenceSubject: "a".repeat(40),
+      subject: "a".repeat(40),
+    };
     const localScenarios = [{ id: "typecheck", tier: "full" }];
     const providerScenarios = [{ id: "provider-matrix", tier: "provider" }];
 
@@ -187,6 +194,21 @@ describe("v0.7.1 release qualification contract", () => {
         ),
       },
     ]);
+
+    const equivalenceCalls = [];
+    preflightQualificationProviderRuntime(
+      {
+        ...base,
+        provider: true,
+        subject: "b".repeat(40),
+        providerEvidenceSubject: "a".repeat(40),
+      },
+      providerScenarios,
+      verify,
+      verifyBaseline,
+      (...args) => equivalenceCalls.push(args),
+    );
+    assert.deepEqual(equivalenceCalls, [[repoRoot, "a".repeat(40), "b".repeat(40)]]);
 
     const mismatch = Object.assign(new Error("CODEX_VERSION_MISMATCH"), {
       code: "CODEX_VERSION_MISMATCH",
@@ -378,7 +400,25 @@ describe("v0.7.1 release qualification contract", () => {
     const providerCommand = provider.find((scenario) => scenario.id === "provider-matrix").command;
     assert.ok(providerCommand.includes("--baseline-evidence"));
     assert.equal(providerCommand.includes("--runtime-bridge"), false);
-    assert.ok(providerCommand.includes("--capture"));
+    assert.ok(providerCommand.includes("{providerAction}"));
+    assert.ok(providerCommand.includes("{providerSubject}"));
+  });
+
+  it("reuses provider evidence only across qualification-only changes", () => {
+    assert.deepEqual(
+      assertProviderEquivalentChangedPaths([
+        "scripts/qualification/check-v0.7.1-efficiency-evidence.mjs",
+        "scripts/qualification/release-qualification.test.mjs",
+      ]),
+      [
+        "scripts/qualification/check-v0.7.1-efficiency-evidence.mjs",
+        "scripts/qualification/release-qualification.test.mjs",
+      ],
+    );
+    assert.throws(
+      () => assertProviderEquivalentChangedPaths(["packages/agentplane/src/cli/index.ts"]),
+      /runtime-affecting changes/u,
+    );
   });
 
   it("fails closed when an explicit scenario omits its dependency", () => {
@@ -533,6 +573,22 @@ describe("v0.7.1 release qualification contract", () => {
     assert.equal(
       timingResult.latency_ms.diagnostics.some(
         (item) => item.metric === "latency.time_to_verified_result_ms.mean",
+      ),
+      true,
+    );
+
+    const timingCoverage = efficiencyMeasurement();
+    timingCoverage.candidate.actual_values.latency_ms.time_to_first_scoped_mutation_ms.sample_count =
+      timingCoverage.baseline.actual_values.latency_ms.time_to_first_scoped_mutation_ms
+        .sample_count - 2;
+    const timingCoverageResult = evaluateEfficiencyMeasurement(
+      timingCoverage,
+      timingCoverage.candidate.subject_sha,
+    );
+    assert.equal(timingCoverageResult.verdict, "pass");
+    assert.equal(
+      timingCoverageResult.latency_ms.diagnostics.some(
+        (item) => item.metric === "latency.time_to_first_scoped_mutation_ms.sample_count",
       ),
       true,
     );
