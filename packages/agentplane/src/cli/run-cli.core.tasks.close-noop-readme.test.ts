@@ -8,6 +8,7 @@ import { defaultConfig } from "./core-imports.js";
 
 import { runCli } from "./run-cli.js";
 import {
+  approveTaskPlan,
   captureStdIO,
   configureGitUser,
   mkGitRepoRootWithBranch,
@@ -54,18 +55,7 @@ describe("task close-noop README recovery", { timeout: 300_000 }, () => {
     await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-    await runCliSilent([
-      "task",
-      "plan",
-      "approve",
-      taskId,
-      "--by",
-      "USER",
-      "--note",
-      "OK",
-      "--root",
-      root,
-    ]);
+    await approveTaskPlan(root, taskId);
     await runCliSilent([
       "work",
       "start",
