@@ -2,10 +2,10 @@
 id: "202608040031-4XD57R"
 title: "Attribute and remove redundant Git observations from direct supervisor preparation"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -59,18 +59,20 @@ quality_review:
 token_usage:
   agent_runs: 0
   input_tokens: null
-  journal_digest: null
+  journal_digest: "sha256:02d6502e608a3c5bd4e29d8e1f1745b8f8499ec912a55fb418466611dc9c7fd0"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
-  source: "unavailable"
+  source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-04T00:57:26.612Z"
-commit: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-08-04T01:28:35.267Z"
+commit:
+  hash: "ea75482b6c8879c99757a290749824efdbb911f6"
+  message: "🧪 4XD57R task: refresh synced release evidence"
 comments:
   -
     author: "CODER"
@@ -90,6 +92,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed structured verification and head-scoped quality evidence cover the unchanged exact code diff; pre-merge closure is ready for publication."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -175,8 +180,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified synchronized performance implementation after the main CI-fix merge; strict latency evidence and all rerun safety checks pass."
+  -
+    type: "status"
+    at: "2026-08-04T01:28:35.267Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-04T01:27:56.126Z"
+doc_updated_at: "2026-08-04T01:28:35.293Z"
 doc_updated_by: "CODER"
 description: "Extend the packed supervisor benchmark with deterministic per-command Git histograms, use those measurements to identify and remove only duplicated direct-workflow observations whose values are already covered by the same command context or route snapshot, preserve all stale-state and side-effect-safety invariants, and restore every cold and warm median and p95 surface below the unchanged +10% v0.6.26 ceiling."
 sections:
@@ -461,8 +473,8 @@ sections:
       Resolution: Recorded verification against the frozen committed head without altering product code.
 extensions:
   implementation_commit:
-    hash: "b80f2e98f136add92e2cd143da7d5731dae64519"
-    message: "🧩 4XD57R task: record closure repair handoff"
+    hash: "7a08766d8aa805b7995d2ea9bf1b794a7f8797fa"
+    message: "🧩 4XD57R task: sync main CI fix"
   workflow_route_baseline:
     start_head_sha: "bae47b05c31e7e489a1c49ce12f7a27d6f44486a"
     version: 1
@@ -770,7 +782,7 @@ DecisionContextRef:
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
-- Provenance: `unavailable/agentplane`
-- Journal digest: `unavailable`
-- Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-04T00:57:26.612Z`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:02d6502e608a3c5bd4e29d8e1f1745b8f8499ec912a55fb418466611dc9c7fd0`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-08-04T01:28:35.267Z`
