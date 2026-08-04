@@ -12,8 +12,8 @@ Created: 2026-08-04T13:24:55.578Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Release-tail fixes verified against implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,12 +24,44 @@ Created: 2026-08-04T13:24:55.578Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-04T13:24:55.578Z
+- Updated: 2026-08-04T13:26:21.628Z
 - Branch: task/202608041322-M26FS0/stabilize-hosted-release-evidence-closeout
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/WORKFLOW.md                            |   2 +-
+ .agentplane/tasks/202608041057-WZRXEX/README.md    |   8 +-
+ .github/workflows/publish.yml                      |  86 ++++++++++++++++-----
+ docs/assets/header.svg                             |   4 +-
+ docs/assets/readme-headers/adr.svg                 |   4 +-
+ docs/assets/readme-headers/agentplane-cli.svg      |   4 +-
+ docs/assets/readme-headers/agentplane.svg          |   4 +-
+ docs/assets/readme-headers/core.svg                |   4 +-
+ docs/assets/readme-headers/docs.svg                |   4 +-
+ docs/assets/readme-headers/humanizer.svg           |   4 +-
+ docs/assets/readme-headers/recipes.svg             |   4 +-
+ docs/assets/readme-headers/releases.svg            |   4 +-
+ docs/assets/readme-headers/schemas.svg             |   4 +-
+ docs/assets/readme-headers/scripts.svg             |   4 +-
+ docs/assets/readme-headers/skills.svg              |   4 +-
+ docs/assets/readme-headers/spec.svg                |   4 +-
+ docs/assets/readme-headers/testkit.svg             |   4 +-
+ docs/releases/v0.7.3.md                            |  28 +++++++
+ packages/agentplane/package.json                   |   6 +-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  16 ++--
+ .../release/publish-workflow-contract.test.ts      |  36 +++++----
+ .../release/release-task-evidence-script.test.ts   |  61 ++++++++++++++-
+ packages/core/package.json                         |   2 +-
+ packages/recipes/package.json                      |   2 +-
+ packages/recipes/src/index.ts                      |   2 +-
+ packages/spec/examples/acr.json                    |   4 +-
+ packages/testkit/package.json                      |   2 +-
+ .../baselines/v0.7-compatibility-candidate.json    |   8 +-
+ .../check-compatibility-contract-baseline.mjs      |   8 +-
+ scripts/release/release-task-evidence.mjs          |   7 --
+ website/static/img/social/docs/releases/v0.7.3.png | Bin 0 -> 53092 bytes
+ website/static/img/social/manifest.json            |   8 ++
+ 32 files changed, 238 insertions(+), 104 deletions(-)
 ```
 
 </details>
