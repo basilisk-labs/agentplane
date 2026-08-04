@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -73,7 +73,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-04T00:50:36.182Z"
+  updated_at: "2026-08-04T00:51:42.874Z"
 commit:
   hash: "b9fc76f03f3e15e890106a4c628837860e4009cf"
   message: "🧩 4XD57R task: record verified performance evidence"
@@ -84,6 +84,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation complete: exact SHA 3a526415 reuses authoritative dirty paths, reduces managed Git observations from 8 to 7, passes the unchanged 20/30 latency gate, supervisor 154/154, recovery 86/86, critical CLI 79/79, typecheck, lint, formatting, doctor, and routing policy."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure is ready; exact implementation 3a526415 passed strict latency, regression, static, policy, verification, and evaluator gates with complete raw evidence."
   -
     author: "CODER"
     body: "Verified: pre-merge closure is ready; exact implementation 3a526415 passed strict latency, regression, static, policy, verification, and evaluator gates with complete raw evidence."
@@ -125,8 +128,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: pre-merge closure is ready; exact implementation 3a526415 passed strict latency, regression, static, policy, verification, and evaluator gates with complete raw evidence."
+  -
+    type: "status"
+    at: "2026-08-04T00:51:42.874Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: pre-merge closure is ready; exact implementation 3a526415 passed strict latency, regression, static, policy, verification, and evaluator gates with complete raw evidence."
 doc_version: 3
-doc_updated_at: "2026-08-04T00:51:29.592Z"
+doc_updated_at: "2026-08-04T00:51:42.901Z"
 doc_updated_by: "CODER"
 description: "Extend the packed supervisor benchmark with deterministic per-command Git histograms, use those measurements to identify and remove only duplicated direct-workflow observations whose values are already covered by the same command context or route snapshot, preserve all stale-state and side-effect-safety invariants, and restore every cold and warm median and p95 surface below the unchanged +10% v0.6.26 ceiling."
 sections:
@@ -289,4 +299,4 @@ DecisionContextRef:
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-04T00:50:36.182Z`
+- Updated at: `2026-08-04T00:51:42.874Z`
