@@ -1,10 +1,11 @@
 ---
 id: "202608040031-4XD57R"
 title: "Attribute and remove redundant Git observations from direct supervisor preparation"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -59,6 +60,20 @@ quality_review:
     - "Git command histograms are collected only after the measured interval, are deterministically sorted, and their totals are validated against per-sample subprocess counts."
     - "Policy scope reuses dirty paths only from an available authoritative snapshot; unavailable snapshots retain the prior live status observation."
     - "Sequential blueprint and snapshot observation avoids the measured cold-start I/O contention introduced by the rejected parallel experiment."
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-04T00:50:36.182Z"
 commit:
   hash: "b9fc76f03f3e15e890106a4c628837860e4009cf"
   message: "🧩 4XD57R task: record verified performance evidence"
@@ -69,6 +84,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation complete: exact SHA 3a526415 reuses authoritative dirty paths, reduces managed Git observations from 8 to 7, passes the unchanged 20/30 latency gate, supervisor 154/154, recovery 86/86, critical CLI 79/79, typecheck, lint, formatting, doctor, and routing policy."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure is ready; exact implementation 3a526415 passed strict latency, regression, static, policy, verification, and evaluator gates with complete raw evidence."
   -
     author: "CODER"
     body: "Verified: pre-merge closure is ready; exact implementation 3a526415 passed strict latency, regression, static, policy, verification, and evaluator gates with complete raw evidence."
@@ -100,8 +118,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure is ready; exact implementation 3a526415 passed strict latency, regression, static, policy, verification, and evaluator gates with complete raw evidence."
+  -
+    type: "status"
+    at: "2026-08-04T00:50:36.182Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: pre-merge closure is ready; exact implementation 3a526415 passed strict latency, regression, static, policy, verification, and evaluator gates with complete raw evidence."
 doc_version: 3
-doc_updated_at: "2026-08-04T00:49:38.270Z"
+doc_updated_at: "2026-08-04T00:50:36.191Z"
 doc_updated_by: "CODER"
 description: "Extend the packed supervisor benchmark with deterministic per-command Git histograms, use those measurements to identify and remove only duplicated direct-workflow observations whose values are already covered by the same command context or route snapshot, preserve all stale-state and side-effect-safety invariants, and restore every cold and warm median and p95 surface below the unchanged +10% v0.6.26 ceiling."
 sections:
@@ -164,6 +189,9 @@ sections:
       Impact: Removes one deterministic repository scan from task run preparation without weakening stale-state, policy, approval, recovery, concurrency, or side-effect safety.
       Resolution: Accept for exact-head hosted review and integration; retain the raw attribution, failed parallel-I/O experiment, and passing sequential benchmark as evidence.
 extensions:
+  implementation_commit:
+    hash: "3a526415de4ea9034687446e68f7115a97353402"
+    message: "⚡ 4XD57R task: sequence snapshot observation"
   workflow_route_baseline:
     start_head_sha: "bae47b05c31e7e489a1c49ce12f7a27d6f44486a"
     version: 1
@@ -241,3 +269,16 @@ DecisionContextRef:
 - Observation: The authoritative Git snapshot now supplies direct policy-scope dirty paths only when available; an explicit fallback retains the original status read when snapshot observation is unavailable.
   Impact: Removes one deterministic repository scan from task run preparation without weakening stale-state, policy, approval, recovery, concurrency, or side-effect safety.
   Resolution: Accept for exact-head hosted review and integration; retain the raw attribution, failed parallel-I/O experiment, and passing sequential benchmark as evidence.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-04T00:50:36.182Z`

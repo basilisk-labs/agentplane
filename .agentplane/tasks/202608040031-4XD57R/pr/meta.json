@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:f3a786297ea2c61c1d85e3dce3d5be47eb49e7bae543b74ac41819de5d37ab16",
   "pr_number": 4769,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4769",
+  "pre_merge_closure": {
+    "basis_commit": "b4b6a24e0a2ad06a46084efe9f31bf21376d9f3c",
+    "branch": "task/202608040031-4XD57R/attribute-and-remove-redundant-git-observations",
+    "pr_number": 4769,
+    "recorded_at": "2026-08-04T00:50:36.250Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608040031-4XD57R",
