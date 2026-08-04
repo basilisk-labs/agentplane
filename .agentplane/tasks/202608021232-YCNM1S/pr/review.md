@@ -12,8 +12,8 @@ Created: 2026-08-04T08:36:16.971Z
 
 ## Verification
 
-- State: ok
-- Note: The semantic-plan fixture rework reaches the intended closeout boundary and preserves runtime behavior.
+- State: needs_rework
+- Note: The test rework passes, but the release candidate version bump and canonical full prepublish are not yet recorded on the final task head.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
