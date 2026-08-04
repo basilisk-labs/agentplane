@@ -27,8 +27,10 @@ Integrate all approved v0.7.1 fixes, run the complete deterministic and provider
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/releases/v0.7.1.md | 337 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 337 insertions(+)
+ docs/releases/v0.7.1.md                            | 337 +++++++++++++++++++++
+ website/static/img/social/docs/releases/v0.7.1.png | Bin 0 -> 52228 bytes
+ website/static/img/social/manifest.json            |   8 +
+ 3 files changed, 345 insertions(+)
 ```
 
 </details>
