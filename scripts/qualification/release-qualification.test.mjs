@@ -404,13 +404,15 @@ describe("v0.7.1 release qualification contract", () => {
     assert.ok(providerCommand.includes("{providerSubject}"));
   });
 
-  it("reuses provider evidence only across qualification-only changes", () => {
+  it("reuses provider evidence only across explicit provider-runtime-equivalent changes", () => {
     assert.deepEqual(
       assertProviderEquivalentChangedPaths([
+        ".github/workflows/publish.yml",
         "scripts/qualification/check-v0.7.1-efficiency-evidence.mjs",
         "scripts/qualification/release-qualification.test.mjs",
       ]),
       [
+        ".github/workflows/publish.yml",
         "scripts/qualification/check-v0.7.1-efficiency-evidence.mjs",
         "scripts/qualification/release-qualification.test.mjs",
       ],

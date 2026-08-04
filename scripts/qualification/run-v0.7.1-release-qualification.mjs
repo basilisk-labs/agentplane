@@ -48,7 +48,7 @@ function helpText() {
     "  --profile <core|full>     Default: full. Gate requires full.",
     "  --provider                Run the bounded 50-run/55-episode provider scenario.",
     "  --provider-evidence-subject <sha>  Reuse immutable provider evidence only when every",
-    "                              intervening change is qualification-only and runtime-equivalent.",
+    "                              intervening change is explicitly provider-runtime-equivalent.",
     "  --subject <sha>           Exact candidate commit. Defaults to current HEAD in audit mode.",
     "  --codex-version <version> Exact Codex CLI version; required with --provider.",
     "  --scenario <id>           Select one scenario; repeatable through comma-separated ids.",

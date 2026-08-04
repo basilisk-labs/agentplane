@@ -16,7 +16,8 @@ const COVERAGE_DIMENSIONS = [
 const TIERS = new Set(["core", "full", "provider"]);
 const RELEASE_DISPOSITIONS = new Set(["block", "advisory"]);
 const TASK_ID_PATTERN = /^\d{12}-[A-Z0-9]{6}$/u;
-const PROVIDER_EQUIVALENT_QUALIFICATION_PATHS = new Set([
+const PROVIDER_RUNTIME_EQUIVALENT_PATHS = new Set([
+  ".github/workflows/publish.yml",
   "scripts/qualification/check-v0.7.1-efficiency-evidence.mjs",
   "scripts/qualification/release-qualification.mjs",
   "scripts/qualification/release-qualification.test.mjs",
@@ -89,7 +90,7 @@ export function assertProviderEquivalentChangedPaths(changedPaths) {
     return filePath.split(path.sep).join("/");
   });
   const unexpected = normalized.filter(
-    (filePath) => !PROVIDER_EQUIVALENT_QUALIFICATION_PATHS.has(filePath),
+    (filePath) => !PROVIDER_RUNTIME_EQUIVALENT_PATHS.has(filePath),
   );
   if (unexpected.length > 0) {
     throw new Error(
@@ -138,7 +139,7 @@ export function readProviderEvidenceEquivalence(repoRoot, sourceSubject, targetS
   return {
     schema_version: 1,
     kind: "agentplane.provider_runtime_equivalence",
-    policy: "qualification_only_descendant_v1",
+    policy: "provider_runtime_equivalent_descendant_v1",
     source_subject: sourceSubject,
     target_subject: targetSubject,
     changed_paths: assertProviderEquivalentChangedPaths(changedPaths),
