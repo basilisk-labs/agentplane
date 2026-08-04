@@ -1,0 +1,27 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "The benchmark report must expose bounded deterministic Git command histograms for baseline and candidate samples without adding work inside the timed interval.",
+    "The candidate must reduce the measured direct managed-preparation observation count, preserve all route and recovery invariants, and pass the unchanged 20-cold/30-warm +10% median and p95 gate."
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-04T01:27:52.318Z",
+    "updated_by": "TESTER",
+    "note": "Verified synchronized performance implementation after the main CI-fix merge; strict latency evidence and all rerun safety checks pass."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608040031-4XD57R/verification/20260804012752318-eb86fbe721914dcb.json",
+      "sha256": "sha256:df113901cb7665e10700c0da4188908c57674d40acd647a9ac8bb98cedd5cbb0"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
