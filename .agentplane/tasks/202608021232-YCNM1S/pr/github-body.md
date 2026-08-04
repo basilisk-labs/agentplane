@@ -113,11 +113,11 @@ yet recorded on the final task head.
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
- packages/spec/examples/acr.json                    |  22 +-
+ packages/spec/examples/acr.json                    |   4 +-
  packages/testkit/package.json                      |   2 +-
  website/static/img/social/docs/releases/v0.7.1.png | Bin 0 -> 52228 bytes
  website/static/img/social/manifest.json            |   8 +
- 85 files changed, 442 insertions(+), 1747 deletions(-)
+ 85 files changed, 428 insertions(+), 1743 deletions(-)
 ```
 
 </details>
