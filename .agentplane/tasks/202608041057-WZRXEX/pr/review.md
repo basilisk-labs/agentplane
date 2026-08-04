@@ -13,7 +13,7 @@ Created: 2026-08-04T10:58:31.949Z
 ## Verification
 
 - State: ok
-- Note: Final v0.7.2 candidate and archived-incident state verified
+- Note: P1 prior-release evidence collision is fixed and verified
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,7 +30,7 @@ Created: 2026-08-04T10:58:31.949Z
 
 ```text
  .agentplane/WORKFLOW.md                            |   3 +-
- .agentplane/tasks/202608021232-YCNM1S/README.md    |  54 ++++++++++++++++++---
+ .agentplane/tasks/202608021232-YCNM1S/README.md    |  54 ++++++++++--
  .agentplane/workflows/last-known-good.md           |   3 +-
  docs/assets/header.svg                             |   4 +-
  docs/assets/readme-headers/adr.svg                 |   4 +-
@@ -46,23 +46,23 @@ Created: 2026-08-04T10:58:31.949Z
  docs/assets/readme-headers/skills.svg              |   4 +-
  docs/assets/readme-headers/spec.svg                |   4 +-
  docs/assets/readme-headers/testkit.svg             |   4 +-
- docs/developer/incident-archive.mdx                |   4 ++
- docs/reference/generated-reference.mdx             |   6 +--
- docs/releases/v0.7.2.md                            |  25 ++++++++++
- packages/agentplane/package.json                   |   6 +--
- ...-cli.critical.agent-efficiency-baseline.test.ts |  16 +++---
- .../release/release-task-evidence-script.test.ts   |  47 ++++++++++++++++++
+ docs/developer/incident-archive.mdx                |   4 +
+ docs/reference/generated-reference.mdx             |   6 +-
+ docs/releases/v0.7.2.md                            |  25 ++++++
+ packages/agentplane/package.json                   |   6 +-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  16 ++--
+ .../release/release-task-evidence-script.test.ts   |  98 +++++++++++++++++++++
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
  packages/spec/examples/acr.json                    |   4 +-
  packages/testkit/package.json                      |   2 +-
- .../baselines/v0.7-compatibility-candidate.json    |   8 +--
- .../check-compatibility-contract-baseline.mjs      |   8 +--
- scripts/release/release-task-evidence.mjs          |  26 +++++++---
+ .../baselines/v0.7-compatibility-candidate.json    |   8 +-
+ .../check-compatibility-contract-baseline.mjs      |   8 +-
+ scripts/release/release-task-evidence.mjs          |  26 ++++--
  website/static/img/social/docs/releases/v0.7.2.png | Bin 0 -> 52852 bytes
- website/static/img/social/manifest.json            |   8 +++
- 33 files changed, 212 insertions(+), 70 deletions(-)
+ website/static/img/social/manifest.json            |   8 ++
+ 33 files changed, 263 insertions(+), 70 deletions(-)
 ```
 
 </details>
