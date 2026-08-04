@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on:
@@ -34,7 +34,7 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-04T07:23:08.209Z"
+  updated_at: "2026-08-04T07:26:34.883Z"
   updated_by: "TESTER"
   note: "PASS: committed integration-safe validator confirms the immutable recorded gate without provider execution."
   attempts: 0
@@ -160,8 +160,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: committed integration-safe validator confirms the immutable recorded gate without provider execution."
+  -
+    type: "verify"
+    at: "2026-08-04T07:26:34.883Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS: committed integration-safe validator confirms the immutable recorded gate without provider execution."
 doc_version: 3
-doc_updated_at: "2026-08-04T07:23:09.712Z"
+doc_updated_at: "2026-08-04T07:26:36.523Z"
 doc_updated_by: "TESTER"
 description: "After all candidate fixes land, execute exactly one no-retry 50-run and 55-provider-episode qualification generation against the exact candidate SHA, verify quality parity, context correctness, token savings, lifecycle latency, and provenance, and classify every failed episode before any replacement generation."
 sections:
@@ -344,6 +350,41 @@ sections:
     Result: PASS; validator commit eff01d2c and verification metadata commit bfd3c3e preserve frozen implementation subject de94bf9d and validate 50 runs, 55 episodes, zero blockers, and 29.92% token reduction.
     Evidence: .agentplane/tasks/202608021232-6BTB6D/evidence/validate-recorded-gate.mjs; .agentplane/tasks/202608021232-6BTB6D/evidence/final-de94bf9d9-gate/report.json; .agentplane/tasks/202608021232-6BTB6D/evidence/final-de94bf9d9-gate/efficiency-evidence.json
     Scope: read-only validation of tracked task evidence; no implementation or provider execution.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-6BTB6D-capture-exact-v0-7-1-semantic-efficiency-evidenc/.agentplane/tasks/202608021232-6BTB6D/blueprint/resolved-snapshot.json
+    - old_digest: 79a3a7060573c39cbae559717f887b6001d04e0b422a548ecc9478bef4d6d9f0
+    - current_digest: 79a3a7060573c39cbae559717f887b6001d04e0b422a548ecc9478bef4d6d9f0
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021232-6BTB6D
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-04T07:26:34.883Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS: committed integration-safe validator confirms the immutable recorded gate without provider execution.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T07:23:09.712Z, excerpt_hash=sha256:8e1803b01fe6916cc554542ffdbf0ba26df87c1a21174b96dd399b47f5173897
+
+    Details:
+
+    Command: node .agentplane/tasks/202608021232-6BTB6D/evidence/validate-recorded-gate.mjs
+    Result: pass
+    Evidence: Frozen subject de94bf9d; tracked report and efficiency evidence validate 50 runs, 55 episodes, zero blockers, and 29.92% token reduction.
+    Scope: Read-only validation of tracked task evidence; no implementation or provider execution.
 
     BlueprintSnapshotRef:
     - state: current
@@ -582,6 +623,41 @@ Command: node .agentplane/tasks/202608021232-6BTB6D/evidence/validate-recorded-g
 Result: PASS; validator commit eff01d2c and verification metadata commit bfd3c3e preserve frozen implementation subject de94bf9d and validate 50 runs, 55 episodes, zero blockers, and 29.92% token reduction.
 Evidence: .agentplane/tasks/202608021232-6BTB6D/evidence/validate-recorded-gate.mjs; .agentplane/tasks/202608021232-6BTB6D/evidence/final-de94bf9d9-gate/report.json; .agentplane/tasks/202608021232-6BTB6D/evidence/final-de94bf9d9-gate/efficiency-evidence.json
 Scope: read-only validation of tracked task evidence; no implementation or provider execution.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-6BTB6D-capture-exact-v0-7-1-semantic-efficiency-evidenc/.agentplane/tasks/202608021232-6BTB6D/blueprint/resolved-snapshot.json
+- old_digest: 79a3a7060573c39cbae559717f887b6001d04e0b422a548ecc9478bef4d6d9f0
+- current_digest: 79a3a7060573c39cbae559717f887b6001d04e0b422a548ecc9478bef4d6d9f0
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021232-6BTB6D
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-04T07:26:34.883Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS: committed integration-safe validator confirms the immutable recorded gate without provider execution.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T07:23:09.712Z, excerpt_hash=sha256:8e1803b01fe6916cc554542ffdbf0ba26df87c1a21174b96dd399b47f5173897
+
+Details:
+
+Command: node .agentplane/tasks/202608021232-6BTB6D/evidence/validate-recorded-gate.mjs
+Result: pass
+Evidence: Frozen subject de94bf9d; tracked report and efficiency evidence validate 50 runs, 55 episodes, zero blockers, and 29.92% token reduction.
+Scope: Read-only validation of tracked task evidence; no implementation or provider execution.
 
 BlueprintSnapshotRef:
 - state: current
