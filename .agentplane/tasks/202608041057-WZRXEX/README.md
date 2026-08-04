@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -64,10 +64,10 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-04T12:31:49.510Z"
+  updated_at: "2026-08-04T12:36:27.896Z"
 commit:
-  hash: "1c1307cee71af7947c8039404384c376e17b86da"
-  message: "🧩 WZRXEX task: record final quality review"
+  hash: "bee4bdf19759c1229459547d046eb2cf525f5d47"
+  message: "🧩 WZRXEX task: record release-ready quality review"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -134,8 +137,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Final v0.7.2 candidate and archived-incident state verified"
+  -
+    type: "status"
+    at: "2026-08-04T12:36:27.896Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-04T12:35:18.338Z"
+doc_updated_at: "2026-08-04T12:36:27.918Z"
 doc_updated_by: "CODER"
 description: "Make post-publish evidence select the unique release task touched by the exact release commit before falling back to version-wide registry matching; add regression coverage for multiple DONE release tasks sharing one version, record v0.7.1 publication evidence, and ship the corrective patch release."
 sections:
@@ -305,8 +315,8 @@ sections:
       Resolution: Resolve all task ids touched by the exact release commit, intersect them with version-qualified release tasks, select a unique exact match, and preserve fail-closed fallback behavior for genuine ambiguity; regression and real v0.7.1 replay pass.
 extensions:
   implementation_commit:
-    hash: "f3000de59d32d425f4dda4eeea91cb8882e1872e"
-    message: "🛡️ WZRXEX release: archive resolved evidence incident"
+    hash: "8dc72497a25202a38b50ea09a8332a0cb59c7dcf"
+    message: "🛡️ WZRXEX release: prevent archived incident repromotion"
   workflow_route_baseline:
     start_head_sha: "f519d9518c34226075a61d2b01b936127a77e587"
     version: 1
@@ -502,4 +512,4 @@ DecisionContextRef:
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-04T12:31:49.510Z`
+- Updated at: `2026-08-04T12:36:27.896Z`
