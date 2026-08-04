@@ -1,1 +1,1 @@
-🚧 7Z0401 task: Harden stale runner reclaim regression after semantic plan enforcement [202608040748-7Z0401]
+✅ 7Z0401 task: Harden stale runner reclaim regression after semantic plan enforcement [202608040748-7Z0401]
