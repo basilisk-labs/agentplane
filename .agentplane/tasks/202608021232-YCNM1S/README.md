@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane v0.7.1"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -31,11 +31,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-04T09:38:09.480Z"
+  state: "ok"
+  updated_at: "2026-08-04T10:32:36.777Z"
   updated_by: "TESTER"
-  note: "The test rework passes, but the release candidate version bump and canonical full prepublish are not yet recorded on the final task head."
-  attempts: 1
+  note: "The exact v0.7.1 local candidate passes the complete release gate; frozen provider evidence remains applicable and hosted publication is the next controlled boundary."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -64,8 +64,8 @@ quality_review:
     - "Both changed tests now establish task-specific semantic plans before asserting approval or closeout behavior; expectations match the current CLI-authoritative planning contract without weakening runtime guards."
     - "The external audit assessment is grounded in executable product, Knip, legacy inventory, provider-efficiency, and latency evidence and separates patch blockers from non-blocking 0.8 architecture work."
 commit:
-  hash: "340b96480ac25dc623052b7cd5e3b9846f1cab9b"
-  message: "🖼️ YCNM1S release: generate v0.7.1 headers"
+  hash: "3ebe0701881e7bba093b3f76c8047033687b3eaf"
+  message: "🧪 YCNM1S release: ratchet v0.7.1 compatibility test"
 comments:
   -
     author: "INTEGRATOR"
@@ -82,6 +82,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework: regenerated all canonical README header assets for v0.7.1 after the version bump; header freshness check passes."
+  -
+    author: "CODER"
+    body: "Implementation rework complete: v0.7.1 compatibility delta and stale release fixtures are corrected; the canonical full prepublish passes on the final local candidate."
 events:
   -
     type: "status"
@@ -136,8 +139,21 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework: regenerated all canonical README header assets for v0.7.1 after the version bump; header freshness check passes."
+  -
+    type: "status"
+    at: "2026-08-04T10:32:13.868Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework complete: v0.7.1 compatibility delta and stale release fixtures are corrected; the canonical full prepublish passes on the final local candidate."
+  -
+    type: "verify"
+    at: "2026-08-04T10:32:36.777Z"
+    author: "TESTER"
+    state: "ok"
+    note: "The exact v0.7.1 local candidate passes the complete release gate; frozen provider evidence remains applicable and hosted publication is the next controlled boundary."
 doc_version: 3
-doc_updated_at: "2026-08-04T09:39:59.935Z"
+doc_updated_at: "2026-08-04T10:32:37.722Z"
 doc_updated_by: "CODER"
 description: "Integrate all approved v0.7.1 fixes, run the complete deterministic and provider release gate on the exact candidate, resolve every blocking defect, verify GitHub Actions and package metadata, publish npm and GitHub Release, and prove the installed release from remote truth."
 sections:
@@ -255,6 +271,66 @@ sections:
 
     DecisionContextRef:
     - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-04T10:32:36.777Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: The exact v0.7.1 local candidate passes the complete release gate; frozen provider evidence remains applicable and hosted publication is the next controlled boundary.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T10:32:13.868Z, excerpt_hash=sha256:48af4cd80adb0012d6612a511df32d0950f6fee1cfbba7d1a6f713897c8eb042
+
+    Details:
+
+    Command: git diff and git status candidate audit
+    Result: pass
+    Evidence: tracked tree was clean before verification; direct tree comparison against provider subject de94bf9d91de1a8a854ad358968e8193e9803342 shows no AgentPlane runtime, core source, qualification, or benchmark drift; only test fixtures and RECIPES_VERSION 0.7.1 differ.
+    Scope: exact local release candidate 3ebe0701881e7bba093b3f76c8047033687b3eaf.
+
+    Command: node scripts/release/check-release-notes.mjs --tag v0.7.1 --min-bullets 287 and bun run format:check
+    Result: pass
+    Evidence: concise v0.7.1 notes with the complete 287-commit ledger pass; all repository files use Prettier style.
+    Scope: release notes, generated assets, and repository formatting.
+
+    Command: node scripts/qualification/check-v0.7.1-product-contract.mjs
+    Result: pass
+    Evidence: canonical supervisor UX, guarded compatibility, compact packet, legacy inventory, TypeScript 7, and zero-unused CLI contract pass.
+    Scope: v0.7.1 product acceptance contract.
+
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: exit code 0 on version 0.7.1; incidents, parity, builds, compatibility, RF-04 replay, architecture, Knip, tarballs, 8-scenario installed migration matrix, 101 of 101 release-ci chunks, workflow coverage, significant coverage 19 files and 204 tests, and release-critical 4 files and 16 tests pass.
+    Scope: complete canonical local release barrier on final candidate SHA.
+
+    Command: inspect task 202608021232-6BTB6D frozen provider evidence
+    Result: pass
+    Evidence: frozen subject de94bf9d91de1a8a854ad358968e8193e9803342 retains exactly 50 runs and 55 provider episodes, zero blockers, and 29.921280763879005 percent token reduction; no semantic runtime drift requires a rerun.
+    Scope: single authorized provider generation, reused without retry or replacement.
+
+    Command: external audit and residual-risk review
+    Result: pass
+    Evidence: audit P0 items are implemented and verified; absolute CLI latency and 87 runtime modules above the 400-line warning threshold remain non-blocking documented follow-ups, with the enforced 600-line ceiling passing.
+    Scope: release-blocker classification; hosted PR checks, merge, publish, and postpublish audit remain next route stages.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-YCNM1S-qualify-and-publish-agentplane-v0-7-1/.agentplane/tasks/202608021232-YCNM1S/blueprint/resolved-snapshot.json
+    - old_digest: 1c6891f873a4739c542029b7b715e76b008e2b21d912005d7d681bbaba7c0653
+    - current_digest: 1c6891f873a4739c542029b7b715e76b008e2b21d912005d7d681bbaba7c0653
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021232-YCNM1S
+
+    DecisionContextRef:
+    - operator_action: stop
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
@@ -415,6 +491,66 @@ BlueprintSnapshotRef:
 
 DecisionContextRef:
 - operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-04T10:32:36.777Z — VERIFY — ok
+
+By: TESTER
+
+Note: The exact v0.7.1 local candidate passes the complete release gate; frozen provider evidence remains applicable and hosted publication is the next controlled boundary.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T10:32:13.868Z, excerpt_hash=sha256:48af4cd80adb0012d6612a511df32d0950f6fee1cfbba7d1a6f713897c8eb042
+
+Details:
+
+Command: git diff and git status candidate audit
+Result: pass
+Evidence: tracked tree was clean before verification; direct tree comparison against provider subject de94bf9d91de1a8a854ad358968e8193e9803342 shows no AgentPlane runtime, core source, qualification, or benchmark drift; only test fixtures and RECIPES_VERSION 0.7.1 differ.
+Scope: exact local release candidate 3ebe0701881e7bba093b3f76c8047033687b3eaf.
+
+Command: node scripts/release/check-release-notes.mjs --tag v0.7.1 --min-bullets 287 and bun run format:check
+Result: pass
+Evidence: concise v0.7.1 notes with the complete 287-commit ledger pass; all repository files use Prettier style.
+Scope: release notes, generated assets, and repository formatting.
+
+Command: node scripts/qualification/check-v0.7.1-product-contract.mjs
+Result: pass
+Evidence: canonical supervisor UX, guarded compatibility, compact packet, legacy inventory, TypeScript 7, and zero-unused CLI contract pass.
+Scope: v0.7.1 product acceptance contract.
+
+Command: bun run release:prepublish
+Result: pass
+Evidence: exit code 0 on version 0.7.1; incidents, parity, builds, compatibility, RF-04 replay, architecture, Knip, tarballs, 8-scenario installed migration matrix, 101 of 101 release-ci chunks, workflow coverage, significant coverage 19 files and 204 tests, and release-critical 4 files and 16 tests pass.
+Scope: complete canonical local release barrier on final candidate SHA.
+
+Command: inspect task 202608021232-6BTB6D frozen provider evidence
+Result: pass
+Evidence: frozen subject de94bf9d91de1a8a854ad358968e8193e9803342 retains exactly 50 runs and 55 provider episodes, zero blockers, and 29.921280763879005 percent token reduction; no semantic runtime drift requires a rerun.
+Scope: single authorized provider generation, reused without retry or replacement.
+
+Command: external audit and residual-risk review
+Result: pass
+Evidence: audit P0 items are implemented and verified; absolute CLI latency and 87 runtime modules above the 400-line warning threshold remain non-blocking documented follow-ups, with the enforced 600-line ceiling passing.
+Scope: release-blocker classification; hosted PR checks, merge, publish, and postpublish audit remain next route stages.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-YCNM1S-qualify-and-publish-agentplane-v0-7-1/.agentplane/tasks/202608021232-YCNM1S/blueprint/resolved-snapshot.json
+- old_digest: 1c6891f873a4739c542029b7b715e76b008e2b21d912005d7d681bbaba7c0653
+- current_digest: 1c6891f873a4739c542029b7b715e76b008e2b21d912005d7d681bbaba7c0653
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021232-YCNM1S
+
+DecisionContextRef:
+- operator_action: stop
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none

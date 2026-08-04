@@ -15,12 +15,12 @@ Integrate all approved v0.7.1 fixes, run the complete deterministic and provider
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-The test rework passes, but the release candidate version bump and canonical full prepublish are not
-yet recorded on the final task head.
+The exact v0.7.1 local candidate passes the complete release gate; frozen provider evidence remains
+applicable and hosted publication is the next controlled boundary.
 ```
 - Canonical workflow state lives in the task README.
 
