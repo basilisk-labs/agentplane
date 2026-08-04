@@ -1,10 +1,10 @@
 ---
 id: "202608040031-4XD57R"
 title: "Attribute and remove redundant Git observations from direct supervisor preparation"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -60,8 +60,8 @@ quality_review:
     - "Policy scope reuses dirty paths only from an available authoritative snapshot; unavailable snapshots retain the prior live status observation."
     - "Sequential blueprint and snapshot observation avoids the measured cold-start I/O contention introduced by the rejected parallel experiment."
 commit:
-  hash: "3a526415de4ea9034687446e68f7115a97353402"
-  message: "⚡ 4XD57R task: sequence snapshot observation"
+  hash: "b9fc76f03f3e15e890106a4c628837860e4009cf"
+  message: "🧩 4XD57R task: record verified performance evidence"
 comments:
   -
     author: "CODER"
@@ -69,6 +69,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation complete: exact SHA 3a526415 reuses authoritative dirty paths, reduces managed Git observations from 8 to 7, passes the unchanged 20/30 latency gate, supervisor 154/154, recovery 86/86, critical CLI 79/79, typecheck, lint, formatting, doctor, and routing policy."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure is ready; exact implementation 3a526415 passed strict latency, regression, static, policy, verification, and evaluator gates with complete raw evidence."
 events:
   -
     type: "status"
@@ -90,8 +93,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified exact implementation SHA 3a526415: instrumented 20-cold/30-warm packed benchmark passed all four unchanged +10% gates and reduced managed Git observations from 8 to 7; supervisor 154/154, recovery 86/86, critical CLI 79/79, qualification 21/21, typecheck, lint, format, doctor, and routing policy passed."
+  -
+    type: "status"
+    at: "2026-08-04T00:49:38.270Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure is ready; exact implementation 3a526415 passed strict latency, regression, static, policy, verification, and evaluator gates with complete raw evidence."
 doc_version: 3
-doc_updated_at: "2026-08-04T00:48:01.566Z"
+doc_updated_at: "2026-08-04T00:49:38.270Z"
 doc_updated_by: "CODER"
 description: "Extend the packed supervisor benchmark with deterministic per-command Git histograms, use those measurements to identify and remove only duplicated direct-workflow observations whose values are already covered by the same command context or route snapshot, preserve all stale-state and side-effect-safety invariants, and restore every cold and warm median and p95 surface below the unchanged +10% v0.6.26 ceiling."
 sections:
