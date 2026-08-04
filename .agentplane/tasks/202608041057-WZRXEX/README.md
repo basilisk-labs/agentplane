@@ -13,6 +13,8 @@ tags:
   - "code"
   - "post-merge-fix"
   - "release"
+task_kind: "release"
+mutation_scope: "release"
 verify: []
 plan_approval:
   state: "approved"

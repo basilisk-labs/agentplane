@@ -429,6 +429,57 @@ describe("release-task-evidence script", () => {
     expect(payload.task_id).toBe(publishTaskId);
   });
 
+  it("ignores a prior-release evidence task touched beside the current release task", async () => {
+    const root = await initRepo();
+    const priorTaskId = "202604191130-PRIOR";
+    await writeTaskReadme(root, priorTaskId, {
+      title: "Publish release v0.3.14",
+      tags: ["v0.3.14", "release"],
+      taskKind: "release",
+      mutationScope: "release",
+    });
+    await commitAll(root, "record prior release task");
+
+    await writeTaskReadme(root, priorTaskId, {
+      title: "Publish release v0.3.14",
+      tags: ["v0.3.14", "release"],
+      taskKind: "release",
+      mutationScope: "release",
+      verificationText: "Hosted publish confirmed for v0.3.14.",
+    });
+    const currentTaskId = "202604191131-CURRENT";
+    await writeTaskReadme(root, currentTaskId, {
+      title: "Publish release v0.3.15",
+      tags: ["v0.3.15", "release"],
+      taskKind: "release",
+      mutationScope: "release",
+    });
+    const releaseSha = await commitAll(root, "publish v0.3.15 and recover v0.3.14 evidence");
+    const publishResultPath = await writePublishResult(root, buildPublishResult(true));
+
+    const result = await execFileAsync(
+      "bun",
+      [
+        SCRIPT_PATH,
+        "prepare",
+        "--release-sha",
+        releaseSha,
+        "--publish-result",
+        publishResultPath,
+        "--repo",
+        "basilisk-labs/agentplane",
+      ],
+      { cwd: root, env: process.env },
+    );
+
+    const payload = JSON.parse(String(result.stdout ?? "")) as {
+      actionable: boolean;
+      task_id: string;
+    };
+    expect(payload.actionable).toBe(true);
+    expect(payload.task_id).toBe(currentTaskId);
+  });
+
   it("refuses ambiguous version-matched release tasks instead of attributing publish evidence", async () => {
     const root = await initRepo();
     for (const taskId of ["202604191130-RELEASE", "202604191131-RELEASE"]) {
