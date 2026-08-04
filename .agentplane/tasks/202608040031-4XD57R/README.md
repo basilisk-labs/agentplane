@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -72,7 +72,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-04T00:51:42.874Z"
+  updated_at: "2026-08-04T00:57:26.612Z"
 commit:
   hash: "b9fc76f03f3e15e890106a4c628837860e4009cf"
   message: "🧩 4XD57R task: record verified performance evidence"
@@ -92,6 +92,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure is ready; exact implementation 3a526415 passed strict latency, regression, static, policy, verification, and evaluator gates with complete raw evidence."
+  -
+    author: "CODER"
+    body: "Verified: refreshed structured verification and head-scoped quality evidence cover the unchanged exact code diff; pre-merge closure is ready for publication."
 events:
   -
     type: "status"
@@ -140,8 +143,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Revalidated the exact semantic implementation and lifecycle-repair target: the accepted 3a526415 code diff and its b80f2e98 task handoff remain covered by the passing strict benchmark and regression matrix."
+  -
+    type: "status"
+    at: "2026-08-04T00:57:26.612Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed structured verification and head-scoped quality evidence cover the unchanged exact code diff; pre-merge closure is ready for publication."
 doc_version: 3
-doc_updated_at: "2026-08-04T00:56:32.444Z"
+doc_updated_at: "2026-08-04T00:57:26.637Z"
 doc_updated_by: "CODER"
 description: "Extend the packed supervisor benchmark with deterministic per-command Git histograms, use those measurements to identify and remove only duplicated direct-workflow observations whose values are already covered by the same command context or route snapshot, preserve all stale-state and side-effect-safety invariants, and restore every cold and warm median and p95 surface below the unchanged +10% v0.6.26 ceiling."
 sections:
@@ -249,8 +259,8 @@ sections:
       Resolution: Record this task-only lifecycle repair handoff, then regenerate the canonical pre-merge closure marker against the same verified implementation SHA 3a526415.
 extensions:
   implementation_commit:
-    hash: "3a526415de4ea9034687446e68f7115a97353402"
-    message: "⚡ 4XD57R task: sequence snapshot observation"
+    hash: "b80f2e98f136add92e2cd143da7d5731dae64519"
+    message: "🧩 4XD57R task: record closure repair handoff"
   workflow_route_baseline:
     start_head_sha: "bae47b05c31e7e489a1c49ce12f7a27d6f44486a"
     version: 1
@@ -384,4 +394,4 @@ DecisionContextRef:
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-04T00:51:42.874Z`
+- Updated at: `2026-08-04T00:57:26.612Z`
