@@ -19,10 +19,9 @@ Extend the packed supervisor benchmark with deterministic per-command Git histog
 - Note:
 
 ```text
-Verified exact implementation SHA 3a526415: instrumented 20-cold/30-warm packed benchmark passed all
-four unchanged +10% gates and reduced managed Git observations from 8 to 7; supervisor 154/154,
-recovery 86/86, critical CLI 79/79, qualification 21/21, typecheck, lint, format, doctor, and
-routing policy passed.
+Revalidated the exact semantic implementation and lifecycle-repair target: the accepted 3a526415
+code diff and its b80f2e98 task handoff remain covered by the passing strict benchmark and
+regression matrix.
 ```
 - Canonical workflow state lives in the task README.
 

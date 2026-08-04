@@ -6,14 +6,14 @@ Created: 2026-08-04T00:32:15.684Z
 
 - Task: `202608040031-4XD57R`
 - Title: Attribute and remove redundant Git observations from direct supervisor preparation
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608040031-4XD57R/attribute-and-remove-redundant-git-observations`
 - Canonical task record: `.agentplane/tasks/202608040031-4XD57R/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified exact implementation SHA 3a526415: instrumented 20-cold/30-warm packed benchmark passed all four unchanged +10% gates and reduced managed Git observations from 8 to 7; supervisor 154/154, recovery 86/86, critical CLI 79/79, qualification 21/21, typecheck, lint, format, doctor, and routing policy passed.
+- Note: Revalidated the exact semantic implementation and lifecycle-repair target: the accepted 3a526415 code diff and its b80f2e98 task handoff remain covered by the passing strict benchmark and regression matrix.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

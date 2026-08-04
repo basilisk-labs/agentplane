@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -25,9 +25,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-04T00:48:00.678Z"
+  updated_at: "2026-08-04T00:55:55.151Z"
   updated_by: "TESTER"
-  note: "Verified exact implementation SHA 3a526415: instrumented 20-cold/30-warm packed benchmark passed all four unchanged +10% gates and reduced managed Git observations from 8 to 7; supervisor 154/154, recovery 86/86, critical CLI 79/79, qualification 21/21, typecheck, lint, format, doctor, and routing policy passed."
+  note: "Revalidated the exact semantic implementation and lifecycle-repair target: the accepted 3a526415 code diff and its b80f2e98 task handoff remain covered by the passing strict benchmark and regression matrix."
   attempts: 0
 quality_review:
   state: "pass"
@@ -135,8 +135,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: pre-merge closure is ready; exact implementation 3a526415 passed strict latency, regression, static, policy, verification, and evaluator gates with complete raw evidence."
+  -
+    type: "verify"
+    at: "2026-08-04T00:55:55.151Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Revalidated the exact semantic implementation and lifecycle-repair target: the accepted 3a526415 code diff and its b80f2e98 task handoff remain covered by the passing strict benchmark and regression matrix."
 doc_version: 3
-doc_updated_at: "2026-08-04T00:51:42.901Z"
+doc_updated_at: "2026-08-04T00:55:57.116Z"
 doc_updated_by: "CODER"
 description: "Extend the packed supervisor benchmark with deterministic per-command Git histograms, use those measurements to identify and remove only duplicated direct-workflow observations whose values are already covered by the same command context or route snapshot, preserve all stale-state and side-effect-safety invariants, and restore every cold and warm median and p95 surface below the unchanged +10% v0.6.26 ceiling."
 sections:
@@ -180,6 +186,46 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608040031-4XD57R
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-04T00:55:55.151Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Revalidated the exact semantic implementation and lifecycle-repair target: the accepted 3a526415 code diff and its b80f2e98 task handoff remain covered by the passing strict benchmark and regression matrix.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T00:51:42.901Z, excerpt_hash=sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d
+
+    Details:
+
+    Command: node scripts/qualification/measure-v0.7.1-supervisor-latency.mjs --subject 3a526415de4ea9034687446e68f7115a97353402 --out .agentplane/tasks/202608040031-4XD57R/evidence/supervisor-latency-3a526415d.json
+    Result: pass
+    Evidence: .agentplane/tasks/202608040031-4XD57R/evidence/supervisor-latency-3a526415d.json
+    Scope: exact 20-cold and 30-warm v0.6.26 supervisor latency comparison with unchanged +10 percent median and p95 gates
+
+    Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608040031-4XD57R/README.md#Verification
+    Scope: critical CLI, supervisor, recovery, static typing, and policy routing regression coverage
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040031-4XD57R-attribute-and-remove-redundant-git-observations/.agentplane/tasks/202608040031-4XD57R/blueprint/resolved-snapshot.json
+    - old_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+    - current_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608040031-4XD57R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -261,6 +307,46 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608040031-4XD57R
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-04T00:55:55.151Z — VERIFY — ok
+
+By: TESTER
+
+Note: Revalidated the exact semantic implementation and lifecycle-repair target: the accepted 3a526415 code diff and its b80f2e98 task handoff remain covered by the passing strict benchmark and regression matrix.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T00:51:42.901Z, excerpt_hash=sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d
+
+Details:
+
+Command: node scripts/qualification/measure-v0.7.1-supervisor-latency.mjs --subject 3a526415de4ea9034687446e68f7115a97353402 --out .agentplane/tasks/202608040031-4XD57R/evidence/supervisor-latency-3a526415d.json
+Result: pass
+Evidence: .agentplane/tasks/202608040031-4XD57R/evidence/supervisor-latency-3a526415d.json
+Scope: exact 20-cold and 30-warm v0.6.26 supervisor latency comparison with unchanged +10 percent median and p95 gates
+
+Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608040031-4XD57R/README.md#Verification
+Scope: critical CLI, supervisor, recovery, static typing, and policy routing regression coverage
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040031-4XD57R-attribute-and-remove-redundant-git-observations/.agentplane/tasks/202608040031-4XD57R/blueprint/resolved-snapshot.json
+- old_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+- current_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608040031-4XD57R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
