@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -25,9 +25,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-04T00:55:55.151Z"
+  updated_at: "2026-08-04T01:23:56.410Z"
   updated_by: "TESTER"
-  note: "Revalidated the exact semantic implementation and lifecycle-repair target: the accepted 3a526415 code diff and its b80f2e98 task handoff remain covered by the passing strict benchmark and regression matrix."
+  note: "Revalidated synced head 7a08766d8: the calendar-date CI flake is fixed on main; focused token-usage 3/3, qualification contract, critical CLI 79/79, TS7 typecheck, touched lint/format, routing policy, and doctor all pass. The measured product diff remains exact 3a526415 with preserved 20-cold/30-warm evidence and all unchanged +10% gates passing."
   attempts: 0
 quality_review:
   state: "pass"
@@ -150,8 +150,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed structured verification and head-scoped quality evidence cover the unchanged exact code diff; pre-merge closure is ready for publication."
+  -
+    type: "verify"
+    at: "2026-08-04T01:23:56.410Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Revalidated synced head 7a08766d8: the calendar-date CI flake is fixed on main; focused token-usage 3/3, qualification contract, critical CLI 79/79, TS7 typecheck, touched lint/format, routing policy, and doctor all pass. The measured product diff remains exact 3a526415 with preserved 20-cold/30-warm evidence and all unchanged +10% gates passing."
 doc_version: 3
-doc_updated_at: "2026-08-04T00:57:26.637Z"
+doc_updated_at: "2026-08-04T01:23:58.312Z"
 doc_updated_by: "CODER"
 description: "Extend the packed supervisor benchmark with deterministic per-command Git histograms, use those measurements to identify and remove only duplicated direct-workflow observations whose values are already covered by the same command context or route snapshot, preserve all stale-state and side-effect-safety invariants, and restore every cold and warm median and p95 surface below the unchanged +10% v0.6.26 ceiling."
 sections:
@@ -241,6 +247,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-04T01:23:56.410Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Revalidated synced head 7a08766d8: the calendar-date CI flake is fixed on main; focused token-usage 3/3, qualification contract, critical CLI 79/79, TS7 typecheck, touched lint/format, routing policy, and doctor all pass. The measured product diff remains exact 3a526415 with preserved 20-cold/30-warm evidence and all unchanged +10% gates passing.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T00:57:26.637Z, excerpt_hash=sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040031-4XD57R-attribute-and-remove-redundant-git-observations/.agentplane/tasks/202608040031-4XD57R/blueprint/resolved-snapshot.json
+    - old_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+    - current_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608040031-4XD57R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -257,6 +293,10 @@ sections:
     - Observation: A manual task-artifact commit used the reserved pre-merge closure subject before the canonical finish --pre-merge-closure command ran; the implementation and verified diff were unchanged.
       Impact: The route oracle treated the reserved-subject commit as the closure basis and could not prove verification coverage for integration.
       Resolution: Record this task-only lifecycle repair handoff, then regenerate the canonical pre-merge closure marker against the same verified implementation SHA 3a526415.
+
+    - Observation: The prior hosted verify-unit failure reproduced only in the pre-existing calendar-date assertion and is fixed by merged task CC1TAP; no performance implementation file changed during base synchronization.
+      Impact: The performance PR can be republished against current main without hiding a product regression or consuming provider budget.
+      Resolution: Merged current main, reran focused and release-critical local checks on 7a08766d8, and retained exact performance evidence for 3a526415.
 extensions:
   implementation_commit:
     hash: "b80f2e98f136add92e2cd143da7d5731dae64519"
@@ -362,6 +402,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-04T01:23:56.410Z — VERIFY — ok
+
+By: TESTER
+
+Note: Revalidated synced head 7a08766d8: the calendar-date CI flake is fixed on main; focused token-usage 3/3, qualification contract, critical CLI 79/79, TS7 typecheck, touched lint/format, routing policy, and doctor all pass. The measured product diff remains exact 3a526415 with preserved 20-cold/30-warm evidence and all unchanged +10% gates passing.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T00:57:26.637Z, excerpt_hash=sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040031-4XD57R-attribute-and-remove-redundant-git-observations/.agentplane/tasks/202608040031-4XD57R/blueprint/resolved-snapshot.json
+- old_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+- current_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608040031-4XD57R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -382,6 +452,10 @@ DecisionContextRef:
 - Observation: A manual task-artifact commit used the reserved pre-merge closure subject before the canonical finish --pre-merge-closure command ran; the implementation and verified diff were unchanged.
   Impact: The route oracle treated the reserved-subject commit as the closure basis and could not prove verification coverage for integration.
   Resolution: Record this task-only lifecycle repair handoff, then regenerate the canonical pre-merge closure marker against the same verified implementation SHA 3a526415.
+
+- Observation: The prior hosted verify-unit failure reproduced only in the pre-existing calendar-date assertion and is fixed by merged task CC1TAP; no performance implementation file changed during base synchronization.
+  Impact: The performance PR can be republished against current main without hiding a product regression or consuming provider budget.
+  Resolution: Merged current main, reran focused and release-critical local checks on 7a08766d8, and retained exact performance evidence for 3a526415.
 
 ## Token Usage
 
