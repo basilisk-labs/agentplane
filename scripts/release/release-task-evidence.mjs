@@ -104,7 +104,7 @@ async function resolveReleaseTaskIdsFromCommit(releaseSha) {
     .map((line) => line.trim())
     .filter(Boolean)
     .map((line) => {
-      const match = /^\.agentplane\/tasks\/([^/]+)\/README\.md$/u.exec(line);
+      const match = /^\.agentplane\/tasks\/([^/]+)\//u.exec(line);
       return match?.[1]?.trim() ?? "";
     })
     .filter(Boolean);
@@ -372,6 +372,21 @@ async function runPrepare(argv) {
     });
   }
   const registryTaskIds = await resolveReleaseTaskIdsFromRegistry(manifest);
+  const commitTaskIds = await resolveReleaseTaskIdsFromCommit(args.releaseSha);
+  const registryTaskIdSet = new Set(registryTaskIds);
+  const exactReleaseTaskIds = commitTaskIds.filter((taskId) => registryTaskIdSet.has(taskId));
+  if (exactReleaseTaskIds.length === 1) {
+    return buildPrepareOutcome({
+      actionable: true,
+      reason: null,
+      manifest,
+      releaseSha: args.releaseSha,
+      baseRef: args.baseRef,
+      repo: args.repo,
+      taskId: exactReleaseTaskIds[0],
+      taskCloseBranchPrefix,
+    });
+  }
   if (registryTaskIds.length > 1) {
     return buildPrepareOutcome({
       actionable: false,
@@ -395,8 +410,7 @@ async function runPrepare(argv) {
       taskCloseBranchPrefix,
     });
   }
-  const taskIds = await resolveReleaseTaskIdsFromCommit(args.releaseSha);
-  if (taskIds.length === 0) {
+  if (commitTaskIds.length === 0) {
     return buildPrepareOutcome({
       actionable: false,
       reason: `release commit ${args.releaseSha} does not touch a tracked task README`,
@@ -406,10 +420,10 @@ async function runPrepare(argv) {
       repo: args.repo,
     });
   }
-  if (taskIds.length > 1) {
+  if (commitTaskIds.length > 1) {
     return buildPrepareOutcome({
       actionable: false,
-      reason: `release commit ${args.releaseSha} touches multiple task READMEs: ${taskIds.join(", ")}`,
+      reason: `release commit ${args.releaseSha} touches multiple task READMEs: ${commitTaskIds.join(", ")}`,
       manifest,
       releaseSha: args.releaseSha,
       baseRef: args.baseRef,
@@ -423,7 +437,7 @@ async function runPrepare(argv) {
     releaseSha: args.releaseSha,
     baseRef: args.baseRef,
     repo: args.repo,
-    taskId: taskIds[0],
+    taskId: commitTaskIds[0],
     taskCloseBranchPrefix,
   });
 }
