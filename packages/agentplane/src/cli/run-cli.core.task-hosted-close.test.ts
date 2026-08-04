@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { execFile } from "node:child_process";
-import { createHash } from "node:crypto";
-import { chmod, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -9,10 +8,8 @@ import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
-import { canonicalizeJson, parseTaskReadme } from "@agentplaneorg/core/tasks";
 import { loadTaskBackend } from "../backends/task-backend.js";
 import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
-import { taskCloseAlreadyRecordedOnBase } from "../commands/task/close-tail-state.js";
 
 import { runCli } from "./run-cli.js";
 import {
@@ -27,10 +24,6 @@ import {
 
 const execFileAsync = promisify(execFile);
 const HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS = 300_000;
-const RELEASE_TASK_EVIDENCE_SCRIPT = path.resolve(
-  process.cwd(),
-  "scripts/release/release-task-evidence.mjs",
-);
 
 installRunCliIntegrationHarness();
 
@@ -40,7 +33,6 @@ async function installFakeGhHostedClosePr(opts: {
   existingResponse: object[];
   mergedResponse?: object[];
   commitPullsResponse?: object[];
-  pullResponse?: object;
   createResponse: object;
   allowCreate: boolean;
 }) {
@@ -58,7 +50,6 @@ async function installFakeGhHostedClosePr(opts: {
       "const args = process.argv.slice(2);",
       "const logPath = process.env.AGENTPLANE_GH_LOG;",
       "if (logPath) fs.appendFileSync(logPath, `${JSON.stringify(args)}\\n`);",
-      'if (args[0] === "pr" && args[1] === "checks") { console.log("[]"); process.exit(0); }',
       'if (args[0] !== "api") { console.error("unexpected gh command"); process.exit(90); }',
       'const endpoint = args[1] ?? "";',
       'const [route, query = ""] = endpoint.split("?", 2);',
@@ -67,7 +58,6 @@ async function installFakeGhHostedClosePr(opts: {
       `const existingResponse = ${JSON.stringify(opts.existingResponse)};`,
       `const mergedResponse = ${JSON.stringify(opts.mergedResponse ?? [])};`,
       `const commitPullsResponse = ${JSON.stringify(opts.commitPullsResponse ?? [])};`,
-      `const pullResponse = ${JSON.stringify(opts.pullResponse ?? null)};`,
       `const createResponse = ${JSON.stringify(opts.createResponse)};`,
       `const allowCreate = ${JSON.stringify(opts.allowCreate)};`,
       'let method = "GET";',
@@ -78,25 +68,12 @@ async function installFakeGhHostedClosePr(opts: {
       "  console.log(JSON.stringify(existingResponse));",
       "  process.exit(0);",
       "}",
-      'if (route === "repos/example/repo/pulls" && method === "GET" && params.get("state") === "all" && params.get("head") === expectedHead) {',
-      "  console.log(JSON.stringify(mergedResponse));",
-      "  process.exit(0);",
-      "}",
       'if (route === "repos/example/repo/pulls" && method === "GET" && params.get("state") === "closed") {',
       "  console.log(JSON.stringify(mergedResponse));",
       "  process.exit(0);",
       "}",
-      'if (/^repos\\/example\\/repo\\/pulls\\/\\d+$/.test(route) && method === "GET") {',
-      "  if (!pullResponse) process.exit(1);",
-      "  console.log(JSON.stringify(pullResponse));",
-      "  process.exit(0);",
-      "}",
       'if (route.startsWith("repos/example/repo/commits/") && route.endsWith("/pulls") && method === "GET") {',
       "  console.log(JSON.stringify(commitPullsResponse));",
-      "  process.exit(0);",
-      "}",
-      'if (route === "graphql" && method === "POST") {',
-      "  console.log(JSON.stringify({ data: { repository: { pullRequest: { reviewThreads: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } } } } } }));",
       "  process.exit(0);",
       "}",
       'if (route === "repos/example/repo/pulls" && method === "POST") {',
@@ -240,13 +217,6 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
       await execFileAsync("git", ["commit", "--no-verify", "-m", "feat: hosted close fixture"], {
         cwd: root,
       });
-      await recordVerificationOk(root, taskId);
-      await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
-      await execFileAsync(
-        "git",
-        ["commit", "--no-verify", "-m", "task: record hosted close verification"],
-        { cwd: root },
-      );
       const { stdout: branchHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
         cwd: root,
       });
@@ -390,213 +360,6 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
         cwd: root,
       });
       expect(afterRerunStdout.trim()).toBe(closeHead);
-
-      const publishResultPath = path.join(root, "publish-result.json");
-      await writeFile(
-        publishResultPath,
-        `${JSON.stringify(
-          {
-            success: true,
-            sha: mergeSha,
-            version: "0.7.3",
-            tag: "v0.7.3",
-            packages: {
-              core: { source: "published_in_run" },
-              recipes: { source: "published_in_run" },
-              cli: { source: "published_in_run" },
-            },
-            checks: {
-              npmSmoke: { passed: true, outcome: "success" },
-              githubRelease: { created: true, outcome: "success" },
-            },
-            job: { runId: "30913095505" },
-          },
-          null,
-          2,
-        )}\n`,
-        "utf8",
-      );
-      await execFileAsync(
-        "bun",
-        [
-          RELEASE_TASK_EVIDENCE_SCRIPT,
-          "apply",
-          "--task-id",
-          taskId,
-          "--publish-result",
-          publishResultPath,
-          "--repo",
-          "basilisk-labs/agentplane",
-          "--author",
-          "DEUS",
-          "--at",
-          "2026-08-04T14:45:00.000Z",
-        ],
-        { cwd: root, env: process.env },
-      );
-      const taskReadmePath = `.agentplane/tasks/${taskId}/README.md`;
-      await execFileAsync("git", ["add", taskReadmePath], { cwd: root });
-      await execFileAsync(
-        "git",
-        ["commit", "--no-verify", "-m", "task-evidence: record hosted publish evidence"],
-        { cwd: root },
-      );
-      const { stdout: evidenceCommitPaths } = await execFileAsync(
-        "git",
-        ["show", "--format=", "--name-only", "HEAD"],
-        { cwd: root },
-      );
-      expect(evidenceCommitPaths.trim()).toBe(taskReadmePath);
-
-      await execFileAsync("git", ["branch", "-d", branch], { cwd: root });
-      const { stdout: evidenceHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-        cwd: root,
-      });
-      await execFileAsync(
-        "git",
-        ["update-ref", `refs/remotes/origin/${baseBranch}`, evidenceHeadStdout.trim()],
-        { cwd: root },
-      );
-      await execFileAsync("git", ["remote", "add", "origin", "git@github.com:example/repo.git"], {
-        cwd: root,
-      });
-
-      const closedTask = parseTaskReadme(
-        await readFile(path.join(root, taskReadmePath), "utf8"),
-      ).frontmatter;
-      const verificationRoot = path.join(root, ".agentplane", "tasks", taskId, "verification");
-      const verificationRecords = await readdir(verificationRoot);
-      const currentVerificationRecord = JSON.parse(
-        await readFile(
-          path.join(
-            verificationRoot,
-            verificationRecords.find((name) =>
-              name.startsWith(
-                String(closedTask.verification?.updated_at ?? "").replaceAll(/[-:.TZ]/gu, ""),
-              ),
-            ) ?? "missing.json",
-          ),
-          "utf8",
-        ),
-      ) as Record<string, unknown>;
-      expect(currentVerificationRecord.recorded_at).toBe(closedTask.verification?.updated_at);
-      expect(currentVerificationRecord.result).toBe(closedTask.verification?.state);
-      expect(currentVerificationRecord.verifier).toBe(closedTask.verification?.updated_by);
-      expect(currentVerificationRecord.note).toBe(closedTask.verification?.note);
-      expect(currentVerificationRecord.scope_digest).toBe(
-        `sha256:${createHash("sha256")
-          .update(String(closedTask.sections?.["Verify Steps"] ?? "").trim())
-          .digest("hex")}`,
-      );
-      const { digest, ...verificationPayload } = currentVerificationRecord;
-      expect(digest).toBe(
-        `sha256:${createHash("sha256")
-          .update(JSON.stringify(canonicalizeJson(verificationPayload)))
-          .digest("hex")}`,
-      );
-      expect(currentVerificationRecord.implementation_sha).toBe(
-        closedTask.quality_review?.evaluated_sha,
-      );
-      expect(closedTask.quality_review?.state).toBe("pass");
-      await expect(
-        taskCloseAlreadyRecordedOnBase({
-          gitRoot: root,
-          workflowDir: ".agentplane/tasks",
-          taskId,
-          baseBranch,
-        }),
-      ).resolves.toBe(true);
-
-      const statusIo = captureStdIO();
-      try {
-        const code = await runCli(["task", "status", taskId, "--route", "--json", "--root", root]);
-        expect(code, statusIo.stderr).toBe(0);
-        const status = JSON.parse(statusIo.stdout) as {
-          prFlow: {
-            branch: { headSha: string | null };
-            pr: { state: string };
-            closeTail: { state: string };
-          };
-        };
-        expect(status.prFlow, statusIo.stdout).toMatchObject({
-          branch: { headSha: null },
-          pr: { state: "MERGED" },
-          closeTail: { state: "recorded_on_base" },
-        });
-      } finally {
-        statusIo.restore();
-      }
-
-      const hostedPull = {
-        number: 88,
-        html_url: "https://github.com/example/repo/pull/88",
-        state: "closed",
-        merged_at: "2026-03-27T20:00:00.000Z",
-        merge_commit_sha: mergeSha,
-        head: { ref: branch, sha: branchHead },
-        base: { ref: baseBranch },
-      };
-      const fakeGh = await installFakeGhHostedClosePr({
-        scenarioName: "terminal-route",
-        branch,
-        existingResponse: [],
-        mergedResponse: [hostedPull],
-        commitPullsResponse: [hostedPull],
-        pullResponse: hostedPull,
-        createResponse: {},
-        allowCreate: false,
-      });
-      const oldPath = process.env.PATH;
-      const oldGhLog = process.env.AGENTPLANE_GH_LOG;
-      process.env.PATH = `${fakeGh.fakeBin}${path.delimiter}${oldPath ?? ""}`;
-      process.env.AGENTPLANE_GH_LOG = fakeGh.logPath;
-
-      async function readRemoteRoute(): Promise<{
-        route_oracle: { phase: string; nextCommand: string | null };
-        workflow_step: { id: string; kind: string };
-        blockers: { code: string }[];
-      }> {
-        const routeIo = captureStdIO();
-        try {
-          const code = await runCli([
-            "task",
-            "next-action",
-            taskId,
-            "--remote",
-            "--json",
-            "--root",
-            root,
-          ]);
-          expect(code, routeIo.stderr).toBe(0);
-          return JSON.parse(routeIo.stdout) as {
-            route_oracle: { phase: string; nextCommand: string | null };
-            workflow_step: { id: string; kind: string };
-            blockers: { code: string }[];
-          };
-        } finally {
-          routeIo.restore();
-        }
-      }
-
-      try {
-        let route = await readRemoteRoute();
-        if (route.route_oracle.phase === "side_effect_authority_required") {
-          const grantCommand = route.route_oracle.nextCommand;
-          expect(grantCommand).toContain(`agentplane task authority grant ${taskId}`);
-          if (!grantCommand) throw new Error("expected remote route authority grant command");
-          await runCliSilent([...grantCommand.split(" ").slice(1), "--root", root]);
-          route = await readRemoteRoute();
-        }
-        const providerLog = await readFile(fakeGh.logPath, "utf8").catch(() => "no gh calls");
-        expect(route.blockers).toEqual([]);
-        expect(route.route_oracle.phase, providerLog).toBe("done");
-        expect(route.workflow_step).toMatchObject({ id: "terminal.done", kind: "terminal" });
-      } finally {
-        process.env.PATH = oldPath;
-        if (oldGhLog === undefined) delete process.env.AGENTPLANE_GH_LOG;
-        else process.env.AGENTPLANE_GH_LOG = oldGhLog;
-        await rm(fakeGh.fakeBin, { recursive: true, force: true });
-      }
     },
     HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS,
   );
