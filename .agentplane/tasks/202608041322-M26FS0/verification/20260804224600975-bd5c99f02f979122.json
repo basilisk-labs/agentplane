@@ -1,0 +1,15 @@
+{
+  "details": "Commit 85cae380eedaded0cbf167c32f78015d951bf388 changes only .agentplane/tasks/202608041322-M26FS0 artifacts: frozen 0.7.3 qualification evidence, evaluator pass artifacts, PR metadata, verification record, and task README. Product/runtime/package files are identical to verified implementation HEAD 77e66477692a3ff42cc6321d49b87b0c6d35bf9f. Existing ci:contract, release:prepublish, qualification 18/19 with 0 blocking, and provider 50 runs / 55 episodes remain applicable.",
+  "digest": "sha256:bd5c99f02f9791222189abc889f235cf323a640129b5a2066d20395dcf3daa6e",
+  "implementation_sha": "77e66477692a3ff42cc6321d49b87b0c6d35bf9f",
+  "kind": "task_verification_record",
+  "note": "Pre-merge closure commit verified as task-artifact-only",
+  "recorded_at": "2026-08-04T22:46:00.975Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused route regression that closes a branch_pr task, advances main with only its hosted release-evidence README, and queries next-action. Expected: the task remains terminal.done; a real implementation commit still makes verification stale.\n2. Run the publish-workflow contract tests. Expected: release evidence CI validates the exact closure SHA, waits for success, emits a GitHub Actions-owned PR verification check, and does not silently continue after a failed evidence gate.\n3. Run bun run ci:contract and bun run release:prepublish. Expected: all blocking contracts, release checks, release CI suites, coverage guards, and release-critical tests pass.\n4. After merge and publish, verify npm latest for all three packages is 0.7.3, tag and GitHub Release v0.7.3 point to the exact release SHA, clean install and postpublish audit pass, and the release-evidence PR merges without reopen/admin repair.\n5. Pull the evidence merge to main and query next-action for this task. Expected: status is DONE, route is terminal.done, hosted publish evidence is present, token provenance is explicit, and no merged task branch/worktree remains.",
+  "scope_digest": "sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550",
+  "task_id": "202608041322-M26FS0",
+  "verification_command": "agentplane verify 202608041322-M26FS0 --ok --by TESTER",
+  "verifier": "TESTER"
+}
