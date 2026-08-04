@@ -6,7 +6,7 @@ Created: 2026-08-04T07:49:53.454Z
 
 - Task: `202608040748-7Z0401`
 - Title: Harden stale runner reclaim regression after semantic plan enforcement
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608040748-7Z0401/harden-stale-runner-reclaim-regression-after-sem`
 - Canonical task record: `.agentplane/tasks/202608040748-7Z0401/README.md`
 
