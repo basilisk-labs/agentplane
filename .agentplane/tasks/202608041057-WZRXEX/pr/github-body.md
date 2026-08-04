@@ -16,7 +16,7 @@ Make post-publish evidence select the unique release task touched by the exact r
 ## Verification
 
 - State: ok
-- Note: P1 prior-release evidence collision is fixed and verified
+- Note: P1 fix verified against refreshed release blueprint snapshot
 - Canonical workflow state lives in the task README.
 
 <details>

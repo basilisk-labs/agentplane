@@ -13,7 +13,7 @@ Created: 2026-08-04T10:58:31.949Z
 ## Verification
 
 - State: ok
-- Note: P1 prior-release evidence collision is fixed and verified
+- Note: P1 fix verified against refreshed release blueprint snapshot
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

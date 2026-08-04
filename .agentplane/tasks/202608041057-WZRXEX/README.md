@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -23,9 +23,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-04T12:44:53.273Z"
+  updated_at: "2026-08-04T12:47:50.392Z"
   updated_by: "TESTER"
-  note: "P1 prior-release evidence collision is fixed and verified"
+  note: "P1 fix verified against refreshed release blueprint snapshot"
   attempts: 0
 quality_review:
   state: "pass"
@@ -152,8 +152,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "P1 prior-release evidence collision is fixed and verified"
+  -
+    type: "verify"
+    at: "2026-08-04T12:47:50.392Z"
+    author: "TESTER"
+    state: "ok"
+    note: "P1 fix verified against refreshed release blueprint snapshot"
 doc_version: 3
-doc_updated_at: "2026-08-04T12:45:34.093Z"
+doc_updated_at: "2026-08-04T12:47:51.705Z"
 doc_updated_by: "CODER"
 description: "Make post-publish evidence select the unique release task touched by the exact release commit before falling back to version-wide registry matching; add regression coverage for multiple DONE release tasks sharing one version, record v0.7.1 publication evidence, and ship the corrective patch release."
 sections:
@@ -333,6 +339,41 @@ sections:
     - state: stale
     - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041057-WZRXEX-disambiguate-hosted-release-evidence-task-select/.agentplane/tasks/202608041057-WZRXEX/blueprint/resolved-snapshot.json
     - old_digest: aeb49d43a5ae3d93afd65fe4b524d5d0cc0c6971cd12c8db68df52ad369db54e
+    - current_digest: 6c6523eb8d4d48fa222e00cecb201f045f2edb5b88176ba91e3c60253c688fa6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608041057-WZRXEX
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-04T12:47:50.392Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: P1 fix verified against refreshed release blueprint snapshot
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T12:45:34.093Z, excerpt_hash=sha256:e86b3757a66971cef08f3b690d4b91196253d5eccc3a044a9eb9a1b21ec16452
+
+    Details:
+
+    Command: bun test packages/agentplane/src/commands/release/release-task-evidence-script.test.ts; bun run ci:contract; agentplane blueprint snapshot 202608041057-WZRXEX
+    Result: pass
+    Evidence: release-evidence suite 10/10; full contract pass; release.strict snapshot current with digest 6c6523eb8d4d48fa222e00cecb201f045f2edb5b88176ba91e3c60253c688fa6 and unchanged route
+    Scope: implementation head 797de1454
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041057-WZRXEX-disambiguate-hosted-release-evidence-task-select/.agentplane/tasks/202608041057-WZRXEX/blueprint/resolved-snapshot.json
+    - old_digest: 6c6523eb8d4d48fa222e00cecb201f045f2edb5b88176ba91e3c60253c688fa6
     - current_digest: 6c6523eb8d4d48fa222e00cecb201f045f2edb5b88176ba91e3c60253c688fa6
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202608041057-WZRXEX
@@ -551,6 +592,41 @@ BlueprintSnapshotRef:
 - state: stale
 - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041057-WZRXEX-disambiguate-hosted-release-evidence-task-select/.agentplane/tasks/202608041057-WZRXEX/blueprint/resolved-snapshot.json
 - old_digest: aeb49d43a5ae3d93afd65fe4b524d5d0cc0c6971cd12c8db68df52ad369db54e
+- current_digest: 6c6523eb8d4d48fa222e00cecb201f045f2edb5b88176ba91e3c60253c688fa6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608041057-WZRXEX
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-04T12:47:50.392Z — VERIFY — ok
+
+By: TESTER
+
+Note: P1 fix verified against refreshed release blueprint snapshot
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T12:45:34.093Z, excerpt_hash=sha256:e86b3757a66971cef08f3b690d4b91196253d5eccc3a044a9eb9a1b21ec16452
+
+Details:
+
+Command: bun test packages/agentplane/src/commands/release/release-task-evidence-script.test.ts; bun run ci:contract; agentplane blueprint snapshot 202608041057-WZRXEX
+Result: pass
+Evidence: release-evidence suite 10/10; full contract pass; release.strict snapshot current with digest 6c6523eb8d4d48fa222e00cecb201f045f2edb5b88176ba91e3c60253c688fa6 and unchanged route
+Scope: implementation head 797de1454
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041057-WZRXEX-disambiguate-hosted-release-evidence-task-select/.agentplane/tasks/202608041057-WZRXEX/blueprint/resolved-snapshot.json
+- old_digest: 6c6523eb8d4d48fa222e00cecb201f045f2edb5b88176ba91e3c60253c688fa6
 - current_digest: 6c6523eb8d4d48fa222e00cecb201f045f2edb5b88176ba91e3c60253c688fa6
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202608041057-WZRXEX
