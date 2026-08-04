@@ -20,7 +20,11 @@ import {
   resolveSupervisorExecutionEpisodePath,
   tryAcquireSupervisorExecutionLease,
 } from "../shared/supervisor-execution-episode.js";
-import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  resolveCommandGitCommonDir,
+  type CommandContext,
+} from "../shared/task-backend.js";
 
 import { agentTransitionId } from "./agent-action-packet.js";
 import {
@@ -152,6 +156,7 @@ async function recordIssuedEpisode(opts: {
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const opened = await openSupervisorExecutionEpisode({
       git_root: opts.command.resolvedProject.gitRoot,
+      common_git_dir: await resolveCommandGitCommonDir(opts.command),
       task_id: opts.decision.task.id,
       task_revision: opts.work_order.task.revision,
       state_fingerprint_digest: opts.decision.workflowStep.preconditionFingerprint.digest,
@@ -236,8 +241,10 @@ export async function issueExternalAgentExchange(opts: {
   const purpose = semanticPurpose(opts.decision);
   if (!purpose) return null;
   const transitionId = agentTransitionId(step.id);
+  const commonGitDir = await resolveCommandGitCommonDir(opts.command);
   const paths = await resolveExternalAgentExchangePaths({
     git_root: opts.command.resolvedProject.gitRoot,
+    common_git_dir: commonGitDir,
     task_id: opts.decision.task.id,
     transition_id: transitionId,
     state_fingerprint: step.preconditionFingerprint.digest,
@@ -424,8 +431,10 @@ export async function acceptExternalAgentResult(opts: {
       message: "Result task_id does not match command task id.",
     });
   }
+  const commonGitDir = await resolveCommandGitCommonDir(opts.command);
   const paths = await resolveExternalAgentExchangePaths({
     git_root: opts.command.resolvedProject.gitRoot,
+    common_git_dir: commonGitDir,
     task_id: identity.task_id,
     transition_id: identity.transition_id,
     state_fingerprint: identity.state_fingerprint,
@@ -445,6 +454,7 @@ export async function acceptExternalAgentResult(opts: {
   }
   const journalPath = await resolveSupervisorExecutionEpisodePath({
     git_root: opts.command.resolvedProject.gitRoot,
+    common_git_dir: commonGitDir,
     task_id: opts.task_id,
   });
   const lease = await tryAcquireSupervisorExecutionLease({ journal_path: journalPath });

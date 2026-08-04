@@ -411,7 +411,10 @@
         "--codex-version",
         "{codexVersion}",
         "--runs",
-        "5"
+        "5",
+        "--runtime-bridge",
+        "{codexVersion}",
+        "--capture"
       ],
       "timeout_ms": 7200000,
       "coverage": {

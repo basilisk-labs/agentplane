@@ -180,11 +180,13 @@ function safeTaskPathSegment(taskId: string): string {
 
 export async function resolveSupervisorExecutionEpisodePath(opts: {
   git_root: string;
+  common_git_dir?: string;
   task_id: string;
 }): Promise<string> {
   const taskId = safeTaskPathSegment(opts.task_id);
-  const rawCommonGitDir = await gitRevParse(opts.git_root, ["--git-common-dir"]);
-  const commonGitDir = path.resolve(opts.git_root, rawCommonGitDir);
+  const commonGitDir = opts.common_git_dir
+    ? path.resolve(opts.common_git_dir)
+    : path.resolve(opts.git_root, await gitRevParse(opts.git_root, ["--git-common-dir"]));
   return path.join(commonGitDir, SUPERVISOR_EPISODE_ARTIFACT_DIRECTORY, taskId, "journal.json");
 }
 
@@ -223,6 +225,7 @@ function defaultSupervisorExecutionBudget(): SupervisorExecutionBudget {
 
 export async function openSupervisorExecutionEpisode(opts: {
   git_root: string;
+  common_git_dir?: string;
   task_id: string;
   task_revision: number | null;
   state_fingerprint_digest: string;
@@ -235,6 +238,7 @@ export async function openSupervisorExecutionEpisode(opts: {
 }> {
   const journalPath = await resolveSupervisorExecutionEpisodePath({
     git_root: opts.git_root,
+    common_git_dir: opts.common_git_dir,
     task_id: opts.task_id,
   });
   const store = createSupervisorEpisodeStore(journalPath);

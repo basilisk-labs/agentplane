@@ -137,6 +137,7 @@ describeCritical("critical: RF-04 candidate measurement", () => {
   it("fails closed for candidate pilot mode combinations that could mutate prior evidence", async () => {
     const fixture = await loadCandidateFixture();
     const common = {
+      capture: false,
       check: false,
       pilot: true,
       replace: false,
@@ -155,6 +156,18 @@ describeCritical("critical: RF-04 candidate measurement", () => {
     expect(() =>
       fixture.candidate.assertCandidateCaptureMode({ ...common, replace: true }),
     ).toThrow("--pilot cannot be combined with --replace");
+    expect(() =>
+      fixture.candidate.assertCandidateCaptureMode({ ...common, pilot: false, capture: true }),
+    ).toThrow("--capture requires --runtime-bridge");
+    expect(() =>
+      fixture.candidate.assertCandidateCaptureMode({
+        ...common,
+        pilot: false,
+        capture: true,
+        check: true,
+        runtimeBridgeVersion: "0.146.0-alpha.3.1",
+      }),
+    ).toThrow("--capture cannot be combined with --check");
   });
 
   it("cleans failed candidate pilot staging without publishing artifacts", async () => {

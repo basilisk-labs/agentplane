@@ -61,6 +61,7 @@ import {
   CODEX_REPLAY_CLI_VERSION_ENV,
   resolveCodexReplayCliVersion,
 } from "./internal/agent-efficiency-codex-runtime.mjs";
+import { checkRuntimeBridge } from "./capture-agent-efficiency-runtime-bridge.mjs";
 
 const SCRIPT_NAME = "capture-agent-efficiency-candidate.mjs";
 const scriptPath = fileURLToPath(import.meta.url);
@@ -102,6 +103,8 @@ function helpText() {
     "  --root <path>     Candidate evidence root under .agentplane/cache/rf04-candidate/.",
     "  --runtime-bridge <version>  Materialize or validate a no-provider comparison against the",
     "                              historical runtime bridge for this exact Codex CLI version.",
+    "  --capture         With --runtime-bridge, capture one candidate generation and then",
+    "                    materialize the comparison against the preflighted runtime bridge.",
     "  --pilot           Run only direct/run-01 against the exact candidate and persist nothing.",
     "  --replace         Replace one complete previous candidate capture generation.",
     "  --check           Rebuild and validate an existing capture without provider calls.",
@@ -116,13 +119,14 @@ function helpText() {
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
     valueFlags: ["subject", "runs", "driver", "root", "codex-version", "runtime-bridge"],
-    booleanFlags: ["check", "help", "pilot", "replace"],
+    booleanFlags: ["capture", "check", "help", "pilot", "replace"],
     aliases: { h: "help" },
   });
   if (positionals.length > 0) {
     throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
   }
   return {
+    capture: flags.capture === true,
     check: flags.check === true,
     codexCliVersion: flags["codex-version"] ?? "",
     driverPath: path.resolve(flags.driver ?? DEFAULT_DRIVER_PATH),
@@ -137,6 +141,12 @@ function parseArgs(argv) {
 }
 
 export function assertCandidateCaptureMode(options) {
+  if (options.capture && options.runtimeBridgeVersion === null) {
+    throw new Error("--capture requires --runtime-bridge");
+  }
+  if (options.capture && options.check) {
+    throw new Error("--capture cannot be combined with --check");
+  }
   if (!options.pilot) return;
   if (options.check) throw new Error("--pilot cannot be combined with --check");
   if (options.runtimeBridgeVersion !== null) {
@@ -1190,6 +1200,27 @@ export function materializeRuntimeBridgeMeasurement(options) {
   return measurement;
 }
 
+export function captureCandidateWithRuntimeBridge(options) {
+  assertCandidateCaptureMode(options);
+  if (options.runtimeBridgeVersion === null) {
+    throw new Error("runtime bridge version is required for provider capture");
+  }
+  const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
+  if (codexCliVersion !== options.runtimeBridgeVersion) {
+    throw new Error("candidate and runtime bridge Codex CLI versions must match exactly");
+  }
+  checkRuntimeBridge({ codexCliVersion });
+  captureCandidate({
+    ...options,
+    capture: false,
+    runtimeBridgeVersion: null,
+  });
+  return materializeRuntimeBridgeMeasurement({
+    ...options,
+    capture: false,
+  });
+}
+
 export function checkRuntimeBridgeMeasurement(options) {
   const subject = assertCandidateSubject(options.subject);
   const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
@@ -1249,9 +1280,11 @@ const main = defineCheck({
     }
     const runtimeBridge = options.runtimeBridgeVersion !== null;
     const measurement = runtimeBridge
-      ? options.check
-        ? checkRuntimeBridgeMeasurement(options)
-        : materializeRuntimeBridgeMeasurement(options)
+      ? options.capture
+        ? captureCandidateWithRuntimeBridge(options)
+        : options.check
+          ? checkRuntimeBridgeMeasurement(options)
+          : materializeRuntimeBridgeMeasurement(options)
       : options.check
         ? checkCandidateCapture(options)
         : captureCandidate(options);
