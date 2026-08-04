@@ -4,7 +4,7 @@ title: "Harden stale runner reclaim regression after semantic plan enforcement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +29,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "b39920e7dc097306af9c2f3a065803309348a9c4"
+  message: "🐛 7Z0401 recovery: prove stale runner reclaim"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Start: implementation committed; stale runner reclaim now has valid semantic lifecycle fixtures and typed E_RUNTIME proof without E_INTERNAL."
 events:
   -
     type: "status"
@@ -42,8 +47,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-04T07:53:50.263Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Start: implementation committed; stale runner reclaim now has valid semantic lifecycle fixtures and typed E_RUNTIME proof without E_INTERNAL."
 doc_version: 3
-doc_updated_at: "2026-08-04T07:53:10.655Z"
+doc_updated_at: "2026-08-04T07:53:50.263Z"
 doc_updated_by: "CODER"
 description: "Reproduce GitHub issue #4773 on current main with a valid task and stale runner PID, repair the stale reclaim regression fixture or implementation as required, and prove deterministic typed recovery without E_INTERNAL."
 sections:
