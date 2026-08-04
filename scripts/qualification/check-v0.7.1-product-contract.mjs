@@ -34,6 +34,19 @@ function probeCli(args, cwd = repoRoot) {
   };
 }
 
+function probeNodeScript(relativePath, args = []) {
+  const result = spawnSync(process.execPath, [path.join(repoRoot, relativePath), ...args], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: { ...process.env, AGENTPLANE_NO_UPDATE_CHECK: "1" },
+  });
+  return {
+    status: result.status,
+    stdout: result.stdout ?? "",
+    stderr: result.stderr ?? "",
+  };
+}
+
 function read(relativePath) {
   return readFileSync(path.join(repoRoot, relativePath), "utf8");
 }
@@ -50,6 +63,48 @@ function checkOnboarding(failures) {
   }
   if (/normal first task, prefer `agentplane task begin/u.test(commandGuide)) {
     failures.push("quickstart still recommends the semantic task begin shortcut");
+  }
+  const canonicalFlow = [
+    'agentplane task new --title "Inspect Agentplane artifacts"',
+    "agentplane task advance <task-id> --agent-json",
+    "agentplane task run <task-id>",
+  ];
+  const positions = canonicalFlow.map((command) => readme.indexOf(command));
+  if (positions.includes(-1)) {
+    failures.push("README omits the canonical task new / task advance / task run flow");
+  } else if (!(positions[0] < positions[1] && positions[1] < positions[2])) {
+    failures.push("README presents the canonical supervisor flow out of order");
+  }
+}
+
+function checkCompatibilityShortcuts(failures) {
+  const begin = probeCli(["task", "begin", "--help"]);
+  if (begin.status === 0) {
+    if (!/Compatibility shortcut/iu.test(begin.stdout)) {
+      failures.push("task begin is not explicitly labeled as a compatibility shortcut");
+    }
+    if (!/stop at semantic planning or approval/iu.test(begin.stdout)) {
+      failures.push("task begin does not expose its semantic planning stop");
+    }
+  } else {
+    failures.push("task begin compatibility help is not executable");
+  }
+
+  const complete = probeCli(["task", "complete", "--help"]);
+  if (complete.status === 0) {
+    if (!/already verified, independently reviewed task/iu.test(complete.stdout)) {
+      failures.push("task complete does not require prior verification and independent review");
+    }
+    if (
+      !/Unsafe compatibility override for a missing observed runner receipt/iu.test(complete.stdout)
+    ) {
+      failures.push("task complete does not expose the observed-receipt safety boundary");
+    }
+    if (!/requires --yes/iu.test(complete.stdout)) {
+      failures.push("task complete unsafe override is not guarded by explicit confirmation");
+    }
+  } else {
+    failures.push("task complete compatibility help is not executable");
   }
 }
 
@@ -232,12 +287,54 @@ function checkExternalFrontend(failures) {
   }
 }
 
+function checkMaintenanceContract(failures) {
+  const legacy = probeCli(["doctor", "legacy", "--json"]);
+  if (legacy.status === 0) {
+    try {
+      const report = JSON.parse(legacy.stdout);
+      assert.equal(report.schema_version, 1, "doctor legacy schema_version must be 1");
+      assert.equal(report.kind, "agentplane.doctor.legacy", "doctor legacy kind must be stable");
+      assert.ok(Array.isArray(report.adapters) && report.adapters.length > 0);
+      for (const adapter of report.adapters) {
+        assert.equal(typeof adapter.introduced_in, "string");
+        assert.ok(adapter.deprecated_in === null || typeof adapter.deprecated_in === "string");
+        assert.ok(
+          typeof adapter.remove_in === "string" ||
+            (adapter.remove_in === null && typeof adapter.removal_blocker === "string"),
+        );
+        assert.equal(typeof adapter.migration_command, "string");
+        assert.equal(typeof adapter.usage_probe?.kind, "string");
+      }
+    } catch (error) {
+      failures.push(
+        `doctor legacy contract is invalid: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  } else {
+    failures.push("doctor legacy --json is not executable");
+  }
+
+  for (const [label, script] of [
+    ["TypeScript 7 toolchain", "scripts/checks/check-typescript-toolchain.mjs"],
+    ["Knip package budget", "scripts/checks/check-knip-baseline.mjs"],
+  ]) {
+    const result = probeNodeScript(script);
+    if (result.status !== 0) {
+      failures.push(
+        `${label} check failed: ${(result.stderr || result.stdout).trim() || `exit=${result.status ?? 1}`}`,
+      );
+    }
+  }
+}
+
 function main() {
   const failures = [];
   checkOnboarding(failures);
+  checkCompatibilityShortcuts(failures);
   checkCanonicalHelp(failures);
   checkManagedFrontend(failures);
   checkExternalFrontend(failures);
+  checkMaintenanceContract(failures);
   if (failures.length > 0) {
     throw new Error(
       ["v0.7.1 product contract is release-blocking:", ...failures.map((item) => `- ${item}`)].join(
@@ -246,7 +343,7 @@ function main() {
     );
   }
   process.stdout.write(
-    "v0.7.1 product contract OK (managed run + compact external advance; normal packet <=2048 bytes)\n",
+    "v0.7.1 product contract OK (canonical supervisor UX, guarded compatibility, compact packet, legacy inventory, TS7, and zero-unused CLI)\n",
   );
 }
 
