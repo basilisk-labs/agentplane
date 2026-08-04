@@ -1,0 +1,5 @@
+$ "node" "scripts/release/check-local-tarball-install-smoke.mjs"
+exit_code=0 signal=none duration_ms=44350
+
+installed migration matrix OK (scenarios=8)
+local tarball install smoke OK (202608040146-4HN064)

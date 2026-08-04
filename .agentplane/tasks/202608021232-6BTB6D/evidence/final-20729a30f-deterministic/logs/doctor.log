@@ -1,0 +1,31 @@
+$ "node" "packages/agentplane/bin/agentplane.js" "doctor"
+exit_code=0 signal=none duration_ms=6441
+
+✅ doctor (OK)
+
+ℹ️ doctor: checking workflow contract
+{"ts":"2026-08-04T01:55:38.559Z","component":"workflow-runtime","event":"workflow_doctor_check","details":{"ok":true,"findings":0}}
+ℹ️ doctor: checking workspace
+ℹ️ doctor: checking branch_pr drift
+ℹ️ doctor: checking runtime source
+ℹ️ doctor: checking project-local blueprints
+ℹ️ doctor: checking prompt graph
+ℹ️ doctor: checking recent task archive
+⚠️ doctor findings: errors=0 warnings=4 info=9
+- [WARN] State: branch_pr tasks appear shipped on the base branch but remain open
+Likely cause: the verified task commit already landed on the base branch, but canonical task closure artifacts were never reconciled
+Next action: agentplane task normalize --sync-branch-pr-state (mark locally shipped branch_pr tasks as DONE in the task projection before committing the reconciled task artifacts on the base branch)
+Details: Affected tasks: 5
+  - Examples: 202607221908-7WV0A7@main:b14fb5a94795 verified_via=task, 202607221908-RC1DX8@main:aea474462713 verified_via=task, 202607221908-YD5J89@main:d183683d77ba verified_via=task, 202607300112-48RH1X@main:d8b93f77c2cb verified_via=task, 202607300150-MGCHE6@main:2c8d47c38939 verified_via=task
+- [INFO] Runtime mode: repo-local (repo-local framework binary)
+- [INFO] Active binary: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-6BTB6D-capture-exact-v0-7-1-semantic-efficiency-evidenc/packages/agentplane/bin/agentplane.js
+- [INFO] Resolved agentplane: 0.7.0 @ /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-6BTB6D-capture-exact-v0-7-1-semantic-efficiency-evidenc/packages/agentplane
+- [INFO] Resolved @agentplaneorg/core: 0.7.0 @ /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-6BTB6D-capture-exact-v0-7-1-semantic-efficiency-evidenc/packages/core
+- [INFO] Framework repo root: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-6BTB6D-capture-exact-v0-7-1-semantic-efficiency-evidenc
+- [INFO] Framework agentplane root: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-6BTB6D-capture-exact-v0-7-1-semantic-efficiency-evidenc/packages/agentplane
+- [INFO] Framework core root: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-6BTB6D-capture-exact-v0-7-1-semantic-efficiency-evidenc/packages/core
+- [INFO] Project blueprint compatibility: compatible; trusted=0
+- [WARN] DONE task is missing implementation commit hash: 202607310026-4V5K9V (finish with --commit <hash>).
+- [WARN] DONE task is missing implementation commit hash: 202607311706-5N483Q (finish with --commit <hash>).
+- [INFO] Historical task archive contains 105 DONE tasks with unknown implementation commit hashes across 105 distinct commit hashes. Examples: 03985dd3622cb28371e96dbb79474d45de024c54 (1 task: 202607221555-JSEZ5E); 05037fa9edf56d5348d91aea2b68a68972a446f3 (1 task: 202607092208-1J49NQ); 06207ca15571411f94e28c49d6b52e3a43468bf3 (1 task: 202607221848-VBV9B1); +102 more hash groups
+- [WARN] DONE task implementation commit points to a close commit: 202607311707-DRYTNK -> 41763040243173eff12440f524acae1ef15b80eb (🧪 DRYTNK task: pre-merge closure)
