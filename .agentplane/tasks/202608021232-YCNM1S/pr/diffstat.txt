@@ -1,3 +1,4 @@
+ .agentplane/WORKFLOW.md                            |   3 +-
  .../logs/cli-latency.log                           |   9 -
  .../logs/context-matrix.log                        |   7 -
  .../logs/critical-cli.log                          |  29 --
@@ -54,10 +55,18 @@
  .../evidence/validate-recorded-gate.mjs            |   7 +-
  .../logs/matched-cli-latency.log                   |   4 -
  .../logs/supervisor-latency.log                    |   4 -
+ .agentplane/workflows/last-known-good.md           |   3 +-
+ docs/reference/generated-reference.mdx             |   6 +-
  docs/releases/v0.7.1.md                            | 337 +++++++++++++++++++
+ packages/agentplane/package.json                   |   6 +-
  .../src/cli/run-cli.core.agent-mode.test.ts        |  11 +-
  .../run-cli.core.direct-task-supervision.test.ts   |  15 +
  ...-cli.core.lifecycle.finish-close-commit.test.ts |  12 +
+ packages/core/package.json                         |   2 +-
+ packages/recipes/package.json                      |   2 +-
+ packages/recipes/src/index.ts                      |   2 +-
+ packages/spec/examples/acr.json                    |  22 +-
+ packages/testkit/package.json                      |   2 +-
  website/static/img/social/docs/releases/v0.7.1.png | Bin 0 -> 52228 bytes
  website/static/img/social/manifest.json            |   8 +
- 62 files changed, 384 insertions(+), 1701 deletions(-)
+ 71 files changed, 414 insertions(+), 1719 deletions(-)
