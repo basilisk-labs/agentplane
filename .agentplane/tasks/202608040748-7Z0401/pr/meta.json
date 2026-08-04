@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:5e38e5880f28df939769544198bce4d3e0d1154b560deab7b0dfc16c48592635",
   "pr_number": 4774,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4774",
+  "pre_merge_closure": {
+    "basis_commit": "b99f5568d0d8a554162a127ab24aa9bd9f8cb218",
+    "branch": "task/202608040748-7Z0401/harden-stale-runner-reclaim-regression-after-sem",
+    "pr_number": 4774,
+    "recorded_at": "2026-08-04T08:00:43.518Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608040748-7Z0401",
