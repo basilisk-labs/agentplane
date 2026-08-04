@@ -26,8 +26,8 @@ const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
 const BASELINE_VERSION = "0.6.26";
 const PACKAGES = ["core", "recipes", "agentplane"];
-const DEFAULT_COLD_RUNS = 20;
-const DEFAULT_WARM_RUNS = 30;
+const DEFAULT_COLD_RUNS = 60;
+const DEFAULT_WARM_RUNS = 60;
 const DEFAULT_WARMUPS = 2;
 const REPOSITORY_SCAN_PATTERN =
   /^(?:branch|diff|for-each-ref|ls-files|merge-base|rev-list|rev-parse|show|status|symbolic-ref|worktree)\b/u;

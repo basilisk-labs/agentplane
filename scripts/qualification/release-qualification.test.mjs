@@ -581,11 +581,11 @@ describe("v0.7.1 release qualification contract", () => {
     assert.equal(failing.delta_ms, 4);
   });
 
-  it("requires 20 cold and 30 warm supervisor samples for both public frontends", () => {
+  it("requires 60 cold and 60 warm supervisor samples for both public frontends", () => {
     const report = {
       schema_version: 1,
       kind: "agentplane.v0.7.1_supervisor_latency",
-      phases: { cold: supervisorLatencySurfaces(20), warm: supervisorLatencySurfaces(30) },
+      phases: { cold: supervisorLatencySurfaces(60), warm: supervisorLatencySurfaces(60) },
     };
 
     assert.equal(validateSupervisorLatencyReport(report), report);
@@ -594,13 +594,13 @@ describe("v0.7.1 release qualification contract", () => {
     insufficientCold.phases.cold[0].candidate.samples = Array.from({ length: 10 }, () => 100);
     assert.throws(
       () => validateSupervisorLatencyReport(insufficientCold),
-      /cold\.external_advance\.candidate requires 20 samples/u,
+      /cold\.external_advance\.candidate requires 60 samples/u,
     );
     const insufficient = structuredClone(report);
-    insufficient.phases.warm[0].candidate.sample_count = 29;
+    insufficient.phases.warm[0].candidate.sample_count = 59;
     assert.throws(
       () => validateSupervisorLatencyReport(insufficient),
-      /warm\.external_advance\.candidate requires 30 samples/u,
+      /warm\.external_advance\.candidate requires 60 samples/u,
     );
   });
 
@@ -623,7 +623,7 @@ describe("v0.7.1 release qualification contract", () => {
     const report = {
       schema_version: 1,
       kind: "agentplane.v0.7.1_supervisor_latency",
-      phases: { cold: supervisorLatencySurfaces(20), warm: supervisorLatencySurfaces(30) },
+      phases: { cold: supervisorLatencySurfaces(60), warm: supervisorLatencySurfaces(60) },
     };
     report.phases.cold[0].candidate.git_command_histogram.total_count -= 1;
     assert.throws(
