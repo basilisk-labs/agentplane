@@ -26,7 +26,7 @@ risk_flags:
   - "network"
 blueprint_request: "quality.regression"
 verify:
-  - "bun run e2e:v0.7.1:gate"
+  - "node .agentplane/tasks/202608021232-6BTB6D/evidence/validate-recorded-gate.mjs"
 plan_approval:
   state: "approved"
   updated_at: "2026-08-04T00:06:14.265Z"
