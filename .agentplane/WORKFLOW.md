@@ -62,7 +62,7 @@ framework:
   source: https://github.com/basilisk-labs/agentplane
   last_update: null
   cli:
-    expected_version: 0.7.2
+    expected_version: 0.7.3
 feedback:
   github_issues:
     enabled: true

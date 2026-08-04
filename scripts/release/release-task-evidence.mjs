@@ -546,13 +546,6 @@ async function runApply(argv) {
   const at = args.at ?? new Date().toISOString();
   const nextFrontmatter = {
     ...parsed.frontmatter,
-    verification: {
-      ...parsed.frontmatter.verification,
-      state: "ok",
-      updated_at: at,
-      updated_by: args.author,
-      note: `Hosted publish confirmed for ${manifest.tag}.`,
-    },
     doc_updated_at: at,
     doc_updated_by: args.author,
     sections,

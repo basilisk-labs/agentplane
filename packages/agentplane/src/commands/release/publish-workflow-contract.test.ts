@@ -138,6 +138,7 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain('--ghcr-outcome "${{ steps.publish_ghcr.outcome }}"');
     expect(workflow).toContain("if: always()");
     expect(workflow).toContain("actions: write");
+    expect(workflow).toContain("checks: write");
     expect(workflow).toContain("pull-requests: write");
     expect(workflow).toContain("Prepare release task evidence");
     expect(workflow).toContain(
@@ -149,7 +150,9 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("Apply release task evidence on a follow-up branch");
     expect(workflow).toContain("bun scripts/release-task-evidence.mjs apply");
     expect(workflow).toContain("Open or recover release evidence PR");
-    expect(workflow).toContain("Enable auto-merge for release evidence PR");
+    expect(workflow).toContain("Verify exact release evidence SHA");
+    expect(workflow).toContain("Publish required release evidence verification");
+    expect(workflow).toContain("Merge release evidence PR");
     expect(workflow.indexOf("Create GitHub Release")).toBeLessThan(
       workflow.indexOf("Publish Homebrew tap PR"),
     );
@@ -157,13 +160,13 @@ describe("publish workflow contract", () => {
       workflow.indexOf("Upload release-distribution artifact"),
     );
     for (const stepName of [
-      "Prepare release task evidence",
       "Check for existing release evidence PR",
       "Apply release task evidence on a follow-up branch",
       "Push release evidence branch",
       "Open or recover release evidence PR",
-      "Dispatch Core CI for release evidence PR",
-      "Enable auto-merge for release evidence PR",
+      "Verify exact release evidence SHA",
+      "Publish required release evidence verification",
+      "Merge release evidence PR",
     ]) {
       const stepIndex = workflow.indexOf(`- name: ${stepName}`);
       expect(stepIndex).toBeGreaterThanOrEqual(0);
@@ -172,13 +175,13 @@ describe("publish workflow contract", () => {
         stepIndex,
         nextStepIndex === -1 ? workflow.length : nextStepIndex,
       );
-      expect(stepBlock).toContain("continue-on-error: true");
+      expect(stepBlock).not.toContain("continue-on-error: true");
       if (
         [
           "Check for existing release evidence PR",
-          "Dispatch Core CI for release evidence branch",
           "Open or recover release evidence PR",
-          "Enable auto-merge for release evidence PR",
+          "Verify exact release evidence SHA",
+          "Merge release evidence PR",
         ].includes(stepName)
       ) {
         expect(stepBlock).toContain("GH_TOKEN: ${{ github.token }}");
@@ -252,21 +255,22 @@ describe("publish workflow contract", () => {
     );
   });
 
-  it("prints resolver diagnostics and dispatches branch CI for release evidence PRs", async () => {
+  it("validates the exact evidence SHA and publishes the required PR check before merge", async () => {
     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
 
     expect(workflow).toContain("source.err");
     expect(workflow).toContain("cat .agentplane/.release/ready/source.err");
-    expect(workflow).toContain("Dispatch Core CI for release evidence PR");
-    expect(workflow).toContain(
-      'gh workflow run ci.yml --ref "${{ steps.release_evidence.outputs.closure_branch }}"',
-    );
-    expect(workflow).toContain(
-      'echo "Release evidence PR ready for app-owned PR verification: $pr_url"',
-    );
+    expect(workflow).toContain("Verify exact release evidence SHA");
+    expect(workflow).toContain('-f "sha=${closure_sha}"');
+    expect(workflow).toContain('gh run watch "$ci_run_id" --exit-status --interval 15');
+    expect(workflow).toContain("uses: actions/github-script@v8");
+    expect(workflow).toContain('name: "PR verification"');
+    expect(workflow).toContain("The exact release-evidence closure SHA passed Core CI.");
     expect(workflow).toContain('gh pr checks "$pr_url" --watch --interval 15');
+    expect(workflow).toContain('gh pr merge --auto --merge --delete-branch "$pr_url"');
+    expect(workflow).toContain('if [ "$state" = "MERGED" ]; then');
     expect(workflow.indexOf("Open or recover release evidence PR")).toBeLessThan(
-      workflow.indexOf("Dispatch Core CI for release evidence PR"),
+      workflow.indexOf("Verify exact release evidence SHA"),
     );
   });
 
