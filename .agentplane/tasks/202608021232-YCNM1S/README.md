@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane v0.7.1"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -64,8 +64,8 @@ quality_review:
     - "Both changed tests now establish task-specific semantic plans before asserting approval or closeout behavior; expectations match the current CLI-authoritative planning contract without weakening runtime guards."
     - "The external audit assessment is grounded in executable product, Knip, legacy inventory, provider-efficiency, and latency evidence and separates patch blockers from non-blocking 0.8 architecture work."
 commit:
-  hash: "66c5df6f2c5bd630650248a60c005e943aceb7c7"
-  message: "🧩 YCNM1S release: refresh workflow snapshot"
+  hash: "340b96480ac25dc623052b7cd5e3b9846f1cab9b"
+  message: "🖼️ YCNM1S release: generate v0.7.1 headers"
 comments:
   -
     author: "INTEGRATOR"
@@ -79,6 +79,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework: prepared the local v0.7.1 release commit and refreshed the generated last-known-good workflow snapshot to expected_version 0.7.1; final prepublish remains pending."
+  -
+    author: "CODER"
+    body: "Implementation rework: regenerated all canonical README header assets for v0.7.1 after the version bump; header freshness check passes."
 events:
   -
     type: "status"
@@ -126,8 +129,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework: prepared the local v0.7.1 release commit and refreshed the generated last-known-good workflow snapshot to expected_version 0.7.1; final prepublish remains pending."
+  -
+    type: "status"
+    at: "2026-08-04T09:39:59.935Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework: regenerated all canonical README header assets for v0.7.1 after the version bump; header freshness check passes."
 doc_version: 3
-doc_updated_at: "2026-08-04T09:39:19.988Z"
+doc_updated_at: "2026-08-04T09:39:59.935Z"
 doc_updated_by: "CODER"
 description: "Integrate all approved v0.7.1 fixes, run the complete deterministic and provider release gate on the exact candidate, resolve every blocking defect, verify GitHub Actions and package metadata, publish npm and GitHub Release, and prove the installed release from remote truth."
 sections:
