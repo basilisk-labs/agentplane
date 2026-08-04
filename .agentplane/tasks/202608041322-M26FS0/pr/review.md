@@ -13,7 +13,7 @@ Created: 2026-08-04T13:24:55.578Z
 ## Verification
 
 - State: ok
-- Note: 0.7.3 hosted closeout and qualification provenance verified
+- Note: Pre-merge closure commit verified as task-artifact-only
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

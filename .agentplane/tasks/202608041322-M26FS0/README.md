@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-04T22:43:39.603Z"
+  updated_at: "2026-08-04T22:46:00.975Z"
   updated_by: "TESTER"
-  note: "0.7.3 hosted closeout and qualification provenance verified"
+  note: "Pre-merge closure commit verified as task-artifact-only"
   attempts: 0
 quality_review:
   state: "pass"
@@ -156,8 +156,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-04T22:46:00.975Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Pre-merge closure commit verified as task-artifact-only"
 doc_version: 3
-doc_updated_at: "2026-08-04T22:45:13.689Z"
+doc_updated_at: "2026-08-04T22:46:02.193Z"
 doc_updated_by: "CODER"
 description: "Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release."
 sections:
@@ -359,6 +365,38 @@ sections:
     Details:
 
     HEAD 77e66477692a3ff42cc6321d49b87b0c6d35bf9f. Qualification gate ready: 18/19 scenarios, 0 blocking; the only failure is advisory absolute CLI latency, while matched v0.6.26 latency and supervisor latency pass. Provider evidence was validated without retry: 50 runs / 55 episodes from 4d529ff0, runtime-equivalent across qualification-only changes; token reduction 29.12145%, verified success 8->17, rework 32->27, scope violations 17->5. Focused qualification contract 22/22, ci:contract, release:prepublish, release-ci-base 101/101, workflow 50/50, significant 204/204, release-critical 16/16 all pass. Evidence: .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/report.json
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+    - old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-04T22:46:00.975Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Pre-merge closure commit verified as task-artifact-only
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T22:45:13.689Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+    Details:
+
+    Commit 85cae380eedaded0cbf167c32f78015d951bf388 changes only .agentplane/tasks/202608041322-M26FS0 artifacts: frozen 0.7.3 qualification evidence, evaluator pass artifacts, PR metadata, verification record, and task README. Product/runtime/package files are identical to verified implementation HEAD 77e66477692a3ff42cc6321d49b87b0c6d35bf9f. Existing ci:contract, release:prepublish, qualification 18/19 with 0 blocking, and provider 50 runs / 55 episodes remain applicable.
 
     BlueprintSnapshotRef:
     - state: current
@@ -608,6 +646,38 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T15:38:07.113Z, excerpt_
 Details:
 
 HEAD 77e66477692a3ff42cc6321d49b87b0c6d35bf9f. Qualification gate ready: 18/19 scenarios, 0 blocking; the only failure is advisory absolute CLI latency, while matched v0.6.26 latency and supervisor latency pass. Provider evidence was validated without retry: 50 runs / 55 episodes from 4d529ff0, runtime-equivalent across qualification-only changes; token reduction 29.12145%, verified success 8->17, rework 32->27, scope violations 17->5. Focused qualification contract 22/22, ci:contract, release:prepublish, release-ci-base 101/101, workflow 50/50, significant 204/204, release-critical 16/16 all pass. Evidence: .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/report.json
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+- old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-04T22:46:00.975Z — VERIFY — ok
+
+By: TESTER
+
+Note: Pre-merge closure commit verified as task-artifact-only
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T22:45:13.689Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+Details:
+
+Commit 85cae380eedaded0cbf167c32f78015d951bf388 changes only .agentplane/tasks/202608041322-M26FS0 artifacts: frozen 0.7.3 qualification evidence, evaluator pass artifacts, PR metadata, verification record, and task README. Product/runtime/package files are identical to verified implementation HEAD 77e66477692a3ff42cc6321d49b87b0c6d35bf9f. Existing ci:contract, release:prepublish, qualification 18/19 with 0 blocking, and provider 50 runs / 55 episodes remain applicable.
 
 BlueprintSnapshotRef:
 - state: current
