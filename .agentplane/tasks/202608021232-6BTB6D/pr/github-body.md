@@ -15,12 +15,14 @@ Produce a release-blocking, reproducible qualification record for the final v0.7
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Exact candidate 2da557536 failed deterministic release qualification: cold managed task run p95
-exceeded the matched v0.6.26 ceiling by 2.655 ms; provider gate was not run.
+PASS: frozen subject de94bf9d passed full v0.7.1 qualification with one 50-run/55-episode provider
+generation, exact Codex 0.146.0-alpha.3.1 runtime bridge, 29.92% total token reduction, no metric
+regressions, and zero blocking defects;
+evidence=.agentplane/tasks/202608021232-6BTB6D/evidence/final-de94bf9d9-gate/report.json
 ```
 - Canonical workflow state lives in the task README.
 
