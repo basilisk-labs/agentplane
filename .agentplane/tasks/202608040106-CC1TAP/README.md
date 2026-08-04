@@ -4,7 +4,7 @@ title: "Remove calendar-date flake from merge token-usage unit test"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,10 +24,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-04T01:09:05.747Z"
+  updated_by: "TESTER"
+  note: "Confirmed the CI failure was a UTC calendar-boundary assertion, then froze reconciliation time and proved exact timestamp semantics: focused 3/3 and nearby 16/16 tests plus TypeScript 7, ESLint, Prettier, and diff checks pass."
   attempts: 0
 commit:
   hash: "87fc9d132fe0253ba6b6cfcf6cbd96ab28f7a0e2"
@@ -54,8 +54,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation complete: exact test now freezes reconciliation time and asserts exact timestamps for hosted, local-merged, and locally-shipped projections; focused 3/3, nearby 16/16, TypeScript 7, lint, formatting, and diff checks pass."
+  -
+    type: "verify"
+    at: "2026-08-04T01:09:05.747Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Confirmed the CI failure was a UTC calendar-boundary assertion, then froze reconciliation time and proved exact timestamp semantics: focused 3/3 and nearby 16/16 tests plus TypeScript 7, ESLint, Prettier, and diff checks pass."
 doc_version: 3
-doc_updated_at: "2026-08-04T01:08:39.901Z"
+doc_updated_at: "2026-08-04T01:09:06.702Z"
 doc_updated_by: "TESTER"
 description: "Replace the hard-coded UTC calendar-day assertion in hosted merge token-usage coverage with a deterministic invariant tied to the observed journal projection, preserving the production token-usage contract and reproducing the hosted failure locally before the fix."
 sections:
@@ -74,6 +80,51 @@ sections:
     4. Run TypeScript 7 typecheck plus touched ESLint, Prettier, and git diff checks. Expected: all pass with no production-code diff.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-04T01:09:05.747Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Confirmed the CI failure was a UTC calendar-boundary assertion, then froze reconciliation time and proved exact timestamp semantics: focused 3/3 and nearby 16/16 tests plus TypeScript 7, ESLint, Prettier, and diff checks pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T01:08:39.901Z, excerpt_hash=sha256:501984ba1bf0744c56f3422cd1716988f077af6e36b9cb1e5e316b5452b59023
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts
+    Result: pass
+    Evidence: packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts and GitHub Actions run 30867253711 job 91861754671
+    Scope: reproduce the 2026-08-03 hard-coded UTC boundary failure and verify the deterministic exact-time replacement
+
+    Command: bunx vitest run packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/commands/task/task-token-usage.test.ts
+    Result: pass
+    Evidence: 3 test files passed, 16 tests passed
+    Scope: hosted, local-merged, locally-shipped token projection and replay stability
+
+    Command: bun run typecheck && bunx eslint packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts && bunx prettier packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts --check && git diff --check
+    Result: pass
+    Evidence: TypeScript 7 build, touched lint and formatting, and whitespace checks completed successfully
+    Scope: static and formatting validation for the test-only diff
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040106-CC1TAP-fix-token-usage-date-flake/.agentplane/tasks/202608040106-CC1TAP/blueprint/resolved-snapshot.json
+    - old_digest: 3f4ab56d84ca19770df0b28210820e875aaeca2088a0ca97d65b070dc7af4a94
+    - current_digest: 3f4ab56d84ca19770df0b28210820e875aaeca2088a0ca97d65b070dc7af4a94
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608040106-CC1TAP
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -110,6 +161,51 @@ Replace the hard-coded UTC calendar-day assertion in hosted merge token-usage co
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-04T01:09:05.747Z — VERIFY — ok
+
+By: TESTER
+
+Note: Confirmed the CI failure was a UTC calendar-boundary assertion, then froze reconciliation time and proved exact timestamp semantics: focused 3/3 and nearby 16/16 tests plus TypeScript 7, ESLint, Prettier, and diff checks pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T01:08:39.901Z, excerpt_hash=sha256:501984ba1bf0744c56f3422cd1716988f077af6e36b9cb1e5e316b5452b59023
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts
+Result: pass
+Evidence: packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts and GitHub Actions run 30867253711 job 91861754671
+Scope: reproduce the 2026-08-03 hard-coded UTC boundary failure and verify the deterministic exact-time replacement
+
+Command: bunx vitest run packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/commands/task/task-token-usage.test.ts
+Result: pass
+Evidence: 3 test files passed, 16 tests passed
+Scope: hosted, local-merged, locally-shipped token projection and replay stability
+
+Command: bun run typecheck && bunx eslint packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts && bunx prettier packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts --check && git diff --check
+Result: pass
+Evidence: TypeScript 7 build, touched lint and formatting, and whitespace checks completed successfully
+Scope: static and formatting validation for the test-only diff
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040106-CC1TAP-fix-token-usage-date-flake/.agentplane/tasks/202608040106-CC1TAP/blueprint/resolved-snapshot.json
+- old_digest: 3f4ab56d84ca19770df0b28210820e875aaeca2088a0ca97d65b070dc7af4a94
+- current_digest: 3f4ab56d84ca19770df0b28210820e875aaeca2088a0ca97d65b070dc7af4a94
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608040106-CC1TAP
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

@@ -12,8 +12,8 @@ Created: 2026-08-04T01:06:52.139Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Confirmed the CI failure was a UTC calendar-boundary assertion, then froze reconciliation time and proved exact timestamp semantics: focused 3/3 and nearby 16/16 tests plus TypeScript 7, ESLint, Prettier, and diff checks pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,8 @@ Created: 2026-08-04T01:06:52.139Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../task/hosted-merge-sync.token-usage.test.ts       | 20 ++++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
 ```
 
 </details>
