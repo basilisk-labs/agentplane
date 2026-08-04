@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane v0.7.1"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -31,11 +31,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-04T09:35:12.227Z"
+  state: "ok"
+  updated_at: "2026-08-04T09:36:46.151Z"
   updated_by: "TESTER"
-  note: "Release-ci chunk 19 exposed a stale semantic-plan fixture before the intended finish closeout boundary."
-  attempts: 1
+  note: "The semantic-plan fixture rework reaches the intended closeout boundary and preserves runtime behavior."
+  attempts: 0
 commit:
   hash: "2237f9c6ea0e6f38d0d696ced37315a97ee93103"
   message: "🧪 YCNM1S release: align closeout test contract"
@@ -77,8 +77,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework: replaced the generated plan placeholder in the commit-from-comment closeout fixture so it reaches the intended stale-quality-review boundary; targeted 5/5 and product contract pass."
+  -
+    type: "verify"
+    at: "2026-08-04T09:36:46.151Z"
+    author: "TESTER"
+    state: "ok"
+    note: "The semantic-plan fixture rework reaches the intended closeout boundary and preserves runtime behavior."
 doc_version: 3
-doc_updated_at: "2026-08-04T09:36:24.492Z"
+doc_updated_at: "2026-08-04T09:36:47.074Z"
 doc_updated_by: "CODER"
 description: "Integrate all approved v0.7.1 fixes, run the complete deterministic and provider release gate on the exact candidate, resolve every blocking defect, verify GitHub Actions and package metadata, publish npm and GitHub Release, and prove the installed release from remote truth."
 sections:
@@ -129,6 +135,41 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608021232-YCNM1S
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-04T09:36:46.151Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: The semantic-plan fixture rework reaches the intended closeout boundary and preserves runtime behavior.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T09:36:24.492Z, excerpt_hash=sha256:48af4cd80adb0012d6612a511df32d0950f6fee1cfbba7d1a6f713897c8eb042
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts; node scripts/qualification/check-v0.7.1-product-contract.mjs
+    Result: pass
+    Evidence: finish-close-commit 5/5 tests passed; v0.7.1 product contract passed; Prettier and git diff checks passed before commit 2237f9c6ea0e.
+    Scope: test fixture and task evidence only; final release verification remains bound to the canonical prepublish candidate run.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-YCNM1S-qualify-and-publish-agentplane-v0-7-1/.agentplane/tasks/202608021232-YCNM1S/blueprint/resolved-snapshot.json
+    - old_digest: 1c6891f873a4739c542029b7b715e76b008e2b21d912005d7d681bbaba7c0653
+    - current_digest: 1c6891f873a4739c542029b7b715e76b008e2b21d912005d7d681bbaba7c0653
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021232-YCNM1S
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -214,6 +255,41 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608021232-YCNM1S
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-04T09:36:46.151Z — VERIFY — ok
+
+By: TESTER
+
+Note: The semantic-plan fixture rework reaches the intended closeout boundary and preserves runtime behavior.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T09:36:24.492Z, excerpt_hash=sha256:48af4cd80adb0012d6612a511df32d0950f6fee1cfbba7d1a6f713897c8eb042
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts; node scripts/qualification/check-v0.7.1-product-contract.mjs
+Result: pass
+Evidence: finish-close-commit 5/5 tests passed; v0.7.1 product contract passed; Prettier and git diff checks passed before commit 2237f9c6ea0e.
+Scope: test fixture and task evidence only; final release verification remains bound to the canonical prepublish candidate run.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-YCNM1S-qualify-and-publish-agentplane-v0-7-1/.agentplane/tasks/202608021232-YCNM1S/blueprint/resolved-snapshot.json
+- old_digest: 1c6891f873a4739c542029b7b715e76b008e2b21d912005d7d681bbaba7c0653
+- current_digest: 1c6891f873a4739c542029b7b715e76b008e2b21d912005d7d681bbaba7c0653
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021232-YCNM1S
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
