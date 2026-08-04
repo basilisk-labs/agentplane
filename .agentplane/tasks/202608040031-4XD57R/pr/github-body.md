@@ -15,12 +15,12 @@ Extend the packed supervisor benchmark with deterministic per-command Git histog
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-Verified frozen head 158fd2432: current-main CI fix and unchanged exact supervisor optimization pass
-the rerun matrix; strict 20-cold/30-warm benchmark evidence remains valid for product SHA 3a526415.
+Rework: Unsupported declared check: The benchmark report must expose bounded deterministic Git
+command histograms for baseline and candidate samples without adding work inside the timed interval.
 ```
 - Canonical workflow state lives in the task README.
 

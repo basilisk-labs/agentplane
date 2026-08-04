@@ -1,0 +1,15 @@
+{
+  "details": "",
+  "digest": "sha256:1befd0dc77a8890392b505d154eb55ed18b2310d554da0cbfbe26fc6c89913c0",
+  "implementation_sha": "7a08766d8aa805b7995d2ea9bf1b794a7f8797fa",
+  "kind": "task_verification_record",
+  "note": "Rework: Unsupported declared check: The benchmark report must expose bounded deterministic Git command histograms for baseline and candidate samples without adding work inside the timed interval.",
+  "recorded_at": "2026-08-04T01:26:59.394Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run the qualification contract tests for the supervisor latency report. Expected: each baseline/candidate surface contains a deterministic, bounded Git command histogram whose total equals the summed per-sample Git subprocess count; instrumentation occurs after the timed command sequence.\n2. Run the instrumented packed benchmark against v0.6.26 on a clean SHA with at least 20 cold and 30 warm samples. Expected: the report identifies exact repeated command families and preserves raw evidence; no provider call occurs.\n3. Run focused route, task-run-path, supervisor, recovery, stale task/Git/policy/approval, concurrency, crash, and effect-in-doubt suites. Expected: the chosen observation reuse invalidates on every covered state change and no protected side effect can replay.\n4. Re-run node scripts/qualification/measure-v0.7.1-supervisor-latency.mjs --subject <clean-implementation-sha> --out <task-evidence>. Expected: every cold/warm median and p95 is <=10% above v0.6.26; managed candidate Git observations are lower than the blocked 2da557536 count of 8 and external preparation does not regress.\n5. Run bun run typecheck, touched ESLint/Prettier, bun run test:critical, ap doctor, node .agentplane/policy/check-routing.mjs, independent EVALUATOR, exact-head hosted checks, and review-thread audit. Expected: all pass before queue integration and hosted close.",
+  "scope_digest": "sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d",
+  "task_id": "202608040031-4XD57R",
+  "verification_command": "agentplane verify 202608040031-4XD57R --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
