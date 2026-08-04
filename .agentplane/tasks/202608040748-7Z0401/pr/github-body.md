@@ -15,19 +15,28 @@ Reproduce GitHub issue #4773 on current main with a valid task and stale runner 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts; bun run
+typecheck; node .agentplane/policy/check-routing.mjs
+```
+Result: pass
+Evidence: 4/4 focused task handoff tests passed; claimed missing-PID run cancelled and advanced to retry; unclaimed run returned E_RUNTIME exit 8 without E_INTERNAL; typecheck and routing passed.
+Scope: stale runner reclaim recovery and its semantic-plan fixture only.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-04T07:49:53.454Z
+- Updated: 2026-08-04T07:50:26.255Z
 - Branch: task/202608040748-7Z0401/harden-stale-runner-reclaim-regression-after-sem
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/cli/run-cli.core.task-handoff.test.ts      | 124 +++++++++++++--------
+ 1 file changed, 78 insertions(+), 46 deletions(-)
 ```
 
 </details>
