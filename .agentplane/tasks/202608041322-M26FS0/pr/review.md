@@ -13,7 +13,7 @@ Created: 2026-08-04T13:24:55.578Z
 ## Verification
 
 - State: ok
-- Note: Pre-merge closure commit verified as task-artifact-only
+- Note: Structured release verification covers implementation target 77e66477
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

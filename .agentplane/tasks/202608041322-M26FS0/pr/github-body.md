@@ -16,7 +16,7 @@ Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created re
 ## Verification
 
 - State: ok
-- Note: Pre-merge closure commit verified as task-artifact-only
+- Note: Structured release verification covers implementation target 77e66477
 - Canonical workflow state lives in the task README.
 
 <details>
