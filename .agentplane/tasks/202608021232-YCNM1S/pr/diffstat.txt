@@ -56,6 +56,20 @@
  .../logs/matched-cli-latency.log                   |   4 -
  .../logs/supervisor-latency.log                    |   4 -
  .agentplane/workflows/last-known-good.md           |   3 +-
+ docs/assets/header.svg                             |   4 +-
+ docs/assets/readme-headers/adr.svg                 |   4 +-
+ docs/assets/readme-headers/agentplane-cli.svg      |   4 +-
+ docs/assets/readme-headers/agentplane.svg          |   4 +-
+ docs/assets/readme-headers/core.svg                |   4 +-
+ docs/assets/readme-headers/docs.svg                |   4 +-
+ docs/assets/readme-headers/humanizer.svg           |   4 +-
+ docs/assets/readme-headers/recipes.svg             |   4 +-
+ docs/assets/readme-headers/releases.svg            |   4 +-
+ docs/assets/readme-headers/schemas.svg             |   4 +-
+ docs/assets/readme-headers/scripts.svg             |   4 +-
+ docs/assets/readme-headers/skills.svg              |   4 +-
+ docs/assets/readme-headers/spec.svg                |   4 +-
+ docs/assets/readme-headers/testkit.svg             |   4 +-
  docs/reference/generated-reference.mdx             |   6 +-
  docs/releases/v0.7.1.md                            | 337 +++++++++++++++++++
  packages/agentplane/package.json                   |   6 +-
@@ -69,4 +83,4 @@
  packages/testkit/package.json                      |   2 +-
  website/static/img/social/docs/releases/v0.7.1.png | Bin 0 -> 52228 bytes
  website/static/img/social/manifest.json            |   8 +
- 71 files changed, 414 insertions(+), 1719 deletions(-)
+ 85 files changed, 442 insertions(+), 1747 deletions(-)
