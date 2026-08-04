@@ -15,8 +15,13 @@ Integrate all approved v0.7.1 fixes, run the complete deterministic and provider
 
 ## Verification
 
-- State: ok
-- Note: The semantic-plan fixture rework reaches the intended closeout boundary and preserves runtime behavior.
+- State: needs_rework
+- Note:
+
+```text
+The test rework passes, but the release candidate version bump and canonical full prepublish are not
+yet recorded on the final task head.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

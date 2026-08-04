@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane v0.7.1"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -31,11 +31,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-04T09:36:46.151Z"
+  state: "needs_rework"
+  updated_at: "2026-08-04T09:38:09.480Z"
   updated_by: "TESTER"
-  note: "The semantic-plan fixture rework reaches the intended closeout boundary and preserves runtime behavior."
-  attempts: 0
+  note: "The test rework passes, but the release candidate version bump and canonical full prepublish are not yet recorded on the final task head."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -63,9 +63,7 @@ quality_review:
   findings:
     - "Both changed tests now establish task-specific semantic plans before asserting approval or closeout behavior; expectations match the current CLI-authoritative planning contract without weakening runtime guards."
     - "The external audit assessment is grounded in executable product, Knip, legacy inventory, provider-efficiency, and latency evidence and separates patch blockers from non-blocking 0.8 architecture work."
-commit:
-  hash: "2237f9c6ea0e6f38d0d696ced37315a97ee93103"
-  message: "🧪 YCNM1S release: align closeout test contract"
+commit: null
 comments:
   -
     author: "INTEGRATOR"
@@ -110,8 +108,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "The semantic-plan fixture rework reaches the intended closeout boundary and preserves runtime behavior."
+  -
+    type: "verify"
+    at: "2026-08-04T09:38:09.480Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "The test rework passes, but the release candidate version bump and canonical full prepublish are not yet recorded on the final task head."
 doc_version: 3
-doc_updated_at: "2026-08-04T09:36:47.074Z"
+doc_updated_at: "2026-08-04T09:38:10.986Z"
 doc_updated_by: "CODER"
 description: "Integrate all approved v0.7.1 fixes, run the complete deterministic and provider release gate on the exact candidate, resolve every blocking defect, verify GitHub Actions and package metadata, publish npm and GitHub Release, and prove the installed release from remote truth."
 sections:
@@ -203,6 +207,41 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-04T09:38:09.480Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: The test rework passes, but the release candidate version bump and canonical full prepublish are not yet recorded on the final task head.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T09:36:47.074Z, excerpt_hash=sha256:48af4cd80adb0012d6612a511df32d0950f6fee1cfbba7d1a6f713897c8eb042
+
+    Details:
+
+    Command: agentplane task next-action 202608021232-YCNM1S --explain
+    Result: fail
+    Evidence: route reached pre_merge_closure while package manifests remain at 0.7.0 and the canonical candidate command has not completed after the latest fixture correction.
+    Scope: release preparation only; prepare the local 0.7.1 candidate without pushing, then verify and evaluate the exact final candidate SHA.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-YCNM1S-qualify-and-publish-agentplane-v0-7-1/.agentplane/tasks/202608021232-YCNM1S/blueprint/resolved-snapshot.json
+    - old_digest: 1c6891f873a4739c542029b7b715e76b008e2b21d912005d7d681bbaba7c0653
+    - current_digest: 1c6891f873a4739c542029b7b715e76b008e2b21d912005d7d681bbaba7c0653
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021232-YCNM1S
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -219,6 +258,10 @@ sections:
     - Observation: The commit-from-comment test attempted plan approval without first recording a task-specific semantic plan.
       Impact: The full prepublish gate stopped before evaluating the intended stale-quality-review boundary.
       Resolution: Record an explicit PLANNER plan in the fixture before approval, then rerun the targeted test and canonical prepublish gate.
+
+    - Observation: Task verification was recorded before the release candidate version commit existed.
+      Impact: Pre-merge closure would bind evidence to a pre-candidate SHA.
+      Resolution: Run the canonical release candidate flow locally, then re-record verification and evaluation on the version-bumped head.
 extensions:
   workflow_route_baseline:
     start_head_sha: "82a0ffea3af6a1ca811a824e24289d9a68c4d684"
@@ -323,6 +366,41 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-04T09:38:09.480Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: The test rework passes, but the release candidate version bump and canonical full prepublish are not yet recorded on the final task head.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T09:36:47.074Z, excerpt_hash=sha256:48af4cd80adb0012d6612a511df32d0950f6fee1cfbba7d1a6f713897c8eb042
+
+Details:
+
+Command: agentplane task next-action 202608021232-YCNM1S --explain
+Result: fail
+Evidence: route reached pre_merge_closure while package manifests remain at 0.7.0 and the canonical candidate command has not completed after the latest fixture correction.
+Scope: release preparation only; prepare the local 0.7.1 candidate without pushing, then verify and evaluate the exact final candidate SHA.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-YCNM1S-qualify-and-publish-agentplane-v0-7-1/.agentplane/tasks/202608021232-YCNM1S/blueprint/resolved-snapshot.json
+- old_digest: 1c6891f873a4739c542029b7b715e76b008e2b21d912005d7d681bbaba7c0653
+- current_digest: 1c6891f873a4739c542029b7b715e76b008e2b21d912005d7d681bbaba7c0653
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021232-YCNM1S
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -343,3 +421,7 @@ DecisionContextRef:
 - Observation: The commit-from-comment test attempted plan approval without first recording a task-specific semantic plan.
   Impact: The full prepublish gate stopped before evaluating the intended stale-quality-review boundary.
   Resolution: Record an explicit PLANNER plan in the fixture before approval, then rerun the targeted test and canonical prepublish gate.
+
+- Observation: Task verification was recorded before the release candidate version commit existed.
+  Impact: Pre-merge closure would bind evidence to a pre-candidate SHA.
+  Resolution: Run the canonical release candidate flow locally, then re-record verification and evaluation on the version-bumped head.
