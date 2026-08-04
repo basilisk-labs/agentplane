@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.v0.7.1_efficiency_qualification",
+  "subject": "74cb0b80ae7a8447032d7b88bba607be9002f872",
+  "source_subject": "4d529ff0fa594fcf9cece44b56dd402b84e7f44c",
+  "coverage": {
+    "replay_runs": 50,
+    "scenarios": 10
+  },
+  "provider_episodes": 55,
+  "provider_tokens": {
+    "baseline": {
+      "input_tokens": 9097432,
+      "output_tokens": 66728,
+      "reasoning_tokens": 22587,
+      "total_tokens": 9186747
+    },
+    "candidate": {
+      "input_tokens": 6451689,
+      "output_tokens": 43904,
+      "reasoning_tokens": 15840,
+      "total_tokens": 6511433
+    },
+    "total_reduction_ratio": 0.29121450715906294
+  },
+  "outcomes": {
+    "baseline": {
+      "adapter_failure": 5,
+      "approval_respected": 50,
+      "blocked": 20,
+      "context_gap": 5,
+      "rework_required": 32,
+      "scope_violation": 17,
+      "verified_success": 8
+    },
+    "candidate": {
+      "adapter_failure": 5,
+      "approval_respected": 50,
+      "blocked": 21,
+      "context_gap": 5,
+      "rework_required": 27,
+      "scope_violation": 5,
+      "verified_success": 17
+    },
+    "baseline_golden_mismatch_count": 33,
+    "candidate_golden_mismatch_count": 14
+  },
+  "latency_ms": {
+    "baseline": {
+      "harness_setup_latency_ms": {
+        "mean": 7605.46,
+        "sample_count": 50
+      },
+      "time_to_first_scoped_mutation_ms": {
+        "mean": 43642.64,
+        "sample_count": 25
+      },
+      "time_to_verified_result_ms": {
+        "mean": 56439.625,
+        "sample_count": 8
+      }
+    },
+    "candidate": {
+      "harness_setup_latency_ms": {
+        "mean": 6809.42,
+        "sample_count": 50
+      },
+      "time_to_first_scoped_mutation_ms": {
+        "mean": 28854.521739130436,
+        "sample_count": 23
+      },
+      "time_to_verified_result_ms": {
+        "mean": 56786.882352941175,
+        "sample_count": 17
+      }
+    },
+    "policy": "diagnostic_only_never_gated",
+    "diagnostics": [
+      {
+        "metric": "latency.time_to_first_scoped_mutation_ms.sample_count",
+        "baseline": 25,
+        "candidate": 23,
+        "delta": -2
+      },
+      {
+        "metric": "latency.time_to_verified_result_ms.mean",
+        "baseline": 56439.625,
+        "candidate": 56786.882352941175,
+        "delta": 347.25735294117476
+      }
+    ]
+  },
+  "failures": [],
+  "verdict": "pass",
+  "provider_evidence": {
+    "source_subject": "4d529ff0fa594fcf9cece44b56dd402b84e7f44c",
+    "runtime_equivalence": {
+      "schema_version": 1,
+      "kind": "agentplane.provider_runtime_equivalence",
+      "policy": "provider_runtime_equivalent_descendant_v1",
+      "source_subject": "4d529ff0fa594fcf9cece44b56dd402b84e7f44c",
+      "target_subject": "74cb0b80ae7a8447032d7b88bba607be9002f872",
+      "changed_paths": [
+        ".agentplane/tasks/202608041322-M26FS0/README.md",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/defects.md",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/efficiency-evidence.json",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/cli-latency.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/context-matrix.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/critical-cli.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/doctor.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/efficiency-evidence.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/full-contract.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/hosted-boundary-matrix.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/lifecycle-matrix.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/matched-cli-latency.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/packaged-candidate-flow.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/provider-matrix.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/qualification-contract.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/recovery-matrix.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/release-task-state.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/supervisor-frontends.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/supervisor-latency.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/supervisor-parity.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/typecheck.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/workflow-coverage.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/matched-cli-latency.json",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/report.json",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/supervisor-latency.json",
+        ".agentplane/tasks/202608041322-M26FS0/pr/diffstat.txt",
+        ".agentplane/tasks/202608041322-M26FS0/pr/github-body.md",
+        ".agentplane/tasks/202608041322-M26FS0/pr/meta.json",
+        ".agentplane/tasks/202608041322-M26FS0/pr/review.md",
+        ".agentplane/tasks/202608041322-M26FS0/quality/20260804-224427672-recovery-context/evaluator-evidence-manifest.json",
+        ".agentplane/tasks/202608041322-M26FS0/quality/20260804-224427672-recovery-context/evaluator-opinion.md",
+        ".agentplane/tasks/202608041322-M26FS0/quality/20260804-224427672-recovery-context/evaluator-result.json",
+        ".agentplane/tasks/202608041322-M26FS0/quality/20260804-224427672-recovery-context/evaluator-work-order.json",
+        ".agentplane/tasks/202608041322-M26FS0/quality/20260804-224427672-recovery-context/quality-report.json",
+        ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/049842669c2ec9818accd9798bdbf8a6a3b3e92f5b0f725aa65321129f7608ac.patch",
+        ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/77c64f0426faced19bf5f1612eabafa5ded0ec0a38a5322904a282316e336692.json",
+        ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/d29ebf80d33bc50fb70faedaf284b892ef0bbe9839f8dbf3858a78b2c6516d59.md",
+        ".agentplane/tasks/202608041322-M26FS0/verification/20260804224339603-2f615f0b73cb2668.json",
+        ".agentplane/tasks/202608041322-M26FS0/verification/20260804224600975-bd5c99f02f979122.json",
+        ".agentplane/tasks/202608041322-M26FS0/verification/20260804224905402-5b738763b55f347b.json",
+        ".agentplane/tasks/202608041322-M26FS0/verification/20260804225740334-29e9f5589c932590.json",
+        ".github/workflows/publish.yml",
+        "scripts/qualification/check-v0.7.1-efficiency-evidence.mjs",
+        "scripts/qualification/release-qualification.mjs",
+        "scripts/qualification/release-qualification.test.mjs",
+        "scripts/qualification/run-v0.7.1-release-qualification.mjs",
+        "scripts/qualification/v0.7.1-release-qualification.json"
+      ],
+      "managed_task_artifact_paths": [
+        ".agentplane/tasks/202608041322-M26FS0/README.md",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/defects.md",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/efficiency-evidence.json",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/cli-latency.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/context-matrix.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/critical-cli.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/doctor.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/efficiency-evidence.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/full-contract.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/hosted-boundary-matrix.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/lifecycle-matrix.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/matched-cli-latency.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/packaged-candidate-flow.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/provider-matrix.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/qualification-contract.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/recovery-matrix.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/release-task-state.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/supervisor-frontends.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/supervisor-latency.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/supervisor-parity.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/typecheck.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/logs/workflow-coverage.log",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/matched-cli-latency.json",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/report.json",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-77e66477/supervisor-latency.json",
+        ".agentplane/tasks/202608041322-M26FS0/pr/diffstat.txt",
+        ".agentplane/tasks/202608041322-M26FS0/pr/github-body.md",
+        ".agentplane/tasks/202608041322-M26FS0/pr/meta.json",
+        ".agentplane/tasks/202608041322-M26FS0/pr/review.md",
+        ".agentplane/tasks/202608041322-M26FS0/quality/20260804-224427672-recovery-context/evaluator-evidence-manifest.json",
+        ".agentplane/tasks/202608041322-M26FS0/quality/20260804-224427672-recovery-context/evaluator-opinion.md",
+        ".agentplane/tasks/202608041322-M26FS0/quality/20260804-224427672-recovery-context/evaluator-result.json",
+        ".agentplane/tasks/202608041322-M26FS0/quality/20260804-224427672-recovery-context/evaluator-work-order.json",
+        ".agentplane/tasks/202608041322-M26FS0/quality/20260804-224427672-recovery-context/quality-report.json",
+        ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/049842669c2ec9818accd9798bdbf8a6a3b3e92f5b0f725aa65321129f7608ac.patch",
+        ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/77c64f0426faced19bf5f1612eabafa5ded0ec0a38a5322904a282316e336692.json",
+        ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/d29ebf80d33bc50fb70faedaf284b892ef0bbe9839f8dbf3858a78b2c6516d59.md",
+        ".agentplane/tasks/202608041322-M26FS0/verification/20260804224339603-2f615f0b73cb2668.json",
+        ".agentplane/tasks/202608041322-M26FS0/verification/20260804224600975-bd5c99f02f979122.json",
+        ".agentplane/tasks/202608041322-M26FS0/verification/20260804224905402-5b738763b55f347b.json",
+        ".agentplane/tasks/202608041322-M26FS0/verification/20260804225740334-29e9f5589c932590.json"
+      ],
+      "provider_runtime_unchanged": true
+    }
+  }
+}
