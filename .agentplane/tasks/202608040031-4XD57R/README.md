@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -25,40 +25,36 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-04T01:24:45.203Z"
+  updated_at: "2026-08-04T01:25:56.309Z"
   updated_by: "TESTER"
-  note: "Verified committed sync head a53d59cbb: current-main flake fix plus unchanged measured performance implementation pass focused token-usage, qualification contract, critical CLI 79/79, TS7 typecheck, lint/format, policy routing, and doctor. Preserved 20-cold/30-warm evidence remains bound to exact product SHA 3a526415."
+  note: "Verified frozen head 158fd2432: current-main CI fix and unchanged exact supervisor optimization pass the rerun matrix; strict 20-cold/30-warm benchmark evidence remains valid for product SHA 3a526415."
   attempts: 0
 quality_review:
   state: "pass"
-  provenance: "human_supplied"
-  updated_at: "2026-08-04T00:56:32.424Z"
-  updated_by: "HUMAN"
-  note: "The exact 3a526415 semantic change and b80f2e98 lifecycle-repair target remain acceptable: one redundant managed Git observation is removed without weakening snapshot freshness or recovery invariants, and all unchanged latency gates pass."
-  evaluated_sha: "b80f2e98f136add92e2cd143da7d5731dae64519"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-04T01:26:00.848Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "7a08766d8aa805b7995d2ea9bf1b794a7f8797fa"
   blueprint_digest: "5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd"
   evidence_refs:
-    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-005631358-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-005631358-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/1dac1e2dcf07822e04b34dd9fe20e77bdebb3bcf690f832340540ddd71e0930e.md"
-    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-005631358-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-005631358-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-012600410-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-012600410-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/5041c711308cbcc1d1cd049407db86540517d1e318c71cdd481697e8f8f74d46.md"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-012600410-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-012600410-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-012600410-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608040031-4XD57R/README.md"
     - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/aa173978d0fa68e8bbe130f183914fafa658d524efdf5757fb60fa5983267738.patch"
-    - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/edccf44fdbabd62a3fc5b0de2f7bf6eea79eaafb0e2d1a2c2954fbcab86b3cfe.json"
-    - ".agentplane/tasks/202608040031-4XD57R/verification/20260804005555151-9c2bc69f16cd56bd.json"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/19e25dd2d25e4dbc3eed1d002ab7e832d81b0af6b2721700fc62a5a1bb24578b.json"
     - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/db30dd99829741a38a1a36a49b04dbba810d52219e13c1d30bb78b397f0c2044.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
-    - ".agentplane/tasks/202608040031-4XD57R/evidence/supervisor-latency-3a526415d.json"
-    - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
-    - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
-    - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts"
   findings:
-    - "Authoritative snapshot dirty paths are reused only when available; the live Git status fallback remains fail-closed."
-    - "The final sequential observation order avoids the rejected cold-start I/O contention while preserving blueprint and fingerprint semantics."
+    - "The product diff reuses an authoritative dirty-path observation, reduces managed Git observations from 8 to 7, and preserves invalidation and side-effect-safety coverage."
+    - "The only hosted failure was an independent UTC calendar-date test flake now fixed and merged on main; the synchronized head passes the focused token-usage test, release qualification contract, critical CLI 79/79, TS7 typecheck, lint, format, routing policy, and doctor."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -162,8 +158,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified committed sync head a53d59cbb: current-main flake fix plus unchanged measured performance implementation pass focused token-usage, qualification contract, critical CLI 79/79, TS7 typecheck, lint/format, policy routing, and doctor. Preserved 20-cold/30-warm evidence remains bound to exact product SHA 3a526415."
+  -
+    type: "verify"
+    at: "2026-08-04T01:25:56.309Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified frozen head 158fd2432: current-main CI fix and unchanged exact supervisor optimization pass the rerun matrix; strict 20-cold/30-warm benchmark evidence remains valid for product SHA 3a526415."
 doc_version: 3
-doc_updated_at: "2026-08-04T01:24:46.384Z"
+doc_updated_at: "2026-08-04T01:26:00.871Z"
 doc_updated_by: "CODER"
 description: "Extend the packed supervisor benchmark with deterministic per-command Git histograms, use those measurements to identify and remove only duplicated direct-workflow observations whose values are already covered by the same command context or route snapshot, preserve all stale-state and side-effect-safety invariants, and restore every cold and warm median and p95 surface below the unchanged +10% v0.6.26 ceiling."
 sections:
@@ -313,6 +315,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-04T01:25:56.309Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified frozen head 158fd2432: current-main CI fix and unchanged exact supervisor optimization pass the rerun matrix; strict 20-cold/30-warm benchmark evidence remains valid for product SHA 3a526415.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T01:24:46.384Z, excerpt_hash=sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040031-4XD57R-attribute-and-remove-redundant-git-observations/.agentplane/tasks/202608040031-4XD57R/blueprint/resolved-snapshot.json
+    - old_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+    - current_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608040031-4XD57R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -337,6 +369,10 @@ sections:
     - Observation: Committed base-sync metadata changes do not alter the measured supervisor implementation or its benchmark contract.
       Impact: Fresh verification now covers the published candidate ancestry required for hosted checks.
       Resolution: Mapped the rerun results and preserved benchmark artifact to the committed synchronized head.
+
+    - Observation: All post-sync implementation changes are inherited from already-reviewed main or managed task artifacts; supervisor production diff is unchanged.
+      Impact: Head 158fd2432 is suitable for fresh semantic quality review and pre-merge closure.
+      Resolution: Recorded verification against the frozen committed head without altering product code.
 extensions:
   implementation_commit:
     hash: "b80f2e98f136add92e2cd143da7d5731dae64519"
@@ -502,6 +538,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-04T01:25:56.309Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified frozen head 158fd2432: current-main CI fix and unchanged exact supervisor optimization pass the rerun matrix; strict 20-cold/30-warm benchmark evidence remains valid for product SHA 3a526415.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T01:24:46.384Z, excerpt_hash=sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040031-4XD57R-attribute-and-remove-redundant-git-observations/.agentplane/tasks/202608040031-4XD57R/blueprint/resolved-snapshot.json
+- old_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+- current_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608040031-4XD57R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -530,6 +596,10 @@ DecisionContextRef:
 - Observation: Committed base-sync metadata changes do not alter the measured supervisor implementation or its benchmark contract.
   Impact: Fresh verification now covers the published candidate ancestry required for hosted checks.
   Resolution: Mapped the rerun results and preserved benchmark artifact to the committed synchronized head.
+
+- Observation: All post-sync implementation changes are inherited from already-reviewed main or managed task artifacts; supervisor production diff is unchanged.
+  Impact: Head 158fd2432 is suitable for fresh semantic quality review and pre-merge closure.
+  Resolution: Recorded verification against the frozen committed head without altering product code.
 
 ## Token Usage
 
