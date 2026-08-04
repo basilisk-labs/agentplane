@@ -1,0 +1,24 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-04T12:34:33.815Z",
+    "updated_by": "TESTER",
+    "note": "Final v0.7.2 candidate and archived-incident state verified"
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608041057-WZRXEX/verification/20260804123433815-00d50ef96f8aa9df.json",
+      "sha256": "sha256:496871995833f4c4ab5c8dbb79a6f0960f17f5230253806c1fed30025317b57f"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -28,29 +28,29 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-04T12:30:23.011Z"
+  updated_at: "2026-08-04T12:35:18.316Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "f3000de59d32d425f4dda4eeea91cb8882e1872e"
+  evaluated_sha: "8dc72497a25202a38b50ea09a8332a0cb59c7dcf"
   blueprint_digest: "aeb49d43a5ae3d93afd65fe4b524d5d0cc0c6971cd12c8db68df52ad369db54e"
   evidence_refs:
-    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-123022607-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-123022607-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/e4b3fba160fcfbf0f7b736e30187a0324611ecff75d8600a031a470c0cc73381.md"
-    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-123022607-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-123022607-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-123022607-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-123517930-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-123517930-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/870b0ad7cf8164aef9617e892e430e9197c3fbdfea8bd9e6e0800342c9f42f15.md"
+    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-123517930-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-123517930-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-123517930-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608041057-WZRXEX/README.md"
     - ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/cf081c6680303ba29542f6c493b6ccd9764c0271fcec900f4d29e436cfbfc5ac.patch"
-    - ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/cd76deca85d62718f70a4ef643305b68731cf69e1a25047119d1265bf5a0d0d8.json"
-    - ".agentplane/tasks/202608041057-WZRXEX/verification/20260804122847188-870ef60851efaded.json"
+    - ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/834893b971820ad8c47d915f2f111d2efd25352ba0fafc2595cb6688f27f91b5.json"
+    - ".agentplane/tasks/202608041057-WZRXEX/verification/20260804123433815-00d50ef96f8aa9df.json"
     - ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/c3981f48ab4123e848f66dd800ec70f92551f0b0ac6087038d3919927f332efe.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "Exact release-commit task identity selects 202608021232-YCNM1S before version fallback; version fallback remains available when no commit identity exists; multiple unresolved candidates remain a hard ambiguity."
+    - "The exact-commit selector remains unique-first and fail-closed; current non-task tree is byte-identical to the fully prepublish-tested f3000de59 candidate; the resolved finding is now task-local while INC-20260804-01 remains archived."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -135,7 +135,7 @@ events:
     state: "ok"
     note: "Final v0.7.2 candidate and archived-incident state verified"
 doc_version: 3
-doc_updated_at: "2026-08-04T12:34:35.119Z"
+doc_updated_at: "2026-08-04T12:35:18.338Z"
 doc_updated_by: "CODER"
 description: "Make post-publish evidence select the unique release task touched by the exact release commit before falling back to version-wide registry matching; add regression coverage for multiple DONE release tasks sharing one version, record v0.7.1 publication evidence, and ship the corrective patch release."
 sections:
