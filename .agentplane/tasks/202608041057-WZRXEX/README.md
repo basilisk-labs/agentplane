@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -30,29 +30,29 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-04T12:35:18.316Z"
+  updated_at: "2026-08-04T12:45:34.071Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "8dc72497a25202a38b50ea09a8332a0cb59c7dcf"
-  blueprint_digest: "aeb49d43a5ae3d93afd65fe4b524d5d0cc0c6971cd12c8db68df52ad369db54e"
+  evaluated_sha: "797de145457d7ef41951b3e6dd13360177ed8ffa"
+  blueprint_digest: "6c6523eb8d4d48fa222e00cecb201f045f2edb5b88176ba91e3c60253c688fa6"
   evidence_refs:
-    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-123517930-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-123517930-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/870b0ad7cf8164aef9617e892e430e9197c3fbdfea8bd9e6e0800342c9f42f15.md"
-    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-123517930-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-123517930-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-123517930-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-124533682-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-124533682-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/3bd66ff0bb3575297bbef5e0b86456f88a89c6d472e8066917bdc55fa5e934ea.md"
+    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-124533682-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-124533682-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-124533682-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608041057-WZRXEX/README.md"
-    - ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/cf081c6680303ba29542f6c493b6ccd9764c0271fcec900f4d29e436cfbfc5ac.patch"
-    - ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/834893b971820ad8c47d915f2f111d2efd25352ba0fafc2595cb6688f27f91b5.json"
-    - ".agentplane/tasks/202608041057-WZRXEX/verification/20260804123433815-00d50ef96f8aa9df.json"
-    - ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/c3981f48ab4123e848f66dd800ec70f92551f0b0ac6087038d3919927f332efe.json"
+    - ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/87e96bd439fabc13f9dab3c4934fc20e821ad9676a5afaf5fb6794ddb81453ac.patch"
+    - ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/8e1e16359bef4a192a77427044b7c948187657e12c4e0aa4f3528372529d33ba.json"
+    - ".agentplane/tasks/202608041057-WZRXEX/verification/20260804124453273-a347d04f52a022f9.json"
+    - ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/1f3ab000c7900312d8e1a5f8967c6167584239c3a74d9f6ac1a6ad59ed128e61.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "The exact-commit selector remains unique-first and fail-closed; current non-task tree is byte-identical to the fully prepublish-tested f3000de59 candidate; the resolved finding is now task-local while INC-20260804-01 remains archived."
+    - "Current task metadata now supplies task_kind=release and mutation_scope=release, so registry matching for v0.7.2 returns WZRXEX; the exact release-commit intersection excludes YCNM1S even though that prior task README is touched in the same merge."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -153,7 +153,7 @@ events:
     state: "ok"
     note: "P1 prior-release evidence collision is fixed and verified"
 doc_version: 3
-doc_updated_at: "2026-08-04T12:44:54.729Z"
+doc_updated_at: "2026-08-04T12:45:34.093Z"
 doc_updated_by: "CODER"
 description: "Make post-publish evidence select the unique release task touched by the exact release commit before falling back to version-wide registry matching; add regression coverage for multiple DONE release tasks sharing one version, record v0.7.1 publication evidence, and ship the corrective patch release."
 sections:

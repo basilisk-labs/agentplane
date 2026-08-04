@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202608041057-WZRXEX",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-04T12:45:34.071Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "797de145457d7ef41951b3e6dd13360177ed8ffa",
+  "blueprint_digest": "6c6523eb8d4d48fa222e00cecb201f045f2edb5b88176ba91e3c60253c688fa6",
+  "findings": [
+    "Current task metadata now supplies task_kind=release and mutation_scope=release, so registry matching for v0.7.2 returns WZRXEX; the exact release-commit intersection excludes YCNM1S even though that prior task README is touched in the same merge."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/87e96bd439fabc13f9dab3c4934fc20e821ad9676a5afaf5fb6794ddb81453ac.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

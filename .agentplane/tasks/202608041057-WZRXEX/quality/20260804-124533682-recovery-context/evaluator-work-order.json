@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608041057-WZRXEX-12b15918d57b8d0ae1386bd4",
+  "prepared_at": "2026-08-04T12:45:33.682Z",
+  "task": {
+    "id": "202608041057-WZRXEX",
+    "revision": 18,
+    "objective": "Disambiguate hosted release evidence task selection\n\nMake post-publish evidence select the unique release task touched by the exact release commit before falling back to version-wide registry matching; add regression coverage for multiple DONE release tasks sharing one version, record v0.7.1 publication evidence, and ship the corrective patch release.",
+    "acceptance_criteria": [
+      "- In scope: Make post-publish evidence select the unique release task touched by the exact release commit before falling back to version-wide registry matching; add regression coverage for multiple DONE release tasks sharing one version, record v0.7.1 publication evidence, and ship the corrective patch release.\n- Out of scope: unrelated refactors not required for \"Disambiguate hosted release evidence task selection\".",
+      "Patch-release plan: version=0.7.2, tag=v0.7.2. 1. Reproduce the hosted publish evidence ambiguity when several DONE release tasks mention one version. 2. Change release-task selection to prefer the unique exact-release-commit task candidate, intersected with version-qualified release tasks, and retain fail-closed behavior for genuine ambiguity. 3. Add focused unit/integration regressions covering unique commit match, multiple registry matches, fallback, and ambiguity. 4. Apply the successful v0.7.1 publish-result to task 202608021232-YCNM1S so its canonical README records hosted publication while preserving unavailable token provenance. 5. Run targeted tests, release contracts, full prepublish, and independent evaluator on the final candidate. 6. Merge through the integration queue, publish v0.7.2 for the exact merged SHA, and verify npm, tag, GitHub Release, clean install, postpublish audit, evidence follow-up, main parity, and branch cleanup. Stop on product drift beyond this repair, tag/version drift, active incidents, or any failed required gate.",
+      "1. Run `bun test packages/agentplane/src/commands/release/release-task-evidence-script.test.ts`. Expected: exact-commit task selection, version fallback, and genuine ambiguity cases pass.\n2. Run the `prepare` command against the archived v0.7.1 `publish-result.json`. Expected: task `202608021232-YCNM1S` is selected despite other DONE v0.7.1 release tasks.\n3. Run `bun run ci:contract` and `bun run release:prepublish`. Expected: all blocking contracts and release gates pass on the final v0.7.2 candidate.\n4. Verify task `202608021232-YCNM1S` contains hosted publish evidence for SHA `f519d9518c34226075a61d2b01b936127a77e587` and retains explicit unavailable token provenance.\n5. After merge and publish, verify npm `latest` for all three packages is `0.7.2`, tag and GitHub Release `v0.7.2` point to the exact merged SHA, a clean install reports `0.7.2`, postpublish audit passes from the workflow artifact, release evidence follow-up succeeds, main is clean and matches origin, and merged branches/worktrees are removed."
+    ]
+  },
+  "evaluated_sha": "797de145457d7ef41951b3e6dd13360177ed8ffa",
+  "diff_base_sha": "f519d9518c34226075a61d2b01b936127a77e587",
+  "blueprint_digest": "6c6523eb8d4d48fa222e00cecb201f045f2edb5b88176ba91e3c60253c688fa6",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608041057-WZRXEX/quality/20260804-124533682-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:746b19c28c205356b2cf651ad046dd2d495b686adee0b2ea50325b8d3f3b6dca",
+    "prompt_path": ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/3bd66ff0bb3575297bbef5e0b86456f88a89c6d472e8066917bdc55fa5e934ea.md",
+    "result_schema_path": ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608041057-WZRXEX/README.md",
+      "sha256": "sha256:1e04b6bc99656f6587ee57da07b5f2fc5f2dec7981ea09edb5c819bc1b991f65",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/87e96bd439fabc13f9dab3c4934fc20e821ad9676a5afaf5fb6794ddb81453ac.patch",
+      "sha256": "sha256:87e96bd439fabc13f9dab3c4934fc20e821ad9676a5afaf5fb6794ddb81453ac",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/8e1e16359bef4a192a77427044b7c948187657e12c4e0aa4f3528372529d33ba.json",
+      "sha256": "sha256:8e1e16359bef4a192a77427044b7c948187657e12c4e0aa4f3528372529d33ba",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608041057-WZRXEX/verification/20260804124453273-a347d04f52a022f9.json",
+      "sha256": "sha256:7f0e472aea455668e47b1e0d3db1caf672803bebeb80cb9436c907a0839b8b3a",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/1f3ab000c7900312d8e1a5f8967c6167584239c3a74d9f6ac1a6ad59ed128e61.json",
+      "sha256": "sha256:1f3ab000c7900312d8e1a5f8967c6167584239c3a74d9f6ac1a6ad59ed128e61",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:94a0fcabe77fef35ff6f32edea35ce0da7754a9f7c740a148c3d24a1b96dfa8d",
+      "required": true
+    }
+  ]
+}
