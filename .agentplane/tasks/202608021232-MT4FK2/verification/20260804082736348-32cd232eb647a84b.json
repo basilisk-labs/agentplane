@@ -1,0 +1,15 @@
+{
+  "details": "Command: git worktree list --porcelain; git fetch origin --prune; git for-each-ref; gh pr list --state open; git status; git stash list; git rev-parse archive/agentplane-loops-final-20260804^{}; agentplane --help; git worktree prune --dry-run -v\nResult: pass\nEvidence: exactly 6 protected/active control worktrees remain; 11 recorded obsolete remote refs and all obsolete local candidates are absent; open PRs are exactly #4752 and #4772; base and outer tracked state are clean; both protected base untracked artifacts and all 39 stashes remain; loops archive resolves to 14d0bd8f5; canonical help exposes task advance/task run and no loop command; worktree dry-run reports no stale entries.\nScope: AgentPlane branch/worktree cleanup and preservation boundaries before v0.7.1.",
+  "digest": "sha256:32cd232eb647a84bfd18f70fa7c6ded60e911ee4832bf55c9f2bb6dca3a9057c",
+  "implementation_sha": "5b9ceeddc76b5e3b524f45d3ed7edd8ba2413d36",
+  "kind": "task_verification_record",
+  "note": "Branch and worktree cleanup verified against current local and hosted state.",
+  "recorded_at": "2026-08-04T08:27:36.348Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `git worktree list --porcelain` in the release control checkout. Expected: only main, the protected detached integration checkout, BLOCKED 72A55V, DOING EH2A15, this cleanup task, and DOING RWW0ND remain.\n2. Fetch/prune origin, list local and remote refs, and run `gh pr list --state open`. Expected: `agentplane-loops` and every recorded obsolete branch are absent; only cleanup PR #4772 and deferred Dependabot PR #4752 remain open.\n3. Inspect base and outer checkout status plus `git stash list`. Expected: no tracked changes were introduced, the two protected base untracked artifacts remain, and all 39 pre-existing stashes remain untouched.\n4. Resolve `archive/agentplane-loops-final-20260804^{}` and inspect the canonical CLI help. Expected: the archive resolves to loop head 14d0bd8f5, current main exposes `task advance` and `task run`, and no loop command is part of the canonical release surface.\n5. Run `git worktree prune --dry-run -v` and inspect retained branch/task states. Expected: no stale worktree registrations remain and active, blocked, dirty, release-maintenance, open-PR, or uniquely unassimilated refs were not deleted.",
+  "scope_digest": "sha256:1dd6d19afd83c13b4a2bd1c48d8e5e54513e1d1bd0e89c4695f7478a452691b6",
+  "task_id": "202608021232-MT4FK2",
+  "verification_command": "agentplane verify 202608021232-MT4FK2 --ok --by TESTER",
+  "verifier": "TESTER"
+}

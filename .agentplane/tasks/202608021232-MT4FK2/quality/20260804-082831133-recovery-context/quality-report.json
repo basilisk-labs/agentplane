@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021232-MT4FK2",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-04T08:28:31.724Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "5b9ceeddc76b5e3b524f45d3ed7edd8ba2413d36",
+  "blueprint_digest": "4abb6f221634ef94f3f6e1a7feac654c2bf336a398b79762418beec9cc0e3284",
+  "findings": [
+    "Provider-merged cleanup used the framework-owned path, while closed superseded qualification and experimental refs were removed only after hosted-state and replacement evidence were recorded.",
+    "The loops branch had no open PR and is superseded by the canonical shared task supervisor; exact head 14d0bd8f5 remains locally recoverable through an annotated archive tag.",
+    "Active, blocked, dirty, maintenance, open-PR, stash, and uniquely unassimilated evidence boundaries remain intact."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021232-MT4FK2/quality/objects/sha256/0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

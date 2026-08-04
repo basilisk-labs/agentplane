@@ -15,14 +15,14 @@ Classify local and remote branches by merged state, unique commits, active workt
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Branch and worktree cleanup verified against current local and hosted state.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-04T05:09:57.825Z
+- Updated: 2026-08-04T05:10:20.020Z
 - Branch: task/202608021232-MT4FK2/audit-and-remove-obsolete-agentplane-branches-be
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
