@@ -81,6 +81,8 @@
  packages/recipes/src/index.ts                      |   2 +-
  packages/spec/examples/acr.json                    |   4 +-
  packages/testkit/package.json                      |   2 +-
+ .../baselines/v0.7-compatibility-candidate.json    |   8 +-
+ .../check-compatibility-contract-baseline.mjs      |   8 +-
  website/static/img/social/docs/releases/v0.7.1.png | Bin 0 -> 52228 bytes
  website/static/img/social/manifest.json            |   8 +
- 85 files changed, 428 insertions(+), 1743 deletions(-)
+ 87 files changed, 436 insertions(+), 1751 deletions(-)
