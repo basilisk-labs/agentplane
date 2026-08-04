@@ -8,10 +8,10 @@
   "pr_number": 4769,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4769",
   "pre_merge_closure": {
-    "basis_commit": "b80f2e98f136add92e2cd143da7d5731dae64519",
+    "basis_commit": "8f2069614417e21832bc5b8c8c834aa946e32a6b",
     "branch": "task/202608040031-4XD57R/attribute-and-remove-redundant-git-observations",
     "pr_number": 4769,
-    "recorded_at": "2026-08-04T00:51:42.942Z",
+    "recorded_at": "2026-08-04T00:57:26.679Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
