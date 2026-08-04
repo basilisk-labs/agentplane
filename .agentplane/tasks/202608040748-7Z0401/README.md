@@ -4,7 +4,7 @@ title: "Harden stale runner reclaim regression after semantic plan enforcement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -25,17 +25,17 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-04T07:55:45.213Z"
+  updated_at: "2026-08-04T07:57:44.184Z"
   updated_by: "TESTER"
   note: |-
     Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts; bun run typecheck; node .agentplane/policy/check-routing.mjs
     Result: pass
-    Evidence: 4/4 focused tests, TypeScript 7 typecheck, and routing passed; the intervening commit contains only task-scoped verification/PR artifacts.
-    Scope: current branch head including stale reclaim regression evidence.
+    Evidence: 4/4 focused tests passed against implementation fea0506ca; both claimed and unclaimed nonexistent-PID paths explicitly reject E_INTERNAL; typecheck and routing passed.
+    Scope: implementation fea0506ca and stale runner reclaim recovery contract.
   attempts: 0
 commit:
-  hash: "b39920e7dc097306af9c2f3a065803309348a9c4"
-  message: "🐛 7Z0401 recovery: prove stale runner reclaim"
+  hash: "fea0506ca8b6f3d23edc5c1a471009779629976e"
+  message: "🐛 7Z0401 recovery: assert claimed reclaim safety"
 comments:
   -
     author: "CODER"
@@ -43,6 +43,9 @@ comments:
   -
     author: "CODER"
     body: "Start: implementation committed; stale runner reclaim now has valid semantic lifecycle fixtures and typed E_RUNTIME proof without E_INTERNAL."
+  -
+    author: "CODER"
+    body: "Start: refreshed implementation head adds explicit no-E_INTERNAL proof for both claimed and unclaimed stale runner recovery."
 events:
   -
     type: "status"
@@ -78,8 +81,25 @@ events:
       Result: pass
       Evidence: 4/4 focused tests, TypeScript 7 typecheck, and routing passed; the intervening commit contains only task-scoped verification/PR artifacts.
       Scope: current branch head including stale reclaim regression evidence.
+  -
+    type: "status"
+    at: "2026-08-04T07:57:13.315Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Start: refreshed implementation head adds explicit no-E_INTERNAL proof for both claimed and unclaimed stale runner recovery."
+  -
+    type: "verify"
+    at: "2026-08-04T07:57:44.184Z"
+    author: "TESTER"
+    state: "ok"
+    note: |-
+      Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts; bun run typecheck; node .agentplane/policy/check-routing.mjs
+      Result: pass
+      Evidence: 4/4 focused tests passed against implementation fea0506ca; both claimed and unclaimed nonexistent-PID paths explicitly reject E_INTERNAL; typecheck and routing passed.
+      Scope: implementation fea0506ca and stale runner reclaim recovery contract.
 doc_version: 3
-doc_updated_at: "2026-08-04T07:55:46.349Z"
+doc_updated_at: "2026-08-04T07:57:45.086Z"
 doc_updated_by: "CODER"
 description: "Reproduce GitHub issue #4773 on current main with a valid task and stale runner PID, repair the stale reclaim regression fixture or implementation as required, and prove deterministic typed recovery without E_INTERNAL."
 sections:
@@ -164,6 +184,39 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-04T07:57:44.184Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts; bun run typecheck; node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: 4/4 focused tests passed against implementation fea0506ca; both claimed and unclaimed nonexistent-PID paths explicitly reject E_INTERNAL; typecheck and routing passed.
+    Scope: implementation fea0506ca and stale runner reclaim recovery contract.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T07:57:13.315Z, excerpt_hash=sha256:f4f3febeec3e46d38aded33c3a9b762fafa94225aab2ab481357dc7f1a1db38d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040748-7Z0401-harden-stale-runner-reclaim-regression-after-sem/.agentplane/tasks/202608040748-7Z0401/blueprint/resolved-snapshot.json
+    - old_digest: 9e0586971f7c3d905cdd8e94ec512e54ecababb1c7eaac0bd3c93276c097d8ec
+    - current_digest: 9e0586971f7c3d905cdd8e94ec512e54ecababb1c7eaac0bd3c93276c097d8ec
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608040748-7Z0401
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608040748-7Z0401
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -187,6 +240,10 @@ sections:
     - Observation: Verification refreshed against the current committed branch head after task evidence was recorded.
       Impact: The verification identity now covers the route-visible implementation head without rerunning provider qualification.
       Resolution: Use a task-artifact classified subject for this refreshed verification commit.
+
+    - Observation: Both stale-runner branches now explicitly assert absence of E_INTERNAL after a valid semantic plan and DOING transition.
+      Impact: Issue #4773 is protected by executable current-main regression evidence.
+      Resolution: Accept implementation fea0506ca for independent quality review and hosted verification.
 extensions:
   workflow_route_baseline:
     start_head_sha: "1f0024cf22d743bfdeb7a5554ae306b0fe1b4680"
@@ -284,6 +341,39 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-04T07:57:44.184Z — VERIFY — ok
+
+By: TESTER
+
+Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts; bun run typecheck; node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: 4/4 focused tests passed against implementation fea0506ca; both claimed and unclaimed nonexistent-PID paths explicitly reject E_INTERNAL; typecheck and routing passed.
+Scope: implementation fea0506ca and stale runner reclaim recovery contract.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T07:57:13.315Z, excerpt_hash=sha256:f4f3febeec3e46d38aded33c3a9b762fafa94225aab2ab481357dc7f1a1db38d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040748-7Z0401-harden-stale-runner-reclaim-regression-after-sem/.agentplane/tasks/202608040748-7Z0401/blueprint/resolved-snapshot.json
+- old_digest: 9e0586971f7c3d905cdd8e94ec512e54ecababb1c7eaac0bd3c93276c097d8ec
+- current_digest: 9e0586971f7c3d905cdd8e94ec512e54ecababb1c7eaac0bd3c93276c097d8ec
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608040748-7Z0401
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608040748-7Z0401
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -311,3 +401,7 @@ DecisionContextRef:
 - Observation: Verification refreshed against the current committed branch head after task evidence was recorded.
   Impact: The verification identity now covers the route-visible implementation head without rerunning provider qualification.
   Resolution: Use a task-artifact classified subject for this refreshed verification commit.
+
+- Observation: Both stale-runner branches now explicitly assert absence of E_INTERNAL after a valid semantic plan and DOING transition.
+  Impact: Issue #4773 is protected by executable current-main regression evidence.
+  Resolution: Accept implementation fea0506ca for independent quality review and hosted verification.
