@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The implementation SHA 3ebe0701881e7bba093b3f76c8047033687b3eaf passes the complete canonical release barrier, including 101 of 101 base chunks, coverage suites, installed migration, tarball, architecture, compatibility, and release-critical checks.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021232-YCNM1S/quality/objects/sha256/9f258652dbdbd7c1641f09358833ab26536a9b84523a19f29ec36726dc55de92.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Direct comparison with frozen provider subject de94bf9d91de1a8a854ad358968e8193e9803342 confirms no AgentPlane runtime, core source, qualification, or benchmark drift; the single 50-run and 55-episode gate remains valid without retry.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021232-YCNM1S/quality/objects/sha256/9f258652dbdbd7c1641f09358833ab26536a9b84523a19f29ec36726dc55de92.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "The external v0.7.0 audit P0 findings are closed by executable v0.7.1 contracts; token usage is reported only when supervisor provenance exists, and missing journal data remains explicitly unavailable instead of inferred.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021232-YCNM1S/quality/objects/sha256/9f258652dbdbd7c1641f09358833ab26536a9b84523a19f29ec36726dc55de92.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
