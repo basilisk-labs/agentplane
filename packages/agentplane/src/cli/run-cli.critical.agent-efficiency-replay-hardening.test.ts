@@ -268,25 +268,28 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
       driverPath,
       'process.stderr.write("RF04_DRIVER_ERROR:CODEX_EXIT\\n");\nprocess.exitCode = 1;\n',
     );
+    const captureOptions = {
+      allowTestTargets: true,
+      anchor: replay.REPLAY_ANCHOR_COMMIT,
+      driverPath,
+      evidenceDirectory,
+      outputPath,
+      pilot: true,
+      registryPath: path.join(REPO_ROOT, "scripts/bench/agent-efficiency-fixtures.json"),
+      replace: false,
+      runs: replay.MINIMUM_REPLAY_RUNS,
+      sourceDirectory,
+    };
     try {
       expect(() =>
         runWithReplayCleanupRetry(
-          () =>
-            capture.captureAgentEfficiencyReplay({
-              allowTestTargets: true,
-              anchor: replay.REPLAY_ANCHOR_COMMIT,
-              driverPath,
-              evidenceDirectory,
-              outputPath,
-              pilot: true,
-              registryPath: path.join(REPO_ROOT, "scripts/bench/agent-efficiency-fixtures.json"),
-              replace: false,
-              runs: replay.MINIMUM_REPLAY_RUNS,
-              sourceDirectory,
-            }),
+          () => capture.captureAgentEfficiencyReplay(captureOptions),
           cleanupFailedReplayCaptures,
         ),
       ).toThrow("direct/run-01 replay driver failed with exit 1; diagnostic=CODEX_EXIT");
+      expect(() => capture.captureAgentEfficiencyReplay(captureOptions)).toThrow(
+        "this exact RF-04 harness generation already failed",
+      );
     } finally {
       rmSync(driverPath, { force: true });
     }
@@ -294,6 +297,20 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
     expect(existsSync(evidenceDirectory)).toBe(false);
     expect(existsSync(outputPath)).toBe(false);
     expect(existsSync(path.join(cacheRoot, "rf04-replay-transaction.json"))).toBe(false);
+    const failureFiles = readdirSync(root).filter((name) => name.startsWith(".capture-failure-"));
+    expect(failureFiles).toHaveLength(1);
+    expect(JSON.parse(readFileSync(path.join(root, failureFiles[0]), "utf8"))).toMatchObject({
+      artifact_kind: "rf04_capture_failure_v1",
+      capture_mode: "pilot",
+      completed_provider_episodes: 0,
+      completed_runs: [],
+      diagnostic_code: "CODEX_EXIT",
+      failed_run: "direct/run-01",
+      failed_run_expected_provider_episodes: 1,
+      failed_run_provider_episodes_observed: null,
+      failure_class: "process_exit",
+      schema_version: 1,
+    });
     expect(
       readdirSync(cacheRoot)
         .filter((name) => name.startsWith("rf04-replay-"))
