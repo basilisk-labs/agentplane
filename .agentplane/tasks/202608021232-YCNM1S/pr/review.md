@@ -24,7 +24,7 @@ Created: 2026-08-04T08:36:16.971Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-04T08:36:16.971Z
+- Updated: 2026-08-04T09:15:15.710Z
 - Branch: task/202608021232-YCNM1S/qualify-and-publish-agentplane-v0-7-1
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -87,9 +87,10 @@ Created: 2026-08-04T08:36:16.971Z
  .../logs/supervisor-latency.log                    |   4 -
  docs/releases/v0.7.1.md                            | 337 +++++++++++++++++++
  .../src/cli/run-cli.core.agent-mode.test.ts        |  11 +-
+ .../run-cli.core.direct-task-supervision.test.ts   |  15 +
  website/static/img/social/docs/releases/v0.7.1.png | Bin 0 -> 52228 bytes
  website/static/img/social/manifest.json            |   8 +
- 60 files changed, 357 insertions(+), 1701 deletions(-)
+ 61 files changed, 372 insertions(+), 1701 deletions(-)
 ```
 
 </details>
