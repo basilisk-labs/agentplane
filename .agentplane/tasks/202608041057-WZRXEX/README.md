@@ -23,9 +23,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-04T13:09:19.816Z"
-  updated_by: "DEUS"
-  note: "Hosted publish confirmed for v0.7.2."
+  updated_at: "2026-08-04T12:47:50.392Z"
+  updated_by: "TESTER"
+  note: "P1 fix verified against refreshed release blueprint snapshot"
   attempts: 0
 quality_review:
   state: "pass"

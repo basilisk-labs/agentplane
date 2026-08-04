@@ -76,14 +76,14 @@
     }
   },
   "release_version_delta": {
-    "source_task": "202608041057-WZRXEX",
+    "source_task": "202608041322-M26FS0",
     "classification": "planned_version_parity",
     "from_version": "0.6.24",
-    "to_version": "0.7.2",
+    "to_version": "0.7.3",
     "section": "package_manifests",
     "from_sha256": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
-    "to_sha256": "5f78c647868acc4841b2cddd1f1e7b62e8930b7e24b4c266ad2c49891a9cbc6f",
-    "surface_sha256": "a3177aeff4ba0735966eb9864a9fe10b1ae5f305e08a0c705c712ad081b5b3c6",
+    "to_sha256": "62af981925c53c759ca64ad783ec0d0b821fc10324e1270acc4bb8bea4da5fc3",
+    "surface_sha256": "6414a03920d7d20425c6bddc219c4b21ba704dd01a9a6f6d503702c98075723b",
     "allowed_json_paths": [
       "$.package_manifests[0].dependencies.@agentplaneorg/core",
       "$.package_manifests[0].dependencies.@agentplaneorg/recipes",

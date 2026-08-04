@@ -5,7 +5,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { afterEach, describe, expect, it } from "vitest";
-import { renderTaskReadme } from "@agentplaneorg/core/tasks";
+import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 const execFileAsync = promisify(execFile);
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/release-task-evidence.mjs");
@@ -44,6 +44,9 @@ async function writeTaskReadme(
   taskId: string,
   opts: {
     verificationState?: "pending" | "ok" | "needs_rework";
+    verificationUpdatedAt?: string | null;
+    verificationUpdatedBy?: string | null;
+    verificationNote?: string | null;
     verificationText?: string;
     docUpdatedAt?: string;
     title?: string;
@@ -110,9 +113,9 @@ async function writeTaskReadme(
       verification: {
         state: verificationState,
         attempts: 2,
-        updated_at: null,
-        updated_by: null,
-        note: null,
+        updated_at: opts.verificationUpdatedAt ?? null,
+        updated_by: opts.verificationUpdatedBy ?? null,
+        note: opts.verificationNote ?? null,
       },
       comments: [],
       events: [],
@@ -553,6 +556,10 @@ describe("release-task-evidence script", () => {
     const root = await initRepo();
     const taskId = "202604191130-JWBEB7";
     const readmePath = await writeTaskReadme(root, taskId, {
+      verificationState: "ok",
+      verificationUpdatedAt: "2026-04-19T10:00:00.000Z",
+      verificationUpdatedBy: "TESTER",
+      verificationNote: "Candidate verification passed.",
       verificationText: [
         "<!-- BEGIN VERIFICATION RESULTS -->",
         "### Candidate validation",
@@ -605,6 +612,13 @@ describe("release-task-evidence script", () => {
     expect(updated).toContain("attempts: 2");
     expect(updated).toContain('updated_by: "DEUS"');
     expect(updated).toContain('state: "ok"');
+    expect(parseTaskReadme(updated).frontmatter.verification).toEqual({
+      state: "ok",
+      attempts: 2,
+      updated_at: "2026-04-19T10:00:00.000Z",
+      updated_by: "TESTER",
+      note: "Candidate verification passed.",
+    });
 
     const repeated = await execFileAsync(
       "bun",
@@ -628,6 +642,45 @@ describe("release-task-evidence script", () => {
     const repeatedReadme = await readFile(readmePath, "utf8");
     expect(repeatedPayload.changed).toBe(false);
     expect(repeatedReadme.match(/BEGIN HOSTED PUBLISH EVIDENCE/gu)).toHaveLength(2);
+  });
+
+  it("does not turn hosted publication into a task verification record", async () => {
+    const root = await initRepo();
+    const taskId = "202604191131-PENDING";
+    const readmePath = await writeTaskReadme(root, taskId, {
+      verificationState: "pending",
+    });
+    await commitAll(root, "seed pending release task");
+    const publishResultPath = await writePublishResult(root, buildPublishResult(true));
+
+    await execFileAsync(
+      "bun",
+      [
+        SCRIPT_PATH,
+        "apply",
+        "--task-id",
+        taskId,
+        "--publish-result",
+        publishResultPath,
+        "--repo",
+        "basilisk-labs/agentplane",
+        "--author",
+        "DEUS",
+        "--at",
+        "2026-04-19T12:00:00.000Z",
+      ],
+      { cwd: root, env: process.env },
+    );
+
+    const updated = parseTaskReadme(await readFile(readmePath, "utf8")).frontmatter;
+    expect(updated.verification).toEqual({
+      state: "pending",
+      attempts: 2,
+      updated_at: null,
+      updated_by: null,
+      note: null,
+    });
+    expect(updated.sections?.Verification).toContain("Hosted publish confirmed for v0.3.15.");
   });
 
   it("audits only scoped recent DONE tasks with closure evidence and pending verification", async () => {

@@ -63,7 +63,11 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - v0.7.2 publish run 30911823733 created release-evidence PR #4777 and dispatched Core CI, but the workflow_dispatch run did not attach the required `PR verification` context to the PR head. The PR required a close/reopen repair before merge.
+    - Hosted evidence apply replaced the accepted TESTER verification metadata for task 202608041057-WZRXEX with DEUS publish metadata without creating a matching immutable verification record. The route therefore regressed from `terminal.done` to `verification_required` after the evidence merge.
+    - The 0.7.3 fix preserves canonical verification metadata, validates the exact evidence closure SHA, waits for Core CI, publishes the required GitHub Actions-owned check, and fails closed until the evidence PR is merged.
+    - Restoring the original TESTER metadata for 202608041057-WZRXEX returned the live route to `terminal.done`. Final acceptance still requires the autonomous v0.7.3 hosted release path.
 extensions:
   workflow_route_baseline:
     start_head_sha: "9d0e0089dd83487defa8950d787a5fa67f53db10"
@@ -104,3 +108,8 @@ Patch-release plan: version=0.7.3, tag=v0.7.3. 1. Preserve the v0.7.2 live evide
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- v0.7.2 publish run 30911823733 created release-evidence PR #4777 and dispatched Core CI, but the workflow_dispatch run did not attach the required `PR verification` context to the PR head. The PR required a close/reopen repair before merge.
+- Hosted evidence apply replaced the accepted TESTER verification metadata for task 202608041057-WZRXEX with DEUS publish metadata without creating a matching immutable verification record. The route therefore regressed from `terminal.done` to `verification_required` after the evidence merge.
+- The 0.7.3 fix preserves canonical verification metadata, validates the exact evidence closure SHA, waits for Core CI, publishes the required GitHub Actions-owned check, and fails closed until the evidence PR is merged.
+- Restoring the original TESTER metadata for 202608041057-WZRXEX returned the live route to `terminal.done`. Final acceptance still requires the autonomous v0.7.3 hosted release path.
