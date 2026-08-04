@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -78,10 +78,10 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-04T07:08:46.878Z"
+  updated_at: "2026-08-04T07:28:00.862Z"
 commit:
-  hash: "8b054fc3d875b4b1f1b447640ea03bf3a5120cd3"
-  message: "🧪 6BTB6D task: record exact qualification verification"
+  hash: "7467af33bccc70d99d03533453fceec5ffda17fc"
+  message: "🧪 6BTB6D task: bind typed integration verification"
 comments:
   -
     author: "TESTER"
@@ -95,6 +95,9 @@ comments:
   -
     author: "TESTER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "TESTER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -166,8 +169,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: committed integration-safe validator confirms the immutable recorded gate without provider execution."
+  -
+    type: "status"
+    at: "2026-08-04T07:28:00.862Z"
+    author: "TESTER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-04T07:26:36.523Z"
+doc_updated_at: "2026-08-04T07:28:00.886Z"
 doc_updated_by: "TESTER"
 description: "After all candidate fixes land, execute exactly one no-retry 50-run and 55-provider-episode qualification generation against the exact candidate SHA, verify quality parity, context correctness, token savings, lifecycle latency, and provenance, and classify every failed episode before any replacement generation."
 sections:
@@ -714,4 +724,4 @@ DecisionContextRef:
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-04T07:08:46.878Z`
+- Updated at: `2026-08-04T07:28:00.862Z`

@@ -8,10 +8,10 @@
   "pr_number": 4761,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4761",
   "pre_merge_closure": {
-    "basis_commit": "8b054fc3d875b4b1f1b447640ea03bf3a5120cd3",
+    "basis_commit": "7467af33bccc70d99d03533453fceec5ffda17fc",
     "branch": "task/202608021232-6BTB6D/capture-exact-v0-7-1-semantic-efficiency-evidenc",
     "pr_number": 4761,
-    "recorded_at": "2026-08-04T07:08:46.942Z",
+    "recorded_at": "2026-08-04T07:28:00.925Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
