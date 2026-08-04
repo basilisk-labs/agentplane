@@ -1,4 +1,0 @@
-$ "node" "scripts/qualification/check-v0.7.1-product-contract.mjs"
-exit_code=0 signal=none duration_ms=3133
-
-v0.7.1 product contract OK (managed run + compact external advance; normal packet <=2048 bytes)

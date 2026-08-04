@@ -1,4 +1,0 @@
-$ "node" "scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs" "--subject" "20729a30faaf80fe58511a2bef84a59d4b9e60c0" "--out" ".agentplane/tasks/202608021232-6BTB6D/evidence/final-20729a30f-deterministic/matched-cli-latency.json"
-exit_code=0 signal=none duration_ms=107207
-
-matched CLI latency: pass; baseline=0.6.26; candidate=0.7.0; failures=none; out=/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-6BTB6D-capture-exact-v0-7-1-semantic-efficiency-evidenc/.agentplane/tasks/202608021232-6BTB6D/evidence/final-20729a30f-deterministic/matched-cli-latency.json

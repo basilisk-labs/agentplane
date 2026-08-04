@@ -1,4 +1,0 @@
-$ "node" "scripts/qualification/measure-v0.7.1-supervisor-latency.mjs" "--subject" "3e51eeac9196a048955c7e56633bacd76fe317bb" "--out" ".agentplane/tasks/202608032116-QFBVB5/evidence/self-dirty-regression/supervisor-latency.json"
-exit_code=0 signal=none duration_ms=80753
-
-supervisor latency: pass; baseline=0.6.26; candidate=0.7.0; failures=none; out=/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032116-QFBVB5-keep-frozen-qualification-subject-clean-while-wr/.agentplane/tasks/202608032116-QFBVB5/evidence/self-dirty-regression/supervisor-latency.json
