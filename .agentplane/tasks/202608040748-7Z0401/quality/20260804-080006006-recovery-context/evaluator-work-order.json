@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608040748-7Z0401-c32fc101136fbd43a5a6ebbd",
+  "prepared_at": "2026-08-04T08:00:06.006Z",
+  "task": {
+    "id": "202608040748-7Z0401",
+    "revision": 12,
+    "objective": "Harden stale runner reclaim regression after semantic plan enforcement\n\nReproduce GitHub issue #4773 on current main with a valid task and stale runner PID, repair the stale reclaim regression fixture or implementation as required, and prove deterministic typed recovery without E_INTERNAL.",
+    "acceptance_criteria": [
+      "bun run typecheck",
+      "bunx vitest run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts",
+      "- In scope: Reproduce GitHub issue #4773 on current main with a valid task and stale runner PID, repair the stale reclaim regression fixture or implementation as required, and prove deterministic typed recovery without E_INTERNAL.\n- Out of scope: unrelated refactors not required for \"Harden stale runner reclaim regression after semantic plan enforcement\".",
+      "1. Reproduce the stale-runner reclaim path on current main with a semantically planned DOING task, a valid runner state, and a nonexistent PID. 2. Repair only the fixture or runtime path proven responsible, preserving fail-closed behavior when no active claim exists. 3. Add assertions that reclaim never returns E_INTERNAL, claimed stale runs become cancelled with deterministic retry guidance, and unclaimed stale runs return the documented typed conflict without writing a handoff. 4. Run the focused task-handoff suite, typecheck, routing validation, and issue-specific CLI proof. 5. Publish through branch_pr and link the verified result to GitHub issue #4773.",
+      "1. Run bunx vitest run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts. Expected: all four task handoff/recovery tests pass with a real semantic plan recorded before approval.\n2. Inspect the claimed stale-run case. Expected: a nonexistent PID is normalized, the run becomes cancelled, the active claim is retired, and next-action deterministically returns task run retry guidance.\n3. Inspect the unclaimed stale-run case. Expected: reclaim returns typed E_RUNTIME with exit 8, never E_INTERNAL, leaves the run non-terminal, and writes no handoff.\n4. Run bun run typecheck and node .agentplane/policy/check-routing.mjs. Expected: both pass without unrelated changes."
+    ]
+  },
+  "evaluated_sha": "fea0506ca8b6f3d23edc5c1a471009779629976e",
+  "diff_base_sha": "1f0024cf22d743bfdeb7a5554ae306b0fe1b4680",
+  "blueprint_digest": "9e0586971f7c3d905cdd8e94ec512e54ecababb1c7eaac0bd3c93276c097d8ec",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608040748-7Z0401/quality/20260804-080006006-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:78f4853f38914e4573b33f13104654c1224df63d0e7b96c5613a9c3533c57673",
+    "prompt_path": ".agentplane/tasks/202608040748-7Z0401/quality/objects/sha256/0e0f6be7969d1ecc1fe39bc021a0d2645996b50da39331fed7450266b6f2fdc9.md",
+    "result_schema_path": ".agentplane/tasks/202608040748-7Z0401/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608040748-7Z0401/README.md",
+      "sha256": "sha256:54c84d56424e6710e0a62e0b7120a8ca0636c6cfabce143b8573696aac4a2453",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608040748-7Z0401/quality/objects/sha256/d831878635f6af03dd8d3ac2589fccccaf312dffb15832977b3c1154fcd6a0e3.patch",
+      "sha256": "sha256:d831878635f6af03dd8d3ac2589fccccaf312dffb15832977b3c1154fcd6a0e3",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608040748-7Z0401/quality/objects/sha256/85ce1e9da513d3e53446b94b43b03a23c5a9f9bf693593dbdefe05d9995f3e8c.json",
+      "sha256": "sha256:85ce1e9da513d3e53446b94b43b03a23c5a9f9bf693593dbdefe05d9995f3e8c",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608040748-7Z0401/verification/20260804075928769-aa9051ffbcc35766.json",
+      "sha256": "sha256:b94ca03c5ac52a051240975c2f8d0cb14cccd204d13d40e47e30904299311494",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608040748-7Z0401/quality/objects/sha256/e03c4c6830d6984d3150d37d450d8566d835dda66b5d9f336cab37f75913b0fd.json",
+      "sha256": "sha256:e03c4c6830d6984d3150d37d450d8566d835dda66b5d9f336cab37f75913b0fd",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

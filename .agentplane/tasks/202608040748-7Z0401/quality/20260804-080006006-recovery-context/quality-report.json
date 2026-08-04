@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608040748-7Z0401",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-04T08:00:06.399Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "fea0506ca8b6f3d23edc5c1a471009779629976e",
+  "blueprint_digest": "9e0586971f7c3d905cdd8e94ec512e54ecababb1c7eaac0bd3c93276c097d8ec",
+  "findings": [
+    "The helper records a non-placeholder plan and asserts plan approval plus start-ready success, so the recovery assertions can no longer pass or fail before reaching reclaim.",
+    "The claimed stale run proves cancellation, active-claim retirement, deterministic retry routing, and no E_INTERNAL; the unclaimed run proves typed E_RUNTIME fail-closed behavior and no handoff."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608040748-7Z0401/quality/objects/sha256/d831878635f6af03dd8d3ac2589fccccaf312dffb15832977b3c1154fcd6a0e3.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

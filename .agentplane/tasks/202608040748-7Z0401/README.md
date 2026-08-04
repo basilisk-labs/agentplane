@@ -4,7 +4,7 @@ title: "Harden stale runner reclaim regression after semantic plan enforcement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -29,6 +29,33 @@ verification:
   updated_by: "TESTER"
   note: "Stale runner reclaim regression verified against implementation fea0506ca."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-04T08:00:06.399Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "fea0506ca8b6f3d23edc5c1a471009779629976e"
+  blueprint_digest: "9e0586971f7c3d905cdd8e94ec512e54ecababb1c7eaac0bd3c93276c097d8ec"
+  evidence_refs:
+    - ".agentplane/tasks/202608040748-7Z0401/quality/20260804-080006006-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608040748-7Z0401/quality/20260804-080006006-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608040748-7Z0401/quality/objects/sha256/0e0f6be7969d1ecc1fe39bc021a0d2645996b50da39331fed7450266b6f2fdc9.md"
+    - ".agentplane/tasks/202608040748-7Z0401/quality/20260804-080006006-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608040748-7Z0401/quality/20260804-080006006-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608040748-7Z0401/quality/20260804-080006006-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608040748-7Z0401/README.md"
+    - ".agentplane/tasks/202608040748-7Z0401/quality/objects/sha256/d831878635f6af03dd8d3ac2589fccccaf312dffb15832977b3c1154fcd6a0e3.patch"
+    - ".agentplane/tasks/202608040748-7Z0401/quality/objects/sha256/85ce1e9da513d3e53446b94b43b03a23c5a9f9bf693593dbdefe05d9995f3e8c.json"
+    - ".agentplane/tasks/202608040748-7Z0401/verification/20260804075928769-aa9051ffbcc35766.json"
+    - ".agentplane/tasks/202608040748-7Z0401/quality/objects/sha256/e03c4c6830d6984d3150d37d450d8566d835dda66b5d9f336cab37f75913b0fd.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The helper records a non-placeholder plan and asserts plan approval plus start-ready success, so the recovery assertions can no longer pass or fail before reaching reclaim."
+    - "The claimed stale run proves cancellation, active-claim retirement, deterministic retry routing, and no E_INTERNAL; the unclaimed run proves typed E_RUNTIME fail-closed behavior and no handoff."
 commit:
   hash: "fea0506ca8b6f3d23edc5c1a471009779629976e"
   message: "🐛 7Z0401 recovery: assert claimed reclaim safety"
