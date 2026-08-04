@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane v0.7.1"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -36,6 +36,33 @@ verification:
   updated_by: "TESTER"
   note: "The semantic-plan fixture rework reaches the intended closeout boundary and preserves runtime behavior."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-04T09:37:28.715Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "2237f9c6ea0e6f38d0d696ced37315a97ee93103"
+  blueprint_digest: "1c6891f873a4739c542029b7b715e76b008e2b21d912005d7d681bbaba7c0653"
+  evidence_refs:
+    - ".agentplane/tasks/202608021232-YCNM1S/quality/20260804-093728105-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021232-YCNM1S/quality/20260804-093728105-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021232-YCNM1S/quality/objects/sha256/86188616826303d7aba4f3419cd8014572a2fa436e16273556189d2894046cac.md"
+    - ".agentplane/tasks/202608021232-YCNM1S/quality/20260804-093728105-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021232-YCNM1S/quality/20260804-093728105-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608021232-YCNM1S/quality/20260804-093728105-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608021232-YCNM1S/README.md"
+    - ".agentplane/tasks/202608021232-YCNM1S/quality/objects/sha256/b9887540f626607c031161ee8ee01fd52b872683a75d7d2e2c195a6a7ab9305d.patch"
+    - ".agentplane/tasks/202608021232-YCNM1S/quality/objects/sha256/25265649f414a18b190f5044bc88796aa3077c56c67fa6f134cd2dff7ea28ecb.json"
+    - ".agentplane/tasks/202608021232-YCNM1S/verification/20260804093646151-3c00432559af9b66.json"
+    - ".agentplane/tasks/202608021232-YCNM1S/quality/objects/sha256/1e77b7aaee5e5d741a57511952139ffa64f21d6a48177d9b6df7fbb8a8dc0ca5.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.release.md"
+  findings:
+    - "Both changed tests now establish task-specific semantic plans before asserting approval or closeout behavior; expectations match the current CLI-authoritative planning contract without weakening runtime guards."
+    - "The external audit assessment is grounded in executable product, Knip, legacy inventory, provider-efficiency, and latency evidence and separates patch blockers from non-blocking 0.8 architecture work."
 commit:
   hash: "2237f9c6ea0e6f38d0d696ced37315a97ee93103"
   message: "🧪 YCNM1S release: align closeout test contract"
