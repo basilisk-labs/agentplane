@@ -6,7 +6,7 @@ Created: 2026-08-04T08:36:16.971Z
 
 - Task: `202608021232-YCNM1S`
 - Title: Qualify and publish AgentPlane v0.7.1
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608021232-YCNM1S/qualify-and-publish-agentplane-v0-7-1`
 - Canonical task record: `.agentplane/tasks/202608021232-YCNM1S/README.md`
 
