@@ -19,10 +19,8 @@ Produce a release-blocking, reproducible qualification record for the final v0.7
 - Note:
 
 ```text
-PASS: frozen subject de94bf9d passed full v0.7.1 qualification with one 50-run/55-episode provider
-generation, exact Codex 0.146.0-alpha.3.1 runtime bridge, 29.92% total token reduction, no metric
-regressions, and zero blocking defects;
-evidence=.agentplane/tasks/202608021232-6BTB6D/evidence/final-de94bf9d9-gate/report.json
+PASS: structured verification confirms the immutable full gate for frozen subject de94bf9d with zero
+blocking defects.
 ```
 - Canonical workflow state lives in the task README.
 

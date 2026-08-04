@@ -6,14 +6,14 @@ Created: 2026-08-03T20:39:56.146Z
 
 - Task: `202608021232-6BTB6D`
 - Title: Capture exact v0.7.1 semantic efficiency evidence
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608021232-6BTB6D/capture-exact-v0-7-1-semantic-efficiency-evidenc`
 - Canonical task record: `.agentplane/tasks/202608021232-6BTB6D/README.md`
 
 ## Verification
 
 - State: ok
-- Note: PASS: frozen subject de94bf9d passed full v0.7.1 qualification with one 50-run/55-episode provider generation, exact Codex 0.146.0-alpha.3.1 runtime bridge, 29.92% total token reduction, no metric regressions, and zero blocking defects; evidence=.agentplane/tasks/202608021232-6BTB6D/evidence/final-de94bf9d9-gate/report.json
+- Note: PASS: structured verification confirms the immutable full gate for frozen subject de94bf9d with zero blocking defects.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
