@@ -3,7 +3,7 @@
   "branch": "task/202608041322-M26FS0/stabilize-hosted-release-evidence-closeout",
   "created_at": "2026-08-04T13:24:55.578Z",
   "diffstat_sha256": "sha256:114ead9e7027acfceb49accc6aec2614129127fac1a69763f9cf08a70e75e830",
-  "last_verified_at": "2026-08-04T22:46:00.975Z",
+  "last_verified_at": "2026-08-04T22:49:05.402Z",
   "last_verified_diffstat_sha256": "sha256:114ead9e7027acfceb49accc6aec2614129127fac1a69763f9cf08a70e75e830",
   "pr_number": 4778,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4778",

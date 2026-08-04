@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-04T22:46:00.975Z"
+  updated_at: "2026-08-04T22:49:05.402Z"
   updated_by: "TESTER"
-  note: "Pre-merge closure commit verified as task-artifact-only"
+  note: "Structured release verification covers implementation target 77e66477"
   attempts: 0
 quality_review:
   state: "pass"
@@ -162,8 +162,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Pre-merge closure commit verified as task-artifact-only"
+  -
+    type: "verify"
+    at: "2026-08-04T22:49:05.402Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Structured release verification covers implementation target 77e66477"
 doc_version: 3
-doc_updated_at: "2026-08-04T22:46:02.193Z"
+doc_updated_at: "2026-08-04T22:49:06.590Z"
 doc_updated_by: "CODER"
 description: "Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release."
 sections:
@@ -397,6 +403,61 @@ sections:
     Details:
 
     Commit 85cae380eedaded0cbf167c32f78015d951bf388 changes only .agentplane/tasks/202608041322-M26FS0 artifacts: frozen 0.7.3 qualification evidence, evaluator pass artifacts, PR metadata, verification record, and task README. Product/runtime/package files are identical to verified implementation HEAD 77e66477692a3ff42cc6321d49b87b0c6d35bf9f. Existing ci:contract, release:prepublish, qualification 18/19 with 0 blocking, and provider 50 runs / 55 episodes remain applicable.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+    - old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-04T22:49:05.402Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Structured release verification covers implementation target 77e66477
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T22:46:02.193Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+    Details:
+
+    Command: node --test scripts/qualification/release-qualification.test.mjs
+    Result: pass
+    Evidence: 22 tests passed; provider equivalence and diagnostic-only timing regression covered
+    Scope: qualification contract and provider evidence provenance
+
+    Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --provider-evidence-subject 4d529ff0 --subject 77e66477
+    Result: pass
+    Evidence: ready 18/19; 0 blocking; 50 runs and 55 provider episodes checked without retry; token reduction 29.12145%
+    Scope: full E2E quality, context, task lifecycle, latency, token, and semantic outcome gate
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: format, schemas, routing, architecture, TypeScript 7 toolchain, task state, and coverage guards passed
+    Scope: repository contract gates
+
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: release-ci-base 101/101, workflow 50/50, significant 204/204, release-critical 16/16, tarball install and 8 migrations passed
+    Scope: release packaging and prepublish readiness
+
+    Command: git diff --name-only 77e66477 866548bf
+    Result: pass
+    Evidence: later commits contain only .agentplane/tasks/202608041322-M26FS0 managed lifecycle, evidence, quality, verification, and PR artifacts
+    Scope: prove product and provider runtime unchanged after the verified implementation commit
 
     BlueprintSnapshotRef:
     - state: current
@@ -678,6 +739,61 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T22:45:13.689Z, excerpt_
 Details:
 
 Commit 85cae380eedaded0cbf167c32f78015d951bf388 changes only .agentplane/tasks/202608041322-M26FS0 artifacts: frozen 0.7.3 qualification evidence, evaluator pass artifacts, PR metadata, verification record, and task README. Product/runtime/package files are identical to verified implementation HEAD 77e66477692a3ff42cc6321d49b87b0c6d35bf9f. Existing ci:contract, release:prepublish, qualification 18/19 with 0 blocking, and provider 50 runs / 55 episodes remain applicable.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+- old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-04T22:49:05.402Z — VERIFY — ok
+
+By: TESTER
+
+Note: Structured release verification covers implementation target 77e66477
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T22:46:02.193Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+Details:
+
+Command: node --test scripts/qualification/release-qualification.test.mjs
+Result: pass
+Evidence: 22 tests passed; provider equivalence and diagnostic-only timing regression covered
+Scope: qualification contract and provider evidence provenance
+
+Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --provider-evidence-subject 4d529ff0 --subject 77e66477
+Result: pass
+Evidence: ready 18/19; 0 blocking; 50 runs and 55 provider episodes checked without retry; token reduction 29.12145%
+Scope: full E2E quality, context, task lifecycle, latency, token, and semantic outcome gate
+
+Command: bun run ci:contract
+Result: pass
+Evidence: format, schemas, routing, architecture, TypeScript 7 toolchain, task state, and coverage guards passed
+Scope: repository contract gates
+
+Command: bun run release:prepublish
+Result: pass
+Evidence: release-ci-base 101/101, workflow 50/50, significant 204/204, release-critical 16/16, tarball install and 8 migrations passed
+Scope: release packaging and prepublish readiness
+
+Command: git diff --name-only 77e66477 866548bf
+Result: pass
+Evidence: later commits contain only .agentplane/tasks/202608041322-M26FS0 managed lifecycle, evidence, quality, verification, and PR artifacts
+Scope: prove product and provider runtime unchanged after the verified implementation commit
 
 BlueprintSnapshotRef:
 - state: current
