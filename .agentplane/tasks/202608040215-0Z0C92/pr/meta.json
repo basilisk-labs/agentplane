@@ -4,9 +4,12 @@
   "created_at": "2026-08-04T02:16:21.720Z",
   "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "last_verified_at": null,
+  "pr_number": 4771,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4771",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202608040215-0Z0C92",
-  "updated_at": "2026-08-04T02:16:21.720Z",
+  "updated_at": "2026-08-04T02:16:59.152Z",
   "verify": {
     "status": "skipped"
   }
