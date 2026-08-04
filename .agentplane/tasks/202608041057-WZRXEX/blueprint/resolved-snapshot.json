@@ -11,6 +11,7 @@
       "release"
     ],
     "owner": "CODER",
+    "taskKind": "release",
     "workflowMode": "branch_pr",
     "workflowGitCapabilities": {
       "workflowMode": "branch_pr",
@@ -21,6 +22,7 @@
       "finishCommitFromComment": false
     },
     "mutation": "release",
+    "mutationScope": "release",
     "touchedPaths": [],
     "recipeHints": [],
     "riskFlags": []
@@ -53,12 +55,14 @@
       "finishCommitFromComment": false
     },
     "taskIntent": {
+      "taskKind": "release",
       "mutationScope": "release"
     },
     "whySelected": [
       "task kind resolved to release",
+      "task intent kind: release",
       "workflow mode: branch_pr",
-      "mutation scope: release"
+      "task intent mutation scope: release"
     ],
     "states": [
       {
@@ -445,11 +449,12 @@
   "stopReasons": [],
   "selectionReasons": [
     "task kind resolved to release",
+    "task intent kind: release",
     "workflow mode: branch_pr",
-    "mutation scope: release"
+    "task intent mutation scope: release"
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "aeb49d43a5ae3d93afd65fe4b524d5d0cc0c6971cd12c8db68df52ad369db54e"
+    "value": "6c6523eb8d4d48fa222e00cecb201f045f2edb5b88176ba91e3c60253c688fa6"
   }
 }
