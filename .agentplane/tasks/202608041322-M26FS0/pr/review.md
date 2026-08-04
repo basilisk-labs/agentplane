@@ -12,8 +12,8 @@ Created: 2026-08-04T13:24:55.578Z
 
 ## Verification
 
-- State: ok
-- Note: Release-tail closeout fixes pass all declared local gates for semantic implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0.
+- State: needs_rework
+- Note: Release prepublish exposed stale hosted integrate fixtures before intended assertions.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,7 +31,7 @@ Created: 2026-08-04T13:24:55.578Z
 ```text
  .agentplane/WORKFLOW.md                            |   2 +-
  .agentplane/tasks/202608041057-WZRXEX/README.md    |   8 +-
- .github/workflows/publish.yml                      |  86 ++++++++++++++++-----
+ .github/workflows/publish.yml                      |  86 ++++--
  docs/assets/header.svg                             |   4 +-
  docs/assets/readme-headers/adr.svg                 |   4 +-
  docs/assets/readme-headers/agentplane-cli.svg      |   4 +-
@@ -46,11 +46,16 @@ Created: 2026-08-04T13:24:55.578Z
  docs/assets/readme-headers/skills.svg              |   4 +-
  docs/assets/readme-headers/spec.svg                |   4 +-
  docs/assets/readme-headers/testkit.svg             |   4 +-
- docs/releases/v0.7.3.md                            |  28 +++++++
+ docs/releases/v0.7.3.md                            |  28 ++
  packages/agentplane/package.json                   |   6 +-
- ...-cli.critical.agent-efficiency-baseline.test.ts |  16 ++--
- .../release/publish-workflow-contract.test.ts      |  36 +++++----
- .../release/release-task-evidence-script.test.ts   |  61 ++++++++++++++-
+ .../run-cli.core.release-evidence-route.test.ts    | 337 +++++++++++++++++++++
+ ...un-cli.core.route-decision.verification.test.ts |   2 +-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  16 +-
+ .../release/publish-workflow-contract.test.ts      |  36 ++-
+ .../release/release-task-evidence-script.test.ts   |  61 +++-
+ .../src/commands/shared/route-decision.ts          |   3 +-
+ .../src/commands/task/close-tail-state.test.ts     |  69 +++++
+ .../src/commands/task/close-tail-state.ts          |  45 ++-
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
@@ -58,10 +63,10 @@ Created: 2026-08-04T13:24:55.578Z
  packages/testkit/package.json                      |   2 +-
  .../baselines/v0.7-compatibility-candidate.json    |   8 +-
  .../check-compatibility-contract-baseline.mjs      |   8 +-
- scripts/release/release-task-evidence.mjs          |   7 --
+ scripts/release/release-task-evidence.mjs          |   7 -
  website/static/img/social/docs/releases/v0.7.3.png | Bin 0 -> 53092 bytes
- website/static/img/social/manifest.json            |   8 ++
- 32 files changed, 238 insertions(+), 104 deletions(-)
+ website/static/img/social/manifest.json            |   8 +
+ 37 files changed, 688 insertions(+), 110 deletions(-)
 ```
 
 </details>

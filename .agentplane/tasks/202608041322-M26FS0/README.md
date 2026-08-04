@@ -4,7 +4,7 @@ title: "Stabilize hosted release evidence closeout"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -20,11 +20,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-04T14:39:34.380Z"
+  state: "needs_rework"
+  updated_at: "2026-08-04T15:38:05.761Z"
   updated_by: "TESTER"
-  note: "Release-tail closeout fixes pass all declared local gates for semantic implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0."
-  attempts: 0
+  note: "Release prepublish exposed stale hosted integrate fixtures before intended assertions."
+  attempts: 1
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
@@ -52,9 +52,7 @@ quality_review:
     - ".agentplane/policy/workflow.release.md"
   findings:
     - "The declared terminal-routing regression was not implemented or executed. The patch tests preservation of verification metadata during evidence application, but does not close a branch_pr task, advance main with an evidence-only README commit, query next-action for terminal.done, or prove that a real implementation commit still makes verification stale."
-commit:
-  hash: "8005cbc506c4c944c33a096a4ad4d6fdf4a210c0"
-  message: "🧩 M26FS0 task: stabilize release evidence closeout"
+commit: null
 comments:
   -
     author: "CODER"
@@ -121,8 +119,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Release-tail closeout fixes pass all declared local gates for semantic implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0."
+  -
+    type: "verify"
+    at: "2026-08-04T15:38:05.761Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Release prepublish exposed stale hosted integrate fixtures before intended assertions."
 doc_version: 3
-doc_updated_at: "2026-08-04T15:12:03.833Z"
+doc_updated_at: "2026-08-04T15:38:07.113Z"
 doc_updated_by: "CODER"
 description: "Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release."
 sections:
@@ -282,6 +286,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-04T15:38:05.761Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Release prepublish exposed stale hosted integrate fixtures before intended assertions.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T15:12:03.833Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+    - old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608041322-M26FS0
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -293,6 +327,10 @@ sections:
     - Independent evaluator finding RCI-001 exposed a missing exact terminal-routing regression. The expanded hosted-close E2E now closes a branch_pr task, records fresh verification and quality, applies an evidence-only README commit, deletes the merged task branch, confirms the live provider state, and requires terminal.done. The negative route regression still requires verification after a semantic implementation advance.
     - Root cause discovered during RCI-001 rework: close-tail detection recognized only the legacy full task ID in a close-scoped subject, while the current close-message builder emits a task-scoped subject and puts the full task ID in the structured Agentplane run body reference. Detection now accepts both legacy commits and current structured commits only when the suffix, exact run ID, and DONE task snapshot all match.
     - Focused rework evidence: six CLI route/hosted-close tests passed with 98 assertions, nine close-tail unit tests passed, targeted ESLint passed, and TypeScript build passed. Full release and evaluator gates must be repeated against the new semantic commit.
+
+    - Observation: bun run release:prepublish and the isolated run-cli.core.pr-flow.integrate-failures.test.ts reproducibly fail three scenarios because pre-merge closure is considered older than the latest verification.
+      Impact: The release gate cannot complete and the affected integration scenarios do not reach their intended behavior checks.
+      Resolution: Diagnose the fixture and freshness source, preserve the production safety gate, add or adjust regression coverage, then rerun the complete release gate.
 extensions:
   workflow_route_baseline:
     start_head_sha: "9d0e0089dd83487defa8950d787a5fa67f53db10"
@@ -465,6 +503,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-04T15:38:05.761Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Release prepublish exposed stale hosted integrate fixtures before intended assertions.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T15:12:03.833Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+- old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608041322-M26FS0
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -480,3 +548,7 @@ DecisionContextRef:
 - Independent evaluator finding RCI-001 exposed a missing exact terminal-routing regression. The expanded hosted-close E2E now closes a branch_pr task, records fresh verification and quality, applies an evidence-only README commit, deletes the merged task branch, confirms the live provider state, and requires terminal.done. The negative route regression still requires verification after a semantic implementation advance.
 - Root cause discovered during RCI-001 rework: close-tail detection recognized only the legacy full task ID in a close-scoped subject, while the current close-message builder emits a task-scoped subject and puts the full task ID in the structured Agentplane run body reference. Detection now accepts both legacy commits and current structured commits only when the suffix, exact run ID, and DONE task snapshot all match.
 - Focused rework evidence: six CLI route/hosted-close tests passed with 98 assertions, nine close-tail unit tests passed, targeted ESLint passed, and TypeScript build passed. Full release and evaluator gates must be repeated against the new semantic commit.
+
+- Observation: bun run release:prepublish and the isolated run-cli.core.pr-flow.integrate-failures.test.ts reproducibly fail three scenarios because pre-merge closure is considered older than the latest verification.
+  Impact: The release gate cannot complete and the affected integration scenarios do not reach their intended behavior checks.
+  Resolution: Diagnose the fixture and freshness source, preserve the production safety gate, add or adjust regression coverage, then rerun the complete release gate.
