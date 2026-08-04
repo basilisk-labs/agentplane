@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Pilot selection is hard-coded to direct/run-01 and validated again from the canonical envelope before any result is returned.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608040215-0Z0C92/quality/objects/sha256/bbefcc79dbf747f696e791909470a202f98ca6a89ff2fff65cb636a7328eb1db.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Pilot registry, envelopes, evidence, and failure state stay inside removable staging; the candidate publication transaction remains reachable only for the unchanged full capture path.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608040215-0Z0C92/quality/objects/sha256/bbefcc79dbf747f696e791909470a202f98ca6a89ff2fff65cb636a7328eb1db.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

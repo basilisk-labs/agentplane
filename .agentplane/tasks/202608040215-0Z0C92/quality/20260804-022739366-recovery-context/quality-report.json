@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608040215-0Z0C92",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-04T02:27:39.690Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "3ceafe0ab6891606d29c98a8d7530b27e6124036",
+  "blueprint_digest": "04b5f37577050a6ede3a073b45ff64e15feab20963b8852439de720c1dd590ed",
+  "findings": [
+    "Pilot selection is hard-coded to direct/run-01 and validated again from the canonical envelope before any result is returned.",
+    "Pilot registry, envelopes, evidence, and failure state stay inside removable staging; the candidate publication transaction remains reachable only for the unchanged full capture path."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608040215-0Z0C92/quality/objects/sha256/bbefcc79dbf747f696e791909470a202f98ca6a89ff2fff65cb636a7328eb1db.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

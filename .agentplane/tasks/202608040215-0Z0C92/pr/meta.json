@@ -3,10 +3,17 @@
   "branch": "task/202608040215-0Z0C92/add-exact-candidate-rf-04-pilot-mode",
   "created_at": "2026-08-04T02:16:21.720Z",
   "diffstat_sha256": "sha256:662be9331153cded05f6e843d4d5be5f9dd828409e0ad8dcaf504f1684dd92b9",
-  "last_verified_at": "2026-08-04T02:24:01.852Z",
+  "last_verified_at": "2026-08-04T02:27:00.314Z",
   "last_verified_diffstat_sha256": "sha256:662be9331153cded05f6e843d4d5be5f9dd828409e0ad8dcaf504f1684dd92b9",
   "pr_number": 4771,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4771",
+  "pre_merge_closure": {
+    "basis_commit": "f87c0edab06497bc9443924509c8b0fa515de6cb",
+    "branch": "task/202608040215-0Z0C92/add-exact-candidate-rf-04-pilot-mode",
+    "pr_number": 4771,
+    "recorded_at": "2026-08-04T02:28:38.875Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608040215-0Z0C92",

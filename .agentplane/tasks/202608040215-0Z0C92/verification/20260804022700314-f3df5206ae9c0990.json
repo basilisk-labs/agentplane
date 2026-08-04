@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.config.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts\nResult: pass\nEvidence: 1 file, 7 tests passed including exact pilot telemetry, invalid modes, and failed-pilot cleanup\nScope: candidate RF-04 pilot behavior\n\nCommand: node scripts/checks/run-vitest-suite.mjs critical-cli\nResult: pass\nEvidence: 12 of 12 files and 82 of 82 tests passed\nScope: critical CLI and RF-04 regression surface\n\nCommand: node --test scripts/qualification/release-qualification.test.mjs\nResult: pass\nEvidence: 21 of 21 qualification contract tests passed\nScope: v0.7.1 release qualification contract\n\nCommand: bun run typecheck; bunx eslint scoped files; bunx prettier --check scoped files; node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: TypeScript build, scoped lint and formatting, and policy routing completed successfully\nScope: typed implementation, code style, and policy gateway",
+  "digest": "sha256:f3df5206ae9c0990add26b6fb13a332a74508edf8fd6df2b8eaecf2010b620c2",
+  "implementation_sha": "3ceafe0ab6891606d29c98a8d7530b27e6124036",
+  "kind": "task_verification_record",
+  "note": "Candidate RF-04 pilot verified on implementation 3ceafe0ab with structured local evidence and no provider execution.",
+  "recorded_at": "2026-08-04T02:27:00.314Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused RF-04 candidate tests. Expected: --pilot selects only direct/run-01, validates one canonical envelope/evidence pair, reports exact subject/runtime/token telemetry, and leaves no candidate publication or failure artifact.\n2. Exercise invalid mode combinations. Expected: --pilot fails closed with --check, --runtime-bridge, or --replace, while the existing 10-scenario x 5-run capture contract remains unchanged.\n3. Run the v0.7.1 qualification contract, scoped lint/format/typecheck, critical CLI candidate chunk, and policy routing check. Expected: all pass and the provider driver is not invoked by tests.\n4. Inspect git diff and task Findings. Expected: only candidate pilot harness, focused tests, and task evidence changed; the failed historical-pilot mismatch is preserved and no provider retry is claimed.",
+  "scope_digest": "sha256:742eca801261ed5e10d8330a049c88abbf36b6a54294dc0977298017e40240ca",
+  "task_id": "202608040215-0Z0C92",
+  "verification_command": "agentplane verify 202608040215-0Z0C92 --ok --by TESTER",
+  "verifier": "TESTER"
+}

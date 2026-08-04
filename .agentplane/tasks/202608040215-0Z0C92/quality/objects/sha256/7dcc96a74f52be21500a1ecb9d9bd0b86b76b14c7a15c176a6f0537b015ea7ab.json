@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-04T02:27:00.314Z",
+    "updated_by": "TESTER",
+    "note": "Candidate RF-04 pilot verified on implementation 3ceafe0ab with structured local evidence and no provider execution."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608040215-0Z0C92/verification/20260804022700314-f3df5206ae9c0990.json",
+      "sha256": "sha256:8ce1eacf9805046ea20f012df90556231485453c432875ec6e5253231d47a029"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
