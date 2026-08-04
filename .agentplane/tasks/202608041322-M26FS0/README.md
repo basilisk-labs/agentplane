@@ -4,7 +4,7 @@ title: "Stabilize hosted release evidence closeout"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-04T14:25:18.886Z"
+  updated_by: "TESTER"
+  note: "Release-tail fixes verified against implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0."
   attempts: 0
 commit:
   hash: "8005cbc506c4c944c33a096a4ad4d6fdf4a210c0"
@@ -50,8 +50,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation: preserve accepted task verification during hosted publish evidence, verify the exact evidence SHA, publish the required GitHub Actions check, wait for evidence PR merge, and release v0.7.3."
+  -
+    type: "verify"
+    at: "2026-08-04T14:25:18.886Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Release-tail fixes verified against implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0."
 doc_version: 3
-doc_updated_at: "2026-08-04T14:24:26.419Z"
+doc_updated_at: "2026-08-04T14:25:19.821Z"
 doc_updated_by: "CODER"
 description: "Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release."
 sections:
@@ -71,6 +77,36 @@ sections:
     5. Pull the evidence merge to main and query next-action for this task. Expected: status is DONE, route is terminal.done, hosted publish evidence is present, token provenance is explicit, and no merged task branch/worktree remains.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-04T14:25:18.886Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Release-tail fixes verified against implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T14:24:26.419Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+    - old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608041322-M26FS0
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -80,6 +116,10 @@ sections:
     - Hosted evidence apply replaced the accepted TESTER verification metadata for task 202608041057-WZRXEX with DEUS publish metadata without creating a matching immutable verification record. The route therefore regressed from `terminal.done` to `verification_required` after the evidence merge.
     - The 0.7.3 fix preserves canonical verification metadata, validates the exact evidence closure SHA, waits for Core CI, publishes the required GitHub Actions-owned check, and fails closed until the evidence PR is merged.
     - Restoring the original TESTER metadata for 202608041057-WZRXEX returned the live route to `terminal.done`. Final acceptance still requires the autonomous v0.7.3 hosted release path.
+
+    - Observation: Focused release tests passed 20/20; compatibility critical passed 9/9; ci:contract passed; release:prepublish passed 101/101 release-ci chunks, 50 workflow coverage tests, 204 significant coverage tests, and 16 release-critical tests.
+      Impact: Hosted evidence now preserves immutable TESTER verification and cannot merge until the exact closure SHA has a successful GitHub Actions-owned PR verification check.
+      Resolution: Accept the implementation for hosted CI, integration, and the live v0.7.3 release-tail proof.
 extensions:
   workflow_route_baseline:
     start_head_sha: "9d0e0089dd83487defa8950d787a5fa67f53db10"
@@ -112,6 +152,36 @@ Patch-release plan: version=0.7.3, tag=v0.7.3. 1. Preserve the v0.7.2 live evide
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-04T14:25:18.886Z — VERIFY — ok
+
+By: TESTER
+
+Note: Release-tail fixes verified against implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T14:24:26.419Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+- old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608041322-M26FS0
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -125,3 +195,7 @@ Patch-release plan: version=0.7.3, tag=v0.7.3. 1. Preserve the v0.7.2 live evide
 - Hosted evidence apply replaced the accepted TESTER verification metadata for task 202608041057-WZRXEX with DEUS publish metadata without creating a matching immutable verification record. The route therefore regressed from `terminal.done` to `verification_required` after the evidence merge.
 - The 0.7.3 fix preserves canonical verification metadata, validates the exact evidence closure SHA, waits for Core CI, publishes the required GitHub Actions-owned check, and fails closed until the evidence PR is merged.
 - Restoring the original TESTER metadata for 202608041057-WZRXEX returned the live route to `terminal.done`. Final acceptance still requires the autonomous v0.7.3 hosted release path.
+
+- Observation: Focused release tests passed 20/20; compatibility critical passed 9/9; ci:contract passed; release:prepublish passed 101/101 release-ci chunks, 50 workflow coverage tests, 204 significant coverage tests, and 16 release-critical tests.
+  Impact: Hosted evidence now preserves immutable TESTER verification and cannot merge until the exact closure SHA has a successful GitHub Actions-owned PR verification check.
+  Resolution: Accept the implementation for hosted CI, integration, and the live v0.7.3 release-tail proof.

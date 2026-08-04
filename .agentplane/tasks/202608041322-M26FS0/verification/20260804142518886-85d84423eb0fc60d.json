@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:85d84423eb0fc60d43e84064f327eb3495fec9dadb2122743ddd2c2d01ac4b33",
+  "implementation_sha": "8005cbc506c4c944c33a096a4ad4d6fdf4a210c0",
+  "kind": "task_verification_record",
+  "note": "Release-tail fixes verified against implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0.",
+  "recorded_at": "2026-08-04T14:25:18.886Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused route regression that closes a branch_pr task, advances main with only its hosted release-evidence README, and queries next-action. Expected: the task remains terminal.done; a real implementation commit still makes verification stale.\n2. Run the publish-workflow contract tests. Expected: release evidence CI validates the exact closure SHA, waits for success, emits a GitHub Actions-owned PR verification check, and does not silently continue after a failed evidence gate.\n3. Run bun run ci:contract and bun run release:prepublish. Expected: all blocking contracts, release checks, release CI suites, coverage guards, and release-critical tests pass.\n4. After merge and publish, verify npm latest for all three packages is 0.7.3, tag and GitHub Release v0.7.3 point to the exact release SHA, clean install and postpublish audit pass, and the release-evidence PR merges without reopen/admin repair.\n5. Pull the evidence merge to main and query next-action for this task. Expected: status is DONE, route is terminal.done, hosted publish evidence is present, token provenance is explicit, and no merged task branch/worktree remains.",
+  "scope_digest": "sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550",
+  "task_id": "202608041322-M26FS0",
+  "verification_command": "agentplane verify 202608041322-M26FS0 --ok --by TESTER",
+  "verifier": "TESTER"
+}
