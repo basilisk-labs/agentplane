@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane v0.7.1"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -36,11 +36,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "e656c493251b1f2677bfdfa5156d0e975d0ceaff"
+  message: "🧪 YCNM1S release: align supervision test contract"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: aligned the stale direct-supervision approval fixture with the semantic-planning contract and recorded the external audit assessment; targeted test and v0.7.1 product contract pass."
 events:
   -
     type: "status"
@@ -49,9 +54,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-04T09:18:29.964Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: aligned the stale direct-supervision approval fixture with the semantic-planning contract and recorded the external audit assessment; targeted test and v0.7.1 product contract pass."
 doc_version: 3
-doc_updated_at: "2026-08-04T08:36:16.852Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-08-04T09:18:29.964Z"
+doc_updated_by: "CODER"
 description: "Integrate all approved v0.7.1 fixes, run the complete deterministic and provider release gate on the exact candidate, resolve every blocking defect, verify GitHub Actions and package metadata, publish npm and GitHub Release, and prove the installed release from remote truth."
 sections:
   Summary: |-
