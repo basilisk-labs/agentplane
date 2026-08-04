@@ -4,7 +4,7 @@ title: "Remove calendar-date flake from merge token-usage unit test"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -29,6 +29,34 @@ verification:
   updated_by: "TESTER"
   note: "Confirmed the CI failure was a UTC calendar-boundary assertion, then froze reconciliation time and proved exact timestamp semantics: focused 3/3 and nearby 16/16 tests plus TypeScript 7, ESLint, Prettier, and diff checks pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-08-04T01:09:31.409Z"
+  updated_by: "HUMAN"
+  note: "The test-only fix replaces a wall-clock calendar assumption with exact contract assertions: hosted and local-merged paths retain the merge timestamp, while locally-shipped reconciliation uses a frozen reconciliation timestamp."
+  evaluated_sha: "c990de07359916f06cfd10aa916f3130bf1b8b10"
+  blueprint_digest: "3f4ab56d84ca19770df0b28210820e875aaeca2088a0ca97d65b070dc7af4a94"
+  evidence_refs:
+    - ".agentplane/tasks/202608040106-CC1TAP/quality/20260804-010930845-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608040106-CC1TAP/quality/20260804-010930845-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608040106-CC1TAP/quality/objects/sha256/b4f51e1c9bda0caeab5505041f19e16d66597d63bf7fd90e8966f4696d391ce3.md"
+    - ".agentplane/tasks/202608040106-CC1TAP/quality/20260804-010930845-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608040106-CC1TAP/quality/20260804-010930845-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608040106-CC1TAP/README.md"
+    - ".agentplane/tasks/202608040106-CC1TAP/quality/objects/sha256/32f9c3620a1c2cd8c902c61b31d9e6f6c18e1fed64ad3034035a7dffca1ab845.patch"
+    - ".agentplane/tasks/202608040106-CC1TAP/quality/objects/sha256/7e745c5820431c4f64be784a75baa346f4673bd2d158900b100347c317acb44f.json"
+    - ".agentplane/tasks/202608040106-CC1TAP/verification/20260804010905747-6d2c58d0b6417c21.json"
+    - ".agentplane/tasks/202608040106-CC1TAP/quality/objects/sha256/21ff819e70f534e91f1011c030c04e31428a6e7c49b6d8156b6bcbbed4add999.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - "packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts"
+    - "https://github.com/basilisk-labs/agentplane/actions/runs/30867253711/job/91861754671"
+  findings:
+    - "The pre-fix failure reproduces after UTC midnight and is isolated to the hard-coded 2026-08-03 assertion; production token aggregation is unchanged."
+    - "Fake time is scoped to one test and restored after every test, while all three paths now assert exact timestamps rather than weakening coverage."
 commit:
   hash: "87fc9d132fe0253ba6b6cfcf6cbd96ab28f7a0e2"
   message: "🧪 CC1TAP task: stabilize token usage timestamp test"
