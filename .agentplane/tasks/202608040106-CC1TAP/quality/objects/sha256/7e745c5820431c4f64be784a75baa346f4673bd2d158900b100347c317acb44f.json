@@ -1,0 +1,27 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "The assertion must still prove token_usage.updated_at is a valid observed timestamp rather than weakening coverage to mere presence.",
+    "The exact hosted-merge-sync.token-usage test must fail before the change and pass afterward on any UTC calendar day."
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-04T01:09:05.747Z",
+    "updated_by": "TESTER",
+    "note": "Confirmed the CI failure was a UTC calendar-boundary assertion, then froze reconciliation time and proved exact timestamp semantics: focused 3/3 and nearby 16/16 tests plus TypeScript 7, ESLint, Prettier, and diff checks pass."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608040106-CC1TAP/verification/20260804010905747-6d2c58d0b6417c21.json",
+      "sha256": "sha256:b9cbe411d461d99dae94e2497e2acdd4791f33a0b8d681953d20d9e80c8b6937"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608040106-CC1TAP-1a3f4e3cc6ca08de9425d136",
+  "prepared_at": "2026-08-04T01:09:30.845Z",
+  "task": {
+    "id": "202608040106-CC1TAP",
+    "revision": 7,
+    "objective": "Remove calendar-date flake from merge token-usage unit test\n\nReplace the hard-coded UTC calendar-day assertion in hosted merge token-usage coverage with a deterministic invariant tied to the observed journal projection, preserving the production token-usage contract and reproducing the hosted failure locally before the fix.",
+    "acceptance_criteria": [
+      "The assertion must still prove token_usage.updated_at is a valid observed timestamp rather than weakening coverage to mere presence.",
+      "The exact hosted-merge-sync.token-usage test must fail before the change and pass afterward on any UTC calendar day.",
+      "- In scope: Replace the hard-coded UTC calendar-day assertion in hosted merge token-usage coverage with a deterministic invariant tied to the observed journal projection, preserving the production token-usage contract and reproducing the hosted failure locally before the fix.\n- Out of scope: unrelated refactors not required for \"Remove calendar-date flake from merge token-usage unit test\".",
+      "1. Preserve the hosted PR #4769 failure and reproduce the exact test locally on current main. 2. Identify the real timestamp contract produced by merge reconciliation and replace only the fixed 2026-08-03 calendar assertion with a deterministic relationship or ISO-time invariant. 3. Run the focused test across an injected cross-midnight case if the fixture supports it, then run the nearby token-usage and merge-reconciliation suites plus formatting/static checks. 4. Record structured verification and independent quality evidence, publish a dedicated branch_pr, merge it into main, and update PR #4769 onto the repaired base.",
+      "1. Reproduce the exact pre-fix failure on current main. Expected: hosted-merge-sync.token-usage.test.ts fails only because the locally-shipped projection crosses the hard-coded 2026-08-03 UTC boundary.\n2. Run the focused hosted merge token-usage suite after the change. Expected: all three paths assert exact contract timestamps and pass independently of the wall-clock date.\n3. Run hosted merge reconciliation and token-usage unit suites. Expected: all nearby token aggregation, merge reconciliation, and replay-stability checks pass.\n4. Run TypeScript 7 typecheck plus touched ESLint, Prettier, and git diff checks. Expected: all pass with no production-code diff."
+    ]
+  },
+  "evaluated_sha": "c990de07359916f06cfd10aa916f3130bf1b8b10",
+  "diff_base_sha": "bae47b05c31e7e489a1c49ce12f7a27d6f44486a",
+  "blueprint_digest": "3f4ab56d84ca19770df0b28210820e875aaeca2088a0ca97d65b070dc7af4a94",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608040106-CC1TAP/quality/20260804-010930845-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:5fcb72ae51411850eac6645948e9782209eb23504660a8b541ff6c540b6d21e8",
+    "prompt_path": ".agentplane/tasks/202608040106-CC1TAP/quality/objects/sha256/b4f51e1c9bda0caeab5505041f19e16d66597d63bf7fd90e8966f4696d391ce3.md",
+    "result_schema_path": ".agentplane/tasks/202608040106-CC1TAP/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608040106-CC1TAP/README.md",
+      "sha256": "sha256:b5f31b55758547c6094821a6c35677ebb33246d277a061cad61d484d8fc547a8",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608040106-CC1TAP/quality/objects/sha256/32f9c3620a1c2cd8c902c61b31d9e6f6c18e1fed64ad3034035a7dffca1ab845.patch",
+      "sha256": "sha256:32f9c3620a1c2cd8c902c61b31d9e6f6c18e1fed64ad3034035a7dffca1ab845",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608040106-CC1TAP/quality/objects/sha256/7e745c5820431c4f64be784a75baa346f4673bd2d158900b100347c317acb44f.json",
+      "sha256": "sha256:7e745c5820431c4f64be784a75baa346f4673bd2d158900b100347c317acb44f",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608040106-CC1TAP/verification/20260804010905747-6d2c58d0b6417c21.json",
+      "sha256": "sha256:b9cbe411d461d99dae94e2497e2acdd4791f33a0b8d681953d20d9e80c8b6937",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608040106-CC1TAP/quality/objects/sha256/21ff819e70f534e91f1011c030c04e31428a6e7c49b6d8156b6bcbbed4add999.json",
+      "sha256": "sha256:21ff819e70f534e91f1011c030c04e31428a6e7c49b6d8156b6bcbbed4add999",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
