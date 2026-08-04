@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { chmod, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -26,6 +26,7 @@ const fingerprintB = `sha256:${"b".repeat(64)}`;
 const at = "2026-08-03T00:00:00.000Z";
 
 afterEach(async () => {
+  vi.useRealTimers();
   await Promise.all(roots.splice(0).map(async (root) => await rm(root, { recursive: true })));
 });
 
@@ -236,7 +237,11 @@ async function writeObservedJournal(opts: {
   return journal;
 }
 
-function expectObservedAggregate(task: TaskData, journal: SupervisorExecutionEpisodeJournal): void {
+function expectObservedAggregate(
+  task: TaskData,
+  journal: SupervisorExecutionEpisodeJournal,
+  expectedUpdatedAt: string,
+): void {
   expect(task.token_usage).toMatchObject({
     schema_version: 1,
     state: "observed",
@@ -251,7 +256,7 @@ function expectObservedAggregate(task: TaskData, journal: SupervisorExecutionEpi
     journal_digest: journal.digest,
     unavailable_reason: null,
   });
-  expect(task.token_usage?.updated_at).toMatch(/^2026-08-03T/u);
+  expect(task.token_usage?.updated_at).toBe(expectedUpdatedAt);
 }
 
 describe("merge reconciliation token usage", () => {
@@ -281,7 +286,7 @@ describe("merge reconciliation token usage", () => {
       tasks: [task(taskId, commit)],
     }).finally(restorePath);
     expect(first.synced).toBe(1);
-    expectObservedAggregate(first.tasks[0]!, journal);
+    expectObservedAggregate(first.tasks[0]!, journal, at);
 
     const second = await syncHostedMergedTasks({
       ctx: commandContext(root),
@@ -303,10 +308,13 @@ describe("merge reconciliation token usage", () => {
       tasks: [task(taskId, commit)],
     });
     expect(result.synced).toBe(1);
-    expectObservedAggregate(result.tasks[0]!, journal);
+    expectObservedAggregate(result.tasks[0]!, journal, at);
   });
 
   it("projects locally shipped usage from the supervisor journal", async () => {
+    const reconciledAt = "2026-08-04T00:00:00.000Z";
+    vi.useFakeTimers();
+    vi.setSystemTime(reconciledAt);
     const { root, commit } = await createRepo();
     const taskId = "202608030003-SHIPPED";
     const branch = `task/${taskId}/shipped`;
@@ -318,7 +326,7 @@ describe("merge reconciliation token usage", () => {
       tasks: [task(taskId, commit)],
     });
     expect(result.synced).toBe(1);
-    expectObservedAggregate(result.tasks[0]!, journal);
+    expectObservedAggregate(result.tasks[0]!, journal, reconciledAt);
 
     const replay = await syncLocallyShippedBranchPrTasks({
       ctx: commandContext(root),
