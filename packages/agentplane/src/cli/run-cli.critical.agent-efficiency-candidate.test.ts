@@ -1,3 +1,5 @@
+import { execFileSync } from "node:child_process";
+import { existsSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -36,8 +38,11 @@ function canonical(value: unknown): string {
 
 async function loadCandidateFixture() {
   const candidate = (await import(CANDIDATE_URL)) as {
+    assertCandidateCaptureMode(options: Json): void;
     buildCandidateMeasurement(input: Json): Json;
+    captureCandidate(options: Json): Json;
     createCandidateHarnessManifest(driver: Json, dependency: Json): Json;
+    validateCandidatePilotCapture(input: Json): Json;
   };
   const replay = (await import(REPLAY_URL)) as {
     createReplayDriverIdentity(root: string, path: string): Json;
@@ -101,6 +106,110 @@ async function loadCandidateFixture() {
 }
 
 describeCritical("critical: RF-04 candidate measurement", () => {
+  it("validates one exact candidate pilot envelope and returns bounded telemetry", async () => {
+    const fixture = await loadCandidateFixture();
+    const envelope = fixture.envelopes.find(
+      (record) => (record.value as Json).run_id === "direct/run-01",
+    )!;
+    const evidencePath = ((envelope?.value as Json).evidence_bundle as Json).path as string;
+    const evidence = fixture.evidence.find((record) => record.path === evidencePath)!;
+
+    const pilot = fixture.candidate.validateCandidatePilotCapture({
+      anchor: CANDIDATE_SHA,
+      dependencyClaim: fixture.dependency,
+      driverIdentity: fixture.driver,
+      envelopeRecords: [envelope],
+      evidenceRecords: [evidence],
+      harnessManifest: fixture.harness,
+      registry: fixture.candidateRegistry,
+      runs: 5,
+    }) as Json;
+
+    expect(pilot).toMatchObject({
+      episode_count: 1,
+      pilot: true,
+      run_id: "direct/run-01",
+      subject_sha: CANDIDATE_SHA,
+    });
+    expect((pilot.profile as Json).runtime_version).toBe("0.6.24/0.145.0-alpha.18");
+  });
+
+  it("fails closed for candidate pilot mode combinations that could mutate prior evidence", async () => {
+    const fixture = await loadCandidateFixture();
+    const common = {
+      check: false,
+      pilot: true,
+      replace: false,
+      runtimeBridgeVersion: null,
+    };
+
+    expect(() => fixture.candidate.assertCandidateCaptureMode({ ...common, check: true })).toThrow(
+      "--pilot cannot be combined with --check",
+    );
+    expect(() =>
+      fixture.candidate.assertCandidateCaptureMode({
+        ...common,
+        runtimeBridgeVersion: "0.146.0-alpha.3.1",
+      }),
+    ).toThrow("--pilot cannot be combined with --runtime-bridge");
+    expect(() =>
+      fixture.candidate.assertCandidateCaptureMode({ ...common, replace: true }),
+    ).toThrow("--pilot cannot be combined with --replace");
+  });
+
+  it("cleans failed candidate pilot staging without publishing artifacts", async () => {
+    const fixture = await loadCandidateFixture();
+    const subject = execFileSync("git", ["rev-parse", "HEAD"], {
+      cwd: REPO_ROOT,
+      encoding: "utf8",
+    }).trim();
+    const unique = `${process.pid}-${Date.now()}`;
+    const outputRoot = path.join(
+      REPO_ROOT,
+      ".agentplane/cache/rf04-candidate",
+      `pilot-test-${unique}`,
+    );
+    const driverPath = path.join(
+      REPO_ROOT,
+      "scripts/bench",
+      `.rf04-candidate-pilot-failing-${unique}.mjs`,
+    );
+    const cacheRoot = path.join(REPO_ROOT, ".agentplane/cache");
+    const stagingBefore = new Set(
+      (existsSync(cacheRoot) ? readdirSync(cacheRoot) : []).filter((name) =>
+        name.startsWith("rf04-candidate-staging-"),
+      ),
+    );
+    writeFileSync(
+      driverPath,
+      'process.stderr.write("RF04_DRIVER_ERROR:CODEX_EXIT\\n");\nprocess.exitCode = 1;\n',
+    );
+    try {
+      expect(() =>
+        fixture.candidate.captureCandidate({
+          check: false,
+          codexCliVersion: "0.146.0-alpha.3.1",
+          driverPath,
+          outputRoot,
+          pilot: true,
+          replace: false,
+          runs: 5,
+          runtimeBridgeVersion: null,
+          subject,
+        }),
+      ).toThrow("direct/run-01 candidate driver failed with exit 1");
+    } finally {
+      rmSync(driverPath, { force: true });
+      rmSync(outputRoot, { force: true, recursive: true });
+    }
+    expect(existsSync(outputRoot)).toBe(false);
+    expect(
+      readdirSync(cacheRoot)
+        .filter((name) => name.startsWith("rf04-candidate-staging-"))
+        .filter((name) => !stagingBefore.has(name)),
+    ).toEqual([]);
+  }, 120_000);
+
   it("compares actual candidate values to the frozen baseline for the reviewed SHA", async () => {
     const fixture = await loadCandidateFixture();
     const measurement = fixture.candidate.buildCandidateMeasurement({
