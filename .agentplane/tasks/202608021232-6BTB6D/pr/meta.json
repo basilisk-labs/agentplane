@@ -3,7 +3,7 @@
   "branch": "task/202608021232-6BTB6D/capture-exact-v0-7-1-semantic-efficiency-evidenc",
   "created_at": "2026-08-03T20:39:56.146Z",
   "diffstat_sha256": "sha256:24fce7713eefe837a644a7a50aa810d71808c9f7ecb30e3f948943a278cddbc4",
-  "last_verified_at": "2026-08-04T07:23:08.209Z",
+  "last_verified_at": "2026-08-04T07:26:34.883Z",
   "last_verified_diffstat_sha256": "sha256:24fce7713eefe837a644a7a50aa810d71808c9f7ecb30e3f948943a278cddbc4",
   "pr_number": 4761,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4761",
