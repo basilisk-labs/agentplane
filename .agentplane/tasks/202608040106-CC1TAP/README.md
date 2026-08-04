@@ -1,10 +1,11 @@
 ---
 id: "202608040106-CC1TAP"
 title: "Remove calendar-date flake from merge token-usage unit test"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -57,9 +58,23 @@ quality_review:
   findings:
     - "The pre-fix failure reproduces after UTC midnight and is isolated to the hard-coded 2026-08-03 assertion; production token aggregation is unchanged."
     - "Fake time is scoped to one test and restored after every test, while all three paths now assert exact timestamps rather than weakening coverage."
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-04T01:11:17.800Z"
 commit:
-  hash: "87fc9d132fe0253ba6b6cfcf6cbd96ab28f7a0e2"
-  message: "🧪 CC1TAP task: stabilize token usage timestamp test"
+  hash: "6f7761358f2dfda22d5e07ac5aab2c7ea8c04a42"
+  message: "🔗 CC1TAP task: link pull request"
 comments:
   -
     author: "TESTER"
@@ -67,6 +82,9 @@ comments:
   -
     author: "TESTER"
     body: "Implementation complete: exact test now freezes reconciliation time and asserts exact timestamps for hosted, local-merged, and locally-shipped projections; focused 3/3, nearby 16/16, TypeScript 7, lint, formatting, and diff checks pass."
+  -
+    author: "TESTER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -88,8 +106,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Confirmed the CI failure was a UTC calendar-boundary assertion, then froze reconciliation time and proved exact timestamp semantics: focused 3/3 and nearby 16/16 tests plus TypeScript 7, ESLint, Prettier, and diff checks pass."
+  -
+    type: "status"
+    at: "2026-08-04T01:11:17.800Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-04T01:09:06.702Z"
+doc_updated_at: "2026-08-04T01:11:17.811Z"
 doc_updated_by: "TESTER"
 description: "Replace the hard-coded UTC calendar-day assertion in hosted merge token-usage coverage with a deterministic invariant tied to the observed journal projection, preserving the production token-usage contract and reproducing the hosted failure locally before the fix."
 sections:
@@ -159,6 +184,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "c990de07359916f06cfd10aa916f3130bf1b8b10"
+    message: "🧩 CC1TAP task: record implementation receipt"
   workflow_route_baseline:
     start_head_sha: "bae47b05c31e7e489a1c49ce12f7a27d6f44486a"
     version: 1
@@ -242,3 +270,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-04T01:11:17.800Z`
