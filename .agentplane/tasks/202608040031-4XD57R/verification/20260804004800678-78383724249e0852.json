@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:78383724249e0852da8a862664eb4473a68937e461dce5eab93bcab74103951b",
+  "implementation_sha": "3a526415de4ea9034687446e68f7115a97353402",
+  "kind": "task_verification_record",
+  "note": "Verified exact implementation SHA 3a526415: instrumented 20-cold/30-warm packed benchmark passed all four unchanged +10% gates and reduced managed Git observations from 8 to 7; supervisor 154/154, recovery 86/86, critical CLI 79/79, qualification 21/21, typecheck, lint, format, doctor, and routing policy passed.",
+  "recorded_at": "2026-08-04T00:48:00.678Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the qualification contract tests for the supervisor latency report. Expected: each baseline/candidate surface contains a deterministic, bounded Git command histogram whose total equals the summed per-sample Git subprocess count; instrumentation occurs after the timed command sequence.\n2. Run the instrumented packed benchmark against v0.6.26 on a clean SHA with at least 20 cold and 30 warm samples. Expected: the report identifies exact repeated command families and preserves raw evidence; no provider call occurs.\n3. Run focused route, task-run-path, supervisor, recovery, stale task/Git/policy/approval, concurrency, crash, and effect-in-doubt suites. Expected: the chosen observation reuse invalidates on every covered state change and no protected side effect can replay.\n4. Re-run node scripts/qualification/measure-v0.7.1-supervisor-latency.mjs --subject <clean-implementation-sha> --out <task-evidence>. Expected: every cold/warm median and p95 is <=10% above v0.6.26; managed candidate Git observations are lower than the blocked 2da557536 count of 8 and external preparation does not regress.\n5. Run bun run typecheck, touched ESLint/Prettier, bun run test:critical, ap doctor, node .agentplane/policy/check-routing.mjs, independent EVALUATOR, exact-head hosted checks, and review-thread audit. Expected: all pass before queue integration and hosted close.",
+  "scope_digest": "sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d",
+  "task_id": "202608040031-4XD57R",
+  "verification_command": "agentplane verify 202608040031-4XD57R --ok --by TESTER",
+  "verifier": "TESTER"
+}

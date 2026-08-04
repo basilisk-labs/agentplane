@@ -1,0 +1,281 @@
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
+index 2649d90d5..e419b71ea 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
+@@ -445,18 +445,42 @@ export async function captureWorkflowStepFingerprint(opts: {
+         ),
+         policyModules: [],
+       };
++  const rawGit = repositoryRoot
++    ? await measurePreparationNode({
++        recorder: opts.ctx.preparationTrace,
++        node: "git_snapshot",
++        scope: traceScope,
++        dependencies: ["task_backend_read", "blueprint_resolution"],
++        cacheability: "exact",
++        cachePolicyReason:
++          "HEAD, index, dirty paths, path digests, and exclusions are fingerprinted.",
++        operation: async () =>
++          await captureGitSnapshot({
++            repository_root: repositoryRoot,
++            trusted_repository_root: true,
++            preobserved_head_commit: opts.state.resume.head_sha,
++          }),
++        fingerprintInputs: (snapshot) => ({
++          repository_root: repositoryRoot,
++          git_snapshot: snapshot,
++        }),
++        output: (snapshot) => snapshot,
++      })
++    : null;
++  opts.onGitSnapshot?.(rawGit);
+   const policyScope = repositoryRoot
+     ? await measurePreparationNode({
+         recorder: opts.ctx.preparationTrace,
+         node: "policy_scope",
+         scope: traceScope,
+-        dependencies: ["task_backend_read"],
++        dependencies: ["task_backend_read", "git_snapshot"],
+         cacheability: "exact",
+         cachePolicyReason: "Policy selection is bound to the observed task and changed-path scope.",
+         operation: async () =>
+           await observeWorkflowPolicyScope({
+             repositoryRoot,
+             state: opts.state,
++            ...(rawGit?.state === "available" ? { preobservedDirtyPaths: rawGit.dirty_paths } : {}),
+           }),
+         fingerprintInputs: (scope) => ({
+           task_id: opts.state.task.id,
+@@ -504,29 +528,6 @@ export async function captureWorkflowStepFingerprint(opts: {
+         unavailableComponent("workflow_route_policy", "authoritative_checkout_unavailable"),
+         unavailableComponent("task_backend_runtime", "authoritative_checkout_unavailable"),
+       ];
+-  const rawGit = repositoryRoot
+-    ? await measurePreparationNode({
+-        recorder: opts.ctx.preparationTrace,
+-        node: "git_snapshot",
+-        scope: traceScope,
+-        dependencies: ["policy_scope", "backend_projection"],
+-        cacheability: "exact",
+-        cachePolicyReason:
+-          "HEAD, index, dirty paths, path digests, and exclusions are fingerprinted.",
+-        operation: async () =>
+-          await captureGitSnapshot({
+-            repository_root: repositoryRoot,
+-            trusted_repository_root: true,
+-            preobserved_head_commit: opts.state.resume.head_sha,
+-          }),
+-        fingerprintInputs: (snapshot) => ({
+-          repository_root: repositoryRoot,
+-          git_snapshot: snapshot,
+-        }),
+-        output: (snapshot) => snapshot,
+-      })
+-    : null;
+-  opts.onGitSnapshot?.(rawGit);
+   const git = rawGit
+     ? projectGitSnapshot(
+         rawGit,
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts b/packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts
+new file mode 100644
+index 000000000..dc97294b2
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts
+@@ -0,0 +1,32 @@
++import { describe, expect, it } from "vitest";
++
++import type { WorkflowRouteStateInput } from "./workflow-step-fingerprint.js";
++import { observeWorkflowPolicyScope } from "./workflow-step-policy-scope.js";
++
++describe("workflow policy scope", () => {
++  it("reuses dirty paths from the authoritative Git snapshot", async () => {
++    const state = {
++      workflowMode: "direct",
++      task: {
++        id: "202608040031-POLICY",
++        status: "TODO",
++        extensions: {},
++      },
++      resume: {},
++      taskWorktree: null,
++      prFlow: null,
++    } as WorkflowRouteStateInput;
++
++    await expect(
++      observeWorkflowPolicyScope({
++        repositoryRoot: "/path/that/is/not/a/repository",
++        state,
++        preobservedDirtyPaths: ["docs/guide.md", "./docs/guide.md"],
++      }),
++    ).resolves.toEqual({
++      state: "present",
++      changedPaths: ["docs/guide.md"],
++      sources: ["working_tree"],
++    });
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts b/packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts
+index 1bd09022a..4e0affc54 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts
+@@ -94,6 +94,7 @@ async function rootCommitChangedPaths(repositoryRoot: string): Promise<string[]>
+ export async function observeWorkflowPolicyScope(opts: {
+   repositoryRoot: string;
+   state: WorkflowRouteStateInput;
++  preobservedDirtyPaths?: readonly string[];
+ }): Promise<WorkflowPolicyScopeObservation> {
+   const passedDirtyPaths = opts.state.taskWorktree?.changedPaths ?? [];
+   const baseline = baselineFromTask(opts.state.task);
+@@ -102,7 +103,9 @@ export async function observeWorkflowPolicyScope(opts: {
+   try {
+     const directDirtyPaths =
+       opts.state.workflowMode === "direct"
+-        ? await new GitContext({ gitRoot: opts.repositoryRoot }).statusChangedPaths()
++        ? Object.hasOwn(opts, "preobservedDirtyPaths")
++          ? (opts.preobservedDirtyPaths ?? [])
++          : await new GitContext({ gitRoot: opts.repositoryRoot }).statusChangedPaths()
+         : [];
+     const dirtyPaths = normalizedPaths([...passedDirtyPaths, ...directDirtyPaths]);
+     if (opts.state.workflowMode === "branch_pr") {
+diff --git a/scripts/qualification/measure-v0.7.1-supervisor-latency.mjs b/scripts/qualification/measure-v0.7.1-supervisor-latency.mjs
+index 002f2d3c3..d2bbc46fe 100644
+--- a/scripts/qualification/measure-v0.7.1-supervisor-latency.mjs
++++ b/scripts/qualification/measure-v0.7.1-supervisor-latency.mjs
+@@ -270,6 +270,7 @@ function measureSequence({ cliPath, commands, cwd, probeBin, logPath, surfaceId
+     duration_ms: durationMs,
+     exit_code: exitCode,
+     signal,
++    git_commands: gitCommands,
+     logical_subprocess_count: commands.length + gitCommands.length,
+     git_subprocess_count: gitCommands.length,
+     repository_scan_count: gitCommands.filter((command) => REPOSITORY_SCAN_PATTERN.test(command))
+@@ -286,6 +287,23 @@ function measureSequence({ cliPath, commands, cwd, probeBin, logPath, surfaceId
+   };
+ }
+ 
++export function summarizeGitCommandHistogram(samples) {
++  const counts = new Map();
++  for (const sample of samples) {
++    for (const command of sample.git_commands ?? []) {
++      counts.set(command, (counts.get(command) ?? 0) + 1);
++    }
++  }
++  const commands = [...counts.entries()]
++    .toSorted(([left], [right]) => left.localeCompare(right))
++    .map(([command, count]) => ({ command, count }));
++  return {
++    total_count: commands.reduce((total, entry) => total + entry.count, 0),
++    unique_count: commands.length,
++    commands,
++  };
++}
++
+ function mean(values) {
+   return values.reduce((total, value) => total + value, 0) / values.length;
+ }
+@@ -319,6 +337,7 @@ function summarizeSamples(samples) {
+       samples.map((sample) => sample.logical_subprocess_count),
+     ),
+     git_subprocess_count: summarizeNumbers(samples.map((sample) => sample.git_subprocess_count)),
++    git_command_histogram: summarizeGitCommandHistogram(samples),
+     repository_scan_count: summarizeNumbers(samples.map((sample) => sample.repository_scan_count)),
+     git_snapshot_count: summarizeNumbers(samples.map((sample) => sample.git_snapshot_count)),
+     packet_bytes: summarizeNumbers(samples.map((sample) => sample.packet_bytes)),
+@@ -448,6 +467,27 @@ export function validateSupervisorLatencyReport(report) {
+         if (surface[side]?.sample_count < expected || surface[side].samples.length < expected) {
+           throw new Error(`${phaseName}.${surface.id}.${side} requires ${expected} samples`);
+         }
++        const histogram = surface[side].git_command_histogram;
++        const gitSamples = surface[side].git_subprocess_count?.samples;
++        if (!histogram || !Array.isArray(histogram.commands) || !Array.isArray(gitSamples)) {
++          throw new Error(`${phaseName}.${surface.id}.${side} requires a Git command histogram`);
++        }
++        const commandTotal = histogram.commands.reduce((total, entry) => total + entry.count, 0);
++        const observedTotal = gitSamples.reduce((total, count) => total + count, 0);
++        const sortedCommands = histogram.commands
++          .map((entry) => entry.command)
++          .toSorted((left, right) => left.localeCompare(right));
++        if (
++          histogram.total_count !== commandTotal ||
++          histogram.total_count !== observedTotal ||
++          histogram.unique_count !== histogram.commands.length ||
++          new Set(sortedCommands).size !== sortedCommands.length ||
++          !histogram.commands.every((entry, index) => entry.command === sortedCommands[index])
++        ) {
++          throw new Error(
++            `${phaseName}.${surface.id}.${side} has an inconsistent Git command histogram`,
++          );
++        }
+       }
+     }
+   }
+diff --git a/scripts/qualification/release-qualification.test.mjs b/scripts/qualification/release-qualification.test.mjs
+index 20c759ede..156cc3863 100644
+--- a/scripts/qualification/release-qualification.test.mjs
++++ b/scripts/qualification/release-qualification.test.mjs
+@@ -25,7 +25,10 @@ import {
+   compareMatchedLatencySamples,
+   validateMatchedLatencyReport,
+ } from "./measure-v0.7.1-matched-cli-latency.mjs";
+-import { validateSupervisorLatencyReport } from "./measure-v0.7.1-supervisor-latency.mjs";
++import {
++  summarizeGitCommandHistogram,
++  validateSupervisorLatencyReport,
++} from "./measure-v0.7.1-supervisor-latency.mjs";
+ import {
+   preflightQualificationProviderRuntime,
+   readQualificationRunSubjectIdentity,
+@@ -111,7 +114,19 @@ function matchedPhase(sampleCount = 20, offset = 0) {
+ }
+ 
+ function supervisorLatencySide(count) {
+-  return { sample_count: count, samples: Array.from({ length: count }, () => 100) };
++  return {
++    sample_count: count,
++    samples: Array.from({ length: count }, () => 100),
++    git_subprocess_count: { samples: Array.from({ length: count }, () => 2) },
++    git_command_histogram: {
++      total_count: count * 2,
++      unique_count: 2,
++      commands: [
++        { command: "rev-parse HEAD", count },
++        { command: "status --porcelain", count },
++      ],
++    },
++  };
+ }
+ 
+ function supervisorLatencySurfaces(count) {
+@@ -588,4 +603,32 @@ describe("v0.7.1 release qualification contract", () => {
+       /warm\.external_advance\.candidate requires 30 samples/u,
+     );
+   });
++
++  it("records deterministic Git command histograms outside duration samples", () => {
++    assert.deepEqual(
++      summarizeGitCommandHistogram([
++        { git_commands: ["status --porcelain", "rev-parse HEAD"] },
++        { git_commands: ["rev-parse HEAD", "status --porcelain"] },
++      ]),
++      {
++        total_count: 4,
++        unique_count: 2,
++        commands: [
++          { command: "rev-parse HEAD", count: 2 },
++          { command: "status --porcelain", count: 2 },
++        ],
++      },
++    );
++
++    const report = {
++      schema_version: 1,
++      kind: "agentplane.v0.7.1_supervisor_latency",
++      phases: { cold: supervisorLatencySurfaces(20), warm: supervisorLatencySurfaces(30) },
++    };
++    report.phases.cold[0].candidate.git_command_histogram.total_count -= 1;
++    assert.throws(
++      () => validateSupervisorLatencyReport(report),
++      /cold\.external_advance\.candidate has an inconsistent Git command histogram/u,
++    );
++  });
+ });
