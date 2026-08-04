@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import {
   buildQualificationReport,
   qualificationExitCode,
+  readProviderEvidenceEquivalence,
   readQualificationSubjectIdentity,
   readQualificationManifest,
   renderDefectLedger,
@@ -46,6 +47,8 @@ function helpText() {
     "  --mode <audit|gate>       Default: audit.",
     "  --profile <core|full>     Default: full. Gate requires full.",
     "  --provider                Run the bounded 50-run/55-episode provider scenario.",
+    "  --provider-evidence-subject <sha>  Reuse immutable provider evidence only when every",
+    "                              intervening change is qualification-only and runtime-equivalent.",
     "  --subject <sha>           Exact candidate commit. Defaults to current HEAD in audit mode.",
     "  --codex-version <version> Exact Codex CLI version; required with --provider.",
     "  --scenario <id>           Select one scenario; repeatable through comma-separated ids.",
@@ -84,7 +87,15 @@ function parseArgs(argv) {
     normalized.push(arg);
   }
   const { flags, positionals } = parseScriptArgs(normalized, {
-    valueFlags: ["mode", "profile", "subject", "codex-version", "manifest", "out-dir"],
+    valueFlags: [
+      "mode",
+      "profile",
+      "subject",
+      "provider-evidence-subject",
+      "codex-version",
+      "manifest",
+      "out-dir",
+    ],
     booleanFlags: ["provider", "dry-run", "help"],
     aliases: { h: "help" },
   });
@@ -107,6 +118,14 @@ function parseArgs(argv) {
   if (flags.provider === true && !flags["codex-version"]) {
     throw new Error("--provider requires --codex-version");
   }
+  if (flags["provider-evidence-subject"] && flags.provider !== true) {
+    throw new Error("--provider-evidence-subject requires --provider");
+  }
+  const subject = flags.subject ?? gitHead();
+  const providerEvidenceSubject = flags["provider-evidence-subject"] ?? subject;
+  if (!/^[a-f0-9]{40}$/u.test(providerEvidenceSubject)) {
+    throw new Error("--provider-evidence-subject must be a full 40-character Git commit SHA");
+  }
   return {
     codexVersion: flags["codex-version"] ?? "",
     dryRun: flags["dry-run"] === true,
@@ -115,10 +134,11 @@ function parseArgs(argv) {
     mode,
     outputDirectory: flags["out-dir"] ? path.resolve(flags["out-dir"]) : null,
     providerBaselineEvidencePath: defaultProviderBaselineEvidencePath,
+    providerEvidenceSubject,
     profile,
     provider: flags.provider === true,
     scenarioIds,
-    subject: flags.subject ?? gitHead(),
+    subject,
   };
 }
 
@@ -219,6 +239,7 @@ export function preflightQualificationProviderRuntime(
   scenarios,
   verify = assertCodexBinary,
   verifyBaseline = readPinnedQualificationBaseline,
+  verifyEquivalence = readProviderEvidenceEquivalence,
 ) {
   if (options.dryRun || !scenarios.some((scenario) => scenario.tier === "provider")) return null;
   const runtime = verify({ [CODEX_REPLAY_CLI_VERSION_ENV]: options.codexVersion });
@@ -226,6 +247,7 @@ export function preflightQualificationProviderRuntime(
     codexCliVersion: options.codexVersion,
     evidencePath: options.providerBaselineEvidencePath ?? defaultProviderBaselineEvidencePath,
   });
+  verifyEquivalence(repoRoot, options.providerEvidenceSubject ?? options.subject, options.subject);
   return runtime;
 }
 
@@ -254,13 +276,15 @@ async function main(argv = process.argv.slice(2)) {
           ".agentplane",
           "cache",
           "rf04-candidate",
-          options.subject,
+          options.providerEvidenceSubject,
           `measurement.pinned-baseline-codex-${options.codexVersion}.json`,
         )
       : path.join("scripts", "baselines", "agent-efficiency-v0.7-beta1-candidate.json"),
     codexVersion: options.codexVersion,
     evidenceDir: relativeOutputDirectory,
     providerBaselineEvidence: path.relative(repoRoot, options.providerBaselineEvidencePath),
+    providerAction: options.providerEvidenceSubject === options.subject ? "--capture" : "--check",
+    providerSubject: options.providerEvidenceSubject,
     repoRoot: ".",
     subject: options.subject,
   };
