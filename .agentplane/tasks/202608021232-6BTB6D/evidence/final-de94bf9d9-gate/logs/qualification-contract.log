@@ -1,0 +1,34 @@
+$ "node" "--test" "scripts/qualification/release-qualification.test.mjs"
+exit_code=0 signal=none duration_ms=258
+
+▶ v0.7.1 release qualification contract
+  ✔ preflights the exact provider runtime only before provider execution (0.724958ms)
+  ✔ maps every required dimension to an executable scenario (0.857292ms)
+  ✔ requires every defect owner to be an existing executable task (0.4025ms)
+  ✔ binds qualification evidence to the exact clean Git subject (0.111166ms)
+  ✔ lets the qualification runner ignore only its active nested evidence directory (168.59025ms)
+  ✔ rejects an uncovered requirement (0.437ms)
+  ✔ selects provider work only when explicitly requested (0.369167ms)
+  ✔ fails closed when an explicit scenario omits its dependency (0.266ms)
+  ✔ fails closed when a command variable is absent (0.153625ms)
+  ✔ keeps audit execution successful while emitting a blocking defect (1.027334ms)
+  ✔ assigns distinct executable tasks to the confirmed release blockers (1.811541ms)
+  ✔ does not claim readiness from a partial successful selection (0.253458ms)
+  ✔ allows a gate pass only after all local and provider scenarios pass (0.329375ms)
+  ✔ keeps RF-04 harness timing diagnostic while gating tokens and outcomes (0.499167ms)
+  ✔ rejects a token regression even when aggregate evidence is complete (0.1975ms)
+  ✔ rejects verified-success and scope regressions without gating RF-04 harness timing (0.320125ms)
+  ✔ rejects an agent packet that grows beyond the release limit (0.353166ms)
+  ✔ requires distinct frozen cold and warm sample sets with at least 20 pairs (0.387125ms)
+  ✔ gates matched CLI latency on median and p95 (0.05275ms)
+  ✔ requires 60 cold and 60 warm supervisor samples for both public frontends (5.973708ms)
+  ✔ records deterministic Git command histograms outside duration samples (0.155708ms)
+✔ v0.7.1 release qualification contract (183.919542ms)
+ℹ tests 21
+ℹ suites 1
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 230.752542
