@@ -51,9 +51,10 @@
  .../logs/supervisor-parity.log                     |   9 -
  .../final-de94bf9d9-gate/logs/typecheck.log        |   4 -
  .../logs/workflow-coverage.log                     |  27 --
+ .../evidence/validate-recorded-gate.mjs            |   7 +-
  .../logs/matched-cli-latency.log                   |   4 -
  .../logs/supervisor-latency.log                    |   4 -
  docs/releases/v0.7.1.md                            | 337 +++++++++++++++++++
  website/static/img/social/docs/releases/v0.7.1.png | Bin 0 -> 52228 bytes
  website/static/img/social/manifest.json            |   8 +
- 58 files changed, 345 insertions(+), 1695 deletions(-)
+ 59 files changed, 350 insertions(+), 1697 deletions(-)

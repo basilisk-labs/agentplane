@@ -79,7 +79,7 @@ sections:
   Findings: |-
     - The release-notes validator requires one bullet per commit since v0.7.0 (287 entries). Keep the normal rendered view concise by placing the complete qualification ledger inside a collapsed details section; this avoids changing release tooling or provider-qualified product code.
     - Provider-qualified product code remains frozen at `de94bf9d91de1a8a854ad358968e8193e9803342`. Later merged work is limited to regression tests, task evidence, cleanup, and release metadata, so the successful 50-run / 55-episode gate remains authoritative unless product code drifts.
-    - The heavy prepublish gate found 55 tracked volatile `.log` files from completed qualification tasks. Their canonical metrics and verdicts already exist in task READMEs, verification records, and compact JSON reports, so remove only the duplicate logs to satisfy the source-artifact policy without weakening release evidence.
+    - The heavy prepublish gate found 55 tracked volatile `.log` files from completed qualification tasks. Their canonical metrics and verdicts already exist in task READMEs, verification records, compact JSON reports, and per-scenario `output_tail` fields, so remove only the duplicate logs and make the task-local recorded-gate validator use the compact output instead of requiring forbidden files.
 extensions:
   workflow_route_baseline:
     start_head_sha: "82a0ffea3af6a1ca811a824e24289d9a68c4d684"
@@ -125,4 +125,4 @@ Release plan: version=0.7.1, tag=v0.7.1, scope=publish the already provider-qual
 
 - The release-notes validator requires one bullet per commit since v0.7.0 (287 entries). Keep the normal rendered view concise by placing the complete qualification ledger inside a collapsed details section; this avoids changing release tooling or provider-qualified product code.
 - Provider-qualified product code remains frozen at `de94bf9d91de1a8a854ad358968e8193e9803342`. Later merged work is limited to regression tests, task evidence, cleanup, and release metadata, so the successful 50-run / 55-episode gate remains authoritative unless product code drifts.
-- The heavy prepublish gate found 55 tracked volatile `.log` files from completed qualification tasks. Their canonical metrics and verdicts already exist in task READMEs, verification records, and compact JSON reports, so remove only the duplicate logs to satisfy the source-artifact policy without weakening release evidence.
+- The heavy prepublish gate found 55 tracked volatile `.log` files from completed qualification tasks. Their canonical metrics and verdicts already exist in task READMEs, verification records, compact JSON reports, and per-scenario `output_tail` fields, so remove only the duplicate logs and make the task-local recorded-gate validator use the compact output instead of requiring forbidden files.
