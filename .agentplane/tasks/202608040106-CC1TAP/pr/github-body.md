@@ -28,7 +28,7 @@ Prettier, and diff checks pass.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-04T01:06:52.139Z
+- Updated: 2026-08-04T01:10:13.218Z
 - Branch: task/202608040106-CC1TAP/fix-token-usage-date-flake
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
