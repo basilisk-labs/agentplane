@@ -838,17 +838,18 @@ export function validateCandidatePilotCapture({
     runs,
     scenarioById: new Map(registry.scenarios.map((scenario) => [scenario.id, scenario])),
   });
+  const providerUsageByRole = {};
+  for (const [role, usage] of Object.entries(envelope.token_usage_by_role)) {
+    providerUsageByRole[role] = Object.fromEntries(
+      Object.entries(usage).map(([field, cell]) => [field, cell.value]),
+    );
+  }
   return {
     driver_sha256: driverIdentity.sha256,
     episode_count: envelope.metrics.llm_episodes.value,
     pilot: true,
     profile: envelope.profile,
-    provider_usage_by_role: Object.fromEntries(
-      Object.entries(envelope.token_usage_by_role).map(([role, usage]) => [
-        role,
-        Object.fromEntries(Object.entries(usage).map(([field, cell]) => [field, cell.value])),
-      ]),
-    ),
+    provider_usage_by_role: providerUsageByRole,
     run_id: envelope.run_id,
     subject_sha: anchor,
   };
