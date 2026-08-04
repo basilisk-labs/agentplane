@@ -27,6 +27,7 @@ import {
 } from "../agents/agents-template.js";
 import type * as taskBackend from "../backends/task-backend.js";
 import {
+  approveTaskPlan,
   captureStdIO,
   cleanGitEnv,
   commitAll,
@@ -292,18 +293,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-    await runCliSilent([
-      "task",
-      "plan",
-      "approve",
-      duplicateId,
-      "--by",
-      "USER",
-      "--note",
-      "OK",
-      "--root",
-      root,
-    ]);
+    await approveTaskPlan(root, duplicateId);
     await runCliSilent([
       "work",
       "start",
