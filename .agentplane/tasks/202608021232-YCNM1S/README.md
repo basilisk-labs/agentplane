@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane v0.7.1"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -36,7 +36,9 @@ verification:
   updated_by: "TESTER"
   note: "Release-ci chunk 19 exposed a stale semantic-plan fixture before the intended finish closeout boundary."
   attempts: 1
-commit: null
+commit:
+  hash: "2237f9c6ea0e6f38d0d696ced37315a97ee93103"
+  message: "🧪 YCNM1S release: align closeout test contract"
 comments:
   -
     author: "INTEGRATOR"
@@ -44,6 +46,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: aligned the stale direct-supervision approval fixture with the semantic-planning contract and recorded the external audit assessment; targeted test and v0.7.1 product contract pass."
+  -
+    author: "CODER"
+    body: "Implementation rework: replaced the generated plan placeholder in the commit-from-comment closeout fixture so it reaches the intended stale-quality-review boundary; targeted 5/5 and product contract pass."
 events:
   -
     type: "status"
@@ -65,8 +70,15 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Release-ci chunk 19 exposed a stale semantic-plan fixture before the intended finish closeout boundary."
+  -
+    type: "status"
+    at: "2026-08-04T09:36:24.492Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework: replaced the generated plan placeholder in the commit-from-comment closeout fixture so it reaches the intended stale-quality-review boundary; targeted 5/5 and product contract pass."
 doc_version: 3
-doc_updated_at: "2026-08-04T09:35:13.263Z"
+doc_updated_at: "2026-08-04T09:36:24.492Z"
 doc_updated_by: "CODER"
 description: "Integrate all approved v0.7.1 fixes, run the complete deterministic and provider release gate on the exact candidate, resolve every blocking defect, verify GitHub Actions and package metadata, publish npm and GitHub Release, and prove the installed release from remote truth."
 sections:
