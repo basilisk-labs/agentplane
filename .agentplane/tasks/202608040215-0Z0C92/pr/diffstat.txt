@@ -1,0 +1,3 @@
+ ...cli.critical.agent-efficiency-candidate.test.ts | 109 ++++++++++++++++
+ .../bench/capture-agent-efficiency-candidate.mjs   | 140 +++++++++++++++++----
+ 2 files changed, 227 insertions(+), 22 deletions(-)

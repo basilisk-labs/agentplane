@@ -4,7 +4,7 @@ title: "Add exact candidate RF-04 pilot mode"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -19,16 +19,21 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-04T02:24:01.852Z"
+  updated_by: "TESTER"
+  note: "Candidate RF-04 pilot verified: focused 7/7 and critical CLI 82/82 passed; qualification contract 21/21, typecheck, lint, format, routing, public help, fail-closed modes, and no-artifact cleanup all passed without provider execution."
   attempts: 0
-commit: null
+commit:
+  hash: "3ceafe0ab6891606d29c98a8d7530b27e6124036"
+  message: "🧩 0Z0C92 code: add exact candidate RF-04 pilot"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed: exact candidate --pilot now runs only direct/run-01, validates canonical evidence, rejects mutating mode combinations, and publishes no artifacts."
 events:
   -
     type: "status"
@@ -37,8 +42,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-04T02:23:33.636Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: exact candidate --pilot now runs only direct/run-01, validates canonical evidence, rejects mutating mode combinations, and publishes no artifacts."
+  -
+    type: "verify"
+    at: "2026-08-04T02:24:01.852Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Candidate RF-04 pilot verified: focused 7/7 and critical CLI 82/82 passed; qualification contract 21/21, typecheck, lint, format, routing, public help, fail-closed modes, and no-artifact cleanup all passed without provider execution."
 doc_version: 3
-doc_updated_at: "2026-08-04T02:18:07.979Z"
+doc_updated_at: "2026-08-04T02:24:02.682Z"
 doc_updated_by: "CODER"
 description: "Add a non-persisting one-run pilot to the v0.7.1 candidate provider capture so the pinned Codex runtime and exact candidate harness can be validated before the no-retry 50-run generation; cover precondition failures and prove no artifacts are published."
 sections:
@@ -61,6 +79,36 @@ sections:
     4. Inspect git diff and task Findings. Expected: only candidate pilot harness, focused tests, and task evidence changed; the failed historical-pilot mismatch is preserved and no provider retry is claimed.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-04T02:24:01.852Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Candidate RF-04 pilot verified: focused 7/7 and critical CLI 82/82 passed; qualification contract 21/21, typecheck, lint, format, routing, public help, fail-closed modes, and no-artifact cleanup all passed without provider execution.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T02:23:33.636Z, excerpt_hash=sha256:742eca801261ed5e10d8330a049c88abbf36b6a54294dc0977298017e40240ca
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040215-0Z0C92-add-exact-candidate-rf-04-pilot-mode/.agentplane/tasks/202608040215-0Z0C92/blueprint/resolved-snapshot.json
+    - old_digest: 04b5f37577050a6ede3a073b45ff64e15feab20963b8852439de720c1dd590ed
+    - current_digest: 04b5f37577050a6ede3a073b45ff64e15feab20963b8852439de720c1dd590ed
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608040215-0Z0C92
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608040215-0Z0C92
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -71,6 +119,10 @@ sections:
       Resolution: Add an explicit non-persisting candidate --pilot path that reuses the exact candidate driver, version contract, evidence validation, and cleanup boundary.
       Promotion: incident-candidate
       Fixability: repo-fixable
+
+    - Observation: The exact candidate pilot now selects only direct/run-01 and validates the same subject, Codex version, harness digest, canonical envelope, and evidence bundle as the full generation.
+      Impact: A provider preflight can validate the actual v0.7.1 candidate boundary without touching the frozen 0.145.0 historical replay or publishing partial evidence.
+      Resolution: Accept commit 3ceafe0ab; retain the previous CODEX_VERSION_MISMATCH as failed historical-pilot evidence and use the new candidate --pilot only on a newly frozen candidate SHA.
 extensions:
   workflow_route_baseline:
     start_head_sha: "3055393dc99d5f1a781cb642502ceaa05d86f0a9"
@@ -105,6 +157,36 @@ Add a non-persisting one-run pilot to the v0.7.1 candidate provider capture so t
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-04T02:24:01.852Z — VERIFY — ok
+
+By: TESTER
+
+Note: Candidate RF-04 pilot verified: focused 7/7 and critical CLI 82/82 passed; qualification contract 21/21, typecheck, lint, format, routing, public help, fail-closed modes, and no-artifact cleanup all passed without provider execution.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T02:23:33.636Z, excerpt_hash=sha256:742eca801261ed5e10d8330a049c88abbf36b6a54294dc0977298017e40240ca
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040215-0Z0C92-add-exact-candidate-rf-04-pilot-mode/.agentplane/tasks/202608040215-0Z0C92/blueprint/resolved-snapshot.json
+- old_digest: 04b5f37577050a6ede3a073b45ff64e15feab20963b8852439de720c1dd590ed
+- current_digest: 04b5f37577050a6ede3a073b45ff64e15feab20963b8852439de720c1dd590ed
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608040215-0Z0C92
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608040215-0Z0C92
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -119,3 +201,7 @@ Add a non-persisting one-run pilot to the v0.7.1 candidate provider capture so t
   Resolution: Add an explicit non-persisting candidate --pilot path that reuses the exact candidate driver, version contract, evidence validation, and cleanup boundary.
   Promotion: incident-candidate
   Fixability: repo-fixable
+
+- Observation: The exact candidate pilot now selects only direct/run-01 and validates the same subject, Codex version, harness digest, canonical envelope, and evidence bundle as the full generation.
+  Impact: A provider preflight can validate the actual v0.7.1 candidate boundary without touching the frozen 0.145.0 historical replay or publishing partial evidence.
+  Resolution: Accept commit 3ceafe0ab; retain the previous CODEX_VERSION_MISMATCH as failed historical-pilot evidence and use the new candidate --pilot only on a newly frozen candidate SHA.
