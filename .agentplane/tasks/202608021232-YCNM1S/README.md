@@ -1,10 +1,10 @@
 ---
 id: "202608021232-YCNM1S"
 title: "Qualify and publish AgentPlane v0.7.1"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 1
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ verify:
   - "bun run e2e:v0.7.1:gate"
   - "npm view agentplane@0.7.1 version"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-08-04T08:35:47.310Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -36,10 +36,21 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-comments: []
-events: []
+commit: null
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-08-04T08:36:16.852Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-08-02T12:32:30.794Z"
+doc_updated_at: "2026-08-04T08:36:16.852Z"
 doc_updated_by: "INTEGRATOR"
 description: "Integrate all approved v0.7.1 fixes, run the complete deterministic and provider release gate on the exact candidate, resolve every blocking defect, verify GitHub Actions and package metadata, publish npm and GitHub Release, and prove the installed release from remote truth."
 sections:
@@ -50,23 +61,28 @@ sections:
   Scope: |-
     - In scope: Integrate all approved v0.7.1 fixes, run the complete deterministic and provider release gate on the exact candidate, resolve every blocking defect, verify GitHub Actions and package metadata, publish npm and GitHub Release, and prove the installed release from remote truth.
     - Out of scope: unrelated refactors not required for "Qualify and publish AgentPlane v0.7.1".
-  Plan: |-
-    1. Implement the change for "Qualify and publish AgentPlane v0.7.1".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+  Plan: "Release plan: version=0.7.1, tag=v0.7.1, scope=publish the already provider-qualified AgentPlane 0.7 candidate with concise user-facing notes and release-only metadata changes. 1. Reconfirm clean main/origin parity, empty active incident registry, frozen provider evidence (50 runs / 55 episodes, 0 blockers, 29.921280763879005% token reduction), and that post-qualification changes are test/task evidence only. 2. Create the branch_pr release worktree and replace fallback Verify Steps with exact checks for release manifests, TypeScript 7, the v0.7.1 product contract, package smoke, notes, and static/critical gates. 3. Generate the patch release plan, write concise docs/releases/v0.7.1.md separated from the full qualification ledger, and prepare version/manifests through the canonical release candidate flow without changing runtime code. 4. Run deterministic prepublish, pack, installed-package, and postpublish checks on the final candidate SHA; do not rerun provider episodes unless runtime/product code changes. 5. Publish the candidate PR, obtain an independent evaluator pass and hosted checks, then merge through the integration queue. 6. Dispatch Publish to npm for the exact merged release SHA and verify the v0.7.1 tag, GitHub Release, npm versions/dist-tags for agentplane, @agentplaneorg/core, and @agentplaneorg/recipes, installed CLI smoke, postpublish audit, and local/remote main parity. Stop if the version/tag changes, active incidents appear, any required gate fails, or the candidate includes product code drift."
   Verify Steps: |-
-    PLANNER fallback scaffold for "Qualify and publish AgentPlane v0.7.1". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Qualify and publish AgentPlane v0.7.1". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Inspect `git diff 82a0ffea3af6a1ca811a824e24289d9a68c4d684...HEAD` and the worktree status. Expected: the candidate contains release metadata, notes, generated release assets, and task evidence only; no runtime or product-source drift is present.
+    2. Run `node scripts/release/check-release-notes.mjs --tag v0.7.1 --min-bullets 287` and `bun run format:check`. Expected: the concise release summary and complete collapsed commit ledger pass the repository contract.
+    3. Run `node scripts/qualification/check-v0.7.1-product-contract.mjs`. Expected: the v0.7.1 product contract passes, including the shared supervisor default, compact agent packet, TypeScript 7 toolchain, and zero unused CLI exports.
+    4. Run `bun run release:prepublish`. Expected: release parity, builds, static contracts, critical suites, package tarball checks, and installed-package smoke all pass for version 0.7.1.
+    5. Reconfirm dependency task `202608021232-6BTB6D`. Expected: the frozen product candidate retains the single completed gate of 50 runs / 55 provider episodes with 0 blockers and 29.921280763879005% token reduction; do not rerun unless product code changes.
+    6. Complete independent task verification, evaluator pass, hosted PR checks, and merge through the integration queue. Expected: every required check is green and the merged SHA is the exact publish input.
+    7. Dispatch `Publish to npm` for the exact merged SHA, then run `bun run release:smoke:published` and `bun run release:postpublish:audit`. Expected: tag and GitHub Release `v0.7.1`, npm versions/dist-tags for all three public packages, installed CLI smoke, and local/remote `main` parity are confirmed.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - The release-notes validator requires one bullet per commit since v0.7.0 (287 entries). Keep the normal rendered view concise by placing the complete qualification ledger inside a collapsed details section; this avoids changing release tooling or provider-qualified product code.
+    - Provider-qualified product code remains frozen at `de94bf9d91de1a8a854ad358968e8193e9803342`. Later merged work is limited to regression tests, task evidence, cleanup, and release metadata, so the successful 50-run / 55-episode gate remains authoritative unless product code drifts.
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "82a0ffea3af6a1ca811a824e24289d9a68c4d684"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
@@ -82,17 +98,17 @@ Integrate all approved v0.7.1 fixes, run the complete deterministic and provider
 
 ## Plan
 
-1. Implement the change for "Qualify and publish AgentPlane v0.7.1".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+Release plan: version=0.7.1, tag=v0.7.1, scope=publish the already provider-qualified AgentPlane 0.7 candidate with concise user-facing notes and release-only metadata changes. 1. Reconfirm clean main/origin parity, empty active incident registry, frozen provider evidence (50 runs / 55 episodes, 0 blockers, 29.921280763879005% token reduction), and that post-qualification changes are test/task evidence only. 2. Create the branch_pr release worktree and replace fallback Verify Steps with exact checks for release manifests, TypeScript 7, the v0.7.1 product contract, package smoke, notes, and static/critical gates. 3. Generate the patch release plan, write concise docs/releases/v0.7.1.md separated from the full qualification ledger, and prepare version/manifests through the canonical release candidate flow without changing runtime code. 4. Run deterministic prepublish, pack, installed-package, and postpublish checks on the final candidate SHA; do not rerun provider episodes unless runtime/product code changes. 5. Publish the candidate PR, obtain an independent evaluator pass and hosted checks, then merge through the integration queue. 6. Dispatch Publish to npm for the exact merged release SHA and verify the v0.7.1 tag, GitHub Release, npm versions/dist-tags for agentplane, @agentplaneorg/core, and @agentplaneorg/recipes, installed CLI smoke, postpublish audit, and local/remote main parity. Stop if the version/tag changes, active incidents appear, any required gate fails, or the candidate includes product code drift.
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Qualify and publish AgentPlane v0.7.1". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Qualify and publish AgentPlane v0.7.1". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Inspect `git diff 82a0ffea3af6a1ca811a824e24289d9a68c4d684...HEAD` and the worktree status. Expected: the candidate contains release metadata, notes, generated release assets, and task evidence only; no runtime or product-source drift is present.
+2. Run `node scripts/release/check-release-notes.mjs --tag v0.7.1 --min-bullets 287` and `bun run format:check`. Expected: the concise release summary and complete collapsed commit ledger pass the repository contract.
+3. Run `node scripts/qualification/check-v0.7.1-product-contract.mjs`. Expected: the v0.7.1 product contract passes, including the shared supervisor default, compact agent packet, TypeScript 7 toolchain, and zero unused CLI exports.
+4. Run `bun run release:prepublish`. Expected: release parity, builds, static contracts, critical suites, package tarball checks, and installed-package smoke all pass for version 0.7.1.
+5. Reconfirm dependency task `202608021232-6BTB6D`. Expected: the frozen product candidate retains the single completed gate of 50 runs / 55 provider episodes with 0 blockers and 29.921280763879005% token reduction; do not rerun unless product code changes.
+6. Complete independent task verification, evaluator pass, hosted PR checks, and merge through the integration queue. Expected: every required check is green and the merged SHA is the exact publish input.
+7. Dispatch `Publish to npm` for the exact merged SHA, then run `bun run release:smoke:published` and `bun run release:postpublish:audit`. Expected: tag and GitHub Release `v0.7.1`, npm versions/dist-tags for all three public packages, installed CLI smoke, and local/remote `main` parity are confirmed.
 
 ## Verification
 
@@ -105,3 +121,6 @@ PLANNER fallback scaffold for "Qualify and publish AgentPlane v0.7.1". Replace w
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- The release-notes validator requires one bullet per commit since v0.7.0 (287 entries). Keep the normal rendered view concise by placing the complete qualification ledger inside a collapsed details section; this avoids changing release tooling or provider-qualified product code.
+- Provider-qualified product code remains frozen at `de94bf9d91de1a8a854ad358968e8193e9803342`. Later merged work is limited to regression tests, task evidence, cleanup, and release metadata, so the successful 50-run / 55-episode gate remains authoritative unless product code drifts.
