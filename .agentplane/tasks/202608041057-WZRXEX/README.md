@@ -262,8 +262,6 @@ sections:
     - Observation: The v0.7.1 Publish release workflow published every channel successfully but skipped release-task evidence because three DONE release tasks matched the same version and the selector ignored task-scoped files in the exact release commit.
       Impact: The release itself was correct, but the canonical publish task README retained only pre-merge verification and required manual provenance recovery from the publish-result artifact.
       Resolution: Resolve all task ids touched by the exact release commit, intersect them with version-qualified release tasks, select a unique exact match, and preserve fail-closed fallback behavior for genuine ambiguity; regression and real v0.7.1 replay pass.
-      Promotion: incident-candidate
-      Fixability: repo-fixable
 extensions:
   implementation_commit:
     hash: "f3000de59d32d425f4dda4eeea91cb8882e1872e"
@@ -416,8 +414,6 @@ DecisionContextRef:
 - Observation: The v0.7.1 Publish release workflow published every channel successfully but skipped release-task evidence because three DONE release tasks matched the same version and the selector ignored task-scoped files in the exact release commit.
   Impact: The release itself was correct, but the canonical publish task README retained only pre-merge verification and required manual provenance recovery from the publish-result artifact.
   Resolution: Resolve all task ids touched by the exact release commit, intersect them with version-qualified release tasks, select a unique exact match, and preserve fail-closed fallback behavior for genuine ambiguity; regression and real v0.7.1 replay pass.
-  Promotion: incident-candidate
-  Fixability: repo-fixable
 
 ## Token Usage
 
