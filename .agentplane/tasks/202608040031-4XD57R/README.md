@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -126,7 +126,7 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure is ready; exact implementation 3a526415 passed strict latency, regression, static, policy, verification, and evaluator gates with complete raw evidence."
 doc_version: 3
-doc_updated_at: "2026-08-04T00:50:36.191Z"
+doc_updated_at: "2026-08-04T00:51:29.592Z"
 doc_updated_by: "CODER"
 description: "Extend the packed supervisor benchmark with deterministic per-command Git histograms, use those measurements to identify and remove only duplicated direct-workflow observations whose values are already covered by the same command context or route snapshot, preserve all stale-state and side-effect-safety invariants, and restore every cold and warm median and p95 surface below the unchanged +10% v0.6.26 ceiling."
 sections:
@@ -188,6 +188,10 @@ sections:
     - Observation: The authoritative Git snapshot now supplies direct policy-scope dirty paths only when available; an explicit fallback retains the original status read when snapshot observation is unavailable.
       Impact: Removes one deterministic repository scan from task run preparation without weakening stale-state, policy, approval, recovery, concurrency, or side-effect safety.
       Resolution: Accept for exact-head hosted review and integration; retain the raw attribution, failed parallel-I/O experiment, and passing sequential benchmark as evidence.
+
+    - Observation: A manual task-artifact commit used the reserved pre-merge closure subject before the canonical finish --pre-merge-closure command ran; the implementation and verified diff were unchanged.
+      Impact: The route oracle treated the reserved-subject commit as the closure basis and could not prove verification coverage for integration.
+      Resolution: Record this task-only lifecycle repair handoff, then regenerate the canonical pre-merge closure marker against the same verified implementation SHA 3a526415.
 extensions:
   implementation_commit:
     hash: "3a526415de4ea9034687446e68f7115a97353402"
@@ -269,6 +273,10 @@ DecisionContextRef:
 - Observation: The authoritative Git snapshot now supplies direct policy-scope dirty paths only when available; an explicit fallback retains the original status read when snapshot observation is unavailable.
   Impact: Removes one deterministic repository scan from task run preparation without weakening stale-state, policy, approval, recovery, concurrency, or side-effect safety.
   Resolution: Accept for exact-head hosted review and integration; retain the raw attribution, failed parallel-I/O experiment, and passing sequential benchmark as evidence.
+
+- Observation: A manual task-artifact commit used the reserved pre-merge closure subject before the canonical finish --pre-merge-closure command ran; the implementation and verified diff were unchanged.
+  Impact: The route oracle treated the reserved-subject commit as the closure basis and could not prove verification coverage for integration.
+  Resolution: Record this task-only lifecycle repair handoff, then regenerate the canonical pre-merge closure marker against the same verified implementation SHA 3a526415.
 
 ## Token Usage
 
