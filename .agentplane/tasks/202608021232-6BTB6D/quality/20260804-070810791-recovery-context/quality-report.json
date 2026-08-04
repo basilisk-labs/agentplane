@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021232-6BTB6D",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-04T07:08:11.201Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "de94bf9d91de1a8a854ad358968e8193e9803342",
+  "blueprint_digest": "79a3a7060573c39cbae559717f887b6001d04e0b422a548ecc9478bef4d6d9f0",
+  "findings": [
+    "All 19 declared scenarios were selected; 18 passed and the only failure is the predeclared non-blocking absolute CLI latency diagnostic. Matched CLI and both supervisor frontends passed their v0.6.26 thresholds.",
+    "Provider evidence contains exactly 50 runs and 55 episodes. Total tokens fell 29.92%; input, output, and reasoning fields all improved; verified success rose 5 to 20; rework fell 36 to 25; scope violations fell 20 to 5; golden mismatches fell 46 to 10."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021232-6BTB6D/quality/objects/sha256/2d5977127459c192fe03dbebe8a60a241ef281579806e6cf1d2a8236b91d63df.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

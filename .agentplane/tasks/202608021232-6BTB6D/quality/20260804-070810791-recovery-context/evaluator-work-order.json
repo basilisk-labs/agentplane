@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608021232-6BTB6D-a1338327fdd29a03b9b04cce",
+  "prepared_at": "2026-08-04T07:08:10.791Z",
+  "task": {
+    "id": "202608021232-6BTB6D",
+    "revision": 17,
+    "objective": "Produce a release-blocking, reproducible qualification record for the final v0.7.1 implementation subject. The record must cover deterministic lifecycle, context, recovery, packaging, hosted, latency, and tooling scenarios before exactly one no-retry Codex provider generation captures 50 runs across 10 scenarios and 55 provider episodes. The evidence must prove semantic quality parity, at least 20% total provider-token reduction, exact provenance, and explicit classification of every failure.",
+    "acceptance_criteria": [
+      "bun run e2e:v0.7.1:gate",
+      "- In scope: freeze one exact implementation subject SHA and Codex CLI version; execute the versioned v0.7.1 qualification matrix; capture deterministic and provider evidence; verify lifecycle/context/recovery/packaging/hosted coverage; measure matched CLI and supervisor latency; validate token and outcome thresholds; preserve raw logs and a classified defect ledger; obtain an independent EVALUATOR verdict.\n- Provider boundary: run the 10-scenario x 5-run capture exactly once, yielding 50 runs and 55 provider episodes, with no retry, replacement, or selective rerun. A failed episode remains failed evidence.\n- Stop before provider execution if deterministic audit has any blocking failure, the candidate SHA or Codex version changes, an existing capture generation is present, the tracked tree is dirty, or a GitHub release-blocking defect changes package/source content.\n- Out of scope: fixing discovered product defects inside this evidence task, dependency upgrades from PR #4752, branch cleanup, version bump, npm publication, and unrelated refactors. Discovered blocking defects require a separate executable task and a newly versioned candidate generation after repair.",
+      "1. Confirm every implementation dependency is DONE, GitHub has no open release-blocking issue or PR, the tracked candidate tree is clean, and freeze the exact implementation subject SHA plus the exact trusted ChatGPT Codex CLI version 0.146.0-alpha.3.1. Record that PR #4752 is a deferred grouped dependency update, not candidate code.\n2. Validate the qualification harness and dry-run command graph, then execute the full deterministic audit without provider access. Stop before provider execution on any blocking defect; preserve the report and defect ledger and route product fixes through separate tasks.\n3. Review deterministic evidence for complete direct and branch_pr task management, managed and external supervisor parity, automatic context freshness, conflict and provenance behavior, interruption and side-effect recovery, packaged migration, hosted boundaries, TypeScript tooling, doctor legacy, coverage, and matched latency.\n4. With the frozen subject unchanged and no existing provider generation, execute exactly one full gate using the trusted Codex CLI 0.146.0-alpha.3.1. The provider scenario must run 10 scenarios x 5 runs, producing exactly 50 runs and 55 provider episodes with no retry or replacement.\n5. Validate the captured measurement: exact subject, runtime, and hash provenance; at least 20% total provider-token reduction; no provider-token field regression; verified success no worse than baseline; and rework, scope-violation, and golden-mismatch counts no worse than baseline.\n6. Classify every failed scenario or provider episode in defects.md with observation, impact, attributable boundary, proposed fix, owner task, and release disposition. A blocking failure keeps this task in rework and forbids release publication.\n7. Generate and verify the task evidence bundle, record all checks against the frozen implementation subject, obtain an independent EVALUATOR pass, publish the evidence-only task PR, wait for hosted checks, integrate it, and clean its merged branch and worktree.",
+      "1. Run bun run e2e:v0.7.1:check and inspect the full dry-run selection. Expected: the versioned manifest and report tests pass; gate selection is full and provider-qualified; every required coverage dimension maps to at least one scenario.\n2. Run node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --subject <frozen-sha> --out-dir <task-evidence-audit-dir>. Expected: every non-provider scenario executes, the report has zero blocking defects, and no provider evidence directory is created.\n3. Confirm the tracked tree, frozen SHA, trusted /Applications/ChatGPT.app/Contents/Resources/codex version 0.146.0-alpha.3.1, candidate cache target, and GitHub blocker audit immediately before provider execution. Expected: subject identity is unchanged, no previous provider generation exists, no open Issue is release-blocking, and deferred PR #4752 is not part of the candidate.\n4. Run exactly once: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --subject <frozen-sha> --codex-version 0.146.0-alpha.3.1 --out-dir <task-evidence-gate-dir>. Expected: 10 scenarios x 5 runs = 50 runs, exactly 55 provider episodes, no retry or replacement, complete raw telemetry, and zero blocking qualification defects.\n5. Inspect efficiency-evidence.json and the raw candidate measurement. Expected: subject and runtime provenance match; all required hashes are present; total provider tokens improve by at least 20%; every token field is no worse; verified_success is no worse; rework_required, scope_violation, and golden mismatch counts are no worse than baseline.\n6. Inspect report.json, defects.md, matched-cli-latency.json, and supervisor-latency.json. Expected: direct and branch_pr, all task states, managed and external frontends, all context conditions, semantic stops, recovery states, packaged migration, hosted boundaries, TypeScript tooling, doctor, coverage, and latency are evidenced; every failure is classified and no blocking item is waived.\n7. Verify the task evidence bundle, run node .agentplane/policy/check-routing.mjs, obtain an independent EVALUATOR pass against the frozen implementation subject and approved scope, and record git status --short --untracked-files=all. Expected: evidence is complete and immutable, routing passes, only the known preserved integration-worktrees directory remains untracked in the base checkout, and the evidence-only task PR passes hosted checks."
+    ]
+  },
+  "evaluated_sha": "de94bf9d91de1a8a854ad358968e8193e9803342",
+  "diff_base_sha": "c411b8c299fffb22e42b05b4ec0cc9b61af8084f",
+  "blueprint_digest": "79a3a7060573c39cbae559717f887b6001d04e0b422a548ecc9478bef4d6d9f0",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608021232-6BTB6D/quality/20260804-070810791-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:893fd12a1311b6f85b9d1bf34bf5005db057c702e0ddea24ed4176c83f06bf90",
+    "prompt_path": ".agentplane/tasks/202608021232-6BTB6D/quality/objects/sha256/118fcd6d189d1c468b655329a1bb0697e1277cfde0b5e7d282ac963ff440b6a7.md",
+    "result_schema_path": ".agentplane/tasks/202608021232-6BTB6D/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608021232-6BTB6D/README.md",
+      "sha256": "sha256:fe47df02f5e48b2661d245808cf957a719663137282bd80796531a7c5eac39a3",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608021232-6BTB6D/quality/objects/sha256/2d5977127459c192fe03dbebe8a60a241ef281579806e6cf1d2a8236b91d63df.patch",
+      "sha256": "sha256:2d5977127459c192fe03dbebe8a60a241ef281579806e6cf1d2a8236b91d63df",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608021232-6BTB6D/quality/objects/sha256/7b3989690e94494cbc3cbc32a5be9e45f44fb42cc03158025e518849036d6bc9.json",
+      "sha256": "sha256:7b3989690e94494cbc3cbc32a5be9e45f44fb42cc03158025e518849036d6bc9",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608021232-6BTB6D/verification/20260804070741196-8feb2a1988f8e494.json",
+      "sha256": "sha256:dfc699004c2ff4d2a833337fd00fad81910d6779fba9045ebcb3074c416e012c",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608021232-6BTB6D/quality/objects/sha256/a4f1deefdff7bf8bca66caf216a987369fdfcad805d0184d4348533177ef1e77.json",
+      "sha256": "sha256:a4f1deefdff7bf8bca66caf216a987369fdfcad805d0184d4348533177ef1e77",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

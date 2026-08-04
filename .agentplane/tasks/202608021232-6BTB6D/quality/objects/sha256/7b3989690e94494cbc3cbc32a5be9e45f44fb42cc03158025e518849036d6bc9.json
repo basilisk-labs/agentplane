@@ -1,0 +1,26 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run e2e:v0.7.1:gate"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-04T07:07:41.196Z",
+    "updated_by": "TESTER",
+    "note": "PASS: structured verification confirms the immutable full gate for frozen subject de94bf9d with zero blocking defects."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608021232-6BTB6D/verification/20260804070741196-8feb2a1988f8e494.json",
+      "sha256": "sha256:dfc699004c2ff4d2a833337fd00fad81910d6779fba9045ebcb3074c416e012c"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

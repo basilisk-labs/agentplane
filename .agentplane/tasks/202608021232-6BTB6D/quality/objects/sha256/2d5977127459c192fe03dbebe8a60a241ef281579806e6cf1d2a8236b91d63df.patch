@@ -1,0 +1,1029 @@
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts
+index 33bb479fa..c7b4eaf66 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts
+@@ -137,6 +137,7 @@ describeCritical("critical: RF-04 candidate measurement", () => {
+   it("fails closed for candidate pilot mode combinations that could mutate prior evidence", async () => {
+     const fixture = await loadCandidateFixture();
+     const common = {
++      capture: false,
+       check: false,
+       pilot: true,
+       replace: false,
+@@ -155,6 +156,18 @@ describeCritical("critical: RF-04 candidate measurement", () => {
+     expect(() =>
+       fixture.candidate.assertCandidateCaptureMode({ ...common, replace: true }),
+     ).toThrow("--pilot cannot be combined with --replace");
++    expect(() =>
++      fixture.candidate.assertCandidateCaptureMode({ ...common, pilot: false, capture: true }),
++    ).toThrow("--capture requires --runtime-bridge");
++    expect(() =>
++      fixture.candidate.assertCandidateCaptureMode({
++        ...common,
++        pilot: false,
++        capture: true,
++        check: true,
++        runtimeBridgeVersion: "0.146.0-alpha.3.1",
++      }),
++    ).toThrow("--capture cannot be combined with --check");
+   });
+ 
+   it("cleans failed candidate pilot staging without publishing artifacts", async () => {
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts
+index df31dd56b..7b9728338 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts
+@@ -13,6 +13,9 @@ const DRIVER_URL = pathToFileURL(
+ const CAPTURE_URL = pathToFileURL(
+   path.join(process.cwd(), "scripts/bench/capture-agent-efficiency-replay.mjs"),
+ ).href;
++const RUNTIME_URL = pathToFileURL(
++  path.join(process.cwd(), "scripts/bench/internal/agent-efficiency-codex-runtime.mjs"),
++).href;
+ const REGISTRY_PATH = path.join(process.cwd(), "scripts/bench/agent-efficiency-fixtures.json");
+ 
+ type Collector = {
+@@ -111,6 +114,14 @@ async function capture(): Promise<CaptureModule> {
+   return (await import(CAPTURE_URL)) as CaptureModule;
+ }
+ 
++async function runtime(): Promise<{
++  runSanitizedCommand(command: string, args: string[], options?: Record<string, unknown>): string;
++}> {
++  return (await import(RUNTIME_URL)) as {
++    runSanitizedCommand(command: string, args: string[], options?: Record<string, unknown>): string;
++  };
++}
++
+ function digest(value: string): string {
+   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
+ }
+@@ -194,6 +205,28 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
+     });
+   });
+ 
++  it("classifies sanitized child failures without exposing child output", async () => {
++    const replayRuntime = await runtime();
++    expect(() =>
++      replayRuntime.runSanitizedCommand(
++        process.execPath,
++        ["-e", 'process.stderr.write("sensitive child output"); process.exit(7)'],
++        { code: "SYNTHETIC" },
++      ),
++    ).toThrow("SYNTHETIC_EXIT");
++    expect(() =>
++      replayRuntime.runSanitizedCommand(process.execPath, ["-e", "setTimeout(() => {}, 10000)"], {
++        code: "SYNTHETIC",
++        timeout: 10,
++      }),
++    ).toThrow("SYNTHETIC_TIMEOUT");
++    expect(() =>
++      replayRuntime.runSanitizedCommand("/definitely/missing/agentplane-command", [], {
++        code: "SYNTHETIC",
++      }),
++    ).toThrow("SYNTHETIC_START");
++  });
++
+   it("feeds the exact prepared bootstrap once and accounts for the actual prompt bytes", async () => {
+     const replayDriver = await driver();
+     const bootstrap = "# ANCHOR_BOOTSTRAP_SENTINEL\nPrepared context.\n";
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts
+index 1f48a1fd0..03ff36c0d 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts
+@@ -268,25 +268,28 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
+       driverPath,
+       'process.stderr.write("RF04_DRIVER_ERROR:CODEX_EXIT\\n");\nprocess.exitCode = 1;\n',
+     );
++    const captureOptions = {
++      allowTestTargets: true,
++      anchor: replay.REPLAY_ANCHOR_COMMIT,
++      driverPath,
++      evidenceDirectory,
++      outputPath,
++      pilot: true,
++      registryPath: path.join(REPO_ROOT, "scripts/bench/agent-efficiency-fixtures.json"),
++      replace: false,
++      runs: replay.MINIMUM_REPLAY_RUNS,
++      sourceDirectory,
++    };
+     try {
+       expect(() =>
+         runWithReplayCleanupRetry(
+-          () =>
+-            capture.captureAgentEfficiencyReplay({
+-              allowTestTargets: true,
+-              anchor: replay.REPLAY_ANCHOR_COMMIT,
+-              driverPath,
+-              evidenceDirectory,
+-              outputPath,
+-              pilot: true,
+-              registryPath: path.join(REPO_ROOT, "scripts/bench/agent-efficiency-fixtures.json"),
+-              replace: false,
+-              runs: replay.MINIMUM_REPLAY_RUNS,
+-              sourceDirectory,
+-            }),
++          () => capture.captureAgentEfficiencyReplay(captureOptions),
+           cleanupFailedReplayCaptures,
+         ),
+       ).toThrow("direct/run-01 replay driver failed with exit 1; diagnostic=CODEX_EXIT");
++      expect(() => capture.captureAgentEfficiencyReplay(captureOptions)).toThrow(
++        "this exact RF-04 harness generation already failed",
++      );
+     } finally {
+       rmSync(driverPath, { force: true });
+     }
+@@ -294,6 +297,20 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
+     expect(existsSync(evidenceDirectory)).toBe(false);
+     expect(existsSync(outputPath)).toBe(false);
+     expect(existsSync(path.join(cacheRoot, "rf04-replay-transaction.json"))).toBe(false);
++    const failureFiles = readdirSync(root).filter((name) => name.startsWith(".capture-failure-"));
++    expect(failureFiles).toHaveLength(1);
++    expect(JSON.parse(readFileSync(path.join(root, failureFiles[0]), "utf8"))).toMatchObject({
++      artifact_kind: "rf04_capture_failure_v1",
++      capture_mode: "pilot",
++      completed_provider_episodes: 0,
++      completed_runs: [],
++      diagnostic_code: "CODEX_EXIT",
++      failed_run: "direct/run-01",
++      failed_run_expected_provider_episodes: 1,
++      failed_run_provider_episodes_observed: null,
++      failure_class: "process_exit",
++      schema_version: 1,
++    });
+     expect(
+       readdirSync(cacheRoot)
+         .filter((name) => name.startsWith("rf04-replay-"))
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts
+index 2a5db870e..7bd43eb71 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts
+@@ -153,6 +153,19 @@ function successfulOperationResult() {
+ }
+ 
+ describe("persisted supervisor execution episodes", () => {
++  it("uses a preobserved common Git directory without another Git lookup", async () => {
++    const root = await mkGitRepoRoot();
++    const commonGitDir = `${root}/.git`;
++
++    await expect(
++      resolveSupervisorExecutionEpisodePath({
++        git_root: `${root}/not-a-repository`,
++        common_git_dir: commonGitDir,
++        task_id: taskId,
++      }),
++    ).resolves.toBe(`${commonGitDir}/agentplane/supervisor/episodes/${taskId}/journal.json`);
++  });
++
+   it("records intent, outcome, and refreshed route without a second controller", async () => {
+     const root = await mkGitRepoRoot();
+     const decision = fixtureDecision(root, 1);
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+index 6ba598037..90fd9c763 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+@@ -180,11 +180,13 @@ function safeTaskPathSegment(taskId: string): string {
+ 
+ export async function resolveSupervisorExecutionEpisodePath(opts: {
+   git_root: string;
++  common_git_dir?: string;
+   task_id: string;
+ }): Promise<string> {
+   const taskId = safeTaskPathSegment(opts.task_id);
+-  const rawCommonGitDir = await gitRevParse(opts.git_root, ["--git-common-dir"]);
+-  const commonGitDir = path.resolve(opts.git_root, rawCommonGitDir);
++  const commonGitDir = opts.common_git_dir
++    ? path.resolve(opts.common_git_dir)
++    : path.resolve(opts.git_root, await gitRevParse(opts.git_root, ["--git-common-dir"]));
+   return path.join(commonGitDir, SUPERVISOR_EPISODE_ARTIFACT_DIRECTORY, taskId, "journal.json");
+ }
+ 
+@@ -223,6 +225,7 @@ function defaultSupervisorExecutionBudget(): SupervisorExecutionBudget {
+ 
+ export async function openSupervisorExecutionEpisode(opts: {
+   git_root: string;
++  common_git_dir?: string;
+   task_id: string;
+   task_revision: number | null;
+   state_fingerprint_digest: string;
+@@ -235,6 +238,7 @@ export async function openSupervisorExecutionEpisode(opts: {
+ }> {
+   const journalPath = await resolveSupervisorExecutionEpisodePath({
+     git_root: opts.git_root,
++    common_git_dir: opts.common_git_dir,
+     task_id: opts.task_id,
+   });
+   const store = createSupervisorEpisodeStore(journalPath);
+diff --git a/packages/agentplane/src/commands/shared/task-backend.ts b/packages/agentplane/src/commands/shared/task-backend.ts
+index f78e2c570..331ab5ce2 100644
+--- a/packages/agentplane/src/commands/shared/task-backend.ts
++++ b/packages/agentplane/src/commands/shared/task-backend.ts
+@@ -1,5 +1,4 @@
+ import type { ResolvedProject } from "@agentplaneorg/core/project";
+-import { realpath } from "node:fs/promises";
+ import path from "node:path";
+ import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+ import { resolveTaskDocUpdatedBy, taskDocToSectionMap } from "@agentplaneorg/core/tasks";
+@@ -19,7 +18,8 @@ import {
+   type TaskData,
+   type TaskSummary,
+ } from "../../backends/task-backend.js";
+-import { GitContext, gitRevParse } from "@agentplaneorg/core/git";
++import { GitContext } from "@agentplaneorg/core/git";
++import { resolveCommonGitDirectory } from "../../shared/env.js";
+ import { loadTaskFromBranchSnapshot } from "./task-backend-branch-snapshot.js";
+ 
+ export {
+@@ -54,10 +54,7 @@ export type CommandContext = {
+ };
+ 
+ export function resolveCommandGitCommonDir(ctx: CommandContext): Promise<string> {
+-  ctx.memo.gitCommonDir ??= gitRevParse(ctx.resolvedProject.gitRoot, [
+-    "--path-format=absolute",
+-    "--git-common-dir",
+-  ]).then(async (commonDir) => await realpath(path.resolve(commonDir)));
++  ctx.memo.gitCommonDir ??= resolveCommonGitDirectory(ctx.resolvedProject.gitRoot);
+   return ctx.memo.gitCommonDir;
+ }
+ 
+diff --git a/packages/agentplane/src/commands/task/external-agent-exchange.test.ts b/packages/agentplane/src/commands/task/external-agent-exchange.test.ts
+new file mode 100644
+index 000000000..12d333910
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-exchange.test.ts
+@@ -0,0 +1,31 @@
++import path from "node:path";
++
++import { describe, expect, it } from "vitest";
++
++import { resolveExternalAgentExchangePaths } from "./external-agent-exchange.js";
++
++describe("resolveExternalAgentExchangePaths", () => {
++  it("reuses a preobserved common Git directory", async () => {
++    const commonGitDir = path.resolve("/repo/.git");
++    const fingerprint = `sha256:${"a".repeat(64)}`;
++
++    const paths = await resolveExternalAgentExchangePaths({
++      git_root: "/not-a-repository",
++      common_git_dir: commonGitDir,
++      task_id: "202608040001-EXCHAN",
++      transition_id: "tr_0123456789abcdef0123456789abcdef",
++      state_fingerprint: fingerprint,
++    });
++
++    expect(paths.directory).toBe(
++      path.join(
++        commonGitDir,
++        "agentplane",
++        "external-agent",
++        "202608040001-EXCHAN",
++        "tr_0123456789abcdef0123456789abcdef",
++        "a".repeat(64),
++      ),
++    );
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/external-agent-exchange.ts b/packages/agentplane/src/commands/task/external-agent-exchange.ts
+index 921d72120..f0f46b495 100644
+--- a/packages/agentplane/src/commands/task/external-agent-exchange.ts
++++ b/packages/agentplane/src/commands/task/external-agent-exchange.ts
+@@ -92,14 +92,16 @@ function fingerprintSegment(value: string): string {
+ 
+ export async function resolveExternalAgentExchangePaths(opts: {
+   git_root: string;
++  common_git_dir?: string;
+   task_id: string;
+   transition_id: string;
+   state_fingerprint: string;
+ }): Promise<ExternalAgentExchangePaths> {
+   const taskId = safeSegment(opts.task_id, "External-agent task id");
+   const transitionId = safeSegment(opts.transition_id, "External-agent transition id");
+-  const rawCommonGitDir = await gitRevParse(opts.git_root, ["--git-common-dir"]);
+-  const commonGitDir = path.resolve(opts.git_root, rawCommonGitDir);
++  const commonGitDir = opts.common_git_dir
++    ? path.resolve(opts.common_git_dir)
++    : path.resolve(opts.git_root, await gitRevParse(opts.git_root, ["--git-common-dir"]));
+   const directory = path.join(
+     commonGitDir,
+     "agentplane",
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor.ts b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+index 2e735e062..86e3996fa 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+@@ -20,7 +20,11 @@ import {
+   resolveSupervisorExecutionEpisodePath,
+   tryAcquireSupervisorExecutionLease,
+ } from "../shared/supervisor-execution-episode.js";
+-import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
++import {
++  loadCommandContext,
++  resolveCommandGitCommonDir,
++  type CommandContext,
++} from "../shared/task-backend.js";
+ 
+ import { agentTransitionId } from "./agent-action-packet.js";
+ import {
+@@ -152,6 +156,7 @@ async function recordIssuedEpisode(opts: {
+   for (let attempt = 0; attempt < 3; attempt += 1) {
+     const opened = await openSupervisorExecutionEpisode({
+       git_root: opts.command.resolvedProject.gitRoot,
++      common_git_dir: await resolveCommandGitCommonDir(opts.command),
+       task_id: opts.decision.task.id,
+       task_revision: opts.work_order.task.revision,
+       state_fingerprint_digest: opts.decision.workflowStep.preconditionFingerprint.digest,
+@@ -236,8 +241,10 @@ export async function issueExternalAgentExchange(opts: {
+   const purpose = semanticPurpose(opts.decision);
+   if (!purpose) return null;
+   const transitionId = agentTransitionId(step.id);
++  const commonGitDir = await resolveCommandGitCommonDir(opts.command);
+   const paths = await resolveExternalAgentExchangePaths({
+     git_root: opts.command.resolvedProject.gitRoot,
++    common_git_dir: commonGitDir,
+     task_id: opts.decision.task.id,
+     transition_id: transitionId,
+     state_fingerprint: step.preconditionFingerprint.digest,
+@@ -424,8 +431,10 @@ export async function acceptExternalAgentResult(opts: {
+       message: "Result task_id does not match command task id.",
+     });
+   }
++  const commonGitDir = await resolveCommandGitCommonDir(opts.command);
+   const paths = await resolveExternalAgentExchangePaths({
+     git_root: opts.command.resolvedProject.gitRoot,
++    common_git_dir: commonGitDir,
+     task_id: identity.task_id,
+     transition_id: identity.transition_id,
+     state_fingerprint: identity.state_fingerprint,
+@@ -445,6 +454,7 @@ export async function acceptExternalAgentResult(opts: {
+   }
+   const journalPath = await resolveSupervisorExecutionEpisodePath({
+     git_root: opts.command.resolvedProject.gitRoot,
++    common_git_dir: commonGitDir,
+     task_id: opts.task_id,
+   });
+   const lease = await tryAcquireSupervisorExecutionLease({ journal_path: journalPath });
+diff --git a/packages/agentplane/src/shared/env.test.ts b/packages/agentplane/src/shared/env.test.ts
+index c093d2b8c..35c94eeb2 100644
+--- a/packages/agentplane/src/shared/env.test.ts
++++ b/packages/agentplane/src/shared/env.test.ts
+@@ -1,10 +1,10 @@
+-import { mkdtemp, mkdir, writeFile } from "node:fs/promises";
++import { mkdtemp, mkdir, realpath, writeFile } from "node:fs/promises";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ 
+ import { describe, expect, it } from "vitest";
+ 
+-import { resolveDotEnvRoot } from "./env.js";
++import { resolveCommonGitDirectory, resolveDotEnvRoot } from "./env.js";
+ 
+ describe("resolveDotEnvRoot", () => {
+   it("uses git commondir instead of assuming the .git/worktrees path layout", async () => {
+@@ -19,5 +19,17 @@ describe("resolveDotEnvRoot", () => {
+     await writeFile(path.join(gitDir, "commondir"), path.join(repoRoot, ".git"), "utf8");
+ 
+     await expect(resolveDotEnvRoot(worktreeRoot)).resolves.toBe(repoRoot);
++    await expect(resolveCommonGitDirectory(worktreeRoot)).resolves.toBe(
++      await realpath(path.join(repoRoot, ".git")),
++    );
++  });
++
++  it("resolves the common Git directory for a primary checkout", async () => {
++    const root = await mkdtemp(path.join(tmpdir(), "agentplane-common-git-dir-"));
++    await mkdir(path.join(root, ".git"));
++
++    await expect(resolveCommonGitDirectory(root)).resolves.toBe(
++      await realpath(path.join(root, ".git")),
++    );
+   });
+ });
+diff --git a/packages/agentplane/src/shared/env.ts b/packages/agentplane/src/shared/env.ts
+index 12697bd48..9f25b032b 100644
+--- a/packages/agentplane/src/shared/env.ts
++++ b/packages/agentplane/src/shared/env.ts
+@@ -1,5 +1,5 @@
+ import { execFile } from "node:child_process";
+-import { readFile, stat } from "node:fs/promises";
++import { readFile, realpath, stat } from "node:fs/promises";
+ import path from "node:path";
+ import { promisify } from "node:util";
+ 
+@@ -136,6 +136,19 @@ async function resolveCommonGitDir(gitDir: string): Promise<string> {
+   return gitDir;
+ }
+ 
++export async function resolveCommonGitDirectory(rootDir: string): Promise<string> {
++  const resolvedRoot = path.resolve(rootDir);
++  const gitPath = path.join(resolvedRoot, ".git");
++  const gitPathStats = await stat(gitPath);
++  if (gitPathStats.isDirectory()) return await realpath(gitPath);
++  if (!gitPathStats.isFile()) {
++    throw new Error(`Git metadata path is neither a directory nor a file: ${gitPath}`);
++  }
++  const gitDir = await readGitFileDir(resolvedRoot, gitPath);
++  if (!gitDir) throw new Error(`Git metadata file has no valid gitdir entry: ${gitPath}`);
++  return await realpath(await resolveCommonGitDir(gitDir));
++}
++
+ async function resolveCoreWorktree(commonGitDir: string): Promise<string | null> {
+   const output = await gitStdoutRaw([
+     "config",
+diff --git a/scripts/bench/capture-agent-efficiency-candidate.mjs b/scripts/bench/capture-agent-efficiency-candidate.mjs
+index 1214ecc02..30f880f6f 100644
+--- a/scripts/bench/capture-agent-efficiency-candidate.mjs
++++ b/scripts/bench/capture-agent-efficiency-candidate.mjs
+@@ -61,6 +61,7 @@ import {
+   CODEX_REPLAY_CLI_VERSION_ENV,
+   resolveCodexReplayCliVersion,
+ } from "./internal/agent-efficiency-codex-runtime.mjs";
++import { checkRuntimeBridge } from "./capture-agent-efficiency-runtime-bridge.mjs";
+ 
+ const SCRIPT_NAME = "capture-agent-efficiency-candidate.mjs";
+ const scriptPath = fileURLToPath(import.meta.url);
+@@ -102,6 +103,8 @@ function helpText() {
+     "  --root <path>     Candidate evidence root under .agentplane/cache/rf04-candidate/.",
+     "  --runtime-bridge <version>  Materialize or validate a no-provider comparison against the",
+     "                              historical runtime bridge for this exact Codex CLI version.",
++    "  --capture         With --runtime-bridge, capture one candidate generation and then",
++    "                    materialize the comparison against the preflighted runtime bridge.",
+     "  --pilot           Run only direct/run-01 against the exact candidate and persist nothing.",
+     "  --replace         Replace one complete previous candidate capture generation.",
+     "  --check           Rebuild and validate an existing capture without provider calls.",
+@@ -116,13 +119,14 @@ function helpText() {
+ function parseArgs(argv) {
+   const { flags, positionals } = parseScriptArgs(argv, {
+     valueFlags: ["subject", "runs", "driver", "root", "codex-version", "runtime-bridge"],
+-    booleanFlags: ["check", "help", "pilot", "replace"],
++    booleanFlags: ["capture", "check", "help", "pilot", "replace"],
+     aliases: { h: "help" },
+   });
+   if (positionals.length > 0) {
+     throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
+   }
+   return {
++    capture: flags.capture === true,
+     check: flags.check === true,
+     codexCliVersion: flags["codex-version"] ?? "",
+     driverPath: path.resolve(flags.driver ?? DEFAULT_DRIVER_PATH),
+@@ -137,6 +141,12 @@ function parseArgs(argv) {
+ }
+ 
+ export function assertCandidateCaptureMode(options) {
++  if (options.capture && options.runtimeBridgeVersion === null) {
++    throw new Error("--capture requires --runtime-bridge");
++  }
++  if (options.capture && options.check) {
++    throw new Error("--capture cannot be combined with --check");
++  }
+   if (!options.pilot) return;
+   if (options.check) throw new Error("--pilot cannot be combined with --check");
+   if (options.runtimeBridgeVersion !== null) {
+@@ -838,17 +848,18 @@ export function validateCandidatePilotCapture({
+     runs,
+     scenarioById: new Map(registry.scenarios.map((scenario) => [scenario.id, scenario])),
+   });
++  const providerUsageByRole = {};
++  for (const [role, usage] of Object.entries(envelope.token_usage_by_role)) {
++    providerUsageByRole[role] = Object.fromEntries(
++      Object.entries(usage).map(([field, cell]) => [field, cell.value]),
++    );
++  }
+   return {
+     driver_sha256: driverIdentity.sha256,
+     episode_count: envelope.metrics.llm_episodes.value,
+     pilot: true,
+     profile: envelope.profile,
+-    provider_usage_by_role: Object.fromEntries(
+-      Object.entries(envelope.token_usage_by_role).map(([role, usage]) => [
+-        role,
+-        Object.fromEntries(Object.entries(usage).map(([field, cell]) => [field, cell.value])),
+-      ]),
+-    ),
++    provider_usage_by_role: providerUsageByRole,
+     run_id: envelope.run_id,
+     subject_sha: anchor,
+   };
+@@ -1189,6 +1200,27 @@ export function materializeRuntimeBridgeMeasurement(options) {
+   return measurement;
+ }
+ 
++export function captureCandidateWithRuntimeBridge(options) {
++  assertCandidateCaptureMode(options);
++  if (options.runtimeBridgeVersion === null) {
++    throw new Error("runtime bridge version is required for provider capture");
++  }
++  const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
++  if (codexCliVersion !== options.runtimeBridgeVersion) {
++    throw new Error("candidate and runtime bridge Codex CLI versions must match exactly");
++  }
++  checkRuntimeBridge({ codexCliVersion });
++  captureCandidate({
++    ...options,
++    capture: false,
++    runtimeBridgeVersion: null,
++  });
++  return materializeRuntimeBridgeMeasurement({
++    ...options,
++    capture: false,
++  });
++}
++
+ export function checkRuntimeBridgeMeasurement(options) {
+   const subject = assertCandidateSubject(options.subject);
+   const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
+@@ -1248,9 +1280,11 @@ const main = defineCheck({
+     }
+     const runtimeBridge = options.runtimeBridgeVersion !== null;
+     const measurement = runtimeBridge
+-      ? options.check
+-        ? checkRuntimeBridgeMeasurement(options)
+-        : materializeRuntimeBridgeMeasurement(options)
++      ? options.capture
++        ? captureCandidateWithRuntimeBridge(options)
++        : options.check
++          ? checkRuntimeBridgeMeasurement(options)
++          : materializeRuntimeBridgeMeasurement(options)
+       : options.check
+         ? checkCandidateCapture(options)
+         : captureCandidate(options);
+diff --git a/scripts/bench/capture-agent-efficiency-replay.mjs b/scripts/bench/capture-agent-efficiency-replay.mjs
+index 8c9f61df7..ec4c02c90 100644
+--- a/scripts/bench/capture-agent-efficiency-replay.mjs
++++ b/scripts/bench/capture-agent-efficiency-replay.mjs
+@@ -217,6 +217,30 @@ function targetExists(target) {
+   return lstatSync(target, { throwIfNoEntry: false }) !== undefined;
+ }
+ 
++export function replayCaptureFailurePath(outputPath, harnessSha256) {
++  const digest = harnessSha256?.match(/^sha256:([a-f0-9]{64})$/)?.[1];
++  if (!digest) throw new Error("RF-04 capture failure evidence requires a harness digest");
++  return path.join(path.dirname(outputPath), `.capture-failure-${digest}.json`);
++}
++
++function replayCaptureFailureDiagnostic(error) {
++  if (error && typeof error === "object" && typeof error.code === "string") {
++    return /^[A-Z0-9_]{1,96}$/u.test(error.code) ? error.code : "UNCLASSIFIED";
++  }
++  const message = error instanceof Error ? error.message : "";
++  const diagnostic = message.match(/(?:^|; diagnostic=)([A-Z0-9_]{1,96})(?:$|\b)/u)?.[1];
++  return diagnostic ?? "CAPTURE_CONTRACT";
++}
++
++function replayCaptureFailureClass(diagnosticCode) {
++  if (diagnosticCode.endsWith("_TIMEOUT")) return "timeout";
++  if (diagnosticCode.endsWith("_SIGNAL")) return "signal";
++  if (diagnosticCode.endsWith("_START")) return "process_start";
++  if (diagnosticCode.endsWith("_EXIT")) return "process_exit";
++  if (diagnosticCode === "CAPTURE_CONTRACT") return "capture_contract";
++  return "driver_diagnostic";
++}
++
+ function captureWithDriver({
+   anchor,
+   codexCliVersion,
+@@ -281,6 +305,13 @@ function captureWithDriver({
+   const cacheRoot = path.join(repoRoot, ".agentplane", "cache");
+   mkdirSync(cacheRoot, { recursive: true });
+   assertInsideRepository(cacheRoot, "RF-04 capture cache", "directory");
++  const failurePath = replayCaptureFailurePath(outputPath, harnessManifest.sha256);
++  assertInsideRepository(failurePath, "RF-04 capture failure evidence", "file");
++  if (targetExists(failurePath)) {
++    throw new Error(
++      "this exact RF-04 harness generation already failed; change and review the harness before another capture",
++    );
++  }
+   const markerPath = path.join(cacheRoot, "rf04-replay-transaction.json");
+   if (lstatSync(markerPath, { throwIfNoEntry: false })) {
+     throw new Error("an unfinished RF-04 capture transaction requires manual recovery");
+@@ -309,6 +340,10 @@ function captureWithDriver({
+       registryPath,
+       repoRoot,
+     });
++  const completedRuns = [];
++  let completedProviderEpisodes = 0;
++  let failedRun = null;
++  let failedRunExpectedProviderEpisodes = null;
+ 
+   try {
+     const pilotScenario = registry.scenarios.find((scenario) => scenario.id === "direct");
+@@ -333,6 +368,8 @@ function captureWithDriver({
+         const outputPath = path.join(scenarioDirectory, fileName);
+         const evidenceOutputPath = path.join(evidenceScenarioDirectory, fileName);
+         const runId = `${scenario.id}/run-${String(runIndex).padStart(2, "0")}`;
++        failedRun = runId;
++        failedRunExpectedProviderEpisodes = scenario.expected_episode_trace.length;
+         const driverArgs = [
+           driverPath,
+           "--scenario",
+@@ -383,6 +420,14 @@ function captureWithDriver({
+         if (evidenceBytes !== `${stableJson(evidence, 2)}\n`) {
+           throw new Error(`${runId} driver evidence must be canonical stable JSON`);
+         }
++        const providerEpisodes = envelope.metrics?.llm_episodes?.value;
++        if (!Number.isInteger(providerEpisodes) || providerEpisodes < 0) {
++          throw new Error(`${runId} driver envelope has no exact provider-episode count`);
++        }
++        completedRuns.push(runId);
++        completedProviderEpisodes += providerEpisodes;
++        failedRun = null;
++        failedRunExpectedProviderEpisodes = null;
+       }
+     }
+ 
+@@ -472,6 +517,35 @@ function captureWithDriver({
+     );
+     return baseline;
+   } catch (error) {
++    const diagnosticCode = replayCaptureFailureDiagnostic(error);
++    let failurePersistenceError = null;
++    try {
++      writeAtomic(
++        failurePath,
++        `${stableJson(
++          {
++            anchor,
++            artifact_kind: "rf04_capture_failure_v1",
++            capture_mode: pilot ? "pilot" : "full",
++            codex_cli_version: codexCliVersion,
++            completed_provider_episodes: completedProviderEpisodes,
++            completed_runs: completedRuns,
++            diagnostic_code: diagnosticCode,
++            driver_sha256: driverIdentity.sha256,
++            failed_at: new Date().toISOString(),
++            failed_run: failedRun,
++            failed_run_expected_provider_episodes: failedRunExpectedProviderEpisodes,
++            failed_run_provider_episodes_observed: null,
++            failure_class: replayCaptureFailureClass(diagnosticCode),
++            harness_sha256: harnessManifest.sha256,
++            schema_version: 1,
++          },
++          2,
++        )}\n`,
++      );
++    } catch (persistenceError) {
++      failurePersistenceError = persistenceError;
++    }
+     let inputFailure = null;
+     try {
+       assertInputsUnchanged();
+@@ -480,10 +554,16 @@ function captureWithDriver({
+     }
+     if (inputFailure) {
+       throw new AggregateError(
+-        [error, inputFailure],
++        [error, inputFailure, ...(failurePersistenceError ? [failurePersistenceError] : [])],
+         "RF-04 capture failed and reviewed capture inputs also drifted",
+       );
+     }
++    if (failurePersistenceError) {
++      throw new AggregateError(
++        [error, failurePersistenceError],
++        "RF-04 capture failed and its sanitized failure evidence could not be persisted",
++      );
++    }
+     throw error;
+   } finally {
+     if (!lstatSync(markerPath, { throwIfNoEntry: false })) {
+diff --git a/scripts/bench/internal/agent-efficiency-codex-runtime.mjs b/scripts/bench/internal/agent-efficiency-codex-runtime.mjs
+index def8ecca6..4e75e0a67 100644
+--- a/scripts/bench/internal/agent-efficiency-codex-runtime.mjs
++++ b/scripts/bench/internal/agent-efficiency-codex-runtime.mjs
+@@ -64,7 +64,13 @@ export function runSanitizedCommand(command, args, options = {}) {
+     maxBuffer: options.maxBuffer ?? 4 * 1024 * 1024,
+     timeout: options.timeout ?? SUPERVISOR_COMMAND_TIMEOUT_MS,
+   });
+-  if (result.error || result.status !== 0) fail(options.code ?? "SUPERVISOR_COMMAND");
++  if (result.error || result.status !== 0) {
++    const baseCode = options.code ?? "SUPERVISOR_COMMAND";
++    if (result.error?.code === "ETIMEDOUT") fail(`${baseCode}_TIMEOUT`);
++    if (result.signal !== null) fail(`${baseCode}_SIGNAL`);
++    if (result.error) fail(`${baseCode}_START`);
++    fail(`${baseCode}_EXIT`);
++  }
+   return result.stdout;
+ }
+ 
+diff --git a/scripts/lib/test-route-registry.mjs b/scripts/lib/test-route-registry.mjs
+index e33012940..f637b7a7d 100644
+--- a/scripts/lib/test-route-registry.mjs
++++ b/scripts/lib/test-route-registry.mjs
+@@ -356,6 +356,7 @@ const V07_LIFECYCLE_FILES = [
+   "packages/agentplane/src/commands/task/direct-task-supervisor-closeout.test.ts",
+   "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
+   "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
++  "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts",
+   "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts",
+   "packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts",
+   "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts",
+@@ -388,6 +389,7 @@ const V07_SUPERVISOR_FILES = [
+   "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
+   "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
+   "packages/agentplane/src/commands/task/agent-action-packet.test.ts",
++  "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts",
+   "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts",
+   "packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",
+   "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
+diff --git a/scripts/qualification/check-v0.7.1-product-contract.mjs b/scripts/qualification/check-v0.7.1-product-contract.mjs
+index 6c1a32f71..f649fa394 100644
+--- a/scripts/qualification/check-v0.7.1-product-contract.mjs
++++ b/scripts/qualification/check-v0.7.1-product-contract.mjs
+@@ -34,6 +34,19 @@ function probeCli(args, cwd = repoRoot) {
+   };
+ }
+ 
++function probeNodeScript(relativePath, args = []) {
++  const result = spawnSync(process.execPath, [path.join(repoRoot, relativePath), ...args], {
++    cwd: repoRoot,
++    encoding: "utf8",
++    env: { ...process.env, AGENTPLANE_NO_UPDATE_CHECK: "1" },
++  });
++  return {
++    status: result.status,
++    stdout: result.stdout ?? "",
++    stderr: result.stderr ?? "",
++  };
++}
++
+ function read(relativePath) {
+   return readFileSync(path.join(repoRoot, relativePath), "utf8");
+ }
+@@ -51,6 +64,48 @@ function checkOnboarding(failures) {
+   if (/normal first task, prefer `agentplane task begin/u.test(commandGuide)) {
+     failures.push("quickstart still recommends the semantic task begin shortcut");
+   }
++  const canonicalFlow = [
++    'agentplane task new --title "Inspect Agentplane artifacts"',
++    "agentplane task advance <task-id> --agent-json",
++    "agentplane task run <task-id>",
++  ];
++  const positions = canonicalFlow.map((command) => readme.indexOf(command));
++  if (positions.includes(-1)) {
++    failures.push("README omits the canonical task new / task advance / task run flow");
++  } else if (!(positions[0] < positions[1] && positions[1] < positions[2])) {
++    failures.push("README presents the canonical supervisor flow out of order");
++  }
++}
++
++function checkCompatibilityShortcuts(failures) {
++  const begin = probeCli(["task", "begin", "--help"]);
++  if (begin.status === 0) {
++    if (!/Compatibility shortcut/iu.test(begin.stdout)) {
++      failures.push("task begin is not explicitly labeled as a compatibility shortcut");
++    }
++    if (!/stop at semantic planning or approval/iu.test(begin.stdout)) {
++      failures.push("task begin does not expose its semantic planning stop");
++    }
++  } else {
++    failures.push("task begin compatibility help is not executable");
++  }
++
++  const complete = probeCli(["task", "complete", "--help"]);
++  if (complete.status === 0) {
++    if (!/already verified, independently reviewed task/iu.test(complete.stdout)) {
++      failures.push("task complete does not require prior verification and independent review");
++    }
++    if (
++      !/Unsafe compatibility override for a missing observed runner receipt/iu.test(complete.stdout)
++    ) {
++      failures.push("task complete does not expose the observed-receipt safety boundary");
++    }
++    if (!/requires --yes/iu.test(complete.stdout)) {
++      failures.push("task complete unsafe override is not guarded by explicit confirmation");
++    }
++  } else {
++    failures.push("task complete compatibility help is not executable");
++  }
+ }
+ 
+ function checkManagedFrontend(failures) {
+@@ -232,12 +287,54 @@ function checkExternalFrontend(failures) {
+   }
+ }
+ 
++function checkMaintenanceContract(failures) {
++  const legacy = probeCli(["doctor", "legacy", "--json"]);
++  if (legacy.status === 0) {
++    try {
++      const report = JSON.parse(legacy.stdout);
++      assert.equal(report.schema_version, 1, "doctor legacy schema_version must be 1");
++      assert.equal(report.kind, "agentplane.doctor.legacy", "doctor legacy kind must be stable");
++      assert.ok(Array.isArray(report.adapters) && report.adapters.length > 0);
++      for (const adapter of report.adapters) {
++        assert.equal(typeof adapter.introduced_in, "string");
++        assert.ok(adapter.deprecated_in === null || typeof adapter.deprecated_in === "string");
++        assert.ok(
++          typeof adapter.remove_in === "string" ||
++            (adapter.remove_in === null && typeof adapter.removal_blocker === "string"),
++        );
++        assert.equal(typeof adapter.migration_command, "string");
++        assert.equal(typeof adapter.usage_probe?.kind, "string");
++      }
++    } catch (error) {
++      failures.push(
++        `doctor legacy contract is invalid: ${error instanceof Error ? error.message : String(error)}`,
++      );
++    }
++  } else {
++    failures.push("doctor legacy --json is not executable");
++  }
++
++  for (const [label, script] of [
++    ["TypeScript 7 toolchain", "scripts/checks/check-typescript-toolchain.mjs"],
++    ["Knip package budget", "scripts/checks/check-knip-baseline.mjs"],
++  ]) {
++    const result = probeNodeScript(script);
++    if (result.status !== 0) {
++      failures.push(
++        `${label} check failed: ${(result.stderr || result.stdout).trim() || `exit=${result.status ?? 1}`}`,
++      );
++    }
++  }
++}
++
+ function main() {
+   const failures = [];
+   checkOnboarding(failures);
++  checkCompatibilityShortcuts(failures);
+   checkCanonicalHelp(failures);
+   checkManagedFrontend(failures);
+   checkExternalFrontend(failures);
++  checkMaintenanceContract(failures);
+   if (failures.length > 0) {
+     throw new Error(
+       ["v0.7.1 product contract is release-blocking:", ...failures.map((item) => `- ${item}`)].join(
+@@ -246,7 +343,7 @@ function main() {
+     );
+   }
+   process.stdout.write(
+-    "v0.7.1 product contract OK (managed run + compact external advance; normal packet <=2048 bytes)\n",
++    "v0.7.1 product contract OK (canonical supervisor UX, guarded compatibility, compact packet, legacy inventory, TS7, and zero-unused CLI)\n",
+   );
+ }
+ 
+diff --git a/scripts/qualification/measure-v0.7.1-supervisor-latency.mjs b/scripts/qualification/measure-v0.7.1-supervisor-latency.mjs
+index d2bbc46fe..04756065f 100644
+--- a/scripts/qualification/measure-v0.7.1-supervisor-latency.mjs
++++ b/scripts/qualification/measure-v0.7.1-supervisor-latency.mjs
+@@ -26,8 +26,8 @@ const scriptPath = fileURLToPath(import.meta.url);
+ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+ const BASELINE_VERSION = "0.6.26";
+ const PACKAGES = ["core", "recipes", "agentplane"];
+-const DEFAULT_COLD_RUNS = 20;
+-const DEFAULT_WARM_RUNS = 30;
++const DEFAULT_COLD_RUNS = 60;
++const DEFAULT_WARM_RUNS = 60;
+ const DEFAULT_WARMUPS = 2;
+ const REPOSITORY_SCAN_PATTERN =
+   /^(?:branch|diff|for-each-ref|ls-files|merge-base|rev-list|rev-parse|show|status|symbolic-ref|worktree)\b/u;
+diff --git a/scripts/qualification/release-qualification.test.mjs b/scripts/qualification/release-qualification.test.mjs
+index 156cc3863..1194519c7 100644
+--- a/scripts/qualification/release-qualification.test.mjs
++++ b/scripts/qualification/release-qualification.test.mjs
+@@ -140,10 +140,15 @@ function supervisorLatencySurfaces(count) {
+ describe("v0.7.1 release qualification contract", () => {
+   it("preflights the exact provider runtime only before provider execution", () => {
+     const calls = [];
++    const bridgeCalls = [];
+     const verify = (source) => {
+       calls.push(source);
+       return "0.146.0-alpha.3.1";
+     };
++    const verifyBridge = (source) => {
++      bridgeCalls.push(source);
++      return {};
++    };
+     const base = { codexVersion: "0.146.0-alpha.3.1", dryRun: false, provider: false };
+     const localScenarios = [{ id: "typecheck", tier: "full" }];
+     const providerScenarios = [{ id: "provider-matrix", tier: "provider" }];
+@@ -162,10 +167,16 @@ describe("v0.7.1 release qualification contract", () => {
+       null,
+     );
+     assert.equal(
+-      preflightQualificationProviderRuntime({ ...base, provider: true }, providerScenarios, verify),
++      preflightQualificationProviderRuntime(
++        { ...base, provider: true },
++        providerScenarios,
++        verify,
++        verifyBridge,
++      ),
+       "0.146.0-alpha.3.1",
+     );
+     assert.deepEqual(calls, [{ [CODEX_REPLAY_CLI_VERSION_ENV]: "0.146.0-alpha.3.1" }]);
++    assert.deepEqual(bridgeCalls, [{ codexCliVersion: "0.146.0-alpha.3.1" }]);
+ 
+     const mismatch = Object.assign(new Error("CODEX_VERSION_MISMATCH"), {
+       code: "CODEX_VERSION_MISMATCH",
+@@ -178,6 +189,7 @@ describe("v0.7.1 release qualification contract", () => {
+           () => {
+             throw mismatch;
+           },
++          verifyBridge,
+         ),
+       (error) => error === mismatch,
+     );
+@@ -353,6 +365,9 @@ describe("v0.7.1 release qualification contract", () => {
+     assert.equal(localIds.includes("efficiency-evidence"), false);
+     assert.equal(provider.filter((scenario) => scenario.tier === "provider").length, 1);
+     assert.ok(providerIds.indexOf("provider-matrix") < providerIds.indexOf("efficiency-evidence"));
++    const providerCommand = provider.find((scenario) => scenario.id === "provider-matrix").command;
++    assert.ok(providerCommand.includes("--runtime-bridge"));
++    assert.ok(providerCommand.includes("--capture"));
+   });
+ 
+   it("fails closed when an explicit scenario omits its dependency", () => {
+@@ -581,11 +596,11 @@ describe("v0.7.1 release qualification contract", () => {
+     assert.equal(failing.delta_ms, 4);
+   });
+ 
+-  it("requires 20 cold and 30 warm supervisor samples for both public frontends", () => {
++  it("requires 60 cold and 60 warm supervisor samples for both public frontends", () => {
+     const report = {
+       schema_version: 1,
+       kind: "agentplane.v0.7.1_supervisor_latency",
+-      phases: { cold: supervisorLatencySurfaces(20), warm: supervisorLatencySurfaces(30) },
++      phases: { cold: supervisorLatencySurfaces(60), warm: supervisorLatencySurfaces(60) },
+     };
+ 
+     assert.equal(validateSupervisorLatencyReport(report), report);
+@@ -594,13 +609,13 @@ describe("v0.7.1 release qualification contract", () => {
+     insufficientCold.phases.cold[0].candidate.samples = Array.from({ length: 10 }, () => 100);
+     assert.throws(
+       () => validateSupervisorLatencyReport(insufficientCold),
+-      /cold\.external_advance\.candidate requires 20 samples/u,
++      /cold\.external_advance\.candidate requires 60 samples/u,
+     );
+     const insufficient = structuredClone(report);
+-    insufficient.phases.warm[0].candidate.sample_count = 29;
++    insufficient.phases.warm[0].candidate.sample_count = 59;
+     assert.throws(
+       () => validateSupervisorLatencyReport(insufficient),
+-      /warm\.external_advance\.candidate requires 30 samples/u,
++      /warm\.external_advance\.candidate requires 60 samples/u,
+     );
+   });
+ 
+@@ -623,7 +638,7 @@ describe("v0.7.1 release qualification contract", () => {
+     const report = {
+       schema_version: 1,
+       kind: "agentplane.v0.7.1_supervisor_latency",
+-      phases: { cold: supervisorLatencySurfaces(20), warm: supervisorLatencySurfaces(30) },
++      phases: { cold: supervisorLatencySurfaces(60), warm: supervisorLatencySurfaces(60) },
+     };
+     report.phases.cold[0].candidate.git_command_histogram.total_count -= 1;
+     assert.throws(
+diff --git a/scripts/qualification/run-v0.7.1-release-qualification.mjs b/scripts/qualification/run-v0.7.1-release-qualification.mjs
+index ffae7f3e8..99df211d1 100644
+--- a/scripts/qualification/run-v0.7.1-release-qualification.mjs
++++ b/scripts/qualification/run-v0.7.1-release-qualification.mjs
+@@ -16,6 +16,7 @@ import {
+   assertCodexBinary,
+   CODEX_REPLAY_CLI_VERSION_ENV,
+ } from "../bench/internal/agent-efficiency-codex-runtime.mjs";
++import { checkRuntimeBridge } from "../bench/capture-agent-efficiency-runtime-bridge.mjs";
+ import { isDirectRun, parseScriptArgs } from "../lib/script-runtime.mjs";
+ 
+ const scriptPath = fileURLToPath(import.meta.url);
+@@ -210,9 +211,12 @@ export function preflightQualificationProviderRuntime(
+   options,
+   scenarios,
+   verify = assertCodexBinary,
++  verifyBridge = checkRuntimeBridge,
+ ) {
+   if (options.dryRun || !scenarios.some((scenario) => scenario.tier === "provider")) return null;
+-  return verify({ [CODEX_REPLAY_CLI_VERSION_ENV]: options.codexVersion });
++  const runtime = verify({ [CODEX_REPLAY_CLI_VERSION_ENV]: options.codexVersion });
++  verifyBridge({ codexCliVersion: options.codexVersion });
++  return runtime;
+ }
+ 
+ async function main(argv = process.argv.slice(2)) {
+@@ -236,7 +240,13 @@ async function main(argv = process.argv.slice(2)) {
+   const relativeOutputDirectory = path.relative(repoRoot, outputDirectory);
+   const variables = {
+     candidateEvidence: options.provider
+-      ? path.join(".agentplane", "cache", "rf04-candidate", options.subject, "measurement.json")
++      ? path.join(
++          ".agentplane",
++          "cache",
++          "rf04-candidate",
++          options.subject,
++          `measurement.runtime-bridge-codex-${options.codexVersion}.json`,
++        )
+       : path.join("scripts", "baselines", "agent-efficiency-v0.7-beta1-candidate.json"),
+     codexVersion: options.codexVersion,
+     evidenceDir: relativeOutputDirectory,
+diff --git a/scripts/qualification/v0.7.1-release-qualification.json b/scripts/qualification/v0.7.1-release-qualification.json
+index 6728e2822..54854b90c 100644
+--- a/scripts/qualification/v0.7.1-release-qualification.json
++++ b/scripts/qualification/v0.7.1-release-qualification.json
+@@ -411,7 +411,10 @@
+         "--codex-version",
+         "{codexVersion}",
+         "--runs",
+-        "5"
++        "5",
++        "--runtime-bridge",
++        "{codexVersion}",
++        "--capture"
+       ],
+       "timeout_ms": 7200000,
+       "coverage": {
