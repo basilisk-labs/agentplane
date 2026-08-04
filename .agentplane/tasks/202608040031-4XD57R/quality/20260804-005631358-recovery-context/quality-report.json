@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608040031-4XD57R",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-04T00:56:32.424Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The exact 3a526415 semantic change and b80f2e98 lifecycle-repair target remain acceptable: one redundant managed Git observation is removed without weakening snapshot freshness or recovery invariants, and all unchanged latency gates pass.",
+  "evaluated_sha": "b80f2e98f136add92e2cd143da7d5731dae64519",
+  "blueprint_digest": "5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd",
+  "findings": [
+    "Authoritative snapshot dirty paths are reused only when available; the live Git status fallback remains fail-closed.",
+    "The final sequential observation order avoids the rejected cold-start I/O contention while preserving blueprint and fingerprint semantics."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608040031-4XD57R/evidence/supervisor-latency-3a526415d.json",
+    ".agentplane/tasks/202608040031-4XD57R/verification/20260804005555151-9c2bc69f16cd56bd.json",
+    "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts",
+    "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts",
+    "packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted exact-head CI and Codex review still must validate the published PR head before integration."
+  ]
+}
