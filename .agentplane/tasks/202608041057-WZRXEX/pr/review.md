@@ -13,7 +13,7 @@ Created: 2026-08-04T10:58:31.949Z
 ## Verification
 
 - State: ok
-- Note: Final v0.7.2 candidate verification passed
+- Note: Final v0.7.2 candidate and archived-incident state verified
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

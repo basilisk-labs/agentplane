@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-04T12:28:47.188Z"
+  updated_at: "2026-08-04T12:34:33.815Z"
   updated_by: "TESTER"
-  note: "Final v0.7.2 candidate verification passed"
+  note: "Final v0.7.2 candidate and archived-incident state verified"
   attempts: 0
 quality_review:
   state: "pass"
@@ -128,8 +128,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-04T12:34:33.815Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Final v0.7.2 candidate and archived-incident state verified"
 doc_version: 3
-doc_updated_at: "2026-08-04T12:31:49.536Z"
+doc_updated_at: "2026-08-04T12:34:35.119Z"
 doc_updated_by: "CODER"
 description: "Make post-publish evidence select the unique release task touched by the exact release commit before falling back to version-wide registry matching; add regression coverage for multiple DONE release tasks sharing one version, record v0.7.1 publication evidence, and ship the corrective patch release."
 sections:
@@ -234,6 +240,41 @@ sections:
     Result: pass
     Evidence: release evidence regression 9/9; real v0.7.1 replay selected 202608021232-YCNM1S; active release incident gate passed with resolved incident archived; final prepublish passed 101/101 release-ci chunks, 50/50 workflow tests, 204/204 significant tests, 16/16 release-critical tests, and 8/8 install migration scenarios
     Scope: final implementation head f3000de59d32d425f4dda4eeea91cb8882e1872e
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041057-WZRXEX-disambiguate-hosted-release-evidence-task-select/.agentplane/tasks/202608041057-WZRXEX/blueprint/resolved-snapshot.json
+    - old_digest: aeb49d43a5ae3d93afd65fe4b524d5d0cc0c6971cd12c8db68df52ad369db54e
+    - current_digest: aeb49d43a5ae3d93afd65fe4b524d5d0cc0c6971cd12c8db68df52ad369db54e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608041057-WZRXEX
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-04T12:34:33.815Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Final v0.7.2 candidate and archived-incident state verified
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T12:31:49.536Z, excerpt_hash=sha256:e86b3757a66971cef08f3b690d4b91196253d5eccc3a044a9eb9a1b21ec16452
+
+    Details:
+
+    Command: git diff --exit-code f3000de59d32d425f4dda4eeea91cb8882e1872e..8dc72497a25202a38b50ea09a8332a0cb59c7dcf excluding task artifacts; bun test packages/agentplane/src/commands/release/release-task-evidence-script.test.ts; node scripts/check-release-incidents.mjs; node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: non-task repository tree is identical to f3000de59d32d425f4dda4eeea91cb8882e1872e, where final release:prepublish passed 101/101 base chunks, 50/50 workflow, 204/204 significant, 16/16 release-critical, and 8/8 migrations; current targeted regression passed 9/9; active incident gate passed; archived finding no longer promotes
+    Scope: final implementation head 8dc72497a25202a38b50ea09a8332a0cb59c7dcf
 
     BlueprintSnapshotRef:
     - state: current
@@ -382,6 +423,41 @@ Command: bun test packages/agentplane/src/commands/release/release-task-evidence
 Result: pass
 Evidence: release evidence regression 9/9; real v0.7.1 replay selected 202608021232-YCNM1S; active release incident gate passed with resolved incident archived; final prepublish passed 101/101 release-ci chunks, 50/50 workflow tests, 204/204 significant tests, 16/16 release-critical tests, and 8/8 install migration scenarios
 Scope: final implementation head f3000de59d32d425f4dda4eeea91cb8882e1872e
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041057-WZRXEX-disambiguate-hosted-release-evidence-task-select/.agentplane/tasks/202608041057-WZRXEX/blueprint/resolved-snapshot.json
+- old_digest: aeb49d43a5ae3d93afd65fe4b524d5d0cc0c6971cd12c8db68df52ad369db54e
+- current_digest: aeb49d43a5ae3d93afd65fe4b524d5d0cc0c6971cd12c8db68df52ad369db54e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608041057-WZRXEX
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-04T12:34:33.815Z — VERIFY — ok
+
+By: TESTER
+
+Note: Final v0.7.2 candidate and archived-incident state verified
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T12:31:49.536Z, excerpt_hash=sha256:e86b3757a66971cef08f3b690d4b91196253d5eccc3a044a9eb9a1b21ec16452
+
+Details:
+
+Command: git diff --exit-code f3000de59d32d425f4dda4eeea91cb8882e1872e..8dc72497a25202a38b50ea09a8332a0cb59c7dcf excluding task artifacts; bun test packages/agentplane/src/commands/release/release-task-evidence-script.test.ts; node scripts/check-release-incidents.mjs; node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: non-task repository tree is identical to f3000de59d32d425f4dda4eeea91cb8882e1872e, where final release:prepublish passed 101/101 base chunks, 50/50 workflow, 204/204 significant, 16/16 release-critical, and 8/8 migrations; current targeted regression passed 9/9; active incident gate passed; archived finding no longer promotes
+Scope: final implementation head 8dc72497a25202a38b50ea09a8332a0cb59c7dcf
 
 BlueprintSnapshotRef:
 - state: current

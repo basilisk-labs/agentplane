@@ -16,7 +16,7 @@ Make post-publish evidence select the unique release task touched by the exact r
 ## Verification
 
 - State: ok
-- Note: Final v0.7.2 candidate verification passed
+- Note: Final v0.7.2 candidate and archived-incident state verified
 - Canonical workflow state lives in the task README.
 
 <details>
