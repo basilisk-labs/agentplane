@@ -19,8 +19,8 @@ Produce a release-blocking, reproducible qualification record for the final v0.7
 - Note:
 
 ```text
-PASS: structured verification confirms the immutable full gate for frozen subject de94bf9d with zero
-blocking defects.
+PASS: integration verification now validates the immutable recorded provider gate without starting a
+new provider episode.
 ```
 - Canonical workflow state lives in the task README.
 
