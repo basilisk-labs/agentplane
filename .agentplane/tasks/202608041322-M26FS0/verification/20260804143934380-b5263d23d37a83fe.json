@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun test packages/agentplane/src/commands/release/release-task-evidence-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts\nResult: pass\nEvidence: 20 tests passed with 246 assertions.\nScope: hosted release evidence preservation and fail-closed publish workflow contract\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: all repository contract checks completed successfully.\nScope: policy routing, architecture, compatibility, docs, and release contracts\n\nCommand: bun run release:prepublish\nResult: pass\nEvidence: 101 release CI chunks, 50 workflow coverage tests, 204 significant coverage tests, and 16 release-critical tests passed; clean tarball and migration scenarios passed.\nScope: complete prepublication gate for v0.7.3\n\nCommand: AGENTPLANE_FAST_CHANGED_FILES scoped full-fast local CI\nResult: pass\nEvidence: 538 test files and 3794 unit tests passed; all 12 critical CLI/E2E chunks passed.\nScope: changed release-tail and task lifecycle surface",
+  "digest": "sha256:b5263d23d37a83fe4a110e208ea376556a01a1e04e87e6d9746c49384c1a3162",
+  "implementation_sha": "8005cbc506c4c944c33a096a4ad4d6fdf4a210c0",
+  "kind": "task_verification_record",
+  "note": "Release-tail closeout fixes pass all declared local gates for semantic implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0.",
+  "recorded_at": "2026-08-04T14:39:34.380Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused route regression that closes a branch_pr task, advances main with only its hosted release-evidence README, and queries next-action. Expected: the task remains terminal.done; a real implementation commit still makes verification stale.\n2. Run the publish-workflow contract tests. Expected: release evidence CI validates the exact closure SHA, waits for success, emits a GitHub Actions-owned PR verification check, and does not silently continue after a failed evidence gate.\n3. Run bun run ci:contract and bun run release:prepublish. Expected: all blocking contracts, release checks, release CI suites, coverage guards, and release-critical tests pass.\n4. After merge and publish, verify npm latest for all three packages is 0.7.3, tag and GitHub Release v0.7.3 point to the exact release SHA, clean install and postpublish audit pass, and the release-evidence PR merges without reopen/admin repair.\n5. Pull the evidence merge to main and query next-action for this task. Expected: status is DONE, route is terminal.done, hosted publish evidence is present, token provenance is explicit, and no merged task branch/worktree remains.",
+  "scope_digest": "sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550",
+  "task_id": "202608041322-M26FS0",
+  "verification_command": "agentplane verify 202608041322-M26FS0 --ok --by TESTER",
+  "verifier": "TESTER"
+}
