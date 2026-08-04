@@ -19,15 +19,18 @@ afterEach(() => {
 });
 
 describe("runCli agent mode", () => {
-  it("shows the full advanced help surface for the ap alias", async () => {
+  it("shows the compact canonical help surface for the ap alias", async () => {
     process.env.AGENTPLANE_CLI_ALIAS = "ap";
     const io = captureStdIO();
     try {
       const code = await runCli(["help"]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("context learn tasks");
-      expect(io.stdout).toContain("context harvest tasks");
-      expect(io.stdout).toContain("context capability");
+      expect(io.stdout).toContain("quickstart");
+      expect(io.stdout).toContain("task advance");
+      expect(io.stdout).toContain("context search");
+      expect(io.stdout).not.toContain("context learn tasks");
+      expect(io.stdout).not.toContain("context harvest tasks");
+      expect(io.stdout).not.toContain("context capability");
       expect(io.stdout).not.toContain("task normalize");
     } finally {
       io.restore();
