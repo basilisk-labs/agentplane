@@ -45,6 +45,21 @@ describe("runCli direct task supervision", () => {
       createIo.restore();
     }
 
+    expect(
+      await runCli([
+        "task",
+        "plan",
+        "set",
+        taskId,
+        "--text",
+        "1. Exercise the direct supervisor approval boundary.\n2. Confirm no provider starts before approval.",
+        "--updated-by",
+        "PLANNER",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+
     const runIo = captureStdIO();
     try {
       expect(await runCli(["task", "run", taskId, "--json", "--root", root])).toBe(0);
