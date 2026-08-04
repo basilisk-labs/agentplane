@@ -2,10 +2,10 @@
 id: "202608040031-4XD57R"
 title: "Attribute and remove redundant Git observations from direct supervisor preparation"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-04T01:25:56.309Z"
-  updated_by: "TESTER"
-  note: "Verified frozen head 158fd2432: current-main CI fix and unchanged exact supervisor optimization pass the rerun matrix; strict 20-cold/30-warm benchmark evidence remains valid for product SHA 3a526415."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-04T01:26:59.394Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Unsupported declared check: The benchmark report must expose bounded deterministic Git command histograms for baseline and candidate samples without adding work inside the timed interval."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -69,9 +69,7 @@ token_usage:
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
   updated_at: "2026-08-04T00:57:26.612Z"
-commit:
-  hash: "b9fc76f03f3e15e890106a4c628837860e4009cf"
-  message: "🧩 4XD57R task: record verified performance evidence"
+commit: null
 comments:
   -
     author: "CODER"
@@ -164,8 +162,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified frozen head 158fd2432: current-main CI fix and unchanged exact supervisor optimization pass the rerun matrix; strict 20-cold/30-warm benchmark evidence remains valid for product SHA 3a526415."
+  -
+    type: "verify"
+    at: "2026-08-04T01:26:59.394Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Unsupported declared check: The benchmark report must expose bounded deterministic Git command histograms for baseline and candidate samples without adding work inside the timed interval."
 doc_version: 3
-doc_updated_at: "2026-08-04T01:26:00.871Z"
+doc_updated_at: "2026-08-04T01:27:00.702Z"
 doc_updated_by: "CODER"
 description: "Extend the packed supervisor benchmark with deterministic per-command Git histograms, use those measurements to identify and remove only duplicated direct-workflow observations whose values are already covered by the same command context or route snapshot, preserve all stale-state and side-effect-safety invariants, and restore every cold and warm median and p95 surface below the unchanged +10% v0.6.26 ceiling."
 sections:
@@ -323,6 +327,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T01:24:46.384Z, excerpt_hash=sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040031-4XD57R-attribute-and-remove-redundant-git-observations/.agentplane/tasks/202608040031-4XD57R/blueprint/resolved-snapshot.json
+    - old_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+    - current_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608040031-4XD57R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-04T01:26:59.394Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Unsupported declared check: The benchmark report must expose bounded deterministic Git command histograms for baseline and candidate samples without adding work inside the timed interval.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T01:26:00.871Z, excerpt_hash=sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d
 
     Details:
 
@@ -546,6 +580,36 @@ Note: Verified frozen head 158fd2432: current-main CI fix and unchanged exact su
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T01:24:46.384Z, excerpt_hash=sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040031-4XD57R-attribute-and-remove-redundant-git-observations/.agentplane/tasks/202608040031-4XD57R/blueprint/resolved-snapshot.json
+- old_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+- current_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608040031-4XD57R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-04T01:26:59.394Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Unsupported declared check: The benchmark report must expose bounded deterministic Git command histograms for baseline and candidate samples without adding work inside the timed interval.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T01:26:00.871Z, excerpt_hash=sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d
 
 Details:
 
