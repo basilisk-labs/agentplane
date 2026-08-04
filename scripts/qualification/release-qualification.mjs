@@ -24,6 +24,7 @@ const PROVIDER_RUNTIME_EQUIVALENT_PATHS = new Set([
   "scripts/qualification/run-v0.7.1-release-qualification.mjs",
   "scripts/qualification/v0.7.1-release-qualification.json",
 ]);
+const PROVIDER_RUNTIME_EQUIVALENT_PREFIXES = [".agentplane/tasks/"];
 
 function assertNonEmptyString(value, label) {
   if (typeof value !== "string" || value.trim().length === 0) {
@@ -90,7 +91,9 @@ export function assertProviderEquivalentChangedPaths(changedPaths) {
     return filePath.split(path.sep).join("/");
   });
   const unexpected = normalized.filter(
-    (filePath) => !PROVIDER_RUNTIME_EQUIVALENT_PATHS.has(filePath),
+    (filePath) =>
+      !PROVIDER_RUNTIME_EQUIVALENT_PATHS.has(filePath) &&
+      !PROVIDER_RUNTIME_EQUIVALENT_PREFIXES.some((prefix) => filePath.startsWith(prefix)),
   );
   if (unexpected.length > 0) {
     throw new Error(
@@ -136,13 +139,17 @@ export function readProviderEvidenceEquivalence(repoRoot, sourceSubject, targetS
     .trim()
     .split("\n")
     .filter(Boolean);
+  const equivalentChangedPaths = assertProviderEquivalentChangedPaths(changedPaths);
   return {
     schema_version: 1,
     kind: "agentplane.provider_runtime_equivalence",
     policy: "provider_runtime_equivalent_descendant_v1",
     source_subject: sourceSubject,
     target_subject: targetSubject,
-    changed_paths: assertProviderEquivalentChangedPaths(changedPaths),
+    changed_paths: equivalentChangedPaths,
+    managed_task_artifact_paths: equivalentChangedPaths.filter((filePath) =>
+      PROVIDER_RUNTIME_EQUIVALENT_PREFIXES.some((prefix) => filePath.startsWith(prefix)),
+    ),
     provider_runtime_unchanged: true,
   };
 }

@@ -6,14 +6,14 @@ Created: 2026-08-04T13:24:55.578Z
 
 - Task: `202608041322-M26FS0`
 - Title: Stabilize hosted release evidence closeout
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608041322-M26FS0/stabilize-hosted-release-evidence-closeout`
 - Canonical task record: `.agentplane/tasks/202608041322-M26FS0/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Structured release verification covers implementation target 77e66477
+- State: needs_rework
+- Note: Provider equivalence proof must classify managed task artifacts separately from runtime changes
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,7 +31,7 @@ Created: 2026-08-04T13:24:55.578Z
 ```text
  .agentplane/WORKFLOW.md                            |   2 +-
  .agentplane/tasks/202608041057-WZRXEX/README.md    |   8 +-
- .github/workflows/publish.yml                      |  86 ++++--
+ .github/workflows/publish.yml                      |  89 ++++--
  docs/assets/header.svg                             |   4 +-
  docs/assets/readme-headers/adr.svg                 |   4 +-
  docs/assets/readme-headers/agentplane-cli.svg      |   4 +-
@@ -68,14 +68,14 @@ Created: 2026-08-04T13:24:55.578Z
  .../bench/capture-agent-efficiency-candidate.mjs   | 332 ++++++++++++++++----
  .../check-compatibility-contract-baseline.mjs      |   8 +-
  .../check-v0.7.1-efficiency-evidence.mjs           |  46 ++-
- scripts/qualification/release-qualification.mjs    |  73 +++++
- .../qualification/release-qualification.test.mjs   |  85 +++++-
+ scripts/qualification/release-qualification.mjs    |  74 +++++
+ .../qualification/release-qualification.test.mjs   |  87 +++++-
  .../run-v0.7.1-release-qualification.mjs           |  49 ++-
  .../v0.7.1-release-qualification.json              |  14 +-
  scripts/release/release-task-evidence.mjs          |   7 -
  website/static/img/social/docs/releases/v0.7.3.png | Bin 0 -> 53092 bytes
  website/static/img/social/manifest.json            |   8 +
- 46 files changed, 1281 insertions(+), 200 deletions(-)
+ 46 files changed, 1287 insertions(+), 200 deletions(-)
 ```
 
 </details>

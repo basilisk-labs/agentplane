@@ -1,0 +1,15 @@
+{
+  "details": "Command: node scripts/qualification/check-v0.7.1-efficiency-evidence.mjs --subject adfe458506e380364c1e1af4e9f3d42eb3951830 --provider-source-subject 4d529ff0fa594fcf9cece44b56dd402b84e7f44c\nResult: fail\nEvidence: the checker rejected only .agentplane/tasks/202608041322-M26FS0 managed evidence, quality, verification, PR, and README paths after all explicit qualification and publish workflow paths were accepted\nScope: final provider-runtime equivalence proof for the release subject",
+  "digest": "sha256:29e9f5589c932590e06e77383976a5228d82612a377e5e852bd9a74fbf938370",
+  "implementation_sha": "adfe458506e380364c1e1af4e9f3d42eb3951830",
+  "kind": "task_verification_record",
+  "note": "Provider equivalence proof must classify managed task artifacts separately from runtime changes",
+  "recorded_at": "2026-08-04T22:57:40.334Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run the focused route regression that closes a branch_pr task, advances main with only its hosted release-evidence README, and queries next-action. Expected: the task remains terminal.done; a real implementation commit still makes verification stale.\n2. Run the publish-workflow contract tests. Expected: release evidence CI validates the exact closure SHA, waits for success, emits a GitHub Actions-owned PR verification check, and does not silently continue after a failed evidence gate.\n3. Run bun run ci:contract and bun run release:prepublish. Expected: all blocking contracts, release checks, release CI suites, coverage guards, and release-critical tests pass.\n4. After merge and publish, verify npm latest for all three packages is 0.7.3, tag and GitHub Release v0.7.3 point to the exact release SHA, clean install and postpublish audit pass, and the release-evidence PR merges without reopen/admin repair.\n5. Pull the evidence merge to main and query next-action for this task. Expected: status is DONE, route is terminal.done, hosted publish evidence is present, token provenance is explicit, and no merged task branch/worktree remains.",
+  "scope_digest": "sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550",
+  "task_id": "202608041322-M26FS0",
+  "verification_command": "agentplane verify 202608041322-M26FS0 --rework --by TESTER",
+  "verifier": "TESTER"
+}

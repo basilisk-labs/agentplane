@@ -2,10 +2,10 @@
 id: "202608041322-M26FS0"
 title: "Stabilize hosted release evidence closeout"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-04T22:49:05.402Z"
+  state: "needs_rework"
+  updated_at: "2026-08-04T22:57:40.334Z"
   updated_by: "TESTER"
-  note: "Structured release verification covers implementation target 77e66477"
-  attempts: 0
+  note: "Provider equivalence proof must classify managed task artifacts separately from runtime changes"
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -65,9 +65,7 @@ token_usage:
   total_tokens: 289945
   unavailable_reason: null
   updated_at: "2026-08-04T22:50:26.298Z"
-commit:
-  hash: "000625e8f7e2caf6560f2b896502cfc6c7bb07d2"
-  message: "🧪 M26FS0 task: refresh task artifacts after commit"
+commit: null
 comments:
   -
     author: "CODER"
@@ -178,8 +176,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-04T22:57:40.334Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Provider equivalence proof must classify managed task artifacts separately from runtime changes"
 doc_version: 3
-doc_updated_at: "2026-08-04T22:50:26.324Z"
+doc_updated_at: "2026-08-04T22:57:41.618Z"
 doc_updated_by: "CODER"
 description: "Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release."
 sections:
@@ -468,6 +472,41 @@ sections:
     Result: pass
     Evidence: later commits contain only .agentplane/tasks/202608041322-M26FS0 managed lifecycle, evidence, quality, verification, and PR artifacts
     Scope: prove product and provider runtime unchanged after the verified implementation commit
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+    - old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-04T22:57:40.334Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Provider equivalence proof must classify managed task artifacts separately from runtime changes
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T22:50:26.324Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+    Details:
+
+    Command: node scripts/qualification/check-v0.7.1-efficiency-evidence.mjs --subject adfe458506e380364c1e1af4e9f3d42eb3951830 --provider-source-subject 4d529ff0fa594fcf9cece44b56dd402b84e7f44c
+    Result: fail
+    Evidence: the checker rejected only .agentplane/tasks/202608041322-M26FS0 managed evidence, quality, verification, PR, and README paths after all explicit qualification and publish workflow paths were accepted
+    Scope: final provider-runtime equivalence proof for the release subject
 
     BlueprintSnapshotRef:
     - state: current
@@ -807,6 +846,41 @@ Command: git diff --name-only 77e66477 866548bf
 Result: pass
 Evidence: later commits contain only .agentplane/tasks/202608041322-M26FS0 managed lifecycle, evidence, quality, verification, and PR artifacts
 Scope: prove product and provider runtime unchanged after the verified implementation commit
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+- old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-04T22:57:40.334Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Provider equivalence proof must classify managed task artifacts separately from runtime changes
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T22:50:26.324Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+Details:
+
+Command: node scripts/qualification/check-v0.7.1-efficiency-evidence.mjs --subject adfe458506e380364c1e1af4e9f3d42eb3951830 --provider-source-subject 4d529ff0fa594fcf9cece44b56dd402b84e7f44c
+Result: fail
+Evidence: the checker rejected only .agentplane/tasks/202608041322-M26FS0 managed evidence, quality, verification, PR, and README paths after all explicit qualification and publish workflow paths were accepted
+Scope: final provider-runtime equivalence proof for the release subject
 
 BlueprintSnapshotRef:
 - state: current
