@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The implementation intersects task IDs touched anywhere under .agentplane/tasks/<id>/ with DONE release registry candidates, accepts only a unique exact match, preserves unique version fallback, and refuses ambiguous attribution.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/4768017655d327f1993258a43bfbd8a998e8a676cd298d83cb64f634d284bdd4.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "A future release commit that carries no task-scoped artifact relies on the unique version-registry fallback, as before."
+  ]
+}

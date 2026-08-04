@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun test packages/agentplane/src/commands/release/release-task-evidence-script.test.ts; bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts; bun run release:prepublish; archived v0.7.1 prepare replay.\nResult: pass\nEvidence: 9/9 targeted release-evidence tests; 9/9 compatibility tests; 101/101 release-ci chunks; 50/50 workflow coverage; 204/204 significant coverage; 16/16 release-critical tests; replay selected 202608021232-YCNM1S for f519d9518c34226075a61d2b01b936127a77e587; token provenance remains supervisor_journal_missing/unavailable.\nScope: implementation f0d58a4092e7a659538a32359a4d57a86ae17645; release tooling, regression tests, task evidence, and v0.7.2 release assets only; no AgentPlane runtime/core behavior change.",
+  "digest": "sha256:c8165f8bab08c5f6348894c109e15a6991151bed50c9d5070ba26cc5b22fbcec",
+  "implementation_sha": "f0d58a4092e7a659538a32359a4d57a86ae17645",
+  "kind": "task_verification_record",
+  "note": "v0.7.2 release-evidence selection and release candidate verified.",
+  "recorded_at": "2026-08-04T12:04:12.205Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bun test packages/agentplane/src/commands/release/release-task-evidence-script.test.ts`. Expected: exact-commit task selection, version fallback, and genuine ambiguity cases pass.\n2. Run the `prepare` command against the archived v0.7.1 `publish-result.json`. Expected: task `202608021232-YCNM1S` is selected despite other DONE v0.7.1 release tasks.\n3. Run `bun run ci:contract` and `bun run release:prepublish`. Expected: all blocking contracts and release gates pass on the final v0.7.2 candidate.\n4. Verify task `202608021232-YCNM1S` contains hosted publish evidence for SHA `f519d9518c34226075a61d2b01b936127a77e587` and retains explicit unavailable token provenance.\n5. After merge and publish, verify npm `latest` for all three packages is `0.7.2`, tag and GitHub Release `v0.7.2` point to the exact merged SHA, a clean install reports `0.7.2`, postpublish audit passes from the workflow artifact, release evidence follow-up succeeds, main is clean and matches origin, and merged branches/worktrees are removed.",
+  "scope_digest": "sha256:e86b3757a66971cef08f3b690d4b91196253d5eccc3a044a9eb9a1b21ec16452",
+  "task_id": "202608041057-WZRXEX",
+  "verification_command": "agentplane verify 202608041057-WZRXEX --ok --by TESTER",
+  "verifier": "TESTER"
+}
