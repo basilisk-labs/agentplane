@@ -408,10 +408,12 @@ describe("v0.7.1 release qualification contract", () => {
     assert.deepEqual(
       assertProviderEquivalentChangedPaths([
         ".github/workflows/publish.yml",
+        ".agentplane/tasks/202608041322-M26FS0/README.md",
         "scripts/qualification/check-v0.7.1-efficiency-evidence.mjs",
         "scripts/qualification/release-qualification.test.mjs",
       ]),
       [
+        ".agentplane/tasks/202608041322-M26FS0/README.md",
         ".github/workflows/publish.yml",
         "scripts/qualification/check-v0.7.1-efficiency-evidence.mjs",
         "scripts/qualification/release-qualification.test.mjs",
