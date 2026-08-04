@@ -1,0 +1,24 @@
+{
+  "base": "main",
+  "branch": "task/202608040106-CC1TAP/fix-token-usage-date-flake",
+  "created_at": "2026-08-04T01:06:52.139Z",
+  "diffstat_sha256": "sha256:049a615b78c88dd1388f5b8836ff06b386fe4928fdb5ba7f86e9d1582101402a",
+  "last_verified_at": "2026-08-04T01:09:05.747Z",
+  "last_verified_diffstat_sha256": "sha256:049a615b78c88dd1388f5b8836ff06b386fe4928fdb5ba7f86e9d1582101402a",
+  "pr_number": 4770,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4770",
+  "pre_merge_closure": {
+    "basis_commit": "6f7761358f2dfda22d5e07ac5aab2c7ea8c04a42",
+    "branch": "task/202608040106-CC1TAP/fix-token-usage-date-flake",
+    "pr_number": 4770,
+    "recorded_at": "2026-08-04T01:11:17.863Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608040106-CC1TAP",
+  "updated_at": "2026-08-04T01:10:13.218Z",
+  "verify": {
+    "status": "pass"
+  }
+}
