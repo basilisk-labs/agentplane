@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Hosted release-evidence routing preserves accepted verification metadata and still invalidates verification on real implementation changes.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/b4f447b54c6e2f6f2fa1bd6fa5dcbc02e8e7d65745d81808c97aadc5b55d8431.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Publish workflow contracts enforce exact closure SHA checks and a GitHub Actions-owned PR verification context before evidence merge.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/b4f447b54c6e2f6f2fa1bd6fa5dcbc02e8e7d65745d81808c97aadc5b55d8431.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "Full qualification is release-ready with 18/19 scenarios passed and zero blockers; the sole absolute CLI latency miss is advisory because matched CLI and supervisor latency gates passed.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/b4f447b54c6e2f6f2fa1bd6fa5dcbc02e8e7d65745d81808c97aadc5b55d8431.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-4",
+      "severity": "medium",
+      "summary": "Provider qualification shows 29.12 percent token reduction, verified success 8 to 17, scope violations 17 to 5, and golden mismatches 33 to 14 across 50 runs and 55 episodes.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/b4f447b54c6e2f6f2fa1bd6fa5dcbc02e8e7d65745d81808c97aadc5b55d8431.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Reuse of provider evidence is valid only under provider_runtime_equivalent_descendant_v1; the proof lists all changed paths and confirms provider runtime inputs are unchanged."
+  ]
+}

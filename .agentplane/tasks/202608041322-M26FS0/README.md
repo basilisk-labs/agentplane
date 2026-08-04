@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -21,36 +21,43 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-04T22:57:40.334Z"
+  state: "ok"
+  updated_at: "2026-08-04T23:37:31.379Z"
   updated_by: "TESTER"
-  note: "Provider equivalence proof must classify managed task artifacts separately from runtime changes"
-  attempts: 1
+  note: |-
+    Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --provider-evidence-subject 4d529ff0fa594fcf9cece44b56dd402b84e7f44c --subject 74cb0b80ae7a8447032d7b88bba607be9002f872; bun run release:prepublish
+    Result: pass
+    Evidence: .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-74cb0b80/report.json (ready 18/19, 0 blocking); prepublish passed 101/101 release-ci-base, 50/50 workflow, 204/204 significant, 16/16 release-critical, package install and 8/8 migrations
+    Scope: pre-merge Verify Steps 1-3 on semantic target 74cb0b80; b17caf97 is task-artifact-only refresh; postpublish Verify Steps 4-5 remain hosted closeout gates
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-04T22:44:28.001Z"
+  updated_at: "2026-08-04T23:38:21.846Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "77e66477692a3ff42cc6321d49b87b0c6d35bf9f"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "74cb0b80ae7a8447032d7b88bba607be9002f872"
   blueprint_digest: "3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045"
   evidence_refs:
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-224427672-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-224427672-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/d29ebf80d33bc50fb70faedaf284b892ef0bbe9839f8dbf3858a78b2c6516d59.md"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-224427672-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-224427672-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-224427672-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-233821379-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-233821379-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/f7cceb5300b20c85e77c44ac5822b3cabeed81214c78425a883d89b180367c81.md"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-233821379-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-233821379-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-233821379-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608041322-M26FS0/README.md"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/049842669c2ec9818accd9798bdbf8a6a3b3e92f5b0f725aa65321129f7608ac.patch"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/77c64f0426faced19bf5f1612eabafa5ded0ec0a38a5322904a282316e336692.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/b4f447b54c6e2f6f2fa1bd6fa5dcbc02e8e7d65745d81808c97aadc5b55d8431.patch"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/978619ab2e22ac0436810210fbae4a73942fa6345ce4e92bee646a0e08bf35e3.json"
     - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/57c0cb8505a309b1962f197839c8b5eb2908748355f96e19842360232b470d88.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "No release-blocking defect remains: hosted evidence routing, forced pre-merge closure, exact publish checks, verification preservation, provider provenance, task token usage, and release packaging are covered by passing deterministic and end-to-end evidence."
+    - "Hosted release-evidence routing preserves accepted verification metadata and still invalidates verification on real implementation changes."
+    - "Publish workflow contracts enforce exact closure SHA checks and a GitHub Actions-owned PR verification context before evidence merge."
+    - "Full qualification is release-ready with 18/19 scenarios passed and zero blockers; the sole absolute CLI latency miss is advisory because matched CLI and supervisor latency gates passed."
+    - "Provider qualification shows 29.12 percent token reduction, verified success 8 to 17, scope violations 17 to 5, and golden mismatches 33 to 14 across 50 runs and 55 episodes."
 token_usage:
   agent_runs: 1
   input_tokens: 286172
@@ -182,8 +189,18 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Provider equivalence proof must classify managed task artifacts separately from runtime changes"
+  -
+    type: "verify"
+    at: "2026-08-04T23:37:31.379Z"
+    author: "TESTER"
+    state: "ok"
+    note: |-
+      Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --provider-evidence-subject 4d529ff0fa594fcf9cece44b56dd402b84e7f44c --subject 74cb0b80ae7a8447032d7b88bba607be9002f872; bun run release:prepublish
+      Result: pass
+      Evidence: .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-74cb0b80/report.json (ready 18/19, 0 blocking); prepublish passed 101/101 release-ci-base, 50/50 workflow, 204/204 significant, 16/16 release-critical, package install and 8/8 migrations
+      Scope: pre-merge Verify Steps 1-3 on semantic target 74cb0b80; b17caf97 is task-artifact-only refresh; postpublish Verify Steps 4-5 remain hosted closeout gates
 doc_version: 3
-doc_updated_at: "2026-08-04T22:57:41.618Z"
+doc_updated_at: "2026-08-04T23:38:21.867Z"
 doc_updated_by: "CODER"
 description: "Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release."
 sections:
@@ -527,6 +544,39 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-04T23:37:31.379Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --provider-evidence-subject 4d529ff0fa594fcf9cece44b56dd402b84e7f44c --subject 74cb0b80ae7a8447032d7b88bba607be9002f872; bun run release:prepublish
+    Result: pass
+    Evidence: .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-74cb0b80/report.json (ready 18/19, 0 blocking); prepublish passed 101/101 release-ci-base, 50/50 workflow, 204/204 significant, 16/16 release-critical, package install and 8/8 migrations
+    Scope: pre-merge Verify Steps 1-3 on semantic target 74cb0b80; b17caf97 is task-artifact-only refresh; postpublish Verify Steps 4-5 remain hosted closeout gates
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T22:57:41.618Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+    - old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -542,6 +592,10 @@ sections:
     - Observation: bun run release:prepublish and the isolated run-cli.core.pr-flow.integrate-failures.test.ts reproducibly fail three scenarios because pre-merge closure is considered older than the latest verification.
       Impact: The release gate cannot complete and the affected integration scenarios do not reach their intended behavior checks.
       Resolution: Diagnose the fixture and freshness source, preserve the production safety gate, add or adjust regression coverage, then rerun the complete release gate.
+
+    - Observation: Focused hosted-close and publish workflow contracts, full qualification, package/install/migration, coverage, and release-critical suites all passed; absolute CLI latency remains advisory while matched and supervisor latency passed.
+      Impact: No blocking local regression remains for the v0.7.3 candidate; hosted publication truth must still be proven after merge.
+      Resolution: Approve implementation verification and advance to independent evaluator review; retain postpublish steps as mandatory release closeout.
 extensions:
   implementation_commit:
     hash: "77e66477692a3ff42cc6321d49b87b0c6d35bf9f"
@@ -901,6 +955,39 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-04T23:37:31.379Z — VERIFY — ok
+
+By: TESTER
+
+Note: Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --provider-evidence-subject 4d529ff0fa594fcf9cece44b56dd402b84e7f44c --subject 74cb0b80ae7a8447032d7b88bba607be9002f872; bun run release:prepublish
+Result: pass
+Evidence: .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-74cb0b80/report.json (ready 18/19, 0 blocking); prepublish passed 101/101 release-ci-base, 50/50 workflow, 204/204 significant, 16/16 release-critical, package install and 8/8 migrations
+Scope: pre-merge Verify Steps 1-3 on semantic target 74cb0b80; b17caf97 is task-artifact-only refresh; postpublish Verify Steps 4-5 remain hosted closeout gates
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T22:57:41.618Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+- old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -920,6 +1007,10 @@ DecisionContextRef:
 - Observation: bun run release:prepublish and the isolated run-cli.core.pr-flow.integrate-failures.test.ts reproducibly fail three scenarios because pre-merge closure is considered older than the latest verification.
   Impact: The release gate cannot complete and the affected integration scenarios do not reach their intended behavior checks.
   Resolution: Diagnose the fixture and freshness source, preserve the production safety gate, add or adjust regression coverage, then rerun the complete release gate.
+
+- Observation: Focused hosted-close and publish workflow contracts, full qualification, package/install/migration, coverage, and release-critical suites all passed; absolute CLI latency remains advisory while matched and supervisor latency passed.
+  Impact: No blocking local regression remains for the v0.7.3 candidate; hosted publication truth must still be proven after merge.
+  Resolution: Approve implementation verification and advance to independent evaluator review; retain postpublish steps as mandatory release closeout.
 
 ## Token Usage
 

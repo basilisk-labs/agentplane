@@ -15,8 +15,17 @@ Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created re
 
 ## Verification
 
-- State: needs_rework
-- Note: Provider equivalence proof must classify managed task artifacts separately from runtime changes
+- State: ok
+- Note:
+
+```bash
+node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full \
+  --provider --provider-evidence-subject 4d529ff0fa594fcf9cece44b56dd402b84e7f44c --subject \
+  74cb0b80ae7a8447032d7b88bba607be9002f872; bun run release:prepublish
+```
+Result: pass
+Evidence: .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-74cb0b80/report.json (ready 18/19, 0 blocking); prepublish passed 101/101 release-ci-base, 50/50 workflow, 204/204 significant, 16/16 release-critical, package install and 8/8 migrations
+Scope: pre-merge Verify Steps 1-3 on semantic target 74cb0b80; b17caf97 is task-artifact-only refresh; postpublish Verify Steps 4-5 remain hosted closeout gates
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -66,14 +75,14 @@ Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created re
  .../bench/capture-agent-efficiency-candidate.mjs   | 332 ++++++++++++++++----
  .../check-compatibility-contract-baseline.mjs      |   8 +-
  .../check-v0.7.1-efficiency-evidence.mjs           |  46 ++-
- scripts/qualification/release-qualification.mjs    |  74 +++++
- .../qualification/release-qualification.test.mjs   |  87 +++++-
+ scripts/qualification/release-qualification.mjs    |  81 +++++
+ .../qualification/release-qualification.test.mjs   |  89 +++++-
  .../run-v0.7.1-release-qualification.mjs           |  49 ++-
  .../v0.7.1-release-qualification.json              |  14 +-
  scripts/release/release-task-evidence.mjs          |   7 -
  website/static/img/social/docs/releases/v0.7.3.png | Bin 0 -> 53092 bytes
  website/static/img/social/manifest.json            |   8 +
- 46 files changed, 1287 insertions(+), 200 deletions(-)
+ 46 files changed, 1296 insertions(+), 200 deletions(-)
 ```
 
 </details>
