@@ -4,7 +4,7 @@ title: "Stabilize hosted release evidence closeout"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -26,8 +26,8 @@ verification:
   note: "Release-tail fixes verified against implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0."
   attempts: 0
 commit:
-  hash: "8005cbc506c4c944c33a096a4ad4d6fdf4a210c0"
-  message: "🧩 M26FS0 task: stabilize release evidence closeout"
+  hash: "92097f3ba42c432580de5b8bc75f558f012a2849"
+  message: "✅ M26FS0 task: record release verification"
 comments:
   -
     author: "CODER"
@@ -35,6 +35,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: preserve accepted task verification during hosted publish evidence, verify the exact evidence SHA, publish the required GitHub Actions check, wait for evidence PR merge, and release v0.7.3."
+  -
+    author: "CODER"
+    body: "Verification baseline: include the committed task-local implementation and evidence artifacts; product implementation remains 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0."
 events:
   -
     type: "status"
@@ -56,8 +59,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Release-tail fixes verified against implementation 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0."
+  -
+    type: "status"
+    at: "2026-08-04T14:27:07.492Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Verification baseline: include the committed task-local implementation and evidence artifacts; product implementation remains 8005cbc506c4c944c33a096a4ad4d6fdf4a210c0."
 doc_version: 3
-doc_updated_at: "2026-08-04T14:25:19.821Z"
+doc_updated_at: "2026-08-04T14:27:07.492Z"
 doc_updated_by: "CODER"
 description: "Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release."
 sections:
