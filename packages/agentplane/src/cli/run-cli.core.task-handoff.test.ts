@@ -227,6 +227,7 @@ describe("runCli task handoff and recovery", () => {
           next_action: "retry",
         },
       });
+      expect(reclaimIo.stderr).not.toContain("E_INTERNAL");
     } finally {
       reclaimIo.restore();
     }
