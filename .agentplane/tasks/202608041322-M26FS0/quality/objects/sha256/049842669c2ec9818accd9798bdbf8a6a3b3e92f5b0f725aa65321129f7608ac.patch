@@ -1,0 +1,3219 @@
+diff --git a/.agentplane/WORKFLOW.md b/.agentplane/WORKFLOW.md
+index 5b666d361..33c9b1528 100644
+--- a/.agentplane/WORKFLOW.md
++++ b/.agentplane/WORKFLOW.md
+@@ -62,7 +62,7 @@ framework:
+   source: https://github.com/basilisk-labs/agentplane
+   last_update: null
+   cli:
+-    expected_version: 0.7.2
++    expected_version: 0.7.3
+ feedback:
+   github_issues:
+     enabled: true
+diff --git a/.agentplane/tasks/202608041057-WZRXEX/README.md b/.agentplane/tasks/202608041057-WZRXEX/README.md
+index 5861f4068..05cfaf198 100644
+--- a/.agentplane/tasks/202608041057-WZRXEX/README.md
++++ b/.agentplane/tasks/202608041057-WZRXEX/README.md
+@@ -23,9 +23,9 @@ plan_approval:
+   note: null
+ verification:
+   state: "ok"
+-  updated_at: "2026-08-04T13:09:19.816Z"
+-  updated_by: "DEUS"
+-  note: "Hosted publish confirmed for v0.7.2."
++  updated_at: "2026-08-04T12:47:50.392Z"
++  updated_by: "TESTER"
++  note: "P1 fix verified against refreshed release blueprint snapshot"
+   attempts: 0
+ quality_review:
+   state: "pass"
+@@ -718,4 +718,4 @@ DecisionContextRef:
+ - Provenance: `unavailable/agentplane`
+ - Journal digest: `unavailable`
+ - Unavailable reason: `supervisor_journal_missing`
+-- Updated at: `2026-08-04T12:49:00.184Z`
+\ No newline at end of file
++- Updated at: `2026-08-04T12:49:00.184Z`
+diff --git a/.github/workflows/publish.yml b/.github/workflows/publish.yml
+index 47135e454..0cb3e798a 100644
+--- a/.github/workflows/publish.yml
++++ b/.github/workflows/publish.yml
+@@ -20,6 +20,7 @@ on:
+ 
+ permissions:
+   actions: write
++  checks: write
+   contents: write
+   id-token: write
+   packages: write
+@@ -672,7 +673,6 @@ jobs:
+       - name: Check for existing release evidence PR
+         if: steps.release_evidence.outputs.actionable == 'true'
+         id: release_evidence_existing
+-        continue-on-error: true
+         env:
+           GH_TOKEN: ${{ github.token }}
+         run: |
+@@ -695,7 +695,6 @@ jobs:
+           steps.release_evidence_existing.outputs.pr_url == '' &&
+           steps.release_evidence_existing.outputs.branch_exists != 'true'
+         id: apply_release_evidence
+-        continue-on-error: true
+         env:
+           REPO: ${{ github.repository }}
+         run: |
+@@ -723,7 +722,6 @@ jobs:
+           echo "closure_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+       - name: Push release evidence branch
+         if: steps.apply_release_evidence.outputs.created_commit == 'true'
+-        continue-on-error: true
+         run: |
+           set -euo pipefail
+           git push --set-upstream origin "${{ steps.release_evidence.outputs.closure_branch }}"
+@@ -732,7 +730,6 @@ jobs:
+           steps.release_evidence.outputs.actionable == 'true' &&
+           steps.release_evidence_existing.outputs.pr_url == ''
+         id: create_release_evidence_pr
+-        continue-on-error: true
+         env:
+           GH_TOKEN: ${{ github.token }}
+           PR_TITLE: ${{ steps.release_evidence.outputs.pr_title }}
+@@ -755,17 +752,18 @@ jobs:
+             elif grep -qi "not permitted to create or approve pull requests" .agentplane/.release/publish/release-task-evidence-pr.err; then
+               echo "manual_pr_required=true" >> "$GITHUB_OUTPUT"
+               echo "manual_pr_url=$MANUAL_PR_URL" >> "$GITHUB_OUTPUT"
+-              echo "::warning::Release evidence branch was pushed, but organization policy blocks GitHub Actions from creating the follow-up PR. Open it manually: $MANUAL_PR_URL"
++              echo "::error::Release evidence branch was pushed, but organization policy blocks GitHub Actions from creating the required follow-up PR: $MANUAL_PR_URL"
++              exit "$status"
+             else
+               cat .agentplane/.release/publish/release-task-evidence-pr.err >&2
+               exit "$status"
+             fi
+           fi
+-      - name: Dispatch Core CI for release evidence PR
++      - name: Verify exact release evidence SHA
+         if: |
+           steps.release_evidence.outputs.actionable == 'true' &&
+           (steps.release_evidence_existing.outputs.pr_url != '' || steps.create_release_evidence_pr.outputs.pr_url != '')
+-        continue-on-error: true
++        id: verify_release_evidence
+         env:
+           GH_TOKEN: ${{ github.token }}
+         run: |
+@@ -774,24 +772,74 @@ jobs:
+           if [ -z "$pr_url" ]; then
+             pr_url="${{ steps.create_release_evidence_pr.outputs.pr_url }}"
+           fi
+-          echo "Release evidence PR ready for app-owned PR verification: $pr_url"
+-          gh workflow run ci.yml --ref "${{ steps.release_evidence.outputs.closure_branch }}"
+-      - name: Enable auto-merge for release evidence PR
++          closure_sha="${{ steps.apply_release_evidence.outputs.closure_sha }}"
++          if [ -z "$closure_sha" ]; then
++            closure_sha="$(git ls-remote origin "refs/heads/${{ steps.release_evidence.outputs.closure_branch }}" | awk '{print $1}')"
++          fi
++          if [[ ! "$closure_sha" =~ ^[0-9a-f]{40,64}$ ]]; then
++            echo "invalid release evidence closure SHA: ${closure_sha:-missing}" >&2
++            exit 1
++          fi
++          ci_run_url="$(gh workflow run ci.yml \
++            --ref "${{ steps.release_evidence.outputs.closure_branch }}" \
++            -f "sha=${closure_sha}" | tail -n 1)"
++          if [[ ! "$ci_run_url" =~ /actions/runs/[0-9]+$ ]]; then
++            echo "Core CI dispatch did not return a run URL: ${ci_run_url:-missing}" >&2
++            exit 1
++          fi
++          ci_run_id="${ci_run_url##*/}"
++          gh run watch "$ci_run_id" --exit-status --interval 15
++          echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
++          echo "closure_sha=$closure_sha" >> "$GITHUB_OUTPUT"
++          echo "ci_run_url=$ci_run_url" >> "$GITHUB_OUTPUT"
++      - name: Publish required release evidence verification
++        if: steps.verify_release_evidence.outputs.closure_sha != ''
++        uses: actions/github-script@v8
++        env:
++          CLOSURE_SHA: ${{ steps.verify_release_evidence.outputs.closure_sha }}
++          CI_RUN_URL: ${{ steps.verify_release_evidence.outputs.ci_run_url }}
++        with:
++          github-token: ${{ github.token }}
++          script: |
++            await github.rest.checks.create({
++              owner: context.repo.owner,
++              repo: context.repo.repo,
++              name: "PR verification",
++              head_sha: process.env.CLOSURE_SHA,
++              status: "completed",
++              conclusion: "success",
++              details_url: process.env.CI_RUN_URL,
++              output: {
++                title: "Release evidence verification passed",
++                summary: "The exact release-evidence closure SHA passed Core CI.",
++              },
++            });
++      - name: Merge release evidence PR
+         if: |
+-          steps.release_evidence.outputs.actionable == 'true' &&
+-          (steps.release_evidence_existing.outputs.pr_url != '' || steps.create_release_evidence_pr.outputs.pr_url != '')
+-        continue-on-error: true
++          steps.verify_release_evidence.outputs.pr_url != '' &&
++          steps.verify_release_evidence.outputs.closure_sha != ''
+         env:
+           GH_TOKEN: ${{ github.token }}
+         run: |
+           set -euo pipefail
+-          pr_url="${{ steps.release_evidence_existing.outputs.pr_url }}"
+-          if [ -z "$pr_url" ]; then
+-            pr_url="${{ steps.create_release_evidence_pr.outputs.pr_url }}"
+-          fi
++          pr_url="${{ steps.verify_release_evidence.outputs.pr_url }}"
+           gh pr checks "$pr_url" --watch --interval 15
+           if gh pr merge --merge --delete-branch "$pr_url"; then
+             echo "Release evidence PR merged immediately: $pr_url"
+-          elif ! gh pr merge --auto --merge --delete-branch "$pr_url"; then
+-            echo "::warning::Release evidence PR created but neither direct merge nor auto-merge could be enabled; inspect $pr_url manually."
++          else
++            gh pr merge --auto --merge --delete-branch "$pr_url"
+           fi
++          for attempt in $(seq 1 40); do
++            state="$(gh pr view "$pr_url" --json state --jq .state)"
++            if [ "$state" = "MERGED" ]; then
++              echo "Release evidence PR merged: $pr_url"
++              exit 0
++            fi
++            if [ "$state" = "CLOSED" ]; then
++              echo "Release evidence PR closed without merge: $pr_url" >&2
++              exit 1
++            fi
++            sleep 15
++          done
++          echo "Release evidence PR did not merge within 10 minutes: $pr_url" >&2
++          exit 1
+diff --git a/docs/assets/header.svg b/docs/assets/header.svg
+index c8714e196..c60615581 100644
+--- a/docs/assets/header.svg
++++ b/docs/assets/header.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.2 README header</title>
++<title>Agentplane v0.7.3 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.2</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/adr.svg b/docs/assets/readme-headers/adr.svg
+index c8714e196..c60615581 100644
+--- a/docs/assets/readme-headers/adr.svg
++++ b/docs/assets/readme-headers/adr.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.2 README header</title>
++<title>Agentplane v0.7.3 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.2</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/agentplane-cli.svg b/docs/assets/readme-headers/agentplane-cli.svg
+index c8714e196..c60615581 100644
+--- a/docs/assets/readme-headers/agentplane-cli.svg
++++ b/docs/assets/readme-headers/agentplane-cli.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.2 README header</title>
++<title>Agentplane v0.7.3 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.2</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/agentplane.svg b/docs/assets/readme-headers/agentplane.svg
+index c8714e196..c60615581 100644
+--- a/docs/assets/readme-headers/agentplane.svg
++++ b/docs/assets/readme-headers/agentplane.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.2 README header</title>
++<title>Agentplane v0.7.3 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.2</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/core.svg b/docs/assets/readme-headers/core.svg
+index c8714e196..c60615581 100644
+--- a/docs/assets/readme-headers/core.svg
++++ b/docs/assets/readme-headers/core.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.2 README header</title>
++<title>Agentplane v0.7.3 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.2</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/docs.svg b/docs/assets/readme-headers/docs.svg
+index c8714e196..c60615581 100644
+--- a/docs/assets/readme-headers/docs.svg
++++ b/docs/assets/readme-headers/docs.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.2 README header</title>
++<title>Agentplane v0.7.3 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.2</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/humanizer.svg b/docs/assets/readme-headers/humanizer.svg
+index c8714e196..c60615581 100644
+--- a/docs/assets/readme-headers/humanizer.svg
++++ b/docs/assets/readme-headers/humanizer.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.2 README header</title>
++<title>Agentplane v0.7.3 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.2</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/recipes.svg b/docs/assets/readme-headers/recipes.svg
+index c8714e196..c60615581 100644
+--- a/docs/assets/readme-headers/recipes.svg
++++ b/docs/assets/readme-headers/recipes.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.2 README header</title>
++<title>Agentplane v0.7.3 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.2</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/releases.svg b/docs/assets/readme-headers/releases.svg
+index c8714e196..c60615581 100644
+--- a/docs/assets/readme-headers/releases.svg
++++ b/docs/assets/readme-headers/releases.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.2 README header</title>
++<title>Agentplane v0.7.3 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.2</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/schemas.svg b/docs/assets/readme-headers/schemas.svg
+index c8714e196..c60615581 100644
+--- a/docs/assets/readme-headers/schemas.svg
++++ b/docs/assets/readme-headers/schemas.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.2 README header</title>
++<title>Agentplane v0.7.3 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.2</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/scripts.svg b/docs/assets/readme-headers/scripts.svg
+index c8714e196..c60615581 100644
+--- a/docs/assets/readme-headers/scripts.svg
++++ b/docs/assets/readme-headers/scripts.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.2 README header</title>
++<title>Agentplane v0.7.3 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.2</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/skills.svg b/docs/assets/readme-headers/skills.svg
+index c8714e196..c60615581 100644
+--- a/docs/assets/readme-headers/skills.svg
++++ b/docs/assets/readme-headers/skills.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.2 README header</title>
++<title>Agentplane v0.7.3 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.2</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/spec.svg b/docs/assets/readme-headers/spec.svg
+index c8714e196..c60615581 100644
+--- a/docs/assets/readme-headers/spec.svg
++++ b/docs/assets/readme-headers/spec.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.2 README header</title>
++<title>Agentplane v0.7.3 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.2</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/testkit.svg b/docs/assets/readme-headers/testkit.svg
+index c8714e196..c60615581 100644
+--- a/docs/assets/readme-headers/testkit.svg
++++ b/docs/assets/readme-headers/testkit.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.2 README header</title>
++<title>Agentplane v0.7.3 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.2</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/releases/v0.7.3.md b/docs/releases/v0.7.3.md
+new file mode 100644
+index 000000000..38c26e4f7
+--- /dev/null
++++ b/docs/releases/v0.7.3.md
+@@ -0,0 +1,28 @@
++# Release Notes - v0.7.3
++
++## Summary
++
++- AgentPlane 0.7.3 closes the hosted release-evidence loop without operator repair and keeps completed release tasks terminal after publication evidence lands.
++
++## Added
++
++- Added exact-SHA Core CI verification and a GitHub Actions-owned required check for release-evidence pull requests.
++- Added regressions that preserve canonical task-verification provenance while hosted publication evidence is appended.
++
++## Improved
++
++- The publish workflow now waits for the evidence commit to pass Core CI and for its pull request to merge before the release workflow succeeds.
++- Release-evidence failures are fail-closed instead of being hidden behind best-effort continuation.
++
++## Fixed
++
++- Fixed evidence pull requests created by GitHub Actions remaining blocked because workflow-dispatch checks were not associated with the pull request.
++- Fixed hosted publication evidence overwriting the accepted TESTER verification record and sending an already completed task back to `verification_required`.
++
++## Upgrade Notes
++
++- No migration is required; upgrade with `npm install --global agentplane@0.7.3` and continue using the existing 0.7 workflow.
++
++## Verification
++
++- The release-evidence selection and preservation suites, publish-workflow contract, repository contract gate, release prepublish gate, protected-main checks, exact-SHA publication, clean-install smoke, postpublish audit, autonomous evidence merge, and terminal task route must all pass.
+diff --git a/packages/agentplane/package.json b/packages/agentplane/package.json
+index efa67e681..2a346555b 100644
+--- a/packages/agentplane/package.json
++++ b/packages/agentplane/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "agentplane",
+-  "version": "0.7.2",
++  "version": "0.7.3",
+   "description": "CLI-first operational workflows and traces for AI agents.",
+   "keywords": [
+     "agentplane",
+@@ -75,8 +75,8 @@
+     "prepublishOnly": "node ../../scripts/release/enforce-github-publish.mjs && npm run prepack"
+   },
+   "dependencies": {
+-    "@agentplaneorg/core": "0.7.2",
+-    "@agentplaneorg/recipes": "0.7.2",
++    "@agentplaneorg/core": "0.7.3",
++    "@agentplaneorg/recipes": "0.7.3",
+     "@clack/prompts": "^1.5.1",
+     "yaml": "^2.7.1",
+     "yauzl": "^3.4.0",
+diff --git a/packages/agentplane/src/cli/run-cli.core.release-evidence-route.test.ts b/packages/agentplane/src/cli/run-cli.core.release-evidence-route.test.ts
+new file mode 100644
+index 000000000..54ccd3e88
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.release-evidence-route.test.ts
+@@ -0,0 +1,337 @@
++import { execFile } from "node:child_process";
++import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
++import { tmpdir } from "node:os";
++import path from "node:path";
++import { promisify } from "node:util";
++
++import { describe, expect, it } from "vitest";
++
++import { defaultConfig } from "@agentplaneorg/core/config";
++import { parseTaskReadme } from "@agentplaneorg/core/tasks";
++import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
++
++import { runCli } from "./run-cli.js";
++import {
++  approveTaskPlan,
++  captureStdIO,
++  installRunCliIntegrationHarness,
++  recordVerificationOk,
++  runCliSilent,
++  writeAndConfigureRoot,
++  writeConfig,
++} from "@agentplane/testkit";
++
++const execFileAsync = promisify(execFile);
++const RELEASE_TASK_EVIDENCE_SCRIPT = path.resolve(
++  process.cwd(),
++  "scripts/release/release-task-evidence.mjs",
++);
++
++installRunCliIntegrationHarness();
++
++async function installMergedPullProvider(opts: {
++  root: string;
++  pull: Record<string, unknown>;
++}): Promise<{ fakeBin: string; logPath: string }> {
++  const fakeBin = path.join(opts.root, "fake-github-provider");
++  await mkdir(fakeBin, { recursive: true });
++  const scriptPath = path.join(fakeBin, "fake-gh.mjs");
++  const ghPath = path.join(fakeBin, process.platform === "win32" ? "gh.cmd" : "gh");
++  await writeFile(
++    scriptPath,
++    [
++      'import fs from "node:fs";',
++      "const args = process.argv.slice(2);",
++      "const logPath = process.env.AGENTPLANE_GH_LOG;",
++      "if (logPath) fs.appendFileSync(logPath, `${JSON.stringify(args)}\\n`);",
++      `const pull = ${JSON.stringify(opts.pull)};`,
++      'if (args[0] === "pr" && args[1] === "checks") { console.log("[]"); process.exit(0); }',
++      'if (args[0] !== "api") process.exit(90);',
++      'const endpoint = args[1] ?? "";',
++      'if (endpoint.startsWith("repos/example/repo/pulls?")) { console.log(JSON.stringify([pull])); process.exit(0); }',
++      "if (/^repos\\/example\\/repo\\/pulls\\/\\d+$/.test(endpoint)) { console.log(JSON.stringify(pull)); process.exit(0); }",
++      'if (endpoint === "graphql") {',
++      "  console.log(JSON.stringify({ data: { repository: { pullRequest: { reviewThreads: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } } } } } }));",
++      "  process.exit(0);",
++      "}",
++      "console.error(`unexpected gh args: ${JSON.stringify(args)}`);",
++      "process.exit(91);",
++      "",
++    ].join("\n"),
++    "utf8",
++  );
++  if (process.platform === "win32") {
++    await writeFile(ghPath, '@echo off\r\nnode "%~dp0\\fake-gh.mjs" %*\r\n', "utf8");
++  } else {
++    await writeFile(ghPath, '#!/bin/sh\nnode "$(dirname "$0")/fake-gh.mjs" "$@"\n', "utf8");
++    await chmod(ghPath, 0o755);
++  }
++  return { fakeBin, logPath: path.join(fakeBin, "gh.log") };
++}
++
++async function readRemoteRoute(opts: { root: string; taskId: string }): Promise<{
++  route_oracle: { phase: string; nextCommand: string | null };
++  workflow_step: { id: string; kind: string };
++  blockers: { code: string }[];
++}> {
++  const io = captureStdIO();
++  try {
++    const code = await runCli([
++      "task",
++      "next-action",
++      opts.taskId,
++      "--remote",
++      "--json",
++      "--root",
++      opts.root,
++    ]);
++    expect(code, io.stderr).toBe(0);
++    return JSON.parse(io.stdout) as {
++      route_oracle: { phase: string; nextCommand: string | null };
++      workflow_step: { id: string; kind: string };
++      blockers: { code: string }[];
++    };
++  } finally {
++    io.restore();
++  }
++}
++
++describe("release evidence route convergence", { timeout: 300_000 }, () => {
++  it("keeps a closed branch_pr task terminal after an evidence-only README commit", async () => {
++    const root = await writeAndConfigureRoot();
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
++    await mkdir(path.join(root, "packages", "agentplane", "assets", "policy"), {
++      recursive: true,
++    });
++    const incidents = createIncidentRegistrySkeleton();
++    await writeFile(path.join(root, ".agentplane", "policy", "incidents.md"), incidents, "utf8");
++    await writeFile(
++      path.join(root, "packages", "agentplane", "assets", "policy", "incidents.md"),
++      incidents,
++      "utf8",
++    );
++    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
++    await execFileAsync("git", ["add", "."], { cwd: root });
++    await execFileAsync("git", ["commit", "--no-verify", "-m", "seed"], { cwd: root });
++    const { stdout: baseStdout } = await execFileAsync(
++      "git",
++      ["rev-parse", "--abbrev-ref", "HEAD"],
++      { cwd: root },
++    );
++    const baseBranch = baseStdout.trim();
++    const taskId = "202603271950-E7D007";
++    const branch = `task/${taskId}/release-evidence-route`;
++
++    expect(
++      await runCliSilent([
++        "task",
++        "add",
++        taskId,
++        "--title",
++        "Release evidence route fixture",
++        "--description",
++        "Prove evidence-only task metadata preserves terminal routing.",
++        "--priority",
++        "high",
++        "--owner",
++        "CODER",
++        "--tag",
++        "workflow",
++        "--root",
++        root,
++      ]),
++    ).toBe(0);
++    await approveTaskPlan(root, taskId);
++    expect(
++      await runCliSilent([
++        "task",
++        "start-ready",
++        taskId,
++        "--author",
++        "CODER",
++        "--body",
++        "Start: exercise the exact hosted release-evidence route.",
++        "--root",
++        root,
++      ]),
++    ).toBe(0);
++    await recordVerificationOk(root, taskId);
++    expect(
++      await runCliSilent([
++        "pr",
++        "open",
++        taskId,
++        "--branch",
++        branch,
++        "--sync-only",
++        "--author",
++        "CODER",
++        "--root",
++        root,
++      ]),
++    ).toBe(0);
++
++    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
++    await mkdir(path.join(root, "src"), { recursive: true });
++    await writeFile(
++      path.join(root, "src", "release-evidence-route.ts"),
++      "export const ok = true;\n",
++    );
++    await execFileAsync("git", ["add", "."], { cwd: root });
++    await execFileAsync(
++      "git",
++      ["commit", "--no-verify", "-m", "feat: release evidence route fixture"],
++      { cwd: root },
++    );
++    await recordVerificationOk(root, taskId);
++    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
++    await execFileAsync(
++      "git",
++      ["commit", "--no-verify", "-m", "task: record release route verification"],
++      { cwd: root },
++    );
++    const { stdout: branchHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    const branchHead = branchHeadStdout.trim();
++
++    await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
++    await execFileAsync("git", ["merge", "--no-ff", branch, "-m", "Merge release fixture"], {
++      cwd: root,
++    });
++    const { stdout: mergeStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    const mergeSha = mergeStdout.trim();
++    const eventDir = await mkdtemp(path.join(tmpdir(), "agentplane-release-route-event-"));
++    const eventPath = path.join(eventDir, "event.json");
++    await writeFile(
++      eventPath,
++      `${JSON.stringify({
++        pull_request: {
++          merged: true,
++          number: 91,
++          title: "Release evidence route fixture",
++          merge_commit_sha: mergeSha,
++          merged_at: "2026-08-04T17:10:00.000Z",
++          head: { ref: branch, sha: branchHead },
++          base: { ref: baseBranch },
++        },
++      })}\n`,
++      "utf8",
++    );
++    expect(
++      await runCliSilent(["task", "hosted-close", "--event-json", eventPath, "--root", root]),
++    ).toBe(0);
++
++    const taskReadme = path.join(root, ".agentplane", "tasks", taskId, "README.md");
++    const beforeEvidence = parseTaskReadme(await readFile(taskReadme, "utf8")).frontmatter;
++    expect(beforeEvidence.status).toBe("DONE");
++    expect(beforeEvidence.quality_review?.state).toBe("pass");
++
++    const publishResultPath = path.join(root, "publish-result.json");
++    await writeFile(
++      publishResultPath,
++      `${JSON.stringify({
++        success: true,
++        sha: mergeSha,
++        version: "0.7.3",
++        tag: "v0.7.3",
++        packages: {
++          core: { source: "published_in_run" },
++          recipes: { source: "published_in_run" },
++          cli: { source: "published_in_run" },
++        },
++        checks: {
++          npmSmoke: { passed: true, outcome: "success" },
++          githubRelease: { created: true, outcome: "success" },
++        },
++        job: { runId: "30913095505" },
++      })}\n`,
++      "utf8",
++    );
++    await execFileAsync(
++      "bun",
++      [
++        RELEASE_TASK_EVIDENCE_SCRIPT,
++        "apply",
++        "--task-id",
++        taskId,
++        "--publish-result",
++        publishResultPath,
++        "--repo",
++        "example/repo",
++        "--author",
++        "DEUS",
++        "--at",
++        "2026-08-04T17:15:00.000Z",
++      ],
++      { cwd: root, env: process.env },
++    );
++    const afterEvidence = parseTaskReadme(await readFile(taskReadme, "utf8")).frontmatter;
++    expect(afterEvidence.verification).toEqual(beforeEvidence.verification);
++    expect(afterEvidence.quality_review).toEqual(beforeEvidence.quality_review);
++
++    const taskReadmeRel = `.agentplane/tasks/${taskId}/README.md`;
++    await execFileAsync("git", ["add", taskReadmeRel], { cwd: root });
++    await execFileAsync(
++      "git",
++      ["commit", "--no-verify", "-m", "task-evidence: record hosted publish evidence"],
++      { cwd: root },
++    );
++    const { stdout: evidencePaths } = await execFileAsync(
++      "git",
++      ["show", "--format=", "--name-only", "HEAD"],
++      { cwd: root },
++    );
++    expect(evidencePaths.trim()).toBe(taskReadmeRel);
++    await execFileAsync("git", ["branch", "-d", branch], { cwd: root });
++    await execFileAsync("git", ["remote", "add", "origin", "git@github.com:example/repo.git"], {
++      cwd: root,
++    });
++    const { stdout: evidenceHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    await execFileAsync(
++      "git",
++      ["update-ref", `refs/remotes/origin/${baseBranch}`, evidenceHeadStdout.trim()],
++      { cwd: root },
++    );
++
++    const pull = {
++      number: 91,
++      html_url: "https://github.com/example/repo/pull/91",
++      state: "closed",
++      merged_at: "2026-08-04T17:10:00.000Z",
++      merge_commit_sha: mergeSha,
++      head: { ref: branch, sha: branchHead },
++      base: { ref: baseBranch },
++    };
++    const fakeProvider = await installMergedPullProvider({ root, pull });
++    const oldPath = process.env.PATH;
++    const oldGhLog = process.env.AGENTPLANE_GH_LOG;
++    process.env.PATH = `${fakeProvider.fakeBin}${path.delimiter}${oldPath ?? ""}`;
++    process.env.AGENTPLANE_GH_LOG = fakeProvider.logPath;
++    try {
++      let route = await readRemoteRoute({ root, taskId });
++      if (route.route_oracle.phase === "side_effect_authority_required") {
++        const command = route.route_oracle.nextCommand;
++        if (!command) throw new Error("expected authority grant command");
++        await runCliSilent([...command.split(" ").slice(1), "--root", root]);
++        route = await readRemoteRoute({ root, taskId });
++      }
++      const providerLog = await readFile(fakeProvider.logPath, "utf8").catch(() => "no gh calls");
++      expect(route.blockers).toEqual([]);
++      expect(route.route_oracle.phase, providerLog).toBe("done");
++      expect(route.workflow_step).toMatchObject({ id: "terminal.done", kind: "terminal" });
++    } finally {
++      process.env.PATH = oldPath;
++      if (oldGhLog === undefined) delete process.env.AGENTPLANE_GH_LOG;
++      else process.env.AGENTPLANE_GH_LOG = oldGhLog;
++      await rm(eventDir, { recursive: true, force: true });
++    }
++  });
++});
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts
+index f2a75217a..3c0c6c645 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts
+@@ -120,7 +120,7 @@ describe("runCli route decision verification freshness", () => {
+     });
+   });
+ 
+-  it("invalidates a passing verification record after a semantic branch commit", async () => {
++  it("keeps the hosted-evidence companion strict by marking a semantic branch advance stale", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index 5d9b0afb5..4720c1c0c 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -222,14 +222,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           ],
+         },
+         release_version_delta: {
+-          source_task: "202608041057-WZRXEX",
++          source_task: "202608041322-M26FS0",
+           classification: "planned_version_parity",
+           from_version: "0.6.24",
+-          to_version: "0.7.2",
++          to_version: "0.7.3",
+           section: "package_manifests",
+           from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+-          to_sha256: "5f78c647868acc4841b2cddd1f1e7b62e8930b7e24b4c266ad2c49891a9cbc6f",
+-          surface_sha256: "a3177aeff4ba0735966eb9864a9fe10b1ae5f305e08a0c705c712ad081b5b3c6",
++          to_sha256: "62af981925c53c759ca64ad783ec0d0b821fc10324e1270acc4bb8bea4da5fc3",
++          surface_sha256: "6414a03920d7d20425c6bddc219c4b21ba704dd01a9a6f6d503702c98075723b",
+           allowed_json_paths: [
+             "$.package_manifests[0].dependencies.@agentplaneorg/core",
+             "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -524,7 +524,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+   });
+ 
+   it(
+-    "reconstructs the exact planned v0.7.2 manifest surface from the reviewed candidate",
++    "reconstructs the exact planned v0.7.3 manifest surface from the reviewed candidate",
+     async () => {
+       const source = `
+         import {
+@@ -556,7 +556,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           },
+         });
+         const before = collectCompatibilitySurface(versionedSource("0.6.24"));
+-        const after = collectCompatibilitySurface(versionedSource("0.7.2"));
++        const after = collectCompatibilitySurface(versionedSource("0.7.3"));
+         const sectionDigests = surfaceSectionDigests(after);
+         process.stdout.write(JSON.stringify({
+           packageManifestDigest: sectionDigests.package_manifests,
+@@ -567,8 +567,8 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       const result = await runNode(["--input-type=module", "--eval", source]);
+       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
+       expect(JSON.parse(result.stdout)).toEqual({
+-        packageManifestDigest: "5f78c647868acc4841b2cddd1f1e7b62e8930b7e24b4c266ad2c49891a9cbc6f",
+-        surfaceDigest: "a3177aeff4ba0735966eb9864a9fe10b1ae5f305e08a0c705c712ad081b5b3c6",
++        packageManifestDigest: "62af981925c53c759ca64ad783ec0d0b821fc10324e1270acc4bb8bea4da5fc3",
++        surfaceDigest: "6414a03920d7d20425c6bddc219c4b21ba704dd01a9a6f6d503702c98075723b",
+         changedPaths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts
+index c7b4eaf66..ecca99de4 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts
+@@ -40,8 +40,10 @@ async function loadCandidateFixture() {
+   const candidate = (await import(CANDIDATE_URL)) as {
+     assertCandidateCaptureMode(options: Json): void;
+     buildCandidateMeasurement(input: Json): Json;
++    buildCandidateMeasurementFromPinnedBaseline(input: Json): Json;
+     captureCandidate(options: Json): Json;
+     createCandidateHarnessManifest(driver: Json, dependency: Json): Json;
++    readPinnedQualificationBaseline(input: Json): Json;
+     validateCandidatePilotCapture(input: Json): Json;
+   };
+   const replay = (await import(REPLAY_URL)) as {
+@@ -138,6 +140,7 @@ describeCritical("critical: RF-04 candidate measurement", () => {
+     const fixture = await loadCandidateFixture();
+     const common = {
+       capture: false,
++      baselineEvidencePath: null,
+       check: false,
+       pilot: true,
+       replace: false,
+@@ -158,7 +161,21 @@ describeCritical("critical: RF-04 candidate measurement", () => {
+     ).toThrow("--pilot cannot be combined with --replace");
+     expect(() =>
+       fixture.candidate.assertCandidateCaptureMode({ ...common, pilot: false, capture: true }),
+-    ).toThrow("--capture requires --runtime-bridge");
++    ).toThrow("--capture requires --runtime-bridge or --baseline-evidence");
++    expect(() =>
++      fixture.candidate.assertCandidateCaptureMode({
++        ...common,
++        pilot: false,
++        baselineEvidencePath: "scripts/baselines/evidence.json",
++        runtimeBridgeVersion: "0.146.0-alpha.3.1",
++      }),
++    ).toThrow("--runtime-bridge cannot be combined with --baseline-evidence");
++    expect(() =>
++      fixture.candidate.assertCandidateCaptureMode({
++        ...common,
++        baselineEvidencePath: "scripts/baselines/evidence.json",
++      }),
++    ).toThrow("--pilot cannot be combined with --baseline-evidence");
+     expect(() =>
+       fixture.candidate.assertCandidateCaptureMode({
+         ...common,
+@@ -333,4 +350,48 @@ describeCritical("critical: RF-04 candidate measurement", () => {
+     expect(measurement.failure_ids as string[]).toEqual(["runtime.profile"]);
+     expect((measurement.runtime_comparison as Json).profile_match).toBe(false);
+   });
++
++  it("rebuilds a candidate comparison from reviewed Git-tracked runtime baseline evidence", async () => {
++    const fixture = await loadCandidateFixture();
++    const evidencePath = path.join(
++      REPO_ROOT,
++      "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json",
++    );
++    const pinned = fixture.candidate.readPinnedQualificationBaseline({
++      codexCliVersion: "0.146.0-alpha.3.1",
++      evidencePath,
++    }) as Json;
++    const candidateMeasurement = fixture.candidate.buildCandidateMeasurement({
++      candidateAnchor: CANDIDATE_SHA,
++      candidateDependencyClaim: fixture.dependency,
++      candidateDriverIdentity: fixture.driver,
++      candidateEnvelopeRecords: fixture.envelopes,
++      candidateEvidenceRecords: fixture.evidence,
++      candidateHarnessManifest: fixture.harness,
++      candidateRegistry: fixture.candidateRegistry,
++    }) as Json;
++    (candidateMeasurement.candidate as Json).runtime_profile = clone(
++      (pinned.baseline as Json).runtime_profile,
++    );
++
++    const measurement = fixture.candidate.buildCandidateMeasurementFromPinnedBaseline({
++      candidateMeasurement,
++      pinnedBaseline: pinned,
++    }) as Json;
++
++    expect((measurement.baseline as Json).source).toBe("pinned_runtime_bridge");
++    expect((measurement.baseline as Json).pinned_evidence_path).toBe(
++      "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json",
++    );
++    expect((measurement.runtime_comparison as Json).profile_match).toBe(true);
++    expect(
++      (measurement.comparisons as Json[]).some((entry) => entry.id === "runtime.profile"),
++    ).toBe(true);
++    expect(() =>
++      fixture.candidate.readPinnedQualificationBaseline({
++        codexCliVersion: "0.146.0-alpha.3.2",
++        evidencePath,
++      }),
++    ).toThrow("does not match the declared Codex runtime");
++  });
+ });
+diff --git a/packages/agentplane/src/commands/release/publish-workflow-contract.test.ts b/packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+index b4eb6c9ec..59f949f2b 100644
+--- a/packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
++++ b/packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+@@ -138,6 +138,7 @@ describe("publish workflow contract", () => {
+     expect(workflow).toContain('--ghcr-outcome "${{ steps.publish_ghcr.outcome }}"');
+     expect(workflow).toContain("if: always()");
+     expect(workflow).toContain("actions: write");
++    expect(workflow).toContain("checks: write");
+     expect(workflow).toContain("pull-requests: write");
+     expect(workflow).toContain("Prepare release task evidence");
+     expect(workflow).toContain(
+@@ -149,7 +150,9 @@ describe("publish workflow contract", () => {
+     expect(workflow).toContain("Apply release task evidence on a follow-up branch");
+     expect(workflow).toContain("bun scripts/release-task-evidence.mjs apply");
+     expect(workflow).toContain("Open or recover release evidence PR");
+-    expect(workflow).toContain("Enable auto-merge for release evidence PR");
++    expect(workflow).toContain("Verify exact release evidence SHA");
++    expect(workflow).toContain("Publish required release evidence verification");
++    expect(workflow).toContain("Merge release evidence PR");
+     expect(workflow.indexOf("Create GitHub Release")).toBeLessThan(
+       workflow.indexOf("Publish Homebrew tap PR"),
+     );
+@@ -157,13 +160,13 @@ describe("publish workflow contract", () => {
+       workflow.indexOf("Upload release-distribution artifact"),
+     );
+     for (const stepName of [
+-      "Prepare release task evidence",
+       "Check for existing release evidence PR",
+       "Apply release task evidence on a follow-up branch",
+       "Push release evidence branch",
+       "Open or recover release evidence PR",
+-      "Dispatch Core CI for release evidence PR",
+-      "Enable auto-merge for release evidence PR",
++      "Verify exact release evidence SHA",
++      "Publish required release evidence verification",
++      "Merge release evidence PR",
+     ]) {
+       const stepIndex = workflow.indexOf(`- name: ${stepName}`);
+       expect(stepIndex).toBeGreaterThanOrEqual(0);
+@@ -172,13 +175,13 @@ describe("publish workflow contract", () => {
+         stepIndex,
+         nextStepIndex === -1 ? workflow.length : nextStepIndex,
+       );
+-      expect(stepBlock).toContain("continue-on-error: true");
++      expect(stepBlock).not.toContain("continue-on-error: true");
+       if (
+         [
+           "Check for existing release evidence PR",
+-          "Dispatch Core CI for release evidence branch",
+           "Open or recover release evidence PR",
+-          "Enable auto-merge for release evidence PR",
++          "Verify exact release evidence SHA",
++          "Merge release evidence PR",
+         ].includes(stepName)
+       ) {
+         expect(stepBlock).toContain("GH_TOKEN: ${{ github.token }}");
+@@ -252,21 +255,22 @@ describe("publish workflow contract", () => {
+     );
+   });
+ 
+-  it("prints resolver diagnostics and dispatches branch CI for release evidence PRs", async () => {
++  it("validates the exact evidence SHA and publishes the required PR check before merge", async () => {
+     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
+ 
+     expect(workflow).toContain("source.err");
+     expect(workflow).toContain("cat .agentplane/.release/ready/source.err");
+-    expect(workflow).toContain("Dispatch Core CI for release evidence PR");
+-    expect(workflow).toContain(
+-      'gh workflow run ci.yml --ref "${{ steps.release_evidence.outputs.closure_branch }}"',
+-    );
+-    expect(workflow).toContain(
+-      'echo "Release evidence PR ready for app-owned PR verification: $pr_url"',
+-    );
++    expect(workflow).toContain("Verify exact release evidence SHA");
++    expect(workflow).toContain('-f "sha=${closure_sha}"');
++    expect(workflow).toContain('gh run watch "$ci_run_id" --exit-status --interval 15');
++    expect(workflow).toContain("uses: actions/github-script@v8");
++    expect(workflow).toContain('name: "PR verification"');
++    expect(workflow).toContain("The exact release-evidence closure SHA passed Core CI.");
+     expect(workflow).toContain('gh pr checks "$pr_url" --watch --interval 15');
++    expect(workflow).toContain('gh pr merge --auto --merge --delete-branch "$pr_url"');
++    expect(workflow).toContain('if [ "$state" = "MERGED" ]; then');
+     expect(workflow.indexOf("Open or recover release evidence PR")).toBeLessThan(
+-      workflow.indexOf("Dispatch Core CI for release evidence PR"),
++      workflow.indexOf("Verify exact release evidence SHA"),
+     );
+   });
+ 
+diff --git a/packages/agentplane/src/commands/release/release-task-evidence-script.test.ts b/packages/agentplane/src/commands/release/release-task-evidence-script.test.ts
+index 9491cdb05..9723bb6cc 100644
+--- a/packages/agentplane/src/commands/release/release-task-evidence-script.test.ts
++++ b/packages/agentplane/src/commands/release/release-task-evidence-script.test.ts
+@@ -5,7 +5,7 @@ import path from "node:path";
+ import { promisify } from "node:util";
+ 
+ import { afterEach, describe, expect, it } from "vitest";
+-import { renderTaskReadme } from "@agentplaneorg/core/tasks";
++import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
+ 
+ const execFileAsync = promisify(execFile);
+ const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/release-task-evidence.mjs");
+@@ -44,6 +44,9 @@ async function writeTaskReadme(
+   taskId: string,
+   opts: {
+     verificationState?: "pending" | "ok" | "needs_rework";
++    verificationUpdatedAt?: string | null;
++    verificationUpdatedBy?: string | null;
++    verificationNote?: string | null;
+     verificationText?: string;
+     docUpdatedAt?: string;
+     title?: string;
+@@ -110,9 +113,9 @@ async function writeTaskReadme(
+       verification: {
+         state: verificationState,
+         attempts: 2,
+-        updated_at: null,
+-        updated_by: null,
+-        note: null,
++        updated_at: opts.verificationUpdatedAt ?? null,
++        updated_by: opts.verificationUpdatedBy ?? null,
++        note: opts.verificationNote ?? null,
+       },
+       comments: [],
+       events: [],
+@@ -553,6 +556,10 @@ describe("release-task-evidence script", () => {
+     const root = await initRepo();
+     const taskId = "202604191130-JWBEB7";
+     const readmePath = await writeTaskReadme(root, taskId, {
++      verificationState: "ok",
++      verificationUpdatedAt: "2026-04-19T10:00:00.000Z",
++      verificationUpdatedBy: "TESTER",
++      verificationNote: "Candidate verification passed.",
+       verificationText: [
+         "<!-- BEGIN VERIFICATION RESULTS -->",
+         "### Candidate validation",
+@@ -605,6 +612,13 @@ describe("release-task-evidence script", () => {
+     expect(updated).toContain("attempts: 2");
+     expect(updated).toContain('updated_by: "DEUS"');
+     expect(updated).toContain('state: "ok"');
++    expect(parseTaskReadme(updated).frontmatter.verification).toEqual({
++      state: "ok",
++      attempts: 2,
++      updated_at: "2026-04-19T10:00:00.000Z",
++      updated_by: "TESTER",
++      note: "Candidate verification passed.",
++    });
+ 
+     const repeated = await execFileAsync(
+       "bun",
+@@ -630,6 +644,45 @@ describe("release-task-evidence script", () => {
+     expect(repeatedReadme.match(/BEGIN HOSTED PUBLISH EVIDENCE/gu)).toHaveLength(2);
+   });
+ 
++  it("does not turn hosted publication into a task verification record", async () => {
++    const root = await initRepo();
++    const taskId = "202604191131-PENDING";
++    const readmePath = await writeTaskReadme(root, taskId, {
++      verificationState: "pending",
++    });
++    await commitAll(root, "seed pending release task");
++    const publishResultPath = await writePublishResult(root, buildPublishResult(true));
++
++    await execFileAsync(
++      "bun",
++      [
++        SCRIPT_PATH,
++        "apply",
++        "--task-id",
++        taskId,
++        "--publish-result",
++        publishResultPath,
++        "--repo",
++        "basilisk-labs/agentplane",
++        "--author",
++        "DEUS",
++        "--at",
++        "2026-04-19T12:00:00.000Z",
++      ],
++      { cwd: root, env: process.env },
++    );
++
++    const updated = parseTaskReadme(await readFile(readmePath, "utf8")).frontmatter;
++    expect(updated.verification).toEqual({
++      state: "pending",
++      attempts: 2,
++      updated_at: null,
++      updated_by: null,
++      note: null,
++    });
++    expect(updated.sections?.Verification).toContain("Hosted publish confirmed for v0.3.15.");
++  });
++
+   it("audits only scoped recent DONE tasks with closure evidence and pending verification", async () => {
+     const root = await initRepo();
+     await writeTaskReadme(root, "202604280001-NEWBAD", {
+diff --git a/packages/agentplane/src/commands/shared/route-decision.ts b/packages/agentplane/src/commands/shared/route-decision.ts
+index 5b5c49b94..ddf70d930 100644
+--- a/packages/agentplane/src/commands/shared/route-decision.ts
++++ b/packages/agentplane/src/commands/shared/route-decision.ts
+@@ -115,7 +115,8 @@ async function resolveLocalRecordedCloseFlow(opts: {
+     const { content } = await readTaskPrMetaArtifact({
+       ctx: opts.ctx,
+       taskId: opts.task.id,
+-      preferBranchSnapshot: opts.ctx.config.workflow_mode === "branch_pr",
++      preferBranchSnapshot:
++        opts.ctx.config.workflow_mode === "branch_pr" && opts.task.status !== "DONE",
+     });
+     if (content === null) return null;
+     const meta = parsePrMeta(content, opts.task.id);
+diff --git a/packages/agentplane/src/commands/task/close-tail-state.test.ts b/packages/agentplane/src/commands/task/close-tail-state.test.ts
+index 1866e4852..c6efbdee7 100644
+--- a/packages/agentplane/src/commands/task/close-tail-state.test.ts
++++ b/packages/agentplane/src/commands/task/close-tail-state.test.ts
+@@ -49,6 +49,75 @@ describe("taskCloseAlreadyRecordedOnBase", () => {
+       }),
+     ).resolves.toBe(false);
+   });
++
++  it("detects the structured close commit emitted by the current close-message builder", async () => {
++    const taskId = "202604191200-G7YHZY";
++    const commit = "a".repeat(40);
++    mocks.execFileAsync
++      .mockResolvedValueOnce({
++        stdout: [
++          commit,
++          "✅ G7YHZY task: finish hosted close",
++          [
++            "Summary:",
++            "- Finished hosted close.",
++            "Refs:",
++            "- Agentplane task: G7YHZY",
++            `- Agentplane run: ${taskId}`,
++          ].join("\n"),
++          "",
++        ].join("\0"),
++        stderr: "",
++      })
++      .mockResolvedValueOnce({
++        stdout: ["---", `id: "${taskId}"`, 'status: "DONE"', "---", "# Task", ""].join("\n"),
++        stderr: "",
++      });
++
++    const { taskCloseAlreadyRecordedOnBase } = await import("./close-tail-state.js");
++    await expect(
++      taskCloseAlreadyRecordedOnBase({
++        gitRoot: "/repo",
++        workflowDir: ".agentplane/tasks",
++        taskId,
++        baseBranch: "main",
++      }),
++    ).resolves.toBe(true);
++    expect(mocks.execFileAsync).toHaveBeenLastCalledWith(
++      "git",
++      ["show", `${commit}:.agentplane/tasks/${taskId}/README.md`],
++      expect.any(Object),
++    );
++  });
++
++  it("rejects a structured task message when the task was not DONE in that commit", async () => {
++    const taskId = "202604191200-G7YHZY";
++    const commit = "a".repeat(40);
++    mocks.execFileAsync
++      .mockResolvedValueOnce({
++        stdout: [
++          commit,
++          "✅ G7YHZY task: finish hosted close",
++          `Refs:\n- Agentplane run: ${taskId}`,
++          "",
++        ].join("\0"),
++        stderr: "",
++      })
++      .mockResolvedValueOnce({
++        stdout: ["---", `id: "${taskId}"`, 'status: "DOING"', "---", "# Task", ""].join("\n"),
++        stderr: "",
++      });
++
++    const { taskCloseAlreadyRecordedOnBase } = await import("./close-tail-state.js");
++    await expect(
++      taskCloseAlreadyRecordedOnBase({
++        gitRoot: "/repo",
++        workflowDir: ".agentplane/tasks",
++        taskId,
++        baseBranch: "main",
++      }),
++    ).resolves.toBe(false);
++  });
+ });
+ 
+ describe("taskPreMergeClosureRecordedOnBase", () => {
+diff --git a/packages/agentplane/src/commands/task/close-tail-state.ts b/packages/agentplane/src/commands/task/close-tail-state.ts
+index e71540f90..2361036c9 100644
+--- a/packages/agentplane/src/commands/task/close-tail-state.ts
++++ b/packages/agentplane/src/commands/task/close-tail-state.ts
+@@ -1,6 +1,6 @@
+ import path from "node:path";
+ 
+-import { extractTaskSuffix } from "@agentplaneorg/core/commit";
++import { extractTaskSuffix, parseTaskSubjectTemplate } from "@agentplaneorg/core/commit";
+ import { normalizeTaskStatus, parseTaskReadme } from "@agentplaneorg/core/tasks";
+ 
+ import { execFileAsync } from "@agentplaneorg/core/process";
+@@ -77,10 +77,14 @@ export async function taskCloseAlreadyRecordedOnBase(opts: {
+   taskId: string;
+   baseBranch: string;
+ }): Promise<boolean> {
+-  const readmePath = path.join(opts.gitRoot, opts.workflowDir, opts.taskId, "README.md");
++  const readmePath = path.posix.join(
++    opts.workflowDir.replaceAll("\\", "/"),
++    opts.taskId,
++    "README.md",
++  );
+   const { stdout } = await execFileAsync(
+     "git",
+-    ["log", opts.baseBranch, "--format=%s", "--", readmePath],
++    ["log", opts.baseBranch, "--format=%H%x00%s%x00%b%x00", "--", readmePath],
+     {
+       cwd: opts.gitRoot,
+       env: gitProofEnv(),
+@@ -90,8 +94,41 @@ export async function taskCloseAlreadyRecordedOnBase(opts: {
+   const suffix = extractTaskSuffix(opts.taskId);
+   const closeNeedle = `${suffix} close:`;
+   const taskNeedle = `(${opts.taskId})`;
+-  return stdout
++  const legacyCloseRecorded = stdout
+     .split("\n")
+     .map((line) => line.trim())
+     .some((line) => line.includes(closeNeedle) && line.includes(taskNeedle));
++  if (legacyCloseRecorded) return true;
++
++  const fields = stdout.split("\0");
++  for (let index = 0; index + 2 < fields.length; index += 3) {
++    const commit = fields[index]?.trim() ?? "";
++    const subject = fields[index + 1]?.trim() ?? "";
++    const body = fields[index + 2] ?? "";
++    if (!isCanonicalFullCommitOid(commit)) continue;
++
++    const parsed = parseTaskSubjectTemplate(subject);
++    if (parsed?.suffix.toLowerCase() !== suffix.toLowerCase()) continue;
++    if (!new Set(["task", "close", "integrate", "formatting"]).has(parsed.scope.toLowerCase())) {
++      continue;
++    }
++    const hasExactRunReference = body
++      .split("\n")
++      .some((line) => line.trim() === `- Agentplane run: ${opts.taskId}`);
++    if (!hasExactRunReference) continue;
++
++    const taskRaw = await gitShowText({
++      gitRoot: opts.gitRoot,
++      baseBranch: commit,
++      repoPath: readmePath,
++    });
++    if (!taskRaw) continue;
++    try {
++      const task = parseTaskReadme(taskRaw).frontmatter;
++      if (task.id === opts.taskId && normalizeTaskStatus(task.status) === "DONE") return true;
++    } catch {
++      // Continue scanning older task-history entries when one candidate is malformed.
++    }
++  }
++  return false;
+ }
+diff --git a/packages/agentplane/src/commands/task/finish-execute.ts b/packages/agentplane/src/commands/task/finish-execute.ts
+index 73e5f9a3e..6515c9398 100644
+--- a/packages/agentplane/src/commands/task/finish-execute.ts
++++ b/packages/agentplane/src/commands/task/finish-execute.ts
+@@ -216,6 +216,7 @@ async function shouldSkipAlreadyHandledBranchPrCloseTail(opts: {
+ }): Promise<boolean> {
+   if (opts.ctx.config.workflow_mode !== "branch_pr") return false;
+   if (!opts.plan.shouldCloseCommit || !opts.plan.primaryTaskId) return false;
++  if (opts.plan.preMergeClosure && opts.options.force) return false;
+ 
+   const closeTailState = await resolveBranchPrCloseTailState({
+     ctx: opts.ctx,
+diff --git a/packages/core/package.json b/packages/core/package.json
+index 35420ac39..e713f4fd2 100644
+--- a/packages/core/package.json
++++ b/packages/core/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@agentplaneorg/core",
+-  "version": "0.7.2",
++  "version": "0.7.3",
+   "description": "Core libraries for Agentplane repository-native task, policy, and verification workflows.",
+   "keywords": [
+     "agentplane",
+diff --git a/packages/recipes/package.json b/packages/recipes/package.json
+index bc01b1adb..e49c50734 100644
+--- a/packages/recipes/package.json
++++ b/packages/recipes/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@agentplaneorg/recipes",
+-  "version": "0.7.2",
++  "version": "0.7.3",
+   "description": "Recipe modules for repeatable Agentplane audit-layer workflows.",
+   "keywords": [
+     "agentplane",
+diff --git a/packages/recipes/src/index.ts b/packages/recipes/src/index.ts
+index b49389be0..4c3afe037 100644
+--- a/packages/recipes/src/index.ts
++++ b/packages/recipes/src/index.ts
+@@ -1,4 +1,4 @@
+-export const RECIPES_VERSION = "0.7.2";
++export const RECIPES_VERSION = "0.7.3";
+ 
+ export * from "./constants.js";
+ export * from "./blueprint-extensions.js";
+diff --git a/packages/spec/examples/acr.json b/packages/spec/examples/acr.json
+index 09db0a30f..3a6cb6838 100644
+--- a/packages/spec/examples/acr.json
++++ b/packages/spec/examples/acr.json
+@@ -5,7 +5,7 @@
+   "created_at": "2026-05-03T12:00:00.000Z",
+   "producer": {
+     "name": "agentplane",
+-    "version": "0.7.2"
++    "version": "0.7.3"
+   },
+   "repository": {
+     "vcs": "git",
+@@ -31,7 +31,7 @@
+     "toolchain": [
+       {
+         "name": "agentplane",
+-        "version": "0.7.2"
++        "version": "0.7.3"
+       }
+     ]
+   },
+diff --git a/packages/testkit/package.json b/packages/testkit/package.json
+index 3e67c92fc..d6b9a7ea0 100644
+--- a/packages/testkit/package.json
++++ b/packages/testkit/package.json
+@@ -70,7 +70,7 @@
+   },
+   "types": "./dist/index.d.ts",
+   "dependencies": {
+-    "@agentplaneorg/core": "0.7.2"
++    "@agentplaneorg/core": "0.7.3"
+   },
+   "scripts": {
+     "build": "node ../../scripts/checks/run-typescript-build.mjs -p tsconfig.json",
+diff --git a/packages/testkit/src/cli-harness.ts b/packages/testkit/src/cli-harness.ts
+index 3c4fbaeec..476013b1e 100644
+--- a/packages/testkit/src/cli-harness.ts
++++ b/packages/testkit/src/cli-harness.ts
+@@ -1,5 +1,5 @@
+ import { execFile } from "node:child_process";
+-import { access, cp, mkdir, mkdtemp, readdir, rm, writeFile } from "node:fs/promises";
++import { access, cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+ import os from "node:os";
+ import path from "node:path";
+ import { promisify } from "node:util";
+@@ -577,6 +577,24 @@ export async function prepareHostedIntegrateFixture(opts: {
+     "--root",
+     opts.root,
+   ]);
++  const finalTask = await readTask({
++    cwd: opts.root,
++    rootOverride: opts.root,
++    taskId: opts.taskId,
++  });
++  const finalMeta = JSON.parse(
++    await readFile(
++      path.join(opts.root, ".agentplane", "tasks", opts.taskId, "pr", "meta.json"),
++      "utf8",
++    ),
++  ) as { pre_merge_closure?: { recorded_at?: string } };
++  const closureRecordedAt = finalMeta.pre_merge_closure?.recorded_at ?? "";
++  const verificationUpdatedAt = finalTask.frontmatter.verification?.updated_at ?? "";
++  if (Date.parse(closureRecordedAt) < Date.parse(verificationUpdatedAt)) {
++    throw new Error(
++      `Hosted integrate fixture has stale closure for ${opts.taskId}: closure=${closureRecordedAt} verification=${verificationUpdatedAt}`,
++    );
++  }
+   if (opts.finalHeadSubject) {
+     const finalSubjectFixturePath = `.agentplane/tasks/${opts.taskId}/pr/final-head-subject.fixture`;
+     await writeFile(
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index df5d7edaa..de4cc1326 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -76,14 +76,14 @@
+     }
+   },
+   "release_version_delta": {
+-    "source_task": "202608041057-WZRXEX",
++    "source_task": "202608041322-M26FS0",
+     "classification": "planned_version_parity",
+     "from_version": "0.6.24",
+-    "to_version": "0.7.2",
++    "to_version": "0.7.3",
+     "section": "package_manifests",
+     "from_sha256": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+-    "to_sha256": "5f78c647868acc4841b2cddd1f1e7b62e8930b7e24b4c266ad2c49891a9cbc6f",
+-    "surface_sha256": "a3177aeff4ba0735966eb9864a9fe10b1ae5f305e08a0c705c712ad081b5b3c6",
++    "to_sha256": "62af981925c53c759ca64ad783ec0d0b821fc10324e1270acc4bb8bea4da5fc3",
++    "surface_sha256": "6414a03920d7d20425c6bddc219c4b21ba704dd01a9a6f6d503702c98075723b",
+     "allowed_json_paths": [
+       "$.package_manifests[0].dependencies.@agentplaneorg/core",
+       "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+diff --git a/scripts/bench/capture-agent-efficiency-candidate.mjs b/scripts/bench/capture-agent-efficiency-candidate.mjs
+index 30f880f6f..f1d10ed30 100644
+--- a/scripts/bench/capture-agent-efficiency-candidate.mjs
++++ b/scripts/bench/capture-agent-efficiency-candidate.mjs
+@@ -103,8 +103,11 @@ function helpText() {
+     "  --root <path>     Candidate evidence root under .agentplane/cache/rf04-candidate/.",
+     "  --runtime-bridge <version>  Materialize or validate a no-provider comparison against the",
+     "                              historical runtime bridge for this exact Codex CLI version.",
++    "  --baseline-evidence <path>  Materialize or validate against a reviewed, Git-tracked",
++    "                              qualification baseline for the exact Codex CLI version.",
+     "  --capture         With --runtime-bridge, capture one candidate generation and then",
+-    "                    materialize the comparison against the preflighted runtime bridge.",
++    "                    materialize the comparison against the preflighted runtime bridge;",
++    "                    with --baseline-evidence, capture once and compare to that evidence.",
+     "  --pilot           Run only direct/run-01 against the exact candidate and persist nothing.",
+     "  --replace         Replace one complete previous candidate capture generation.",
+     "  --check           Rebuild and validate an existing capture without provider calls.",
+@@ -118,7 +121,15 @@ function helpText() {
+ 
+ function parseArgs(argv) {
+   const { flags, positionals } = parseScriptArgs(argv, {
+-    valueFlags: ["subject", "runs", "driver", "root", "codex-version", "runtime-bridge"],
++    valueFlags: [
++      "subject",
++      "runs",
++      "driver",
++      "root",
++      "codex-version",
++      "runtime-bridge",
++      "baseline-evidence",
++    ],
+     booleanFlags: ["capture", "check", "help", "pilot", "replace"],
+     aliases: { h: "help" },
+   });
+@@ -127,6 +138,9 @@ function parseArgs(argv) {
+   }
+   return {
+     capture: flags.capture === true,
++    baselineEvidencePath: flags["baseline-evidence"]
++      ? path.resolve(flags["baseline-evidence"])
++      : null,
+     check: flags.check === true,
+     codexCliVersion: flags["codex-version"] ?? "",
+     driverPath: path.resolve(flags.driver ?? DEFAULT_DRIVER_PATH),
+@@ -141,8 +155,13 @@ function parseArgs(argv) {
+ }
+ 
+ export function assertCandidateCaptureMode(options) {
+-  if (options.capture && options.runtimeBridgeVersion === null) {
+-    throw new Error("--capture requires --runtime-bridge");
++  const usesRuntimeBridge = options.runtimeBridgeVersion != null;
++  const usesBaselineEvidence = options.baselineEvidencePath != null;
++  if (usesRuntimeBridge && usesBaselineEvidence) {
++    throw new Error("--runtime-bridge cannot be combined with --baseline-evidence");
++  }
++  if (options.capture && !usesRuntimeBridge && !usesBaselineEvidence) {
++    throw new Error("--capture requires --runtime-bridge or --baseline-evidence");
+   }
+   if (options.capture && options.check) {
+     throw new Error("--capture cannot be combined with --check");
+@@ -152,6 +171,9 @@ export function assertCandidateCaptureMode(options) {
+   if (options.runtimeBridgeVersion !== null) {
+     throw new Error("--pilot cannot be combined with --runtime-bridge");
+   }
++  if (usesBaselineEvidence) {
++    throw new Error("--pilot cannot be combined with --baseline-evidence");
++  }
+   if (options.replace) throw new Error("--pilot cannot be combined with --replace");
+ }
+ 
+@@ -642,6 +664,58 @@ function comparisonTimingPolicy(runtimeBridgeVersion) {
+   return baseline.comparison_policy?.timing ?? null;
+ }
+ 
++function buildMeasurementComparisons({
++  baselineRuntimeProfile,
++  baselineValues,
++  candidateRuntimeProfile,
++  candidateValues,
++}) {
++  return [
++    ...Object.entries(candidateValues.provider_tokens).map(([field, candidate]) =>
++      atMostComparison(
++        `provider_tokens.${field}`,
++        baselineValues.provider_tokens[field],
++        candidate,
++      ),
++    ),
++    ...Object.keys(candidateValues.latency_ms).flatMap((field) => {
++      const baselineLatency = baselineValues.latency_ms[field];
++      const candidateLatency = candidateValues.latency_ms[field];
++      return [
++        atLeastComparison(
++          `latency.${field}.sample_count`,
++          baselineLatency.sample_count,
++          candidateLatency.sample_count,
++        ),
++        atMostComparison(`latency.${field}.mean_ms`, baselineLatency.mean, candidateLatency.mean),
++      ];
++    }),
++    atLeastComparison(
++      "outcomes.verified_success",
++      baselineValues.outcomes.verified_success,
++      candidateValues.outcomes.verified_success,
++    ),
++    atMostComparison(
++      "outcomes.rework_required",
++      baselineValues.outcomes.rework_required,
++      candidateValues.outcomes.rework_required,
++      0,
++    ),
++    atMostComparison(
++      "outcomes.golden_mismatch_count",
++      baselineValues.golden_mismatch_count,
++      candidateValues.golden_mismatch_count,
++      0,
++    ),
++    exactComparison(
++      "provider_episodes",
++      baselineValues.provider_episodes,
++      candidateValues.provider_episodes,
++    ),
++    identityComparison("runtime.profile", baselineRuntimeProfile, candidateRuntimeProfile),
++  ];
++}
++
+ function readComparisonBaseline({ baselineSource, runs }) {
+   const baselineRegistry = readFixtureRegistry(baselineSource.registryPath, {
+     historicalBaseline: true,
+@@ -745,50 +819,12 @@ export function buildCandidateMeasurement({
+     candidate: candidateRuntimeProfile.runtime_version,
+     profile_match: stableJson(baselineRuntimeProfile) === stableJson(candidateRuntimeProfile),
+   };
+-  const comparisons = [
+-    ...Object.entries(candidateValues.provider_tokens).map(([field, candidate]) =>
+-      atMostComparison(
+-        `provider_tokens.${field}`,
+-        baselineValues.provider_tokens[field],
+-        candidate,
+-      ),
+-    ),
+-    ...Object.keys(candidateValues.latency_ms).flatMap((field) => {
+-      const baselineLatency = baselineValues.latency_ms[field];
+-      const candidateLatency = candidateValues.latency_ms[field];
+-      return [
+-        atLeastComparison(
+-          `latency.${field}.sample_count`,
+-          baselineLatency.sample_count,
+-          candidateLatency.sample_count,
+-        ),
+-        atMostComparison(`latency.${field}.mean_ms`, baselineLatency.mean, candidateLatency.mean),
+-      ];
+-    }),
+-    atLeastComparison(
+-      "outcomes.verified_success",
+-      baselineValues.outcomes.verified_success,
+-      candidateValues.outcomes.verified_success,
+-    ),
+-    atMostComparison(
+-      "outcomes.rework_required",
+-      baselineValues.outcomes.rework_required,
+-      candidateValues.outcomes.rework_required,
+-      0,
+-    ),
+-    atMostComparison(
+-      "outcomes.golden_mismatch_count",
+-      baselineValues.golden_mismatch_count,
+-      candidateValues.golden_mismatch_count,
+-      0,
+-    ),
+-    exactComparison(
+-      "provider_episodes",
+-      baselineValues.provider_episodes,
+-      candidateValues.provider_episodes,
+-    ),
+-    identityComparison("runtime.profile", baselineRuntimeProfile, candidateRuntimeProfile),
+-  ];
++  const comparisons = buildMeasurementComparisons({
++    baselineRuntimeProfile,
++    baselineValues,
++    candidateRuntimeProfile,
++    candidateValues,
++  });
+   const failures = comparisons.filter((comparison) => comparison.verdict !== "pass");
+   return {
+     baseline: {
+@@ -1165,6 +1201,165 @@ function runtimeBridgeMeasurementPath(paths, runtimeBridgeVersion) {
+   return path.join(paths.root, `measurement.runtime-bridge-codex-${runtimeBridgeVersion}.json`);
+ }
+ 
++function pinnedBaselineMeasurementPath(paths, codexCliVersion) {
++  return path.join(paths.root, `measurement.pinned-baseline-codex-${codexCliVersion}.json`);
++}
++
++export function readPinnedQualificationBaseline({ codexCliVersion, evidencePath }) {
++  const resolvedPath = path.resolve(evidencePath);
++  assertRepoPathNoSymlinkEscape(repoRoot, resolvedPath, "pinned qualification baseline", {
++    kind: "file",
++  });
++  const bytes = readFileSync(resolvedPath, "utf8");
++  const evidence = JSON.parse(bytes);
++  const measurement = evidence?.measurement;
++  const expectedRuntimeVersion = `0.6.24/${codexCliVersion}`;
++  if (
++    evidence?.schema_version !== 1 ||
++    evidence?.kind !== "agentplane.rf04.qualification_candidate_evidence" ||
++    measurement?.schema_version !== 1 ||
++    measurement?.kind !== "agent_efficiency_candidate_measurement_v1"
++  ) {
++    throw new Error("pinned qualification baseline has an unsupported evidence contract");
++  }
++  if (
++    measurement.baseline?.source !== "runtime_bridge" ||
++    measurement.baseline?.runtime_profile?.runtime_version !== expectedRuntimeVersion ||
++    measurement.runtime_comparison?.baseline !== expectedRuntimeVersion ||
++    measurement.runtime_comparison?.candidate !== expectedRuntimeVersion ||
++    measurement.runtime_comparison?.profile_match !== true
++  ) {
++    throw new Error("pinned qualification baseline does not match the declared Codex runtime");
++  }
++  if (
++    measurement.baseline?.actual_values?.provider_episodes !== 55 ||
++    !/^sha256:[a-f0-9]{64}$/u.test(measurement.baseline?.replay_baseline_sha256 ?? "") ||
++    !/^sha256:[a-f0-9]{64}$/u.test(evidence.source?.measurement_source_sha256 ?? "") ||
++    !/^[a-f0-9]{40}$/u.test(evidence.source?.task_artifact_commit ?? "")
++  ) {
++    throw new Error("pinned qualification baseline provenance is incomplete");
++  }
++  return {
++    baseline: structuredClone(measurement.baseline),
++    evidence_path: relativeRepoPath(repoRoot, resolvedPath, "pinned qualification baseline"),
++    evidence_sha256: sha256(bytes),
++  };
++}
++
++export function buildCandidateMeasurementFromPinnedBaseline({
++  candidateMeasurement,
++  pinnedBaseline,
++}) {
++  if (
++    candidateMeasurement?.schema_version !== 1 ||
++    candidateMeasurement?.kind !== "agent_efficiency_candidate_measurement_v1"
++  ) {
++    throw new Error("candidate raw measurement has an unsupported evidence contract");
++  }
++  const baseline = pinnedBaseline?.baseline;
++  const candidate = candidateMeasurement.candidate;
++  if (!baseline?.actual_values || !baseline.runtime_profile || !candidate?.actual_values) {
++    throw new Error("pinned baseline comparison omits actual baseline or candidate values");
++  }
++  const runtimeComparison = {
++    baseline: baseline.runtime_profile.runtime_version,
++    candidate: candidate.runtime_profile?.runtime_version ?? null,
++    profile_match: stableJson(baseline.runtime_profile) === stableJson(candidate.runtime_profile),
++  };
++  const comparisons = buildMeasurementComparisons({
++    baselineRuntimeProfile: baseline.runtime_profile,
++    baselineValues: baseline.actual_values,
++    candidateRuntimeProfile: candidate.runtime_profile,
++    candidateValues: candidate.actual_values,
++  });
++  const failures = comparisons.filter((comparison) => comparison.verdict !== "pass");
++  return {
++    baseline: {
++      ...structuredClone(baseline),
++      pinned_evidence_path: pinnedBaseline.evidence_path,
++      pinned_evidence_sha256: pinnedBaseline.evidence_sha256,
++      source: "pinned_runtime_bridge",
++    },
++    candidate: structuredClone(candidate),
++    comparisons,
++    failure_ids: failures.map((comparison) => comparison.id),
++    kind: "agent_efficiency_candidate_measurement_v1",
++    runtime_comparison: runtimeComparison,
++    schema_version: 1,
++    verdict: failures.length === 0 ? "pass" : "fail",
++  };
++}
++
++export function materializePinnedBaselineMeasurement(options) {
++  const subject = assertCandidateSubject(options.subject);
++  const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
++  const runs = assertRuns(options.runs);
++  if (options.baselineEvidencePath == null) {
++    throw new Error("pinned qualification baseline evidence is required");
++  }
++  const paths = resolveCandidatePaths(subject, options.outputRoot);
++  assertCandidatePaths(paths);
++  const measurementPath = pinnedBaselineMeasurementPath(paths, codexCliVersion);
++  assertRepoPathNoSymlinkEscape(repoRoot, measurementPath, "pinned baseline measurement", {
++    kind: "file",
++  });
++  const rawMeasurement = rebuildCandidateMeasurement({
++    codexCliVersion,
++    driverPath: options.driverPath,
++    paths,
++    runs,
++    subject,
++    useRecordedCandidateInputs: true,
++  });
++  const pinnedBaseline = readPinnedQualificationBaseline({
++    codexCliVersion,
++    evidencePath: options.baselineEvidencePath,
++  });
++  const measurement = buildCandidateMeasurementFromPinnedBaseline({
++    candidateMeasurement: rawMeasurement,
++    pinnedBaseline,
++  });
++  const bytes = canonicalBytes(measurement);
++  if (targetExists(measurementPath) && readFileSync(measurementPath, "utf8") !== bytes) {
++    throw new Error("pinned baseline measurement already exists with different immutable bytes");
++  }
++  if (!targetExists(measurementPath)) {
++    writeFileSync(measurementPath, bytes, { encoding: "utf8", mode: 0o600 });
++  }
++  return measurement;
++}
++
++export function captureCandidateWithPinnedBaseline(options) {
++  assertCandidateCaptureMode(options);
++  readPinnedQualificationBaseline({
++    codexCliVersion: assertCandidateCodexCliVersion(options.codexCliVersion),
++    evidencePath: options.baselineEvidencePath,
++  });
++  captureCandidate({
++    ...options,
++    baselineEvidencePath: null,
++    capture: false,
++  });
++  return materializePinnedBaselineMeasurement({ ...options, capture: false });
++}
++
++export function checkPinnedBaselineMeasurement(options) {
++  const subject = assertCandidateSubject(options.subject);
++  const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
++  const paths = resolveCandidatePaths(subject, options.outputRoot);
++  const measurementPath = pinnedBaselineMeasurementPath(paths, codexCliVersion);
++  if (!targetExists(measurementPath)) {
++    throw new Error(
++      "pinned baseline measurement is absent; materialize it after candidate capture",
++    );
++  }
++  const rebuilt = materializePinnedBaselineMeasurement(options);
++  if (readFileSync(measurementPath, "utf8") !== canonicalBytes(rebuilt)) {
++    throw new Error("pinned baseline measurement is not the deterministic rebuild of raw evidence");
++  }
++  return rebuilt;
++}
++
+ export function materializeRuntimeBridgeMeasurement(options) {
+   const subject = assertCandidateSubject(options.subject);
+   const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
+@@ -1279,24 +1474,45 @@ const main = defineCheck({
+       return;
+     }
+     const runtimeBridge = options.runtimeBridgeVersion !== null;
+-    const measurement = runtimeBridge
++    const pinnedBaseline = options.baselineEvidencePath !== null;
++    const measurement = pinnedBaseline
+       ? options.capture
+-        ? captureCandidateWithRuntimeBridge(options)
++        ? captureCandidateWithPinnedBaseline(options)
++        : options.check
++          ? checkPinnedBaselineMeasurement(options)
++          : materializePinnedBaselineMeasurement(options)
++      : runtimeBridge
++        ? options.capture
++          ? captureCandidateWithRuntimeBridge(options)
++          : options.check
++            ? checkRuntimeBridgeMeasurement(options)
++            : materializeRuntimeBridgeMeasurement(options)
+         : options.check
+-          ? checkRuntimeBridgeMeasurement(options)
+-          : materializeRuntimeBridgeMeasurement(options)
+-      : options.check
+-        ? checkCandidateCapture(options)
+-        : captureCandidate(options);
++          ? checkCandidateCapture(options)
++          : captureCandidate(options);
+     stdout.write(
+-      `RF-04 candidate ${runtimeBridge ? "runtime bridge measurement" : "measurement"} ` +
+-        `${options.check ? "validated" : runtimeBridge ? "materialized" : "captured"} ` +
++      `RF-04 candidate ${
++        pinnedBaseline
++          ? "pinned baseline measurement"
++          : runtimeBridge
++            ? "runtime bridge measurement"
++            : "measurement"
++      } ` +
++        `${
++          options.check
++            ? "validated"
++            : runtimeBridge || pinnedBaseline
++              ? "materialized"
++              : "captured"
++        } ` +
+         `(subject=${measurement.candidate.subject_sha}; runs=${measurement.candidate.coverage.replay_runs}; ` +
+         `episodes=${measurement.candidate.actual_values.provider_episodes}; verdict=${measurement.verdict})\n`,
+     );
+     const blockingFailureIds = blockingCandidateFailureIds(
+       measurement,
+-      comparisonTimingPolicy(options.runtimeBridgeVersion),
++      pinnedBaseline
++        ? "diagnostic_only_never_gated"
++        : comparisonTimingPolicy(options.runtimeBridgeVersion),
+     );
+     if (blockingFailureIds.length > 0) {
+       throw new Error(`RF-04 candidate comparison failed: ${blockingFailureIds.join(", ")}`);
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index 9172de237..87d29b557 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -493,14 +493,14 @@ function validateReviewedCandidate({
+   assert(
+     hashJson(releaseVersionDelta) ===
+       hashJson({
+-        source_task: "202608041057-WZRXEX",
++        source_task: "202608041322-M26FS0",
+         classification: "planned_version_parity",
+         from_version: "0.6.24",
+-        to_version: "0.7.2",
++        to_version: "0.7.3",
+         section: "package_manifests",
+         from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+-        to_sha256: "5f78c647868acc4841b2cddd1f1e7b62e8930b7e24b4c266ad2c49891a9cbc6f",
+-        surface_sha256: "a3177aeff4ba0735966eb9864a9fe10b1ae5f305e08a0c705c712ad081b5b3c6",
++        to_sha256: "62af981925c53c759ca64ad783ec0d0b821fc10324e1270acc4bb8bea4da5fc3",
++        surface_sha256: "6414a03920d7d20425c6bddc219c4b21ba704dd01a9a6f6d503702c98075723b",
+         allowed_json_paths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+diff --git a/scripts/qualification/check-v0.7.1-efficiency-evidence.mjs b/scripts/qualification/check-v0.7.1-efficiency-evidence.mjs
+index a97e1669a..d45bb4150 100644
+--- a/scripts/qualification/check-v0.7.1-efficiency-evidence.mjs
++++ b/scripts/qualification/check-v0.7.1-efficiency-evidence.mjs
+@@ -1,7 +1,9 @@
+ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+ import path from "node:path";
++import { fileURLToPath } from "node:url";
+ 
+ import { isDirectRun, parseScriptArgs } from "../lib/script-runtime.mjs";
++import { readProviderEvidenceEquivalence } from "./release-qualification.mjs";
+ 
+ const TOKEN_FIELDS = ["input_tokens", "output_tokens", "reasoning_tokens", "total_tokens"];
+ const LATENCY_FIELDS = [
+@@ -11,10 +13,12 @@ const LATENCY_FIELDS = [
+ ];
+ const TIMING_POLICY = "diagnostic_only_never_gated";
+ const SHA256_PATTERN = /^sha256:[a-f0-9]{64}$/u;
++const scriptPath = fileURLToPath(import.meta.url);
++const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+ 
+ function parseArgs(argv) {
+   const { flags, positionals } = parseScriptArgs(argv, {
+-    valueFlags: ["evidence", "subject", "out"],
++    valueFlags: ["evidence", "subject", "provider-source-subject", "out"],
+   });
+   if (positionals.length > 0) {
+     throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
+@@ -25,9 +29,14 @@ function parseArgs(argv) {
+   if (!/^[a-f0-9]{40}$/u.test(flags.subject)) {
+     throw new Error("--subject must be a full 40-character Git commit SHA");
+   }
++  const providerSourceSubject = flags["provider-source-subject"] ?? flags.subject;
++  if (!/^[a-f0-9]{40}$/u.test(providerSourceSubject)) {
++    throw new Error("--provider-source-subject must be a full 40-character Git commit SHA");
++  }
+   return {
+     evidencePath: path.resolve(flags.evidence),
+     outputPath: path.resolve(flags.out),
++    providerSourceSubject,
+     subject: flags.subject,
+   };
+ }
+@@ -128,12 +137,20 @@ export function evaluateEfficiencyMeasurement(measurement, subject) {
+   for (const field of LATENCY_FIELDS) {
+     const before = baseline.latency_ms?.[field];
+     const after = candidate.latency_ms?.[field];
+-    assertAtLeast(
+-      failures,
+-      `latency.${field}.sample_count`,
+-      after?.sample_count,
+-      before?.sample_count,
+-    );
++    if (
++      !finite(after?.sample_count) ||
++      (finite(before?.sample_count) && after.sample_count < before.sample_count)
++    ) {
++      latencyDiagnostics.push({
++        metric: `latency.${field}.sample_count`,
++        baseline: before?.sample_count ?? null,
++        candidate: after?.sample_count ?? null,
++        delta:
++          finite(before?.sample_count) && finite(after?.sample_count)
++            ? after.sample_count - before.sample_count
++            : null,
++      });
++    }
+     if (finite(before?.mean) && finite(after?.mean) && after.mean > before.mean) {
+       latencyDiagnostics.push({
+         metric: `latency.${field}.mean`,
+@@ -202,7 +219,20 @@ export function evaluateEfficiencyMeasurement(measurement, subject) {
+ function main(argv = process.argv.slice(2)) {
+   const options = parseArgs(argv);
+   const measurement = readMeasurement(options.evidencePath);
+-  const result = evaluateEfficiencyMeasurement(measurement, options.subject);
++  const runtimeEquivalence = readProviderEvidenceEquivalence(
++    repoRoot,
++    options.providerSourceSubject,
++    options.subject,
++  );
++  const evaluated = evaluateEfficiencyMeasurement(measurement, options.providerSourceSubject);
++  const result = {
++    ...evaluated,
++    subject: options.subject,
++    provider_evidence: {
++      source_subject: options.providerSourceSubject,
++      runtime_equivalence: runtimeEquivalence,
++    },
++  };
+   mkdirSync(path.dirname(options.outputPath), { recursive: true });
+   writeFileSync(options.outputPath, `${JSON.stringify(result, null, 2)}\n`, "utf8");
+   process.stdout.write(
+diff --git a/scripts/qualification/release-qualification.mjs b/scripts/qualification/release-qualification.mjs
+index 461c192cf..6b2488681 100644
+--- a/scripts/qualification/release-qualification.mjs
++++ b/scripts/qualification/release-qualification.mjs
+@@ -16,6 +16,13 @@ const COVERAGE_DIMENSIONS = [
+ const TIERS = new Set(["core", "full", "provider"]);
+ const RELEASE_DISPOSITIONS = new Set(["block", "advisory"]);
+ const TASK_ID_PATTERN = /^\d{12}-[A-Z0-9]{6}$/u;
++const PROVIDER_EQUIVALENT_QUALIFICATION_PATHS = new Set([
++  "scripts/qualification/check-v0.7.1-efficiency-evidence.mjs",
++  "scripts/qualification/release-qualification.mjs",
++  "scripts/qualification/release-qualification.test.mjs",
++  "scripts/qualification/run-v0.7.1-release-qualification.mjs",
++  "scripts/qualification/v0.7.1-release-qualification.json",
++]);
+ 
+ function assertNonEmptyString(value, label) {
+   if (typeof value !== "string" || value.trim().length === 0) {
+@@ -73,6 +80,72 @@ export function sha256(value) {
+   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
+ }
+ 
++export function assertProviderEquivalentChangedPaths(changedPaths) {
++  if (!Array.isArray(changedPaths)) {
++    throw new TypeError("provider evidence changed paths must be an array");
++  }
++  const normalized = changedPaths.map((filePath) => {
++    assertNonEmptyString(filePath, "provider evidence changed path");
++    return filePath.split(path.sep).join("/");
++  });
++  const unexpected = normalized.filter(
++    (filePath) => !PROVIDER_EQUIVALENT_QUALIFICATION_PATHS.has(filePath),
++  );
++  if (unexpected.length > 0) {
++    throw new Error(
++      `provider evidence cannot cross runtime-affecting changes: ${unexpected.join(", ")}`,
++    );
++  }
++  return normalized.toSorted();
++}
++
++export function readProviderEvidenceEquivalence(repoRoot, sourceSubject, targetSubject) {
++  for (const [label, value] of [
++    ["provider evidence source subject", sourceSubject],
++    ["provider evidence target subject", targetSubject],
++  ]) {
++    if (!/^[a-f0-9]{40}$/u.test(value ?? "")) {
++      throw new Error(`${label} must be a full 40-character Git commit SHA`);
++    }
++  }
++  if (sourceSubject === targetSubject) {
++    return {
++      schema_version: 1,
++      kind: "agentplane.provider_runtime_equivalence",
++      policy: "exact_subject_v1",
++      source_subject: sourceSubject,
++      target_subject: targetSubject,
++      changed_paths: [],
++      provider_runtime_unchanged: true,
++    };
++  }
++  try {
++    execFileSync("git", ["merge-base", "--is-ancestor", sourceSubject, targetSubject], {
++      cwd: repoRoot,
++      stdio: "ignore",
++    });
++  } catch {
++    throw new Error("provider evidence source must be an ancestor of the qualification subject");
++  }
++  const changedPaths = execFileSync(
++    "git",
++    ["diff", "--name-only", "--diff-filter=ACDMRTUXB", sourceSubject, targetSubject, "--"],
++    { cwd: repoRoot, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
++  )
++    .trim()
++    .split("\n")
++    .filter(Boolean);
++  return {
++    schema_version: 1,
++    kind: "agentplane.provider_runtime_equivalence",
++    policy: "qualification_only_descendant_v1",
++    source_subject: sourceSubject,
++    target_subject: targetSubject,
++    changed_paths: assertProviderEquivalentChangedPaths(changedPaths),
++    provider_runtime_unchanged: true,
++  };
++}
++
+ export function assertQualificationSubjectIdentity({ subject, head, tree, statusPorcelain }) {
+   if (!/^[a-f0-9]{40}$/u.test(subject)) {
+     throw new Error("qualification subject must be a full 40-character Git commit SHA");
+diff --git a/scripts/qualification/release-qualification.test.mjs b/scripts/qualification/release-qualification.test.mjs
+index 1194519c7..9d008ccad 100644
+--- a/scripts/qualification/release-qualification.test.mjs
++++ b/scripts/qualification/release-qualification.test.mjs
+@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
+ import {
+   assertQualificationSubjectIdentity,
+   buildQualificationReport,
++  assertProviderEquivalentChangedPaths,
+   qualificationExitCode,
+   qualificationEvidenceStatusPathspec,
+   readQualificationManifest,
+@@ -140,16 +141,22 @@ function supervisorLatencySurfaces(count) {
+ describe("v0.7.1 release qualification contract", () => {
+   it("preflights the exact provider runtime only before provider execution", () => {
+     const calls = [];
+-    const bridgeCalls = [];
++    const baselineCalls = [];
+     const verify = (source) => {
+       calls.push(source);
+       return "0.146.0-alpha.3.1";
+     };
+-    const verifyBridge = (source) => {
+-      bridgeCalls.push(source);
++    const verifyBaseline = (source) => {
++      baselineCalls.push(source);
+       return {};
+     };
+-    const base = { codexVersion: "0.146.0-alpha.3.1", dryRun: false, provider: false };
++    const base = {
++      codexVersion: "0.146.0-alpha.3.1",
++      dryRun: false,
++      provider: false,
++      providerEvidenceSubject: "a".repeat(40),
++      subject: "a".repeat(40),
++    };
+     const localScenarios = [{ id: "typecheck", tier: "full" }];
+     const providerScenarios = [{ id: "provider-matrix", tier: "provider" }];
+ 
+@@ -171,12 +178,37 @@ describe("v0.7.1 release qualification contract", () => {
+         { ...base, provider: true },
+         providerScenarios,
+         verify,
+-        verifyBridge,
++        verifyBaseline,
+       ),
+       "0.146.0-alpha.3.1",
+     );
+     assert.deepEqual(calls, [{ [CODEX_REPLAY_CLI_VERSION_ENV]: "0.146.0-alpha.3.1" }]);
+-    assert.deepEqual(bridgeCalls, [{ codexCliVersion: "0.146.0-alpha.3.1" }]);
++    assert.deepEqual(baselineCalls, [
++      {
++        codexCliVersion: "0.146.0-alpha.3.1",
++        evidencePath: path.join(
++          repoRoot,
++          "scripts",
++          "baselines",
++          "agent-efficiency-v0.7-beta1-candidate.json",
++        ),
++      },
++    ]);
++
++    const equivalenceCalls = [];
++    preflightQualificationProviderRuntime(
++      {
++        ...base,
++        provider: true,
++        subject: "b".repeat(40),
++        providerEvidenceSubject: "a".repeat(40),
++      },
++      providerScenarios,
++      verify,
++      verifyBaseline,
++      (...args) => equivalenceCalls.push(args),
++    );
++    assert.deepEqual(equivalenceCalls, [[repoRoot, "a".repeat(40), "b".repeat(40)]]);
+ 
+     const mismatch = Object.assign(new Error("CODEX_VERSION_MISMATCH"), {
+       code: "CODEX_VERSION_MISMATCH",
+@@ -189,7 +221,7 @@ describe("v0.7.1 release qualification contract", () => {
+           () => {
+             throw mismatch;
+           },
+-          verifyBridge,
++          verifyBaseline,
+         ),
+       (error) => error === mismatch,
+     );
+@@ -366,8 +398,27 @@ describe("v0.7.1 release qualification contract", () => {
+     assert.equal(provider.filter((scenario) => scenario.tier === "provider").length, 1);
+     assert.ok(providerIds.indexOf("provider-matrix") < providerIds.indexOf("efficiency-evidence"));
+     const providerCommand = provider.find((scenario) => scenario.id === "provider-matrix").command;
+-    assert.ok(providerCommand.includes("--runtime-bridge"));
+-    assert.ok(providerCommand.includes("--capture"));
++    assert.ok(providerCommand.includes("--baseline-evidence"));
++    assert.equal(providerCommand.includes("--runtime-bridge"), false);
++    assert.ok(providerCommand.includes("{providerAction}"));
++    assert.ok(providerCommand.includes("{providerSubject}"));
++  });
++
++  it("reuses provider evidence only across qualification-only changes", () => {
++    assert.deepEqual(
++      assertProviderEquivalentChangedPaths([
++        "scripts/qualification/check-v0.7.1-efficiency-evidence.mjs",
++        "scripts/qualification/release-qualification.test.mjs",
++      ]),
++      [
++        "scripts/qualification/check-v0.7.1-efficiency-evidence.mjs",
++        "scripts/qualification/release-qualification.test.mjs",
++      ],
++    );
++    assert.throws(
++      () => assertProviderEquivalentChangedPaths(["packages/agentplane/src/cli/index.ts"]),
++      /runtime-affecting changes/u,
++    );
+   });
+ 
+   it("fails closed when an explicit scenario omits its dependency", () => {
+@@ -525,6 +576,22 @@ describe("v0.7.1 release qualification contract", () => {
+       ),
+       true,
+     );
++
++    const timingCoverage = efficiencyMeasurement();
++    timingCoverage.candidate.actual_values.latency_ms.time_to_first_scoped_mutation_ms.sample_count =
++      timingCoverage.baseline.actual_values.latency_ms.time_to_first_scoped_mutation_ms
++        .sample_count - 2;
++    const timingCoverageResult = evaluateEfficiencyMeasurement(
++      timingCoverage,
++      timingCoverage.candidate.subject_sha,
++    );
++    assert.equal(timingCoverageResult.verdict, "pass");
++    assert.equal(
++      timingCoverageResult.latency_ms.diagnostics.some(
++        (item) => item.metric === "latency.time_to_first_scoped_mutation_ms.sample_count",
++      ),
++      true,
++    );
+   });
+ 
+   it("rejects an agent packet that grows beyond the release limit", () => {
+diff --git a/scripts/qualification/run-v0.7.1-release-qualification.mjs b/scripts/qualification/run-v0.7.1-release-qualification.mjs
+index 99df211d1..307d1e374 100644
+--- a/scripts/qualification/run-v0.7.1-release-qualification.mjs
++++ b/scripts/qualification/run-v0.7.1-release-qualification.mjs
+@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
+ import {
+   buildQualificationReport,
+   qualificationExitCode,
++  readProviderEvidenceEquivalence,
+   readQualificationSubjectIdentity,
+   readQualificationManifest,
+   renderDefectLedger,
+@@ -16,7 +17,7 @@ import {
+   assertCodexBinary,
+   CODEX_REPLAY_CLI_VERSION_ENV,
+ } from "../bench/internal/agent-efficiency-codex-runtime.mjs";
+-import { checkRuntimeBridge } from "../bench/capture-agent-efficiency-runtime-bridge.mjs";
++import { readPinnedQualificationBaseline } from "../bench/capture-agent-efficiency-candidate.mjs";
+ import { isDirectRun, parseScriptArgs } from "../lib/script-runtime.mjs";
+ 
+ const scriptPath = fileURLToPath(import.meta.url);
+@@ -27,6 +28,12 @@ const defaultManifestPath = path.join(
+   "qualification",
+   "v0.7.1-release-qualification.json",
+ );
++const defaultProviderBaselineEvidencePath = path.join(
++  repoRoot,
++  "scripts",
++  "baselines",
++  "agent-efficiency-v0.7-beta1-candidate.json",
++);
+ 
+ function helpText() {
+   return [
+@@ -40,6 +47,8 @@ function helpText() {
+     "  --mode <audit|gate>       Default: audit.",
+     "  --profile <core|full>     Default: full. Gate requires full.",
+     "  --provider                Run the bounded 50-run/55-episode provider scenario.",
++    "  --provider-evidence-subject <sha>  Reuse immutable provider evidence only when every",
++    "                              intervening change is qualification-only and runtime-equivalent.",
+     "  --subject <sha>           Exact candidate commit. Defaults to current HEAD in audit mode.",
+     "  --codex-version <version> Exact Codex CLI version; required with --provider.",
+     "  --scenario <id>           Select one scenario; repeatable through comma-separated ids.",
+@@ -78,7 +87,15 @@ function parseArgs(argv) {
+     normalized.push(arg);
+   }
+   const { flags, positionals } = parseScriptArgs(normalized, {
+-    valueFlags: ["mode", "profile", "subject", "codex-version", "manifest", "out-dir"],
++    valueFlags: [
++      "mode",
++      "profile",
++      "subject",
++      "provider-evidence-subject",
++      "codex-version",
++      "manifest",
++      "out-dir",
++    ],
+     booleanFlags: ["provider", "dry-run", "help"],
+     aliases: { h: "help" },
+   });
+@@ -101,6 +118,14 @@ function parseArgs(argv) {
+   if (flags.provider === true && !flags["codex-version"]) {
+     throw new Error("--provider requires --codex-version");
+   }
++  if (flags["provider-evidence-subject"] && flags.provider !== true) {
++    throw new Error("--provider-evidence-subject requires --provider");
++  }
++  const subject = flags.subject ?? gitHead();
++  const providerEvidenceSubject = flags["provider-evidence-subject"] ?? subject;
++  if (!/^[a-f0-9]{40}$/u.test(providerEvidenceSubject)) {
++    throw new Error("--provider-evidence-subject must be a full 40-character Git commit SHA");
++  }
+   return {
+     codexVersion: flags["codex-version"] ?? "",
+     dryRun: flags["dry-run"] === true,
+@@ -108,10 +133,12 @@ function parseArgs(argv) {
+     manifestPath: path.resolve(flags.manifest ?? defaultManifestPath),
+     mode,
+     outputDirectory: flags["out-dir"] ? path.resolve(flags["out-dir"]) : null,
++    providerBaselineEvidencePath: defaultProviderBaselineEvidencePath,
++    providerEvidenceSubject,
+     profile,
+     provider: flags.provider === true,
+     scenarioIds,
+-    subject: flags.subject ?? gitHead(),
++    subject,
+   };
+ }
+ 
+@@ -211,11 +238,16 @@ export function preflightQualificationProviderRuntime(
+   options,
+   scenarios,
+   verify = assertCodexBinary,
+-  verifyBridge = checkRuntimeBridge,
++  verifyBaseline = readPinnedQualificationBaseline,
++  verifyEquivalence = readProviderEvidenceEquivalence,
+ ) {
+   if (options.dryRun || !scenarios.some((scenario) => scenario.tier === "provider")) return null;
+   const runtime = verify({ [CODEX_REPLAY_CLI_VERSION_ENV]: options.codexVersion });
+-  verifyBridge({ codexCliVersion: options.codexVersion });
++  verifyBaseline({
++    codexCliVersion: options.codexVersion,
++    evidencePath: options.providerBaselineEvidencePath ?? defaultProviderBaselineEvidencePath,
++  });
++  verifyEquivalence(repoRoot, options.providerEvidenceSubject ?? options.subject, options.subject);
+   return runtime;
+ }
+ 
+@@ -244,12 +276,15 @@ async function main(argv = process.argv.slice(2)) {
+           ".agentplane",
+           "cache",
+           "rf04-candidate",
+-          options.subject,
+-          `measurement.runtime-bridge-codex-${options.codexVersion}.json`,
++          options.providerEvidenceSubject,
++          `measurement.pinned-baseline-codex-${options.codexVersion}.json`,
+         )
+       : path.join("scripts", "baselines", "agent-efficiency-v0.7-beta1-candidate.json"),
+     codexVersion: options.codexVersion,
+     evidenceDir: relativeOutputDirectory,
++    providerBaselineEvidence: path.relative(repoRoot, options.providerBaselineEvidencePath),
++    providerAction: options.providerEvidenceSubject === options.subject ? "--capture" : "--check",
++    providerSubject: options.providerEvidenceSubject,
+     repoRoot: ".",
+     subject: options.subject,
+   };
+diff --git a/scripts/qualification/v0.7.1-release-qualification.json b/scripts/qualification/v0.7.1-release-qualification.json
+index 54854b90c..5938df7c6 100644
+--- a/scripts/qualification/v0.7.1-release-qualification.json
++++ b/scripts/qualification/v0.7.1-release-qualification.json
+@@ -227,6 +227,8 @@
+         "{candidateEvidence}",
+         "--subject",
+         "{subject}",
++        "--provider-source-subject",
++        "{providerSubject}",
+         "--out",
+         "{evidenceDir}/efficiency-evidence.json"
+       ],
+@@ -407,14 +409,14 @@
+         "node",
+         "scripts/bench/capture-agent-efficiency-candidate.mjs",
+         "--subject",
+-        "{subject}",
++        "{providerSubject}",
+         "--codex-version",
+         "{codexVersion}",
+         "--runs",
+         "5",
+-        "--runtime-bridge",
+-        "{codexVersion}",
+-        "--capture"
++        "--baseline-evidence",
++        "{providerBaselineEvidence}",
++        "{providerAction}"
+       ],
+       "timeout_ms": 7200000,
+       "coverage": {
+@@ -424,8 +426,8 @@
+       },
+       "failure": {
+         "classification": "semantic_provider_qualification_failure",
+-        "impact": "The exact candidate lacks complete no-retry semantic quality and token telemetry.",
+-        "proposed_fix": "Classify the failed episode without retrying it, repair the attributable product defect, and run a new explicitly versioned candidate generation.",
++        "impact": "The candidate lacks complete no-retry semantic quality and token telemetry from the exact runtime or a proven qualification-only descendant.",
++        "proposed_fix": "Classify the failed episode without retrying it, repair the attributable product defect, and run a new explicitly versioned candidate generation unless the runtime is provably unchanged.",
+         "owner_task": "202608021232-6BTB6D",
+         "release_disposition": "block"
+       }
+diff --git a/scripts/release/release-task-evidence.mjs b/scripts/release/release-task-evidence.mjs
+index e9ff9b7ec..b33f52404 100644
+--- a/scripts/release/release-task-evidence.mjs
++++ b/scripts/release/release-task-evidence.mjs
+@@ -546,13 +546,6 @@ async function runApply(argv) {
+   const at = args.at ?? new Date().toISOString();
+   const nextFrontmatter = {
+     ...parsed.frontmatter,
+-    verification: {
+-      ...parsed.frontmatter.verification,
+-      state: "ok",
+-      updated_at: at,
+-      updated_by: args.author,
+-      note: `Hosted publish confirmed for ${manifest.tag}.`,
+-    },
+     doc_updated_at: at,
+     doc_updated_by: args.author,
+     sections,
+diff --git a/website/static/img/social/docs/releases/v0.7.3.png b/website/static/img/social/docs/releases/v0.7.3.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..df452d1bd9526b2bf86c2b549c0d68ab6906909d
+GIT binary patch
+literal 53092
+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
+Jvd$@?2>>R%t6Ts8
+
+literal 0
+HcmV?d00001
+
+diff --git a/website/static/img/social/manifest.json b/website/static/img/social/manifest.json
+index 486a5d755..66a116f32 100644
+--- a/website/static/img/social/manifest.json
++++ b/website/static/img/social/manifest.json
+@@ -1548,6 +1548,14 @@
+       "title": "V0.7.2",
+       "svgSha256": "b947d6df0f31db709ee65fb0176922896d85ca4ae6190edd980b3ff2f00ed9b4"
+     },
++    {
++      "route": "/docs/releases/v0.7.3",
++      "output": "static/img/social/docs/releases/v0.7.3.png",
++      "section": "Releases",
++      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
++      "title": "V0.7.3",
++      "svgSha256": "2288d8e241a7954f6654263f74e614114b7472866743de12d36e06485302d464"
++    },
+     {
+       "route": "/docs/showcase",
+       "output": "static/img/social/docs/showcase.png",

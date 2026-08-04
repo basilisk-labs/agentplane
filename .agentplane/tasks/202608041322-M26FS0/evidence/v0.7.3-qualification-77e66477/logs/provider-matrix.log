@@ -1,0 +1,4 @@
+$ "node" "scripts/bench/capture-agent-efficiency-candidate.mjs" "--subject" "4d529ff0fa594fcf9cece44b56dd402b84e7f44c" "--codex-version" "0.146.0-alpha.3.1" "--runs" "5" "--baseline-evidence" "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json" "--check"
+exit_code=0 signal=none duration_ms=5884
+
+RF-04 candidate pinned baseline measurement validated (subject=4d529ff0fa594fcf9cece44b56dd402b84e7f44c; runs=50; episodes=55; verdict=fail)
