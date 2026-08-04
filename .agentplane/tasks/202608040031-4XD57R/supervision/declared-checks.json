@@ -1,0 +1,8 @@
+{
+  "checks": [],
+  "kind": "direct_task_declared_checks",
+  "reason": "Unsupported declared check: The benchmark report must expose bounded deterministic Git command histograms for baseline and candidate samples without adding work inside the timed interval.",
+  "schema_version": 1,
+  "status": "unsupported",
+  "task_id": "202608040031-4XD57R"
+}

@@ -1,0 +1,22 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "The benchmark report must expose bounded deterministic Git command histograms for baseline and candidate samples without adding work inside the timed interval.",
+    "The candidate must reduce the measured direct managed-preparation observation count, preserve all route and recovery invariants, and pass the unchanged 20-cold/30-warm +10% median and p95 gate."
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-04T00:48:00.678Z",
+    "updated_by": "TESTER",
+    "note": "Verified exact implementation SHA 3a526415: instrumented 20-cold/30-warm packed benchmark passed all four unchanged +10% gates and reduced managed Git observations from 8 to 7; supervisor 154/154, recovery 86/86, critical CLI 79/79, qualification 21/21, typecheck, lint, format, doctor, and routing policy passed."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

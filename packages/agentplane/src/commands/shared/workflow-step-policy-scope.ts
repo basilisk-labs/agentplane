@@ -94,6 +94,7 @@ async function rootCommitChangedPaths(repositoryRoot: string): Promise<string[]>
 export async function observeWorkflowPolicyScope(opts: {
   repositoryRoot: string;
   state: WorkflowRouteStateInput;
+  preobservedDirtyPaths?: readonly string[];
 }): Promise<WorkflowPolicyScopeObservation> {
   const passedDirtyPaths = opts.state.taskWorktree?.changedPaths ?? [];
   const baseline = baselineFromTask(opts.state.task);
@@ -102,7 +103,9 @@ export async function observeWorkflowPolicyScope(opts: {
   try {
     const directDirtyPaths =
       opts.state.workflowMode === "direct"
-        ? await new GitContext({ gitRoot: opts.repositoryRoot }).statusChangedPaths()
+        ? Object.hasOwn(opts, "preobservedDirtyPaths")
+          ? (opts.preobservedDirtyPaths ?? [])
+          : await new GitContext({ gitRoot: opts.repositoryRoot }).statusChangedPaths()
         : [];
     const dirtyPaths = normalizedPaths([...passedDirtyPaths, ...directDirtyPaths]);
     if (opts.state.workflowMode === "branch_pr") {

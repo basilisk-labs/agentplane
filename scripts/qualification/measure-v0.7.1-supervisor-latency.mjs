@@ -270,6 +270,7 @@ function measureSequence({ cliPath, commands, cwd, probeBin, logPath, surfaceId 
     duration_ms: durationMs,
     exit_code: exitCode,
     signal,
+    git_commands: gitCommands,
     logical_subprocess_count: commands.length + gitCommands.length,
     git_subprocess_count: gitCommands.length,
     repository_scan_count: gitCommands.filter((command) => REPOSITORY_SCAN_PATTERN.test(command))
@@ -283,6 +284,23 @@ function measureSequence({ cliPath, commands, cwd, probeBin, logPath, surfaceId 
     ),
     ...context,
     stderr: stderr.join("\n").slice(-1000),
+  };
+}
+
+export function summarizeGitCommandHistogram(samples) {
+  const counts = new Map();
+  for (const sample of samples) {
+    for (const command of sample.git_commands ?? []) {
+      counts.set(command, (counts.get(command) ?? 0) + 1);
+    }
+  }
+  const commands = [...counts.entries()]
+    .toSorted(([left], [right]) => left.localeCompare(right))
+    .map(([command, count]) => ({ command, count }));
+  return {
+    total_count: commands.reduce((total, entry) => total + entry.count, 0),
+    unique_count: commands.length,
+    commands,
   };
 }
 
@@ -319,6 +337,7 @@ function summarizeSamples(samples) {
       samples.map((sample) => sample.logical_subprocess_count),
     ),
     git_subprocess_count: summarizeNumbers(samples.map((sample) => sample.git_subprocess_count)),
+    git_command_histogram: summarizeGitCommandHistogram(samples),
     repository_scan_count: summarizeNumbers(samples.map((sample) => sample.repository_scan_count)),
     git_snapshot_count: summarizeNumbers(samples.map((sample) => sample.git_snapshot_count)),
     packet_bytes: summarizeNumbers(samples.map((sample) => sample.packet_bytes)),
@@ -447,6 +466,27 @@ export function validateSupervisorLatencyReport(report) {
       for (const side of ["baseline", "candidate"]) {
         if (surface[side]?.sample_count < expected || surface[side].samples.length < expected) {
           throw new Error(`${phaseName}.${surface.id}.${side} requires ${expected} samples`);
+        }
+        const histogram = surface[side].git_command_histogram;
+        const gitSamples = surface[side].git_subprocess_count?.samples;
+        if (!histogram || !Array.isArray(histogram.commands) || !Array.isArray(gitSamples)) {
+          throw new Error(`${phaseName}.${surface.id}.${side} requires a Git command histogram`);
+        }
+        const commandTotal = histogram.commands.reduce((total, entry) => total + entry.count, 0);
+        const observedTotal = gitSamples.reduce((total, count) => total + count, 0);
+        const sortedCommands = histogram.commands
+          .map((entry) => entry.command)
+          .toSorted((left, right) => left.localeCompare(right));
+        if (
+          histogram.total_count !== commandTotal ||
+          histogram.total_count !== observedTotal ||
+          histogram.unique_count !== histogram.commands.length ||
+          new Set(sortedCommands).size !== sortedCommands.length ||
+          !histogram.commands.every((entry, index) => entry.command === sortedCommands[index])
+        ) {
+          throw new Error(
+            `${phaseName}.${surface.id}.${side} has an inconsistent Git command histogram`,
+          );
         }
       }
     }

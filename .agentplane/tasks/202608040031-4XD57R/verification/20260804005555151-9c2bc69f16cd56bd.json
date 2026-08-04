@@ -1,0 +1,15 @@
+{
+  "details": "Command: node scripts/qualification/measure-v0.7.1-supervisor-latency.mjs --subject 3a526415de4ea9034687446e68f7115a97353402 --out .agentplane/tasks/202608040031-4XD57R/evidence/supervisor-latency-3a526415d.json\nResult: pass\nEvidence: .agentplane/tasks/202608040031-4XD57R/evidence/supervisor-latency-3a526415d.json\nScope: exact 20-cold and 30-warm v0.6.26 supervisor latency comparison with unchanged +10 percent median and p95 gates\n\nCommand: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202608040031-4XD57R/README.md#Verification\nScope: critical CLI, supervisor, recovery, static typing, and policy routing regression coverage",
+  "digest": "sha256:9c2bc69f16cd56bd392e255993f308ba905465073010bf897e468226a87a7174",
+  "implementation_sha": "b80f2e98f136add92e2cd143da7d5731dae64519",
+  "kind": "task_verification_record",
+  "note": "Revalidated the exact semantic implementation and lifecycle-repair target: the accepted 3a526415 code diff and its b80f2e98 task handoff remain covered by the passing strict benchmark and regression matrix.",
+  "recorded_at": "2026-08-04T00:55:55.151Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the qualification contract tests for the supervisor latency report. Expected: each baseline/candidate surface contains a deterministic, bounded Git command histogram whose total equals the summed per-sample Git subprocess count; instrumentation occurs after the timed command sequence.\n2. Run the instrumented packed benchmark against v0.6.26 on a clean SHA with at least 20 cold and 30 warm samples. Expected: the report identifies exact repeated command families and preserves raw evidence; no provider call occurs.\n3. Run focused route, task-run-path, supervisor, recovery, stale task/Git/policy/approval, concurrency, crash, and effect-in-doubt suites. Expected: the chosen observation reuse invalidates on every covered state change and no protected side effect can replay.\n4. Re-run node scripts/qualification/measure-v0.7.1-supervisor-latency.mjs --subject <clean-implementation-sha> --out <task-evidence>. Expected: every cold/warm median and p95 is <=10% above v0.6.26; managed candidate Git observations are lower than the blocked 2da557536 count of 8 and external preparation does not regress.\n5. Run bun run typecheck, touched ESLint/Prettier, bun run test:critical, ap doctor, node .agentplane/policy/check-routing.mjs, independent EVALUATOR, exact-head hosted checks, and review-thread audit. Expected: all pass before queue integration and hosted close.",
+  "scope_digest": "sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d",
+  "task_id": "202608040031-4XD57R",
+  "verification_command": "agentplane verify 202608040031-4XD57R --ok --by TESTER",
+  "verifier": "TESTER"
+}

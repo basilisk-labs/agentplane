@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608040106-CC1TAP",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-04T01:09:31.409Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The test-only fix replaces a wall-clock calendar assumption with exact contract assertions: hosted and local-merged paths retain the merge timestamp, while locally-shipped reconciliation uses a frozen reconciliation timestamp.",
+  "evaluated_sha": "c990de07359916f06cfd10aa916f3130bf1b8b10",
+  "blueprint_digest": "3f4ab56d84ca19770df0b28210820e875aaeca2088a0ca97d65b070dc7af4a94",
+  "findings": [
+    "The pre-fix failure reproduces after UTC midnight and is isolated to the hard-coded 2026-08-03 assertion; production token aggregation is unchanged.",
+    "Fake time is scoped to one test and restored after every test, while all three paths now assert exact timestamps rather than weakening coverage."
+  ],
+  "evidence_refs": [
+    "packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts",
+    ".agentplane/tasks/202608040106-CC1TAP/verification/20260804010905747-6d2c58d0b6417c21.json",
+    "https://github.com/basilisk-labs/agentplane/actions/runs/30867253711/job/91861754671"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The dedicated PR must pass the complete hosted unit matrix before main is treated as repaired."
+  ]
+}
