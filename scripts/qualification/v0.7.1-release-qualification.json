@@ -412,8 +412,8 @@
         "{codexVersion}",
         "--runs",
         "5",
-        "--runtime-bridge",
-        "{codexVersion}",
+        "--baseline-evidence",
+        "{providerBaselineEvidence}",
         "--capture"
       ],
       "timeout_ms": 7200000,
