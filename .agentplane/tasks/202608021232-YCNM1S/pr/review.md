@@ -12,8 +12,8 @@ Created: 2026-08-04T08:36:16.971Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Release-ci chunk 19 exposed a stale semantic-plan fixture before the intended finish closeout boundary.
+- State: ok
+- Note: The semantic-plan fixture rework reaches the intended closeout boundary and preserves runtime behavior.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
