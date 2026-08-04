@@ -216,6 +216,7 @@ async function shouldSkipAlreadyHandledBranchPrCloseTail(opts: {
 }): Promise<boolean> {
   if (opts.ctx.config.workflow_mode !== "branch_pr") return false;
   if (!opts.plan.shouldCloseCommit || !opts.plan.primaryTaskId) return false;
+  if (opts.plan.preMergeClosure && opts.options.force) return false;
 
   const closeTailState = await resolveBranchPrCloseTailState({
     ctx: opts.ctx,

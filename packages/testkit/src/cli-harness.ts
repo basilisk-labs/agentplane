@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { access, cp, mkdir, mkdtemp, readdir, rm, writeFile } from "node:fs/promises";
+import { access, cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -577,6 +577,24 @@ export async function prepareHostedIntegrateFixture(opts: {
     "--root",
     opts.root,
   ]);
+  const finalTask = await readTask({
+    cwd: opts.root,
+    rootOverride: opts.root,
+    taskId: opts.taskId,
+  });
+  const finalMeta = JSON.parse(
+    await readFile(
+      path.join(opts.root, ".agentplane", "tasks", opts.taskId, "pr", "meta.json"),
+      "utf8",
+    ),
+  ) as { pre_merge_closure?: { recorded_at?: string } };
+  const closureRecordedAt = finalMeta.pre_merge_closure?.recorded_at ?? "";
+  const verificationUpdatedAt = finalTask.frontmatter.verification?.updated_at ?? "";
+  if (Date.parse(closureRecordedAt) < Date.parse(verificationUpdatedAt)) {
+    throw new Error(
+      `Hosted integrate fixture has stale closure for ${opts.taskId}: closure=${closureRecordedAt} verification=${verificationUpdatedAt}`,
+    );
+  }
   if (opts.finalHeadSubject) {
     const finalSubjectFixturePath = `.agentplane/tasks/${opts.taskId}/pr/final-head-subject.fixture`;
     await writeFile(
