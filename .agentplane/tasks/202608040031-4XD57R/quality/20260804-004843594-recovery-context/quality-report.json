@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608040031-4XD57R",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-04T00:48:43.862Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Exact implementation 3a526415 removes one redundant direct-workflow status observation, preserves fail-closed fallback and state-fingerprint semantics, and passes the strict packed latency and regression gates.",
+  "evaluated_sha": "3a526415de4ea9034687446e68f7115a97353402",
+  "blueprint_digest": "5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd",
+  "findings": [
+    "Git command histograms are collected only after the measured interval, are deterministically sorted, and their totals are validated against per-sample subprocess counts.",
+    "Policy scope reuses dirty paths only from an available authoritative snapshot; unavailable snapshots retain the prior live status observation.",
+    "Sequential blueprint and snapshot observation avoids the measured cold-start I/O contention introduced by the rejected parallel experiment."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608040031-4XD57R/evidence/attribution-a649936d4.json",
+    ".agentplane/tasks/202608040031-4XD57R/evidence/supervisor-latency-2a724df0b.json",
+    ".agentplane/tasks/202608040031-4XD57R/evidence/supervisor-latency-3a526415d.json",
+    ".agentplane/tasks/202608040031-4XD57R/verification/20260804004800678-78383724249e0852.json",
+    "packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Wall-clock tails remain environment-sensitive, but the exact candidate passed all predeclared 20-cold/30-warm median and p95 thresholds without retry or threshold relaxation."
+  ]
+}

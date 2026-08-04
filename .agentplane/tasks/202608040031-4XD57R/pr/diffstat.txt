@@ -1,0 +1,6 @@
+ .../commands/shared/workflow-step-fingerprint.ts   | 49 +++++++++++-----------
+ .../shared/workflow-step-policy-scope.test.ts      | 32 ++++++++++++++
+ .../commands/shared/workflow-step-policy-scope.ts  |  5 ++-
+ .../measure-v0.7.1-supervisor-latency.mjs          | 40 ++++++++++++++++++
+ .../qualification/release-qualification.test.mjs   | 47 ++++++++++++++++++++-
+ 5 files changed, 146 insertions(+), 27 deletions(-)
