@@ -217,6 +217,30 @@ function targetExists(target) {
   return lstatSync(target, { throwIfNoEntry: false }) !== undefined;
 }
 
+export function replayCaptureFailurePath(outputPath, harnessSha256) {
+  const digest = harnessSha256?.match(/^sha256:([a-f0-9]{64})$/)?.[1];
+  if (!digest) throw new Error("RF-04 capture failure evidence requires a harness digest");
+  return path.join(path.dirname(outputPath), `.capture-failure-${digest}.json`);
+}
+
+function replayCaptureFailureDiagnostic(error) {
+  if (error && typeof error === "object" && typeof error.code === "string") {
+    return /^[A-Z0-9_]{1,96}$/u.test(error.code) ? error.code : "UNCLASSIFIED";
+  }
+  const message = error instanceof Error ? error.message : "";
+  const diagnostic = message.match(/(?:^|; diagnostic=)([A-Z0-9_]{1,96})(?:$|\b)/u)?.[1];
+  return diagnostic ?? "CAPTURE_CONTRACT";
+}
+
+function replayCaptureFailureClass(diagnosticCode) {
+  if (diagnosticCode.endsWith("_TIMEOUT")) return "timeout";
+  if (diagnosticCode.endsWith("_SIGNAL")) return "signal";
+  if (diagnosticCode.endsWith("_START")) return "process_start";
+  if (diagnosticCode.endsWith("_EXIT")) return "process_exit";
+  if (diagnosticCode === "CAPTURE_CONTRACT") return "capture_contract";
+  return "driver_diagnostic";
+}
+
 function captureWithDriver({
   anchor,
   codexCliVersion,
@@ -281,6 +305,13 @@ function captureWithDriver({
   const cacheRoot = path.join(repoRoot, ".agentplane", "cache");
   mkdirSync(cacheRoot, { recursive: true });
   assertInsideRepository(cacheRoot, "RF-04 capture cache", "directory");
+  const failurePath = replayCaptureFailurePath(outputPath, harnessManifest.sha256);
+  assertInsideRepository(failurePath, "RF-04 capture failure evidence", "file");
+  if (targetExists(failurePath)) {
+    throw new Error(
+      "this exact RF-04 harness generation already failed; change and review the harness before another capture",
+    );
+  }
   const markerPath = path.join(cacheRoot, "rf04-replay-transaction.json");
   if (lstatSync(markerPath, { throwIfNoEntry: false })) {
     throw new Error("an unfinished RF-04 capture transaction requires manual recovery");
@@ -309,6 +340,10 @@ function captureWithDriver({
       registryPath,
       repoRoot,
     });
+  const completedRuns = [];
+  let completedProviderEpisodes = 0;
+  let failedRun = null;
+  let failedRunExpectedProviderEpisodes = null;
 
   try {
     const pilotScenario = registry.scenarios.find((scenario) => scenario.id === "direct");
@@ -333,6 +368,8 @@ function captureWithDriver({
         const outputPath = path.join(scenarioDirectory, fileName);
         const evidenceOutputPath = path.join(evidenceScenarioDirectory, fileName);
         const runId = `${scenario.id}/run-${String(runIndex).padStart(2, "0")}`;
+        failedRun = runId;
+        failedRunExpectedProviderEpisodes = scenario.expected_episode_trace.length;
         const driverArgs = [
           driverPath,
           "--scenario",
@@ -383,6 +420,14 @@ function captureWithDriver({
         if (evidenceBytes !== `${stableJson(evidence, 2)}\n`) {
           throw new Error(`${runId} driver evidence must be canonical stable JSON`);
         }
+        const providerEpisodes = envelope.metrics?.llm_episodes?.value;
+        if (!Number.isInteger(providerEpisodes) || providerEpisodes < 0) {
+          throw new Error(`${runId} driver envelope has no exact provider-episode count`);
+        }
+        completedRuns.push(runId);
+        completedProviderEpisodes += providerEpisodes;
+        failedRun = null;
+        failedRunExpectedProviderEpisodes = null;
       }
     }
 
@@ -472,6 +517,35 @@ function captureWithDriver({
     );
     return baseline;
   } catch (error) {
+    const diagnosticCode = replayCaptureFailureDiagnostic(error);
+    let failurePersistenceError = null;
+    try {
+      writeAtomic(
+        failurePath,
+        `${stableJson(
+          {
+            anchor,
+            artifact_kind: "rf04_capture_failure_v1",
+            capture_mode: pilot ? "pilot" : "full",
+            codex_cli_version: codexCliVersion,
+            completed_provider_episodes: completedProviderEpisodes,
+            completed_runs: completedRuns,
+            diagnostic_code: diagnosticCode,
+            driver_sha256: driverIdentity.sha256,
+            failed_at: new Date().toISOString(),
+            failed_run: failedRun,
+            failed_run_expected_provider_episodes: failedRunExpectedProviderEpisodes,
+            failed_run_provider_episodes_observed: null,
+            failure_class: replayCaptureFailureClass(diagnosticCode),
+            harness_sha256: harnessManifest.sha256,
+            schema_version: 1,
+          },
+          2,
+        )}\n`,
+      );
+    } catch (persistenceError) {
+      failurePersistenceError = persistenceError;
+    }
     let inputFailure = null;
     try {
       assertInputsUnchanged();
@@ -480,8 +554,14 @@ function captureWithDriver({
     }
     if (inputFailure) {
       throw new AggregateError(
-        [error, inputFailure],
+        [error, inputFailure, ...(failurePersistenceError ? [failurePersistenceError] : [])],
         "RF-04 capture failed and reviewed capture inputs also drifted",
+      );
+    }
+    if (failurePersistenceError) {
+      throw new AggregateError(
+        [error, failurePersistenceError],
+        "RF-04 capture failed and its sanitized failure evidence could not be persisted",
       );
     }
     throw error;

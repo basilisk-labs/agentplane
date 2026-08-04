@@ -13,6 +13,9 @@ const DRIVER_URL = pathToFileURL(
 const CAPTURE_URL = pathToFileURL(
   path.join(process.cwd(), "scripts/bench/capture-agent-efficiency-replay.mjs"),
 ).href;
+const RUNTIME_URL = pathToFileURL(
+  path.join(process.cwd(), "scripts/bench/internal/agent-efficiency-codex-runtime.mjs"),
+).href;
 const REGISTRY_PATH = path.join(process.cwd(), "scripts/bench/agent-efficiency-fixtures.json");
 
 type Collector = {
@@ -111,6 +114,14 @@ async function capture(): Promise<CaptureModule> {
   return (await import(CAPTURE_URL)) as CaptureModule;
 }
 
+async function runtime(): Promise<{
+  runSanitizedCommand(command: string, args: string[], options?: Record<string, unknown>): string;
+}> {
+  return (await import(RUNTIME_URL)) as {
+    runSanitizedCommand(command: string, args: string[], options?: Record<string, unknown>): string;
+  };
+}
+
 function digest(value: string): string {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
 }
@@ -192,6 +203,28 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
       XDG_CACHE_HOME: "/isolated-fixture/.rf04-runtime/process/xdg-cache",
       XDG_CONFIG_HOME: "/isolated-fixture/.rf04-runtime/process/xdg-config",
     });
+  });
+
+  it("classifies sanitized child failures without exposing child output", async () => {
+    const replayRuntime = await runtime();
+    expect(() =>
+      replayRuntime.runSanitizedCommand(
+        process.execPath,
+        ["-e", 'process.stderr.write("sensitive child output"); process.exit(7)'],
+        { code: "SYNTHETIC" },
+      ),
+    ).toThrow("SYNTHETIC_EXIT");
+    expect(() =>
+      replayRuntime.runSanitizedCommand(process.execPath, ["-e", "setTimeout(() => {}, 10000)"], {
+        code: "SYNTHETIC",
+        timeout: 10,
+      }),
+    ).toThrow("SYNTHETIC_TIMEOUT");
+    expect(() =>
+      replayRuntime.runSanitizedCommand("/definitely/missing/agentplane-command", [], {
+        code: "SYNTHETIC",
+      }),
+    ).toThrow("SYNTHETIC_START");
   });
 
   it("feeds the exact prepared bootstrap once and accounts for the actual prompt bytes", async () => {

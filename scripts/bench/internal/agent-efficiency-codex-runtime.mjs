@@ -64,7 +64,13 @@ export function runSanitizedCommand(command, args, options = {}) {
     maxBuffer: options.maxBuffer ?? 4 * 1024 * 1024,
     timeout: options.timeout ?? SUPERVISOR_COMMAND_TIMEOUT_MS,
   });
-  if (result.error || result.status !== 0) fail(options.code ?? "SUPERVISOR_COMMAND");
+  if (result.error || result.status !== 0) {
+    const baseCode = options.code ?? "SUPERVISOR_COMMAND";
+    if (result.error?.code === "ETIMEDOUT") fail(`${baseCode}_TIMEOUT`);
+    if (result.signal !== null) fail(`${baseCode}_SIGNAL`);
+    if (result.error) fail(`${baseCode}_START`);
+    fail(`${baseCode}_EXIT`);
+  }
   return result.stdout;
 }
 
