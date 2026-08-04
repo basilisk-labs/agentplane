@@ -23,8 +23,8 @@ Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-handoff.t
 typecheck; node .agentplane/policy/check-routing.mjs
 ```
 Result: pass
-Evidence: 4/4 focused task handoff tests passed; claimed missing-PID run cancelled and advanced to retry; unclaimed run returned E_RUNTIME exit 8 without E_INTERNAL; typecheck and routing passed.
-Scope: stale runner reclaim recovery and its semantic-plan fixture only.
+Evidence: 4/4 focused tests, TypeScript 7 typecheck, and routing passed; the intervening commit contains only task-scoped verification/PR artifacts.
+Scope: current branch head including stale reclaim regression evidence.
 - Canonical workflow state lives in the task README.
 
 <details>

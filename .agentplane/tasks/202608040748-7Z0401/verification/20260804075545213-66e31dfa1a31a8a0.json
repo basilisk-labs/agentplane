@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:66e31dfa1a31a8a0cc21ab181c624feb70af61fc405341b485b79161ed412c65",
+  "implementation_sha": "b39920e7dc097306af9c2f3a065803309348a9c4",
+  "kind": "task_verification_record",
+  "note": "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts; bun run typecheck; node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: 4/4 focused tests, TypeScript 7 typecheck, and routing passed; the intervening commit contains only task-scoped verification/PR artifacts.\nScope: current branch head including stale reclaim regression evidence.",
+  "recorded_at": "2026-08-04T07:55:45.213Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run bunx vitest run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts. Expected: all four task handoff/recovery tests pass with a real semantic plan recorded before approval.\n2. Inspect the claimed stale-run case. Expected: a nonexistent PID is normalized, the run becomes cancelled, the active claim is retired, and next-action deterministically returns task run retry guidance.\n3. Inspect the unclaimed stale-run case. Expected: reclaim returns typed E_RUNTIME with exit 8, never E_INTERNAL, leaves the run non-terminal, and writes no handoff.\n4. Run bun run typecheck and node .agentplane/policy/check-routing.mjs. Expected: both pass without unrelated changes.",
+  "scope_digest": "sha256:f4f3febeec3e46d38aded33c3a9b762fafa94225aab2ab481357dc7f1a1db38d",
+  "task_id": "202608040748-7Z0401",
+  "verification_command": "agentplane verify 202608040748-7Z0401 --ok --by TESTER",
+  "verifier": "TESTER"
+}
