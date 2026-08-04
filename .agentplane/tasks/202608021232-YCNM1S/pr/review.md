@@ -12,8 +12,8 @@ Created: 2026-08-04T08:36:16.971Z
 
 ## Verification
 
-- State: needs_rework
-- Note: The test rework passes, but the release candidate version bump and canonical full prepublish are not yet recorded on the final task head.
+- State: ok
+- Note: The exact v0.7.1 local candidate passes the complete release gate; frozen provider evidence remains applicable and hosted publication is the next controlled boundary.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
