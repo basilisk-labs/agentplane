@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Current task metadata now supplies task_kind=release and mutation_scope=release, so registry matching for v0.7.2 returns WZRXEX; the exact release-commit intersection excludes YCNM1S even though that prior task README is touched in the same merge.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/87e96bd439fabc13f9dab3c4934fc20e821ad9676a5afaf5fb6794ddb81453ac.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

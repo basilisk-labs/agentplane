@@ -1,0 +1,24 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-04T12:44:53.273Z",
+    "updated_by": "TESTER",
+    "note": "P1 prior-release evidence collision is fixed and verified"
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608041057-WZRXEX/verification/20260804124453273-a347d04f52a022f9.json",
+      "sha256": "sha256:7f0e472aea455668e47b1e0d3db1caf672803bebeb80cb9436c907a0839b8b3a"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
