@@ -102,6 +102,7 @@ function helpText() {
     "  --root <path>     Candidate evidence root under .agentplane/cache/rf04-candidate/.",
     "  --runtime-bridge <version>  Materialize or validate a no-provider comparison against the",
     "                              historical runtime bridge for this exact Codex CLI version.",
+    "  --pilot           Run only direct/run-01 against the exact candidate and persist nothing.",
     "  --replace         Replace one complete previous candidate capture generation.",
     "  --check           Rebuild and validate an existing capture without provider calls.",
     "  --help            Show this help text.",
@@ -115,7 +116,7 @@ function helpText() {
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
     valueFlags: ["subject", "runs", "driver", "root", "codex-version", "runtime-bridge"],
-    booleanFlags: ["check", "help", "replace"],
+    booleanFlags: ["check", "help", "pilot", "replace"],
     aliases: { h: "help" },
   });
   if (positionals.length > 0) {
@@ -127,11 +128,21 @@ function parseArgs(argv) {
     driverPath: path.resolve(flags.driver ?? DEFAULT_DRIVER_PATH),
     help: flags.help === true,
     outputRoot: flags.root ? path.resolve(flags.root) : null,
+    pilot: flags.pilot === true,
     replace: flags.replace === true,
     runs: Number.parseInt(flags.runs ?? String(MINIMUM_REPLAY_RUNS), 10),
     runtimeBridgeVersion: flags["runtime-bridge"] ?? null,
     subject: flags.subject ?? "",
   };
+}
+
+export function assertCandidateCaptureMode(options) {
+  if (!options.pilot) return;
+  if (options.check) throw new Error("--pilot cannot be combined with --check");
+  if (options.runtimeBridgeVersion !== null) {
+    throw new Error("--pilot cannot be combined with --runtime-bridge");
+  }
+  if (options.replace) throw new Error("--pilot cannot be combined with --replace");
 }
 
 function assertCandidateSubject(subject) {
@@ -251,13 +262,17 @@ function targetExists(target) {
   return lstatSync(target, { throwIfNoEntry: false }) !== undefined;
 }
 
-function writeCandidateRegistry(subject, registryPath) {
+function createCandidateRegistry(subject) {
   const historical = readFixtureRegistry(DEFAULT_BASELINE_REGISTRY_PATH, {
     historicalBaseline: true,
   });
   const candidate = JSON.parse(stableJson(historical));
   candidate.provenance.efficiency_anchor_commit = subject;
   assertFixtureRegistry(candidate);
+  return candidate;
+}
+
+function writeCandidateRegistry(candidate, registryPath) {
   mkdirSync(path.dirname(registryPath), { recursive: true });
   writeFileSync(registryPath, canonicalBytes(candidate), { encoding: "utf8", mode: 0o600 });
   return candidate;
@@ -794,7 +809,53 @@ export function buildCandidateMeasurement({
   };
 }
 
-function captureCandidate(options) {
+export function validateCandidatePilotCapture({
+  anchor,
+  dependencyClaim,
+  driverIdentity,
+  envelopeRecords,
+  evidenceRecords,
+  harnessManifest,
+  registry,
+  runs,
+}) {
+  if (envelopeRecords.length !== 1 || evidenceRecords.length !== 1) {
+    throw new Error("RF-04 candidate pilot must produce exactly one envelope and evidence bundle");
+  }
+  const evidenceByPath = new Map(evidenceRecords.map((record) => [record.path, record]));
+  const envelope = envelopeRecords[0].value;
+  if (envelope.run_id !== "direct/run-01") {
+    throw new Error("RF-04 candidate pilot must execute only direct/run-01");
+  }
+  assertReplayEnvelope(envelope, {
+    allowTestControls: false,
+    anchor,
+    dependencyClaim,
+    driverIdentity,
+    evidenceByPath,
+    fixtureRegistrySha256: fixtureRegistrySha256(registry),
+    harnessSha256: harnessManifest.sha256,
+    runs,
+    scenarioById: new Map(registry.scenarios.map((scenario) => [scenario.id, scenario])),
+  });
+  return {
+    driver_sha256: driverIdentity.sha256,
+    episode_count: envelope.metrics.llm_episodes.value,
+    pilot: true,
+    profile: envelope.profile,
+    provider_usage_by_role: Object.fromEntries(
+      Object.entries(envelope.token_usage_by_role).map(([role, usage]) => [
+        role,
+        Object.fromEntries(Object.entries(usage).map(([field, cell]) => [field, cell.value])),
+      ]),
+    ),
+    run_id: envelope.run_id,
+    subject_sha: anchor,
+  };
+}
+
+export function captureCandidate(options) {
+  assertCandidateCaptureMode(options);
   const subject = assertCandidateSubject(options.subject);
   const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
   const runs = assertRuns(options.runs);
@@ -806,19 +867,19 @@ function captureCandidate(options) {
     paths.measurementPath,
   ];
   const existingTargetCount = publicationTargets.filter((target) => targetExists(target)).length;
-  if (existingTargetCount > 0 && !options.replace) {
+  if (!options.pilot && existingTargetCount > 0 && !options.replace) {
     throw new Error(
       "candidate envelopes, evidence, or measurement already exist; refusing a retry without --replace",
     );
   }
-  if (options.replace && existingTargetCount !== 0 && existingTargetCount !== 3) {
+  if (!options.pilot && options.replace && existingTargetCount !== 0 && existingTargetCount !== 3) {
     throw new Error("candidate replacement requires a complete previous three-artifact generation");
   }
   if (targetExists(paths.markerPath)) {
     throw new Error("an unfinished candidate capture transaction requires manual recovery");
   }
 
-  const registry = writeCandidateRegistry(subject, paths.registryPath);
+  const registry = createCandidateRegistry(subject);
   const driverIdentity = createReplayDriverIdentity(repoRoot, options.driverPath);
   const dependencyManifest = createReplayDependencyManifest(repoRoot);
   const dependencyClaim = replayDependencyClaimFromManifest(dependencyManifest);
@@ -841,9 +902,13 @@ function captureCandidate(options) {
   const stagingEvidence = path.join(captureRoot, "evidence");
   const stagingMeasurement = path.join(captureRoot, "measurement.json");
   const isolatedRepository = path.join(captureRoot, "subject");
+  const activeRegistryPath = options.pilot
+    ? path.join(captureRoot, "fixture-registry.json")
+    : paths.registryPath;
   const completedRuns = [];
   mkdirSync(stagingEnvelopes, { recursive: true });
   mkdirSync(stagingEvidence, { recursive: true });
+  writeCandidateRegistry(registry, activeRegistryPath);
   const evidenceLogicalRoot = relativeRepoPath(
     repoRoot,
     paths.evidenceDirectory,
@@ -851,8 +916,14 @@ function captureCandidate(options) {
   );
 
   try {
-    for (const scenario of registry.scenarios) {
-      for (let runIndex = 1; runIndex <= runs; runIndex += 1) {
+    const pilotScenario = registry.scenarios.find((scenario) => scenario.id === "direct");
+    if (options.pilot && !pilotScenario) {
+      throw new Error("RF-04 candidate pilot scenario direct is absent");
+    }
+    const selectedScenarios = options.pilot ? [pilotScenario] : registry.scenarios;
+    const selectedRuns = options.pilot ? 1 : runs;
+    for (const scenario of selectedScenarios) {
+      for (let runIndex = 1; runIndex <= selectedRuns; runIndex += 1) {
         rmSync(isolatedRepository, { force: true, recursive: true });
         mkdirSync(isolatedRepository, { recursive: true });
         initializeAnchorCheckout(repoRoot, isolatedRepository, subject);
@@ -915,7 +986,7 @@ function captureCandidate(options) {
           throw new Error(`${runId} candidate driver output must be canonical stable JSON`);
         }
         completedRuns.push(runId);
-        assertCandidateInputsUnchanged(expectedInputs, paths.registryPath, options.driverPath);
+        assertCandidateInputsUnchanged(expectedInputs, activeRegistryPath, options.driverPath);
       }
     }
     const envelopes = readReplayEnvelopeRecords(repoRoot, stagingEnvelopes, {
@@ -928,6 +999,20 @@ function captureCandidate(options) {
     const evidence = readReplayEvidenceRecords(repoRoot, stagingEvidence, {
       logicalRoot: evidenceLogicalRoot,
     });
+    if (options.pilot) {
+      const result = validateCandidatePilotCapture({
+        anchor: subject,
+        dependencyClaim,
+        driverIdentity,
+        envelopeRecords: envelopes,
+        evidenceRecords: evidence,
+        harnessManifest,
+        registry,
+        runs,
+      });
+      assertCandidateInputsUnchanged(expectedInputs, activeRegistryPath, options.driverPath);
+      return result;
+    }
     const measurement = buildCandidateMeasurement({
       candidateAnchor: subject,
       candidateCodexCliVersion: codexCliVersion,
@@ -953,7 +1038,7 @@ function captureCandidate(options) {
       {
         markerPath: paths.markerPath,
         validateInstalled() {
-          assertCandidateInputsUnchanged(expectedInputs, paths.registryPath, options.driverPath);
+          assertCandidateInputsUnchanged(expectedInputs, activeRegistryPath, options.driverPath);
           const installed = rebuildCandidateMeasurement({
             codexCliVersion,
             driverPath: options.driverPath,
@@ -971,18 +1056,20 @@ function captureCandidate(options) {
     );
     return measurement;
   } catch (error) {
-    mkdirSync(paths.root, { recursive: true });
-    writeFileSync(
-      paths.failurePath,
-      canonicalBytes({
-        completed_runs: completedRuns,
-        failed_at: new Date().toISOString(),
-        kind: "agent_efficiency_candidate_capture_failure_v1",
-        message: error instanceof Error ? error.message : String(error),
-        subject_sha: subject,
-      }),
-      { encoding: "utf8", mode: 0o600 },
-    );
+    if (!options.pilot) {
+      mkdirSync(paths.root, { recursive: true });
+      writeFileSync(
+        paths.failurePath,
+        canonicalBytes({
+          completed_runs: completedRuns,
+          failed_at: new Date().toISOString(),
+          kind: "agent_efficiency_candidate_capture_failure_v1",
+          message: error instanceof Error ? error.message : String(error),
+          subject_sha: subject,
+        }),
+        { encoding: "utf8", mode: 0o600 },
+      );
+    }
     throw error;
   } finally {
     if (!targetExists(paths.markerPath)) {
@@ -1148,6 +1235,15 @@ const main = defineCheck({
   async check({ options, stdout }) {
     if (options.help) {
       stdout.write(`${helpText()}\n`);
+      return;
+    }
+    assertCandidateCaptureMode(options);
+    if (options.pilot) {
+      const pilot = captureCandidate(options);
+      stdout.write(
+        `RF-04 candidate pilot passed (subject=${pilot.subject_sha}; run=${pilot.run_id}; ` +
+          `episodes=${pilot.episode_count}; runtime=${pilot.profile.runtime_version})\n`,
+      );
       return;
     }
     const runtimeBridge = options.runtimeBridgeVersion !== null;
