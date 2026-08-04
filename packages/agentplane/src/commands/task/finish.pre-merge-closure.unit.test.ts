@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   createTaskCloseCommit: vi.fn(),
   gitCurrentBranch: vi.fn(),
   materializeBranchPrCloseTail: vi.fn(),
+  resolveBranchPrCloseTailState: vi.fn(),
 }));
 
 vi.mock("./finish-shared.js", () => ({
@@ -21,6 +22,7 @@ vi.mock("./finish-shared.js", () => ({
 }));
 vi.mock("./finish-close.js", () => ({
   materializeBranchPrCloseTail: mocks.materializeBranchPrCloseTail,
+  resolveBranchPrCloseTailState: mocks.resolveBranchPrCloseTailState,
 }));
 vi.mock("../shared/git-ops.js", () => ({
   gitCurrentBranch: mocks.gitCurrentBranch,
@@ -71,6 +73,34 @@ function mkOptions(cwd: string): FinishOptions {
 }
 
 describe("finish pre-merge closure", () => {
+  it("does not skip an explicit closure refresh when an older close tail exists", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-pre-merge-refresh-"));
+    try {
+      mocks.resolveBranchPrCloseTailState.mockResolvedValue({
+        alreadyHandled: true,
+        baseBranch: "main",
+        closeBranch: null,
+      });
+      const { shouldSkipAlreadyHandledBranchPrCloseTail } = await import("./finish-execute.js");
+
+      await expect(
+        shouldSkipAlreadyHandledBranchPrCloseTail({
+          ctx: mkCtx(root),
+          options: mkOptions(root),
+          plan: {
+            shouldCloseCommit: true,
+            preMergeClosure: true,
+            primaryTaskId: "T-1",
+            closeAdditionalTaskIds: [],
+          } as FinishExecutionPlan,
+        }),
+      ).resolves.toBe(false);
+      expect(mocks.resolveBranchPrCloseTailState).not.toHaveBeenCalled();
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
   it("allows dirty artifacts inside the active task subtree", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-pre-merge-dirt-"));
     try {

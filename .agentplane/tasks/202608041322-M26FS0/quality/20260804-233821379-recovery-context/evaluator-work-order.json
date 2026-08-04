@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608041322-M26FS0-5b6fe4d6725b92a9dedd7432",
+  "prepared_at": "2026-08-04T23:38:21.379Z",
+  "task": {
+    "id": "202608041322-M26FS0",
+    "revision": 22,
+    "objective": "Stabilize hosted release evidence closeout\n\nFix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release.",
+    "acceptance_criteria": [
+      "- In scope: Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release.\n- Out of scope: unrelated refactors not required for \"Stabilize hosted release evidence closeout\".",
+      "Patch-release plan: version=0.7.3, tag=v0.7.3. 1. Preserve the v0.7.2 live evidence for both release-tail failures. 2. Make release-evidence verification validate the exact closure SHA, wait for that Core CI run, publish a GitHub Actions-owned required PR verification check, and fail closed before merge automation. 3. Keep a fully closed DONE task terminal across a task-evidence-only README advance while preserving stale-verification blocking for real implementation changes. 4. Add focused route and publish-workflow regressions. 5. Run targeted tests, ci:contract, release:prepublish, and independent evaluator. 6. Merge through branch_pr, publish v0.7.3 for the exact merged SHA, and prove that the evidence PR merges without reopen/admin repair and the release task route remains terminal. Stop on product drift outside these release-tail repairs, active incidents, failed required checks, or version/tag drift.",
+      "1. Run the focused route regression that closes a branch_pr task, advances main with only its hosted release-evidence README, and queries next-action. Expected: the task remains terminal.done; a real implementation commit still makes verification stale.\n2. Run the publish-workflow contract tests. Expected: release evidence CI validates the exact closure SHA, waits for success, emits a GitHub Actions-owned PR verification check, and does not silently continue after a failed evidence gate.\n3. Run bun run ci:contract and bun run release:prepublish. Expected: all blocking contracts, release checks, release CI suites, coverage guards, and release-critical tests pass.\n4. After merge and publish, verify npm latest for all three packages is 0.7.3, tag and GitHub Release v0.7.3 point to the exact release SHA, clean install and postpublish audit pass, and the release-evidence PR merges without reopen/admin repair.\n5. Pull the evidence merge to main and query next-action for this task. Expected: status is DONE, route is terminal.done, hosted publish evidence is present, token provenance is explicit, and no merged task branch/worktree remains."
+    ]
+  },
+  "evaluated_sha": "74cb0b80ae7a8447032d7b88bba607be9002f872",
+  "diff_base_sha": "9d0e0089dd83487defa8950d787a5fa67f53db10",
+  "blueprint_digest": "3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608041322-M26FS0/quality/20260804-233821379-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:153727dc9aa8bcbb2348fbf61e1c4f370d421921bd631e4b615f33a29e53f368",
+    "prompt_path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/f7cceb5300b20c85e77c44ac5822b3cabeed81214c78425a883d89b180367c81.md",
+    "result_schema_path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608041322-M26FS0/README.md",
+      "sha256": "sha256:ef02b561973ee4372e6980274ed264e58cb79a1e05a56f814c614bbe4e5f4336",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/b4f447b54c6e2f6f2fa1bd6fa5dcbc02e8e7d65745d81808c97aadc5b55d8431.patch",
+      "sha256": "sha256:b4f447b54c6e2f6f2fa1bd6fa5dcbc02e8e7d65745d81808c97aadc5b55d8431",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/978619ab2e22ac0436810210fbae4a73942fa6345ce4e92bee646a0e08bf35e3.json",
+      "sha256": "sha256:978619ab2e22ac0436810210fbae4a73942fa6345ce4e92bee646a0e08bf35e3",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/57c0cb8505a309b1962f197839c8b5eb2908748355f96e19842360232b470d88.json",
+      "sha256": "sha256:57c0cb8505a309b1962f197839c8b5eb2908748355f96e19842360232b470d88",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:94a0fcabe77fef35ff6f32edea35ce0da7754a9f7c740a148c3d24a1b96dfa8d",
+      "required": true
+    }
+  ]
+}

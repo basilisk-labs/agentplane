@@ -209,14 +209,14 @@ function assertFinishPhasePolicy(opts: {
   }
 }
 
-async function shouldSkipAlreadyHandledBranchPrCloseTail(opts: {
+export async function shouldSkipAlreadyHandledBranchPrCloseTail(opts: {
   ctx: CommandContext;
   options: FinishOptions;
   plan: FinishExecutionPlan;
 }): Promise<boolean> {
   if (opts.ctx.config.workflow_mode !== "branch_pr") return false;
   if (!opts.plan.shouldCloseCommit || !opts.plan.primaryTaskId) return false;
-  if (opts.plan.preMergeClosure && opts.options.force) return false;
+  if (opts.plan.preMergeClosure) return false;
 
   const closeTailState = await resolveBranchPrCloseTailState({
     ctx: opts.ctx,

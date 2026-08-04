@@ -37,11 +37,11 @@
  .../bench/capture-agent-efficiency-candidate.mjs   | 332 ++++++++++++++++----
  .../check-compatibility-contract-baseline.mjs      |   8 +-
  .../check-v0.7.1-efficiency-evidence.mjs           |  46 ++-
- scripts/qualification/release-qualification.mjs    |  74 +++++
- .../qualification/release-qualification.test.mjs   |  87 +++++-
+ scripts/qualification/release-qualification.mjs    |  81 +++++
+ .../qualification/release-qualification.test.mjs   |  89 +++++-
  .../run-v0.7.1-release-qualification.mjs           |  49 ++-
  .../v0.7.1-release-qualification.json              |  14 +-
  scripts/release/release-task-evidence.mjs          |   7 -
  website/static/img/social/docs/releases/v0.7.3.png | Bin 0 -> 53092 bytes
  website/static/img/social/manifest.json            |   8 +
- 46 files changed, 1287 insertions(+), 200 deletions(-)
+ 46 files changed, 1296 insertions(+), 200 deletions(-)
