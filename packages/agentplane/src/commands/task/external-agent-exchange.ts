@@ -92,14 +92,16 @@ function fingerprintSegment(value: string): string {
 
 export async function resolveExternalAgentExchangePaths(opts: {
   git_root: string;
+  common_git_dir?: string;
   task_id: string;
   transition_id: string;
   state_fingerprint: string;
 }): Promise<ExternalAgentExchangePaths> {
   const taskId = safeSegment(opts.task_id, "External-agent task id");
   const transitionId = safeSegment(opts.transition_id, "External-agent transition id");
-  const rawCommonGitDir = await gitRevParse(opts.git_root, ["--git-common-dir"]);
-  const commonGitDir = path.resolve(opts.git_root, rawCommonGitDir);
+  const commonGitDir = opts.common_git_dir
+    ? path.resolve(opts.common_git_dir)
+    : path.resolve(opts.git_root, await gitRevParse(opts.git_root, ["--git-common-dir"]));
   const directory = path.join(
     commonGitDir,
     "agentplane",

@@ -16,6 +16,7 @@ import {
   assertCodexBinary,
   CODEX_REPLAY_CLI_VERSION_ENV,
 } from "../bench/internal/agent-efficiency-codex-runtime.mjs";
+import { checkRuntimeBridge } from "../bench/capture-agent-efficiency-runtime-bridge.mjs";
 import { isDirectRun, parseScriptArgs } from "../lib/script-runtime.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -210,9 +211,12 @@ export function preflightQualificationProviderRuntime(
   options,
   scenarios,
   verify = assertCodexBinary,
+  verifyBridge = checkRuntimeBridge,
 ) {
   if (options.dryRun || !scenarios.some((scenario) => scenario.tier === "provider")) return null;
-  return verify({ [CODEX_REPLAY_CLI_VERSION_ENV]: options.codexVersion });
+  const runtime = verify({ [CODEX_REPLAY_CLI_VERSION_ENV]: options.codexVersion });
+  verifyBridge({ codexCliVersion: options.codexVersion });
+  return runtime;
 }
 
 async function main(argv = process.argv.slice(2)) {
@@ -236,7 +240,13 @@ async function main(argv = process.argv.slice(2)) {
   const relativeOutputDirectory = path.relative(repoRoot, outputDirectory);
   const variables = {
     candidateEvidence: options.provider
-      ? path.join(".agentplane", "cache", "rf04-candidate", options.subject, "measurement.json")
+      ? path.join(
+          ".agentplane",
+          "cache",
+          "rf04-candidate",
+          options.subject,
+          `measurement.runtime-bridge-codex-${options.codexVersion}.json`,
+        )
       : path.join("scripts", "baselines", "agent-efficiency-v0.7-beta1-candidate.json"),
     codexVersion: options.codexVersion,
     evidenceDir: relativeOutputDirectory,

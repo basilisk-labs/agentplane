@@ -153,6 +153,19 @@ function successfulOperationResult() {
 }
 
 describe("persisted supervisor execution episodes", () => {
+  it("uses a preobserved common Git directory without another Git lookup", async () => {
+    const root = await mkGitRepoRoot();
+    const commonGitDir = `${root}/.git`;
+
+    await expect(
+      resolveSupervisorExecutionEpisodePath({
+        git_root: `${root}/not-a-repository`,
+        common_git_dir: commonGitDir,
+        task_id: taskId,
+      }),
+    ).resolves.toBe(`${commonGitDir}/agentplane/supervisor/episodes/${taskId}/journal.json`);
+  });
+
   it("records intent, outcome, and refreshed route without a second controller", async () => {
     const root = await mkGitRepoRoot();
     const decision = fixtureDecision(root, 1);

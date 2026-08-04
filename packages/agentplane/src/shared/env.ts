@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { readFile, stat } from "node:fs/promises";
+import { readFile, realpath, stat } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -134,6 +134,19 @@ async function resolveCommonGitDir(gitDir: string): Promise<string> {
     // Non-linked or synthetic worktrees may not have commondir.
   }
   return gitDir;
+}
+
+export async function resolveCommonGitDirectory(rootDir: string): Promise<string> {
+  const resolvedRoot = path.resolve(rootDir);
+  const gitPath = path.join(resolvedRoot, ".git");
+  const gitPathStats = await stat(gitPath);
+  if (gitPathStats.isDirectory()) return await realpath(gitPath);
+  if (!gitPathStats.isFile()) {
+    throw new Error(`Git metadata path is neither a directory nor a file: ${gitPath}`);
+  }
+  const gitDir = await readGitFileDir(resolvedRoot, gitPath);
+  if (!gitDir) throw new Error(`Git metadata file has no valid gitdir entry: ${gitPath}`);
+  return await realpath(await resolveCommonGitDir(gitDir));
 }
 
 async function resolveCoreWorktree(commonGitDir: string): Promise<string | null> {

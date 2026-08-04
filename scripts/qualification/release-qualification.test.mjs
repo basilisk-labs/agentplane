@@ -140,9 +140,14 @@ function supervisorLatencySurfaces(count) {
 describe("v0.7.1 release qualification contract", () => {
   it("preflights the exact provider runtime only before provider execution", () => {
     const calls = [];
+    const bridgeCalls = [];
     const verify = (source) => {
       calls.push(source);
       return "0.146.0-alpha.3.1";
+    };
+    const verifyBridge = (source) => {
+      bridgeCalls.push(source);
+      return {};
     };
     const base = { codexVersion: "0.146.0-alpha.3.1", dryRun: false, provider: false };
     const localScenarios = [{ id: "typecheck", tier: "full" }];
@@ -162,10 +167,16 @@ describe("v0.7.1 release qualification contract", () => {
       null,
     );
     assert.equal(
-      preflightQualificationProviderRuntime({ ...base, provider: true }, providerScenarios, verify),
+      preflightQualificationProviderRuntime(
+        { ...base, provider: true },
+        providerScenarios,
+        verify,
+        verifyBridge,
+      ),
       "0.146.0-alpha.3.1",
     );
     assert.deepEqual(calls, [{ [CODEX_REPLAY_CLI_VERSION_ENV]: "0.146.0-alpha.3.1" }]);
+    assert.deepEqual(bridgeCalls, [{ codexCliVersion: "0.146.0-alpha.3.1" }]);
 
     const mismatch = Object.assign(new Error("CODEX_VERSION_MISMATCH"), {
       code: "CODEX_VERSION_MISMATCH",
@@ -178,6 +189,7 @@ describe("v0.7.1 release qualification contract", () => {
           () => {
             throw mismatch;
           },
+          verifyBridge,
         ),
       (error) => error === mismatch,
     );
@@ -353,6 +365,9 @@ describe("v0.7.1 release qualification contract", () => {
     assert.equal(localIds.includes("efficiency-evidence"), false);
     assert.equal(provider.filter((scenario) => scenario.tier === "provider").length, 1);
     assert.ok(providerIds.indexOf("provider-matrix") < providerIds.indexOf("efficiency-evidence"));
+    const providerCommand = provider.find((scenario) => scenario.id === "provider-matrix").command;
+    assert.ok(providerCommand.includes("--runtime-bridge"));
+    assert.ok(providerCommand.includes("--capture"));
   });
 
   it("fails closed when an explicit scenario omits its dependency", () => {
