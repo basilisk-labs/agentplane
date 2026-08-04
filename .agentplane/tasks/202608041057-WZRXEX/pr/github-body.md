@@ -16,7 +16,7 @@ Make post-publish evidence select the unique release task touched by the exact r
 ## Verification
 
 - State: ok
-- Note: v0.7.2 release-evidence selection and release candidate verified.
+- Note: Final v0.7.2 candidate verification passed
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -44,6 +44,7 @@ Make post-publish evidence select the unique release task touched by the exact r
  docs/assets/readme-headers/skills.svg              |   4 +-
  docs/assets/readme-headers/spec.svg                |   4 +-
  docs/assets/readme-headers/testkit.svg             |   4 +-
+ docs/developer/incident-archive.mdx                |   4 ++
  docs/reference/generated-reference.mdx             |   6 +--
  docs/releases/v0.7.2.md                            |  25 ++++++++++
  packages/agentplane/package.json                   |   6 +--
@@ -59,7 +60,7 @@ Make post-publish evidence select the unique release task touched by the exact r
  scripts/release/release-task-evidence.mjs          |  26 +++++++---
  website/static/img/social/docs/releases/v0.7.2.png | Bin 0 -> 52852 bytes
  website/static/img/social/manifest.json            |   8 +++
- 32 files changed, 208 insertions(+), 70 deletions(-)
+ 33 files changed, 212 insertions(+), 70 deletions(-)
 ```
 
 </details>
