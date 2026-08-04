@@ -15,14 +15,14 @@ Make post-publish evidence select the unique release task touched by the exact r
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: v0.7.2 release-evidence selection and release candidate verified.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-04T10:58:31.949Z
+- Updated: 2026-08-04T12:01:02.896Z
 - Branch: task/202608041057-WZRXEX/disambiguate-hosted-release-evidence-task-select
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

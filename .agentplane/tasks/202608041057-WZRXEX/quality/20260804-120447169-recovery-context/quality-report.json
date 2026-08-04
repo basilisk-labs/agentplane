@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608041057-WZRXEX",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-04T12:04:47.798Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "f0d58a4092e7a659538a32359a4d57a86ae17645",
+  "blueprint_digest": "aeb49d43a5ae3d93afd65fe4b524d5d0cc0c6971cd12c8db68df52ad369db54e",
+  "findings": [
+    "The implementation intersects task IDs touched anywhere under .agentplane/tasks/<id>/ with DONE release registry candidates, accepts only a unique exact match, preserves unique version fallback, and refuses ambiguous attribution."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608041057-WZRXEX/quality/objects/sha256/4768017655d327f1993258a43bfbd8a998e8a676cd298d83cb64f634d284bdd4.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "A future release commit that carries no task-scoped artifact relies on the unique version-registry fallback, as before."
+  ],
+  "residual_risks": []
+}

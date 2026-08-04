@@ -6,14 +6,14 @@ Created: 2026-08-04T10:58:31.949Z
 
 - Task: `202608041057-WZRXEX`
 - Title: Disambiguate hosted release evidence task selection
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608041057-WZRXEX/disambiguate-hosted-release-evidence-task-select`
 - Canonical task record: `.agentplane/tasks/202608041057-WZRXEX/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: v0.7.2 release-evidence selection and release candidate verified.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-04T10:58:31.949Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-04T10:58:31.949Z
+- Updated: 2026-08-04T12:01:02.896Z
 - Branch: task/202608041057-WZRXEX/disambiguate-hosted-release-evidence-task-select
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
