@@ -266,6 +266,7 @@ sections:
     - The release-ci suite exposed a second stale fixture that created a task without a semantic plan but expected `approval_required`. Preserve the intended approval-boundary coverage by recording a task-specific unapproved plan first; the correct no-plan boundary remains `semantic_input_required`, and runtime behavior is unchanged.
     - The user-supplied v0.7 audit was checked against the current candidate in `evidence/external-audit-assessment.md`. Its P0 product findings are already resolved by the v0.7.1 contract and provider-qualified code; package-splitting, composite complexity metrics, and broader evidence-retention backends remain non-blocking architecture follow-up.
     - Release-ci chunk 19 exposed another pre-semantic-planning fixture: the commit-from-comment closeout test attempted approval without replacing the generated plan placeholder, so it stopped before reaching the intended stale-quality-review boundary. Add a task-specific PLANNER plan to the fixture; runtime behavior remains unchanged.
+    - The first prepublish on the version-bumped candidate correctly rejected README header SVGs still generated for v0.7.0. Regenerate the 14 canonical header assets for v0.7.1 before rerunning the release gate.
 
     - Observation: The commit-from-comment test attempted plan approval without first recording a task-specific semantic plan.
       Impact: The full prepublish gate stopped before evaluating the intended stale-quality-review boundary.
@@ -429,6 +430,7 @@ DecisionContextRef:
 - The release-ci suite exposed a second stale fixture that created a task without a semantic plan but expected `approval_required`. Preserve the intended approval-boundary coverage by recording a task-specific unapproved plan first; the correct no-plan boundary remains `semantic_input_required`, and runtime behavior is unchanged.
 - The user-supplied v0.7 audit was checked against the current candidate in `evidence/external-audit-assessment.md`. Its P0 product findings are already resolved by the v0.7.1 contract and provider-qualified code; package-splitting, composite complexity metrics, and broader evidence-retention backends remain non-blocking architecture follow-up.
 - Release-ci chunk 19 exposed another pre-semantic-planning fixture: the commit-from-comment closeout test attempted approval without replacing the generated plan placeholder, so it stopped before reaching the intended stale-quality-review boundary. Add a task-specific PLANNER plan to the fixture; runtime behavior remains unchanged.
+- The first prepublish on the version-bumped candidate correctly rejected README header SVGs still generated for v0.7.0. Regenerate the 14 canonical header assets for v0.7.1 before rerunning the release gate.
 
 - Observation: The commit-from-comment test attempted plan approval without first recording a task-specific semantic plan.
   Impact: The full prepublish gate stopped before evaluating the intended stale-quality-review boundary.
