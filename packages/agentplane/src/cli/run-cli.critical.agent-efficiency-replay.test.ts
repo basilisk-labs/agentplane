@@ -866,6 +866,7 @@ describeCritical("critical: RF-04 anchored replay telemetry", () => {
         HTTPS_PROXY: "http://proxy.invalid",
         NODE_OPTIONS: "--require=/malicious/preload.cjs",
         OPENAI_API_KEY: "explicit-secret-value",
+        AGENTPLANE_RF04_REPLAY_CODEX_BINARY: "/reviewed/archive/codex",
         PATH: "/untrusted/bin",
         TMPDIR: "/sensitive/tmp",
         UNRELATED_SECRET: "must-not-pass",
@@ -875,6 +876,9 @@ describeCritical("critical: RF-04 anchored replay telemetry", () => {
     expect(environment).toMatchObject(testContractEnvironment());
     expect(environment.PATH).toBe(
       "/Applications/ChatGPT.app/Contents/Resources:/opt/homebrew/bin:/usr/bin:/bin",
+    );
+    expect(environment.AGENTPLANE_RF04_REPLAY_CODEX_BINARY).toBe(
+      "/reviewed/archive/codex",
     );
     for (const forbidden of [
       "DYLD_INSERT_LIBRARIES",

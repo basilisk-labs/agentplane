@@ -1,8 +1,10 @@
 import { spawn, spawnSync } from "node:child_process";
-import { lstatSync, realpathSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { lstatSync, readFileSync, realpathSync } from "node:fs";
 import path from "node:path";
 
 export const CODEX_REPLAY_BINARY = "/Applications/ChatGPT.app/Contents/Resources/codex";
+export const CODEX_REPLAY_BINARY_ENV = "AGENTPLANE_RF04_REPLAY_CODEX_BINARY";
 export const CODEX_REPLAY_CLI_VERSION = "0.145.0-alpha.18";
 export const CODEX_REPLAY_CLI_VERSION_ENV = "AGENTPLANE_RF04_REPLAY_CODEX_CLI_VERSION";
 export const CODEX_REPLAY_MODEL = "gpt-5.6-terra";
@@ -16,6 +18,9 @@ const MAX_STDERR_BYTES = 1024 * 1024;
 const SUPERVISOR_COMMAND_TIMEOUT_MS = 120_000;
 const PROVIDER_FIELDS = ["input_tokens", "output_tokens", "reasoning_output_tokens"];
 const CODEX_CLI_VERSION_PATTERN = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u;
+export const CODEX_REPLAY_ARCHIVE_SHA256 = Object.freeze({
+  "0.146.0-alpha.3.1": "sha256:fa0cb7c5f80e6a192563fcb1d9f98857f4a808a28cb29289400ed7110291bce4",
+});
 
 export class ReplayDriverError extends Error {
   constructor(code) {
@@ -82,13 +87,29 @@ export function resolveCodexReplayCliVersion(source = process.env) {
   return version;
 }
 
-export function assertCodexBinary(source = process.env) {
-  const stats = lstatSync(CODEX_REPLAY_BINARY, { throwIfNoEntry: false });
+export function resolveCodexReplayBinary(source = process.env) {
+  const candidate = source[CODEX_REPLAY_BINARY_ENV] ?? CODEX_REPLAY_BINARY;
+  if (typeof candidate !== "string" || !path.isAbsolute(candidate)) {
+    fail("CODEX_BINARY_PATH");
+  }
+  const stats = lstatSync(candidate, { throwIfNoEntry: false });
   if (!stats?.isFile() || stats.isSymbolicLink()) fail("CODEX_BINARY");
-  if (path.resolve(realpathSync(CODEX_REPLAY_BINARY)) !== path.resolve(CODEX_REPLAY_BINARY)) {
+  if (path.resolve(realpathSync(candidate)) !== path.resolve(candidate)) {
     fail("CODEX_BINARY_REALPATH");
   }
-  const version = runSanitizedCommand(CODEX_REPLAY_BINARY, ["--version"], {
+  if (candidate !== CODEX_REPLAY_BINARY) {
+    const version = resolveCodexReplayCliVersion(source);
+    const expectedDigest = CODEX_REPLAY_ARCHIVE_SHA256[version];
+    if (!expectedDigest) fail("CODEX_BINARY_ARCHIVE_UNPINNED");
+    const actualDigest = `sha256:${createHash("sha256").update(readFileSync(candidate)).digest("hex")}`;
+    if (actualDigest !== expectedDigest) fail("CODEX_BINARY_ARCHIVE_DIGEST");
+  }
+  return candidate;
+}
+
+export function assertCodexBinary(source = process.env) {
+  const binary = resolveCodexReplayBinary(source);
+  const version = runSanitizedCommand(binary, ["--version"], {
     code: "CODEX_VERSION_COMMAND",
   }).trim();
   const expected = resolveCodexReplayCliVersion(source);
@@ -192,7 +213,7 @@ export function runCodexEpisode({ fixtureRoot, prompt, schemaPath }) {
   return new Promise((resolve, reject) => {
     const collector = createCodexJsonlCollector();
     const child = spawn(
-      CODEX_REPLAY_BINARY,
+      resolveCodexReplayBinary(),
       [
         "-a",
         "never",
