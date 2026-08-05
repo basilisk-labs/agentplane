@@ -100,6 +100,8 @@ async function createVerifiedOpenPrFixture(
     "--root",
     root,
   ]);
+  await execFileAsync("git", ["add", "-A"], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "task: start route fixture"], { cwd: root });
 
   await writeFile(path.join(root, "impl.txt"), "implementation\n");
   await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
@@ -226,7 +228,7 @@ describe("runCli quality route decisions", () => {
     }
   });
 
-  it("stops for a stale quality review without synthesizing a replacement verdict", async () => {
+  it("re-verifies a semantic advance before replacing its stale quality review", async () => {
     const root = await setupRoot();
     const { taskId } = await createVerifiedOpenPrFixture(root, "Exercise stale review routing.");
     await runCliExpectOk(
@@ -279,9 +281,11 @@ describe("runCli quality route decisions", () => {
         next_action: { code: string; command: string | null };
         execution_packet: { actionKind: string; exactArgv: string[] | null };
       };
-      expect(parsed.blockers.map((blocker) => blocker.code)).toContain("quality_review_stale");
+      expect(parsed.blockers.map((blocker) => blocker.code)).toEqual(
+        expect.arrayContaining(["verification_required", "quality_review_stale"]),
+      );
       expect(parsed.next_action).toEqual(
-        expect.objectContaining({ code: "quality_review_required", command: null }),
+        expect.objectContaining({ code: "verification_required", command: null }),
       );
       expect(parsed.execution_packet).toMatchObject({ actionKind: "stop", exactArgv: null });
       expect(nextIo.stdout).not.toContain("--verdict pass");

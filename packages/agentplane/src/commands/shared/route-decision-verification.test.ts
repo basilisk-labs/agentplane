@@ -109,6 +109,7 @@ describe("route verification target selection", () => {
     expect(mocks.hasAcceptedVerificationRecord).toHaveBeenCalledWith(
       expect.objectContaining({
         evaluatedSha: reviewedSha,
+        requireConcreteCheckDetails: true,
         snapshotRef: mergedPrHead,
       }),
     );
@@ -132,6 +133,9 @@ describe("route verification target selection", () => {
 
     expect(mocks.resolveQualityReviewTargetSha).toHaveBeenCalledWith(
       expect.objectContaining({ headSha: branchHead }),
+    );
+    expect(mocks.hasAcceptedVerificationRecord).toHaveBeenCalledWith(
+      expect.objectContaining({ requireConcreteCheckDetails: false }),
     );
   });
 

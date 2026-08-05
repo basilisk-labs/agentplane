@@ -60,6 +60,8 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
     opts.ctx.config.paths.workflow_dir,
     opts.task.id,
   );
+  const requireConcreteCheckDetails =
+    opts.task.status === "DONE" || Boolean(opts.task.commit?.hash?.trim());
   return await hasAcceptedVerificationRecord({
     taskRoot,
     task: opts.task,
@@ -75,5 +77,6 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
       (opts.prFlow?.pr.state === "MERGED" ? opts.prFlow.pr.headSha : null) ??
       opts.resume.head_sha ??
       null,
+    requireConcreteCheckDetails,
   }).catch(() => false);
 }
