@@ -2,8 +2,9 @@
   "base": "main",
   "branch": "task/202608052127-XWDY4R/keep-release-diagnostics-on-the-current-publishe",
   "created_at": "2026-08-05T21:28:48.428Z",
-  "diffstat_sha256": "sha256:db83929ab0e2ca4cab61f472866296f26c45165624b1ad9b0b772c79b895c64b",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:abad6f33c66218a4c1534c891bc74c67051e485a1f6a04cffcf49f32de1199d9",
+  "last_verified_at": "2026-08-05T22:30:00.773Z",
+  "last_verified_diffstat_sha256": "sha256:db83929ab0e2ca4cab61f472866296f26c45165624b1ad9b0b772c79b895c64b",
   "pr_number": 4780,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4780",
   "schema_version": 1,
@@ -11,6 +12,6 @@
   "task_id": "202608052127-XWDY4R",
   "updated_at": "2026-08-05T21:29:23.465Z",
   "verify": {
-    "status": "skipped"
+    "status": "fail"
   }
 }

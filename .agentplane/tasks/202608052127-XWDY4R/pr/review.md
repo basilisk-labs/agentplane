@@ -12,8 +12,8 @@ Created: 2026-08-05T21:28:48.428Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Contract gate rework: repository-wide Prettier rejects the touched provider conflict-rework test; apply the canonical formatter in a dedicated mechanical commit, then rerun ci:contract.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,13 +29,13 @@ Created: 2026-08-05T21:28:48.428Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../cli/run-cli.core.pr-conflict-rework.test.ts    |   3 +-
- .../release-evidence-collect-script.test.ts        | 211 ++++++++++++++
- .../release/release-next-action-script.test.ts     |  95 ++++++-
- scripts/release/evidence-collect.mjs               | 305 +++++++++++++++++++--
- scripts/release/next-action.mjs                    |  95 +++++--
- scripts/release/state.mjs                          |  49 ++++
- 6 files changed, 711 insertions(+), 47 deletions(-)
+ .../cli/run-cli.core.pr-conflict-rework.test.ts    | 1093 ++++++++++----------
+ .../release-evidence-collect-script.test.ts        |  211 ++++
+ .../release/release-next-action-script.test.ts     |   95 +-
+ scripts/release/evidence-collect.mjs               |  305 +++++-
+ scripts/release/next-action.mjs                    |   95 +-
+ scripts/release/state.mjs                          |   49 +
+ 6 files changed, 1267 insertions(+), 581 deletions(-)
 ```
 
 </details>
