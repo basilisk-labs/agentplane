@@ -164,21 +164,6 @@ describe("runCli route decision verification freshness", () => {
     await writeFile(path.join(root, "impl.txt"), "first implementation\n", "utf8");
     await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "feat: first implementation"], { cwd: root });
-    const { stdout: firstHead } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
-    await runCliSilent([
-      "task",
-      "set-status",
-      taskId,
-      "DOING",
-      "--commit",
-      firstHead.trim(),
-      "--author",
-      "CODER",
-      "--body",
-      "Implementation committed: first semantic implementation.",
-      "--root",
-      root,
-    ]);
     await recordVerificationOk(root, taskId);
     await execFileAsync("git", ["add", "--all"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "task: record fresh verification"], { cwd: root });
@@ -197,21 +182,6 @@ describe("runCli route decision verification freshness", () => {
     await writeFile(path.join(root, "impl.txt"), "second implementation\n", "utf8");
     await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "feat: second implementation"], { cwd: root });
-    const { stdout: secondHead } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
-    await runCliSilent([
-      "task",
-      "set-status",
-      taskId,
-      "DOING",
-      "--commit",
-      secondHead.trim(),
-      "--author",
-      "CODER",
-      "--body",
-      "Implementation committed: second semantic implementation.",
-      "--root",
-      root,
-    ]);
 
     const stale = await runJson<{ blockers: { code: string; summary: string }[] }>([
       "task",
