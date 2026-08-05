@@ -4,7 +4,7 @@ title: "Keep release diagnostics on the current published target"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -24,7 +24,9 @@ verification:
   updated_by: "TESTER"
   note: "Contract gate rework: repository-wide Prettier rejects the touched provider conflict-rework test; apply the canonical formatter in a dedicated mechanical commit, then rerun ci:contract."
   attempts: 1
-commit: null
+commit:
+  hash: "948b9d8a90b7e5483f55dcf04053be5106eff035"
+  message: "🚧 XWDY4R task: satisfy formatting contract"
 comments:
   -
     author: "CODER"
@@ -32,6 +34,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation ready for independent verification: release diagnostics and evidence are bound to the exact current target; focused regressions pass."
+  -
+    author: "CODER"
+    body: "Rework complete: canonical formatting applied mechanically to the provider conflict-rework matrix; focused test and repository-wide format check pass."
 events:
   -
     type: "status"
@@ -53,8 +58,15 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Contract gate rework: repository-wide Prettier rejects the touched provider conflict-rework test; apply the canonical formatter in a dedicated mechanical commit, then rerun ci:contract."
+  -
+    type: "status"
+    at: "2026-08-05T22:31:10.586Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework complete: canonical formatting applied mechanically to the provider conflict-rework matrix; focused test and repository-wide format check pass."
 doc_version: 3
-doc_updated_at: "2026-08-05T22:30:01.751Z"
+doc_updated_at: "2026-08-05T22:31:10.586Z"
 doc_updated_by: "CODER"
 description: "Prevent release next-action from mixing the current package/tag target with stale local release-plan SHA and hosted evidence; add regression coverage, merge the fix, and publish the verified v0.7.4 patch release."
 sections:
