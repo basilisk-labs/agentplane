@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 38
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-05T20:13:02.703Z"
+  updated_at: "2026-08-05T20:52:48.854Z"
   updated_by: "TESTER"
-  note: "Deterministic pre-merge verification recorded in the canonical four-field format for frozen evaluator ingestion."
+  note: "Verified exact-SHA release evidence closeout and complete v0.7.3 prepublish gate at 0cb1a3f433e782c0a47785235faa869b72bfaefc."
   attempts: 0
 quality_review:
   state: "rework"
@@ -229,8 +229,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Deterministic pre-merge verification recorded in the canonical four-field format for frozen evaluator ingestion."
+  -
+    type: "verify"
+    at: "2026-08-05T20:52:48.854Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified exact-SHA release evidence closeout and complete v0.7.3 prepublish gate at 0cb1a3f433e782c0a47785235faa869b72bfaefc."
 doc_version: 3
-doc_updated_at: "2026-08-05T20:14:54.868Z"
+doc_updated_at: "2026-08-05T20:52:50.240Z"
 doc_updated_by: "CODER"
 description: "Complete the user-approved AgentPlane 0.7.3 release closeout: stabilize hosted release-tail regressions; harden exact-SHA qualification, provider replay, matched latency, and token-efficiency evidence; align compatibility, documentation, and release artifacts; validate task, context, evaluator, and upgrade flows; audit live GitHub Issues and PRs; publish exact merged artifacts; prove postpublish state; and safely clean obsolete merged branches."
 sections:
@@ -800,6 +806,56 @@ sections:
     Result: pass
     Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json | .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/report.json
     Scope: Verify Step 4; ready with 0 blocking, 50/50 runs, 55/55 provider episodes without retry, 31.0% token reduction, and matched latency pass for production subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+    - old_digest: 662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712
+    - current_digest: 662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608041322-M26FS0
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-05T20:52:48.854Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified exact-SHA release evidence closeout and complete v0.7.3 prepublish gate at 0cb1a3f433e782c0a47785235faa869b72bfaefc.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-05T20:14:54.868Z, excerpt_hash=sha256:6309a3d4c9984f701d73ba218bd1258e0a6e58df309358d98999afb057472f02
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.release-evidence-route.test.ts
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.3-premerge-0cb1a3f4.json
+    Scope: Verify Step 1; 1 file and 1 release-evidence route test passed at implementation SHA 0cb1a3f433e782c0a47785235faa869b72bfaefc
+
+    Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/verify-release-evidence-pr-script.test.ts
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.3-premerge-0cb1a3f4.json
+    Scope: Verify Step 2; 2 files and 11 tests passed, including baseline-delta dispatch correlation, concurrent exact-SHA runs, CI wait, required check publication, and auto-merge
+
+    Command: bun run ci:contract && bun run release:prepublish
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.3-premerge-0cb1a3f4.json
+    Scope: Verify Step 3; ci:contract, 101/101 release-ci groups, workflow 50/50, significant 204/204, release-critical 16/16, tarball install, and 8/8 migrations passed at implementation SHA 0cb1a3f433e782c0a47785235faa869b72bfaefc
+
+    Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --provider-evidence-subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca --subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.3-premerge-0cb1a3f4.json | .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/report.json
+    Scope: Verify Step 4; ready with 0 blocking, 50/50 runs, 55/55 provider episodes without retry, 31.0% token reduction, and matched latency pass for production subject SHA 275bdfa32e6a11a99d31bbf91180d27d4a294bca
 
     BlueprintSnapshotRef:
     - state: current
@@ -1432,6 +1488,56 @@ Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode 
 Result: pass
 Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json | .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/report.json
 Scope: Verify Step 4; ready with 0 blocking, 50/50 runs, 55/55 provider episodes without retry, 31.0% token reduction, and matched latency pass for production subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+- old_digest: 662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712
+- current_digest: 662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608041322-M26FS0
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-05T20:52:48.854Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified exact-SHA release evidence closeout and complete v0.7.3 prepublish gate at 0cb1a3f433e782c0a47785235faa869b72bfaefc.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-05T20:14:54.868Z, excerpt_hash=sha256:6309a3d4c9984f701d73ba218bd1258e0a6e58df309358d98999afb057472f02
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.release-evidence-route.test.ts
+Result: pass
+Evidence: .agentplane/cache/v0.7.3-premerge-0cb1a3f4.json
+Scope: Verify Step 1; 1 file and 1 release-evidence route test passed at implementation SHA 0cb1a3f433e782c0a47785235faa869b72bfaefc
+
+Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/verify-release-evidence-pr-script.test.ts
+Result: pass
+Evidence: .agentplane/cache/v0.7.3-premerge-0cb1a3f4.json
+Scope: Verify Step 2; 2 files and 11 tests passed, including baseline-delta dispatch correlation, concurrent exact-SHA runs, CI wait, required check publication, and auto-merge
+
+Command: bun run ci:contract && bun run release:prepublish
+Result: pass
+Evidence: .agentplane/cache/v0.7.3-premerge-0cb1a3f4.json
+Scope: Verify Step 3; ci:contract, 101/101 release-ci groups, workflow 50/50, significant 204/204, release-critical 16/16, tarball install, and 8/8 migrations passed at implementation SHA 0cb1a3f433e782c0a47785235faa869b72bfaefc
+
+Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --provider-evidence-subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca --subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca
+Result: pass
+Evidence: .agentplane/cache/v0.7.3-premerge-0cb1a3f4.json | .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/report.json
+Scope: Verify Step 4; ready with 0 blocking, 50/50 runs, 55/55 provider episodes without retry, 31.0% token reduction, and matched latency pass for production subject SHA 275bdfa32e6a11a99d31bbf91180d27d4a294bca
 
 BlueprintSnapshotRef:
 - state: current
