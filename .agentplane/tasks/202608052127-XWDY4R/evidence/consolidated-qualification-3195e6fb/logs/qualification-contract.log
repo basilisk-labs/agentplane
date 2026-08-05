@@ -1,0 +1,37 @@
+$ "node" "--test" "scripts/qualification/release-qualification.test.mjs"
+exit_code=0 signal=none duration_ms=251
+
+▶ v0.7.1 release qualification contract
+  ✔ excludes disposable matched-latency fixtures from host indexing (1.509166ms)
+  ✔ preflights the exact provider runtime only before provider execution (0.566583ms)
+  ✔ maps every required dimension to an executable scenario (0.869417ms)
+  ✔ requires every defect owner to be an existing executable task (0.438ms)
+  ✔ binds qualification evidence to the exact clean Git subject (0.115125ms)
+  ✔ lets the qualification runner ignore only its active nested evidence directory (162.922333ms)
+  ✔ rejects an uncovered requirement (0.410042ms)
+  ✔ selects provider work only when explicitly requested (0.361625ms)
+  ✔ reuses provider evidence only across explicit provider-runtime-equivalent changes (0.121375ms)
+  ✔ fails closed when an explicit scenario omits its dependency (0.30575ms)
+  ✔ fails closed when a command variable is absent (0.126666ms)
+  ✔ keeps audit execution successful while emitting a blocking defect (0.959959ms)
+  ✔ assigns distinct executable tasks to the confirmed release blockers (0.738458ms)
+  ✔ does not claim readiness from a partial successful selection (0.254375ms)
+  ✔ allows a gate pass only after all local and provider scenarios pass (0.3365ms)
+  ✔ keeps RF-04 harness timing diagnostic while gating tokens and outcomes (0.32575ms)
+  ✔ rejects a token regression even when aggregate evidence is complete (0.194583ms)
+  ✔ rejects verified-success and scope regressions without gating RF-04 harness timing (0.412458ms)
+  ✔ rejects an agent packet that grows beyond the release limit (0.356625ms)
+  ✔ requires distinct frozen cold and warm sample sets with at least 20 pairs (0.503ms)
+  ✔ gates matched CLI latency on median and p95 (0.048791ms)
+  ✔ uses balanced replicated logical samples without weakening latency thresholds (0.1155ms)
+  ✔ requires 60 cold and 60 warm supervisor samples for both public frontends (5.878916ms)
+  ✔ records deterministic Git command histograms outside duration samples (0.152667ms)
+✔ v0.7.1 release qualification contract (178.741375ms)
+ℹ tests 24
+ℹ suites 1
+ℹ pass 24
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 223.280791

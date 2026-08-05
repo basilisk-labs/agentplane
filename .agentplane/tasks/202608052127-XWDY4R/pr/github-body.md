@@ -14,12 +14,14 @@ In scope: a consolidated post-release audit and fix set for installation and upg
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Contract gate rework: repository-wide Prettier rejects the touched provider conflict-rework test;
-apply the canonical formatter in a dedicated mechanical commit, then rerun ci:contract.
+Consolidated post-release verification passed on 3195e6fb: focused release regressions, typecheck,
+lint/format, ci:contract, critical tests, doctor, routing, release:prepublish, full v0.7
+qualification, and one no-retry 50-run/55-episode provider matrix. Qualification ready 18/19 with
+zero blocking defects; the sole absolute latency advisory is cleared by matched v0.6.26 comparison.
 ```
 - Canonical workflow state lives in the task README.
 

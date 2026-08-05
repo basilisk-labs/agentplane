@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.v0.7.1_efficiency_qualification",
+  "subject": "3195e6fb97586ceb347f7bd9063fa3ef4b7b1cca",
+  "source_subject": "3195e6fb97586ceb347f7bd9063fa3ef4b7b1cca",
+  "coverage": {
+    "replay_runs": 50,
+    "scenarios": 10
+  },
+  "provider_episodes": 55,
+  "provider_tokens": {
+    "baseline": {
+      "input_tokens": 9097432,
+      "output_tokens": 66728,
+      "reasoning_tokens": 22587,
+      "total_tokens": 9186747
+    },
+    "candidate": {
+      "input_tokens": 6137525,
+      "output_tokens": 39859,
+      "reasoning_tokens": 14037,
+      "total_tokens": 6191421
+    },
+    "total_reduction_ratio": 0.326048600228133
+  },
+  "outcomes": {
+    "baseline": {
+      "adapter_failure": 5,
+      "approval_respected": 50,
+      "blocked": 20,
+      "context_gap": 5,
+      "rework_required": 32,
+      "scope_violation": 17,
+      "verified_success": 8
+    },
+    "candidate": {
+      "adapter_failure": 5,
+      "approval_respected": 50,
+      "blocked": 20,
+      "context_gap": 5,
+      "rework_required": 25,
+      "scope_violation": 5,
+      "verified_success": 20
+    },
+    "baseline_golden_mismatch_count": 33,
+    "candidate_golden_mismatch_count": 10
+  },
+  "latency_ms": {
+    "baseline": {
+      "harness_setup_latency_ms": {
+        "mean": 7605.46,
+        "sample_count": 50
+      },
+      "time_to_first_scoped_mutation_ms": {
+        "mean": 43642.64,
+        "sample_count": 25
+      },
+      "time_to_verified_result_ms": {
+        "mean": 56439.625,
+        "sample_count": 8
+      }
+    },
+    "candidate": {
+      "harness_setup_latency_ms": {
+        "mean": 7431.8,
+        "sample_count": 50
+      },
+      "time_to_first_scoped_mutation_ms": {
+        "mean": 27473.333333333332,
+        "sample_count": 24
+      },
+      "time_to_verified_result_ms": {
+        "mean": 52486.95,
+        "sample_count": 20
+      }
+    },
+    "policy": "diagnostic_only_never_gated",
+    "diagnostics": [
+      {
+        "metric": "latency.time_to_first_scoped_mutation_ms.sample_count",
+        "baseline": 25,
+        "candidate": 24,
+        "delta": -1
+      }
+    ]
+  },
+  "failures": [],
+  "verdict": "pass",
+  "provider_evidence": {
+    "source_subject": "3195e6fb97586ceb347f7bd9063fa3ef4b7b1cca",
+    "runtime_equivalence": {
+      "schema_version": 1,
+      "kind": "agentplane.provider_runtime_equivalence",
+      "policy": "exact_subject_v1",
+      "source_subject": "3195e6fb97586ceb347f7bd9063fa3ef4b7b1cca",
+      "target_subject": "3195e6fb97586ceb347f7bd9063fa3ef4b7b1cca",
+      "changed_paths": [],
+      "provider_runtime_unchanged": true
+    }
+  }
+}
