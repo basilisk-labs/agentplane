@@ -6,7 +6,7 @@ Created: 2026-08-04T13:24:55.578Z
 
 - Task: `202608041322-M26FS0`
 - Title: Stabilize hosted release evidence closeout
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608041322-M26FS0/stabilize-hosted-release-evidence-closeout`
 - Canonical task record: `.agentplane/tasks/202608041322-M26FS0/README.md`
 
