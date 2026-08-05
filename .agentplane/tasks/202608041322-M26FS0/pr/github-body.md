@@ -21,8 +21,8 @@ Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created re
 - Note:
 
 ```text
-Fresh deterministic verification after committing scope, blueprint, prior evaluator records, and
-command evidence; semantic implementation remains 26db6758 and production subject 275bdfa3.
+Deterministic pre-merge verification recorded in the canonical four-field format for frozen
+evaluator ingestion.
 ```
 - Canonical workflow state lives in the task README.
 

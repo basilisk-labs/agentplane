@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608041322-M26FS0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-05T20:11:27.953Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "26db675800b8d2cf3e6b7160a3c744d82620f232",
+  "blueprint_digest": "662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712",
+  "findings": [
+    "The frozen packet contains no deterministic execution results for any of the four mandatory pre-merge checks."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/1fab3789f01e6289e7c27f5f9241bfe9ca63619ef29bbd698681ea1d6b18d601.json"
+  ],
+  "missing_tests": [
+    "Frozen result for the focused release-evidence route regression.",
+    "Frozen result for the publish-workflow contract regression.",
+    "Frozen results for ci:contract and release:prepublish at evaluated SHA 26db675800b8d2cf3e6b7160a3c744d82620f232.",
+    "Frozen exact-SHA qualification result for subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca, including 50/50 runs, 55/55 provider episodes, matched-latency, and efficiency gates."
+  ],
+  "hidden_assumptions": [
+    "The TESTER verification note accurately summarizes successful deterministic runs and exact-SHA provenance despite the frozen observed-checks artifact containing no command-level records or runtime evidence."
+  ],
+  "residual_risks": [
+    "Regenerate the frozen evaluator packet with deterministic command-level results for all four mandatory pre-merge checks at the declared evaluated SHA and qualification subject."
+  ]
+}

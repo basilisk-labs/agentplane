@@ -13,7 +13,7 @@ Created: 2026-08-04T13:24:55.578Z
 ## Verification
 
 - State: ok
-- Note: Fresh deterministic verification after committing scope, blueprint, prior evaluator records, and command evidence; semantic implementation remains 26db6758 and production subject 275bdfa3.
+- Note: Deterministic pre-merge verification recorded in the canonical four-field format for frozen evaluator ingestion.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
