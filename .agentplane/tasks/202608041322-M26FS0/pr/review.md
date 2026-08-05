@@ -12,11 +12,8 @@ Created: 2026-08-04T13:24:55.578Z
 
 ## Verification
 
-- State: ok
-- Note: Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --provider-evidence-subject 4d529ff0fa594fcf9cece44b56dd402b84e7f44c --subject 74cb0b80ae7a8447032d7b88bba607be9002f872; bun run release:prepublish
-Result: pass
-Evidence: .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-74cb0b80/report.json (ready 18/19, 0 blocking); prepublish passed 101/101 release-ci-base, 50/50 workflow, 204/204 significant, 16/16 release-critical, package install and 8/8 migrations
-Scope: pre-merge Verify Steps 1-3 on semantic target 74cb0b80; b17caf97 is task-artifact-only refresh; postpublish Verify Steps 4-5 remain hosted closeout gates
+- State: needs_rework
+- Note: Matched CLI latency gate is not repeatable under transient host contention; aggregate medians pass while command-level p95 failures change between runs.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -52,15 +49,25 @@ Scope: pre-merge Verify Steps 1-3 on semantic target 74cb0b80; b17caf97 is task-
  docs/releases/v0.7.3.md                            |  28 ++
  packages/agentplane/package.json                   |   6 +-
  .../run-cli.core.release-evidence-route.test.ts    | 337 +++++++++++++++++++++
- ...un-cli.core.route-decision.verification.test.ts |   2 +-
+ .../run-cli.core.route-decision.quality.test.ts    |  11 +-
+ ...un-cli.core.route-decision.verification.test.ts |  32 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |  16 +-
  ...cli.critical.agent-efficiency-candidate.test.ts |  63 +++-
+ ...critical.agent-efficiency-replay-driver.test.ts |   8 +
+ ...un-cli.critical.agent-efficiency-replay.test.ts |  11 +-
  .../release/publish-workflow-contract.test.ts      |  36 ++-
  .../release/release-task-evidence-script.test.ts   |  61 +++-
+ .../route-decision-blockers.quality-review.test.ts |   5 +-
+ .../src/commands/shared/route-decision-blockers.ts |  16 +-
+ .../route-decision-blockers.worktree.test.ts       |  27 ++
+ .../shared/route-decision-verification.test.ts     |   4 +
+ .../commands/shared/route-decision-verification.ts |   3 +
  .../src/commands/shared/route-decision.ts          |   3 +-
+ .../commands/shared/task-verification-records.ts   |  24 +-
  .../src/commands/task/close-tail-state.test.ts     |  69 +++++
  .../src/commands/task/close-tail-state.ts          |  45 ++-
- .../agentplane/src/commands/task/finish-execute.ts |   1 +
+ .../agentplane/src/commands/task/finish-execute.ts |   3 +-
+ .../task/finish.pre-merge-closure.unit.test.ts     |  30 ++
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
@@ -68,17 +75,23 @@ Scope: pre-merge Verify Steps 1-3 on semantic target 74cb0b80; b17caf97 is task-
  packages/testkit/package.json                      |   2 +-
  packages/testkit/src/cli-harness.ts                |  20 +-
  .../baselines/v0.7-compatibility-candidate.json    |   8 +-
- .../bench/capture-agent-efficiency-candidate.mjs   | 332 ++++++++++++++++----
+ .../bench/capture-agent-efficiency-candidate.mjs   | 335 ++++++++++++++++----
+ scripts/bench/capture-agent-efficiency-replay.mjs  |   3 +
+ .../internal/agent-efficiency-codex-runtime.mjs    |  33 +-
+ .../bench/run-agent-efficiency-codex-replay.mjs    |   3 +
  .../check-compatibility-contract-baseline.mjs      |   8 +-
+ scripts/lib/agent-efficiency-replay-safety.mjs     |   1 +
+ scripts/lib/agent-efficiency-replay.mjs            |   2 +
  .../check-v0.7.1-efficiency-evidence.mjs           |  46 ++-
+ .../measure-v0.7.1-matched-cli-latency.mjs         | 139 +++++++--
  scripts/qualification/release-qualification.mjs    |  81 +++++
- .../qualification/release-qualification.test.mjs   |  89 +++++-
- .../run-v0.7.1-release-qualification.mjs           |  49 ++-
+ .../qualification/release-qualification.test.mjs   | 152 +++++++++-
+ .../run-v0.7.1-release-qualification.mjs           |  57 +++-
  .../v0.7.1-release-qualification.json              |  14 +-
  scripts/release/release-task-evidence.mjs          |   7 -
  website/static/img/social/docs/releases/v0.7.3.png | Bin 0 -> 53092 bytes
  website/static/img/social/manifest.json            |   8 +
- 46 files changed, 1296 insertions(+), 200 deletions(-)
+ 62 files changed, 1638 insertions(+), 284 deletions(-)
 ```
 
 </details>

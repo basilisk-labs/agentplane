@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -21,15 +21,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-04T23:37:31.379Z"
+  state: "needs_rework"
+  updated_at: "2026-08-05T16:19:41.965Z"
   updated_by: "TESTER"
-  note: |-
-    Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --provider-evidence-subject 4d529ff0fa594fcf9cece44b56dd402b84e7f44c --subject 74cb0b80ae7a8447032d7b88bba607be9002f872; bun run release:prepublish
-    Result: pass
-    Evidence: .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-74cb0b80/report.json (ready 18/19, 0 blocking); prepublish passed 101/101 release-ci-base, 50/50 workflow, 204/204 significant, 16/16 release-critical, package install and 8/8 migrations
-    Scope: pre-merge Verify Steps 1-3 on semantic target 74cb0b80; b17caf97 is task-artifact-only refresh; postpublish Verify Steps 4-5 remain hosted closeout gates
-  attempts: 0
+  note: "Matched CLI latency gate is not repeatable under transient host contention; aggregate medians pass while command-level p95 failures change between runs."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -199,8 +195,14 @@ events:
       Result: pass
       Evidence: .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-74cb0b80/report.json (ready 18/19, 0 blocking); prepublish passed 101/101 release-ci-base, 50/50 workflow, 204/204 significant, 16/16 release-critical, package install and 8/8 migrations
       Scope: pre-merge Verify Steps 1-3 on semantic target 74cb0b80; b17caf97 is task-artifact-only refresh; postpublish Verify Steps 4-5 remain hosted closeout gates
+  -
+    type: "verify"
+    at: "2026-08-05T16:19:41.965Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Matched CLI latency gate is not repeatable under transient host contention; aggregate medians pass while command-level p95 failures change between runs."
 doc_version: 3
-doc_updated_at: "2026-08-04T23:38:21.867Z"
+doc_updated_at: "2026-08-05T16:19:43.399Z"
 doc_updated_by: "CODER"
 description: "Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release."
 sections:
@@ -577,6 +579,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-05T16:19:41.965Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Matched CLI latency gate is not repeatable under transient host contention; aggregate medians pass while command-level p95 failures change between runs.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T23:38:21.867Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+    - old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608041322-M26FS0
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -596,6 +628,10 @@ sections:
     - Observation: Focused hosted-close and publish workflow contracts, full qualification, package/install/migration, coverage, and release-critical suites all passed; absolute CLI latency remains advisory while matched and supervisor latency passed.
       Impact: No blocking local regression remains for the v0.7.3 candidate; hosted publication truth must still be proven after merge.
       Resolution: Approve implementation verification and advance to independent evaluator review; retain postpublish steps as mandatory release closeout.
+
+    - Observation: At 55b96529, matched-cli-latency failed cold.task_list, cold.preflight_quick, and warm.task_list after an earlier strict standalone pass on the same host; no provider episode started.
+      Impact: A one-invocation logical sample can classify a release by unrelated host spikes, so the current release evidence is not reliable enough for closeout.
+      Resolution: Use multiple invocations per logical sample with balanced order and median aggregation, preserving 20 logical samples and the existing median/p95 thresholds; then rerun exact qualification.
 extensions:
   implementation_commit:
     hash: "77e66477692a3ff42cc6321d49b87b0c6d35bf9f"
@@ -988,6 +1024,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-05T16:19:41.965Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Matched CLI latency gate is not repeatable under transient host contention; aggregate medians pass while command-level p95 failures change between runs.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T23:38:21.867Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+- old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608041322-M26FS0
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1011,6 +1077,10 @@ DecisionContextRef:
 - Observation: Focused hosted-close and publish workflow contracts, full qualification, package/install/migration, coverage, and release-critical suites all passed; absolute CLI latency remains advisory while matched and supervisor latency passed.
   Impact: No blocking local regression remains for the v0.7.3 candidate; hosted publication truth must still be proven after merge.
   Resolution: Approve implementation verification and advance to independent evaluator review; retain postpublish steps as mandatory release closeout.
+
+- Observation: At 55b96529, matched-cli-latency failed cold.task_list, cold.preflight_quick, and warm.task_list after an earlier strict standalone pass on the same host; no provider episode started.
+  Impact: A one-invocation logical sample can classify a release by unrelated host spikes, so the current release evidence is not reliable enough for closeout.
+  Resolution: Use multiple invocations per logical sample with balanced order and median aggregation, preserving 20 logical samples and the existing median/p95 thresholds; then rerun exact qualification.
 
 ## Token Usage
 

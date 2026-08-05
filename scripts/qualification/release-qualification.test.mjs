@@ -23,8 +23,10 @@ import { evaluateEfficiencyMeasurement } from "./check-v0.7.1-efficiency-evidenc
 import { assertCompactAgentPacket } from "./check-v0.7.1-product-contract.mjs";
 import { blockingCandidateFailureIds } from "../bench/capture-agent-efficiency-candidate.mjs";
 import {
+  collapseMatchedLatencyReplicates,
   compareMatchedLatencySamples,
   createMatchedLatencyTempRoot,
+  matchedInvocationOrder,
   validateMatchedLatencyReport,
 } from "./measure-v0.7.1-matched-cli-latency.mjs";
 import {
@@ -642,6 +644,7 @@ describe("v0.7.1 release qualification contract", () => {
     const report = {
       schema_version: 2,
       kind: "agentplane.v0.7.1_matched_cli_latency",
+      sample_contract: { invocations_per_side_per_logical_sample: 3 },
       phases: { cold: matchedPhase(20, 0), warm: matchedPhase(20, 1) },
     };
     assert.equal(validateMatchedLatencyReport(report), report);
@@ -653,6 +656,13 @@ describe("v0.7.1 release qualification contract", () => {
     const missingWarm = structuredClone(report);
     delete missingWarm.phases.warm;
     assert.throws(() => validateMatchedLatencyReport(missingWarm), /omits warm commands/u);
+
+    const missingReplicates = structuredClone(report);
+    delete missingReplicates.sample_contract.invocations_per_side_per_logical_sample;
+    assert.throws(
+      () => validateMatchedLatencyReport(missingReplicates),
+      /requires an odd replicate count >= 3/u,
+    );
 
     const insufficientCold = structuredClone(report);
     insufficientCold.phases.cold = matchedPhase(19);
@@ -685,6 +695,35 @@ describe("v0.7.1 release qualification contract", () => {
     assert.equal(failing.verdict, "fail");
     assert.equal(failingP95.verdict, "fail");
     assert.equal(failing.delta_ms, 4);
+  });
+
+  it("uses balanced replicated logical samples without weakening latency thresholds", () => {
+    const baseline = ["baseline"];
+    const candidate = ["candidate"];
+    assert.deepEqual(matchedInvocationOrder(0, 0, baseline, candidate), [baseline, candidate]);
+    assert.deepEqual(matchedInvocationOrder(0, 1, baseline, candidate), [candidate, baseline]);
+    assert.deepEqual(matchedInvocationOrder(1, 0, baseline, candidate), [candidate, baseline]);
+    assert.deepEqual(matchedInvocationOrder(1, 1, baseline, candidate), [baseline, candidate]);
+
+    assert.deepEqual(
+      collapseMatchedLatencyReplicates([
+        { duration_ms: 100, exit_code: 0, signal: null, stderr: "" },
+        { duration_ms: 900, exit_code: 0, signal: null, stderr: "" },
+        { duration_ms: 101, exit_code: 0, signal: null, stderr: "" },
+      ]),
+      { duration_ms: 101, exit_code: 0, signal: null, stderr: "" },
+    );
+    const failed = collapseMatchedLatencyReplicates([
+      { duration_ms: 100, exit_code: 0, signal: null, stderr: "" },
+      { duration_ms: 101, exit_code: 1, signal: null, stderr: "boom" },
+      { duration_ms: 102, exit_code: 0, signal: null, stderr: "" },
+    ]);
+    assert.equal(failed.exit_code, 1);
+    assert.equal(failed.stderr, "boom");
+    assert.throws(
+      () => collapseMatchedLatencyReplicates([{ duration_ms: 100, exit_code: 0 }]),
+      /odd number of at least 3 replicates/u,
+    );
   });
 
   it("requires 60 cold and 60 warm supervisor samples for both public frontends", () => {
