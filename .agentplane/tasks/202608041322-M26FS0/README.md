@@ -2,10 +2,10 @@
 id: "202608041322-M26FS0"
 title: "Stabilize hosted release evidence closeout"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 39
+revision: 40
 origin:
   system: "manual"
 depends_on: []
@@ -58,20 +58,22 @@ quality_review:
   findings:
     - "No contract-breaking divergence was found in the frozen implementation and verification evidence."
 token_usage:
-  agent_runs: 1
-  input_tokens: 286172
-  journal_digest: "sha256:33d6077a5cf9056191edd50681e89ded6d5cdfbe981eeec4d652f0398f535780"
-  observed_agent_runs: 1
+  agent_runs: 6
+  input_tokens: 956291
+  journal_digest: "sha256:53ae3c9292126416b0b4c24babe9dcf70493d65a626564a804e5bb229e2f8604"
+  observed_agent_runs: 6
   observed_by: "agentplane"
-  output_tokens: 2915
-  reasoning_tokens: 858
+  output_tokens: 12440
+  reasoning_tokens: 2434
   schema_version: 1
   source: "supervisor_journal"
   state: "observed"
-  total_tokens: 289945
+  total_tokens: 971165
   unavailable_reason: null
-  updated_at: "2026-08-04T22:50:26.298Z"
-commit: null
+  updated_at: "2026-08-05T20:56:17.055Z"
+commit:
+  hash: "cdf1b65fce8bb1b2582734630c5938da85412072"
+  message: "🧪 M26FS0 task: record passing quality review"
 comments:
   -
     author: "CODER"
@@ -91,6 +93,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -234,8 +239,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified exact-SHA release evidence closeout and complete v0.7.3 prepublish gate at 0cb1a3f433e782c0a47785235faa869b72bfaefc."
+  -
+    type: "status"
+    at: "2026-08-05T20:56:17.055Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-05T20:54:21.607Z"
+doc_updated_at: "2026-08-05T20:56:17.081Z"
 doc_updated_by: "CODER"
 description: "Complete the user-approved AgentPlane 0.7.3 release closeout: stabilize hosted release-tail regressions; harden exact-SHA qualification, provider replay, matched latency, and token-efficiency evidence; align compatibility, documentation, and release artifacts; validate task, context, evaluator, and upgrade flows; audit live GitHub Issues and PRs; publish exact merged artifacts; prove postpublish state; and safely clean obsolete merged branches."
 sections:
@@ -904,8 +916,8 @@ sections:
       Resolution: The fixture now sources CODEX_REPLAY_BINARY from the reviewed runtime module; the focused hardening file passed 11/11 and the complete release:prepublish rerun passed.
 extensions:
   implementation_commit:
-    hash: "77e66477692a3ff42cc6321d49b87b0c6d35bf9f"
-    message: "🧪 M26FS0 release: preserve provider evidence provenance"
+    hash: "0cb1a3f433e782c0a47785235faa869b72bfaefc"
+    message: "🛡️ M26FS0 code: correlate exact-SHA release CI"
   workflow_route_baseline:
     start_head_sha: "9d0e0089dd83487defa8950d787a5fa67f53db10"
     version: 1
@@ -1592,12 +1604,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `observed`
-- Completeness: `1/1` agent runs
-- Input tokens: `286172`
-- Output tokens: `2915`
-- Reasoning tokens: `858`
-- Total tokens: `289945`
+- Completeness: `6/6` agent runs
+- Input tokens: `956291`
+- Output tokens: `12440`
+- Reasoning tokens: `2434`
+- Total tokens: `971165`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:33d6077a5cf9056191edd50681e89ded6d5cdfbe981eeec4d652f0398f535780`
+- Journal digest: `sha256:53ae3c9292126416b0b4c24babe9dcf70493d65a626564a804e5bb229e2f8604`
 - Unavailable reason: `none`
-- Updated at: `2026-08-04T22:50:26.298Z`
+- Updated at: `2026-08-05T20:56:17.055Z`
