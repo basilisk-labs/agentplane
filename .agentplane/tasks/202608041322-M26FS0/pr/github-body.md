@@ -10,17 +10,19 @@ Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created re
 
 ## Scope
 
-- In scope: Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release.
-- Out of scope: unrelated refactors not required for "Stabilize hosted release evidence closeout".
+- In scope: the complete user-approved 0.7.3 corrective release surface on this branch: hosted release-evidence routing; exact-SHA qualification and dependency provenance; 50-run/55-episode Codex replay; matched cold/warm latency; token-efficiency and quality metrics; compatibility baselines; required documentation and release artwork; task/context/evaluator/upgrade regressions; live GitHub Issue/PR audit; exact-SHA publication proof; and ownership-safe cleanup of obsolete merged branches.
+- Approval provenance: the user explicitly expanded the release request to full e2e effectiveness and quality validation, context generation, all task-management variants, token accounting, GitHub Issue/PR fixes, and branch cleanup, and granted continuing authority without repeated approval prompts.
+- Pre-merge quality boundary: engineering quality covers declared checks and frozen evidence for the current semantic implementation. Hosted npm, tag, GitHub Release, evidence-PR merge, and terminal routing are postpublish closeout obligations and cannot be evidence for a gate that must pass before PR publication.
+- Out of scope: unrelated product features, unowned or unmerged branch deletion, weakening security or replay isolation, and changes to absent agentplane-loops history.
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Matched CLI latency gate is not repeatable under transient host contention; aggregate medians pass
-while command-level p95 failures change between runs.
+Pre-merge engineering quality is verified for implementation 26db6758 and production subject
+275bdfa3 with explicit command-level evidence; postpublish closeout remains a later release phase.
 ```
 - Canonical workflow state lives in the task README.
 

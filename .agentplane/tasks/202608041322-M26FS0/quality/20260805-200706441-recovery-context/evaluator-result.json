@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen packet does not contain deterministic results for any of the four mandatory pre-merge checks.",
+      "broken_invariant": "The task requires command-level evidence for every Verify Step, while the frozen observed-checks artifact has empty verification_records, runner_history, and runtime_evidence arrays and provides only a narrative TESTER note.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/fabcfc4055e1c41f2e7b8929adee7c948f0731840d2d51f7b20a70553da26403.json",
+          "sha256": "sha256:fabcfc4055e1c41f2e7b8929adee7c948f0731840d2d51f7b20a70553da26403",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/README.md",
+          "sha256": "sha256:a0cda09e23432c0d590acd2aa1cff076f9130a6029d06919c69083fed48e8a07",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Frozen passing result for the focused release-evidence route regression, including evidence-only terminal preservation and implementation-change staleness.",
+    "Frozen passing result for the publish-workflow contract, including exact closure-SHA validation and fail-closed check-publication and merge paths.",
+    "Frozen passing results for bun run ci:contract and bun run release:prepublish at evaluated SHA 26db675800b8d2cf3e6b7160a3c744d82620f232.",
+    "Frozen exact-SHA qualification result for subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca showing zero blocking gates, 50/50 runs, 55/55 provider episodes without retry, and passing matched-latency and efficiency gates."
+  ],
+  "hidden_assumptions": [
+    "The TESTER narrative note accurately summarizes commands that ran at the evaluated SHA despite the absence of frozen command results.",
+    "The tracked qualification evidence referenced in task prose corresponds exactly to the declared semantic subject and remained unchanged when the evaluator packet was frozen."
+  ],
+  "recovery_context": "Regenerate the frozen evaluator packet with deterministic command-level results for all four declared pre-merge checks at evaluated SHA 26db675800b8d2cf3e6b7160a3c744d82620f232, including the exact-subject qualification evidence.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

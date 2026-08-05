@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "scope-drift",
+      "severity": "high",
+      "summary": "The evaluated patch expands far beyond the two declared release-tail repairs, including qualification, efficiency replay, latency, documentation artwork, compatibility baselines, and unrelated task artifacts.",
+      "broken_invariant": "The task excludes unrelated refactors, and DoD requires material drift to be explicitly re-approved when files outside approved scope are modified or scope expands by more than five files.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/c362c8e4a3270cc827ba7989523220b39597274d4576c021d7e6678288b962ab.patch",
+          "sha256": "sha256:c362c8e4a3270cc827ba7989523220b39597274d4576c021d7e6678288b962ab"
+        },
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/README.md",
+          "sha256": "sha256:394e8aed5b7b49838794eef27a17bad014d7504268bbb22d2cb402abc18eb805",
+          "section": "Scope"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    },
+    {
+      "id": "verification-evidence-incomplete",
+      "severity": "high",
+      "summary": "The frozen observed-checks artifact contains only a narrative verification note; declared checks, verification records, runner history, and runtime evidence are empty, so the required focused regressions and release gates are not deterministically evidenced.",
+      "broken_invariant": "Code DoD requires every Verify Step to be executed and recorded with command, result, evidence, and scope; evaluator pass additionally requires positive, negative, and concurrency-sensitive verification evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/5237e6a69749423e3d7440fadf5b6e4fb3124283b34cdeb2a52ef091f90a43bc.json",
+          "sha256": "sha256:5237e6a69749423e3d7440fadf5b6e4fb3124283b34cdeb2a52ef091f90a43bc"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/README.md",
+          "sha256": "sha256:394e8aed5b7b49838794eef27a17bad014d7504268bbb22d2cb402abc18eb805",
+          "section": "Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "hosted-closeout-unproven",
+      "severity": "medium",
+      "summary": "The frozen packet explicitly leaves post-merge publication and terminal-route checks outstanding, so it does not prove that npm packages, tag, GitHub Release, autonomous evidence-PR merge, and final terminal task state satisfy acceptance criteria.",
+      "broken_invariant": "The approved Verify Steps require hosted post-merge checks and recorded release evidence before release closeout can pass.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/README.md",
+          "sha256": "sha256:394e8aed5b7b49838794eef27a17bad014d7504268bbb22d2cb402abc18eb805",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/5237e6a69749423e3d7440fadf5b6e4fb3124283b34cdeb2a52ef091f90a43bc.json",
+          "sha256": "sha256:5237e6a69749423e3d7440fadf5b6e4fb3124283b34cdeb2a52ef091f90a43bc"
+        },
+        {
+          "path": ".agentplane/policy/workflow.release.md",
+          "sha256": "sha256:94a0fcabe77fef35ff6f32edea35ce0da7754a9f7c740a148c3d24a1b96dfa8d",
+          "section": "Required sequence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Deterministic recorded execution of the focused route regression covering evidence-only README advancement and stale verification after a real implementation change.",
+    "Deterministic recorded execution of the publish-workflow contract covering exact closure SHA validation, failed Core CI, failed check publication, and merge timeout or closure without merge.",
+    "Recorded ci:contract and release:prepublish command results tied to evaluated SHA 26db675800b8d2cf3e6b7160a3c744d82620f232.",
+    "Hosted post-merge verification for all three npm packages at 0.7.3, exact tag and GitHub Release SHA, clean install, postpublish audit, autonomous evidence-PR merge, and terminal.done routing after pulling main."
+  ],
+  "hidden_assumptions": [
+    "The narrative TESTER note accurately represents checks whose command-level records are absent from the frozen packet.",
+    "The extensive qualification, replay, latency, baseline, artwork, and unrelated task-artifact changes were approved despite no such expansion appearing in the frozen task scope.",
+    "A pre-merge evaluator pass would be sufficient even though acceptance criteria explicitly require post-merge and post-publish evidence."
+  ],
+  "recovery_context": "Separate or explicitly re-approve the material scope expansion, then freeze deterministic command-level evidence for Verify Steps 1–3 at the evaluated SHA and complete Verify Steps 4–5 after hosted merge and publication before requesting another evaluation."
+}
