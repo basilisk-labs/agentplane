@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -26,36 +26,36 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-05T20:09:36.623Z"
+  updated_at: "2026-08-05T20:13:02.703Z"
   updated_by: "TESTER"
-  note: "Fresh deterministic verification after committing scope, blueprint, prior evaluator records, and command evidence; semantic implementation remains 26db6758 and production subject 275bdfa3."
+  note: "Deterministic pre-merge verification recorded in the canonical four-field format for frozen evaluator ingestion."
   attempts: 0
 quality_review:
   state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-05T20:07:45.554Z"
+  updated_at: "2026-08-05T20:11:27.953Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned blocked with 1 typed finding(s)."
   evaluated_sha: "26db675800b8d2cf3e6b7160a3c744d82620f232"
   blueprint_digest: "662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712"
   evidence_refs:
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-200706441-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-200706441-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/1ef7974ef6d618be6a9917fbd0ab61fa9663e0154c64fa69f904b610ae3ab8dc.md"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-200706441-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-200706441-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-200706441-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-200706441-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201055009-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201055009-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/b929c52e75f8634517475d75a62e2a30ca7b5cd12838cc136ec1c0a3f0daf2d7.md"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201055009-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201055009-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201055009-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201055009-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608041322-M26FS0/README.md"
     - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/c362c8e4a3270cc827ba7989523220b39597274d4576c021d7e6678288b962ab.patch"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/fabcfc4055e1c41f2e7b8929adee7c948f0731840d2d51f7b20a70553da26403.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/1fab3789f01e6289e7c27f5f9241bfe9ca63619ef29bbd698681ea1d6b18d601.json"
     - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/1040507c37113f25a2f8f70caed507ccb1b07b151e39f4743ccb0f92e1baa877.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "The frozen packet does not contain deterministic results for any of the four mandatory pre-merge checks."
+    - "The frozen packet contains no deterministic execution results for any of the four mandatory pre-merge checks."
   recovery_reason: "deterministic_evidence_gap"
 token_usage:
   agent_runs: 1
@@ -222,8 +222,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Fresh deterministic verification after committing scope, blueprint, prior evaluator records, and command evidence; semantic implementation remains 26db6758 and production subject 275bdfa3."
+  -
+    type: "verify"
+    at: "2026-08-05T20:13:02.703Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Deterministic pre-merge verification recorded in the canonical four-field format for frozen evaluator ingestion."
 doc_version: 3
-doc_updated_at: "2026-08-05T20:09:37.838Z"
+doc_updated_at: "2026-08-05T20:13:03.946Z"
 doc_updated_by: "CODER"
 description: "Complete the user-approved AgentPlane 0.7.3 release closeout: stabilize hosted release-tail regressions; harden exact-SHA qualification, provider replay, matched latency, and token-efficiency evidence; align compatibility, documentation, and release artifacts; validate task, context, evaluator, and upgrade flows; audit live GitHub Issues and PRs; publish exact merged artifacts; prove postpublish state; and safely clean obsolete merged branches."
 sections:
@@ -743,6 +749,56 @@ sections:
     Result: pass (ready; 18/19; 0 blocking; 50/50 runs; 55/55 provider episodes; no retry; 31.0% token reduction; matched latency pass)
     Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json | .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/report.json
     Scope: Verify Step 4; production subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca; task-only evidence commit 9eb341209026 preserves the reviewed target
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+    - old_digest: 662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712
+    - current_digest: 662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608041322-M26FS0
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-05T20:13:02.703Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Deterministic pre-merge verification recorded in the canonical four-field format for frozen evaluator ingestion.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-05T20:11:27.974Z, excerpt_hash=sha256:6309a3d4c9984f701d73ba218bd1258e0a6e58df309358d98999afb057472f02
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.release-evidence-route.test.ts
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json
+    Scope: Verify Step 1; 1 file and 1 test passed at semantic implementation 26db675800b8d2cf3e6b7160a3c744d82620f232
+
+    Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json
+    Scope: Verify Step 2; 1 file and 9 positive and fail-closed tests passed at semantic implementation 26db675800b8d2cf3e6b7160a3c744d82620f232
+
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json
+    Scope: Verify Step 3; ci:contract, 101/101 release-ci groups, workflow 50/50, significant 204/204, release-critical 16/16, tarball install, and 8/8 migrations passed at semantic implementation 26db675800b8d2cf3e6b7160a3c744d82620f232
+
+    Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --provider-evidence-subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca --subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json | .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/report.json
+    Scope: Verify Step 4; ready with 0 blocking, 50/50 runs, 55/55 provider episodes without retry, 31.0% token reduction, and matched latency pass for production subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca
 
     BlueprintSnapshotRef:
     - state: current
@@ -1325,6 +1381,56 @@ Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode 
 Result: pass (ready; 18/19; 0 blocking; 50/50 runs; 55/55 provider episodes; no retry; 31.0% token reduction; matched latency pass)
 Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json | .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/report.json
 Scope: Verify Step 4; production subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca; task-only evidence commit 9eb341209026 preserves the reviewed target
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+- old_digest: 662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712
+- current_digest: 662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608041322-M26FS0
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-05T20:13:02.703Z — VERIFY — ok
+
+By: TESTER
+
+Note: Deterministic pre-merge verification recorded in the canonical four-field format for frozen evaluator ingestion.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-05T20:11:27.974Z, excerpt_hash=sha256:6309a3d4c9984f701d73ba218bd1258e0a6e58df309358d98999afb057472f02
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.release-evidence-route.test.ts
+Result: pass
+Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json
+Scope: Verify Step 1; 1 file and 1 test passed at semantic implementation 26db675800b8d2cf3e6b7160a3c744d82620f232
+
+Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+Result: pass
+Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json
+Scope: Verify Step 2; 1 file and 9 positive and fail-closed tests passed at semantic implementation 26db675800b8d2cf3e6b7160a3c744d82620f232
+
+Command: bun run release:prepublish
+Result: pass
+Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json
+Scope: Verify Step 3; ci:contract, 101/101 release-ci groups, workflow 50/50, significant 204/204, release-critical 16/16, tarball install, and 8/8 migrations passed at semantic implementation 26db675800b8d2cf3e6b7160a3c744d82620f232
+
+Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --provider-evidence-subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca --subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca
+Result: pass
+Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json | .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/report.json
+Scope: Verify Step 4; ready with 0 blocking, 50/50 runs, 55/55 provider episodes without retry, 31.0% token reduction, and matched latency pass for production subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca
 
 BlueprintSnapshotRef:
 - state: current

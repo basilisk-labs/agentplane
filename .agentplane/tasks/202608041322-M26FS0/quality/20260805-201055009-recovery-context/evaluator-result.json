@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The frozen packet contains no deterministic execution results for any of the four mandatory pre-merge checks.",
+      "broken_invariant": "Pass requires frozen verification evidence covering the declared positive, negative, concurrency-sensitive, contract, prepublish, and exact-SHA qualification paths; a TESTER state and narrative note without verification records, runner history, or runtime evidence are insufficient.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/1fab3789f01e6289e7c27f5f9241bfe9ca63619ef29bbd698681ea1d6b18d601.json",
+          "sha256": "sha256:1fab3789f01e6289e7c27f5f9241bfe9ca63619ef29bbd698681ea1d6b18d601",
+          "section": "verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Frozen result for the focused release-evidence route regression.",
+    "Frozen result for the publish-workflow contract regression.",
+    "Frozen results for ci:contract and release:prepublish at evaluated SHA 26db675800b8d2cf3e6b7160a3c744d82620f232.",
+    "Frozen exact-SHA qualification result for subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca, including 50/50 runs, 55/55 provider episodes, matched-latency, and efficiency gates."
+  ],
+  "hidden_assumptions": [
+    "The TESTER verification note accurately summarizes successful deterministic runs and exact-SHA provenance despite the frozen observed-checks artifact containing no command-level records or runtime evidence."
+  ],
+  "recovery_context": "Regenerate the frozen evaluator packet with deterministic command-level results for all four mandatory pre-merge checks at the declared evaluated SHA and qualification subject.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

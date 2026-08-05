@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608041322-M26FS0-903a24f3ce091b16d6600b61",
+  "task_id": "202608041322-M26FS0",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the frozen evaluator packet with deterministic command-level results for all four mandatory pre-merge checks at the declared evaluated SHA and qualification subject.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The frozen packet contains no deterministic execution results for any of the four mandatory pre-merge checks.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/1fab3789f01e6289e7c27f5f9241bfe9ca63619ef29bbd698681ea1d6b18d601.json",
+          "sha256": "sha256:1fab3789f01e6289e7c27f5f9241bfe9ca63619ef29bbd698681ea1d6b18d601",
+          "section": "verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201055009-recovery-context/evaluator-result.json"
+}
