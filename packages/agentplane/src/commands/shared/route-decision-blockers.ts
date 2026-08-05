@@ -473,6 +473,9 @@ export async function deriveBlockers(opts: {
   }
   if (opts.workflowMode === "branch_pr") {
     const taskIsDoing = String(opts.task.status).toUpperCase() === "DOING";
+    const verificationRequired = blockers.some(
+      (blocker) => blocker.code === "verification_required",
+    );
     let implementationReworkRequired =
       taskIsDoing && opts.task.verification?.state === "needs_rework";
     if (
@@ -540,7 +543,12 @@ export async function deriveBlockers(opts: {
         "implementation PR is merged but close-tail is missing",
       );
     }
-    if (opts.task.verification?.state === "ok" && taskIsDoing && !implementationReworkRequired) {
+    if (
+      opts.task.verification?.state === "ok" &&
+      taskIsDoing &&
+      !implementationReworkRequired &&
+      !verificationRequired
+    ) {
       const review = opts.task.quality_review;
       const headSha = opts.prFlow?.branch.headSha ?? opts.resume.head_sha;
       if (review) {
