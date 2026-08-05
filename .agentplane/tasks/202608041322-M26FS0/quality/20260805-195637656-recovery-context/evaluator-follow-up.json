@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608041322-M26FS0-14ba2d57bc13c4a851b2bebd",
+  "task_id": "202608041322-M26FS0",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Separate or explicitly re-approve the material scope expansion, then freeze deterministic command-level evidence for Verify Steps 1–3 at the evaluated SHA and complete Verify Steps 4–5 after hosted merge and publication before requesting another evaluation.",
+  "findings": [
+    {
+      "id": "scope-drift",
+      "summary": "The evaluated patch expands far beyond the two declared release-tail repairs, including qualification, efficiency replay, latency, documentation artwork, compatibility baselines, and unrelated task artifacts.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/c362c8e4a3270cc827ba7989523220b39597274d4576c021d7e6678288b962ab.patch",
+          "sha256": "sha256:c362c8e4a3270cc827ba7989523220b39597274d4576c021d7e6678288b962ab"
+        },
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/README.md",
+          "sha256": "sha256:394e8aed5b7b49838794eef27a17bad014d7504268bbb22d2cb402abc18eb805",
+          "section": "Scope"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    },
+    {
+      "id": "verification-evidence-incomplete",
+      "summary": "The frozen observed-checks artifact contains only a narrative verification note; declared checks, verification records, runner history, and runtime evidence are empty, so the required focused regressions and release gates are not deterministically evidenced.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/5237e6a69749423e3d7440fadf5b6e4fb3124283b34cdeb2a52ef091f90a43bc.json",
+          "sha256": "sha256:5237e6a69749423e3d7440fadf5b6e4fb3124283b34cdeb2a52ef091f90a43bc"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/README.md",
+          "sha256": "sha256:394e8aed5b7b49838794eef27a17bad014d7504268bbb22d2cb402abc18eb805",
+          "section": "Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "hosted-closeout-unproven",
+      "summary": "The frozen packet explicitly leaves post-merge publication and terminal-route checks outstanding, so it does not prove that npm packages, tag, GitHub Release, autonomous evidence-PR merge, and final terminal task state satisfy acceptance criteria.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/README.md",
+          "sha256": "sha256:394e8aed5b7b49838794eef27a17bad014d7504268bbb22d2cb402abc18eb805",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/5237e6a69749423e3d7440fadf5b6e4fb3124283b34cdeb2a52ef091f90a43bc.json",
+          "sha256": "sha256:5237e6a69749423e3d7440fadf5b6e4fb3124283b34cdeb2a52ef091f90a43bc"
+        },
+        {
+          "path": ".agentplane/policy/workflow.release.md",
+          "sha256": "sha256:94a0fcabe77fef35ff6f32edea35ce0da7754a9f7c740a148c3d24a1b96dfa8d",
+          "section": "Required sequence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608041322-M26FS0/quality/20260805-195637656-recovery-context/evaluator-result.json"
+}

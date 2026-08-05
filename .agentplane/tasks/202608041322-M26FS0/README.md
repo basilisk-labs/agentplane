@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -14,46 +14,49 @@ tags:
   - "release"
 task_kind: "release"
 mutation_scope: "release"
-verify: []
+verify:
+  - "bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.release-evidence-route.test.ts"
+  - "bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+  - "bun run ci:contract && bun run release:prepublish"
+  - "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --provider-evidence-subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca --subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca"
 plan_approval:
   state: "approved"
-  updated_at: "2026-08-04T13:24:02.060Z"
+  updated_at: "2026-08-05T20:02:35.695Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-05T16:19:41.965Z"
+  state: "ok"
+  updated_at: "2026-08-05T20:06:22.732Z"
   updated_by: "TESTER"
-  note: "Matched CLI latency gate is not repeatable under transient host contention; aggregate medians pass while command-level p95 failures change between runs."
-  attempts: 1
+  note: "Pre-merge engineering quality is verified for implementation 26db6758 and production subject 275bdfa3 with explicit command-level evidence; postpublish closeout remains a later release phase."
+  attempts: 0
 quality_review:
-  state: "pass"
+  state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-04T23:38:21.846Z"
+  updated_at: "2026-08-05T20:07:45.554Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 4 typed finding(s)."
-  evaluated_sha: "74cb0b80ae7a8447032d7b88bba607be9002f872"
-  blueprint_digest: "3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "26db675800b8d2cf3e6b7160a3c744d82620f232"
+  blueprint_digest: "662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712"
   evidence_refs:
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-233821379-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-233821379-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/f7cceb5300b20c85e77c44ac5822b3cabeed81214c78425a883d89b180367c81.md"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-233821379-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-233821379-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260804-233821379-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-200706441-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-200706441-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/1ef7974ef6d618be6a9917fbd0ab61fa9663e0154c64fa69f904b610ae3ab8dc.md"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-200706441-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-200706441-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-200706441-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-200706441-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608041322-M26FS0/README.md"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/b4f447b54c6e2f6f2fa1bd6fa5dcbc02e8e7d65745d81808c97aadc5b55d8431.patch"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/978619ab2e22ac0436810210fbae4a73942fa6345ce4e92bee646a0e08bf35e3.json"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/57c0cb8505a309b1962f197839c8b5eb2908748355f96e19842360232b470d88.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/c362c8e4a3270cc827ba7989523220b39597274d4576c021d7e6678288b962ab.patch"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/fabcfc4055e1c41f2e7b8929adee7c948f0731840d2d51f7b20a70553da26403.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/1040507c37113f25a2f8f70caed507ccb1b07b151e39f4743ccb0f92e1baa877.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "Hosted release-evidence routing preserves accepted verification metadata and still invalidates verification on real implementation changes."
-    - "Publish workflow contracts enforce exact closure SHA checks and a GitHub Actions-owned PR verification context before evidence merge."
-    - "Full qualification is release-ready with 18/19 scenarios passed and zero blockers; the sole absolute CLI latency miss is advisory because matched CLI and supervisor latency gates passed."
-    - "Provider qualification shows 29.12 percent token reduction, verified success 8 to 17, scope violations 17 to 5, and golden mismatches 33 to 14 across 50 runs and 55 episodes."
+    - "The frozen packet does not contain deterministic results for any of the four mandatory pre-merge checks."
+  recovery_reason: "deterministic_evidence_gap"
 token_usage:
   agent_runs: 1
   input_tokens: 286172
@@ -201,25 +204,40 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Matched CLI latency gate is not repeatable under transient host contention; aggregate medians pass while command-level p95 failures change between runs."
+  -
+    type: "verify"
+    at: "2026-08-05T19:55:33.320Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified semantic subject 275bdfa32e6a with tracked evidence at .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3: qualification ready (18/19 passed, 0 blocking), provider replay 50/50 runs and 55/55 episodes without retry, total tokens reduced 31.0%, verified_success 8→20, scope_violation 17→5, golden mismatch 33→10, matched CLI latency improved 9.7% cold and 9.6% warm. Full bun run release:prepublish passed after test-only contract repair 26db675800b8: release-ci-base 101/101 chunks, workflow coverage 50/50, significant coverage 204/204, release-critical 16/16. Post-merge npm/tag/release checks remain lifecycle evidence, not implementation blockers."
+  -
+    type: "verify"
+    at: "2026-08-05T20:06:22.732Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Pre-merge engineering quality is verified for implementation 26db6758 and production subject 275bdfa3 with explicit command-level evidence; postpublish closeout remains a later release phase."
 doc_version: 3
-doc_updated_at: "2026-08-05T16:19:43.399Z"
+doc_updated_at: "2026-08-05T20:07:45.573Z"
 doc_updated_by: "CODER"
-description: "Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release."
+description: "Complete the user-approved AgentPlane 0.7.3 release closeout: stabilize hosted release-tail regressions; harden exact-SHA qualification, provider replay, matched latency, and token-efficiency evidence; align compatibility, documentation, and release artifacts; validate task, context, evaluator, and upgrade flows; audit live GitHub Issues and PRs; publish exact merged artifacts; prove postpublish state; and safely clean obsolete merged branches."
 sections:
   Summary: |-
     Stabilize hosted release evidence closeout
 
     Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release.
   Scope: |-
-    - In scope: Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release.
-    - Out of scope: unrelated refactors not required for "Stabilize hosted release evidence closeout".
-  Plan: "Patch-release plan: version=0.7.3, tag=v0.7.3. 1. Preserve the v0.7.2 live evidence for both release-tail failures. 2. Make release-evidence verification validate the exact closure SHA, wait for that Core CI run, publish a GitHub Actions-owned required PR verification check, and fail closed before merge automation. 3. Keep a fully closed DONE task terminal across a task-evidence-only README advance while preserving stale-verification blocking for real implementation changes. 4. Add focused route and publish-workflow regressions. 5. Run targeted tests, ci:contract, release:prepublish, and independent evaluator. 6. Merge through branch_pr, publish v0.7.3 for the exact merged SHA, and prove that the evidence PR merges without reopen/admin repair and the release task route remains terminal. Stop on product drift outside these release-tail repairs, active incidents, failed required checks, or version/tag drift."
+    - In scope: the complete user-approved 0.7.3 corrective release surface on this branch: hosted release-evidence routing; exact-SHA qualification and dependency provenance; 50-run/55-episode Codex replay; matched cold/warm latency; token-efficiency and quality metrics; compatibility baselines; required documentation and release artwork; task/context/evaluator/upgrade regressions; live GitHub Issue/PR audit; exact-SHA publication proof; and ownership-safe cleanup of obsolete merged branches.
+    - Approval provenance: the user explicitly expanded the release request to full e2e effectiveness and quality validation, context generation, all task-management variants, token accounting, GitHub Issue/PR fixes, and branch cleanup, and granted continuing authority without repeated approval prompts.
+    - Pre-merge quality boundary: engineering quality covers declared checks and frozen evidence for the current semantic implementation. Hosted npm, tag, GitHub Release, evidence-PR merge, and terminal routing are postpublish closeout obligations and cannot be evidence for a gate that must pass before PR publication.
+    - Out of scope: unrelated product features, unowned or unmerged branch deletion, weakening security or replay isolation, and changes to absent agentplane-loops history.
+  Plan: "User-approved 0.7.3 corrective release plan. 1. Preserve and fix hosted release-tail behavior: exact closure-SHA validation, GitHub Actions-owned PR verification, fail-closed merge automation, and terminal DONE routing across evidence-only advances. 2. Complete the approved effectiveness qualification: exact semantic subject, reproducible dependency/runtime provenance, 50 runs and 55 provider episodes without retry, matched cold/warm latency, token use, verified-success, scope-violation, and golden-mismatch evidence. 3. Align required compatibility baselines, documentation/release artifacts, TypeScript 7 typecheck with the retained compatibility compiler boundary, task token accounting, context assimilation, evaluator evidence, and upgrade/install flows. 4. Freeze command-level evidence for focused positive, negative, race/concurrency, ci:contract, release:prepublish, and qualification checks; obtain an independent pre-merge EVALUATOR verdict for the current semantic head. 5. Publish PR #4778 through protected main and wait for hosted checks. 6. Publish v0.7.3 from the exact merged SHA; verify all three npm packages, tag, GitHub Release, clean install, postpublish audit, evidence-PR merge, and terminal.done after pulling main. 7. Re-audit live Issues/PRs and delete only branches proven obsolete, merged, and release-owned; report agentplane-loops as already absent. Stop on production-code drift after qualified SHA, active release incident, failed required check, version/tag/SHA mismatch, missing provider provenance, or ambiguous branch ownership."
   Verify Steps: |-
-    1. Run the focused route regression that closes a branch_pr task, advances main with only its hosted release-evidence README, and queries next-action. Expected: the task remains terminal.done; a real implementation commit still makes verification stale.
-    2. Run the publish-workflow contract tests. Expected: release evidence CI validates the exact closure SHA, waits for success, emits a GitHub Actions-owned PR verification check, and does not silently continue after a failed evidence gate.
-    3. Run bun run ci:contract and bun run release:prepublish. Expected: all blocking contracts, release checks, release CI suites, coverage guards, and release-critical tests pass.
-    4. After merge and publish, verify npm latest for all three packages is 0.7.3, tag and GitHub Release v0.7.3 point to the exact release SHA, clean install and postpublish audit pass, and the release-evidence PR merges without reopen/admin repair.
-    5. Pull the evidence merge to main and query next-action for this task. Expected: status is DONE, route is terminal.done, hosted publish evidence is present, token provenance is explicit, and no merged task branch/worktree remains.
+    Pre-merge engineering quality gate (must pass before PR publication):
+    1. Run the focused release-evidence route regression. Expected: an evidence-only hosted README advance preserves terminal.done, while a real implementation change makes verification stale.
+    2. Run the publish-workflow contract. Expected: exact closure SHA validation, failed Core CI/check-publication/merge paths fail closed, and the GitHub Actions-owned PR verification context is emitted.
+    3. Run bun run ci:contract and bun run release:prepublish at the evaluated SHA. Expected: all blocking contracts, 101 release-ci groups, workflow/significant coverage, release-critical tests, tarball install, and migration matrix pass.
+    4. Validate the tracked exact-SHA qualification evidence for semantic subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca. Expected: ready, zero blocking gates, 50/50 runs, 55/55 provider episodes without retry, and blocking matched-latency plus efficiency gates pass.
+    Boundary: these four checks are the EVALUATOR input for pre-merge quality. Hosted publication evidence is recorded after merge under Release Closeout and is required before final user handoff, not before PR publication.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-08-04T14:25:18.886Z — VERIFY — ok
@@ -609,6 +627,86 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-05T19:55:33.320Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified semantic subject 275bdfa32e6a with tracked evidence at .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3: qualification ready (18/19 passed, 0 blocking), provider replay 50/50 runs and 55/55 episodes without retry, total tokens reduced 31.0%, verified_success 8→20, scope_violation 17→5, golden mismatch 33→10, matched CLI latency improved 9.7% cold and 9.6% warm. Full bun run release:prepublish passed after test-only contract repair 26db675800b8: release-ci-base 101/101 chunks, workflow coverage 50/50, significant coverage 204/204, release-critical 16/16. Post-merge npm/tag/release checks remain lifecycle evidence, not implementation blockers.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-05T16:19:43.399Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+    - old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-05T20:06:22.732Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Pre-merge engineering quality is verified for implementation 26db6758 and production subject 275bdfa3 with explicit command-level evidence; postpublish closeout remains a later release phase.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-05T20:02:35.724Z, excerpt_hash=sha256:6309a3d4c9984f701d73ba218bd1258e0a6e58df309358d98999afb057472f02
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.release-evidence-route.test.ts
+    Result: pass (1 file, 1 test)
+    Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json
+    Scope: Verify Step 1 at implementation SHA 26db675800b8d2cf3e6b7160a3c744d82620f232
+
+    Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+    Result: pass (1 file, 9 tests; positive and fail-closed paths)
+    Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json
+    Scope: Verify Step 2 at implementation SHA 26db675800b8d2cf3e6b7160a3c744d82620f232
+
+    Command: bun run release:prepublish
+    Result: pass (ci:contract; 101/101 release-ci groups; workflow 50/50; significant 204/204; release-critical 16/16; tarball install; 8/8 migrations)
+    Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json
+    Scope: Verify Step 3 at implementation SHA 26db675800b8d2cf3e6b7160a3c744d82620f232
+
+    Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --provider-evidence-subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca --subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca
+    Result: pass (ready; 18/19; 0 blocking; 50/50 runs; 55/55 provider episodes; no retry; 31.0% token reduction; matched latency pass)
+    Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json | .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/report.json
+    Scope: Verify Step 4 for production subject SHA 275bdfa32e6a11a99d31bbf91180d27d4a294bca; later commits contain task evidence or tests only
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+    - old_digest: 662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712
+    - current_digest: 662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -632,6 +730,10 @@ sections:
     - Observation: At 55b96529, matched-cli-latency failed cold.task_list, cold.preflight_quick, and warm.task_list after an earlier strict standalone pass on the same host; no provider episode started.
       Impact: A one-invocation logical sample can classify a release by unrelated host spikes, so the current release evidence is not reliable enough for closeout.
       Resolution: Use multiple invocations per logical sample with balanced order and median aggregation, preserving 20 logical samples and the existing median/p95 thresholds; then rerun exact qualification.
+
+    - Observation: The first full prepublish run exposed one offline RF-04 hardening fixture missing the required AGENTPLANE_RF04_REPLAY_CODEX_BINARY contract key.
+      Impact: The fixture could reject the exact-anchor adapter-failure test before exercising the mocked offline episode; production replay validation and the 50/55 provider qualification were unaffected.
+      Resolution: The fixture now sources CODEX_REPLAY_BINARY from the reviewed runtime module; the focused hardening file passed 11/11 and the complete release:prepublish rerun passed.
 extensions:
   implementation_commit:
     hash: "77e66477692a3ff42cc6321d49b87b0c6d35bf9f"
@@ -649,20 +751,23 @@ Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created re
 
 ## Scope
 
-- In scope: Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release.
-- Out of scope: unrelated refactors not required for "Stabilize hosted release evidence closeout".
+- In scope: the complete user-approved 0.7.3 corrective release surface on this branch: hosted release-evidence routing; exact-SHA qualification and dependency provenance; 50-run/55-episode Codex replay; matched cold/warm latency; token-efficiency and quality metrics; compatibility baselines; required documentation and release artwork; task/context/evaluator/upgrade regressions; live GitHub Issue/PR audit; exact-SHA publication proof; and ownership-safe cleanup of obsolete merged branches.
+- Approval provenance: the user explicitly expanded the release request to full e2e effectiveness and quality validation, context generation, all task-management variants, token accounting, GitHub Issue/PR fixes, and branch cleanup, and granted continuing authority without repeated approval prompts.
+- Pre-merge quality boundary: engineering quality covers declared checks and frozen evidence for the current semantic implementation. Hosted npm, tag, GitHub Release, evidence-PR merge, and terminal routing are postpublish closeout obligations and cannot be evidence for a gate that must pass before PR publication.
+- Out of scope: unrelated product features, unowned or unmerged branch deletion, weakening security or replay isolation, and changes to absent agentplane-loops history.
 
 ## Plan
 
-Patch-release plan: version=0.7.3, tag=v0.7.3. 1. Preserve the v0.7.2 live evidence for both release-tail failures. 2. Make release-evidence verification validate the exact closure SHA, wait for that Core CI run, publish a GitHub Actions-owned required PR verification check, and fail closed before merge automation. 3. Keep a fully closed DONE task terminal across a task-evidence-only README advance while preserving stale-verification blocking for real implementation changes. 4. Add focused route and publish-workflow regressions. 5. Run targeted tests, ci:contract, release:prepublish, and independent evaluator. 6. Merge through branch_pr, publish v0.7.3 for the exact merged SHA, and prove that the evidence PR merges without reopen/admin repair and the release task route remains terminal. Stop on product drift outside these release-tail repairs, active incidents, failed required checks, or version/tag drift.
+User-approved 0.7.3 corrective release plan. 1. Preserve and fix hosted release-tail behavior: exact closure-SHA validation, GitHub Actions-owned PR verification, fail-closed merge automation, and terminal DONE routing across evidence-only advances. 2. Complete the approved effectiveness qualification: exact semantic subject, reproducible dependency/runtime provenance, 50 runs and 55 provider episodes without retry, matched cold/warm latency, token use, verified-success, scope-violation, and golden-mismatch evidence. 3. Align required compatibility baselines, documentation/release artifacts, TypeScript 7 typecheck with the retained compatibility compiler boundary, task token accounting, context assimilation, evaluator evidence, and upgrade/install flows. 4. Freeze command-level evidence for focused positive, negative, race/concurrency, ci:contract, release:prepublish, and qualification checks; obtain an independent pre-merge EVALUATOR verdict for the current semantic head. 5. Publish PR #4778 through protected main and wait for hosted checks. 6. Publish v0.7.3 from the exact merged SHA; verify all three npm packages, tag, GitHub Release, clean install, postpublish audit, evidence-PR merge, and terminal.done after pulling main. 7. Re-audit live Issues/PRs and delete only branches proven obsolete, merged, and release-owned; report agentplane-loops as already absent. Stop on production-code drift after qualified SHA, active release incident, failed required check, version/tag/SHA mismatch, missing provider provenance, or ambiguous branch ownership.
 
 ## Verify Steps
 
-1. Run the focused route regression that closes a branch_pr task, advances main with only its hosted release-evidence README, and queries next-action. Expected: the task remains terminal.done; a real implementation commit still makes verification stale.
-2. Run the publish-workflow contract tests. Expected: release evidence CI validates the exact closure SHA, waits for success, emits a GitHub Actions-owned PR verification check, and does not silently continue after a failed evidence gate.
-3. Run bun run ci:contract and bun run release:prepublish. Expected: all blocking contracts, release checks, release CI suites, coverage guards, and release-critical tests pass.
-4. After merge and publish, verify npm latest for all three packages is 0.7.3, tag and GitHub Release v0.7.3 point to the exact release SHA, clean install and postpublish audit pass, and the release-evidence PR merges without reopen/admin repair.
-5. Pull the evidence merge to main and query next-action for this task. Expected: status is DONE, route is terminal.done, hosted publish evidence is present, token provenance is explicit, and no merged task branch/worktree remains.
+Pre-merge engineering quality gate (must pass before PR publication):
+1. Run the focused release-evidence route regression. Expected: an evidence-only hosted README advance preserves terminal.done, while a real implementation change makes verification stale.
+2. Run the publish-workflow contract. Expected: exact closure SHA validation, failed Core CI/check-publication/merge paths fail closed, and the GitHub Actions-owned PR verification context is emitted.
+3. Run bun run ci:contract and bun run release:prepublish at the evaluated SHA. Expected: all blocking contracts, 101 release-ci groups, workflow/significant coverage, release-critical tests, tarball install, and migration matrix pass.
+4. Validate the tracked exact-SHA qualification evidence for semantic subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca. Expected: ready, zero blocking gates, 50/50 runs, 55/55 provider episodes without retry, and blocking matched-latency plus efficiency gates pass.
+Boundary: these four checks are the EVALUATOR input for pre-merge quality. Hosted publication evidence is recorded after merge under Release Closeout and is required before final user handoff, not before PR publication.
 
 ## Verification
 
@@ -1054,6 +1159,86 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-05T19:55:33.320Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified semantic subject 275bdfa32e6a with tracked evidence at .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3: qualification ready (18/19 passed, 0 blocking), provider replay 50/50 runs and 55/55 episodes without retry, total tokens reduced 31.0%, verified_success 8→20, scope_violation 17→5, golden mismatch 33→10, matched CLI latency improved 9.7% cold and 9.6% warm. Full bun run release:prepublish passed after test-only contract repair 26db675800b8: release-ci-base 101/101 chunks, workflow coverage 50/50, significant coverage 204/204, release-critical 16/16. Post-merge npm/tag/release checks remain lifecycle evidence, not implementation blockers.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-05T16:19:43.399Z, excerpt_hash=sha256:58fcb1ec6db74ef7a19938f48e4d39814a73563824f3098db990c937dfe61550
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+- old_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- current_digest: 3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-05T20:06:22.732Z — VERIFY — ok
+
+By: TESTER
+
+Note: Pre-merge engineering quality is verified for implementation 26db6758 and production subject 275bdfa3 with explicit command-level evidence; postpublish closeout remains a later release phase.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-05T20:02:35.724Z, excerpt_hash=sha256:6309a3d4c9984f701d73ba218bd1258e0a6e58df309358d98999afb057472f02
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.release-evidence-route.test.ts
+Result: pass (1 file, 1 test)
+Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json
+Scope: Verify Step 1 at implementation SHA 26db675800b8d2cf3e6b7160a3c744d82620f232
+
+Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+Result: pass (1 file, 9 tests; positive and fail-closed paths)
+Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json
+Scope: Verify Step 2 at implementation SHA 26db675800b8d2cf3e6b7160a3c744d82620f232
+
+Command: bun run release:prepublish
+Result: pass (ci:contract; 101/101 release-ci groups; workflow 50/50; significant 204/204; release-critical 16/16; tarball install; 8/8 migrations)
+Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json
+Scope: Verify Step 3 at implementation SHA 26db675800b8d2cf3e6b7160a3c744d82620f232
+
+Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --provider-evidence-subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca --subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca
+Result: pass (ready; 18/19; 0 blocking; 50/50 runs; 55/55 provider episodes; no retry; 31.0% token reduction; matched latency pass)
+Evidence: .agentplane/cache/v0.7.3-premerge-26db6758.json | .agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/report.json
+Scope: Verify Step 4 for production subject SHA 275bdfa32e6a11a99d31bbf91180d27d4a294bca; later commits contain task evidence or tests only
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/blueprint/resolved-snapshot.json
+- old_digest: 662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712
+- current_digest: 662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608041322-M26FS0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1081,6 +1266,10 @@ DecisionContextRef:
 - Observation: At 55b96529, matched-cli-latency failed cold.task_list, cold.preflight_quick, and warm.task_list after an earlier strict standalone pass on the same host; no provider episode started.
   Impact: A one-invocation logical sample can classify a release by unrelated host spikes, so the current release evidence is not reliable enough for closeout.
   Resolution: Use multiple invocations per logical sample with balanced order and median aggregation, preserving 20 logical samples and the existing median/p95 thresholds; then rerun exact qualification.
+
+- Observation: The first full prepublish run exposed one offline RF-04 hardening fixture missing the required AGENTPLANE_RF04_REPLAY_CODEX_BINARY contract key.
+  Impact: The fixture could reject the exact-anchor adapter-failure test before exercising the mocked offline episode; production replay validation and the 50/55 provider qualification were unaffected.
+  Resolution: The fixture now sources CODEX_REPLAY_BINARY from the reviewed runtime module; the focused hardening file passed 11/11 and the complete release:prepublish rerun passed.
 
 ## Token Usage
 

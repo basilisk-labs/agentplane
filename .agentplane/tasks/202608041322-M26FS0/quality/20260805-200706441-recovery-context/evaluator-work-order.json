@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608041322-M26FS0-9be397510846fda6f6bc5f51",
+  "prepared_at": "2026-08-05T20:07:06.441Z",
+  "task": {
+    "id": "202608041322-M26FS0",
+    "revision": 32,
+    "objective": "Stabilize hosted release evidence closeout\n\nFix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release.",
+    "acceptance_criteria": [
+      "bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.release-evidence-route.test.ts",
+      "bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/release/publish-workflow-contract.test.ts",
+      "bun run ci:contract && bun run release:prepublish",
+      "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --provider-evidence-subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca --subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca",
+      "- In scope: the complete user-approved 0.7.3 corrective release surface on this branch: hosted release-evidence routing; exact-SHA qualification and dependency provenance; 50-run/55-episode Codex replay; matched cold/warm latency; token-efficiency and quality metrics; compatibility baselines; required documentation and release artwork; task/context/evaluator/upgrade regressions; live GitHub Issue/PR audit; exact-SHA publication proof; and ownership-safe cleanup of obsolete merged branches.\n- Approval provenance: the user explicitly expanded the release request to full e2e effectiveness and quality validation, context generation, all task-management variants, token accounting, GitHub Issue/PR fixes, and branch cleanup, and granted continuing authority without repeated approval prompts.\n- Pre-merge quality boundary: engineering quality covers declared checks and frozen evidence for the current semantic implementation. Hosted npm, tag, GitHub Release, evidence-PR merge, and terminal routing are postpublish closeout obligations and cannot be evidence for a gate that must pass before PR publication.\n- Out of scope: unrelated product features, unowned or unmerged branch deletion, weakening security or replay isolation, and changes to absent agentplane-loops history.",
+      "User-approved 0.7.3 corrective release plan. 1. Preserve and fix hosted release-tail behavior: exact closure-SHA validation, GitHub Actions-owned PR verification, fail-closed merge automation, and terminal DONE routing across evidence-only advances. 2. Complete the approved effectiveness qualification: exact semantic subject, reproducible dependency/runtime provenance, 50 runs and 55 provider episodes without retry, matched cold/warm latency, token use, verified-success, scope-violation, and golden-mismatch evidence. 3. Align required compatibility baselines, documentation/release artifacts, TypeScript 7 typecheck with the retained compatibility compiler boundary, task token accounting, context assimilation, evaluator evidence, and upgrade/install flows. 4. Freeze command-level evidence for focused positive, negative, race/concurrency, ci:contract, release:prepublish, and qualification checks; obtain an independent pre-merge EVALUATOR verdict for the current semantic head. 5. Publish PR #4778 through protected main and wait for hosted checks. 6. Publish v0.7.3 from the exact merged SHA; verify all three npm packages, tag, GitHub Release, clean install, postpublish audit, evidence-PR merge, and terminal.done after pulling main. 7. Re-audit live Issues/PRs and delete only branches proven obsolete, merged, and release-owned; report agentplane-loops as already absent. Stop on production-code drift after qualified SHA, active release incident, failed required check, version/tag/SHA mismatch, missing provider provenance, or ambiguous branch ownership.",
+      "Pre-merge engineering quality gate (must pass before PR publication):\n1. Run the focused release-evidence route regression. Expected: an evidence-only hosted README advance preserves terminal.done, while a real implementation change makes verification stale.\n2. Run the publish-workflow contract. Expected: exact closure SHA validation, failed Core CI/check-publication/merge paths fail closed, and the GitHub Actions-owned PR verification context is emitted.\n3. Run bun run ci:contract and bun run release:prepublish at the evaluated SHA. Expected: all blocking contracts, 101 release-ci groups, workflow/significant coverage, release-critical tests, tarball install, and migration matrix pass.\n4. Validate the tracked exact-SHA qualification evidence for semantic subject 275bdfa32e6a11a99d31bbf91180d27d4a294bca. Expected: ready, zero blocking gates, 50/50 runs, 55/55 provider episodes without retry, and blocking matched-latency plus efficiency gates pass.\nBoundary: these four checks are the EVALUATOR input for pre-merge quality. Hosted publication evidence is recorded after merge under Release Closeout and is required before final user handoff, not before PR publication."
+    ]
+  },
+  "evaluated_sha": "26db675800b8d2cf3e6b7160a3c744d82620f232",
+  "diff_base_sha": "9d0e0089dd83487defa8950d787a5fa67f53db10",
+  "blueprint_digest": "662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608041322-M26FS0/quality/20260805-200706441-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:60113e3519d17b8263abae0f4503301a159f07896d3549239134363b3f23e89c",
+    "prompt_path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/1ef7974ef6d618be6a9917fbd0ab61fa9663e0154c64fa69f904b610ae3ab8dc.md",
+    "result_schema_path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608041322-M26FS0/README.md",
+      "sha256": "sha256:a0cda09e23432c0d590acd2aa1cff076f9130a6029d06919c69083fed48e8a07",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/c362c8e4a3270cc827ba7989523220b39597274d4576c021d7e6678288b962ab.patch",
+      "sha256": "sha256:c362c8e4a3270cc827ba7989523220b39597274d4576c021d7e6678288b962ab",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/fabcfc4055e1c41f2e7b8929adee7c948f0731840d2d51f7b20a70553da26403.json",
+      "sha256": "sha256:fabcfc4055e1c41f2e7b8929adee7c948f0731840d2d51f7b20a70553da26403",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/1040507c37113f25a2f8f70caed507ccb1b07b151e39f4743ccb0f92e1baa877.json",
+      "sha256": "sha256:1040507c37113f25a2f8f70caed507ccb1b07b151e39f4743ccb0f92e1baa877",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:94a0fcabe77fef35ff6f32edea35ce0da7754a9f7c740a148c3d24a1b96dfa8d",
+      "required": true
+    }
+  ]
+}

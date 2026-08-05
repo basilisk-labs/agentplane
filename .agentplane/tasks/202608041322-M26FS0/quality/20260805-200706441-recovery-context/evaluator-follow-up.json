@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608041322-M26FS0-9be397510846fda6f6bc5f51",
+  "task_id": "202608041322-M26FS0",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the frozen evaluator packet with deterministic command-level results for all four declared pre-merge checks at evaluated SHA 26db675800b8d2cf3e6b7160a3c744d82620f232, including the exact-subject qualification evidence.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen packet does not contain deterministic results for any of the four mandatory pre-merge checks.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/fabcfc4055e1c41f2e7b8929adee7c948f0731840d2d51f7b20a70553da26403.json",
+          "sha256": "sha256:fabcfc4055e1c41f2e7b8929adee7c948f0731840d2d51f7b20a70553da26403",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/README.md",
+          "sha256": "sha256:a0cda09e23432c0d590acd2aa1cff076f9130a6029d06919c69083fed48e8a07",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608041322-M26FS0/quality/20260805-200706441-recovery-context/evaluator-result.json"
+}

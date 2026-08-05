@@ -12,8 +12,8 @@ Created: 2026-08-04T13:24:55.578Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Matched CLI latency gate is not repeatable under transient host contention; aggregate medians pass while command-level p95 failures change between runs.
+- State: ok
+- Note: Pre-merge engineering quality is verified for implementation 26db6758 and production subject 275bdfa3 with explicit command-level evidence; postpublish closeout remains a later release phase.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
