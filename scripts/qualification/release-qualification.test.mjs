@@ -24,6 +24,7 @@ import { assertCompactAgentPacket } from "./check-v0.7.1-product-contract.mjs";
 import { blockingCandidateFailureIds } from "../bench/capture-agent-efficiency-candidate.mjs";
 import {
   compareMatchedLatencySamples,
+  createMatchedLatencyTempRoot,
   validateMatchedLatencyReport,
 } from "./measure-v0.7.1-matched-cli-latency.mjs";
 import {
@@ -142,6 +143,15 @@ function supervisorLatencySurfaces(count) {
 }
 
 describe("v0.7.1 release qualification contract", () => {
+  it("excludes disposable matched-latency fixtures from host indexing", () => {
+    const tempRoot = createMatchedLatencyTempRoot(tmpdir());
+    try {
+      assert.equal(readFileSync(path.join(tempRoot, ".metadata_never_index"), "utf8"), "");
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
   it("preflights the exact provider runtime only before provider execution", () => {
     const calls = [];
     const baselineCalls = [];
