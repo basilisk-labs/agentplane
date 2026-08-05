@@ -10,7 +10,7 @@ Prevent release next-action from mixing the current package/tag target with stal
 
 ## Scope
 
-In scope: scripts/release next-action and recovery evidence selection, focused tests, release notes/version artifacts required for v0.7.4, and exact-SHA publication evidence. Out of scope: task/context/runtime semantics, dependency upgrades, historical release data deletion, and unrelated open tasks.
+In scope: a consolidated post-release audit and fix set for installation and upgrade surfaces, package exports and assets, direct and branch_pr task lifecycle variants, automatic context generation and budget/safety boundaries, evaluator and provider handoffs, stale/concurrent/crash/authority recovery, release plan/evidence/idempotency diagnostics, token and latency regression, release notes/version artifacts, and one final patch publication. Out of scope: unrelated dependency upgrades, new product features, deletion of ambiguous task branches or user artifacts, and TypeScript 7 compiler migration.
 
 ## Verification
 
@@ -21,12 +21,18 @@ In scope: scripts/release next-action and recovery evidence selection, focused t
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-05T21:28:48.428Z
+- Updated: 2026-08-05T21:29:23.465Z
 - Branch: task/202608052127-XWDY4R/keep-release-diagnostics-on-the-current-publishe
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../cli/run-cli.core.pr-conflict-rework.test.ts    |   3 +-
+ .../release-evidence-collect-script.test.ts        | 211 ++++++++++++++
+ .../release/release-next-action-script.test.ts     |  95 ++++++-
+ scripts/release/evidence-collect.mjs               | 305 +++++++++++++++++++--
+ scripts/release/next-action.mjs                    |  95 +++++--
+ scripts/release/state.mjs                          |  49 ++++
+ 6 files changed, 711 insertions(+), 47 deletions(-)
 ```
 
 </details>

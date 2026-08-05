@@ -30,6 +30,47 @@ function readLatestPlanVersion(planDir) {
   }
 }
 
+function readReleaseEvidence(version, tag, releaseSha) {
+  const evidencePath = `.agentplane/.release/evidence/${tag}.json`;
+  const absolutePath = path.join(ROOT, evidencePath);
+  if (!existsSync(absolutePath)) {
+    return {
+      path: evidencePath,
+      exists: false,
+      valid: false,
+      detail: "release evidence is missing",
+    };
+  }
+  try {
+    const evidence = JSON.parse(readFileSync(absolutePath, "utf8"));
+    const failures = [];
+    if (evidence?.schema_version !== 2) failures.push("evidence schema is unsupported");
+    if (evidence?.ok !== true) failures.push("evidence is not successful");
+    if (!Array.isArray(evidence?.failures) || evidence.failures.length > 0) {
+      failures.push("evidence contains failures or an invalid failure list");
+    }
+    if (evidence?.version !== version) failures.push("evidence version does not match");
+    if (evidence?.tag !== tag) failures.push("evidence tag does not match");
+    if (!releaseSha) failures.push("current release tag is missing");
+    if (releaseSha && evidence?.release_sha !== releaseSha) {
+      failures.push("evidence release SHA does not match the current tag");
+    }
+    return {
+      path: evidencePath,
+      exists: true,
+      valid: failures.length === 0,
+      detail: failures.length === 0 ? null : failures.join("; "),
+    };
+  } catch (error) {
+    return {
+      path: evidencePath,
+      exists: true,
+      valid: false,
+      detail: `release evidence is unreadable: ${error instanceof Error ? error.message : String(error)}`,
+    };
+  }
+}
+
 function upstreamState(branch) {
   if (!branch || branch === "HEAD") return null;
   const upstream = runGit(["for-each-ref", "--format=%(upstream:short)", `refs/heads/${branch}`]);
@@ -122,11 +163,13 @@ async function buildState(opts) {
     "v[0-9]*.[0-9]*.[0-9]*",
   ]);
   const head = runGit(["rev-parse", "HEAD"]);
+  const tagCommit = runGit(["rev-list", "-n", "1", `refs/tags/${tag}`]);
   const branch = runGit(["rev-parse", "--abbrev-ref", "HEAD"]);
   const dirty = runGit(["status", "--short", "--untracked-files=no"]);
   const latestPlan = latestPlanDir();
   const latestPlanVersion = readLatestPlanVersion(latestPlan);
   const upstream = upstreamState(branch);
+  const evidence = readReleaseEvidence(version, tag, tagCommit);
 
   return {
     schema_version: 1,
@@ -142,6 +185,8 @@ async function buildState(opts) {
     release: {
       version,
       tag,
+      tag_exists: Boolean(tagCommit),
+      tag_commit: tagCommit,
       latest_plan_dir: latestPlan,
       latest_plan: latestPlanVersion,
       notes_path: notesPath,
@@ -150,6 +195,10 @@ async function buildState(opts) {
       publish_result_exists: existsSync(path.join(ROOT, publishResultPath)),
       release_distribution_path: releaseDistributionPath,
       release_distribution_exists: existsSync(path.join(ROOT, releaseDistributionPath)),
+      evidence_path: evidence.path,
+      evidence_exists: evidence.exists,
+      evidence_valid: evidence.valid,
+      evidence_detail: evidence.detail,
     },
     parity: {
       ok: parityErrors.length === 0,
