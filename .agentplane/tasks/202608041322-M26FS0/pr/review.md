@@ -13,7 +13,7 @@ Created: 2026-08-04T13:24:55.578Z
 ## Verification
 
 - State: ok
-- Note: Pre-merge engineering quality is verified for implementation 26db6758 and production subject 275bdfa3 with explicit command-level evidence; postpublish closeout remains a later release phase.
+- Note: Fresh deterministic verification after committing scope, blueprint, prior evaluator records, and command evidence; semantic implementation remains 26db6758 and production subject 275bdfa3.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
