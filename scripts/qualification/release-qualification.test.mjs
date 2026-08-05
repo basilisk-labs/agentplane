@@ -34,7 +34,10 @@ import {
   preflightQualificationProviderRuntime,
   readQualificationRunSubjectIdentity,
 } from "./run-v0.7.1-release-qualification.mjs";
-import { CODEX_REPLAY_CLI_VERSION_ENV } from "../bench/internal/agent-efficiency-codex-runtime.mjs";
+import {
+  CODEX_REPLAY_BINARY_ENV,
+  CODEX_REPLAY_CLI_VERSION_ENV,
+} from "../bench/internal/agent-efficiency-codex-runtime.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
@@ -182,7 +185,14 @@ describe("v0.7.1 release qualification contract", () => {
       ),
       "0.146.0-alpha.3.1",
     );
-    assert.deepEqual(calls, [{ [CODEX_REPLAY_CLI_VERSION_ENV]: "0.146.0-alpha.3.1" }]);
+    assert.deepEqual(calls, [
+      {
+        [CODEX_REPLAY_CLI_VERSION_ENV]: "0.146.0-alpha.3.1",
+        ...(process.env[CODEX_REPLAY_BINARY_ENV]
+          ? { [CODEX_REPLAY_BINARY_ENV]: process.env[CODEX_REPLAY_BINARY_ENV] }
+          : {}),
+      },
+    ]);
     assert.deepEqual(baselineCalls, [
       {
         codexCliVersion: "0.146.0-alpha.3.1",
