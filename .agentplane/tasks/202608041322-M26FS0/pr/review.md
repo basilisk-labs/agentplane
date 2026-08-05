@@ -31,7 +31,7 @@ Created: 2026-08-04T13:24:55.578Z
 ```text
  .agentplane/WORKFLOW.md                            |   2 +-
  .agentplane/tasks/202608041057-WZRXEX/README.md    |   8 +-
- .github/workflows/publish.yml                      |  89 ++++--
+ .github/workflows/publish.yml                      |  44 +--
  docs/assets/header.svg                             |   4 +-
  docs/assets/readme-headers/adr.svg                 |   4 +-
  docs/assets/readme-headers/agentplane-cli.svg      |   4 +-
@@ -48,7 +48,7 @@ Created: 2026-08-04T13:24:55.578Z
  docs/assets/readme-headers/testkit.svg             |   4 +-
  docs/releases/v0.7.3.md                            |  28 ++
  packages/agentplane/package.json                   |   6 +-
- .../run-cli.core.release-evidence-route.test.ts    | 337 +++++++++++++++++++++
+ .../run-cli.core.release-evidence-route.test.ts    | 337 +++++++++++++++++++
  .../run-cli.core.route-decision.quality.test.ts    |   9 +-
  ...un-cli.core.route-decision.verification.test.ts |  32 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |  16 +-
@@ -56,8 +56,9 @@ Created: 2026-08-04T13:24:55.578Z
  ...critical.agent-efficiency-replay-driver.test.ts |   6 +
  ...tical.agent-efficiency-replay-hardening.test.ts |   2 +
  ...un-cli.critical.agent-efficiency-replay.test.ts |   9 +-
- .../release/publish-workflow-contract.test.ts      |  36 ++-
+ .../release/publish-workflow-contract.test.ts      |  32 +-
  .../release/release-task-evidence-script.test.ts   |  61 +++-
+ .../verify-release-evidence-pr-script.test.ts      | 206 ++++++++++++
  .../route-decision-blockers.quality-review.test.ts |   5 +-
  .../src/commands/shared/route-decision-blockers.ts |  41 +--
  .../route-decision-blockers.worktree.test.ts       |  27 ++
@@ -65,7 +66,7 @@ Created: 2026-08-04T13:24:55.578Z
  .../commands/shared/route-decision-verification.ts |  23 ++
  .../src/commands/shared/route-decision.ts          |   3 +-
  .../commands/shared/task-verification-records.ts   |  24 +-
- .../src/commands/task/close-tail-state.test.ts     |  69 +++++
+ .../src/commands/task/close-tail-state.test.ts     |  69 ++++
  .../src/commands/task/close-tail-state.ts          |  45 ++-
  .../agentplane/src/commands/task/finish-execute.ts |   3 +-
  .../task/finish.pre-merge-closure.unit.test.ts     |  30 ++
@@ -76,7 +77,7 @@ Created: 2026-08-04T13:24:55.578Z
  packages/testkit/package.json                      |   2 +-
  packages/testkit/src/cli-harness.ts                |  20 +-
  .../baselines/v0.7-compatibility-candidate.json    |   8 +-
- .../bench/capture-agent-efficiency-candidate.mjs   | 335 ++++++++++++++++----
+ .../bench/capture-agent-efficiency-candidate.mjs   | 335 +++++++++++++++----
  scripts/bench/capture-agent-efficiency-replay.mjs  |   3 +
  .../internal/agent-efficiency-codex-runtime.mjs    |  33 +-
  .../bench/run-agent-efficiency-codex-replay.mjs    |   3 +
@@ -84,15 +85,16 @@ Created: 2026-08-04T13:24:55.578Z
  scripts/lib/agent-efficiency-replay-safety.mjs     |   1 +
  scripts/lib/agent-efficiency-replay.mjs            |   2 +
  .../check-v0.7.1-efficiency-evidence.mjs           |  46 ++-
- .../measure-v0.7.1-matched-cli-latency.mjs         | 139 +++++++--
+ .../measure-v0.7.1-matched-cli-latency.mjs         | 139 ++++++--
  scripts/qualification/release-qualification.mjs    |  81 +++++
- .../qualification/release-qualification.test.mjs   | 152 +++++++++-
+ .../qualification/release-qualification.test.mjs   | 152 ++++++++-
  .../run-v0.7.1-release-qualification.mjs           |  57 +++-
  .../v0.7.1-release-qualification.json              |  14 +-
  scripts/release/release-task-evidence.mjs          |   7 -
+ scripts/workflow/verify-release-evidence-pr.mjs    | 362 +++++++++++++++++++++
  website/static/img/social/docs/releases/v0.7.3.png | Bin 0 -> 53092 bytes
  website/static/img/social/manifest.json            |   8 +
- 63 files changed, 1658 insertions(+), 305 deletions(-)
+ 65 files changed, 2169 insertions(+), 313 deletions(-)
 ```
 
 </details>

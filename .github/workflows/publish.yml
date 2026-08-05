@@ -759,13 +759,13 @@ jobs:
               exit "$status"
             fi
           fi
-      - name: Verify exact release evidence SHA
+      - name: Verify and merge exact release evidence SHA
         if: |
           steps.release_evidence.outputs.actionable == 'true' &&
           (steps.release_evidence_existing.outputs.pr_url != '' || steps.create_release_evidence_pr.outputs.pr_url != '')
-        id: verify_release_evidence
         env:
           GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
           pr_url="${{ steps.release_evidence_existing.outputs.pr_url }}"
@@ -780,69 +780,10 @@ jobs:
             echo "invalid release evidence closure SHA: ${closure_sha:-missing}" >&2
             exit 1
           fi
-          ci_run_url="$(gh workflow run ci.yml \
+          node scripts/workflow/verify-release-evidence-pr.mjs \
+            --workflow ci.yml \
             --ref "${{ steps.release_evidence.outputs.closure_branch }}" \
-            -f "sha=${closure_sha}" | tail -n 1)"
-          if [[ ! "$ci_run_url" =~ /actions/runs/[0-9]+$ ]]; then
-            echo "Core CI dispatch did not return a run URL: ${ci_run_url:-missing}" >&2
-            exit 1
-          fi
-          ci_run_id="${ci_run_url##*/}"
-          gh run watch "$ci_run_id" --exit-status --interval 15
-          {
-            echo "pr_url=$pr_url"
-            echo "closure_sha=$closure_sha"
-            echo "ci_run_url=$ci_run_url"
-          } >> "$GITHUB_OUTPUT"
-      - name: Publish required release evidence verification
-        if: steps.verify_release_evidence.outputs.closure_sha != ''
-        uses: actions/github-script@v8
-        env:
-          CLOSURE_SHA: ${{ steps.verify_release_evidence.outputs.closure_sha }}
-          CI_RUN_URL: ${{ steps.verify_release_evidence.outputs.ci_run_url }}
-        with:
-          github-token: ${{ github.token }}
-          script: |
-            await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: "PR verification",
-              head_sha: process.env.CLOSURE_SHA,
-              status: "completed",
-              conclusion: "success",
-              details_url: process.env.CI_RUN_URL,
-              output: {
-                title: "Release evidence verification passed",
-                summary: "The exact release-evidence closure SHA passed Core CI.",
-              },
-            });
-      - name: Merge release evidence PR
-        if: |
-          steps.verify_release_evidence.outputs.pr_url != '' &&
-          steps.verify_release_evidence.outputs.closure_sha != ''
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          pr_url="${{ steps.verify_release_evidence.outputs.pr_url }}"
-          gh pr checks "$pr_url" --watch --interval 15
-          if gh pr merge --merge --delete-branch "$pr_url"; then
-            echo "Release evidence PR merged immediately: $pr_url"
-          else
-            gh pr merge --auto --merge --delete-branch "$pr_url"
-          fi
-          for attempt in $(seq 1 40); do
-            state="$(gh pr view "$pr_url" --json state --jq .state)"
-            if [ "$state" = "MERGED" ]; then
-              echo "Release evidence PR merged: $pr_url"
-              exit 0
-            fi
-            if [ "$state" = "CLOSED" ]; then
-              echo "Release evidence PR closed without merge: $pr_url" >&2
-              exit 1
-            fi
-            echo "Waiting for release evidence PR merge ($attempt/40): $pr_url"
-            sleep 15
-          done
-          echo "Release evidence PR did not merge within 10 minutes: $pr_url" >&2
-          exit 1
+            --sha "$closure_sha" \
+            --pr-url "$pr_url" \
+            --repo "$REPO" \
+            --json | tee .agentplane/.release/publish/release-evidence-closeout.json

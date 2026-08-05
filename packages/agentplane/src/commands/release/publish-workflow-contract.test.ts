@@ -150,9 +150,8 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("Apply release task evidence on a follow-up branch");
     expect(workflow).toContain("bun scripts/release-task-evidence.mjs apply");
     expect(workflow).toContain("Open or recover release evidence PR");
-    expect(workflow).toContain("Verify exact release evidence SHA");
-    expect(workflow).toContain("Publish required release evidence verification");
-    expect(workflow).toContain("Merge release evidence PR");
+    expect(workflow).toContain("Verify and merge exact release evidence SHA");
+    expect(workflow).toContain("node scripts/workflow/verify-release-evidence-pr.mjs");
     expect(workflow.indexOf("Create GitHub Release")).toBeLessThan(
       workflow.indexOf("Publish Homebrew tap PR"),
     );
@@ -164,9 +163,7 @@ describe("publish workflow contract", () => {
       "Apply release task evidence on a follow-up branch",
       "Push release evidence branch",
       "Open or recover release evidence PR",
-      "Verify exact release evidence SHA",
-      "Publish required release evidence verification",
-      "Merge release evidence PR",
+      "Verify and merge exact release evidence SHA",
     ]) {
       const stepIndex = workflow.indexOf(`- name: ${stepName}`);
       expect(stepIndex).toBeGreaterThanOrEqual(0);
@@ -180,8 +177,7 @@ describe("publish workflow contract", () => {
         [
           "Check for existing release evidence PR",
           "Open or recover release evidence PR",
-          "Verify exact release evidence SHA",
-          "Merge release evidence PR",
+          "Verify and merge exact release evidence SHA",
         ].includes(stepName)
       ) {
         expect(stepBlock).toContain("GH_TOKEN: ${{ github.token }}");
@@ -260,17 +256,15 @@ describe("publish workflow contract", () => {
 
     expect(workflow).toContain("source.err");
     expect(workflow).toContain("cat .agentplane/.release/ready/source.err");
-    expect(workflow).toContain("Verify exact release evidence SHA");
-    expect(workflow).toContain('-f "sha=${closure_sha}"');
-    expect(workflow).toContain('gh run watch "$ci_run_id" --exit-status --interval 15');
-    expect(workflow).toContain("uses: actions/github-script@v8");
-    expect(workflow).toContain('name: "PR verification"');
-    expect(workflow).toContain("The exact release-evidence closure SHA passed Core CI.");
-    expect(workflow).toContain('gh pr checks "$pr_url" --watch --interval 15');
-    expect(workflow).toContain('gh pr merge --auto --merge --delete-branch "$pr_url"');
-    expect(workflow).toContain('if [ "$state" = "MERGED" ]; then');
+    expect(workflow).toContain("Verify and merge exact release evidence SHA");
+    expect(workflow).toContain("node scripts/workflow/verify-release-evidence-pr.mjs");
+    expect(workflow).toContain("--workflow ci.yml");
+    expect(workflow).toContain('--sha "$closure_sha"');
+    expect(workflow).toContain('--pr-url "$pr_url"');
+    expect(workflow).toContain('--repo "$REPO"');
+    expect(workflow).toContain("release-evidence-closeout.json");
     expect(workflow.indexOf("Open or recover release evidence PR")).toBeLessThan(
-      workflow.indexOf("Verify exact release evidence SHA"),
+      workflow.indexOf("Verify and merge exact release evidence SHA"),
     );
   });
 
