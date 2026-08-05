@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608041322-M26FS0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-05T20:14:54.850Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "26db675800b8d2cf3e6b7160a3c744d82620f232",
+  "blueprint_digest": "662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712",
+  "findings": [
+    "The hosted closeout assumes `gh workflow run` returns the created Actions run URL, then immediately rejects any other output. The frozen contract test only checks workflow text and does not prove this runtime behavior, so the evidence PR can fail before its required check is published."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/c362c8e4a3270cc827ba7989523220b39597274d4576c021d7e6678288b962ab.patch",
+    ".agentplane/cache/v0.7.3-premerge-26db6758.json"
+  ],
+  "missing_tests": [
+    "Execute the hosted verification shell path against the supported GitHub CLI output contract, proving dispatch-to-run correlation, exact-SHA selection, waiting, check creation, and merge.",
+    "Cover concurrent or pre-existing workflow runs so the dispatched Core CI run is correlated to the requested closure SHA rather than inferred from mutable or presentation-oriented CLI output."
+  ],
+  "hidden_assumptions": [
+    "`gh workflow run ci.yml ...` emits a canonical `/actions/runs/<id>` URL on stdout for the installed GitHub CLI version.",
+    "The textual publish-workflow contract is sufficient evidence that the hosted dispatch, run correlation, and required-check publication work end to end."
+  ],
+  "residual_risks": [
+    "Replace or prove the unsupported dispatch-output assumption with deterministic run discovery correlated to the exact closure SHA, then add executable hosted-path regression coverage and rerun the four pre-merge checks."
+  ]
+}
