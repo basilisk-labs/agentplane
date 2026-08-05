@@ -282,9 +282,7 @@ describe("runCli quality route decisions", () => {
         execution_packet: { actionKind: string; exactArgv: string[] | null };
       };
       expect(parsed.blockers.map((blocker) => blocker.code)).toContain("verification_required");
-      expect(parsed.blockers.map((blocker) => blocker.code)).not.toContain(
-        "quality_review_stale",
-      );
+      expect(parsed.blockers.map((blocker) => blocker.code)).not.toContain("quality_review_stale");
       expect(parsed.next_action).toEqual(
         expect.objectContaining({ code: "verification_required", command: null }),
       );

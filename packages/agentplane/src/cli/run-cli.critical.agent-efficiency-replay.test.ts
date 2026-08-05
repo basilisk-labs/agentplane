@@ -882,9 +882,7 @@ describeCritical("critical: RF-04 anchored replay telemetry", () => {
     expect(environment.PATH).toBe(
       "/Applications/ChatGPT.app/Contents/Resources:/opt/homebrew/bin:/usr/bin:/bin",
     );
-    expect(environment.AGENTPLANE_RF04_REPLAY_CODEX_BINARY).toBe(
-      "/reviewed/archive/codex",
-    );
+    expect(environment.AGENTPLANE_RF04_REPLAY_CODEX_BINARY).toBe("/reviewed/archive/codex");
     for (const forbidden of [
       "DYLD_INSERT_LIBRARIES",
       "GIT_CONFIG_GLOBAL",
