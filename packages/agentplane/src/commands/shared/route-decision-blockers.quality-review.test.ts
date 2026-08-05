@@ -183,7 +183,7 @@ describe("DOING route quality rework", () => {
     );
   });
 
-  it("returns newer verified evidence rework to the quality-review gate", async () => {
+  it("refreshes newer verification evidence before returning to the quality-review gate", async () => {
     const blockers = await blockersFor(
       reviewedSha,
       undefined,
@@ -195,6 +195,9 @@ describe("DOING route quality rework", () => {
       expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
     );
     expect(blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "verification_required" })]),
+    );
+    expect(blockers).not.toEqual(
       expect.arrayContaining([expect.objectContaining({ code: "quality_review_stale" })]),
     );
   });
