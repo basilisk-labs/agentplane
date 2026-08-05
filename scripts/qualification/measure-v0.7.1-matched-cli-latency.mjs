@@ -27,11 +27,12 @@ const BASELINE_VERSION = "0.6.26";
 const PACKAGES = ["core", "recipes", "agentplane"];
 const DEFAULT_RUNS = 20;
 const DEFAULT_WARMUPS = 2;
+const DEFAULT_REPLICATES = 3;
 const SPOTLIGHT_EXCLUSION_MARKER = ".metadata_never_index";
 
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
-    valueFlags: ["subject", "out", "runs", "warmups"],
+    valueFlags: ["subject", "out", "runs", "warmups", "replicates"],
   });
   if (positionals.length > 0) {
     throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
@@ -42,13 +43,23 @@ function parseArgs(argv) {
   }
   const runs = Number.parseInt(flags.runs ?? String(DEFAULT_RUNS), 10);
   const warmups = Number.parseInt(flags.warmups ?? String(DEFAULT_WARMUPS), 10);
+  const replicates = Number.parseInt(flags.replicates ?? String(DEFAULT_REPLICATES), 10);
   if (!Number.isInteger(runs) || runs < 20) {
     throw new Error("--runs must be an integer >= 20");
   }
   if (!Number.isInteger(warmups) || warmups < 1) {
     throw new Error("--warmups must be an integer >= 1");
   }
-  return { outputPath: path.resolve(flags.out), runs, subject: flags.subject, warmups };
+  if (!Number.isInteger(replicates) || replicates < 3 || replicates % 2 === 0) {
+    throw new Error("--replicates must be an odd integer >= 3");
+  }
+  return {
+    outputPath: path.resolve(flags.out),
+    replicates,
+    runs,
+    subject: flags.subject,
+    warmups,
+  };
 }
 
 const run = createQualificationCommandRunner(repoRoot);
@@ -167,8 +178,26 @@ export function compareMatchedLatencySamples({
   };
 }
 
-function invocationOrder(index, baseline, candidate) {
-  return index % 2 === 0 ? [baseline, candidate] : [candidate, baseline];
+export function matchedInvocationOrder(sampleIndex, replicateIndex, baseline, candidate) {
+  return (sampleIndex + replicateIndex) % 2 === 0 ? [baseline, candidate] : [candidate, baseline];
+}
+
+export function collapseMatchedLatencyReplicates(results) {
+  if (!Array.isArray(results) || results.length < 3 || results.length % 2 === 0) {
+    throw new Error(
+      "matched latency logical samples require an odd number of at least 3 replicates",
+    );
+  }
+  const failed = results.find((result) => result.exit_code !== 0);
+  return {
+    duration_ms: summarizeDurations(results.map((result) => result.duration_ms)).median_ms,
+    exit_code: failed ? (failed.exit_code ?? 1) : 0,
+    signal: failed?.signal ?? null,
+    stderr: results
+      .map((result) => result.stderr)
+      .filter(Boolean)
+      .join("\n"),
+  };
 }
 
 function aggregateSamples(commands, side) {
@@ -200,10 +229,13 @@ function measurementCapture(id) {
     candidate: { durations: [], exitCode: null, stderr: "" },
   };
   return {
-    record(kind, result) {
+    record(kind, results) {
+      const result = collapseMatchedLatencyReplicates(results);
       state[kind].durations.push(result.duration_ms);
-      state[kind].exitCode = result.exit_code;
-      state[kind].stderr = result.stderr;
+      if (state[kind].exitCode === null || result.exit_code !== 0) {
+        state[kind].exitCode = result.exit_code;
+      }
+      if (result.stderr) state[kind].stderr = result.stderr;
     },
     comparison() {
       return compareMatchedLatencySamples({
@@ -224,6 +256,7 @@ function measureWarmPhase({
   candidateCli,
   baselineFixtureRoot,
   candidateFixtureRoot,
+  replicates,
   runs,
   warmups,
   suite,
@@ -245,38 +278,63 @@ function measureWarmPhase({
     }
     const capture = measurementCapture(spec.id);
     for (let index = 0; index < runs; index += 1) {
-      const order = invocationOrder(
-        index,
-        ["baseline", baselineCli, baselineArgv, baselineFixtureRoot],
-        ["candidate", candidateCli, candidateArgv, candidateFixtureRoot],
-      );
-      for (const [kind, cliPath, argv, cwd] of order) {
-        const result = measuredInvocation(cliPath, argv, cwd);
-        capture.record(kind, result);
+      const logicalSample = { baseline: [], candidate: [] };
+      for (let replicateIndex = 0; replicateIndex < replicates; replicateIndex += 1) {
+        const order = matchedInvocationOrder(
+          index,
+          replicateIndex,
+          ["baseline", baselineCli, baselineArgv, baselineFixtureRoot],
+          ["candidate", candidateCli, candidateArgv, candidateFixtureRoot],
+        );
+        for (const [kind, cliPath, argv, cwd] of order) {
+          logicalSample[kind].push(measuredInvocation(cliPath, argv, cwd));
+        }
       }
+      capture.record("baseline", logicalSample.baseline);
+      capture.record("candidate", logicalSample.candidate);
     }
     commands.push(capture.comparison());
   }
   return { commands, provider_excluded_time_to_verified: providerExcludedTimeToVerified(commands) };
 }
 
-function measureColdPhase({ baselineCli, candidateCli, fixtureSeed, coldRoot, runs, suite }) {
+function measureColdPhase({
+  baselineCli,
+  candidateCli,
+  fixtureSeed,
+  coldRoot,
+  replicates,
+  runs,
+  suite,
+}) {
   const commands = [];
   for (const spec of suite.commands) {
     const capture = measurementCapture(spec.id);
     for (let index = 0; index < runs; index += 1) {
-      const order = invocationOrder(index, ["baseline", baselineCli], ["candidate", candidateCli]);
-      for (const [kind, cliPath] of order) {
-        const fixtureRoot = path.join(coldRoot, `${spec.id}-${String(index)}-${kind}`);
-        fixtureCopy(fixtureSeed, fixtureRoot);
-        const argv = interpolateArgs(spec.argv, {
-          root: fixtureRoot,
-          repoRoot: cliRepoRootFromPath(cliPath),
-        });
-        const result = measuredInvocation(cliPath, argv, fixtureRoot);
-        rmSync(fixtureRoot, { recursive: true, force: true });
-        capture.record(kind, result);
+      const logicalSample = { baseline: [], candidate: [] };
+      for (let replicateIndex = 0; replicateIndex < replicates; replicateIndex += 1) {
+        const order = matchedInvocationOrder(
+          index,
+          replicateIndex,
+          ["baseline", baselineCli],
+          ["candidate", candidateCli],
+        );
+        for (const [kind, cliPath] of order) {
+          const fixtureRoot = path.join(
+            coldRoot,
+            `${spec.id}-${String(index)}-${String(replicateIndex)}-${kind}`,
+          );
+          fixtureCopy(fixtureSeed, fixtureRoot);
+          const argv = interpolateArgs(spec.argv, {
+            root: fixtureRoot,
+            repoRoot: cliRepoRootFromPath(cliPath),
+          });
+          logicalSample[kind].push(measuredInvocation(cliPath, argv, fixtureRoot));
+          rmSync(fixtureRoot, { recursive: true, force: true });
+        }
       }
+      capture.record("baseline", logicalSample.baseline);
+      capture.record("candidate", logicalSample.candidate);
     }
     commands.push(capture.comparison());
   }
@@ -286,6 +344,10 @@ function measureColdPhase({ baselineCli, candidateCli, fixtureSeed, coldRoot, ru
 export function validateMatchedLatencyReport(report) {
   if (report.schema_version !== 2 || report.kind !== "agentplane.v0.7.1_matched_cli_latency") {
     throw new Error("matched CLI latency report must use schema_version=2");
+  }
+  const replicateCount = report.sample_contract?.invocations_per_side_per_logical_sample;
+  if (!Number.isInteger(replicateCount) || replicateCount < 3 || replicateCount % 2 === 0) {
+    throw new Error("matched CLI latency report requires an odd replicate count >= 3");
   }
   for (const phaseName of ["cold", "warm"]) {
     const phase = report.phases?.[phaseName];
@@ -361,6 +423,7 @@ async function main(argv = process.argv.slice(2)) {
         candidateCli,
         fixtureSeed,
         coldRoot,
+        replicates: options.replicates,
         runs: options.runs,
         suite,
       }),
@@ -369,6 +432,7 @@ async function main(argv = process.argv.slice(2)) {
         candidateCli,
         baselineFixtureRoot: baselineWarmFixture,
         candidateFixtureRoot: candidateWarmFixture,
+        replicates: options.replicates,
         runs: options.runs,
         warmups: options.warmups,
         suite,
@@ -400,12 +464,14 @@ async function main(argv = process.argv.slice(2)) {
       candidate_version: candidateVersion,
       sample_contract: {
         runs_per_phase: options.runs,
+        invocations_per_side_per_logical_sample: options.replicates,
         warmups_before_warm_phase_per_command: options.warmups,
-        cold: "one invocation in a fresh copy of the identical initialized fixture; fixture-copy time is excluded",
-        warm: "one invocation in a persistent per-subject fixture after explicit unmeasured warmups",
+        cold: "each logical sample is the median of repeated invocations in fresh copies of the identical initialized fixture; fixture-copy time is excluded",
+        warm: "each logical sample is the median of repeated invocations in a persistent per-subject fixture after explicit unmeasured warmups",
         process:
-          "every sample launches a new Node.js process; baseline/candidate order alternates by sample index",
-        os_cache: "not reset; alternating order controls shared host-cache drift",
+          "every replicate launches a new Node.js process; baseline/candidate order alternates by logical-sample and replicate index",
+        os_cache:
+          "not reset; balanced replicate order and logical-sample medians control shared host-cache drift and transient host contention",
         host_indexing:
           "the disposable benchmark root contains .metadata_never_index before package installation and fixture copies",
         provider: "not invoked",
