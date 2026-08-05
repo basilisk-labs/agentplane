@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:7d00be7eae44f11449327138e786fc7afcdb4d745822fbadb98d832a2a8d233a",
+  "implementation_sha": "948b9d8a90b7e5483f55dcf04053be5106eff035",
+  "kind": "task_verification_record",
+  "note": "Consolidated post-release verification passed on 3195e6fb: focused release regressions, typecheck, lint/format, ci:contract, critical tests, doctor, routing, release:prepublish, full v0.7 qualification, and one no-retry 50-run/55-episode provider matrix. Qualification ready 18/19 with zero blocking defects; the sole absolute latency advisory is cleared by matched v0.6.26 comparison.",
+  "recorded_at": "2026-08-05T23:45:59.060Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run and archive the consolidated post-release matrix against published 0.7.3 and the candidate: clean npm install, packed install, platform asset manifest/install scripts, supported upgrade fixtures, Node package exports, direct and branch_pr lifecycle variants, automatic context synthesis and bounded omission/safety cases, evaluator verdict routes, stale state, authority, concurrency, crash/effect-in-doubt recovery, release plan/evidence/idempotency, and CLI machine-output identity. Expected: all scenarios classify deterministically and candidate has zero blocking product failures. 2. Run focused regression tests for every confirmed defect, bun run typecheck, formatting/lint on touched files, bun run ci:contract, bun run test:critical, agentplane doctor, and node .agentplane/policy/check-routing.mjs. Expected: all pass. 3. Run the full v0.7 qualification and bun run release:prepublish. Expected: existing effectiveness, quality, token, matched-latency, workflow, significant-coverage, release-critical, migration, and packed-install gates do not regress. 4. Run bounded live provider smoke without retry only after deterministic gates pass. Expected: recorded provider provenance, no scope violation, correct task/context handoff, and no retry masking. 5. After one protected-main merge, publish exactly one patch release and run postpublish audit plus clean npm and upgrade installs of all three packages. Expected: npm latest, tag, GitHub Release, assets, installed CLI version, release SHA, and evidence PR all agree.",
+  "scope_digest": "sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463",
+  "task_id": "202608052127-XWDY4R",
+  "verification_command": "agentplane verify 202608052127-XWDY4R --ok --by TESTER",
+  "verifier": "TESTER"
+}
