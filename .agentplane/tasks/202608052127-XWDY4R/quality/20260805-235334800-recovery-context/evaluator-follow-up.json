@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608052127-XWDY4R-b2e8e96769c09323cbfeaef3",
+  "task_id": "202608052127-XWDY4R",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Guard evaluator resume by role and kind before any stop transition. Add an externally evidenced recovery path that reopens only the exact matching stopped effect_in_doubt intent without launching another provider operation. Cover both behaviors with regression tests, reconcile this task's PLANNER exchange, then rerun structured verification and EVALUATOR.",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "summary": "executeEvaluatorSupervisorEpisode treats every intent_recorded journal as a resumable evaluator outcome; when the latest operation is PLANNER/agent_episode it catches validation failure and stops the shared journal as effect_in_doubt.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/89c53905d0d48525cdc39511155336552e5dd2d8df4ea8c35291316ef5daba0d.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "summary": "acceptExternalAgentResult only accepts a running intent_recorded journal, so a later matching PLANNER result cannot reconcile the effect after the evaluator-induced stop.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/89c53905d0d48525cdc39511155336552e5dd2d8df4ea8c35291316ef5daba0d.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608052127-XWDY4R/quality/20260805-235334800-recovery-context/evaluator-result.json"
+}
