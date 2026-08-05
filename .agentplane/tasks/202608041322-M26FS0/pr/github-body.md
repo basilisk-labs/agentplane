@@ -52,12 +52,12 @@ while command-level p95 failures change between runs.
  docs/releases/v0.7.3.md                            |  28 ++
  packages/agentplane/package.json                   |   6 +-
  .../run-cli.core.release-evidence-route.test.ts    | 337 +++++++++++++++++++++
- .../run-cli.core.route-decision.quality.test.ts    |  11 +-
+ .../run-cli.core.route-decision.quality.test.ts    |   9 +-
  ...un-cli.core.route-decision.verification.test.ts |  32 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |  16 +-
  ...cli.critical.agent-efficiency-candidate.test.ts |  63 +++-
- ...critical.agent-efficiency-replay-driver.test.ts |   8 +
- ...un-cli.critical.agent-efficiency-replay.test.ts |  11 +-
+ ...critical.agent-efficiency-replay-driver.test.ts |   6 +
+ ...un-cli.critical.agent-efficiency-replay.test.ts |   9 +-
  .../release/publish-workflow-contract.test.ts      |  36 ++-
  .../release/release-task-evidence-script.test.ts   |  61 +++-
  .../route-decision-blockers.quality-review.test.ts |   5 +-
@@ -94,7 +94,7 @@ while command-level p95 failures change between runs.
  scripts/release/release-task-evidence.mjs          |   7 -
  website/static/img/social/docs/releases/v0.7.3.png | Bin 0 -> 53092 bytes
  website/static/img/social/manifest.json            |   8 +
- 62 files changed, 1638 insertions(+), 284 deletions(-)
+ 62 files changed, 1632 insertions(+), 284 deletions(-)
 ```
 
 </details>
