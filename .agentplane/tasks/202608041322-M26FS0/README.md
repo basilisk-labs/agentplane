@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -31,32 +31,33 @@ verification:
   note: "Deterministic pre-merge verification recorded in the canonical four-field format for frozen evaluator ingestion."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-05T20:11:27.953Z"
+  updated_at: "2026-08-05T20:14:54.850Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
   evaluated_sha: "26db675800b8d2cf3e6b7160a3c744d82620f232"
   blueprint_digest: "662995c8d4f76dca8b69cf404537683b0c8b5812dabc9e7aa216a6ee5bc47712"
   evidence_refs:
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201055009-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201055009-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/b929c52e75f8634517475d75a62e2a30ca7b5cd12838cc136ec1c0a3f0daf2d7.md"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201055009-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201055009-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201055009-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201055009-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201401952-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201401952-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/85f8d20e68b4005d149349c28d522c72b9c40d6bbdcc45638e98227553ab0043.md"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201401952-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201401952-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201401952-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201401952-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608041322-M26FS0/README.md"
     - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/c362c8e4a3270cc827ba7989523220b39597274d4576c021d7e6678288b962ab.patch"
-    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/1fab3789f01e6289e7c27f5f9241bfe9ca63619ef29bbd698681ea1d6b18d601.json"
+    - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/69ce0f2f034618a730d4a7d15b42a4352e336056f42172b8a414a4a8e539bef3.json"
+    - ".agentplane/tasks/202608041322-M26FS0/verification/20260805201302703-000e1c8c1f6830d9.json"
+    - ".agentplane/cache/v0.7.3-premerge-26db6758.json"
     - ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/1040507c37113f25a2f8f70caed507ccb1b07b151e39f4743ccb0f92e1baa877.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "The frozen packet contains no deterministic execution results for any of the four mandatory pre-merge checks."
-  recovery_reason: "deterministic_evidence_gap"
+    - "The hosted closeout assumes `gh workflow run` returns the created Actions run URL, then immediately rejects any other output. The frozen contract test only checks workflow text and does not prove this runtime behavior, so the evidence PR can fail before its required check is published."
 token_usage:
   agent_runs: 1
   input_tokens: 286172
@@ -229,7 +230,7 @@ events:
     state: "ok"
     note: "Deterministic pre-merge verification recorded in the canonical four-field format for frozen evaluator ingestion."
 doc_version: 3
-doc_updated_at: "2026-08-05T20:13:03.946Z"
+doc_updated_at: "2026-08-05T20:14:54.868Z"
 doc_updated_by: "CODER"
 description: "Complete the user-approved AgentPlane 0.7.3 release closeout: stabilize hosted release-tail regressions; harden exact-SHA qualification, provider replay, matched latency, and token-efficiency evidence; align compatibility, documentation, and release artifacts; validate task, context, evaluator, and upgrade flows; audit live GitHub Issues and PRs; publish exact merged artifacts; prove postpublish state; and safely clean obsolete merged branches."
 sections:

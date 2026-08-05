@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608041322-M26FS0-f2caad10c1349b96c2c42596",
+  "task_id": "202608041322-M26FS0",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Replace or prove the unsupported dispatch-output assumption with deterministic run discovery correlated to the exact closure SHA, then add executable hosted-path regression coverage and rerun the four pre-merge checks.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The hosted closeout assumes `gh workflow run` returns the created Actions run URL, then immediately rejects any other output. The frozen contract test only checks workflow text and does not prove this runtime behavior, so the evidence PR can fail before its required check is published.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/c362c8e4a3270cc827ba7989523220b39597274d4576c021d7e6678288b962ab.patch",
+          "sha256": "sha256:c362c8e4a3270cc827ba7989523220b39597274d4576c021d7e6678288b962ab",
+          "section": ".github/workflows/publish.yml — Verify exact release evidence SHA"
+        },
+        {
+          "path": ".agentplane/cache/v0.7.3-premerge-26db6758.json",
+          "sha256": "sha256:885ce7c80993b4a2d3c72950a0533f05b6222de48e3a8d1b3429fbeff878ea32",
+          "section": "checks"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608041322-M26FS0/quality/20260805-201401952-recovery-context/evaluator-result.json"
+}
