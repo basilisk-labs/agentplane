@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608052127-XWDY4R",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-05T23:53:35.466Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "948b9d8a90b7e5483f55dcf04053be5106eff035",
+  "blueprint_digest": "3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94",
+  "findings": [
+    "executeEvaluatorSupervisorEpisode treats every intent_recorded journal as a resumable evaluator outcome; when the latest operation is PLANNER/agent_episode it catches validation failure and stops the shared journal as effect_in_doubt.",
+    "acceptExternalAgentResult only accepts a running intent_recorded journal, so a later matching PLANNER result cannot reconcile the effect after the evaluator-induced stop."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/89c53905d0d48525cdc39511155336552e5dd2d8df4ea8c35291316ef5daba0d.patch"
+  ],
+  "missing_tests": [
+    "Evaluator execution with an unrelated pending PLANNER external-agent intent must fail closed without mutating the journal, and the matching result must remain consumable."
+  ],
+  "hidden_assumptions": [
+    "The evaluator supervisor assumes any shared intent_recorded operation belongs to EVALUATOR."
+  ],
+  "residual_risks": [
+    "Guard evaluator resume by role and kind before any stop transition. Add an externally evidenced recovery path that reopens only the exact matching stopped effect_in_doubt intent without launching another provider operation. Cover both behaviors with regression tests, reconcile this task's PLANNER exchange, then rerun structured verification and EVALUATOR."
+  ]
+}

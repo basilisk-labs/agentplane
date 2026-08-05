@@ -4,7 +4,7 @@ title: "Keep release diagnostics on the current published target"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,34 @@ verification:
   updated_by: "TESTER"
   note: "Consolidated post-release verification accepted with structured durable evidence; no test or provider retry was performed."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-05T23:53:35.466Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "948b9d8a90b7e5483f55dcf04053be5106eff035"
+  blueprint_digest: "3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94"
+  evidence_refs:
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/20260805-235334800-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/20260805-235334800-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/3c589bb3d9fc987a1d46d929e9ddf8e14a4169b3d45a7b81d620f7f1ad950d3a.md"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/20260805-235334800-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/20260805-235334800-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/20260805-235334800-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/20260805-235334800-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608052127-XWDY4R/README.md"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/89c53905d0d48525cdc39511155336552e5dd2d8df4ea8c35291316ef5daba0d.patch"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/1e20db7fa98d0d3df8e8c09241515c2db2152998abd635236fb58119a2ef59b7.json"
+    - ".agentplane/tasks/202608052127-XWDY4R/verification/20260805234909952-0abbe8f50f50bd28.json"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/5a6be8e8bb4eef600218e0e0f9e31d0be93457cb7dca9813a7a6213dcd7a561f.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.release.md"
+  findings:
+    - "executeEvaluatorSupervisorEpisode treats every intent_recorded journal as a resumable evaluator outcome; when the latest operation is PLANNER/agent_episode it catches validation failure and stops the shared journal as effect_in_doubt."
+    - "acceptExternalAgentResult only accepts a running intent_recorded journal, so a later matching PLANNER result cannot reconcile the effect after the evaluator-induced stop."
 commit:
   hash: "948b9d8a90b7e5483f55dcf04053be5106eff035"
   message: "🚧 XWDY4R task: satisfy formatting contract"

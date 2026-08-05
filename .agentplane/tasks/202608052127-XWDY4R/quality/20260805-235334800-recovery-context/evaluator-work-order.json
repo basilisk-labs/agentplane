@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608052127-XWDY4R-b2e8e96769c09323cbfeaef3",
+  "prepared_at": "2026-08-05T23:53:34.800Z",
+  "task": {
+    "id": "202608052127-XWDY4R",
+    "revision": 22,
+    "objective": "Keep release diagnostics on the current published target\n\nPrevent release next-action from mixing the current package/tag target with stale local release-plan SHA and hosted evidence; add regression coverage, merge the fix, and publish the verified v0.7.4 patch release.",
+    "acceptance_criteria": [
+      "In scope: a consolidated post-release audit and fix set for installation and upgrade surfaces, package exports and assets, direct and branch_pr task lifecycle variants, automatic context generation and budget/safety boundaries, evaluator and provider handoffs, stale/concurrent/crash/authority recovery, release plan/evidence/idempotency diagnostics, token and latency regression, release notes/version artifacts, and one final patch publication. Out of scope: unrelated dependency upgrades, new product features, deletion of ambiguous task branches or user artifacts, and TypeScript 7 compiler migration.",
+      "Consolidated post-release patch plan. 1. Freeze a risk-based post-release matrix covering npm and binary installs, upgrades from supported 0.6.x and 0.7.x states, direct and branch_pr task lifecycles, context synthesis and budget boundaries, evaluator routes, authority/stale/concurrency/crash recovery, release recovery/evidence/idempotency, package exports, platform artifacts, and token/latency regressions. 2. Execute deterministic suites against published 0.7.3 and current main, plus bounded live provider smoke without retry; record every failure before editing. 3. Classify failures as product defect, test/evidence defect, environment issue, or expected fail-closed behavior; implement all confirmed release-blocking product fixes in PR #4780 without changing unrelated semantics. 4. Re-run the complete matrix and existing v0.7 qualification/prepublish gates; require zero blocking failures and no token/latency/quality regression. 5. Merge once through protected main. 6. Generate one patch target after the fix set is frozen, publish it from the exact merged SHA, and verify npm, tag, GitHub Release, assets, clean install, upgrade, postpublish audit, and terminal evidence. No intermediate patch publication.",
+      "1. Run and archive the consolidated post-release matrix against published 0.7.3 and the candidate: clean npm install, packed install, platform asset manifest/install scripts, supported upgrade fixtures, Node package exports, direct and branch_pr lifecycle variants, automatic context synthesis and bounded omission/safety cases, evaluator verdict routes, stale state, authority, concurrency, crash/effect-in-doubt recovery, release plan/evidence/idempotency, and CLI machine-output identity. Expected: all scenarios classify deterministically and candidate has zero blocking product failures. 2. Run focused regression tests for every confirmed defect, bun run typecheck, formatting/lint on touched files, bun run ci:contract, bun run test:critical, agentplane doctor, and node .agentplane/policy/check-routing.mjs. Expected: all pass. 3. Run the full v0.7 qualification and bun run release:prepublish. Expected: existing effectiveness, quality, token, matched-latency, workflow, significant-coverage, release-critical, migration, and packed-install gates do not regress. 4. Run bounded live provider smoke without retry only after deterministic gates pass. Expected: recorded provider provenance, no scope violation, correct task/context handoff, and no retry masking. 5. After one protected-main merge, publish exactly one patch release and run postpublish audit plus clean npm and upgrade installs of all three packages. Expected: npm latest, tag, GitHub Release, assets, installed CLI version, release SHA, and evidence PR all agree."
+    ]
+  },
+  "evaluated_sha": "948b9d8a90b7e5483f55dcf04053be5106eff035",
+  "diff_base_sha": "944dc6eefcd5ea79c33af066caf1078f881e371a",
+  "blueprint_digest": "3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608052127-XWDY4R/quality/20260805-235334800-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:c133121d08bac32c8ac5267428ba6d9e0fae95d9d2918add9eb22d76796c9413",
+    "prompt_path": ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/3c589bb3d9fc987a1d46d929e9ddf8e14a4169b3d45a7b81d620f7f1ad950d3a.md",
+    "result_schema_path": ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608052127-XWDY4R/README.md",
+      "sha256": "sha256:f556fda3428f0debcbb310396a2b6274f79bd31e89d03625c9f9dcf31e8274e7",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/89c53905d0d48525cdc39511155336552e5dd2d8df4ea8c35291316ef5daba0d.patch",
+      "sha256": "sha256:89c53905d0d48525cdc39511155336552e5dd2d8df4ea8c35291316ef5daba0d",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/1e20db7fa98d0d3df8e8c09241515c2db2152998abd635236fb58119a2ef59b7.json",
+      "sha256": "sha256:1e20db7fa98d0d3df8e8c09241515c2db2152998abd635236fb58119a2ef59b7",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608052127-XWDY4R/verification/20260805234909952-0abbe8f50f50bd28.json",
+      "sha256": "sha256:5f23277eee08ed11702332024698e6e44bfd7f511d8c4eeabf5f6f9a94b8baf1",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/5a6be8e8bb4eef600218e0e0f9e31d0be93457cb7dca9813a7a6213dcd7a561f.json",
+      "sha256": "sha256:5a6be8e8bb4eef600218e0e0f9e31d0be93457cb7dca9813a7a6213dcd7a561f",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:94a0fcabe77fef35ff6f32edea35ce0da7754a9f7c740a148c3d24a1b96dfa8d",
+      "required": true
+    }
+  ]
+}

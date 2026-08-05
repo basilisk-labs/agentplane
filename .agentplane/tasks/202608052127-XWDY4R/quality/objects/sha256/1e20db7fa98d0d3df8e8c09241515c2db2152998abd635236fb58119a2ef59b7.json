@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-05T23:49:09.952Z",
+    "updated_by": "TESTER",
+    "note": "Consolidated post-release verification accepted with structured durable evidence; no test or provider retry was performed."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608052127-XWDY4R/verification/20260805234909952-0abbe8f50f50bd28.json",
+      "sha256": "sha256:5f23277eee08ed11702332024698e6e44bfd7f511d8c4eeabf5f6f9a94b8baf1"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
