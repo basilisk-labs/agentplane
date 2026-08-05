@@ -1,0 +1,454 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.release_qualification_report",
+  "release": "0.7.1",
+  "mode": "gate",
+  "profile": "full",
+  "subject": "275bdfa32e6a11a99d31bbf91180d27d4a294bca",
+  "source_identity": {
+    "commit": "275bdfa32e6a11a99d31bbf91180d27d4a294bca",
+    "tree": "300be0375d94ec3058f2af56e632cbb01b47530e",
+    "clean": true
+  },
+  "manifest": {
+    "path": "scripts/qualification/v0.7.1-release-qualification.json",
+    "sha256": "sha256:fbc6a2765b8fe9b319c0740b9cdbfefcf7d51188d8664529d71ebee538c3afea"
+  },
+  "started_at": "2026-08-05T17:30:51.402Z",
+  "finished_at": "2026-08-05T18:23:04.091Z",
+  "duration_ms": 3132689,
+  "verdict": "ready",
+  "release_ready": true,
+  "local_ready": true,
+  "provider": {
+    "requested": true,
+    "status": "passed"
+  },
+  "coverage": {
+    "workflow_modes": [
+      "direct",
+      "branch_pr"
+    ],
+    "supervisor_frontends": [
+      "managed_run",
+      "external_advance"
+    ],
+    "lifecycle_states": [
+      "planned",
+      "ready",
+      "doing",
+      "verify_rework",
+      "verified",
+      "integrated",
+      "done",
+      "blocked"
+    ],
+    "context_conditions": [
+      "fresh",
+      "warm",
+      "stale",
+      "missing",
+      "conflicting",
+      "provenance_restricted",
+      "token_budgeted"
+    ],
+    "semantic_stops": [
+      "approval_required",
+      "human_review",
+      "scope_drift",
+      "missing_knowledge"
+    ],
+    "recovery_states": [
+      "interruption",
+      "process_loss",
+      "provider_ambiguity",
+      "effect_in_doubt",
+      "replay",
+      "duplicate_side_effect",
+      "stale_fingerprint",
+      "evaluator_rework",
+      "approval_expiry",
+      "hosted_wait",
+      "cleanup_race"
+    ],
+    "hosted_boundaries": [
+      "pr_publish",
+      "checks",
+      "merge",
+      "hosted_close",
+      "release_publish"
+    ]
+  },
+  "summary": {
+    "selected": 19,
+    "declared": 19,
+    "passed": 18,
+    "failed": 1,
+    "blocking": 0,
+    "local_selection_complete": true,
+    "provider_selection_complete": true
+  },
+  "scenarios": [
+    {
+      "id": "qualification-contract",
+      "title": "Qualification manifest, report, threshold, and audit/gate contracts",
+      "tier": "core",
+      "status": "passed",
+      "duration_ms": 263,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "--test",
+        "scripts/qualification/release-qualification.test.mjs"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/qualification-contract.log",
+      "output_tail": "▶ v0.7.1 release qualification contract\n  ✔ excludes disposable matched-latency fixtures from host indexing (0.7295ms)\n  ✔ preflights the exact provider runtime only before provider execution (0.595708ms)\n  ✔ maps every required dimension to an executable scenario (0.922625ms)\n  ✔ requires every defect owner to be an existing executable task (0.455958ms)\n  ✔ binds qualification evidence to the exact clean Git subject (0.106667ms)\n  ✔ lets the qualification runner ignore only its active nested evidence directory (167.643292ms)\n  ✔ rejects an uncovered requirement (0.408208ms)\n  ✔ selects provider work only when explicitly requested (0.3545ms)\n  ✔ reuses provider evidence only across explicit provider-runtime-equivalent changes (0.121416ms)\n  ✔ fails closed when an explicit scenario omits its dependency (0.312542ms)\n  ✔ fails closed when a command variable is absent (0.124542ms)\n  ✔ keeps audit execution successful while emitting a blocking defect (0.991584ms)\n  ✔ assigns distinct executable tasks to the confirmed release blockers (3.546ms)\n  ✔ does not claim readiness from a partial successful selection (0.308875ms)\n  ✔ allows a gate pass only after all local and provider scenarios pass (0.344125ms)\n  ✔ keeps RF-04 harness timing diagnostic while gating tokens and outcomes (0.3255ms)\n  ✔ rejects a token regression even when aggregate evidence is complete (0.185292ms)\n  ✔ rejects verified-success and scope regressions without gating RF-04 harness timing (0.400792ms)\n  ✔ rejects an agent packet that grows beyond the release limit (0.349167ms)\n  ✔ requires distinct frozen cold and warm sample sets with at least 20 pairs (0.51625ms)\n  ✔ gates matched CLI latency on median and p95 (0.049916ms)\n  ✔ uses balanced replicated logical samples without weakening latency thresholds (0.113583ms)\n  ✔ requires 60 cold and 60 warm supervisor samples for both public frontends (5.99725ms)\n  ✔ records deterministic Git command histograms outside duration samples (0.172542ms)\n✔ v0.7.1 release qualification contract (185.832166ms)\nℹ tests 24\nℹ suites 1\nℹ pass 24\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 234.225875\n"
+    },
+    {
+      "id": "packaged-candidate-flow",
+      "title": "Packed candidate install, initialization, context, lifecycle, and migration flow",
+      "tier": "full",
+      "status": "passed",
+      "duration_ms": 44986,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "scripts/release/check-local-tarball-install-smoke.mjs"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/packaged-candidate-flow.log",
+      "output_tail": "installed migration matrix OK (scenarios=8)\nlocal tarball install smoke OK (202608051731-DD0X5Q)\n"
+    },
+    {
+      "id": "lifecycle-matrix",
+      "title": "Direct and branch_pr lifecycle state matrix",
+      "tier": "core",
+      "status": "passed",
+      "duration_ms": 16051,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "scripts/checks/run-vitest-suite.mjs",
+        "v0.7-lifecycle"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/lifecycle-matrix.log",
+      "output_tail": "Vitest suite v0.7-lifecycle: chunk 1/3 (6 files): packages/agentplane/src/commands/task/plan.unit.test.ts, packages/agentplane/src/commands/task/shared.verify-steps.test.ts, packages/agentplane/src/commands/task/verify-record.unit.test.ts, packages/agentplane/src/commands/task/finish.validation.unit.test.ts, packages/agentplane/src/commands/task/direct-task-supervisor.test.ts, packages/agentplane/src/commands/task/direct-task-supervisor-closeout.test.ts\nVitest suite v0.7-lifecycle: chunk 1/3 passed in 1866ms (Test Files  6 passed (6); Tests  76 passed (76); Duration  1.58s (transform 1.39s, setup 0ms, import 1.23s, tests 1.29s, environment 0ms))\nVitest suite v0.7-lifecycle: chunk 2/3 (6 files): packages/agentplane/src/commands/task/branch-task-supervisor.test.ts, packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts, packages/agentplane/src/cli/run-cli.core.task-guided.test.ts, packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts, packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts, packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts\nVitest suite v0.7-lifecycle: chunk 2/3 passed in 9252ms (Test Files  6 passed (6); Tests  42 passed (42); Duration  9.00s (transform 4.13s, setup 0ms, import 4.53s, tests 12.11s, environment 0ms))\nVitest suite v0.7-lifecycle: chunk 3/3 (1 files): packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts\nVitest suite v0.7-lifecycle: chunk 3/3 passed in 4863ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  4.64s (transform 1.62s, setup 0ms, import 1.13s, tests 3.44s, environment 0ms))\n"
+    },
+    {
+      "id": "context-matrix",
+      "title": "Automatic context-layer freshness, provenance, conflict, and budget matrix",
+      "tier": "core",
+      "status": "passed",
+      "duration_ms": 20435,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "scripts/checks/run-vitest-suite.mjs",
+        "v0.7-context"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/context-matrix.log",
+      "output_tail": "Vitest suite v0.7-context: chunk 1/2 (8 files): packages/agentplane/src/context/ingest-task.test.ts, packages/agentplane/src/context/ingest-task-pack.test.ts, packages/agentplane/src/context/search-freshness.unit.test.ts, packages/agentplane/src/context/reindex-projection.test.ts, packages/agentplane/src/context/knowledge-ref.test.ts, packages/agentplane/src/context/source-spans.test.ts, packages/agentplane/src/context/coverage-validation.test.ts, packages/agentplane/src/context/maximum-assimilation-artifacts-validation.test.ts\nVitest suite v0.7-context: chunk 1/2 passed in 1611ms (Test Files  8 passed (8); Tests  50 passed (50); Duration  1.38s (transform 642ms, setup 0ms, import 1.02s, tests 721ms, environment 0ms))\nVitest suite v0.7-context: chunk 2/2 (5 files): packages/agentplane/src/commands/context/reindex.incremental.unit.test.ts, packages/agentplane/src/commands/context/search.fts5.unit.test.ts, packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts, packages/agentplane/src/runner/context/task-context.test.ts, packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts\nVitest suite v0.7-context: chunk 2/2 passed in 18756ms (Test Files  5 passed (5); Tests  38 passed (38); Duration  18.52s (transform 2.39s, setup 0ms, import 2.63s, tests 21.65s, environment 0ms))\n"
+    },
+    {
+      "id": "supervisor-frontends",
+      "title": "Managed runner and compact external-agent supervisor protocol",
+      "tier": "core",
+      "status": "passed",
+      "duration_ms": 6846,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "scripts/qualification/check-v0.7.1-product-contract.mjs"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/supervisor-frontends.log",
+      "output_tail": "v0.7.1 product contract OK (canonical supervisor UX, guarded compatibility, compact packet, legacy inventory, TS7, and zero-unused CLI)\n"
+    },
+    {
+      "id": "supervisor-parity",
+      "title": "Shared supervisor state-machine parity and evidence outcomes",
+      "tier": "core",
+      "status": "passed",
+      "duration_ms": 35337,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "scripts/checks/run-vitest-suite.mjs",
+        "v0.7-supervisor"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/supervisor-parity.log",
+      "output_tail": "Vitest suite v0.7-supervisor: chunk 1/3 (6 files): packages/core/src/runner/supervisor-execution-episode.test.ts, packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts, packages/agentplane/src/commands/shared/workflow-supervisor.test.ts, packages/agentplane/src/commands/shared/workflow-step.test.ts, packages/agentplane/src/commands/shared/workflow-step-projections.test.ts, packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts\nVitest suite v0.7-supervisor: chunk 1/3 passed in 3046ms (Test Files  6 passed (6); Tests  80 passed (80); Duration  2.82s (transform 1.77s, setup 0ms, import 2.87s, tests 2.30s, environment 0ms))\nVitest suite v0.7-supervisor: chunk 2/3 (6 files): packages/agentplane/src/commands/task/direct-task-supervisor.test.ts, packages/agentplane/src/commands/task/branch-task-supervisor.test.ts, packages/agentplane/src/commands/task/agent-action-packet.test.ts, packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts, packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts, packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts\nVitest suite v0.7-supervisor: chunk 2/3 passed in 13077ms (Test Files  6 passed (6); Tests  70 passed (70); Duration  12.82s (transform 2.54s, setup 0ms, import 3.43s, tests 12.52s, environment 0ms))\nVitest suite v0.7-supervisor: chunk 3/3 (2 files): packages/agentplane/src/cli/run-cli.core.task-advance.test.ts, packages/agentplane/src/cli/run-cli.core.task-run.test.ts\nVitest suite v0.7-supervisor: chunk 3/3 passed in 19146ms (Test Files  2 passed (2); Tests  16 passed (16); Duration  18.86s (transform 3.04s, setup 0ms, import 2.72s, tests 20.56s, environment 0ms))\n"
+    },
+    {
+      "id": "recovery-matrix",
+      "title": "Interruption, ambiguity, replay, stale authority, hosted wait, and cleanup recovery",
+      "tier": "core",
+      "status": "passed",
+      "duration_ms": 54434,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "scripts/checks/run-vitest-suite.mjs",
+        "v0.7-recovery"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/recovery-matrix.log",
+      "output_tail": "Vitest suite v0.7-recovery: chunk 1/2 (6 files): packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts, packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts, packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel-effect-in-doubt.test.ts, packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts, packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-provenance.test.ts, packages/agentplane/src/runner/usecases/task-run-active-claim-reconciliation.test.ts\nVitest suite v0.7-recovery: chunk 1/2 passed in 37206ms (Test Files  6 passed (6); Tests  49 passed (49); Duration  36.93s (transform 3.49s, setup 0ms, import 3.55s, tests 69.09s, environment 0ms))\nVitest suite v0.7-recovery: chunk 2/2 (5 files): packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts, packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts, packages/agentplane/src/runner/usecases/task-run-state-fingerprint-post-state.integration.test.ts, packages/agentplane/src/commands/integrate-queue-recovery.test.ts, packages/agentplane/src/commands/pr/conflict-rework-recovery.test.ts\nVitest suite v0.7-recovery: chunk 2/2 passed in 17138ms (Test Files  5 passed (5); Tests  37 passed (37); Duration  16.85s (transform 2.72s, setup 0ms, import 2.75s, tests 27.63s, environment 0ms))\n"
+    },
+    {
+      "id": "hosted-boundary-matrix",
+      "title": "PR publication, checks, merge, hosted close, and release boundary matrix",
+      "tier": "full",
+      "status": "passed",
+      "duration_ms": 13154,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "scripts/checks/run-vitest-suite.mjs",
+        "v0.7-hosted"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/hosted-boundary-matrix.log",
+      "output_tail": "Vitest suite v0.7-hosted: chunk 1/2 (4 files): packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts, packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts, packages/agentplane/src/commands/task/hosted-close-pr.command.test.ts, packages/agentplane/src/commands/task/hosted-merge-sync.test.ts\nVitest suite v0.7-hosted: chunk 1/2 passed in 9323ms (Test Files  4 passed (4); Tests  19 passed (19); Duration  8.99s (transform 3.61s, setup 0ms, import 3.75s, tests 13.48s, environment 0ms))\nVitest suite v0.7-hosted: chunk 2/2 (3 files): packages/agentplane/src/commands/pr/integrate/cmd.protected-base.test.ts, packages/agentplane/src/commands/release/apply.push-recovery.test.ts, packages/agentplane/src/commands/release/apply.apply-flow.test.ts\nVitest suite v0.7-hosted: chunk 2/2 passed in 3742ms (Test Files  3 passed (3); Tests  10 passed (10); Duration  3.49s (transform 1.90s, setup 0ms, import 2.51s, tests 3.17s, environment 0ms))\n"
+    },
+    {
+      "id": "cli-latency",
+      "title": "Deterministic CLI cold and wall-time latency guards",
+      "tier": "full",
+      "status": "failed",
+      "duration_ms": 8368,
+      "exit_code": 1,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "scripts/checks/check-cli-walltime-baseline.mjs",
+        "--warmups",
+        "1",
+        "--attempts",
+        "1"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/cli-latency.log",
+      "output_tail": "error: CLI wall-time baseline guard failed after 1 attempt.\n- task_list: median_ms=282.144 exceeds max_median_ms=280\n- task_next: median_ms=276.568 exceeds max_median_ms=240\n- task_next: p95_ms=281.07 exceeds max_p95_ms=260\n- preflight_quick: median_ms=409.095 exceeds max_median_ms=330\n\nLast measurement: quickstart median=216.876ms (threshold=220ms, p95=232.84ms); task_list median=282.144ms (threshold=280ms, p95=283.899ms); task_search median=288.937ms (threshold=290ms, p95=291.203ms); task_next median=276.568ms (threshold=240ms, p95=281.07ms); preflight_quick median=409.095ms (threshold=330ms, p95=412.279ms); help median=214.25ms (threshold=220ms, p95=214.467ms); version median=205.9ms (threshold=220ms, p95=205.959ms)\n"
+    },
+    {
+      "id": "matched-cli-latency",
+      "title": "Interleaved v0.6.26 versus packed-candidate CLI latency",
+      "tier": "full",
+      "status": "passed",
+      "duration_ms": 290859,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs",
+        "--subject",
+        "275bdfa32e6a11a99d31bbf91180d27d4a294bca",
+        "--out",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/matched-cli-latency.json"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/matched-cli-latency.log",
+      "output_tail": "matched CLI latency: pass; baseline=0.6.26; candidate=0.7.3; failures=none; out=/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/matched-cli-latency.json\n"
+    },
+    {
+      "id": "supervisor-latency",
+      "title": "Packed public supervisor latency versus published v0.6.26",
+      "tier": "full",
+      "status": "passed",
+      "duration_ms": 225295,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "scripts/qualification/measure-v0.7.1-supervisor-latency.mjs",
+        "--subject",
+        "275bdfa32e6a11a99d31bbf91180d27d4a294bca",
+        "--out",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/supervisor-latency.json"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/supervisor-latency.log",
+      "output_tail": "supervisor latency: pass; baseline=0.6.26; candidate=0.7.3; failures=none; out=/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/supervisor-latency.json\n"
+    },
+    {
+      "id": "full-contract",
+      "title": "Repository contract, type/tooling, architecture, and baseline guards",
+      "tier": "full",
+      "status": "passed",
+      "duration_ms": 156381,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "bun",
+        "run",
+        "ci:contract"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/full-contract.log",
+      "output_tail": "encies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/scenario\n\n✔ no dependency violations found (79 modules, 173 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/shared\n\n✔ no dependency violations found (443 modules, 1043 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/task\n\n✔ no dependency violations found (800 modules, 2418 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/upgrade\n\n✔ no dependency violations found (29 modules, 44 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/*.ts\n\n✔ no dependency violations found (646 modules, 1863 dependencies cruised)\n\ndependency-cruiser: packages/core/src\n\n✔ no dependency violations found (92 modules, 203 dependencies cruised)\n\ndependency-cruiser: packages/recipes/src\n\n✔ no dependency violations found (19 modules, 20 dependencies cruised)\n\ndependency-cruiser: packages/testkit/src\n\n✔ no dependency violations found (592 modules, 1591 dependencies cruised)\n\nClone baseline OK (sources=1359, clones=90, duplicatedLines=1421, duplicatedTokens=9869, percentage=0.5627277047362585; baseline sources=1274, clones=90, duplicatedLines=1431, duplicatedTokens=9977, percentage=0.6187760255639683)\nKnip unused-code baseline OK (files=0/0, exports=18/18, types=3/3, enumMembers=0/0, namespaceMembers=0/0, total=21/21; agentplane CLI: files=0/0 total=0/0, core compatibility: files=0/0 total=21/21)\nCoverage threshold guard passed (lines=80 functions=80 branches=72 statements=80).\n\n$ bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run typescript:toolchain:check && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check && bun run coverage:thresholds:check\n$ prettier . --check\n$ bun scripts/generate/sync-schemas.mjs check\n$ node scripts/checks/check-spec-examples.mjs\n$ node scripts/checks/check-acr-example-version.mjs\n$ node scripts/generate/sync-agent-templates.mjs check\n$ node scripts/checks/check-policy-routing.mjs\n$ node scripts/release/check-release-parity.mjs\n$ node scripts/checks/check-agent-bootstrap-fresh.mjs\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-scripts-readme.mjs --check\n$ node scripts/checks/check-compatibility-contract-baseline.mjs\n$ node scripts/checks/check-agent-efficiency-baseline.mjs\n$ node scripts/checks/check-agent-efficiency-replay.mjs\n$ node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000\n$ node scripts/checks/check-lifecycle-invariants.mjs\n$ node scripts/checks/check-types-files.mjs\n$ node scripts/checks/check-typescript-toolchain.mjs\n$ node scripts/checks/check-vitest-projects.mjs\n$ node scripts/checks/check-shared-guards.mjs && bun run trust:ratchet:check\n$ node scripts/checks/check-trust-boundary-ratchet.mjs\n$ eslint packages scripts eslint.config.cjs vitest.config.ts\n$ node scripts/checks/check-no-console.mjs\n$ bun run arch:baseline && bun run arch:deps\n$ node scripts/checks/check-depcruise-known-violations.mjs\n$ node scripts/checks/run-depcruise-arch.mjs depcruise.config.cjs\n$ node scripts/checks/check-clone-baseline.mjs\n$ node scripts/checks/check-knip-baseline.mjs\n$ node scripts/checks/check-coverage-thresholds.mjs\n"
+    },
+    {
+      "id": "critical-cli",
+      "title": "Critical CLI behavior suite",
+      "tier": "full",
+      "status": "passed",
+      "duration_ms": 76072,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "bun",
+        "run",
+        "test:critical"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/critical-cli.log",
+      "output_tail": "Vitest suite critical-cli: chunk 1/12 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts\nVitest suite critical-cli: chunk 1/12 passed in 14033ms (Test Files  1 passed (1); Tests  9 passed (9); Duration  13.77s (transform 1.21s, setup 0ms, import 1.61s, tests 12.07s, environment 0ms))\nVitest suite critical-cli: chunk 2/12 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts\nVitest suite critical-cli: chunk 2/12 passed in 8542ms (Test Files  1 passed (1); Tests  8 passed (8); Duration  8.33s (transform 1.26s, setup 0ms, import 1.57s, tests 6.69s, environment 0ms))\nVitest suite critical-cli: chunk 3/12 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts\nVitest suite critical-cli: chunk 3/12 passed in 2124ms (Test Files  1 passed (1); Tests  15 passed (15); Duration  1.86s (transform 1.32s, setup 0ms, import 1.64s, tests 133ms, environment 0ms))\nVitest suite critical-cli: chunk 4/12 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts\nVitest suite critical-cli: chunk 4/12 passed in 23197ms (Test Files  1 passed (1); Tests  11 passed (11); Duration  22.96s (transform 1.28s, setup 0ms, import 1.58s, tests 21.29s, environment 0ms))\nVitest suite critical-cli: chunk 5/12 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts\nVitest suite critical-cli: chunk 5/12 passed in 2387ms (Test Files  1 passed (1); Tests  10 passed (10); Duration  2.12s (transform 1.27s, setup 0ms, import 1.63s, tests 400ms, environment 0ms))\nVitest suite critical-cli: chunk 6/12 (1 files): packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 6/12 passed in 3257ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  3.05s (transform 1.14s, setup 0ms, import 1.49s, tests 1.48s, environment 0ms))\nVitest suite critical-cli: chunk 7/12 (1 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts\nVitest suite critical-cli: chunk 7/12 passed in 3279ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  3.05s (transform 1.25s, setup 0ms, import 1.63s, tests 1.34s, environment 0ms))\nVitest suite critical-cli: chunk 8/12 (1 files): packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 8/12 passed in 3894ms (Test Files  1 passed (1); Tests  3 passed (3); Duration  3.64s (transform 1.41s, setup 0ms, import 1.86s, tests 1.68s, environment 0ms))\nVitest suite critical-cli: chunk 9/12 (1 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts\nVitest suite critical-cli: chunk 9/12 passed in 3596ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  3.37s (transform 1.20s, setup 0ms, import 1.56s, tests 1.73s, environment 0ms))\nVitest suite critical-cli: chunk 10/12 (1 files): packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 10/12 passed in 2908ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  2.68s (transform 1.16s, setup 0ms, import 1.51s, tests 1.08s, environment 0ms))\nVitest suite critical-cli: chunk 11/12 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 11/12 passed in 2325ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  2.03s (transform 1.34s, setup 0ms, import 1.62s, tests 320ms, environment 0ms))\nVitest suite critical-cli: chunk 12/12 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 12/12 passed in 6423ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  6.18s (transform 1.46s, setup 0ms, import 1.75s, tests 4.34s, environment 0ms))\n\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n"
+    },
+    {
+      "id": "typecheck",
+      "title": "TypeScript candidate build and type contract",
+      "tier": "full",
+      "status": "passed",
+      "duration_ms": 239,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "bun",
+        "run",
+        "typecheck"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/typecheck.log",
+      "output_tail": "$ node scripts/checks/run-typescript-build.mjs\n"
+    },
+    {
+      "id": "workflow-coverage",
+      "title": "Workflow runtime coverage and harness matrix",
+      "tier": "full",
+      "status": "passed",
+      "duration_ms": 1416,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "bun",
+        "run",
+        "coverage:workflow-suite"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/workflow-coverage.log",
+      "output_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout\n\n\n Test Files  13 passed (13)\n      Tests  50 passed (50)\n   Start at  20:46:40\n   Duration  756ms (transform 417ms, setup 0ms, import 1.29s, tests 583ms, environment 1ms)\n\nWorkflow harness suite contract OK (5 source targets; matrix=docs/developer/workflow-harness-test-matrix.mdx).\n\n$ node scripts/workflow/run-workflow-coverage-suite.mjs\n{\"ts\":\"2026-08-05T17:46:40.901Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-08-05T17:46:40.916Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-08-05T17:46:40.916Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-08-05T17:46:40.921Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-08-05T17:46:40.921Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-08-05T17:46:40.927Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n{\"ts\":\"2026-08-05T17:46:40.980Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-IpYSqF/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-IpYSqF/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-08-05T17:46:41.000Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-UW2HAu/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-UW2HAu/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-08-05T17:46:41.005Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-UW2HAu/.agentplane/WORKFLOW.md\",\"from\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-UW2HAu/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-08-05T17:46:41.011Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-4h2c4E/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-4h2c4E/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-08-05T17:46:41.015Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n$ node scripts/checks/check-workflow-harness-coverage.mjs\n"
+    },
+    {
+      "id": "doctor",
+      "title": "Candidate repository diagnostics",
+      "tier": "full",
+      "status": "passed",
+      "duration_ms": 8048,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "packages/agentplane/bin/agentplane.js",
+        "doctor"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/doctor.log",
+      "output_tail": "✅ doctor (OK)\n\nℹ️ doctor: checking workflow contract\n{\"ts\":\"2026-08-05T17:46:41.904Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_doctor_check\",\"details\":{\"ok\":true,\"findings\":0}}\nℹ️ doctor: checking workspace\nℹ️ doctor: checking branch_pr drift\nℹ️ doctor: checking runtime source\nℹ️ doctor: checking project-local blueprints\nℹ️ doctor: checking prompt graph\nℹ️ doctor: checking recent task archive\n⚠️ doctor findings: errors=0 warnings=4 info=9\n- [WARN] State: branch_pr tasks appear shipped on the base branch but remain open\nLikely cause: the verified task commit already landed on the base branch, but canonical task closure artifacts were never reconciled\nNext action: agentplane task normalize --sync-branch-pr-state (mark locally shipped branch_pr tasks as DONE in the task projection before committing the reconciled task artifacts on the base branch)\nDetails: Affected tasks: 5\n  - Examples: 202607221908-7WV0A7@main:b14fb5a94795 verified_via=task, 202607221908-RC1DX8@main:aea474462713 verified_via=task, 202607221908-YD5J89@main:d183683d77ba verified_via=task, 202607300112-48RH1X@main:d8b93f77c2cb verified_via=task, 202607300150-MGCHE6@main:2c8d47c38939 verified_via=task\n- [INFO] Runtime mode: repo-local (repo-local framework binary)\n- [INFO] Active binary: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/packages/agentplane/bin/agentplane.js\n- [INFO] Resolved agentplane: 0.7.3 @ /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/packages/agentplane\n- [INFO] Resolved @agentplaneorg/core: 0.7.3 @ /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/packages/core\n- [INFO] Framework repo root: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout\n- [INFO] Framework agentplane root: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/packages/agentplane\n- [INFO] Framework core root: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/packages/core\n- [INFO] Project blueprint compatibility: compatible; trusted=0\n- [WARN] DONE task is missing implementation commit hash: 202607310026-4V5K9V (finish with --commit <hash>).\n- [WARN] DONE task is missing implementation commit hash: 202607311706-5N483Q (finish with --commit <hash>).\n- [INFO] Historical task archive contains 101 DONE tasks with unknown implementation commit hashes across 101 distinct commit hashes. Examples: 03985dd3622cb28371e96dbb79474d45de024c54 (1 task: 202607221555-JSEZ5E); 05037fa9edf56d5348d91aea2b68a68972a446f3 (1 task: 202607092208-1J49NQ); 06207ca15571411f94e28c49d6b52e3a43468bf3 (1 task: 202607221848-VBV9B1); +98 more hash groups\n- [WARN] Historical task archive contains 2 DONE tasks with implementation commits that point to close commits across 2 distinct commit hashes. Examples: 41763040243173eff12440f524acae1ef15b80eb (1 task: 202607311707-DRYTNK; subject: 🧪 DRYTNK task: pre-merge closure); f87c0edab06497bc9443924509c8b0fa515de6cb (1 task: 202608040215-0Z0C92; subject: 🧪 0Z0C92 close: record candidate pilot verification)\n"
+    },
+    {
+      "id": "release-task-state",
+      "title": "Release task registry and closeout state",
+      "tier": "full",
+      "status": "passed",
+      "duration_ms": 306,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "bun",
+        "run",
+        "task-state:check"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/release-task-state.log",
+      "output_tail": "task state OK (tasks=3240 release_closure=72)\n\n$ node scripts/checks/check-task-state.mjs\n"
+    },
+    {
+      "id": "provider-matrix",
+      "title": "Bounded Codex semantic qualification: 50 runs and 55 provider episodes",
+      "tier": "provider",
+      "status": "passed",
+      "duration_ms": 2174097,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "scripts/bench/capture-agent-efficiency-candidate.mjs",
+        "--subject",
+        "275bdfa32e6a11a99d31bbf91180d27d4a294bca",
+        "--codex-version",
+        "0.146.0-alpha.3.1",
+        "--runs",
+        "5",
+        "--baseline-evidence",
+        "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json",
+        "--capture"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/provider-matrix.log",
+      "output_tail": "RF-04 candidate pinned baseline measurement materialized (subject=275bdfa32e6a11a99d31bbf91180d27d4a294bca; runs=50; episodes=55; verdict=fail)\n"
+    },
+    {
+      "id": "efficiency-evidence",
+      "title": "Matched provider-token, quality, and structural-hash evidence",
+      "tier": "core",
+      "status": "passed",
+      "duration_ms": 100,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "scripts/qualification/check-v0.7.1-efficiency-evidence.mjs",
+        "--evidence",
+        ".agentplane/cache/rf04-candidate/275bdfa32e6a11a99d31bbf91180d27d4a294bca/measurement.pinned-baseline-codex-0.146.0-alpha.3.1.json",
+        "--subject",
+        "275bdfa32e6a11a99d31bbf91180d27d4a294bca",
+        "--provider-source-subject",
+        "275bdfa32e6a11a99d31bbf91180d27d4a294bca",
+        "--out",
+        ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/efficiency-evidence.json"
+      ],
+      "log": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/efficiency-evidence.log",
+      "output_tail": "v0.7.1 efficiency evidence: pass; token_reduction=31.05%; failures=0; out=/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041322-M26FS0-stabilize-hosted-release-evidence-closeout/.agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/efficiency-evidence.json\n"
+    }
+  ],
+  "defects": [
+    {
+      "id": "QR-cli-latency",
+      "scenario_id": "cli-latency",
+      "classification": "absolute_cli_latency_diagnostic",
+      "reproduction": "\"node\" \"scripts/checks/check-cli-walltime-baseline.mjs\" \"--warmups\" \"1\" \"--attempts\" \"1\"",
+      "evidence": ".agentplane/tasks/202608041322-M26FS0/evidence/v0.7.3-qualification-275bdfa3/logs/cli-latency.log",
+      "impact": "Formal CLI preparation exceeds the historical absolute threshold in the current environment; a matched baseline decides release impact.",
+      "proposed_fix": "Correlate the absolute result with the matched v0.6.26 comparison before attributing a product regression.",
+      "owner_task": "202608021231-SHYJGK",
+      "release_disposition": "advisory",
+      "exit_code": 1,
+      "signal": null,
+      "timed_out": false
+    }
+  ]
+}
