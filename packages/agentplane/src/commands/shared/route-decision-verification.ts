@@ -22,6 +22,26 @@ function hostedCloseVerificationTarget(
     : null;
 }
 
+export function qualityReworkHasNewVerification(task: TaskData): boolean {
+  const reviewUpdatedAt = task.quality_review?.updated_at;
+  const verificationUpdatedAt = task.verification?.updated_at;
+  if (
+    task.quality_review?.state !== "rework" ||
+    task.verification?.state !== "ok" ||
+    !reviewUpdatedAt ||
+    !verificationUpdatedAt
+  ) {
+    return false;
+  }
+  const reviewTime = Date.parse(reviewUpdatedAt);
+  const verificationTime = Date.parse(verificationUpdatedAt);
+  return (
+    Number.isFinite(reviewTime) &&
+    Number.isFinite(verificationTime) &&
+    verificationTime > reviewTime
+  );
+}
+
 export async function hasAcceptedVerificationForCurrentImplementation(opts: {
   ctx: CommandContext;
   task: TaskData;

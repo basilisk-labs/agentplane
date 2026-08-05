@@ -20,7 +20,10 @@ import {
   type TaskWorktreeCleanliness,
 } from "./task-worktree-cleanliness.js";
 import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
-import { hasAcceptedVerificationForCurrentImplementation } from "./route-decision-verification.js";
+import {
+  hasAcceptedVerificationForCurrentImplementation,
+  qualityReworkHasNewVerification,
+} from "./route-decision-verification.js";
 import {
   filterTaskWorktreeBlockingPaths,
   isTaskArtifactPath,
@@ -197,26 +200,6 @@ async function qualityReviewIsFreshForHead(opts: {
     workflowMode: opts.ctx.config.workflow_mode,
   }).catch(() => null);
   return expectedSha === review.evaluated_sha;
-}
-
-function qualityReworkHasNewVerification(task: TaskData): boolean {
-  const reviewUpdatedAt = task.quality_review?.updated_at;
-  const verificationUpdatedAt = task.verification?.updated_at;
-  if (
-    task.quality_review?.state !== "rework" ||
-    task.verification?.state !== "ok" ||
-    !reviewUpdatedAt ||
-    !verificationUpdatedAt
-  ) {
-    return false;
-  }
-  const reviewTime = Date.parse(reviewUpdatedAt);
-  const verificationTime = Date.parse(verificationUpdatedAt);
-  return (
-    Number.isFinite(reviewTime) &&
-    Number.isFinite(verificationTime) &&
-    verificationTime > reviewTime
-  );
 }
 
 async function readTaskPrMeta(opts: {
