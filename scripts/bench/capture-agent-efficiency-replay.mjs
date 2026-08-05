@@ -59,6 +59,8 @@ import {
   installFixtureRegistryOverlay,
 } from "./internal/agent-efficiency-capture-runtime.mjs";
 import {
+  CODEX_REPLAY_BINARY,
+  CODEX_REPLAY_BINARY_ENV,
   CODEX_REPLAY_CLI_VERSION,
   CODEX_REPLAY_CLI_VERSION_ENV,
   resolveCodexReplayCliVersion,
@@ -383,6 +385,7 @@ function captureWithDriver({
         ];
         const contractEnvironment = createReplayDriverContractEnvironment({
           anchor,
+          codexBinary: process.env[CODEX_REPLAY_BINARY_ENV] ?? CODEX_REPLAY_BINARY,
           codexCliVersion,
           dependencyClaim,
           driverIdentity,
