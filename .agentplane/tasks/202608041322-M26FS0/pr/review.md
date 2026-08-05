@@ -58,10 +58,10 @@ Created: 2026-08-04T13:24:55.578Z
  .../release/publish-workflow-contract.test.ts      |  36 ++-
  .../release/release-task-evidence-script.test.ts   |  61 +++-
  .../route-decision-blockers.quality-review.test.ts |   5 +-
- .../src/commands/shared/route-decision-blockers.ts |  16 +-
+ .../src/commands/shared/route-decision-blockers.ts |  41 +--
  .../route-decision-blockers.worktree.test.ts       |  27 ++
  .../shared/route-decision-verification.test.ts     |   4 +
- .../commands/shared/route-decision-verification.ts |   3 +
+ .../commands/shared/route-decision-verification.ts |  23 ++
  .../src/commands/shared/route-decision.ts          |   3 +-
  .../commands/shared/task-verification-records.ts   |  24 +-
  .../src/commands/task/close-tail-state.test.ts     |  69 +++++
@@ -91,7 +91,7 @@ Created: 2026-08-04T13:24:55.578Z
  scripts/release/release-task-evidence.mjs          |   7 -
  website/static/img/social/docs/releases/v0.7.3.png | Bin 0 -> 53092 bytes
  website/static/img/social/manifest.json            |   8 +
- 62 files changed, 1632 insertions(+), 284 deletions(-)
+ 62 files changed, 1656 insertions(+), 305 deletions(-)
 ```
 
 </details>

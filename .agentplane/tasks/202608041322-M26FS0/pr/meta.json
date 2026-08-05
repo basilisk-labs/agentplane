@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608041322-M26FS0/stabilize-hosted-release-evidence-closeout",
   "created_at": "2026-08-04T13:24:55.578Z",
-  "diffstat_sha256": "sha256:ce73f560f8d0df0b684b2700dd82c6ce2c949566db9ab8fd1ba3525cbb13364a",
+  "diffstat_sha256": "sha256:6bc0bc2b9f0cf8eb1d4bbdb3f164c8f1004c53c0b7c35aeaf93b39c9475bb812",
   "last_verified_at": "2026-08-05T16:19:41.965Z",
   "last_verified_diffstat_sha256": "sha256:b84f5e292a652acc474aaee962321edd166268133663277b8bd34cbec6e03047",
   "pr_number": 4778,
