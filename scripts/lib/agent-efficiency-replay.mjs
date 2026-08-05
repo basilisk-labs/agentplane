@@ -851,6 +851,13 @@ export function buildReplayDriverEnvironment(sourceEnv, contractEnv) {
     PATH: TRUSTED_REPLAY_DRIVER_PATH,
     TZ: "UTC",
   };
+  const codexBinary = sourceEnv.AGENTPLANE_RF04_REPLAY_CODEX_BINARY;
+  if (codexBinary !== undefined) {
+    if (typeof codexBinary !== "string" || codexBinary.length === 0) {
+      throw new Error("invalid replay Codex binary override");
+    }
+    result.AGENTPLANE_RF04_REPLAY_CODEX_BINARY = codexBinary;
+  }
   for (const name of REPLAY_CONTRACT_ENV_KEYS) {
     const value = contractEnv[name];
     if (typeof value !== "string" || value.length === 0) {

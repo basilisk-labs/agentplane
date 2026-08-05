@@ -34,6 +34,8 @@ type DriverModule = {
   >;
   anchorTaskOwner(role: string): string;
   CODEX_REPLAY_BINARY: string;
+  CODEX_REPLAY_BINARY_ENV: string;
+  CODEX_REPLAY_ARCHIVE_SHA256: Readonly<Record<string, string>>;
   CODEX_REPLAY_CLI_VERSION: string;
   CODEX_REPLAY_CLI_VERSION_ENV: string;
   CODEX_REPLAY_MODEL: string;
@@ -145,6 +147,12 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
 
     expect(replayDriver.CODEX_REPLAY_BINARY).toBe(
       "/Applications/ChatGPT.app/Contents/Resources/codex",
+    );
+    expect(replayDriver.CODEX_REPLAY_BINARY_ENV).toBe(
+      "AGENTPLANE_RF04_REPLAY_CODEX_BINARY",
+    );
+    expect(replayDriver.CODEX_REPLAY_ARCHIVE_SHA256["0.146.0-alpha.3.1"]).toBe(
+      "sha256:fa0cb7c5f80e6a192563fcb1d9f98857f4a808a28cb29289400ed7110291bce4",
     );
     expect(replayDriver.CODEX_REPLAY_CLI_VERSION).toBe("0.145.0-alpha.18");
     expect(

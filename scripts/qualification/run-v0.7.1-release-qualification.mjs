@@ -15,6 +15,7 @@ import {
 } from "./release-qualification.mjs";
 import {
   assertCodexBinary,
+  CODEX_REPLAY_BINARY_ENV,
   CODEX_REPLAY_CLI_VERSION_ENV,
 } from "../bench/internal/agent-efficiency-codex-runtime.mjs";
 import { readPinnedQualificationBaseline } from "../bench/capture-agent-efficiency-candidate.mjs";
@@ -242,7 +243,12 @@ export function preflightQualificationProviderRuntime(
   verifyEquivalence = readProviderEvidenceEquivalence,
 ) {
   if (options.dryRun || !scenarios.some((scenario) => scenario.tier === "provider")) return null;
-  const runtime = verify({ [CODEX_REPLAY_CLI_VERSION_ENV]: options.codexVersion });
+  const runtime = verify({
+    [CODEX_REPLAY_CLI_VERSION_ENV]: options.codexVersion,
+    ...(process.env[CODEX_REPLAY_BINARY_ENV]
+      ? { [CODEX_REPLAY_BINARY_ENV]: process.env[CODEX_REPLAY_BINARY_ENV] }
+      : {}),
+  });
   verifyBaseline({
     codexCliVersion: options.codexVersion,
     evidencePath: options.providerBaselineEvidencePath ?? defaultProviderBaselineEvidencePath,
