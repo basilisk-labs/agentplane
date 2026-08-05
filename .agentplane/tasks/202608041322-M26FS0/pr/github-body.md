@@ -57,6 +57,7 @@ while command-level p95 failures change between runs.
  ...-cli.critical.agent-efficiency-baseline.test.ts |  16 +-
  ...cli.critical.agent-efficiency-candidate.test.ts |  63 +++-
  ...critical.agent-efficiency-replay-driver.test.ts |   6 +
+ ...tical.agent-efficiency-replay-hardening.test.ts |   2 +
  ...un-cli.critical.agent-efficiency-replay.test.ts |   9 +-
  .../release/publish-workflow-contract.test.ts      |  36 ++-
  .../release/release-task-evidence-script.test.ts   |  61 +++-
@@ -94,7 +95,7 @@ while command-level p95 failures change between runs.
  scripts/release/release-task-evidence.mjs          |   7 -
  website/static/img/social/docs/releases/v0.7.3.png | Bin 0 -> 53092 bytes
  website/static/img/social/manifest.json            |   8 +
- 62 files changed, 1656 insertions(+), 305 deletions(-)
+ 63 files changed, 1658 insertions(+), 305 deletions(-)
 ```
 
 </details>

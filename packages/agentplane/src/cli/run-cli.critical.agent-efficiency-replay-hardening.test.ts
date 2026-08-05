@@ -780,6 +780,7 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
       };
     }>("scripts/bench/internal/agent-efficiency-dependency-manifest.mjs");
     const driverModule = await importModule<{
+      CODEX_REPLAY_BINARY: string;
       runReplayDriver(
         args: string[],
         dependencies: {
@@ -850,6 +851,7 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
     expect(adapterFailure).toBeDefined();
     const contract = {
       AGENTPLANE_RF04_REPLAY_ANCHOR: replay.REPLAY_ANCHOR_COMMIT,
+      AGENTPLANE_RF04_REPLAY_CODEX_BINARY: driverModule.CODEX_REPLAY_BINARY,
       AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_EXECUTABLE_SHA256:
         dependencyClaim.capture_executable_sha256,
       AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_PLATFORM: JSON.stringify(
