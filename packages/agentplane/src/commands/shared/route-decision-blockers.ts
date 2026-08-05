@@ -301,10 +301,10 @@ export function addVerificationRequiredBlocker(opts: {
   acceptedVerificationRecord?: boolean;
 }): void {
   const status = String(opts.task.status).toUpperCase();
-  const hasRecordedImplementationCommit =
-    typeof opts.task.commit?.hash === "string" && opts.task.commit.hash.trim().length > 0;
   const requiresVerification =
-    status === "DONE" || (status === "DOING" && hasRecordedImplementationCommit);
+    status === "DONE" ||
+    (status === "DOING" &&
+      (Boolean(opts.task.commit?.hash?.trim()) || opts.task.verification?.state === "ok"));
   if (
     !requiresVerification ||
     (opts.task.verification?.state === "ok" && opts.acceptedVerificationRecord !== false)

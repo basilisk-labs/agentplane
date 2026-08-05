@@ -126,6 +126,33 @@ describe("route task-worktree blockers", () => {
     expect(freshBlockers).toEqual([]);
   });
 
+  it("invalidates stale verification before the active task records its final commit", () => {
+    const blockers: RouteBlocker[] = [];
+    addVerificationRequiredBlocker({
+      blockers,
+      task: {
+        id: "T-1",
+        title: "Task",
+        description: "Task",
+        status: "DOING",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: [],
+        verify: ["bun test"],
+        verification: { state: "ok" },
+      },
+      acceptedVerificationRecord: false,
+    });
+
+    expect(blockers).toEqual([
+      {
+        code: "verification_required",
+        summary: "the passing verification record does not cover the current implementation head",
+      },
+    ]);
+  });
+
   it("requires every path to be clean once the route reaches integration", () => {
     expect(
       collect({
