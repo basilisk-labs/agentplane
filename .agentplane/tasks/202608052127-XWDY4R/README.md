@@ -4,7 +4,7 @@ title: "Keep release diagnostics on the current published target"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-05T23:47:25.283Z"
+  updated_at: "2026-08-05T23:49:09.952Z"
   updated_by: "TESTER"
-  note: "Verification rebound after committing the archived evidence set. Candidate code remains 3195e6fb/948b9d8a implementation; consolidated qualification evidence is now part of the reviewed diff. No provider or test retry was performed."
+  note: "Consolidated post-release verification accepted with structured durable evidence; no test or provider retry was performed."
   attempts: 0
 commit:
   hash: "948b9d8a90b7e5483f55dcf04053be5106eff035"
@@ -77,8 +77,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verification rebound after committing the archived evidence set. Candidate code remains 3195e6fb/948b9d8a implementation; consolidated qualification evidence is now part of the reviewed diff. No provider or test retry was performed."
+  -
+    type: "verify"
+    at: "2026-08-05T23:49:09.952Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Consolidated post-release verification accepted with structured durable evidence; no test or provider retry was performed."
 doc_version: 3
-doc_updated_at: "2026-08-05T23:47:26.478Z"
+doc_updated_at: "2026-08-05T23:49:11.218Z"
 doc_updated_by: "CODER"
 description: "Prevent release next-action from mixing the current package/tag target with stale local release-plan SHA and hosted evidence; add regression coverage, merge the fix, and publish the verified v0.7.4 patch release."
 sections:
@@ -163,6 +169,56 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-05T23:46:00.003Z, excerpt_hash=sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608052127-XWDY4R-keep-release-diagnostics-on-the-current-publishe/.agentplane/tasks/202608052127-XWDY4R/blueprint/resolved-snapshot.json
+    - old_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+    - current_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608052127-XWDY4R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608052127-XWDY4R
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-05T23:49:09.952Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Consolidated post-release verification accepted with structured durable evidence; no test or provider retry was performed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-05T23:47:26.478Z, excerpt_hash=sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463
+
+    Details:
+
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: .agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-3195e6fb/logs/full-contract.log and packaged-candidate-flow.log
+    Scope: complete build, contract, migration, packed-install, platform, workflow, coverage, and release-critical gates
+
+    Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1
+    Result: pass
+    Evidence: .agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-3195e6fb/report.json and efficiency-evidence.json
+    Scope: exact candidate 3195e6fb; 50 runs, 55 provider episodes, no retry, zero blocking defects
+
+    Command: bun run ci:contract and bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-3195e6fb/logs/full-contract.log and critical-cli.log
+    Scope: repository contract plus release-critical CLI regression surface
+
+    Command: bun run release:evidence:collect -- --version 0.7.3 --json
+    Result: pass
+    Evidence: .agentplane/.release/evidence/v0.7.3.json
+    Scope: exact-tag npm, GitHub Release, successful publish workflow, canonical publish-result, and idempotent postpublish audit
 
     BlueprintSnapshotRef:
     - state: current
@@ -298,6 +354,56 @@ Attempts: 0
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-05T23:46:00.003Z, excerpt_hash=sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608052127-XWDY4R-keep-release-diagnostics-on-the-current-publishe/.agentplane/tasks/202608052127-XWDY4R/blueprint/resolved-snapshot.json
+- old_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+- current_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608052127-XWDY4R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608052127-XWDY4R
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-05T23:49:09.952Z — VERIFY — ok
+
+By: TESTER
+
+Note: Consolidated post-release verification accepted with structured durable evidence; no test or provider retry was performed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-05T23:47:26.478Z, excerpt_hash=sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463
+
+Details:
+
+Command: bun run release:prepublish
+Result: pass
+Evidence: .agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-3195e6fb/logs/full-contract.log and packaged-candidate-flow.log
+Scope: complete build, contract, migration, packed-install, platform, workflow, coverage, and release-critical gates
+
+Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1
+Result: pass
+Evidence: .agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-3195e6fb/report.json and efficiency-evidence.json
+Scope: exact candidate 3195e6fb; 50 runs, 55 provider episodes, no retry, zero blocking defects
+
+Command: bun run ci:contract and bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-3195e6fb/logs/full-contract.log and critical-cli.log
+Scope: repository contract plus release-critical CLI regression surface
+
+Command: bun run release:evidence:collect -- --version 0.7.3 --json
+Result: pass
+Evidence: .agentplane/.release/evidence/v0.7.3.json
+Scope: exact-tag npm, GitHub Release, successful publish workflow, canonical publish-result, and idempotent postpublish audit
 
 BlueprintSnapshotRef:
 - state: current
