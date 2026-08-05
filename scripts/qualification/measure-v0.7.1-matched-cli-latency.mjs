@@ -27,6 +27,7 @@ const BASELINE_VERSION = "0.6.26";
 const PACKAGES = ["core", "recipes", "agentplane"];
 const DEFAULT_RUNS = 20;
 const DEFAULT_WARMUPS = 2;
+const SPOTLIGHT_EXCLUSION_MARKER = ".metadata_never_index";
 
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
@@ -51,6 +52,12 @@ function parseArgs(argv) {
 }
 
 const run = createQualificationCommandRunner(repoRoot);
+
+export function createMatchedLatencyTempRoot(systemTempRoot = os.tmpdir()) {
+  const tempRoot = mkdtempSync(path.join(systemTempRoot, "agentplane-matched-cli-latency-"));
+  writeFileSync(path.join(tempRoot, SPOTLIGHT_EXCLUSION_MARKER), "", "utf8");
+  return tempRoot;
+}
 
 function initializeFixture(root, baselineCli) {
   run("git", ["init", "-q", "-b", "main"], { cwd: root });
@@ -299,7 +306,7 @@ export function validateMatchedLatencyReport(report) {
 async function main(argv = process.argv.slice(2)) {
   const options = parseArgs(argv);
   const sourceIdentity = readQualificationSubjectIdentity(repoRoot, options.subject);
-  const tempRoot = mkdtempSync(path.join(os.tmpdir(), "agentplane-matched-cli-latency-"));
+  const tempRoot = createMatchedLatencyTempRoot();
   const baselinePrefix = path.join(tempRoot, "baseline");
   const candidatePrefix = path.join(tempRoot, "candidate");
   const packDirectory = path.join(tempRoot, "packs");
@@ -399,6 +406,8 @@ async function main(argv = process.argv.slice(2)) {
         process:
           "every sample launches a new Node.js process; baseline/candidate order alternates by sample index",
         os_cache: "not reset; alternating order controls shared host-cache drift",
+        host_indexing:
+          "the disposable benchmark root contains .metadata_never_index before package installation and fixture copies",
         provider: "not invoked",
       },
       comparison:
