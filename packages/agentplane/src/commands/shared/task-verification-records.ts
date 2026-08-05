@@ -43,6 +43,7 @@ async function matchesCurrentVerification(
   task: TaskData,
   evaluatedSha: string | null,
   targetContext?: VerificationRecordTargetContext,
+  requireConcreteCheckDetails = true,
 ): Promise<boolean> {
   const verification = task.verification;
   const scopeDigest = verifyStepsDigest(task);
@@ -60,7 +61,7 @@ async function matchesCurrentVerification(
     record.note !== verification.note ||
     record.scope_digest !== scopeDigest ||
     !hasValidRecordDigest(record) ||
-    !hasConcreteCheckDetails(record.details)
+    (requireConcreteCheckDetails && !hasConcreteCheckDetails(record.details))
   ) {
     return false;
   }
@@ -87,6 +88,7 @@ async function isAcceptedVerificationRecord(
   task: TaskData,
   evaluatedSha: string | null,
   targetContext?: VerificationRecordTargetContext,
+  requireConcreteCheckDetails = true,
 ): Promise<boolean> {
   try {
     return await matchesCurrentVerification(
@@ -94,6 +96,7 @@ async function isAcceptedVerificationRecord(
       task,
       evaluatedSha,
       targetContext,
+      requireConcreteCheckDetails,
     );
   } catch {
     return false;
@@ -105,6 +108,7 @@ export async function verificationRecordPaths(
   task: TaskData,
   evaluatedSha: string | null,
   targetContext?: VerificationRecordTargetContext,
+  requireConcreteCheckDetails = true,
 ): Promise<string[]> {
   try {
     const entries = await readdir(path.join(taskRoot, "verification"), { withFileTypes: true });
@@ -115,7 +119,13 @@ export async function verificationRecordPaths(
     const accepted = await Promise.all(
       candidates.map(async (filePath) => ({
         filePath,
-        accepted: await isAcceptedVerificationRecord(filePath, task, evaluatedSha, targetContext),
+        accepted: await isAcceptedVerificationRecord(
+          filePath,
+          task,
+          evaluatedSha,
+          targetContext,
+          requireConcreteCheckDetails,
+        ),
       })),
     );
     return accepted.filter((entry) => entry.accepted).map((entry) => entry.filePath);
@@ -173,12 +183,14 @@ export async function hasAcceptedVerificationRecord(opts: {
   evaluatedSha: string | null;
   targetContext?: VerificationRecordTargetContext;
   snapshotRef?: string | null;
+  requireConcreteCheckDetails?: boolean;
 }): Promise<boolean> {
   const localRecords = await verificationRecordPaths(
     opts.taskRoot,
     opts.task,
     opts.evaluatedSha,
     opts.targetContext,
+    opts.requireConcreteCheckDetails,
   );
   if (localRecords.length > 0) return true;
   if (!opts.snapshotRef || !opts.targetContext) return false;
@@ -189,7 +201,13 @@ export async function hasAcceptedVerificationRecord(opts: {
   });
   const accepted = await Promise.all(
     snapshotRecords.map((record) =>
-      matchesCurrentVerification(record, opts.task, opts.evaluatedSha, opts.targetContext),
+      matchesCurrentVerification(
+        record,
+        opts.task,
+        opts.evaluatedSha,
+        opts.targetContext,
+        opts.requireConcreteCheckDetails,
+      ),
     ),
   );
   return accepted.some(Boolean);
