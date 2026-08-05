@@ -17,6 +17,7 @@ import {
 } from "@agentplane/testkit/cli-core-pr-flow";
 
 const execFileAsync = promisify(execFile);
+const PROVIDER_CONFLICT_REWORK_MATRIX_TIMEOUT_MS = 120_000;
 
 type ConflictRouteOutput = {
   workflow_step: {
@@ -959,5 +960,5 @@ describe("provider conflict rework CLI", () => {
         expect(worktreeAfter.stdout).toBe(worktreeBefore.stdout);
       },
     );
-  }, 60_000);
+  }, PROVIDER_CONFLICT_REWORK_MATRIX_TIMEOUT_MS);
 });

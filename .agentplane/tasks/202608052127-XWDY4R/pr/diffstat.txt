@@ -1,0 +1,7 @@
+ .../cli/run-cli.core.pr-conflict-rework.test.ts    |   3 +-
+ .../release-evidence-collect-script.test.ts        | 211 ++++++++++++++
+ .../release/release-next-action-script.test.ts     |  95 ++++++-
+ scripts/release/evidence-collect.mjs               | 305 +++++++++++++++++++--
+ scripts/release/next-action.mjs                    |  95 +++++--
+ scripts/release/state.mjs                          |  49 ++++
+ 6 files changed, 711 insertions(+), 47 deletions(-)

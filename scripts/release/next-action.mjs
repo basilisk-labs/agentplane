@@ -38,10 +38,16 @@ function loadReleaseState(flags) {
   ]);
 }
 
-function loadRecoveryReport(flags) {
+function latestPlanTargetsCurrentRelease(state) {
+  const plan = state.release?.latest_plan;
+  return plan?.nextVersion === state.release?.version && plan?.nextTag === state.release?.tag;
+}
+
+function loadRecoveryReport(flags, state) {
   const fixturePath = process.env.AGENTPLANE_TEST_RELEASE_RECOVERY_REPORT_PATH;
   if (fixturePath) return readJsonFile(fixturePath);
   if (flags["check-github"] !== true) return null;
+  if (!latestPlanTargetsCurrentRelease(state)) return null;
 
   const args = [
     "scripts/check-release-recovery-state.mjs",
@@ -56,6 +62,29 @@ function loadRecoveryReport(flags) {
     args.push("--github-sha", flags["github-sha"].trim());
   }
   return runJson("node", args);
+}
+
+function recoveryApplicability(state, recovery, flags) {
+  if (flags["check-github"] !== true) {
+    return { checked: false, applicable: false, reason: "github recovery check was skipped" };
+  }
+  const target = recovery?.target ?? state.release?.latest_plan ?? null;
+  if (!target) {
+    return { checked: true, applicable: false, reason: "no release recovery target is available" };
+  }
+  const applicable =
+    target.nextVersion === state.release?.version && target.nextTag === state.release?.tag;
+  return {
+    checked: true,
+    applicable,
+    reason: applicable
+      ? null
+      : `recovery target ${target.nextTag ?? "unknown"} (${target.nextVersion ?? "unknown"}) does not match current ${state.release?.tag ?? "unknown"} (${state.release?.version ?? "unknown"})`,
+    target: {
+      version: target.nextVersion ?? null,
+      tag: target.nextTag ?? null,
+    },
+  };
 }
 
 function githubReleaseStatus(tag, flags) {
@@ -123,12 +152,24 @@ function publishResultSummary(report) {
   return `${result.state}${success}${reason}`;
 }
 
-function tagSummary(report, tag) {
-  if (!report) return `local/current only (${tag})`;
+function tagSummary(report, state) {
+  const tag = state.release.tag;
+  if (!report) {
+    const local = state.release.tag_exists === true ? "present" : "missing";
+    return `local=${local}; remote=not_checked (${tag})`;
+  }
   const local = report.current?.localTagPresent === true ? "present" : "missing";
   const remoteName = report.current?.remote?.name ?? "origin";
   const remote = report.current?.remote?.tagPresent === true ? "present" : "missing";
   return `local=${local}; ${remoteName}/${tag}=${remote}`;
+}
+
+function evidenceSummary(state) {
+  if (state.release.evidence_valid === true) return `valid (${state.release.evidence_path})`;
+  if (state.release.evidence_exists === true) {
+    return `invalid (${state.release.evidence_detail ?? state.release.evidence_path})`;
+  }
+  return `missing (${state.release.evidence_path ?? "current release target"})`;
 }
 
 function commandFromAction(action, state, report) {
@@ -148,6 +189,7 @@ function renderText(result) {
     `NPM registry: ${result.truth.registry}`,
     `Git tag: ${result.truth.tag}`,
     `GitHub release: ${result.truth.githubRelease.state}`,
+    `Release evidence: ${result.truth.evidence}`,
     `Next action: ${result.action}`,
     `Command: ${result.command}`,
   ];
@@ -162,21 +204,26 @@ function main() {
     valueFlags: ["github-repo", "github-sha"],
   });
   const state = loadReleaseState(flags);
-  const recovery = loadRecoveryReport(flags);
-  const releaseSha = recovery?.current?.github?.releaseSha ?? state.git.head ?? null;
+  const recovery = loadRecoveryReport(flags, state);
+  const applicability = recoveryApplicability(state, recovery, flags);
+  const applicableRecovery = applicability.applicable ? recovery : null;
+  const releaseSha =
+    applicableRecovery?.current?.github?.releaseSha ??
+    state.release?.tag_commit ??
+    state.git.head ??
+    null;
   const githubRelease = githubReleaseStatus(state.release.tag, flags);
 
-  let action = "run release candidate preparation";
-  let command = "bun run release:candidate:prepare -- --write";
+  const defaultAction = "run release candidate preparation";
+  const defaultCommand = "bun run release:candidate:prepare -- --write";
+  let action = defaultAction;
+  let command = defaultCommand;
   if (state.git.tracked_dirty) {
     action = "clean tracked working tree before release work";
     command = "git status --short --untracked-files=no";
   } else if (state.git.upstream?.behind > 0) {
     action = "fast-forward local branch before release planning";
     command = "git pull --ff-only";
-  } else if (state.release.latest_plan?.nextTag === state.release.tag) {
-    action = "generate a fresh release plan for the next patch";
-    command = "ap release plan --patch";
   } else if (!state.parity.ok) {
     action = "restore release version parity";
     command = "bun run release:parity";
@@ -193,16 +240,26 @@ function main() {
   } else if (
     state.registry.checked &&
     state.registry.packages.every((pkg) => pkg.published === true) &&
-    !state.release.publish_result_exists
+    state.release.evidence_valid !== true
   ) {
     action = "collect hosted publish evidence";
     command = "bun run release:evidence:collect";
+  } else if (state.release.latest_plan?.nextTag === state.release.tag) {
+    action = "generate a fresh release plan for the next patch";
+    command = "ap release plan --patch";
   }
+
+  const useRecoveryDecision =
+    action === defaultAction &&
+    command === defaultCommand &&
+    typeof applicableRecovery?.summary?.state === "string";
 
   const result = {
     schema_version: 2,
-    action: recovery?.summary?.state ?? action,
-    command: commandFromAction({ action, command }, state, recovery),
+    action: useRecoveryDecision ? applicableRecovery.summary.state : action,
+    command: useRecoveryDecision
+      ? commandFromAction({ action, command }, state, applicableRecovery)
+      : command,
     target: {
       version: state.release.version,
       tag: state.release.tag,
@@ -213,15 +270,17 @@ function main() {
     },
     releaseSha,
     truth: {
-      releaseReady: releaseReadySummary(recovery),
-      publish: publishSummary(recovery),
-      publishResult: publishResultSummary(recovery),
+      releaseReady: releaseReadySummary(applicableRecovery),
+      publish: publishSummary(applicableRecovery),
+      publishResult: publishResultSummary(applicableRecovery),
       registry: registrySummary(state),
-      tag: tagSummary(recovery, state.release.tag),
+      tag: tagSummary(applicableRecovery, state),
       githubRelease,
+      evidence: evidenceSummary(state),
     },
     state,
-    recovery,
+    recovery: applicableRecovery,
+    recovery_applicability: applicability,
   };
   if (flags.json === true) {
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);

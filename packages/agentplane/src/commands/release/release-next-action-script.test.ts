@@ -29,9 +29,14 @@ const releaseState = {
   release: {
     version: "0.6.8",
     tag: "v0.6.8",
+    tag_exists: true,
+    tag_commit: "abc123release",
     latest_plan: { nextTag: "v0.6.8" },
     notes_exists: true,
     publish_result_exists: false,
+    evidence_path: ".agentplane/.release/evidence/v0.6.8.json",
+    evidence_exists: false,
+    evidence_valid: false,
   },
   parity: { ok: true },
   registry: {
@@ -45,6 +50,10 @@ const releaseState = {
 };
 
 const recoveryReport = {
+  target: {
+    nextVersion: "0.6.8",
+    nextTag: "v0.6.8",
+  },
   summary: {
     state: "release_publish_already_succeeded",
     nextAction: "Do not rerun publish; verify release evidence only.",
@@ -154,7 +163,9 @@ describe("release next-action script", () => {
     expect(result.stdout).toContain("NPM registry: published");
     expect(result.stdout).toContain("Git tag: local=present; origin/v0.6.8=present");
     expect(result.stdout).toContain("GitHub release: present");
-    expect(result.stdout).toContain("Command: Do not rerun publish; verify release evidence only.");
+    expect(result.stdout).toContain("Release evidence: missing");
+    expect(result.stdout).toContain("Next action: collect hosted publish evidence");
+    expect(result.stdout).toContain("Command: bun run release:evidence:collect");
   });
 
   it("emits the same diagnostic contract as JSON", async () => {
@@ -180,12 +191,92 @@ describe("release next-action script", () => {
       releaseSha: string;
       truth: { githubRelease: { state: string }; registry: string };
       command: string;
+      recovery_applicability: { applicable: boolean };
     };
     expect(payload.schema_version).toBe(2);
     expect(payload.releaseSha).toBe("abc123release");
     expect(payload.truth.githubRelease.state).toBe("present");
     expect(payload.truth.registry).toContain("@agentplaneorg/core");
-    expect(payload.command).toBe("Do not rerun publish; verify release evidence only.");
+    expect(payload.command).toBe("bun run release:evidence:collect");
+    expect(payload.recovery_applicability.applicable).toBe(true);
+  });
+
+  it("does not mix a stale recovery plan into the current release target", async () => {
+    const currentState = structuredClone(releaseState);
+    currentState.release.version = "0.7.3";
+    currentState.release.tag = "v0.7.3";
+    currentState.release.tag_commit = "current073sha";
+    currentState.release.latest_plan = { nextTag: "v0.6.8" };
+    currentState.release.evidence_path = ".agentplane/.release/evidence/v0.7.3.json";
+    currentState.registry.packages = currentState.registry.packages.map((entry) => ({
+      ...entry,
+      version: "0.7.3",
+    }));
+    const statePath = await writeJsonFixture("state.json", currentState);
+    const recoveryPath = await writeJsonFixture("recovery.json", recoveryReport);
+    const githubReleasePath = await writeJsonFixture("github-release.json", {
+      state: "present",
+      tagName: "v0.7.3",
+    });
+
+    const result = await execFileAsync(
+      "node",
+      [SCRIPT_PATH, "--check-registry", "--check-github", "--json"],
+      {
+        env: {
+          ...process.env,
+          AGENTPLANE_TEST_RELEASE_STATE_PATH: statePath,
+          AGENTPLANE_TEST_RELEASE_RECOVERY_REPORT_PATH: recoveryPath,
+          AGENTPLANE_TEST_GITHUB_RELEASE_STATUS_PATH: githubReleasePath,
+        },
+      },
+    );
+    const payload = JSON.parse(result.stdout) as {
+      action: string;
+      command: string;
+      releaseSha: string;
+      truth: { releaseReady: string; publish: string; publishResult: string };
+      recovery: unknown;
+      recovery_applicability: { applicable: boolean; reason: string };
+    };
+
+    expect(payload.releaseSha).toBe("current073sha");
+    expect(payload.action).toBe("collect hosted publish evidence");
+    expect(payload.command).toBe("bun run release:evidence:collect");
+    expect(payload.truth).toMatchObject({
+      releaseReady: "skipped",
+      publish: "skipped",
+      publishResult: "skipped",
+    });
+    expect(payload.recovery).toBeNull();
+    expect(payload.recovery_applicability.applicable).toBe(false);
+    expect(payload.recovery_applicability.reason).toContain("does not match current v0.7.3");
+  });
+
+  it("moves to the next patch plan after exact current release evidence is valid", async () => {
+    const closedState = structuredClone(releaseState);
+    closedState.release.evidence_exists = true;
+    closedState.release.evidence_valid = true;
+    const statePath = await writeJsonFixture("state.json", closedState);
+    const recoveryPath = await writeJsonFixture("recovery.json", recoveryReport);
+    const githubReleasePath = await writeJsonFixture("github-release.json", { state: "present" });
+
+    const result = await execFileAsync(
+      "node",
+      [SCRIPT_PATH, "--check-registry", "--check-github", "--json"],
+      {
+        env: {
+          ...process.env,
+          AGENTPLANE_TEST_RELEASE_STATE_PATH: statePath,
+          AGENTPLANE_TEST_RELEASE_RECOVERY_REPORT_PATH: recoveryPath,
+          AGENTPLANE_TEST_GITHUB_RELEASE_STATUS_PATH: githubReleasePath,
+        },
+      },
+    );
+    const payload = JSON.parse(result.stdout) as { action: string; command: string };
+
+    expect(payload.action).toBe("generate a fresh release plan for the next patch");
+    expect(payload.command).toBe("ap release plan --patch");
   });
 
   it("passes --github-repo through to GitHub release lookup", async () => {
