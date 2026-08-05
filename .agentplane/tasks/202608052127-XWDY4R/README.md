@@ -4,7 +4,7 @@ title: "Keep release diagnostics on the current published target"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "cc7d8e89cb8c177064dd6b51d8870f9ca06b1db0"
+  message: "🚧 XWDY4R task: bind evidence to current target"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation ready for independent verification: release diagnostics and evidence are bound to the exact current target; focused regressions pass."
 events:
   -
     type: "status"
@@ -37,8 +42,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-05T22:28:42.223Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation ready for independent verification: release diagnostics and evidence are bound to the exact current target; focused regressions pass."
 doc_version: 3
-doc_updated_at: "2026-08-05T22:26:25.954Z"
+doc_updated_at: "2026-08-05T22:28:42.223Z"
 doc_updated_by: "CODER"
 description: "Prevent release next-action from mixing the current package/tag target with stale local release-plan SHA and hosted evidence; add regression coverage, merge the fix, and publish the verified v0.7.4 patch release."
 sections:
