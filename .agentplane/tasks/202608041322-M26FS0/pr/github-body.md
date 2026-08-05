@@ -21,8 +21,8 @@ Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created re
 - Note:
 
 ```text
-Deterministic pre-merge verification recorded in the canonical four-field format for frozen
-evaluator ingestion.
+Verified exact-SHA release evidence closeout and complete v0.7.3 prepublish gate at
+0cb1a3f433e782c0a47785235faa869b72bfaefc.
 ```
 - Canonical workflow state lives in the task README.
 

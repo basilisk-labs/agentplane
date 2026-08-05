@@ -13,7 +13,7 @@ Created: 2026-08-04T13:24:55.578Z
 ## Verification
 
 - State: ok
-- Note: Deterministic pre-merge verification recorded in the canonical four-field format for frozen evaluator ingestion.
+- Note: Verified exact-SHA release evidence closeout and complete v0.7.3 prepublish gate at 0cb1a3f433e782c0a47785235faa869b72bfaefc.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
