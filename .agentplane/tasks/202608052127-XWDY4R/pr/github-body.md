@@ -18,10 +18,9 @@ In scope: a consolidated post-release audit and fix set for installation and upg
 - Note:
 
 ```text
-Consolidated post-release verification passed on 3195e6fb: focused release regressions, typecheck,
-lint/format, ci:contract, critical tests, doctor, routing, release:prepublish, full v0.7
-qualification, and one no-retry 50-run/55-episode provider matrix. Qualification ready 18/19 with
-zero blocking defects; the sole absolute latency advisory is cleared by matched v0.6.26 comparison.
+Verification rebound after committing the archived evidence set. Candidate code remains
+3195e6fb/948b9d8a implementation; consolidated qualification evidence is now part of the reviewed
+diff. No provider or test retry was performed.
 ```
 - Canonical workflow state lives in the task README.
 

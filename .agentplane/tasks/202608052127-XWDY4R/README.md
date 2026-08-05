@@ -4,7 +4,7 @@ title: "Keep release diagnostics on the current published target"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-05T23:45:59.060Z"
+  updated_at: "2026-08-05T23:47:25.283Z"
   updated_by: "TESTER"
-  note: "Consolidated post-release verification passed on 3195e6fb: focused release regressions, typecheck, lint/format, ci:contract, critical tests, doctor, routing, release:prepublish, full v0.7 qualification, and one no-retry 50-run/55-episode provider matrix. Qualification ready 18/19 with zero blocking defects; the sole absolute latency advisory is cleared by matched v0.6.26 comparison."
+  note: "Verification rebound after committing the archived evidence set. Candidate code remains 3195e6fb/948b9d8a implementation; consolidated qualification evidence is now part of the reviewed diff. No provider or test retry was performed."
   attempts: 0
 commit:
   hash: "948b9d8a90b7e5483f55dcf04053be5106eff035"
@@ -71,8 +71,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Consolidated post-release verification passed on 3195e6fb: focused release regressions, typecheck, lint/format, ci:contract, critical tests, doctor, routing, release:prepublish, full v0.7 qualification, and one no-retry 50-run/55-episode provider matrix. Qualification ready 18/19 with zero blocking defects; the sole absolute latency advisory is cleared by matched v0.6.26 comparison."
+  -
+    type: "verify"
+    at: "2026-08-05T23:47:25.283Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verification rebound after committing the archived evidence set. Candidate code remains 3195e6fb/948b9d8a implementation; consolidated qualification evidence is now part of the reviewed diff. No provider or test retry was performed."
 doc_version: 3
-doc_updated_at: "2026-08-05T23:46:00.003Z"
+doc_updated_at: "2026-08-05T23:47:26.478Z"
 doc_updated_by: "CODER"
 description: "Prevent release next-action from mixing the current package/tag target with stale local release-plan SHA and hosted evidence; add regression coverage, merge the fix, and publish the verified v0.7.4 patch release."
 sections:
@@ -147,6 +153,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-05T23:47:25.283Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verification rebound after committing the archived evidence set. Candidate code remains 3195e6fb/948b9d8a implementation; consolidated qualification evidence is now part of the reviewed diff. No provider or test retry was performed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-05T23:46:00.003Z, excerpt_hash=sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608052127-XWDY4R-keep-release-diagnostics-on-the-current-publishe/.agentplane/tasks/202608052127-XWDY4R/blueprint/resolved-snapshot.json
+    - old_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+    - current_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608052127-XWDY4R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608052127-XWDY4R
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Before publication, revert the task PR. After publication, never reuse the npm version or move the tag; fix any release-only regression in a new patch version while preserving published evidence."
   Findings: |-
@@ -159,6 +195,10 @@ sections:
     - Observation: Release diagnostics were stale-target prone and failed evidence could appear reusable; provider and full release regressions required one immutable candidate proof.
       Impact: The patch now binds release state and evidence to the exact current version, tag, release SHA, hosted publish run, npm packages, and GitHub Release while retaining deterministic failure semantics.
       Resolution: Archived consolidated evidence under .agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-3195e6fb; token reduction 32.60%, verified success 8 to 20, scope violations 17 to 5, golden mismatches 33 to 10, no blocking defects.
+
+    - Observation: The first passing record preceded the evidence archive commit, so the route correctly treated the expanded task diff as unverified.
+      Impact: Without rebinding, PR publication could advance with task evidence not covered by the recorded diff fingerprint.
+      Resolution: Reviewed the evidence-only commit 6f3aacfc8831 and recorded the same passing result against the complete current diff; semantic candidate and all prior test outputs are unchanged.
 extensions:
   workflow_route_baseline:
     start_head_sha: "944dc6eefcd5ea79c33af066caf1078f881e371a"
@@ -248,6 +288,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-05T23:47:25.283Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verification rebound after committing the archived evidence set. Candidate code remains 3195e6fb/948b9d8a implementation; consolidated qualification evidence is now part of the reviewed diff. No provider or test retry was performed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-05T23:46:00.003Z, excerpt_hash=sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608052127-XWDY4R-keep-release-diagnostics-on-the-current-publishe/.agentplane/tasks/202608052127-XWDY4R/blueprint/resolved-snapshot.json
+- old_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+- current_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608052127-XWDY4R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608052127-XWDY4R
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -265,3 +335,7 @@ Confirmed post-release findings and fixes: (1) release next-action accepted stal
 - Observation: Release diagnostics were stale-target prone and failed evidence could appear reusable; provider and full release regressions required one immutable candidate proof.
   Impact: The patch now binds release state and evidence to the exact current version, tag, release SHA, hosted publish run, npm packages, and GitHub Release while retaining deterministic failure semantics.
   Resolution: Archived consolidated evidence under .agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-3195e6fb; token reduction 32.60%, verified success 8 to 20, scope violations 17 to 5, golden mismatches 33 to 10, no blocking defects.
+
+- Observation: The first passing record preceded the evidence archive commit, so the route correctly treated the expanded task diff as unverified.
+  Impact: Without rebinding, PR publication could advance with task evidence not covered by the recorded diff fingerprint.
+  Resolution: Reviewed the evidence-only commit 6f3aacfc8831 and recorded the same passing result against the complete current diff; semantic candidate and all prior test outputs are unchanged.
