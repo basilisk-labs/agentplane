@@ -122,7 +122,7 @@ type ReadmeStatEntry = {
   };
 };
 
-export function buildReadmeStatEntry(opts: {
+function buildReadmeStatEntry(opts: {
   dirName: string;
   readmePath: string;
   mtimeMs: bigint;

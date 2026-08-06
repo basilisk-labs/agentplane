@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "202608061925-KANFC0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-06T19:39:48.313Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "d2e5d894b25e3e4ea5438b0867b3e489e304cf60",
+  "blueprint_digest": "addd84cbd305a906371cd8cbf627e52cc1a6a49f14daa3cf478383c3d09bd0e2",
+  "findings": [
+    "The regression test validates only the extracted stat-entry helper, not the required scan-to-stable-reader path where the precision bug occurred.",
+    "Mandatory verification is incomplete: bun run test:critical was not executed and the recorded skip has no owner approval."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/e218134b64056582669dde7fa6d3338f14482f8dfac424e526490d92683601e1.patch",
+    ".agentplane/tasks/202608061925-KANFC0/README.md",
+    ".agentplane/tasks/202608061925-KANFC0/verification/20260806193854648-823522e735c4b3a1.json",
+    ".agentplane/policy/dod.code.md"
+  ],
+  "missing_tests": [
+    "An end-to-end local task scan regression that injects an NTFS-style dev/ino above Number.MAX_SAFE_INTEGER and proves the exact bigint identity reaches and succeeds in the stable no-follow README reader.",
+    "The declared bun run test:critical check, or a policy-complete approved skip recording the concrete reason, risk, and approving owner.",
+    "Windows hosted PR verification on the exact evaluated PR head before integration."
+  ],
+  "hidden_assumptions": [
+    "Testing buildReadmeStatEntry in isolation is assumed to prove that listLocalTasks forwards the same exact identity through the stable protected-read comparison.",
+    "The pre-existing compatibility-baseline failure is assumed to justify skipping bun run test:critical without explicit owner approval.",
+    "Existing ordinary scan tests are assumed to exercise the identity-mismatch and concurrent replacement behavior relevant to stable reads."
+  ],
+  "residual_risks": [
+    "Add focused end-to-end coverage from the bigint lstat pre-scan through the stable no-follow reader, then complete bun run test:critical or record a policy-complete owner-approved skip; preserve Windows hosted verification as a required pre-integration gate."
+  ]
+}

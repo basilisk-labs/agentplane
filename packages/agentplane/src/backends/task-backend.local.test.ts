@@ -1,14 +1,72 @@
-import { mkdir, readFile, rm, stat, utimes, writeFile } from "node:fs/promises";
+import type { PathLike } from "node:fs";
+import { mkdir, readFile, realpath, rm, stat, utimes, writeFile } from "node:fs/promises";
+import type * as NodeFsPromises from "node:fs/promises";
 import path from "node:path";
 import { renderTaskReadme } from "@agentplaneorg/core/tasks";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+const ntfsIdentityMock = vi.hoisted(() => ({
+  filePaths: [] as string[],
+  dev: 18_014_398_509_481_985n,
+  ino: 25_000_000_000_000_001n,
+  lstatHits: 0,
+  handleStatHits: 0,
+}));
+
+function withNtfsIdentity<T>(stats: T): T {
+  return Object.assign(stats as object, {
+    dev: ntfsIdentityMock.dev,
+    ino: ntfsIdentityMock.ino,
+  }) as T;
+}
+
+function matchesNtfsPath(filePath: PathLike): boolean {
+  return ntfsIdentityMock.filePaths.includes(String(filePath));
+}
+
+vi.mock("node:fs/promises", async (importOriginal) => {
+  const actual = await importOriginal<typeof NodeFsPromises>();
+  return {
+    ...actual,
+    lstat: async (filePath: PathLike, options?: { bigint?: boolean }) => {
+      const stats = await actual.lstat(filePath, options as { bigint: true });
+      if (
+        matchesNtfsPath(filePath) &&
+        typeof stats.dev === "bigint" &&
+        typeof stats.ino === "bigint"
+      ) {
+        ntfsIdentityMock.lstatHits += 1;
+        return withNtfsIdentity(stats);
+      }
+      return stats;
+    },
+    open: async (filePath: PathLike, flags: string | number, mode?: number) => {
+      const handle = await actual.open(filePath, flags, mode);
+      if (!matchesNtfsPath(filePath)) return handle;
+      return new Proxy(handle, {
+        get(target, property) {
+          if (property === "stat") {
+            return async (options?: { bigint?: boolean }) => {
+              const stats = await target.stat(options as { bigint: true });
+              ntfsIdentityMock.handleStatHits += 1;
+              return withNtfsIdentity(stats);
+            };
+          }
+          const value = Reflect.get(target, property, target) as unknown;
+          if (typeof value !== "function") return value;
+          const callable = value as (...args: unknown[]) => unknown;
+          return (...args: unknown[]): unknown => Reflect.apply(callable, target, args) as unknown;
+        },
+      });
+    },
+  };
+});
 
 import { LocalBackend, toTaskSummary, type TaskData, type TaskSummary } from "./task-backend.js";
 import {
   readFreshSqliteTaskProjection,
   resolveTaskProjectionSqlitePath,
 } from "./task-backend/local-task-sqlite-cache.js";
-import { buildReadmeStatEntry } from "./task-backend/local-backend-read.js";
 import { mkTempDir, silenceStdIO } from "@agentplane/testkit";
 
 type QuerySummaryView = Pick<
@@ -52,6 +110,9 @@ describe("LocalBackend", () => {
   });
 
   afterEach(async () => {
+    ntfsIdentityMock.filePaths = [];
+    ntfsIdentityMock.lstatHits = 0;
+    ntfsIdentityMock.handleStatHits = 0;
     restoreStdIO?.();
     restoreStdIO = null;
     if (tempDir) {
@@ -59,25 +120,40 @@ describe("LocalBackend", () => {
     }
   });
 
-  it("preserves NTFS-style README file ids above Number.MAX_SAFE_INTEGER", () => {
-    const exactDevice = 18_014_398_509_481_985n;
-    const exactInode = 25_000_000_000_000_001n;
-    expect(BigInt(Number(exactDevice))).not.toBe(exactDevice);
-    expect(BigInt(Number(exactInode))).not.toBe(exactInode);
+  it("preserves NTFS-style README file ids through the stable scan reader", async () => {
+    expect(BigInt(Number(ntfsIdentityMock.dev))).not.toBe(ntfsIdentityMock.dev);
+    expect(BigInt(Number(ntfsIdentityMock.ino))).not.toBe(ntfsIdentityMock.ino);
 
-    const entry = buildReadmeStatEntry({
-      dirName: "202608061925-KANFC0",
-      readmePath: "C:\\repo\\.agentplane\\tasks\\202608061925-KANFC0\\README.md",
-      mtimeMs: 1_786_041_600_000n,
-      mtimeNs: 1_786_041_600_000_125_000n,
-      size: 4096n,
-      dev: exactDevice,
-      ino: exactInode,
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const task: TaskData = {
+      id: "202608061925-NTF5",
+      title: "NTFS identity",
+      description: "Exact scan identity",
+      status: "TODO",
+      priority: "high",
+      owner: "TESTER",
+      depends_on: [],
+      tags: ["windows"],
+      verify: [],
+      doc: "## Summary\n\nNTFS identity regression",
+    };
+    await backend.writeTask(task);
+    const readmePath = path.join(tempDir, task.id, "README.md");
+    ntfsIdentityMock.filePaths = [readmePath, await realpath(readmePath)];
+
+    const tasks = await backend.listTasks();
+
+    expect({
+      ids: tasks.map((entry) => entry.id),
+      warnings: backend.getLastListWarnings(),
+      lstatHits: ntfsIdentityMock.lstatHits,
+      handleStatHits: ntfsIdentityMock.handleStatHits,
+    }).toEqual({
+      ids: [task.id],
+      warnings: [],
+      lstatHits: 5,
+      handleStatHits: 2,
     });
-
-    expect(entry.identity).toEqual({ dev: exactDevice, ino: exactInode });
-    expect(entry.mtimeMs).toBe(1_786_041_600_000.125);
-    expect(entry.size).toBe(4096);
   });
 
   it("writes and reads tasks with docs and metadata", async () => {
