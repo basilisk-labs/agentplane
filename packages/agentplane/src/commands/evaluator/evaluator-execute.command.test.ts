@@ -535,6 +535,62 @@ describe("evaluator execute supervisor episode", () => {
     });
   });
 
+  it("leaves an unrelated pending PLANNER intent unchanged", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202607280000-EE12";
+    await addTask(root, taskId);
+    await commitTarget(root);
+    await writeVerificationRecord(root, taskId);
+    const fakeBin = await installFakeCodex(root);
+    const decision = await buildTaskRouteDecision({
+      cwd: root,
+      rootOverride: root,
+      taskId,
+      includeRemote: false,
+    });
+    const created = createSupervisorExecutionEpisodeJournal({
+      task_id: taskId,
+      task_revision: null,
+      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      budget: {
+        max_episodes: 50,
+        max_agent_runs: 50,
+        max_input_tokens: 3_000_000,
+        max_output_tokens: 1_000_000,
+        max_total_tokens: 4_000_000,
+        max_wall_time_ms: 4 * 60 * 60 * 1000,
+        max_changed_files: 2000,
+        max_diff_lines: null,
+        max_no_progress_episodes: 3,
+      },
+    });
+    const started = startSupervisorExecutionEpisode({
+      journal: created,
+      role: "PLANNER",
+      kind: "agent_episode",
+      operation_identity: { purpose: "planning" },
+      precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      authority_ref: "external-agent:planner",
+      authority_digest: decision.workflowStep.preconditionFingerprint.digest,
+      work_order_ref: ".agentplane/external-agent/planner-work-order.json",
+      effect_ref: "external-agent:planner-result",
+    });
+    if (started.status !== "started") throw new Error("expected pending PLANNER intent");
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    await store.write(started.journal);
+
+    const execution = await runWithFakeCodex(root, taskId, fakeBin);
+
+    expect(execution.code).toBe(8);
+    expect(execution.stderr).toContain("unrelated pending PLANNER agent_episode intent");
+    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toEqual(started.journal);
+  });
+
   it("records a known read-only provider failure without reopening its intent", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

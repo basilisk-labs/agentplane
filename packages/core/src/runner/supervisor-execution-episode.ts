@@ -442,6 +442,49 @@ export function recoverSupervisorExecutionEpisodeJournal(opts: {
   return journal;
 }
 
+/**
+ * Reopen one exact effect-in-doubt intent only after its external result has
+ * been validated against the original operation identity. This does not start
+ * or count another operation; it restores the recorded intent so the caller
+ * can durably complete it with the observed result.
+ */
+export function reopenSupervisorExecutionEpisodeAfterEffectEvidence(opts: {
+  journal: SupervisorExecutionEpisodeJournal;
+  operation_key: string;
+  now?: string;
+}): SupervisorExecutionEpisodeJournal {
+  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+  const operationKey = opts.operation_key.trim();
+  const operation = journal.operations.at(-1);
+  if (
+    journal.status !== "stopped" ||
+    journal.stop?.reason !== "effect_in_doubt" ||
+    journal.cursor.phase !== "stopped" ||
+    journal.cursor.operation_key !== operationKey ||
+    journal.stop.operation_key !== operationKey ||
+    operation?.operation_key !== operationKey ||
+    operation.status !== "intent"
+  ) {
+    throw new Error(
+      "Supervisor effect recovery requires the exact stopped effect-in-doubt operation intent.",
+    );
+  }
+  const now = opts.now ?? new Date().toISOString();
+  const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
+    ...journal,
+    cursor: {
+      episode: journal.cursor.episode,
+      phase: "intent_recorded",
+      operation_key: operationKey,
+    },
+    status: "running",
+    stop: null,
+    updated_at: now,
+    previous_digest: journal.digest,
+  };
+  return createJournal(next);
+}
+
 export function startSupervisorExecutionEpisode(opts: {
   journal: SupervisorExecutionEpisodeJournal;
   role: SupervisorEpisodeRole;

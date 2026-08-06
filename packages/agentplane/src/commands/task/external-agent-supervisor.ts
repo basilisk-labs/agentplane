@@ -22,6 +22,7 @@ import {
 } from "../shared/supervisor-execution-episode.js";
 import {
   loadCommandContext,
+  loadTaskFromContext,
   resolveCommandGitCommonDir,
   type CommandContext,
 } from "../shared/task-backend.js";
@@ -400,11 +401,23 @@ async function isReadOnlyResultAlreadyApplied(opts: {
   command: CommandContext;
   exchange: ExternalAgentExchange;
   decision: TaskRouteDecision;
+  envelope: ExternalAgentResultEnvelope;
 }): Promise<boolean> {
   if (opts.exchange.purpose === "planning") {
-    return (
+    if (
       opts.decision.workflowStep.kind === "approval" &&
       opts.decision.workflowStep.request.type === "plan_approval"
+    ) {
+      return true;
+    }
+    if (opts.envelope.result.status !== "completed") return false;
+    const task = await loadTaskFromContext({
+      ctx: opts.command,
+      taskId: opts.exchange.task_id,
+    });
+    return (
+      task.plan_approval?.state === "approved" &&
+      task.sections?.Plan?.trim() === opts.envelope.result.summary.trim()
     );
   }
   if (opts.exchange.purpose === "quality_review") {
@@ -476,7 +489,6 @@ export async function acceptExternalAgentResult(opts: {
       task_id: opts.task_id,
       state_fingerprint: identity.state_fingerprint,
     });
-    const { journal: issuedJournal, operation } = intent;
     const envelope = validateExternalAgentResultEnvelope({ raw, exchange, work_order: workOrder });
     const resultDigest = externalAgentResultDigest(envelope);
     if (exchange.status === "accepted" && exchange.result_digest !== resultDigest) {
@@ -485,6 +497,16 @@ export async function acceptExternalAgentResult(opts: {
         message: "A different result is already accepted for this external-agent exchange.",
       });
     }
+    if (
+      intent.state === "issued_effect_in_doubt" &&
+      !(await store.compareAndSwap(intent.persisted_journal_digest, intent.journal))
+    ) {
+      throw new CliError({
+        code: "E_RUNTIME",
+        message: "External-agent supervisor changed while reconciling the observed effect.",
+      });
+    }
+    const { journal: issuedJournal, operation } = intent;
     if (exchange.status === "issued") {
       exchange = {
         ...exchange,
@@ -526,6 +548,7 @@ export async function acceptExternalAgentResult(opts: {
         command: checkoutCommand,
         exchange,
         decision: current,
+        envelope,
       }));
     if (
       !alreadyApplied &&

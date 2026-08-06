@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   advanceSupervisorExecutionEpisodeState,
   digestSupervisorEpisodeValue,
+  reopenSupervisorExecutionEpisodeAfterEffectEvidence,
   validateSupervisorExecutionEpisodeJournal,
   type AgentWorkOrderV2,
   type SupervisorExecutionEpisodeJournal,
@@ -59,11 +60,18 @@ export function assertExternalAgentSupervisorIntent(opts: {
   work_order: AgentWorkOrderV2;
   task_id: string;
   state_fingerprint: string;
-}): {
-  state: "issued" | "completed_pending_exchange";
-  journal: SupervisorExecutionEpisodeJournal;
-  operation: SupervisorExecutionEpisodeJournal["operations"][number];
-} {
+}):
+  | {
+      state: "issued" | "completed_pending_exchange";
+      journal: SupervisorExecutionEpisodeJournal;
+      operation: SupervisorExecutionEpisodeJournal["operations"][number];
+    }
+  | {
+      state: "issued_effect_in_doubt";
+      journal: SupervisorExecutionEpisodeJournal;
+      operation: SupervisorExecutionEpisodeJournal["operations"][number];
+      persisted_journal_digest: string;
+    } {
   const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
   const operation = journal.operations.at(-1);
   const expectedEffectRef = `external-agent-issue:${externalAgentIssueDigest({
@@ -102,6 +110,30 @@ export function assertExternalAgentSupervisorIntent(opts: {
       (journal.cursor.phase === "stopped" && journal.stop?.reason === "budget_exhausted"))
   ) {
     return { state: "completed_pending_exchange", journal, operation };
+  }
+  if (
+    journal.status === "stopped" &&
+    journal.stop?.reason === "effect_in_doubt" &&
+    journal.cursor.phase === "stopped" &&
+    journal.cursor.operation_key === operation.operation_key &&
+    journal.stop.operation_key === operation.operation_key &&
+    operation.status === "intent"
+  ) {
+    if (opts.exchange.status !== "issued" && opts.exchange.status !== "accepted") {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "External-agent exchange state is invalid for effect reconciliation.",
+      });
+    }
+    return {
+      state: "issued_effect_in_doubt",
+      journal: reopenSupervisorExecutionEpisodeAfterEffectEvidence({
+        journal,
+        operation_key: operation.operation_key,
+      }),
+      operation,
+      persisted_journal_digest: journal.digest,
+    };
   }
   if (
     journal.cursor.phase !== "intent_recorded" ||
