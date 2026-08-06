@@ -212,6 +212,9 @@ Field names and casing are exact. Optional fields are omitted when no value is a
   - [evaluator show](#evaluator-show)
 - Evidence
   - [evidence bundle](#evidence-bundle)
+  - [evidence compact](#evidence-compact)
+  - [evidence gc](#evidence-gc)
+  - [evidence stats](#evidence-stats)
   - [evidence verify](#evidence-verify)
 - Integrations
   - [hermes doctor](#hermes-doctor)
@@ -4097,6 +4100,100 @@ agentplane evidence bundle 202605031625-886KZ6
 ```
 
 - Write \`.agentplane/tasks/&lt;task-id&gt;/evidence/manifest.json\`.
+
+### evidence compact
+
+Deduplicate verified evidence objects without rewriting manifests.
+
+Usage:
+
+```text
+agentplane evidence compact [options]
+```
+
+Options:
+
+- `--apply`: Apply the planned local maintenance. Default is dry-run. (default=false)
+- `--yes`: Confirm an apply operation. Required with --apply. (default=false)
+- `--json`: Emit machine-readable result. (default=false)
+
+Notes:
+
+- Apply requires a clean repository and refuses corrupt objects or missing references.
+
+Examples:
+
+```sh
+agentplane evidence compact --json
+```
+
+- Preview safe hard-link deduplication.
+
+```sh
+agentplane evidence compact --apply --yes
+```
+
+- Apply the verified plan.
+
+### evidence gc
+
+Remove only expired, unreferenced, unpinned evidence objects.
+
+Usage:
+
+```text
+agentplane evidence gc [options]
+```
+
+Options:
+
+- `--apply`: Apply the planned local maintenance. Default is dry-run. (default=false)
+- `--yes`: Confirm an apply operation. Required with --apply. (default=false)
+- `--json`: Emit machine-readable result. (default=false)
+
+Notes:
+
+- Reachable objects, active-task evidence, current failures, and release evidence are never collectible.
+
+Examples:
+
+```sh
+agentplane evidence gc --json
+```
+
+- Preview collectible objects.
+
+```sh
+agentplane evidence gc --apply --yes
+```
+
+- Apply the verified retention plan.
+
+### evidence stats
+
+Inspect tracked evidence and content-addressed object retention.
+
+Usage:
+
+```text
+agentplane evidence stats [options]
+```
+
+Options:
+
+- `--json`: Emit machine-readable result. (default=false)
+
+Notes:
+
+- Read-only. Retention defaults come from \`.agentplane/evidence-retention.json\` when present.
+
+Examples:
+
+```sh
+agentplane evidence stats --json
+```
+
+- Inspect reachability, pins, age, and disk use.
 
 ### evidence verify
 
