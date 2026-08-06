@@ -1,4 +1,0 @@
-$ "node" "scripts/qualification/check-v0.7.1-efficiency-evidence.mjs" "--evidence" ".agentplane/cache/rf04-candidate/3195e6fb97586ceb347f7bd9063fa3ef4b7b1cca/measurement.pinned-baseline-codex-0.146.0-alpha.3.1.json" "--subject" "3195e6fb97586ceb347f7bd9063fa3ef4b7b1cca" "--provider-source-subject" "3195e6fb97586ceb347f7bd9063fa3ef4b7b1cca" "--out" ".agentplane/reports/v0.7.1-qualification/2026-08-05T22-57-46-619Z/efficiency-evidence.json"
-exit_code=0 signal=none duration_ms=34
-
-v0.7.1 efficiency evidence: pass; token_reduction=32.60%; failures=0; out=/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608052127-XWDY4R-keep-release-diagnostics-on-the-current-publishe/.agentplane/reports/v0.7.1-qualification/2026-08-05T22-57-46-619Z/efficiency-evidence.json

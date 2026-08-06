@@ -1,7 +1,0 @@
-$ "node" "scripts/checks/run-vitest-suite.mjs" "v0.7-hosted"
-exit_code=0 signal=none duration_ms=12478
-
-Vitest suite v0.7-hosted: chunk 1/2 (4 files): packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts, packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts, packages/agentplane/src/commands/task/hosted-close-pr.command.test.ts, packages/agentplane/src/commands/task/hosted-merge-sync.test.ts
-Vitest suite v0.7-hosted: chunk 1/2 passed in 8767ms (Test Files  4 passed (4); Tests  19 passed (19); Duration  8.51s (transform 3.64s, setup 0ms, import 3.78s, tests 12.85s, environment 0ms))
-Vitest suite v0.7-hosted: chunk 2/2 (3 files): packages/agentplane/src/commands/pr/integrate/cmd.protected-base.test.ts, packages/agentplane/src/commands/release/apply.push-recovery.test.ts, packages/agentplane/src/commands/release/apply.apply-flow.test.ts
-Vitest suite v0.7-hosted: chunk 2/2 passed in 3623ms (Test Files  3 passed (3); Tests  10 passed (10); Duration  3.37s (transform 1.92s, setup 0ms, import 2.51s, tests 2.98s, environment 0ms))

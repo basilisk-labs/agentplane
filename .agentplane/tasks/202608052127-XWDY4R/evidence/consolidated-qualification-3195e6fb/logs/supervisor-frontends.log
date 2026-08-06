@@ -1,4 +1,0 @@
-$ "node" "scripts/qualification/check-v0.7.1-product-contract.mjs"
-exit_code=0 signal=none duration_ms=6636
-
-v0.7.1 product contract OK (canonical supervisor UX, guarded compatibility, compact packet, legacy inventory, TS7, and zero-unused CLI)

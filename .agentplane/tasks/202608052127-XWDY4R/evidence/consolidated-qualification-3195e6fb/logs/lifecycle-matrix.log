@@ -1,9 +1,0 @@
-$ "node" "scripts/checks/run-vitest-suite.mjs" "v0.7-lifecycle"
-exit_code=0 signal=none duration_ms=15380
-
-Vitest suite v0.7-lifecycle: chunk 1/3 (6 files): packages/agentplane/src/commands/task/plan.unit.test.ts, packages/agentplane/src/commands/task/shared.verify-steps.test.ts, packages/agentplane/src/commands/task/verify-record.unit.test.ts, packages/agentplane/src/commands/task/finish.validation.unit.test.ts, packages/agentplane/src/commands/task/direct-task-supervisor.test.ts, packages/agentplane/src/commands/task/direct-task-supervisor-closeout.test.ts
-Vitest suite v0.7-lifecycle: chunk 1/3 passed in 1775ms (Test Files  6 passed (6); Tests  76 passed (76); Duration  1.52s (transform 1.34s, setup 0ms, import 1.18s, tests 1.24s, environment 0ms))
-Vitest suite v0.7-lifecycle: chunk 2/3 (6 files): packages/agentplane/src/commands/task/branch-task-supervisor.test.ts, packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts, packages/agentplane/src/cli/run-cli.core.task-guided.test.ts, packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts, packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts, packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts
-Vitest suite v0.7-lifecycle: chunk 2/3 passed in 8856ms (Test Files  6 passed (6); Tests  42 passed (42); Duration  8.60s (transform 4.12s, setup 0ms, import 4.49s, tests 11.46s, environment 0ms))
-Vitest suite v0.7-lifecycle: chunk 3/3 (1 files): packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts
-Vitest suite v0.7-lifecycle: chunk 3/3 passed in 4681ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  4.46s (transform 1.63s, setup 0ms, import 1.14s, tests 3.25s, environment 0ms))

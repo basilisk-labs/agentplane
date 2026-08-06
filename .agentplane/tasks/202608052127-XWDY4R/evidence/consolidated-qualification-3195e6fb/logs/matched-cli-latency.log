@@ -1,4 +1,0 @@
-$ "node" "scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs" "--subject" "3195e6fb97586ceb347f7bd9063fa3ef4b7b1cca" "--out" ".agentplane/reports/v0.7.1-qualification/2026-08-05T22-57-46-619Z/matched-cli-latency.json"
-exit_code=0 signal=none duration_ms=289819
-
-matched CLI latency: pass; baseline=0.6.26; candidate=0.7.3; failures=none; out=/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608052127-XWDY4R-keep-release-diagnostics-on-the-current-publishe/.agentplane/reports/v0.7.1-qualification/2026-08-05T22-57-46-619Z/matched-cli-latency.json

@@ -1,6 +1,0 @@
-$ "bun" "run" "task-state:check"
-exit_code=0 signal=none duration_ms=288
-
-task state OK (tasks=3241 release_closure=72)
-
-$ node scripts/checks/check-task-state.mjs
