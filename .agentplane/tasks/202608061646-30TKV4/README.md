@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on:
@@ -39,31 +39,30 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-06T23:55:34.316Z"
+  updated_at: "2026-08-06T23:57:20.954Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
   evaluated_sha: "32d47133fd20aa05a4a47d14264eead0ddb49e95"
   blueprint_digest: "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62"
   evidence_refs:
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260806-235440844-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260806-235440844-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/ab42a3012873592caa5cfd792077f9f6f0c8428ac5663b73fc8547041a6fdda9.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260806-235440844-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260806-235440844-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260806-235440844-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260806-235440844-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260806-235624838-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260806-235624838-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/fb3117794ad8c8299938170b9a0ef7999010897132c16afc96098a7ca686009e.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260806-235624838-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260806-235624838-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260806-235624838-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260806-235624838-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608061646-30TKV4/README.md"
     - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/3a49c50099238097e8b103032d050c22a335492decec015c807fb273c428f729.patch"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/854f4d1f46f51514ece98cf82d247554ad0947d935144919b8eecde8ac56c3e3.json"
-    - ".agentplane/tasks/202608061646-30TKV4/verification/20260806235416823-b6355c5c52208ecf.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/1276b37f468b3703b67f648e793a685c7755b05c5b282a955d3d9071108dad0a.json"
+    - ".agentplane/tasks/202608061646-30TKV4/verification/20260806235616032-e77244303af23abc.json"
     - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/425dc49ad99db2ca9f60810ac83290977a16fdf6a35d74fe3f0c781f5388ee6d.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The latest verification record does not record execution or a result for the required policy-routing check."
-    - "The frozen closure evidence contains no final tracked/untracked workspace-status check."
+    - "The duplicate-creation regression test exercises two concurrent runCli calls in one process, so it does not prove the intended cross-process CLI serialization behavior."
 token_usage:
   agent_runs: 3
   input_tokens: 456817
@@ -168,7 +167,7 @@ events:
     state: "ok"
     note: "The current-main UX branch has complete deterministic verification evidence, including policy routing and final workspace cleanliness."
 doc_version: 3
-doc_updated_at: "2026-08-06T23:56:17.139Z"
+doc_updated_at: "2026-08-06T23:57:20.976Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
