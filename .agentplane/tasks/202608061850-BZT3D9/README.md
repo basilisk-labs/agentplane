@@ -1,11 +1,11 @@
 ---
 id: "202608061850-BZT3D9"
 title: "Land post-merge workflow routing qualification fixes"
-result_summary: "pre-merge closure"
+result_summary: "Post-merge workflow routing qualification fixes verified and ready on PR #4795."
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -75,7 +75,7 @@ token_usage:
   state: "partial"
   total_tokens: 454322
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
-  updated_at: "2026-08-06T22:45:57.231Z"
+  updated_at: "2026-08-06T23:41:10.152Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -85,8 +85,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "14526cb606f858b5de3b4ac87dc983f6681228fa"
-  message: "🧪 BZT3D9 task: record recovery evaluator pass"
+  hash: "4c07d105bec7f52aa2d6259967225e05217cf84c"
+  message: "🧩 BZT3D9 task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -100,6 +100,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: recovery PR #4795 carries the already qualified implementation and a fresh pre-merge closure for protected integration."
 events:
   -
     type: "status"
@@ -145,9 +148,16 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-08-06T23:41:10.152Z"
+    author: "INTEGRATOR"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: recovery PR #4795 carries the already qualified implementation and a fresh pre-merge closure for protected integration."
 doc_version: 3
-doc_updated_at: "2026-08-06T22:45:57.257Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-06T23:41:10.175Z"
+doc_updated_by: "INTEGRATOR"
 description: "Publish the already verified post-merge fixes discovered after PR #4784 auto-merged: generated schema formatting, CLI reference and llms corpus refresh, isolated routing E2E coverage, lint-safe route resolution, repaired supervisor test fixture, and reviewed compatibility candidate evidence. No new product behavior beyond task 202608061646-WCARQG."
 sections:
   Summary: |-
@@ -528,4 +538,4 @@ DecisionContextRef:
 - Provenance: `supervisor_journal/agentplane`
 - Journal digest: `sha256:3d316f5315a02663da97b9cd2ffa3b363b18fdce1595d5d31d33fe49fa6692e6`
 - Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
-- Updated at: `2026-08-06T22:45:57.231Z`
+- Updated at: `2026-08-06T23:41:10.152Z`
