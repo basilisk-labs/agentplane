@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on:
@@ -78,8 +78,8 @@ token_usage:
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
   updated_at: "2026-08-06T20:09:32.605Z"
 commit:
-  hash: "32d47133fd20aa05a4a47d14264eead0ddb49e95"
-  message: "🔀 30TKV4 integrate: refresh verified UX branch from main"
+  hash: "d5856d4e9f7df6d42b3ca43f1221866148fdc54c"
+  message: "🧪 30TKV4 ux: test cross-process duplicate serialization"
 comments:
   -
     author: "CODER"
@@ -99,6 +99,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation refreshed: merged the qualified main, regenerated CLI docs, preserved the task-status UX assertion, and passed the bounded regression suite."
+  -
+    author: "CODER"
+    body: "Implementation rework committed: duplicate creation is now exercised by two independently spawned CLI processes released against the same start barrier."
 events:
   -
     type: "status"
@@ -166,8 +169,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "The current-main UX branch has complete deterministic verification evidence, including policy routing and final workspace cleanliness."
+  -
+    type: "status"
+    at: "2026-08-06T23:59:37.386Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework committed: duplicate creation is now exercised by two independently spawned CLI processes released against the same start barrier."
 doc_version: 3
-doc_updated_at: "2026-08-06T23:57:20.976Z"
+doc_updated_at: "2026-08-06T23:59:37.433Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
