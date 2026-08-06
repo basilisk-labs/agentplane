@@ -4,7 +4,7 @@
   "base": "main",
   "branch": "task/202608061646-WCARQG/add-explainable-per-task-workflow-routing",
   "created_at": "2026-08-06T16:48:32.143Z",
-  "diffstat_sha256": "sha256:7db60f07fff623c6d242c8fc65990d4bb32643ea9bba76123a0af621702d34a0",
+  "diffstat_sha256": "sha256:5737c96586cbd347357b78b1503af539973b47a93d8206955e618e6208cdb873",
   "last_verified_at": "2026-08-06T17:15:18.499Z",
   "last_verified_diffstat_sha256": "sha256:e05c759c52b7acf9150403204755057b1776739a12204d8ac7a042aae63a37af",
   "merge_commit": "0e1d30346d74b782d736e480700919077e532c5f",
