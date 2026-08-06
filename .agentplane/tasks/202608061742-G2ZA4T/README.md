@@ -4,7 +4,7 @@ title: "Redesign init around safe defaults and progressive disclosure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -33,6 +33,32 @@ verification:
   updated_by: "TESTER"
   note: "Progressive init is verified with concrete local evidence across behavior, onboarding, generated help, types, and routing."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-06T23:47:09.038Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "1b63fb8813a54cc74aa197719a5c81e759110d27"
+  blueprint_digest: "8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb"
+  evidence_refs:
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260806-234531354-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260806-234531354-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/665ca5d1a643d06acf14f1b442d3d77a1c07bc317a2c55439c0b5bae836addb3.md"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260806-234531354-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260806-234531354-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260806-234531354-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/README.md"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/db7b2c06d6cb4e01d464a665b1b1b6b95e26a92077007eab324b6e7ca45fc3b4.patch"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/a4d57d2e92e4eab83f5b90ce38afa2768e1cabfd16bbea7a197a42d0afa9eb78.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/verification/20260806234507136-be18675e79789f1c.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/f8d50aeb6c6ba67e5bbdc1ef85fee8250df89013e0dfe3d833853945634456ca.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The frozen aggregate diff includes the declared dependency task's artifacts and task-command implementation in addition to this task's init changes; commit-level inspection attributes the init task's own changes to the approved scope."
 commit:
   hash: "1b63fb8813a54cc74aa197719a5c81e759110d27"
   message: "✨ G2ZA4T ux: add progressive setup flow"
