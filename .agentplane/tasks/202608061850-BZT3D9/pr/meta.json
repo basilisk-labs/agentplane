@@ -8,10 +8,10 @@
   "pr_number": 4785,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4785",
   "pre_merge_closure": {
-    "basis_commit": "dc653b0db69ab83022fe1f38eab77daf4f3d92a7",
+    "basis_commit": "14526cb606f858b5de3b4ac87dc983f6681228fa",
     "branch": "task/202608061850-BZT3D9/land-post-merge-workflow-routing-qualification-f",
     "pr_number": 4785,
-    "recorded_at": "2026-08-06T19:01:14.522Z",
+    "recorded_at": "2026-08-06T22:45:57.295Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

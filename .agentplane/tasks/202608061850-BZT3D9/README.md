@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -63,19 +63,19 @@ quality_review:
   findings:
     - "The evaluated SHA has a deterministic verification record covering every declared local qualification gate, and the frozen patch remains within the approved post-merge qualification scope."
 token_usage:
-  agent_runs: 1
-  input_tokens: 162176
-  journal_digest: "sha256:cfb3476e9270fc33b1f32eb3bdf694f2f455f74ce956ebe77309be24080a14cc"
-  observed_agent_runs: 1
+  agent_runs: 5
+  input_tokens: 446755
+  journal_digest: "sha256:3d316f5315a02663da97b9cd2ffa3b363b18fdce1595d5d31d33fe49fa6692e6"
+  observed_agent_runs: 4
   observed_by: "agentplane"
-  output_tokens: 1875
-  reasoning_tokens: 308
+  output_tokens: null
+  reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
-  state: "observed"
-  total_tokens: 164359
-  unavailable_reason: null
-  updated_at: "2026-08-06T19:01:14.461Z"
+  state: "partial"
+  total_tokens: 454322
+  unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
+  updated_at: "2026-08-06T22:45:57.231Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -85,8 +85,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "dc653b0db69ab83022fe1f38eab77daf4f3d92a7"
-  message: "🧪 BZT3D9 task: refresh task artifacts after commit"
+  hash: "14526cb606f858b5de3b4ac87dc983f6681228fa"
+  message: "🧪 BZT3D9 task: record recovery evaluator pass"
 comments:
   -
     author: "CODER"
@@ -97,6 +97,9 @@ comments:
   -
     author: "CODER"
     body: "CI recovery: refreshed the task artifact without changing implementation so GitHub can create a new pull_request synchronize check suite after the Actions outage."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -135,8 +138,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "CI recovery head locally requalified with deterministic check details; hosted checks pending PR synchronize."
+  -
+    type: "status"
+    at: "2026-08-06T22:45:57.231Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-06T22:45:02.600Z"
+doc_updated_at: "2026-08-06T22:45:57.257Z"
 doc_updated_by: "CODER"
 description: "Publish the already verified post-merge fixes discovered after PR #4784 auto-merged: generated schema formatting, CLI reference and llms corpus refresh, isolated routing E2E coverage, lint-safe route resolution, repaired supervisor test fixture, and reviewed compatibility candidate evidence. No new product behavior beyond task 202608061646-WCARQG."
 sections:
@@ -509,13 +519,13 @@ DecisionContextRef:
 
 ## Token Usage
 
-- State: `observed`
-- Completeness: `1/1` agent runs
-- Input tokens: `162176`
-- Output tokens: `1875`
-- Reasoning tokens: `308`
-- Total tokens: `164359`
+- State: `partial`
+- Completeness: `4/5` agent runs
+- Input tokens: `446755`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `454322`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:cfb3476e9270fc33b1f32eb3bdf694f2f455f74ce956ebe77309be24080a14cc`
-- Unavailable reason: `none`
-- Updated at: `2026-08-06T19:01:14.461Z`
+- Journal digest: `sha256:3d316f5315a02663da97b9cd2ffa3b363b18fdce1595d5d31d33fe49fa6692e6`
+- Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
+- Updated at: `2026-08-06T22:45:57.231Z`
