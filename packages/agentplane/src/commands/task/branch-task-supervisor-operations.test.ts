@@ -8,11 +8,12 @@ import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operati
 const mocks = vi.hoisted(() => ({
   cmdFinish: vi.fn(),
   loadCommandContext: vi.fn(),
+  loadTaskFromContext: vi.fn(),
 }));
 
 vi.mock("../shared/task-backend.js", () => ({
   loadCommandContext: mocks.loadCommandContext,
-  loadTaskFromContext: vi.fn(),
+  loadTaskFromContext: mocks.loadTaskFromContext,
 }));
 
 vi.mock("./finish-command.js", () => ({
@@ -52,6 +53,7 @@ function preMergeCloseOperation(): Extract<WorkflowOperation, { id: "task.pre_me
 function routeDecision(operation: WorkflowOperation): TaskRouteDecision {
   return {
     executionPacket: { mustRunFrom: "/repo/task" },
+    task: { id: "202607221852-71SCSW" },
     workflowStep: { id: operation.id, kind: "cli_operation", operation },
   } as unknown as TaskRouteDecision;
 }
@@ -60,8 +62,12 @@ describe("branch task supervisor operations", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.loadCommandContext.mockResolvedValue({
+      config: { workflow_mode: "branch_pr" },
       resolvedProject: { gitRoot: "/repo" },
     } as CommandContext);
+    mocks.loadTaskFromContext.mockResolvedValue({
+      execution_route: { selected_mode: "branch_pr" },
+    });
     mocks.cmdFinish.mockResolvedValue(0);
   });
 
