@@ -22,11 +22,12 @@ Add a backward-compatible task-level execution route that lets AgentPlane classi
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-06T17:06:45.437Z
+- Updated: 2026-08-06T17:49:35.409Z
 - Branch: task/202608061646-WCARQG/add-explainable-per-task-workflow-routing
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/user/cli-reference.generated.mdx              |   1 +
  .../src/backends/task-backend/shared/record.ts     |  30 ++++++
  .../src/backends/task-backend/shared/types.ts      |   2 +
  .../src/cli/run-cli.core.route-decision.test.ts    | 104 +++++++++++++++++++
@@ -63,7 +64,7 @@ Add a backward-compatible task-level execution route that lets AgentPlane classi
  packages/spec/schemas/tasks-export.schema.json     |  42 ++++++++
  schemas/task-readme-frontmatter.schema.json        |  42 ++++++++
  schemas/tasks-export.schema.json                   |  42 ++++++++
- 36 files changed, 783 insertions(+), 9 deletions(-)
+ 37 files changed, 784 insertions(+), 9 deletions(-)
 ```
 
 </details>
