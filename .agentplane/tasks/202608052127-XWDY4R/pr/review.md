@@ -13,7 +13,7 @@ Created: 2026-08-05T21:28:48.428Z
 ## Verification
 
 - State: ok
-- Note: Exact-subject consolidated qualification and effectiveness evidence accepted in machine-parseable form.
+- Note: Command: pinned Codex 0.146.0-alpha.3.1 full provider qualification on exact subject 6c21aab823fe2019b6649b65f5bea6685be0e549. Result: pass. Evidence: report fbf20573217713c56df7418532e7fbdfa6d218b01cad361c8b5b279eff701e1a; efficiency eb55407be4344639d669ee0ce84434586c2c0f64f3945202878ce7e67187bfc4; ready 18/19, blocking 0, runs 50/50, episodes 55/55, no retry; token reduction 31.82%; verified success 8 to 20; scope violations 17 to 5; matched CLI and supervisor latency passed. Scope: all declared install, upgrade, lifecycle, context, evaluator, stale-state, recovery, release, package, performance, and semantic-provider gates.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

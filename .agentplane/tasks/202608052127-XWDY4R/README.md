@@ -4,7 +4,7 @@ title: "Keep release diagnostics on the current published target"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-06T01:48:41.709Z"
+  updated_at: "2026-08-06T12:26:36.959Z"
   updated_by: "TESTER"
-  note: "Exact-subject consolidated qualification and effectiveness evidence accepted in machine-parseable form."
+  note: "Command: pinned Codex 0.146.0-alpha.3.1 full provider qualification on exact subject 6c21aab823fe2019b6649b65f5bea6685be0e549. Result: pass. Evidence: report fbf20573217713c56df7418532e7fbdfa6d218b01cad361c8b5b279eff701e1a; efficiency eb55407be4344639d669ee0ce84434586c2c0f64f3945202878ce7e67187bfc4; ready 18/19, blocking 0, runs 50/50, episodes 55/55, no retry; token reduction 31.82%; verified success 8 to 20; scope violations 17 to 5; matched CLI and supervisor latency passed. Scope: all declared install, upgrade, lifecycle, context, evaluator, stale-state, recovery, release, package, performance, and semantic-provider gates."
   attempts: 0
 quality_review:
   state: "rework"
@@ -128,8 +128,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Exact-subject consolidated qualification and effectiveness evidence accepted in machine-parseable form."
+  -
+    type: "verify"
+    at: "2026-08-06T12:26:36.959Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Command: pinned Codex 0.146.0-alpha.3.1 full provider qualification on exact subject 6c21aab823fe2019b6649b65f5bea6685be0e549. Result: pass. Evidence: report fbf20573217713c56df7418532e7fbdfa6d218b01cad361c8b5b279eff701e1a; efficiency eb55407be4344639d669ee0ce84434586c2c0f64f3945202878ce7e67187bfc4; ready 18/19, blocking 0, runs 50/50, episodes 55/55, no retry; token reduction 31.82%; verified success 8 to 20; scope violations 17 to 5; matched CLI and supervisor latency passed. Scope: all declared install, upgrade, lifecycle, context, evaluator, stale-state, recovery, release, package, performance, and semantic-provider gates."
 doc_version: 3
-doc_updated_at: "2026-08-06T01:48:42.897Z"
+doc_updated_at: "2026-08-06T12:26:38.394Z"
 doc_updated_by: "CODER"
 description: "Prevent release next-action from mixing the current package/tag target with stale local release-plan SHA and hosted evidence; add regression coverage, merge the fix, and publish the verified v0.7.4 patch release."
 sections:
@@ -409,6 +415,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-06T12:26:36.959Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Command: pinned Codex 0.146.0-alpha.3.1 full provider qualification on exact subject 6c21aab823fe2019b6649b65f5bea6685be0e549. Result: pass. Evidence: report fbf20573217713c56df7418532e7fbdfa6d218b01cad361c8b5b279eff701e1a; efficiency eb55407be4344639d669ee0ce84434586c2c0f64f3945202878ce7e67187bfc4; ready 18/19, blocking 0, runs 50/50, episodes 55/55, no retry; token reduction 31.82%; verified success 8 to 20; scope violations 17 to 5; matched CLI and supervisor latency passed. Scope: all declared install, upgrade, lifecycle, context, evaluator, stale-state, recovery, release, package, performance, and semantic-provider gates.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T01:48:42.897Z, excerpt_hash=sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608052127-XWDY4R-keep-release-diagnostics-on-the-current-publishe/.agentplane/tasks/202608052127-XWDY4R/blueprint/resolved-snapshot.json
+    - old_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+    - current_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608052127-XWDY4R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608052127-XWDY4R
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Before publication, revert the task PR. After publication, never reuse the npm version or move the tag; fix any release-only regression in a new patch version while preserving published evidence."
   Findings: |-
@@ -425,6 +461,10 @@ sections:
     - Observation: The first passing record preceded the evidence archive commit, so the route correctly treated the expanded task diff as unverified.
       Impact: Without rebinding, PR publication could advance with task evidence not covered by the recorded diff fingerprint.
       Resolution: Reviewed the evidence-only commit 6f3aacfc8831 and recorded the same passing result against the complete current diff; semantic candidate and all prior test outputs are unchanged.
+
+    - Observation: Absolute CLI wall-time remained advisory-red and raw provider measurement had 23 scoped-mutation samples versus baseline 25; the release contract's matched v0.6.26 latency and outcome/token gates passed with no blocking failure.
+      Impact: The candidate is provider-qualified without weakening thresholds; diagnostic sample-count variance does not hide token, outcome, scope, matched-latency, or supervisor regressions.
+      Resolution: Archive the exact report and compact provider evidence, publish this verified head, run hosted checks, then integrate once and publish one 0.7.4 patch from protected main.
 extensions:
   workflow_route_baseline:
     start_head_sha: "944dc6eefcd5ea79c33af066caf1078f881e371a"
@@ -719,6 +759,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-06T12:26:36.959Z — VERIFY — ok
+
+By: TESTER
+
+Note: Command: pinned Codex 0.146.0-alpha.3.1 full provider qualification on exact subject 6c21aab823fe2019b6649b65f5bea6685be0e549. Result: pass. Evidence: report fbf20573217713c56df7418532e7fbdfa6d218b01cad361c8b5b279eff701e1a; efficiency eb55407be4344639d669ee0ce84434586c2c0f64f3945202878ce7e67187bfc4; ready 18/19, blocking 0, runs 50/50, episodes 55/55, no retry; token reduction 31.82%; verified success 8 to 20; scope violations 17 to 5; matched CLI and supervisor latency passed. Scope: all declared install, upgrade, lifecycle, context, evaluator, stale-state, recovery, release, package, performance, and semantic-provider gates.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T01:48:42.897Z, excerpt_hash=sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608052127-XWDY4R-keep-release-diagnostics-on-the-current-publishe/.agentplane/tasks/202608052127-XWDY4R/blueprint/resolved-snapshot.json
+- old_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+- current_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608052127-XWDY4R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608052127-XWDY4R
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -740,3 +810,7 @@ Confirmed post-release findings and fixes: (1) release next-action accepted stal
 - Observation: The first passing record preceded the evidence archive commit, so the route correctly treated the expanded task diff as unverified.
   Impact: Without rebinding, PR publication could advance with task evidence not covered by the recorded diff fingerprint.
   Resolution: Reviewed the evidence-only commit 6f3aacfc8831 and recorded the same passing result against the complete current diff; semantic candidate and all prior test outputs are unchanged.
+
+- Observation: Absolute CLI wall-time remained advisory-red and raw provider measurement had 23 scoped-mutation samples versus baseline 25; the release contract's matched v0.6.26 latency and outcome/token gates passed with no blocking failure.
+  Impact: The candidate is provider-qualified without weakening thresholds; diagnostic sample-count variance does not hide token, outcome, scope, matched-latency, or supervisor regressions.
+  Resolution: Archive the exact report and compact provider evidence, publish this verified head, run hosted checks, then integrate once and publish one 0.7.4 patch from protected main.

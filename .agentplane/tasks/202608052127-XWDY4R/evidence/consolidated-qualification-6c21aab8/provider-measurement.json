@@ -1,0 +1,335 @@
+{
+  "baseline": {
+    "actual_values": {
+      "golden_mismatch_count": 33,
+      "latency_ms": {
+        "harness_setup_latency_ms": {
+          "mean": 7605.46,
+          "sample_count": 50
+        },
+        "time_to_first_scoped_mutation_ms": {
+          "mean": 43642.64,
+          "sample_count": 25
+        },
+        "time_to_verified_result_ms": {
+          "mean": 56439.625,
+          "sample_count": 8
+        }
+      },
+      "outcomes": {
+        "adapter_failure": 5,
+        "approval_respected": 50,
+        "blocked": 20,
+        "context_gap": 5,
+        "rework_required": 32,
+        "scope_violation": 17,
+        "verified_success": 8
+      },
+      "provider_episodes": 55,
+      "provider_tokens": {
+        "input_tokens": 9097432,
+        "output_tokens": 66728,
+        "reasoning_tokens": 22587,
+        "total_tokens": 9186747
+      }
+    },
+    "pinned_evidence_path": "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json",
+    "pinned_evidence_sha256": "sha256:f8e569366cb80bd0e054210a58cafc3d92b16b45d9653dd283911ee51733c870",
+    "replay_baseline_sha256": "sha256:cb39d8981b509a54573d076d6323d495324ce2ed9e60c71d21dfa084fdb2d1ab",
+    "runtime_profile": {
+      "adapter_id": "codex-exec-jsonl-supervisor",
+      "cache_mode": "ephemeral-provider-default",
+      "model_id": "gpt-5.6-terra",
+      "provider_id": "openai-chatgpt",
+      "reasoning_effort": "low",
+      "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
+      "runtime_version": "0.6.24/0.146.0-alpha.3.1",
+      "sandbox_mode": "workspace-write-network-disabled"
+    },
+    "source": "pinned_runtime_bridge",
+    "subject_sha": "1a702e160ba9f0efe7067f2a22fc008defc89ffb"
+  },
+  "candidate": {
+    "actual_values": {
+      "golden_mismatch_count": 10,
+      "latency_ms": {
+        "harness_setup_latency_ms": {
+          "mean": 6744.68,
+          "sample_count": 50
+        },
+        "time_to_first_scoped_mutation_ms": {
+          "mean": 30525,
+          "sample_count": 23
+        },
+        "time_to_verified_result_ms": {
+          "mean": 59953.15,
+          "sample_count": 20
+        }
+      },
+      "outcomes": {
+        "adapter_failure": 5,
+        "approval_respected": 50,
+        "blocked": 20,
+        "context_gap": 5,
+        "rework_required": 25,
+        "scope_violation": 5,
+        "verified_success": 20
+      },
+      "provider_episodes": 55,
+      "provider_tokens": {
+        "input_tokens": 6206606,
+        "output_tokens": 41950,
+        "reasoning_tokens": 15004,
+        "total_tokens": 6263560
+      }
+    },
+    "coverage": {
+      "replay_runs": 50,
+      "scenarios": 10
+    },
+    "driver": {
+      "contract_version": 1,
+      "path": "scripts/bench/run-agent-efficiency-codex-replay.mjs",
+      "sha256": "sha256:c1edb26915257b501d00067184267ff80e56ce524c84443a5845da428c4dd14d"
+    },
+    "fixture_registry_sha256": "sha256:bcdbcb6d7a95a96cdff7eeec2fb43c1ebb76f3b747bba4f9d98a53084e33a959",
+    "harness_sha256": "sha256:fe7c1a6b2712aee2bcde8bb2ce0db5e780346406a4abce3bf1f497e6e691c18a",
+    "runtime_profile": {
+      "adapter_id": "codex-exec-jsonl-supervisor",
+      "cache_mode": "ephemeral-provider-default",
+      "model_id": "gpt-5.6-terra",
+      "provider_id": "openai-chatgpt",
+      "reasoning_effort": "low",
+      "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
+      "runtime_version": "0.6.24/0.146.0-alpha.3.1",
+      "sandbox_mode": "workspace-write-network-disabled"
+    },
+    "subject_sha": "6c21aab823fe2019b6649b65f5bea6685be0e549"
+  },
+  "comparisons": [
+    {
+      "baseline": 9097432,
+      "candidate": 6206606,
+      "delta": -2890826,
+      "delta_ratio": -0.3177628587935584,
+      "id": "provider_tokens.input_tokens",
+      "maximum": 10007175.200000001,
+      "threshold": {
+        "kind": "max_increase_ratio",
+        "value": 0.1
+      },
+      "verdict": "pass"
+    },
+    {
+      "baseline": 66728,
+      "candidate": 41950,
+      "delta": -24778,
+      "delta_ratio": -0.371328377892339,
+      "id": "provider_tokens.output_tokens",
+      "maximum": 73400.8,
+      "threshold": {
+        "kind": "max_increase_ratio",
+        "value": 0.1
+      },
+      "verdict": "pass"
+    },
+    {
+      "baseline": 22587,
+      "candidate": 15004,
+      "delta": -7583,
+      "delta_ratio": -0.3357240890777881,
+      "id": "provider_tokens.reasoning_tokens",
+      "maximum": 24845.7,
+      "threshold": {
+        "kind": "max_increase_ratio",
+        "value": 0.1
+      },
+      "verdict": "pass"
+    },
+    {
+      "baseline": 9186747,
+      "candidate": 6263560,
+      "delta": -2923187,
+      "delta_ratio": -0.31819609269744775,
+      "id": "provider_tokens.total_tokens",
+      "maximum": 10105421.700000001,
+      "threshold": {
+        "kind": "max_increase_ratio",
+        "value": 0.1
+      },
+      "verdict": "pass"
+    },
+    {
+      "baseline": 50,
+      "candidate": 50,
+      "delta": 0,
+      "id": "latency.harness_setup_latency_ms.sample_count",
+      "minimum": 50,
+      "threshold": {
+        "kind": "no_regression",
+        "value": 0
+      },
+      "verdict": "pass"
+    },
+    {
+      "baseline": 7605.46,
+      "candidate": 6744.68,
+      "delta": -860.7799999999997,
+      "delta_ratio": -0.11317921598430598,
+      "id": "latency.harness_setup_latency_ms.mean_ms",
+      "maximum": 8366.006000000001,
+      "threshold": {
+        "kind": "max_increase_ratio",
+        "value": 0.1
+      },
+      "verdict": "pass"
+    },
+    {
+      "baseline": 25,
+      "candidate": 23,
+      "delta": -2,
+      "id": "latency.time_to_first_scoped_mutation_ms.sample_count",
+      "minimum": 25,
+      "threshold": {
+        "kind": "no_regression",
+        "value": 0
+      },
+      "verdict": "fail"
+    },
+    {
+      "baseline": 43642.64,
+      "candidate": 30525,
+      "delta": -13117.64,
+      "delta_ratio": -0.3005693514416176,
+      "id": "latency.time_to_first_scoped_mutation_ms.mean_ms",
+      "maximum": 48006.904,
+      "threshold": {
+        "kind": "max_increase_ratio",
+        "value": 0.1
+      },
+      "verdict": "pass"
+    },
+    {
+      "baseline": 8,
+      "candidate": 20,
+      "delta": 12,
+      "id": "latency.time_to_verified_result_ms.sample_count",
+      "minimum": 8,
+      "threshold": {
+        "kind": "no_regression",
+        "value": 0
+      },
+      "verdict": "pass"
+    },
+    {
+      "baseline": 56439.625,
+      "candidate": 59953.15,
+      "delta": 3513.5250000000015,
+      "delta_ratio": 0.062252805542205525,
+      "id": "latency.time_to_verified_result_ms.mean_ms",
+      "maximum": 62083.5875,
+      "threshold": {
+        "kind": "max_increase_ratio",
+        "value": 0.1
+      },
+      "verdict": "pass"
+    },
+    {
+      "baseline": 8,
+      "candidate": 20,
+      "delta": 12,
+      "id": "outcomes.verified_success",
+      "minimum": 8,
+      "threshold": {
+        "kind": "no_regression",
+        "value": 0
+      },
+      "verdict": "pass"
+    },
+    {
+      "baseline": 32,
+      "candidate": 25,
+      "delta": -7,
+      "delta_ratio": -0.21875,
+      "id": "outcomes.rework_required",
+      "maximum": 32,
+      "threshold": {
+        "kind": "max_increase_ratio",
+        "value": 0
+      },
+      "verdict": "pass"
+    },
+    {
+      "baseline": 33,
+      "candidate": 10,
+      "delta": -23,
+      "delta_ratio": -0.696969696969697,
+      "id": "outcomes.golden_mismatch_count",
+      "maximum": 33,
+      "threshold": {
+        "kind": "max_increase_ratio",
+        "value": 0
+      },
+      "verdict": "pass"
+    },
+    {
+      "baseline": 55,
+      "candidate": 55,
+      "delta": 0,
+      "id": "provider_episodes",
+      "threshold": {
+        "kind": "exact",
+        "value": 55
+      },
+      "verdict": "pass"
+    },
+    {
+      "baseline": {
+        "adapter_id": "codex-exec-jsonl-supervisor",
+        "cache_mode": "ephemeral-provider-default",
+        "model_id": "gpt-5.6-terra",
+        "provider_id": "openai-chatgpt",
+        "reasoning_effort": "low",
+        "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
+        "runtime_version": "0.6.24/0.146.0-alpha.3.1",
+        "sandbox_mode": "workspace-write-network-disabled"
+      },
+      "candidate": {
+        "adapter_id": "codex-exec-jsonl-supervisor",
+        "cache_mode": "ephemeral-provider-default",
+        "model_id": "gpt-5.6-terra",
+        "provider_id": "openai-chatgpt",
+        "reasoning_effort": "low",
+        "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
+        "runtime_version": "0.6.24/0.146.0-alpha.3.1",
+        "sandbox_mode": "workspace-write-network-disabled"
+      },
+      "id": "runtime.profile",
+      "threshold": {
+        "kind": "exact",
+        "value": {
+          "adapter_id": "codex-exec-jsonl-supervisor",
+          "cache_mode": "ephemeral-provider-default",
+          "model_id": "gpt-5.6-terra",
+          "provider_id": "openai-chatgpt",
+          "reasoning_effort": "low",
+          "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
+          "runtime_version": "0.6.24/0.146.0-alpha.3.1",
+          "sandbox_mode": "workspace-write-network-disabled"
+        }
+      },
+      "verdict": "pass"
+    }
+  ],
+  "failure_ids": [
+    "latency.time_to_first_scoped_mutation_ms.sample_count"
+  ],
+  "kind": "agent_efficiency_candidate_measurement_v1",
+  "runtime_comparison": {
+    "baseline": "0.6.24/0.146.0-alpha.3.1",
+    "candidate": "0.6.24/0.146.0-alpha.3.1",
+    "profile_match": true
+  },
+  "schema_version": 1,
+  "verdict": "fail"
+}
