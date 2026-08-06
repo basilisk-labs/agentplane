@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608061925-KANFC0/preserve-exact-windows-task-readme-file-identiti",
+  "created_at": "2026-08-06T19:28:55.153Z",
+  "diffstat_sha256": "sha256:cea0248d5ded7d128f90f769c9ed6c372334de4b7381b6c2c136e57c66a71838",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608061925-KANFC0",
+  "updated_at": "2026-08-06T19:28:55.153Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
