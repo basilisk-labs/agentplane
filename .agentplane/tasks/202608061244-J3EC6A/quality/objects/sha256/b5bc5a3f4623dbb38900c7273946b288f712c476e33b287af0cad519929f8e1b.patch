@@ -1,0 +1,1294 @@
+diff --git a/.agentplane/WORKFLOW.md b/.agentplane/WORKFLOW.md
+index 33c9b1528..2bff746eb 100644
+--- a/.agentplane/WORKFLOW.md
++++ b/.agentplane/WORKFLOW.md
+@@ -62,7 +62,7 @@ framework:
+   source: https://github.com/basilisk-labs/agentplane
+   last_update: null
+   cli:
+-    expected_version: 0.7.3
++    expected_version: 0.7.4
+ feedback:
+   github_issues:
+     enabled: true
+@@ -138,6 +138,7 @@ in_scope_paths:
+ 
+ 
+ 
++
+ 
+ 
+ ## Prompt Template
+diff --git a/.agentplane/workflows/last-known-good.md b/.agentplane/workflows/last-known-good.md
+index 5b666d361..2bff746eb 100644
+--- a/.agentplane/workflows/last-known-good.md
++++ b/.agentplane/workflows/last-known-good.md
+@@ -62,7 +62,7 @@ framework:
+   source: https://github.com/basilisk-labs/agentplane
+   last_update: null
+   cli:
+-    expected_version: 0.7.2
++    expected_version: 0.7.4
+ feedback:
+   github_issues:
+     enabled: true
+@@ -138,6 +138,7 @@ in_scope_paths:
+ 
+ 
+ 
++
+ 
+ 
+ ## Prompt Template
+diff --git a/docs/assets/header.svg b/docs/assets/header.svg
+index c60615581..78700d6e9 100644
+--- a/docs/assets/header.svg
++++ b/docs/assets/header.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.3 README header</title>
++<title>Agentplane v0.7.4 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.4</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/adr.svg b/docs/assets/readme-headers/adr.svg
+index c60615581..78700d6e9 100644
+--- a/docs/assets/readme-headers/adr.svg
++++ b/docs/assets/readme-headers/adr.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.3 README header</title>
++<title>Agentplane v0.7.4 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.4</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/agentplane-cli.svg b/docs/assets/readme-headers/agentplane-cli.svg
+index c60615581..78700d6e9 100644
+--- a/docs/assets/readme-headers/agentplane-cli.svg
++++ b/docs/assets/readme-headers/agentplane-cli.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.3 README header</title>
++<title>Agentplane v0.7.4 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.4</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/agentplane.svg b/docs/assets/readme-headers/agentplane.svg
+index c60615581..78700d6e9 100644
+--- a/docs/assets/readme-headers/agentplane.svg
++++ b/docs/assets/readme-headers/agentplane.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.3 README header</title>
++<title>Agentplane v0.7.4 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.4</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/core.svg b/docs/assets/readme-headers/core.svg
+index c60615581..78700d6e9 100644
+--- a/docs/assets/readme-headers/core.svg
++++ b/docs/assets/readme-headers/core.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.3 README header</title>
++<title>Agentplane v0.7.4 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.4</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/docs.svg b/docs/assets/readme-headers/docs.svg
+index c60615581..78700d6e9 100644
+--- a/docs/assets/readme-headers/docs.svg
++++ b/docs/assets/readme-headers/docs.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.3 README header</title>
++<title>Agentplane v0.7.4 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.4</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/humanizer.svg b/docs/assets/readme-headers/humanizer.svg
+index c60615581..78700d6e9 100644
+--- a/docs/assets/readme-headers/humanizer.svg
++++ b/docs/assets/readme-headers/humanizer.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.3 README header</title>
++<title>Agentplane v0.7.4 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.4</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/recipes.svg b/docs/assets/readme-headers/recipes.svg
+index c60615581..78700d6e9 100644
+--- a/docs/assets/readme-headers/recipes.svg
++++ b/docs/assets/readme-headers/recipes.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.3 README header</title>
++<title>Agentplane v0.7.4 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.4</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/releases.svg b/docs/assets/readme-headers/releases.svg
+index c60615581..78700d6e9 100644
+--- a/docs/assets/readme-headers/releases.svg
++++ b/docs/assets/readme-headers/releases.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.3 README header</title>
++<title>Agentplane v0.7.4 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.4</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/schemas.svg b/docs/assets/readme-headers/schemas.svg
+index c60615581..78700d6e9 100644
+--- a/docs/assets/readme-headers/schemas.svg
++++ b/docs/assets/readme-headers/schemas.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.3 README header</title>
++<title>Agentplane v0.7.4 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.4</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/scripts.svg b/docs/assets/readme-headers/scripts.svg
+index c60615581..78700d6e9 100644
+--- a/docs/assets/readme-headers/scripts.svg
++++ b/docs/assets/readme-headers/scripts.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.3 README header</title>
++<title>Agentplane v0.7.4 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.4</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/skills.svg b/docs/assets/readme-headers/skills.svg
+index c60615581..78700d6e9 100644
+--- a/docs/assets/readme-headers/skills.svg
++++ b/docs/assets/readme-headers/skills.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.3 README header</title>
++<title>Agentplane v0.7.4 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.4</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/spec.svg b/docs/assets/readme-headers/spec.svg
+index c60615581..78700d6e9 100644
+--- a/docs/assets/readme-headers/spec.svg
++++ b/docs/assets/readme-headers/spec.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.3 README header</title>
++<title>Agentplane v0.7.4 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.4</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/testkit.svg b/docs/assets/readme-headers/testkit.svg
+index c60615581..78700d6e9 100644
+--- a/docs/assets/readme-headers/testkit.svg
++++ b/docs/assets/readme-headers/testkit.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.3 README header</title>
++<title>Agentplane v0.7.4 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.3</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.4</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/reference/generated-reference.mdx b/docs/reference/generated-reference.mdx
+index 888e6359c..0b50a4942 100644
+--- a/docs/reference/generated-reference.mdx
++++ b/docs/reference/generated-reference.mdx
+@@ -10,9 +10,9 @@ This page is generated by `scripts/generate-website-docs.mjs`.
+ 
+ | Package                  | Version    | Folder                |
+ | ------------------------ | ---------- | --------------------- |
+-| `agentplane`             | `0.7.2`    | `packages/agentplane` |
+-| `@agentplaneorg/core`    | `0.7.2`    | `packages/core`       |
+-| `@agentplaneorg/recipes` | `0.7.2`    | `packages/recipes`    |
++| `agentplane`             | `0.7.4`    | `packages/agentplane` |
++| `@agentplaneorg/core`    | `0.7.4`    | `packages/core`       |
++| `@agentplaneorg/recipes` | `0.7.4`    | `packages/recipes`    |
+ | `@agentplane/spec`       | `internal` | `packages/spec`       |
+ | `@agentplane/testkit`    | `internal` | `packages/testkit`    |
+ 
+diff --git a/docs/releases/v0.7.4.md b/docs/releases/v0.7.4.md
+new file mode 100644
+index 000000000..31923e661
+--- /dev/null
++++ b/docs/releases/v0.7.4.md
+@@ -0,0 +1,43 @@
++# Release Notes - v0.7.4
++
++## Summary
++
++- AgentPlane 0.7.4 completes the 0.7 refactor with a CLI-owned execution envelope that prepares compact typed context, preserves exact semantic effects, and keeps task, release, and provider state recoverable.
++- This patch consolidates the post-release audit into one qualified update instead of publishing a sequence of speculative fixes.
++
++## Added
++
++- Added an exact-result recovery contract for late PLANNER responses so only the plan that is currently persisted can complete an uncertain operation.
++- Added regression coverage for stale planning results that preserves the independently revised plan and leaves the supervisor journal retry-safe.
++- Added compact, immutable qualification evidence for the exact release subject, including provider provenance, effectiveness, matched latency, and supervisor latency.
++- Added structured verification records that bind commands, results, evidence, and scope to the reviewed implementation and archived evidence set.
++
++## Improved
++
++- Improved release recovery so the current package version and tag determine the active target instead of a stale local release-plan SHA.
++- Improved release next-action diagnostics to separate current-target evidence from obsolete hosted workflow state.
++- Improved release evidence collection to resolve the successful exact-SHA publish run and reuse its canonical publication result idempotently.
++- Improved supervisor recovery so a semantic side effect is reconciled exactly once across process interruption and uncertain provider completion.
++- Improved the Codex and Hermes supervisor frontends to share the same execution-episode state, usage accounting, and stop semantics.
++- Improved task-owned artifact commits so recovery metadata remains aligned with the repository commit policy.
++- Improved provider conflict and rework coverage with a realistic aggregate time budget while preserving strict per-scenario failure reporting.
++- Improved verification freshness so evidence-only commits remain distinguishable from the implementation SHA reviewed by the evaluator.
++
++## Fixed
++
++- Fixed stale release plans mixing an old release SHA with diagnostics for the current version and tag.
++- Fixed failed or incomplete postpublish audits being stored in a shape that could appear reusable as successful evidence.
++- Fixed late PLANNER results being accepted merely because any plan was awaiting approval, even when the returned plan differed.
++- Fixed supervisor recovery modules exceeding repository size and lint constraints after the recovery paths were consolidated.
++- Fixed formatting drift in the provider conflict-rework matrix that blocked the repository contract gate.
++- Fixed quality handoff records that previously lacked machine-parseable command, result, evidence, and scope fields.
++
++## Upgrade Notes
++
++- No migration is required; upgrade with `npm install --global agentplane@0.7.4`. Existing 0.6.x and 0.7.x repositories remain supported by the qualified upgrade fixtures.
++
++## Verification
++
++- The full release qualification completed 50 of 50 semantic runs and 55 of 55 provider episodes without retry, with zero blocking failures.
++- Compared with the frozen baseline, measured provider tokens fell from 9,186,747 to 6,263,560, verified successes rose from 8 to 20, scope violations fell from 17 to 5, and golden mismatches fell from 33 to 10.
++- The deterministic prepublish suite, package and upgrade matrices, matched CLI latency, both supervisor latency frontends, critical CLI, Windows, CodeQL, documentation, static analysis, unit tests, and protected-main checks passed before release preparation.
+diff --git a/packages/agentplane/package.json b/packages/agentplane/package.json
+index 2a346555b..c8f83541a 100644
+--- a/packages/agentplane/package.json
++++ b/packages/agentplane/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "agentplane",
+-  "version": "0.7.3",
++  "version": "0.7.4",
+   "description": "CLI-first operational workflows and traces for AI agents.",
+   "keywords": [
+     "agentplane",
+@@ -75,8 +75,8 @@
+     "prepublishOnly": "node ../../scripts/release/enforce-github-publish.mjs && npm run prepack"
+   },
+   "dependencies": {
+-    "@agentplaneorg/core": "0.7.3",
+-    "@agentplaneorg/recipes": "0.7.3",
++    "@agentplaneorg/core": "0.7.4",
++    "@agentplaneorg/recipes": "0.7.4",
+     "@clack/prompts": "^1.5.1",
+     "yaml": "^2.7.1",
+     "yauzl": "^3.4.0",
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index 4720c1c0c..0888e4886 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -222,14 +222,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           ],
+         },
+         release_version_delta: {
+-          source_task: "202608041322-M26FS0",
++          source_task: "202608061244-J3EC6A",
+           classification: "planned_version_parity",
+           from_version: "0.6.24",
+-          to_version: "0.7.3",
++          to_version: "0.7.4",
+           section: "package_manifests",
+           from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+-          to_sha256: "62af981925c53c759ca64ad783ec0d0b821fc10324e1270acc4bb8bea4da5fc3",
+-          surface_sha256: "6414a03920d7d20425c6bddc219c4b21ba704dd01a9a6f6d503702c98075723b",
++          to_sha256: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
++          surface_sha256: "e268ab12ae45c6c5620e2b92c671828ea25fbcc79fd4f21b6e9da806de08eabb",
+           allowed_json_paths: [
+             "$.package_manifests[0].dependencies.@agentplaneorg/core",
+             "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -524,7 +524,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+   });
+ 
+   it(
+-    "reconstructs the exact planned v0.7.3 manifest surface from the reviewed candidate",
++    "reconstructs the exact planned v0.7.4 manifest surface from the reviewed candidate",
+     async () => {
+       const source = `
+         import {
+diff --git a/packages/core/package.json b/packages/core/package.json
+index e713f4fd2..36d08b7ce 100644
+--- a/packages/core/package.json
++++ b/packages/core/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@agentplaneorg/core",
+-  "version": "0.7.3",
++  "version": "0.7.4",
+   "description": "Core libraries for Agentplane repository-native task, policy, and verification workflows.",
+   "keywords": [
+     "agentplane",
+diff --git a/packages/recipes/package.json b/packages/recipes/package.json
+index e49c50734..aef14db24 100644
+--- a/packages/recipes/package.json
++++ b/packages/recipes/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@agentplaneorg/recipes",
+-  "version": "0.7.3",
++  "version": "0.7.4",
+   "description": "Recipe modules for repeatable Agentplane audit-layer workflows.",
+   "keywords": [
+     "agentplane",
+diff --git a/packages/recipes/src/index.ts b/packages/recipes/src/index.ts
+index 4c3afe037..25d00cab3 100644
+--- a/packages/recipes/src/index.ts
++++ b/packages/recipes/src/index.ts
+@@ -1,4 +1,4 @@
+-export const RECIPES_VERSION = "0.7.3";
++export const RECIPES_VERSION = "0.7.4";
+ 
+ export * from "./constants.js";
+ export * from "./blueprint-extensions.js";
+diff --git a/packages/spec/examples/acr.json b/packages/spec/examples/acr.json
+index 3a6cb6838..bffc82306 100644
+--- a/packages/spec/examples/acr.json
++++ b/packages/spec/examples/acr.json
+@@ -5,7 +5,7 @@
+   "created_at": "2026-05-03T12:00:00.000Z",
+   "producer": {
+     "name": "agentplane",
+-    "version": "0.7.3"
++    "version": "0.7.4"
+   },
+   "repository": {
+     "vcs": "git",
+@@ -31,7 +31,7 @@
+     "toolchain": [
+       {
+         "name": "agentplane",
+-        "version": "0.7.3"
++        "version": "0.7.4"
+       }
+     ]
+   },
+diff --git a/packages/testkit/package.json b/packages/testkit/package.json
+index d6b9a7ea0..f9048e4fa 100644
+--- a/packages/testkit/package.json
++++ b/packages/testkit/package.json
+@@ -70,7 +70,7 @@
+   },
+   "types": "./dist/index.d.ts",
+   "dependencies": {
+-    "@agentplaneorg/core": "0.7.3"
++    "@agentplaneorg/core": "0.7.4"
+   },
+   "scripts": {
+     "build": "node ../../scripts/checks/run-typescript-build.mjs -p tsconfig.json",
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index de4cc1326..9d5d5b030 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -76,14 +76,14 @@
+     }
+   },
+   "release_version_delta": {
+-    "source_task": "202608041322-M26FS0",
++    "source_task": "202608061244-J3EC6A",
+     "classification": "planned_version_parity",
+     "from_version": "0.6.24",
+-    "to_version": "0.7.3",
++    "to_version": "0.7.4",
+     "section": "package_manifests",
+     "from_sha256": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+-    "to_sha256": "62af981925c53c759ca64ad783ec0d0b821fc10324e1270acc4bb8bea4da5fc3",
+-    "surface_sha256": "6414a03920d7d20425c6bddc219c4b21ba704dd01a9a6f6d503702c98075723b",
++    "to_sha256": "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
++    "surface_sha256": "e268ab12ae45c6c5620e2b92c671828ea25fbcc79fd4f21b6e9da806de08eabb",
+     "allowed_json_paths": [
+       "$.package_manifests[0].dependencies.@agentplaneorg/core",
+       "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index 87d29b557..07d78ac6b 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -493,14 +493,14 @@ function validateReviewedCandidate({
+   assert(
+     hashJson(releaseVersionDelta) ===
+       hashJson({
+-        source_task: "202608041322-M26FS0",
++        source_task: "202608061244-J3EC6A",
+         classification: "planned_version_parity",
+         from_version: "0.6.24",
+-        to_version: "0.7.3",
++        to_version: "0.7.4",
+         section: "package_manifests",
+         from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+-        to_sha256: "62af981925c53c759ca64ad783ec0d0b821fc10324e1270acc4bb8bea4da5fc3",
+-        surface_sha256: "6414a03920d7d20425c6bddc219c4b21ba704dd01a9a6f6d503702c98075723b",
++        to_sha256: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
++        surface_sha256: "e268ab12ae45c6c5620e2b92c671828ea25fbcc79fd4f21b6e9da806de08eabb",
+         allowed_json_paths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+diff --git a/website/static/img/social/docs/releases/v0.7.4.png b/website/static/img/social/docs/releases/v0.7.4.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..3992ec80344afab345066bb1833987a61d3b27b1
+GIT binary patch
+literal 52576
+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
+G&;$TK2CN$Z
+
+literal 0
+HcmV?d00001
+
+diff --git a/website/static/img/social/manifest.json b/website/static/img/social/manifest.json
+index 66a116f32..b97388158 100644
+--- a/website/static/img/social/manifest.json
++++ b/website/static/img/social/manifest.json
+@@ -1556,6 +1556,14 @@
+       "title": "V0.7.3",
+       "svgSha256": "2288d8e241a7954f6654263f74e614114b7472866743de12d36e06485302d464"
+     },
++    {
++      "route": "/docs/releases/v0.7.4",
++      "output": "static/img/social/docs/releases/v0.7.4.png",
++      "section": "Releases",
++      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
++      "title": "V0.7.4",
++      "svgSha256": "62b337fdd25d3ade49e043690012f9c7142b40402a4cf52ad95ea56e867dc579"
++    },
+     {
+       "route": "/docs/showcase",
+       "output": "static/img/social/docs/showcase.png",

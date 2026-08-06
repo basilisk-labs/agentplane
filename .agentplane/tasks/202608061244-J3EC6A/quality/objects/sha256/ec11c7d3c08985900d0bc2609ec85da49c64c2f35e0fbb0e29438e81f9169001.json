@@ -1,0 +1,27 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run release:prepublish",
+    "postpublish exact-SHA audit, npm package identity, tag, GitHub Release assets, clean install, and supported upgrade"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-06T13:16:17.181Z",
+    "updated_by": "TESTER",
+    "note": "PASS: the complete 0.7.4 prepublish contract and release-only semantic diff are valid."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608061244-J3EC6A/verification/20260806131617181-7b5defc9747fe37c.json",
+      "sha256": "sha256:e31c1637244e45f624e74946fb7753a47566bce29bbf6ce78bc5f8f4cbb21c5d"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

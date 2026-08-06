@@ -2,15 +2,23 @@
   "base": "main",
   "branch": "task/202608061244-J3EC6A/publish-agentplane-0-7-4-from-the-verified-prote",
   "created_at": "2026-08-06T12:45:45.075Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:23feeaf5c006507ea6d6f26a7872b714c5e8cef9ef2fcec25be961edab205c1f",
+  "last_verified_at": "2026-08-06T13:16:17.181Z",
+  "last_verified_diffstat_sha256": "sha256:23feeaf5c006507ea6d6f26a7872b714c5e8cef9ef2fcec25be961edab205c1f",
   "pr_number": 4781,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4781",
+  "pre_merge_closure": {
+    "basis_commit": "302b60da59b526b71c36db569988a1107b4a79ce",
+    "branch": "task/202608061244-J3EC6A/publish-agentplane-0-7-4-from-the-verified-prote",
+    "pr_number": 4781,
+    "recorded_at": "2026-08-06T13:17:34.668Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608061244-J3EC6A",
   "updated_at": "2026-08-06T12:46:07.734Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

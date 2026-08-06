@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608061244-J3EC6A",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-06T13:16:55.262Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The 0.7.4 release candidate is semantically coherent, release-scoped, and supported by fresh deterministic and provider qualification evidence.",
+  "evaluated_sha": "302b60da59b526b71c36db569988a1107b4a79ce",
+  "blueprint_digest": "f3c08b496f39cc2ca9f9dea04c38f2ec1e869b61c28dde0bc18e1ae18dc387f4",
+  "findings": [
+    "Version parity is exact across the three public packages, internal package references, workflow expectations, ACR example, generated reference, README headers, and social manifest.",
+    "Release-note effectiveness claims match the merged exact qualification evidence: 50/50 runs, 55/55 provider episodes, 31.82% measured token reduction, 20 verified successes, 5 scope violations, and 10 golden mismatches.",
+    "The cumulative v0.7 compatibility ratchet changes only the reviewed 0.7.4 release-version delta and preserves the immutable v0.6.24 baseline."
+  ],
+  "evidence_refs": [
+    "docs/releases/v0.7.4.md",
+    ".agentplane/tasks/202608061244-J3EC6A/verification/20260806131617181-7b5defc9747fe37c.json",
+    "bun run release:prepublish (exit 0 at 302b60da59b526b71c36db569988a1107b4a79ce)",
+    "scripts/baselines/v0.7-compatibility-candidate.json surface e268ab12ae45c6c5620e2b92c671828ea25fbcc79fd4f21b6e9da806de08eabb"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted checks and exact-SHA postpublish audit remain mandatory publication gates; they are not yet evidence of a published release."
+  ]
+}
