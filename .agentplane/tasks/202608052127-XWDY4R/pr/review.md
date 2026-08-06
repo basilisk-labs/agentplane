@@ -13,7 +13,7 @@ Created: 2026-08-05T21:28:48.428Z
 ## Verification
 
 - State: ok
-- Note: Consolidated post-release verification accepted with structured durable evidence; no test or provider retry was performed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -35,6 +35,8 @@ Created: 2026-08-05T21:28:48.428Z
  .../evaluator/evaluator-execute.command.test.ts    |   56 +
  .../release-evidence-collect-script.test.ts        |  211 ++++
  .../release/release-next-action-script.test.ts     |   95 +-
+ .../task/branch-task-supervisor-episodes.ts        |   23 +-
+ .../commands/task/branch-task-supervisor.test.ts   |   24 +
  .../task/external-agent-exchange-authority.ts      |   42 +-
  .../src/commands/task/external-agent-supervisor.ts |   27 +-
  .../runner/supervisor-execution-episode.test.ts    |   35 +
@@ -43,7 +45,7 @@ Created: 2026-08-05T21:28:48.428Z
  scripts/release/evidence-collect.mjs               |  305 +++++-
  scripts/release/next-action.mjs                    |   95 +-
  scripts/release/state.mjs                          |   49 +
- 14 files changed, 1527 insertions(+), 588 deletions(-)
+ 16 files changed, 1570 insertions(+), 592 deletions(-)
 ```
 
 </details>

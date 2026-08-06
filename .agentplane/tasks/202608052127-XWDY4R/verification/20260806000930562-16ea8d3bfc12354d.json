@@ -1,0 +1,15 @@
+{
+  "details": "",
+  "digest": "sha256:16ea8d3bfc12354d21da501086c0e8395183bbd75fa815e866136146d5801fdc",
+  "implementation_sha": "7f1b16c8ee859d31e192f203c05b4798f357d553",
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-08-06T00:09:30.562Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run and archive the consolidated post-release matrix against published 0.7.3 and the candidate: clean npm install, packed install, platform asset manifest/install scripts, supported upgrade fixtures, Node package exports, direct and branch_pr lifecycle variants, automatic context synthesis and bounded omission/safety cases, evaluator verdict routes, stale state, authority, concurrency, crash/effect-in-doubt recovery, release plan/evidence/idempotency, and CLI machine-output identity. Expected: all scenarios classify deterministically and candidate has zero blocking product failures. 2. Run focused regression tests for every confirmed defect, bun run typecheck, formatting/lint on touched files, bun run ci:contract, bun run test:critical, agentplane doctor, and node .agentplane/policy/check-routing.mjs. Expected: all pass. 3. Run the full v0.7 qualification and bun run release:prepublish. Expected: existing effectiveness, quality, token, matched-latency, workflow, significant-coverage, release-critical, migration, and packed-install gates do not regress. 4. Run bounded live provider smoke without retry only after deterministic gates pass. Expected: recorded provider provenance, no scope violation, correct task/context handoff, and no retry masking. 5. After one protected-main merge, publish exactly one patch release and run postpublish audit plus clean npm and upgrade installs of all three packages. Expected: npm latest, tag, GitHub Release, assets, installed CLI version, release SHA, and evidence PR all agree.",
+  "scope_digest": "sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463",
+  "task_id": "202608052127-XWDY4R",
+  "verification_command": "agentplane verify 202608052127-XWDY4R --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
