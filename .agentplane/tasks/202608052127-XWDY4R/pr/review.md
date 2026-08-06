@@ -13,7 +13,7 @@ Created: 2026-08-05T21:28:48.428Z
 ## Verification
 
 - State: ok
-- Note: Consolidated post-release regression and exact-subject provider qualification passed with zero blocking defects.
+- Note: Exact-subject consolidated qualification and effectiveness evidence accepted in machine-parseable form.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

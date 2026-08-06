@@ -15,12 +15,7 @@ In scope: a consolidated post-release audit and fix set for installation and upg
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Consolidated post-release regression and exact-subject provider qualification passed with zero
-blocking defects.
-```
+- Note: Exact-subject consolidated qualification and effectiveness evidence accepted in machine-parseable form.
 - Canonical workflow state lives in the task README.
 
 <details>
