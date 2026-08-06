@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run typecheck; focused agentplane/core routing suites; schemas:check; docs:cli:check; policy routing check\nResult: pass\nEvidence: TypeScript build passed; routing/blueprint 9 tests passed; CLI routing/task-create 17 tests passed; core task persistence 119 tests passed; schemas, generated CLI reference, and policy routing are current.\nScope: typed route persistence, route resolution, command surfaces, projections, and generated contracts.\n\nCommand: full non-CLI Vitest suite plus repaired branch supervisor regression\nResult: pass\nEvidence: the complete suite exercised 541 files and 3814 tests; 540 files and 3813 tests passed initially, the sole stale supervisor fixture was repaired, and its exact test passed on rerun.\nScope: repository unit and integration behavior outside run-cli E2E.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: all 12 critical CLI chunks passed, including compatibility and RF-04 replay contracts.\nScope: release-critical CLI, trust-boundary, compatibility, and efficiency baselines.\n\nCommand: docs:site:check; workflows:lint; test:platform-critical; significant coverage guard\nResult: pass\nEvidence: documentation generation/typecheck/build/design passed; workflow contracts passed; 6 platform files and 94 tests passed; 8 guard files and 101 coverage tests passed; 17 significant source targets satisfied.\nScope: docs, workflow automation, platform behavior, guard coverage, and release qualification.",
+  "digest": "sha256:a1fae66f76b0f24cdc4774d0d75dfff4be7404807b98404dffcd785abefbd5e4",
+  "implementation_sha": "18b3f85671f25f2ffe15e24ffa28f5ae844eb54b",
+  "kind": "task_verification_record",
+  "note": "Per-task routing, compatibility, and release gates pass on the current semantic head.",
+  "recorded_at": "2026-08-06T18:46:48.783Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/blueprint/task-input.test.ts\n- bunx vitest --config vitest.workspace.ts run --project core packages/core/src/tasks\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984",
+  "task_id": "202608061646-WCARQG",
+  "verification_command": "agentplane verify 202608061646-WCARQG --ok --by TESTER",
+  "verifier": "TESTER"
+}

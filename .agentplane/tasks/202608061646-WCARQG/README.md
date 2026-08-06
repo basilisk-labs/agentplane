@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -29,9 +29,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-06T17:15:18.499Z"
+  updated_at: "2026-08-06T18:46:48.783Z"
   updated_by: "TESTER"
-  note: "Implementation 1c7849f0e is accepted for integration with concrete check evidence."
+  note: "Per-task routing, compatibility, and release gates pass on the current semantic head."
   attempts: 0
 quality_review:
   state: "pass"
@@ -156,8 +156,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-06T18:46:48.783Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Per-task routing, compatibility, and release gates pass on the current semantic head."
 doc_version: 3
-doc_updated_at: "2026-08-06T17:16:44.420Z"
+doc_updated_at: "2026-08-06T18:46:51.373Z"
 doc_updated_by: "CODER"
 description: "Add a backward-compatible task-level execution route that lets AgentPlane classify task isolation risk and deterministically select direct or branch_pr, with policy overrides, stable reason codes, persisted evidence, and no route changes after mutation starts."
 sections:
@@ -418,6 +424,56 @@ sections:
     Result: pass
     Evidence: policy routing validation passed
     Scope: repository policy graph
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-WCARQG-add-explainable-per-task-workflow-routing/.agentplane/tasks/202608061646-WCARQG/blueprint/resolved-snapshot.json
+    - old_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+    - current_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-WCARQG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-06T18:46:48.783Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Per-task routing, compatibility, and release gates pass on the current semantic head.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T17:16:44.420Z, excerpt_hash=sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984
+
+    Details:
+
+    Command: bun run typecheck; focused agentplane/core routing suites; schemas:check; docs:cli:check; policy routing check
+    Result: pass
+    Evidence: TypeScript build passed; routing/blueprint 9 tests passed; CLI routing/task-create 17 tests passed; core task persistence 119 tests passed; schemas, generated CLI reference, and policy routing are current.
+    Scope: typed route persistence, route resolution, command surfaces, projections, and generated contracts.
+
+    Command: full non-CLI Vitest suite plus repaired branch supervisor regression
+    Result: pass
+    Evidence: the complete suite exercised 541 files and 3814 tests; 540 files and 3813 tests passed initially, the sole stale supervisor fixture was repaired, and its exact test passed on rerun.
+    Scope: repository unit and integration behavior outside run-cli E2E.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical CLI chunks passed, including compatibility and RF-04 replay contracts.
+    Scope: release-critical CLI, trust-boundary, compatibility, and efficiency baselines.
+
+    Command: docs:site:check; workflows:lint; test:platform-critical; significant coverage guard
+    Result: pass
+    Evidence: documentation generation/typecheck/build/design passed; workflow contracts passed; 6 platform files and 94 tests passed; 8 guard files and 101 coverage tests passed; 17 significant source targets satisfied.
+    Scope: docs, workflow automation, platform behavior, guard coverage, and release qualification.
 
     BlueprintSnapshotRef:
     - state: current
@@ -724,6 +780,56 @@ Command: node .agentplane/policy/check-routing.mjs
 Result: pass
 Evidence: policy routing validation passed
 Scope: repository policy graph
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-WCARQG-add-explainable-per-task-workflow-routing/.agentplane/tasks/202608061646-WCARQG/blueprint/resolved-snapshot.json
+- old_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+- current_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-WCARQG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-06T18:46:48.783Z — VERIFY — ok
+
+By: TESTER
+
+Note: Per-task routing, compatibility, and release gates pass on the current semantic head.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T17:16:44.420Z, excerpt_hash=sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984
+
+Details:
+
+Command: bun run typecheck; focused agentplane/core routing suites; schemas:check; docs:cli:check; policy routing check
+Result: pass
+Evidence: TypeScript build passed; routing/blueprint 9 tests passed; CLI routing/task-create 17 tests passed; core task persistence 119 tests passed; schemas, generated CLI reference, and policy routing are current.
+Scope: typed route persistence, route resolution, command surfaces, projections, and generated contracts.
+
+Command: full non-CLI Vitest suite plus repaired branch supervisor regression
+Result: pass
+Evidence: the complete suite exercised 541 files and 3814 tests; 540 files and 3813 tests passed initially, the sole stale supervisor fixture was repaired, and its exact test passed on rerun.
+Scope: repository unit and integration behavior outside run-cli E2E.
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical CLI chunks passed, including compatibility and RF-04 replay contracts.
+Scope: release-critical CLI, trust-boundary, compatibility, and efficiency baselines.
+
+Command: docs:site:check; workflows:lint; test:platform-critical; significant coverage guard
+Result: pass
+Evidence: documentation generation/typecheck/build/design passed; workflow contracts passed; 6 platform files and 94 tests passed; 8 guard files and 101 coverage tests passed; 17 significant source targets satisfied.
+Scope: docs, workflow automation, platform behavior, guard coverage, and release qualification.
 
 BlueprintSnapshotRef:
 - state: current

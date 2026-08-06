@@ -13,7 +13,7 @@ Created: 2026-08-06T16:48:32.143Z
 ## Verification
 
 - State: ok
-- Note: Implementation 1c7849f0e is accepted for integration with concrete check evidence.
+- Note: Per-task routing, compatibility, and release gates pass on the current semantic head.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
