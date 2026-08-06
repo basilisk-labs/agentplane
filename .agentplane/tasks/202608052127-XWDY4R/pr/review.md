@@ -13,7 +13,7 @@ Created: 2026-08-05T21:28:48.428Z
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note: Consolidated post-release regression and exact-subject provider qualification passed with zero blocking defects.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
