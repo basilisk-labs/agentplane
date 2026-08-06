@@ -398,6 +398,140 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     }
   });
 
+  it("task create rejects invalid intake and persists safe explicit route overrides", async () => {
+    const root = await mkGitRepoRoot();
+
+    for (const args of [
+      ["task", "create", "   ", "--root", root],
+      ["task", "create", "Fix the parser", "--route", "sideways", "--root", root],
+    ]) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli(args);
+        expect(code).toBe(2);
+        expect(io.stderr).toMatch(/outcome|--route/u);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const cases = [
+      ["Fix the direct parser path", "direct", "direct", "explicit_direct"],
+      ["Fix the isolated parser path", "branch_pr", "branch_pr", "explicit_branch_pr"],
+      ["Publish the next patch release", "direct", "branch_pr", "direct_request_overridden"],
+    ] as const;
+    for (const [outcome, requestedRoute, selectedRoute, reason] of cases) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "create",
+          outcome,
+          "--route",
+          requestedRoute,
+          "--json",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        const payload = JSON.parse(io.stdout) as {
+          task_id: string;
+          execution_route: {
+            requested_mode: string;
+            selected_mode: string;
+            reason_codes: string[];
+          };
+        };
+        expect(payload.execution_route).toMatchObject({
+          requested_mode: requestedRoute,
+          selected_mode: selectedRoute,
+        });
+        expect(payload.execution_route.reason_codes).toContain(reason);
+
+        const task = await readTask({ cwd: root, rootOverride: root, taskId: payload.task_id });
+        expect(task.frontmatter.execution_route).toEqual(
+          expect.objectContaining({
+            requested_mode: requestedRoute,
+            selected_mode: selectedRoute,
+            frozen: true,
+          }),
+        );
+      } finally {
+        io.restore();
+      }
+    }
+  });
+
+  it("task create keeps the compact task advance agent-json handoff compatible", async () => {
+    const root = await mkGitRepoRoot();
+    let taskId = "";
+    const createIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "create",
+        "Fix the compact handoff",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = (JSON.parse(createIo.stdout) as { task_id: string }).task_id;
+    } finally {
+      createIo.restore();
+    }
+
+    const advanceIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "advance", taskId, "--agent-json", "--root", root]);
+      expect(code).toBe(0);
+      const packet = JSON.parse(advanceIo.stdout) as {
+        schema_version: number;
+        task_id: string;
+        action: { kind: string };
+        stop: { reason: string; resume: string };
+      };
+      expect(packet).toMatchObject({
+        schema_version: 1,
+        task_id: taskId,
+        action: { kind: "agent_episode" },
+        stop: { reason: "semantic_boundary", resume: "request_fresh_packet" },
+      });
+    } finally {
+      advanceIo.restore();
+    }
+  });
+
+  it("task create serializes concurrent exact duplicates and preserves the selected route", async () => {
+    const root = await mkGitRepoRoot();
+    const args = ["task", "create", "Fix the concurrent parser path", "--json", "--root", root];
+    const io = captureStdIO();
+    let codes: number[] = [];
+    try {
+      codes = await Promise.all([runCli(args), runCli(args)]);
+    } finally {
+      io.restore();
+    }
+
+    expect(codes.toSorted()).toEqual([0, 4]);
+    const taskEntries = await readdir(path.join(root, ".agentplane", "tasks"), {
+      withFileTypes: true,
+    });
+    const taskIds = taskEntries
+      .filter((entry) => entry.isDirectory() && /^\d{12}-[A-Z0-9]{6}$/u.test(entry.name))
+      .map((entry) => entry.name);
+    expect(taskIds).toHaveLength(1);
+    const task = await readTask({ cwd: root, rootOverride: root, taskId: taskIds[0] ?? "" });
+    expect(task.frontmatter.execution_route).toEqual(
+      expect.objectContaining({
+        requested_mode: "auto",
+        selected_mode: "direct",
+        reason_codes: ["automatic_safe_direct"],
+        frozen: true,
+      }),
+    );
+  });
+
   it("task new can preview the resolved blueprint route without changing stdout", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();

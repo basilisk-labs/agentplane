@@ -12,8 +12,8 @@ Created: 2026-08-06T19:12:24.484Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified user-first task creation, deterministic route inference, default status guidance, and dry-run execution preview. Focused cli-core 22/22, generated docs, onboarding, typecheck, and policy routing all pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-06T19:12:24.484Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-06T19:12:24.484Z
+- Updated: 2026-08-06T19:51:44.575Z
 - Branch: task/202608061646-30TKV4/add-user-first-task-intake-and-execution-preview
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -33,15 +33,16 @@ Created: 2026-08-06T19:12:24.484Z
  packages/agentplane/src/cli/command-invocations.ts |   1 +
  .../src/cli/run-cli.core.route-decision.test.ts    |   8 +
  .../src/cli/run-cli.core.task-run.test.ts          | 112 +++---
- .../src/cli/run-cli.core.tasks.create.test.ts      |  83 +++++
+ .../src/cli/run-cli.core.tasks.create.test.ts      | 217 +++++++++++
  .../src/cli/run-cli/command-catalog/task.ts        |   9 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
  .../agentplane/src/commands/task/create.command.ts | 409 +++++++++++++++++++++
+ packages/agentplane/src/commands/task/new.ts       | 333 +++++++++--------
  .../agentplane/src/commands/task/run-render.ts     | 122 +++++-
  .../agentplane/src/commands/task/run.command.ts    |   6 +-
  .../agentplane/src/commands/task/status.command.ts |  13 +-
  .../agentplane/src/commands/task/task.command.ts   |  10 +-
- 12 files changed, 751 insertions(+), 112 deletions(-)
+ 13 files changed, 1056 insertions(+), 274 deletions(-)
 ```
 
 </details>
