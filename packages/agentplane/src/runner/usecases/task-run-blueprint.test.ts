@@ -19,13 +19,11 @@ describe("runner blueprint guards", () => {
       "/goal Execute AgentPlane task 202605271519-3ES6T7: Start Codex runner prompts with /goal",
     );
     expect(bootstrap).toContain("# agentplane runner bootstrap");
-    expect(bootstrap).toContain(
-      "- bundle_path: /repo/.agentplane/tasks/202605271519-3ES6T7/runs/run-123/bundle.json",
-    );
+    expect(bootstrap).not.toContain("bundle_path");
     expect(bootstrap).toContain(
       "- result_path: /repo/.agentplane/tasks/202605271519-3ES6T7/runs/run-123/result.json",
     );
-    expect(bootstrap).toContain("Keep lifecycle authority with the parent AgentPlane workflow");
+    expect(bootstrap).toContain("Keep all control-plane operations with the parent supervisor");
     expect(bootstrap).toContain("Assume sibling runners may be executing concurrently");
     expect(bootstrap).toContain("report possible write conflicts in the result manifest");
   });
@@ -43,7 +41,7 @@ describe("runner blueprint guards", () => {
     expect(bootstrap).not.toContain("/goal");
   });
 
-  it("renders route oracle fields into the runner bootstrap", () => {
+  it("keeps route choreography out of the provider bootstrap", () => {
     const bundle = makeRunnerContextBundle();
     bundle.route_decision = {
       workflowStep: {
@@ -98,28 +96,19 @@ describe("runner blueprint guards", () => {
 
     const bootstrap = renderTaskRunnerBootstrap(bundle);
 
-    expect(bootstrap).toContain("- route_phase: worktree_needed");
-    expect(bootstrap).toContain("- workflow_step_kind: cli_operation");
-    expect(bootstrap).toContain("- workflow_step_id: worktree.prepare");
-    expect(bootstrap).toContain("- workflow_operation_id: worktree.prepare");
-    expect(bootstrap).toContain("- route_mutation_path_hint: /repo");
-    expect(bootstrap).toContain("- route_safe_to_mutate: true");
-    expect(bootstrap).toContain("- route_must_run_from: /repo");
-    expect(bootstrap).toContain("- route_return_control_when: after the exact command exits");
-    expect(bootstrap).toContain(
-      "Treat the rendered route fields as supervisor-resolved constraints",
-    );
-    expect(bootstrap).toContain("Do not recompute workflow state");
-    expect(bootstrap).toContain("use absolute paths under route_mutation_path_hint");
-    expect(bootstrap).toContain("the parent supervisor owns the next state transition");
-    expect(bootstrap).toContain("Route must-not rules:");
+    expect(bootstrap).not.toContain("route_phase");
+    expect(bootstrap).not.toContain("workflow_step_kind");
+    expect(bootstrap).not.toContain("workflow_operation_id");
+    expect(bootstrap).not.toContain("route_mutation_path_hint");
+    expect(bootstrap).not.toContain("agentplane work start");
+    expect(bootstrap).not.toContain("agentplane task next-action");
+    expect(bootstrap).toContain("use absolute paths under writable_roots");
+    expect(bootstrap).toContain("parent supervisor owns every formal transition");
     expect(bootstrap).not.toContain("- route_next_command:");
     expect(bootstrap).not.toContain("- route_exact_argv:");
     expect(bootstrap).not.toContain("- route_stale_state_check:");
     expect(bootstrap).not.toContain("- route_requires_provider_action:");
-    expect(bootstrap).not.toContain(
-      "run `agentplane task next-action <task-id> --explain` before mutating",
-    );
+    expect(bootstrap).toContain("complete provider-facing projection");
   });
 
   it("renders configured evaluator skepticism into the runner bootstrap", () => {

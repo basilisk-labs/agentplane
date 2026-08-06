@@ -1,6 +1,7 @@
 import type { OverlayStrength, OverlaySurface } from "@agentplaneorg/recipes";
 
 import type { BehaviorResolutionTrace } from "../../runtime/behavior/index.js";
+import type { PromptMarkdownFragment } from "../../runtime/prompt-fragments/index.js";
 
 export type RunnerPromptRole = "system" | "policy" | "profile" | "task" | "context";
 
@@ -16,4 +17,6 @@ export type RunnerPromptBlock = {
   surface?: RunnerPromptSurface;
   strength?: OverlayStrength;
   resolution?: BehaviorResolutionTrace<Record<string, unknown>>;
+  /** Structured source fragments retained until the provider-phase projection is compiled. */
+  fragments?: PromptMarkdownFragment[];
 };

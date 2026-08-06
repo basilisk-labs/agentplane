@@ -348,6 +348,7 @@ export async function observePreparedRunnerStateComponents(opts: {
   ctx: CommandContext;
   bundle: RunnerContextBundle;
   probes?: RunnerStateFingerprintComponentProbes;
+  policy_prompts?: RunnerPromptBlock[];
 }): Promise<RunnerStateFingerprintObservedComponents> {
   // TaskEpisodeView deliberately excludes full lifecycle state. Re-observe the
   // backend projection while preparing the fingerprint instead of retaining a
@@ -363,7 +364,7 @@ export async function observePreparedRunnerStateComponents(opts: {
     opts.probes?.observe_policy?.() ??
       observeRunnerPolicyComponent({
         repository_root: repositoryRoot,
-        prompts: opts.bundle.base_prompts,
+        prompts: opts.policy_prompts ?? opts.bundle.base_prompts,
         policy_modules: opts.bundle.blueprint?.policyModules ?? [],
         evaluator_skepticism_level: opts.ctx.config.evaluator.skepticism_level,
         harness_task: opts.bundle.framework_explain?.harness.task,

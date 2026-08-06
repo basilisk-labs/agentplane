@@ -8,6 +8,7 @@ import {
 } from "../../runtime/behavior/index.js";
 import type { RunnerPromptBlock, RunnerPromptRole } from "../types.js";
 import { renderMarkdownPromptTemplate } from "../../agents/agents-template.js";
+import type { PromptMarkdownFragment } from "../../runtime/prompt-fragments/index.js";
 import { resolveAgentplaneAssetUrl } from "../../shared/package-paths.js";
 export { isRecord } from "../../shared/guards.js";
 
@@ -85,6 +86,7 @@ export type PromptSourcePayload = {
   source: string;
   title: string;
   content: string;
+  fragments?: PromptMarkdownFragment[];
 };
 
 export type PromptSourceTraceMetadata = {
@@ -123,6 +125,9 @@ export function promptBlockFromResolved(opts: {
     source: opts.resolved.value.source,
     priority: opts.priority,
     content: opts.resolved.value.content,
+    ...(opts.resolved.value.fragments
+      ? { fragments: structuredClone(opts.resolved.value.fragments) }
+      : {}),
     resolution: stripBehaviorValue(opts.resolved),
   };
 }

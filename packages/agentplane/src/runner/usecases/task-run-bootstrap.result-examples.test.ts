@@ -106,7 +106,7 @@ describe("runner bootstrap result examples", () => {
     expect(bootstrap).toContain("Do not attempt to write result_path.");
     expect(bootstrap).toContain("the supervisor writes and validates result_path");
     expect(bootstrap).toContain(
-      "The parent CLI owns those actions. The only exception is an exact run-scoped phase-tool invocation listed below.",
+      "Use only an exact run-scoped phase-tool invocation declared below",
     );
     expect(bootstrap).not.toContain(
       "Execute-mode runs must write a valid AgentSemanticResult v2 JSON manifest",

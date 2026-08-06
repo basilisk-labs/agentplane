@@ -23,6 +23,11 @@ export {
   RunnerPromptModuleCompilationError,
   runnerPromptBlocksToModuleGraph,
 } from "./prompt-module-bridge.js";
+export {
+  assertSemanticProviderPromptHasNoProcessChoreography,
+  isExplicitProcessMechanismTask,
+  projectRunnerPromptsForSemanticEpisode,
+} from "./semantic-prompt-projection.js";
 
 export async function collectRunnerBasePrompts(opts: {
   git_root: string;

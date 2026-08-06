@@ -250,7 +250,8 @@ describe("runCli task run", () => {
       expect(bootstrap.split("\n")[0]).toBe(
         `/goal Execute AgentPlane task ${taskId}: Run task through Codex goal`,
       );
-      expect(bootstrap).toContain("Use bundle.json as the complete runner input.");
+      expect(bootstrap).toContain("complete provider-facing projection for this episode");
+      expect(bootstrap).not.toContain("bundle_path");
       expect(bootstrap).toContain(
         "Do not attempt to write result_path. Return the AgentSemanticResult v2 object",
       );

@@ -24,12 +24,29 @@ Created: 2026-08-06T21:10:34.048Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-06T21:10:34.048Z
+- Updated: 2026-08-06T21:11:14.161Z
 - Branch: task/202608062021-V2EESE/project-semantic-only-provider-prompts-and-rejec
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/cli/run-cli.core.task-run.test.ts          |   3 +-
+ .../src/runner/context/base-prompt-sources.ts      |  17 +-
+ .../src/runner/context/base-prompts.test.ts        |  91 ++++++++++
+ .../agentplane/src/runner/context/base-prompts.ts  |   5 +
+ .../src/runner/context/prompt-block-shared.ts      |   5 +
+ .../src/runner/context/prompt-module-bridge.ts     |   4 +
+ .../runner/context/semantic-prompt-projection.ts   | 195 +++++++++++++++++++++
+ .../src/runner/state-fingerprint-observation.ts    |   3 +-
+ .../agentplane/src/runner/state-fingerprint.ts     |   3 +-
+ packages/agentplane/src/runner/types/prompts.ts    |   3 +
+ .../src/runner/usecases/agent-work-order-build.ts  |   5 +-
+ .../src/runner/usecases/agent-work-order.ts        |  12 ++
+ .../src/runner/usecases/task-run-blueprint.test.ts |  35 ++--
+ .../task-run-bootstrap.result-examples.test.ts     |   2 +-
+ .../src/runner/usecases/task-run-bootstrap.ts      | 139 ++++++++++-----
+ .../usecases/task-run-context.integration.test.ts  |  54 +++++-
+ .../agentplane/src/runner/usecases/task-run.ts     |  35 +++-
+ 17 files changed, 534 insertions(+), 77 deletions(-)
 ```
 
 </details>

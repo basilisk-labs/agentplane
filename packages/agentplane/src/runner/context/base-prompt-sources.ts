@@ -1,7 +1,11 @@
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
-import { loadAgentTemplates, loadPolicyGatewayTemplate } from "../../agents/agents-template.js";
+import {
+  loadAgentTemplates,
+  loadPolicyGatewayMarkdownTemplate,
+  renderMarkdownPromptTemplate,
+} from "../../agents/agents-template.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { resolveBehavior, type BehaviorCandidate } from "../../runtime/behavior/index.js";
 import type { ResolvedExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
@@ -117,6 +121,10 @@ export async function resolvePolicyGatewayPromptSource(opts: {
 
   if (await fileExists(gateway.absPath)) {
     const source = path.relative(opts.git_root, gateway.absPath).replaceAll("\\", "/");
+    const rendered = renderMarkdownPromptTemplate(await readFile(gateway.absPath, "utf8"), {
+      source_ref: source,
+      fallback_id: `gateway.${gateway.flavor}.file.repository`,
+    });
     candidates.push(
       promptCandidate({
         layer: "harness",
@@ -124,12 +132,14 @@ export async function resolvePolicyGatewayPromptSource(opts: {
         value: {
           source,
           title: `Repository Policy Gateway (${gateway.fileName})`,
-          content: normalizeText(await readFile(gateway.absPath, "utf8")),
+          content: rendered.contents,
+          fragments: rendered.fragments,
         },
       }),
     );
   }
 
+  const bundledTemplate = await loadPolicyGatewayMarkdownTemplate(gateway.flavor);
   candidates.push(
     promptCandidate({
       layer: "builtin",
@@ -137,7 +147,8 @@ export async function resolvePolicyGatewayPromptSource(opts: {
       value: {
         source: `bundled:policy-gateway:${gateway.fileName}`,
         title: `Bundled Policy Gateway Fallback (${gateway.fileName})`,
-        content: await loadPolicyGatewayTemplate(gateway.flavor),
+        content: bundledTemplate.contents,
+        fragments: bundledTemplate.fragments,
       },
       order: 10,
     }),

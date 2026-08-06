@@ -17,6 +17,7 @@ import {
   PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
 } from "../../runtime/prompt-modules/index.js";
 import type { RunnerPromptBlock, RunnerPromptRole } from "../types.js";
+import type { PromptMarkdownFragment } from "../../runtime/prompt-fragments/index.js";
 
 type RunnerPromptBlockModuleContent = {
   id: string;
@@ -28,6 +29,7 @@ type RunnerPromptBlockModuleContent = {
   surface?: RunnerPromptBlock["surface"];
   strength?: RunnerPromptBlock["strength"];
   resolution?: RunnerPromptBlock["resolution"];
+  fragments?: PromptMarkdownFragment[];
 };
 
 type RunnerPromptModule = PromptModule<RunnerPromptBlockModuleContent>;
@@ -142,6 +144,7 @@ function promptBlockContent(block: RunnerPromptBlock): RunnerPromptBlockModuleCo
     ...(block.surface === undefined ? {} : { surface: block.surface }),
     ...(block.strength === undefined ? {} : { strength: block.strength }),
     ...(block.resolution === undefined ? {} : { resolution: block.resolution }),
+    ...(block.fragments === undefined ? {} : { fragments: block.fragments }),
   };
 }
 
@@ -210,6 +213,7 @@ function moduleToRunnerPromptBlock(module: PromptModule): RunnerPromptBlock {
     ...(content.surface === undefined ? {} : { surface: content.surface }),
     ...(content.strength === undefined ? {} : { strength: content.strength }),
     ...(content.resolution === undefined ? {} : { resolution: content.resolution }),
+    ...(content.fragments === undefined ? {} : { fragments: content.fragments }),
   };
 }
 
