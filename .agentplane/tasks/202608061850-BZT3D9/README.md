@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -37,32 +37,31 @@ verification:
   note: "CI recovery head locally requalified with deterministic check details; hosted checks pending PR synchronize."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-06T22:38:34.987Z"
+  updated_at: "2026-08-06T22:45:02.574Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "2c35aa1d9848ccdc44d1c13b722dc0253f4f4f9d"
   blueprint_digest: "440d169b378295a6d69c4666cf3c8ed8ff4c86eec65ae304cf306267eda88e65"
   evidence_refs:
-    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223754924-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223754924-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/193e21694589d992a337462841ee317da4535af1da81b3d2a0f11eda10dae09f.md"
-    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223754924-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223754924-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223754924-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223754924-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-224420217-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-224420217-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/3097fcf4f50086c64bab3282eba345856e5de6781bc86b20d32c601137a1911e.md"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-224420217-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-224420217-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-224420217-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608061850-BZT3D9/README.md"
     - ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/e704e1f7b5b4b6e00e8798bc3aae836076195dfada0e5c1895b5f9bc8a9b53eb.patch"
-    - ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/8967159f715c70dc39a845fbfb50cc55d258dc53097ef7703366fb083650420d.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/3881be0ddec698ba0845cdb25d8732b98e073cbc84d5429386b2c8566987f5e1.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/verification/20260806224111843-f84dc99bbaa19ff1.json"
     - ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/da1da062628bd7d3d47bb26c5ca0ec5ec0fc7cac80f1c69ecab4b123086b462d.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen packet contains no deterministic verification records for the evaluated SHA."
-  recovery_reason: "deterministic_evidence_gap"
+    - "The evaluated SHA has a deterministic verification record covering every declared local qualification gate, and the frozen patch remains within the approved post-merge qualification scope."
 token_usage:
   agent_runs: 1
   input_tokens: 162176
@@ -137,7 +136,7 @@ events:
     state: "ok"
     note: "CI recovery head locally requalified with deterministic check details; hosted checks pending PR synchronize."
 doc_version: 3
-doc_updated_at: "2026-08-06T22:41:13.788Z"
+doc_updated_at: "2026-08-06T22:45:02.600Z"
 doc_updated_by: "CODER"
 description: "Publish the already verified post-merge fixes discovered after PR #4784 auto-merged: generated schema formatting, CLI reference and llms corpus refresh, isolated routing E2E coverage, lint-safe route resolution, repaired supervisor test fixture, and reviewed compatibility candidate evidence. No new product behavior beyond task 202608061646-WCARQG."
 sections:
