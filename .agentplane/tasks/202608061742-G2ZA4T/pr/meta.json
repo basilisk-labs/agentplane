@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608061742-G2ZA4T/redesign-init-around-safe-defaults-and-progressi",
+  "created_at": "2026-08-06T23:23:35.080Z",
+  "diffstat_sha256": "sha256:60edffbb9b223f68dd25369808d574c5e09c9c03d8242418c3315c7b6dc14e6c",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608061742-G2ZA4T",
+  "updated_at": "2026-08-06T23:23:35.080Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
