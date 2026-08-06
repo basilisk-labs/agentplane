@@ -187,17 +187,16 @@ describe("runCli interactive init UI", () => {
   it("runs the preview, confirm, and apply path on the default interactive route", async () => {
     const root = await mkTempDir();
     mocks.selectMock
-      .mockResolvedValueOnce("light")
+      .mockResolvedValueOnce("quick")
       .mockResolvedValueOnce("codex")
-      .mockResolvedValueOnce("codex")
-      .mockResolvedValueOnce("local");
+      .mockResolvedValueOnce("direct");
     mocks.confirmMock.mockResolvedValueOnce(true);
 
     const io = captureStdIO();
     try {
       const code = await runCli(["init", "--root", root]);
 
-      expect(code).toBe(0);
+      expect(code, io.stderr).toBe(0);
       expect(io.stdout).toContain(".agentplane");
     } finally {
       io.restore();
@@ -211,7 +210,13 @@ describe("runCli interactive init UI", () => {
     });
     expect(mocks.spinnerStartMock).toHaveBeenCalledWith("Writing init config");
     expect(mocks.spinnerStopMock).toHaveBeenCalledWith("Created install commit");
-    expect(mocks.outroMock).toHaveBeenCalledWith(`AgentPlane initialized in ${root}.`);
+    expect(mocks.noteMock).toHaveBeenCalledWith(
+      expect.stringContaining("First task"),
+      "Install preview",
+    );
+    expect(mocks.outroMock).toHaveBeenCalledWith(
+      `AgentPlane initialized in ${root}.\nNext: agentplane task create "Describe the outcome you want"`,
+    );
 
     const { config } = await loadConfig(path.join(root, ".agentplane"));
     expect(config.workflow_mode).toBe("direct");
@@ -231,6 +236,9 @@ describe("runCli interactive init UI", () => {
     try {
       const code = await runCli([
         "init",
+        "--quick",
+        "--tool",
+        "codex",
         "--setup-profile",
         "light",
         "--policy-gateway",
@@ -255,6 +263,7 @@ describe("runCli interactive init UI", () => {
 
     expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
     expect(mocks.confirmMock).toHaveBeenCalledTimes(1);
+    expect(mocks.selectMock).not.toHaveBeenCalled();
     await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(true);
     await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
   });
@@ -262,10 +271,9 @@ describe("runCli interactive init UI", () => {
   it("uses init for the default TTY interactive route", async () => {
     const root = await mkTempDir();
     mocks.selectMock
-      .mockResolvedValueOnce("light")
+      .mockResolvedValueOnce("quick")
       .mockResolvedValueOnce("codex")
-      .mockResolvedValueOnce("codex")
-      .mockResolvedValueOnce("local");
+      .mockResolvedValueOnce("direct");
     mocks.confirmMock.mockResolvedValueOnce(true);
 
     const io = captureStdIO();
@@ -291,20 +299,23 @@ describe("runCli interactive init UI", () => {
       .mockResolvedValueOnce("full-harness")
       .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("direct")
-      .mockResolvedValueOnce("allow_other_task_readmes")
+      .mockResolvedValueOnce("allow-other-task-readmes")
       .mockResolvedValueOnce("local")
       .mockResolvedValueOnce("aggressive")
       .mockResolvedValueOnce("standard");
     mocks.confirmMock
       .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(true);
     mocks.textMock.mockResolvedValueOnce("none");
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["init", "--root", root]);
+      const code = await runCli(["init", "--advanced", "--root", root]);
 
       expect(code).toBe(0);
       expect(io.stdout).toContain(".agentplane");
@@ -314,8 +325,8 @@ describe("runCli interactive init UI", () => {
 
     expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
     expect(mocks.noteMock).toHaveBeenCalledWith(expect.stringContaining("agent/plane"));
-    expect(mocks.logStepMock).toHaveBeenCalledWith("Setup");
-    expect(mocks.selectMock).toHaveBeenCalledTimes(8);
+    expect(mocks.logStepMock).toHaveBeenCalledWith("Advanced setup");
+    expect(mocks.selectMock).toHaveBeenCalledTimes(9);
     expect(mocks.textMock).toHaveBeenCalledWith(
       expect.objectContaining({ message: "Materialize cached recipes" }),
     );
@@ -323,7 +334,9 @@ describe("runCli interactive init UI", () => {
       message: "Apply this init plan?",
       initialValue: true,
     });
-    expect(mocks.outroMock).toHaveBeenCalledWith(`AgentPlane initialized in ${root}.`);
+    expect(mocks.outroMock).toHaveBeenCalledWith(
+      `AgentPlane initialized in ${root}.\nNext: agentplane task create "Describe the outcome you want"`,
+    );
     await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(true);
     const migrated = JSON.parse(
       await readFile(path.join(process.env.AGENTPLANE_HOME ?? "", "recipes.json"), "utf8"),
@@ -341,13 +354,16 @@ describe("runCli interactive init UI", () => {
       .mockResolvedValueOnce("full-harness")
       .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("direct")
-      .mockResolvedValueOnce("allow_other_task_readmes")
+      .mockResolvedValueOnce("allow-other-task-readmes")
       .mockResolvedValueOnce("local")
       .mockResolvedValueOnce("aggressive")
       .mockResolvedValueOnce("standard");
     mocks.confirmMock
       .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true)
       .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(true);
     mocks.textMock.mockImplementationOnce(
@@ -359,7 +375,7 @@ describe("runCli interactive init UI", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["init", "--root", root]);
+      const code = await runCli(["init", "--advanced", "--root", root]);
 
       expect(code).toBe(0);
       expect(io.stderr).not.toContain("Cannot read properties of undefined");
@@ -367,7 +383,9 @@ describe("runCli interactive init UI", () => {
       io.restore();
     }
 
-    expect(mocks.outroMock).toHaveBeenCalledWith(`AgentPlane initialized in ${root}.`);
+    expect(mocks.outroMock).toHaveBeenCalledWith(
+      `AgentPlane initialized in ${root}.\nNext: agentplane task create "Describe the outcome you want"`,
+    );
     await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(true);
     await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
   });
@@ -379,19 +397,21 @@ describe("runCli interactive init UI", () => {
       .mockResolvedValueOnce("full-harness")
       .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("direct")
-      .mockResolvedValueOnce("allow_other_task_readmes")
+      .mockResolvedValueOnce("allow-other-task-readmes")
       .mockResolvedValueOnce("local")
       .mockResolvedValueOnce("aggressive")
       .mockResolvedValueOnce("standard");
     mocks.confirmMock
       .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(true);
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["init", "--root", root]);
+      const code = await runCli(["init", "--advanced", "--root", root]);
 
       expect(code).toBe(0);
       expect(io.stderr).not.toContain("Invalid field manifest: expected prompts or scenarios");
@@ -401,7 +421,9 @@ describe("runCli interactive init UI", () => {
 
     expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
     expect(mocks.textMock).not.toHaveBeenCalled();
-    expect(mocks.outroMock).toHaveBeenCalledWith(`AgentPlane initialized in ${root}.`);
+    expect(mocks.outroMock).toHaveBeenCalledWith(
+      `AgentPlane initialized in ${root}.\nNext: agentplane task create "Describe the outcome you want"`,
+    );
     await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(true);
     await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
     const migrated = JSON.parse(
@@ -418,17 +440,21 @@ describe("runCli interactive init UI", () => {
       .mockResolvedValueOnce("full-harness")
       .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("direct")
-      .mockResolvedValueOnce("allow_other_task_readmes")
+      .mockResolvedValueOnce("allow-other-task-readmes")
       .mockResolvedValueOnce("local")
       .mockResolvedValueOnce("aggressive")
       .mockResolvedValueOnce("standard")
       .mockResolvedValueOnce("cancel");
-    mocks.confirmMock.mockResolvedValueOnce(false).mockResolvedValueOnce(false);
+    mocks.confirmMock
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(false);
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["init", "--hooks", "yes", "--root", root]);
+      const code = await runCli(["init", "--advanced", "--hooks", "yes", "--root", root]);
 
       expect(code).toBe(2);
       expect(io.stderr).toContain("Init cancelled during conflict resolution.");
@@ -442,6 +468,27 @@ describe("runCli interactive init UI", () => {
     );
     await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(false);
     await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
+  });
+
+  it("cancels before writes when setup depth selection is aborted", async () => {
+    const root = await mkTempDir();
+    const cancelSymbol = Symbol("cancel");
+    mocks.selectMock.mockResolvedValueOnce(cancelSymbol);
+    mocks.isCancelMock.mockImplementation((value: unknown) => value === cancelSymbol);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--root", root]);
+
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Setup depth selection cancelled.");
+    } finally {
+      io.restore();
+    }
+
+    expect(mocks.cancelMock).toHaveBeenCalledWith("Setup depth selection cancelled.");
+    await expect(pathExists(path.join(root, ".git"))).resolves.toBe(false);
+    await expect(pathExists(path.join(root, ".agentplane"))).resolves.toBe(false);
   });
 
   it("rejects removed interactive init compatibility flags", async () => {
@@ -472,6 +519,30 @@ describe("runCli interactive init UI", () => {
     }
 
     expect(mocks.introMock).not.toHaveBeenCalled();
+    expect(mocks.confirmMock).not.toHaveBeenCalled();
+  });
+
+  it("treats explicit ci mode as non-interactive even in a TTY", async () => {
+    const root = await mkTempDir();
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "init",
+        "--init-mode",
+        "ci",
+        "--root",
+        root,
+        "--gitignore-agents",
+      ]);
+
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    expect(mocks.introMock).not.toHaveBeenCalled();
+    expect(mocks.selectMock).not.toHaveBeenCalled();
     expect(mocks.confirmMock).not.toHaveBeenCalled();
   });
 

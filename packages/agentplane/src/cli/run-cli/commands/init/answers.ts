@@ -3,7 +3,14 @@ import type { EvaluatorSkepticismLevel, ExecutionProfile } from "@agentplaneorg/
 import type { WorkflowMode } from "../../../../agents/agents-template.js";
 import { InitAborted } from "./prompts.js";
 import type { InitClackPrompts } from "./prompts.js";
-import type { InitFlags, InitIde, InitParsed, SetupProfilePreset } from "./model.js";
+import type {
+  InitFlags,
+  InitIde,
+  InitMode,
+  InitParsed,
+  InitTool,
+  SetupProfilePreset,
+} from "./model.js";
 import { INIT_DEFAULTS, setupProfilePresets } from "./presets.js";
 import { listCachedBlueprintCatalogItems } from "./blueprints.js";
 import { listCachedRecipes } from "./recipes.js";
@@ -13,9 +20,11 @@ import {
   promptBackendStep,
   promptBlueprintSelectionStep,
   promptIdeStep,
+  promptInitModeStep,
   promptPolicyGatewayStep,
   promptRecipeSelectionStep,
   promptSetupProfileStep,
+  promptToolStep,
   promptWorkflowStep,
 } from "./steps/index.js";
 import type { InitPromptClack } from "./steps/contracts.js";
@@ -47,6 +56,12 @@ export type InitAnswers = {
   strictUnsafeConfirm: boolean;
   blueprints: string[];
   runnerProfile: "codex" | "hermes";
+  decisionReasons: string[];
+};
+
+export type InteractiveInitAnswers = {
+  answers: InitAnswers;
+  initMode: Exclude<InitMode, "ci">;
 };
 
 export function assertConfirmed(clack: InitClackPrompts, value: boolean | symbol): boolean {
@@ -80,61 +95,145 @@ export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
     strictUnsafeConfirm: flags.strictUnsafeConfirm ?? preset.defaultStrictUnsafeConfirm,
     blueprints: flags.blueprints ?? INIT_DEFAULTS.blueprints,
     runnerProfile: resolveRunnerProfileFromFlags(flags, "codex"),
+    decisionReasons: [
+      "Automation mode: non-interactive flags and stable defaults determine every value.",
+      `Agent surface: ${flags.tool ?? "codex default"}; granular gateway and IDE flags override the mapping.`,
+      `Workflow: ${flags.workflow ?? INIT_DEFAULTS.workflow}${flags.workflow ? " selected explicitly" : " is the safe local default"}.`,
+      `Guardrails: ${setupProfilePreset} profile supplies approval and execution defaults unless overridden.`,
+      `Storage: ${flags.backend ?? INIT_DEFAULTS.backend}${flags.backend ? " selected explicitly" : " keeps task state local by default"}.`,
+    ],
   };
 }
 
-export async function promptInteractiveAnswers(opts: {
+function quickDecisionReasons(opts: {
+  tool: InitTool;
+  workflow: WorkflowMode;
+  workflowExplicit: boolean;
+  setupProfile: SetupProfilePreset;
+  backend: NonNullable<InitFlags["backend"]>;
+}): string[] {
+  return [
+    "Setup depth: quick keeps optional controls out of the first-run path.",
+    `Agent surface: ${opts.tool}; gateway, IDE integration, and managed-runner defaults are derived from this choice.`,
+    `Workflow: ${opts.workflow}${opts.workflowExplicit ? " selected explicitly" : " selected in this dialog"}.`,
+    `Guardrails: ${opts.setupProfile} applies a coherent approval, hook, and execution profile.`,
+    `Storage: ${opts.backend}${opts.backend === "local" ? " keeps the project self-contained" : " was selected explicitly"}.`,
+    "Optional recipes and blueprints stay disabled until requested through advanced setup or explicit flags.",
+  ];
+}
+
+async function promptQuickAnswers(opts: {
   flags: InitParsed;
-  clack: InitClackPrompts;
-  targetRoot: string;
+  clack: InitPromptClack & Pick<InitClackPrompts, "log" | "note">;
 }): Promise<InitAnswers> {
-  const promptClack = opts.clack as InitPromptClack & Pick<InitClackPrompts, "note">;
-  opts.clack.intro("AgentPlane init");
-  introLogo(opts.clack);
-  section(opts.clack, "Setup", "Choose the project defaults before AgentPlane writes files.");
+  section(
+    opts.clack,
+    "Quick setup",
+    "Choose the agent surface and workflow. AgentPlane will explain the safe defaults before writing files; use Advanced setup to review every control.",
+  );
+  const setupProfile = opts.flags.setupProfile ?? "normal";
+  const selectedPreset = setupProfilePresets[setupProfile];
+  const { tool } = await promptToolStep({ clack: opts.clack, flags: opts.flags });
+  const toolDefaults = resolveToolDefaults(tool);
+  const workflow = await promptWorkflowStep({
+    clack: opts.clack,
+    flags: opts.flags,
+    setupProfileMode: "compact",
+    promptWorkflow: true,
+    promptDirectCloseDirtyPolicy: false,
+  });
+  const advanced = await promptAdvancedSettingsStep({
+    clack: opts.clack,
+    flags: opts.flags,
+    setupProfilePreset: setupProfile,
+    setupProfileMode: "compact",
+  });
+  const backend = opts.flags.backend ?? INIT_DEFAULTS.backend;
+  return {
+    setupProfile,
+    setupProfileDescription: selectedPreset.description,
+    policyGateway:
+      opts.flags.policyGateway ?? toolDefaults.policyGateway ?? INIT_DEFAULTS.policyGateway,
+    ide: opts.flags.ide ?? toolDefaults.ide ?? INIT_DEFAULTS.ide,
+    workflow: workflow.workflow,
+    directCloseDirtyPolicy: workflow.directCloseDirtyPolicy,
+    backend,
+    hooks: advanced.hooks,
+    recipes: opts.flags.recipes ?? selectedPreset.defaultRecipes,
+    requirePlanApproval: advanced.requirePlanApproval,
+    requireNetworkApproval: advanced.requireNetworkApproval,
+    requireVerifyApproval: advanced.requireVerifyApproval,
+    feedbackGithubIssues: advanced.feedbackGithubIssues,
+    feedbackAnonymousCloud: advanced.feedbackAnonymousCloud,
+    executionProfile: advanced.executionProfile,
+    evaluatorSkepticism: advanced.evaluatorSkepticism,
+    strictUnsafeConfirm: advanced.strictUnsafeConfirm,
+    blueprints: opts.flags.blueprints ?? INIT_DEFAULTS.blueprints,
+    runnerProfile: toolDefaults.runnerProfile ?? "codex",
+    decisionReasons: quickDecisionReasons({
+      tool,
+      workflow: workflow.workflow,
+      workflowExplicit: opts.flags.workflow !== undefined,
+      setupProfile,
+      backend,
+    }),
+  };
+}
+
+async function promptDetailedAnswers(opts: {
+  flags: InitParsed;
+  clack: InitPromptClack & Pick<InitClackPrompts, "log" | "note">;
+  targetRoot: string;
+  initMode: "guided" | "advanced";
+}): Promise<InitAnswers> {
+  section(opts.clack, "Advanced setup", "Review project policy and integration controls.");
   const setup = await promptSetupProfileStep({
-    clack: promptClack,
+    clack: opts.clack,
     flags: opts.flags,
     defaultProfile: "normal",
   });
   const selectedPreset = setupProfilePresets[setup.setupProfilePreset];
-  const toolDefaults = resolveToolDefaults(opts.flags.tool);
+  const { tool } = await promptToolStep({ clack: opts.clack, flags: opts.flags });
+  const toolDefaults = resolveToolDefaults(tool);
+  const promptMode = opts.initMode === "advanced" ? "full" : setup.setupProfileMode;
   const policy = await promptPolicyGatewayStep({
-    clack: promptClack,
-    flags: {
-      policyGateway: opts.flags.policyGateway ?? toolDefaults.policyGateway,
+    clack: opts.clack,
+    flags: { policyGateway: opts.flags.policyGateway },
+    defaults: {
+      policyGateway: toolDefaults.policyGateway ?? INIT_DEFAULTS.policyGateway,
     },
   });
   const ide = await promptIdeStep({
-    clack: promptClack,
-    flags: { ide: opts.flags.ide ?? toolDefaults.ide },
+    clack: opts.clack,
+    flags: { ide: opts.flags.ide },
+    defaults: { ide: toolDefaults.ide ?? INIT_DEFAULTS.ide },
   });
   const workflow = await promptWorkflowStep({
-    clack: promptClack,
+    clack: opts.clack,
     flags: opts.flags,
-    setupProfileMode: setup.setupProfileMode,
+    setupProfileMode: promptMode,
   });
-  const backend = await promptBackendStep({ clack: promptClack, flags: opts.flags });
+  const backend = await promptBackendStep({ clack: opts.clack, flags: opts.flags });
   const advanced = await promptAdvancedSettingsStep({
-    clack: promptClack,
+    clack: opts.clack,
     flags: opts.flags,
     setupProfilePreset: setup.setupProfilePreset,
-    setupProfileMode: setup.setupProfileMode,
+    setupProfileMode: promptMode,
   });
   const cachedRecipes = await listCachedRecipes({ cwd: opts.targetRoot });
   const recipeSelection = await promptRecipeSelectionStep({
-    clack: promptClack,
+    clack: opts.clack,
     flags: opts.flags,
     setupProfilePreset: setup.setupProfilePreset,
-    setupProfileMode: setup.setupProfileMode,
+    setupProfileMode: promptMode,
     cachedRecipes,
   });
   const cachedBlueprints = await listCachedBlueprintCatalogItems({ cwd: opts.targetRoot });
   const blueprintSelection = await promptBlueprintSelectionStep({
-    clack: promptClack,
+    clack: opts.clack,
     flags: opts.flags,
     setupProfilePreset: setup.setupProfilePreset,
-    setupProfileMode: setup.setupProfileMode,
+    setupProfileMode: promptMode,
     cachedBlueprints,
   });
   return {
@@ -157,5 +256,33 @@ export async function promptInteractiveAnswers(opts: {
     strictUnsafeConfirm: advanced.strictUnsafeConfirm,
     blueprints: blueprintSelection.blueprints,
     runnerProfile: toolDefaults.runnerProfile ?? "codex",
+    decisionReasons: [
+      `Setup depth: ${opts.initMode} exposes individual policy and integration controls.`,
+      `Agent surface: ${tool}; gateway, IDE, and runner values remain individually reviewable.`,
+      `Workflow: ${workflow.workflow} was confirmed in the detailed setup path.`,
+      `Guardrails: ${setup.setupProfilePreset} supplied the starting values for approvals and execution.`,
+      `Storage: ${backend.backend} was confirmed in the detailed setup path.`,
+    ],
   };
+}
+
+export async function promptInteractiveAnswers(opts: {
+  flags: InitParsed;
+  clack: InitClackPrompts;
+  targetRoot: string;
+}): Promise<InteractiveInitAnswers> {
+  const promptClack = opts.clack as InitPromptClack & Pick<InitClackPrompts, "log" | "note">;
+  opts.clack.intro("AgentPlane init");
+  introLogo(opts.clack);
+  const initMode = await promptInitModeStep({ clack: promptClack, flags: opts.flags });
+  const answers =
+    initMode === "quick"
+      ? await promptQuickAnswers({ flags: opts.flags, clack: promptClack })
+      : await promptDetailedAnswers({
+          flags: opts.flags,
+          clack: promptClack,
+          targetRoot: opts.targetRoot,
+          initMode,
+        });
+  return { answers, initMode };
 }

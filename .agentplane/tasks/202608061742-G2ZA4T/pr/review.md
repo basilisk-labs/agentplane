@@ -24,7 +24,7 @@ Created: 2026-08-06T23:23:35.080Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-06T23:23:35.080Z
+- Updated: 2026-08-06T23:24:02.615Z
 - Branch: task/202608061742-G2ZA4T/redesign-init-around-safe-defaults-and-progressi
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -62,20 +62,38 @@ Created: 2026-08-06T23:23:35.080Z
  ...6ce9895dadc52f2cbc8b357d2cfecc8a3890ea40fb99.md | Bin 0 -> 5030 bytes
  .../20260806195317361-b18111f72a312cf9.json        |  15 +
  .../20260806200209449-a03aef059064a503.json        |  15 +
- docs/user/cli-reference.generated.mdx              |  86 ++-
+ docs/user/cli-reference.generated.mdx              |  90 ++--
+ docs/user/setup.mdx                                |  53 +-
  packages/agentplane/src/cli/command-invocations.ts |   1 +
+ .../src/cli/run-cli.core.init.interactive.test.ts  | 115 +++-
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |  43 +-
  .../src/cli/run-cli.core.route-decision.test.ts    |   8 +
  .../src/cli/run-cli.core.task-run.test.ts          | 112 ++--
  .../src/cli/run-cli.core.tasks.create.test.ts      | 217 ++++++++
  .../src/cli/run-cli/command-catalog/task.ts        |   9 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
+ .../src/cli/run-cli/commands/init/answers.ts       | 173 +++++-
+ .../cli/run-cli/commands/init/execution.test.ts    |   1 +
+ .../src/cli/run-cli/commands/init/execution.ts     |   4 +
+ .../src/cli/run-cli/commands/init/init-plan.ts     |   7 +-
+ .../src/cli/run-cli/commands/init/model.ts         |   1 +
+ .../src/cli/run-cli/commands/init/modes.ts         |   9 +-
+ .../src/cli/run-cli/commands/init/orchestrate.ts   |  24 +-
+ .../src/cli/run-cli/commands/init/spec.ts          |   7 +-
+ .../cli/run-cli/commands/init/steps/contracts.ts   |   6 +-
+ .../src/cli/run-cli/commands/init/steps/index.ts   |   2 +
+ .../cli/run-cli/commands/init/steps/init-mode.ts   |  34 ++
+ .../commands/init/steps/prompt-steps.test.ts       |  32 +-
+ .../src/cli/run-cli/commands/init/steps/tool.ts    |  37 ++
+ .../cli/run-cli/commands/init/steps/workflow.ts    |   9 +-
+ .../agentplane/src/cli/run-cli/commands/init/ui.ts |   9 +-
  .../agentplane/src/commands/task/create.command.ts | 409 ++++++++++++++
  packages/agentplane/src/commands/task/new.ts       | 333 ++++++------
  .../agentplane/src/commands/task/run-render.ts     | 122 ++++-
  .../agentplane/src/commands/task/run.command.ts    |   6 +-
  .../agentplane/src/commands/task/status.command.ts |  13 +-
  .../agentplane/src/commands/task/task.command.ts   |  10 +-
- 46 files changed, 3063 insertions(+), 274 deletions(-)
+ 64 files changed, 3548 insertions(+), 359 deletions(-)
 ```
 
 </details>

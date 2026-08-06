@@ -42,11 +42,16 @@ export async function promptWorkflowStep(opts: {
   flags: Pick<InitFlags, "workflow" | "directCloseDirtyPolicy">;
   setupProfileMode: InitSetupProfileMode;
   defaults?: Pick<InitDefaults, "workflow" | "directCloseDirtyPolicy">;
+  promptWorkflow?: boolean;
+  promptDirectCloseDirtyPolicy?: boolean;
 }): Promise<WorkflowStepAnswers> {
   const defaults = opts.defaults ?? INIT_DEFAULTS;
+  const promptWorkflow = opts.promptWorkflow ?? opts.setupProfileMode === "full";
+  const promptDirectCloseDirtyPolicy =
+    opts.promptDirectCloseDirtyPolicy ?? opts.setupProfileMode === "full";
   const workflow =
     opts.flags.workflow ??
-    (opts.setupProfileMode === "full"
+    (promptWorkflow
       ? await selectStepValue(opts.clack, {
           message: "Workflow mode",
           options: workflowOptions,
@@ -64,7 +69,7 @@ export async function promptWorkflowStep(opts: {
 
   const directCloseDirtyPolicy =
     opts.flags.directCloseDirtyPolicy ??
-    (opts.setupProfileMode === "full"
+    (promptDirectCloseDirtyPolicy
       ? directCloseDirtyChoiceToPolicy(
           await selectStepValue(opts.clack, {
             message: "Direct close dirt policy",

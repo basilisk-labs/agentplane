@@ -127,5 +127,6 @@ export type InitPlan = {
   effects: InitEffect[];
   conflicts: string[];
   warnings: string[];
+  decisionReasons: string[];
   nextSteps: string[];
 };

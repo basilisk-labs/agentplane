@@ -14,7 +14,7 @@ export function resolveInitMode(opts: { flags: InitParsed; interactive: boolean 
   if (opts.flags.initMode) return opts.flags.initMode;
   if (opts.flags.yes) return "ci";
   if (!opts.interactive) return "ci";
-  return "guided";
+  return "quick";
 }
 
 export function setupProfileToUserFacingProfile(profile: SetupProfilePreset): UserFacingProfile {
@@ -28,8 +28,11 @@ export function resolveToolDefaults(tool: InitTool | undefined): {
   ide?: InitIde;
   runnerProfile?: InitRunnerProfile;
 } {
-  if (!tool || tool === "multiple" || tool === "manual") return {};
-  if (tool === "claude") return { policyGateway: "claude", ide: "codex" };
+  if (!tool) return {};
+  if (tool === "multiple" || tool === "manual") {
+    return { policyGateway: "codex", ide: "none" };
+  }
+  if (tool === "claude") return { policyGateway: "claude", ide: "none" };
   if (tool === "cursor") return { policyGateway: "codex", ide: "cursor" };
   if (tool === "windsurf") return { policyGateway: "codex", ide: "windsurf" };
   if (tool === "hermes") return { policyGateway: "codex", ide: "none", runnerProfile: "hermes" };

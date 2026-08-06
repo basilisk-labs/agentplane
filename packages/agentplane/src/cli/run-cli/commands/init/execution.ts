@@ -22,6 +22,7 @@ import { ensureInitGitignore } from "./write-gitignore.js";
 import { ensureInitWorkflow } from "./write-workflow.js";
 import { assertConfirmed } from "./answers.js";
 import type { ResolvedInitPaths } from "./init-paths.js";
+import { FIRST_TASK_COMMAND } from "./init-plan.js";
 
 export {
   collectInitAndHookConflicts,
@@ -32,6 +33,7 @@ export {
   buildInitPlan,
   detectGithubCliInstalled,
   GITHUB_CLI_INIT_RECOMMENDATION,
+  FIRST_TASK_COMMAND,
 } from "./init-plan.js";
 
 export async function maybeConfirmInteractiveApply(opts: {
@@ -64,6 +66,8 @@ export async function maybeConfirmInteractiveApply(opts: {
     ...(opts.plan.warnings.length > 0
       ? [{ label: "Warnings", value: opts.plan.warnings.join(" | ") }]
       : []),
+    { label: "Why", value: opts.plan.decisionReasons.join(" | ") },
+    { label: "First task", value: FIRST_TASK_COMMAND },
     { label: "Install commit", value: !opts.flags.gitignoreAgents },
   ]);
   const confirmed = assertConfirmed(

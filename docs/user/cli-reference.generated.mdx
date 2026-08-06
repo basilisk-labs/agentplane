@@ -2147,7 +2147,7 @@ agentplane init [options]
 
 Options:
 
-- `--init-mode <quick|guided|advanced|ci>`: User-facing init route. TTY defaults to guided; --yes defaults to ci for automation. (choices=quick|guided|advanced|ci)
+- `--init-mode <quick|guided|advanced|ci>`: User-facing init route. TTY defaults to quick with an advanced choice; --yes defaults to ci for automation. (choices=quick|guided|advanced|ci)
 - `--quick`: Alias for --init-mode quick. (default=false)
 - `--advanced`: Alias for --init-mode advanced. (default=false)
 - `--tool <codex|claude|cursor|windsurf|hermes|multiple|manual>`: AI surface that should read project instructions. Granular --policy-gateway/--ide flags override this mapping. (choices=codex|claude|cursor|windsurf|hermes|multiple|manual)
@@ -2182,7 +2182,7 @@ Examples:
 agentplane init
 ```
 
-- Interactive setup (prompts for missing values).
+- Short interactive setup for agent surface and workflow, followed by an explained preview.
 
 ```sh
 agentplane init --setup-profile light --yes
