@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:05129b3484590b39a925b9344e6709dd5149f5e2600fec30fccc478e817a488e",
+  "implementation_sha": "17bf2fc07eacbbe5609a583e94664d1854be0044",
+  "kind": "task_verification_record",
+  "note": "Targeted semantic prompt, context, supervisor, and state-fingerprint checks pass; full test:critical remains blocked by the pre-existing compatibility ratchet drift on current main pending foundational PR BZT3D9.",
+  "recorded_at": "2026-08-06T21:32:55.493Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\n- bun run test:critical\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98",
+  "task_id": "202608062021-V2EESE",
+  "verification_command": "agentplane verify 202608062021-V2EESE --rework --by TESTER",
+  "verifier": "TESTER"
+}
