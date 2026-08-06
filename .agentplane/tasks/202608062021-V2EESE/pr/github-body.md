@@ -15,8 +15,14 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Targeted semantic prompt, context, supervisor, and state-fingerprint checks pass; full test:critical
+remains blocked by the pre-existing compatibility ratchet drift on current main pending foundational
+PR BZT3D9.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
