@@ -34,6 +34,7 @@ Created: 2026-08-06T16:48:32.143Z
  .../src/backends/task-backend/shared/types.ts      |   2 +
  .../src/cli/run-cli.core.task-routing.test.ts      | 134 +++++++++++++++++++++
  .../src/cli/run-cli.core.tasks.create.test.ts      |  44 +++++++
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  15 +--
  .../src/commands/blueprint/task-input.test.ts      |  21 ++++
  .../src/commands/blueprint/task-input.ts           |   3 +-
  .../src/commands/branch/work-start.command.ts      |   8 +-
@@ -67,7 +68,9 @@ Created: 2026-08-06T16:48:32.143Z
  packages/spec/schemas/tasks-export.schema.json     |  42 +++++++
  schemas/task-readme-frontmatter.schema.json        |  42 +++++++
  schemas/tasks-export.schema.json                   |  42 +++++++
- 38 files changed, 832 insertions(+), 11 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    |  32 +++--
+ .../check-compatibility-contract-baseline.mjs      |  18 ++-
+ 41 files changed, 881 insertions(+), 27 deletions(-)
 ```
 
 </details>
