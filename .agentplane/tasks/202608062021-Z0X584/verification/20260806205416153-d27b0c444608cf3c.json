@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:d27b0c444608cf3ccd733ec4120ff167d2e5624227bfb38c75907a73e5537be8",
+  "implementation_sha": "b5faa8b3dce64578db6160645737572acbea4239",
+  "kind": "task_verification_record",
+  "note": "Supervisor-first assets, compiled quickstart and role prompts, generated docs, and routing contracts passed all task Verify Steps; 63 focused tests and typecheck also passed.",
+  "recorded_at": "2026-08-06T20:54:16.153Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts\n- bun run docs:onboarding:check\n- bun run docs:cli:check\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:ae20cadd2d3f5e18bbfbecd7e0a72cf3000ad9579bea93f3493a49d6ff61b277",
+  "task_id": "202608062021-Z0X584",
+  "verification_command": "agentplane verify 202608062021-Z0X584 --ok --by TESTER",
+  "verifier": "TESTER"
+}

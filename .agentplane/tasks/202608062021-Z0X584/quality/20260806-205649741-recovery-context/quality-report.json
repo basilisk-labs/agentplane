@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608062021-Z0X584",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-06T20:57:45.991Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "b5faa8b3dce64578db6160645737572acbea4239",
+  "blueprint_digest": "5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100",
+  "findings": [
+    "The post-commit task, verification, PR, and quality-artifact drift is attributable to active AgentPlane supervision and does not alter the frozen implementation diff."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608062021-Z0X584/README.md",
+    ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/baa8ade9826dd7b0d4391b1d9ab07232dca46746d451064353ac9e58ac17ebce.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Managed task-run examples assume that a compatible managed-runner adapter has been configured; the documentation explicitly identifies that prerequisite.",
+    "Verification records summarize command outcomes rather than preserving complete raw command output; this evaluation relies on the frozen TESTER evidence as authoritative deterministic evidence."
+  ],
+  "residual_risks": []
+}
