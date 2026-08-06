@@ -13,7 +13,7 @@ Created: 2026-08-06T18:52:19.901Z
 ## Verification
 
 - State: ok
-- Note: Post-merge qualification fixes are isolated from merged main and pass all declared release gates.
+- Note: CI recovery head refresh verified: implementation unchanged; typecheck, exact compatibility contract, and all 12 critical CLI chunks passed on e36b10803bad.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
