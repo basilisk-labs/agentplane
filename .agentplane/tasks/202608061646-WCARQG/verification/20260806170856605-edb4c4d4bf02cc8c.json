@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:edb4c4d4bf02cc8c475dcf33e3f7ffe0f17a904a50740993d3a877ed90539853",
+  "implementation_sha": "1c7849f0ed3881ca385a7bdf8705358099fb47b2",
+  "kind": "task_verification_record",
+  "note": "Post-closure verification confirms f60c230c4931 adds only task closure artifacts on top of already verified implementation 1c7849f0e; 98 focused tests, typecheck, schema parity, and policy routing remain the accepted evidence.",
+  "recorded_at": "2026-08-06T17:08:56.605Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/blueprint/task-input.test.ts\n- bunx vitest --config vitest.workspace.ts run --project core packages/core/src/tasks\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984",
+  "task_id": "202608061646-WCARQG",
+  "verification_command": "agentplane verify 202608061646-WCARQG --ok --by TESTER",
+  "verifier": "TESTER"
+}
