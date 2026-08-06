@@ -39,6 +39,7 @@ Add a backward-compatible task-level execution route that lets AgentPlane classi
  .../src/commands/shared/route-decision.ts          |   8 +-
  .../agentplane/src/commands/shared/task-backend.ts |   1 +
  .../agentplane/src/commands/task/begin.command.ts  |   1 +
+ .../task/branch-task-supervisor-operations.test.ts |   8 +-
  .../task/branch-task-supervisor-operations.ts      |   7 +-
  .../agentplane/src/commands/task/brief-model.ts    |   4 +-
  .../agentplane/src/commands/task/brief-render.ts   |  15 +++
@@ -64,7 +65,7 @@ Add a backward-compatible task-level execution route that lets AgentPlane classi
  packages/spec/schemas/tasks-export.schema.json     |  42 +++++++
  schemas/task-readme-frontmatter.schema.json        |  42 +++++++
  schemas/tasks-export.schema.json                   |  42 +++++++
- 37 files changed, 825 insertions(+), 10 deletions(-)
+ 38 files changed, 832 insertions(+), 11 deletions(-)
 ```
 
 </details>
