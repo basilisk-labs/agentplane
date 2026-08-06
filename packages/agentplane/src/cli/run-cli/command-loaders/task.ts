@@ -159,6 +159,10 @@ export const loadTaskNewSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/new.command.js").then((m) =>
     m.makeRunTaskNewHandler(getSessionContext(session, "task.write")),
   );
+export const loadTaskCreateSpec = (session: TaskWriteSession) =>
+  import("../../../commands/task/create.command.js").then((m) =>
+    m.makeRunTaskCreateHandler(getSessionContext(session, "task.write")),
+  );
 export const loadTaskBeginSpec = (session: TaskLifecycleSession) =>
   import("../../../commands/task/begin.command.js").then((m) =>
     m.makeRunTaskBeginHandler(getSessionContext(session, "git.mutate")),

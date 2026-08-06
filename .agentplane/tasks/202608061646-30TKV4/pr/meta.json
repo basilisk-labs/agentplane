@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608061646-30TKV4/add-user-first-task-intake-and-execution-preview",
+  "created_at": "2026-08-06T19:12:24.484Z",
+  "diffstat_sha256": "sha256:bccba45701e3a1788493f9a360f9c2914421c38a5f6713cd9dd4ae07ac654a29",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608061646-30TKV4",
+  "updated_at": "2026-08-06T19:12:24.484Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

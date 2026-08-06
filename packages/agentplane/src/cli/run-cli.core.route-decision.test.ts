@@ -217,6 +217,14 @@ describe("runCli route decision commands", () => {
       statusIo.restore();
     }
 
+    const [simpleStatusCode, simpleStatus] = await runJson<{
+      selected_route: string;
+      next_step: string;
+    }>(["task", "status", taskId, "--json", "--root", root]);
+    expect(simpleStatusCode).toBe(0);
+    expect(simpleStatus.selected_route).toBe("branch_pr");
+    expect(simpleStatus.next_step).toContain(`work start ${taskId}`);
+
     const nextIo = captureStdIO();
     try {
       const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);

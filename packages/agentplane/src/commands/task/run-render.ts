@@ -6,7 +6,7 @@ import type {
 } from "../../runner/usecases/task-run-inspect.js";
 import type { TaskRunnerActiveClaimCleanupDiagnostic } from "../../runner/usecases/task-run-active-claim-runtime.js";
 import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
-import type { RunnerLifecycleStatus } from "../../runner/types.js";
+import type { RunnerContextBundle, RunnerLifecycleStatus } from "../../runner/types.js";
 import {
   isProcessAlive,
   readObservedProcessIdentity,
@@ -52,12 +52,97 @@ export function renderTaskRunPayload(opts: {
   };
 }
 
+export type TaskRunExecutionPreview = {
+  route: {
+    requested_mode: string;
+    selected_mode: string;
+    reason_codes: string[];
+  };
+  context: {
+    blueprint_id: string | null;
+    task_sections: number;
+    task_context_bytes: number;
+    duplicate_bytes_removed: number;
+    prompt_blocks: number;
+    policy_modules: number;
+    knowledge_refs: number;
+  };
+  approvals: {
+    plan: boolean;
+    verify: boolean;
+    network: boolean;
+    force: boolean;
+  };
+  checks: string[];
+  budgets: {
+    token: {
+      state: "unavailable";
+      reason: string;
+    };
+    context: {
+      max_policy_modules: number;
+      max_prompt_blocks: number | null;
+    } | null;
+    tools: Record<string, { limit: number; remaining: number }>;
+  };
+};
+
+export function buildTaskRunExecutionPreview(bundle: RunnerContextBundle): TaskRunExecutionPreview {
+  const persistedRoute = bundle.route_decision?.task.execution_route;
+  const fallbackRoute = bundle.blueprint?.workflowMode ?? "direct";
+  const toolBudget = Object.fromEntries(
+    Object.entries(bundle.execution.profile_runtime?.budget ?? {}).map(([phase, budget]) => [
+      phase,
+      { limit: budget.limit, remaining: budget.remaining },
+    ]),
+  );
+  return {
+    route: {
+      requested_mode: persistedRoute?.requested_mode ?? "repository",
+      selected_mode: persistedRoute?.selected_mode ?? fallbackRoute,
+      reason_codes: [...(persistedRoute?.reason_codes ?? ["repository_mode_selected"])],
+    },
+    context: {
+      blueprint_id: bundle.blueprint?.blueprintId ?? null,
+      task_sections: bundle.task?.narrative.sections.length ?? 0,
+      task_context_bytes: bundle.task?.compaction.serialized.emitted_bytes ?? 0,
+      duplicate_bytes_removed: bundle.task?.compaction.serialized.duplicate_bytes_removed ?? 0,
+      prompt_blocks: bundle.base_prompts.length,
+      policy_modules: bundle.blueprint?.policyModules.length ?? 0,
+      knowledge_refs: bundle.knowledge_refs?.length ?? 0,
+    },
+    approvals: {
+      plan: bundle.execution.approvals?.require_plan === true,
+      verify: bundle.execution.approvals?.require_verify === true,
+      network: bundle.execution.approvals?.require_network === true,
+      force: bundle.execution.approvals?.require_force === true,
+    },
+    checks: [...(bundle.task?.verification.commands ?? [])],
+    budgets: {
+      token: {
+        state: "unavailable",
+        reason: "provider token budget is assigned by the semantic supervisor at execution time",
+      },
+      context: bundle.blueprint
+        ? {
+            max_policy_modules: bundle.blueprint.contextBudget.maxPolicyModules,
+            max_prompt_blocks: bundle.blueprint.contextBudget.maxPromptBlocks ?? null,
+          }
+        : null,
+      tools: toolBudget,
+    },
+  };
+}
+
 /**
  * Compatibility renderer for the typed in-process lifecycle result. The
  * existing top-level fields stay stable while the additive lifecycle object
  * exposes durable effect and authority evidence without stdout parsing.
  */
-export function renderTaskRunnerLifecyclePayload(result: TaskRunnerLifecycleResult) {
+export function renderTaskRunnerLifecyclePayload(
+  result: TaskRunnerLifecycleResult,
+  executionPreview?: TaskRunExecutionPreview,
+) {
   return {
     ...renderTaskRunPayload({
       taskId: result.task_id,
@@ -77,6 +162,7 @@ export function renderTaskRunnerLifecyclePayload(result: TaskRunnerLifecycleResu
     }),
     work_order_id: result.invocation.work_order_id,
     lifecycle_result: result,
+    ...(executionPreview ? { execution_preview: executionPreview } : {}),
   };
 }
 
@@ -450,9 +536,41 @@ function taskRunIdentityRows(
 }
 
 export function reportPreparedTaskRun(payload: TaskRunRendererPayload, taskId: string): void {
+  const preview = "execution_preview" in payload ? payload.execution_preview : null;
   createCliEmitter().report(
     [
       ...taskRunIdentityRows(payload, { includeEffectResolution: false }),
+      ...(preview
+        ? [
+            {
+              label: "route",
+              value:
+                `requested=${preview.route.requested_mode} ` +
+                `selected=${preview.route.selected_mode}`,
+            },
+            { label: "route_reasons", value: preview.route.reason_codes.join(", ") },
+            { label: "blueprint", value: preview.context.blueprint_id },
+            {
+              label: "context",
+              value:
+                `task_bytes=${preview.context.task_context_bytes} ` +
+                `sections=${preview.context.task_sections} ` +
+                `prompt_blocks=${preview.context.prompt_blocks} ` +
+                `policy_modules=${preview.context.policy_modules} ` +
+                `knowledge_refs=${preview.context.knowledge_refs}`,
+            },
+            {
+              label: "approvals",
+              value:
+                `plan=${String(preview.approvals.plan)} ` +
+                `verify=${String(preview.approvals.verify)} ` +
+                `network=${String(preview.approvals.network)} ` +
+                `force=${String(preview.approvals.force)}`,
+            },
+            { label: "checks", value: preview.checks.join("; ") || "none" },
+            { label: "token_budget", value: preview.budgets.token.state },
+          ]
+        : []),
       { label: "bundle", value: payload.bundle_path },
       { label: "bootstrap", value: payload.bootstrap_path },
       { label: "result", value: payload.result_path },

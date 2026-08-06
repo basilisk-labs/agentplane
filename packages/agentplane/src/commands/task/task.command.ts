@@ -14,18 +14,18 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
   synopsis: ["agentplane task <subcommand> [args] [options]"],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<subcommand>" }],
   notes: [
-    "Default external-agent path: task new -> task advance --agent-json. The packet exposes one bounded action while Agentplane retains lifecycle authority.",
+    'Default user path: task create "<outcome>" -> task advance --agent-json. Agentplane infers structured intent and an explainable execution route, then the packet exposes one bounded semantic action.',
     "Default managed-agent path: create the task, record and approve the semantic plan, then use task run to supervise the typed lifecycle.",
     "The generated Plan is an explicit placeholder: task plan approve fails until PLANNER or a human records a task-specific plan.",
-    "Direct task route: task new -> task plan set -> task plan approve -> task start-ready -> task verify-show -> verify -> finish.",
+    "Advanced direct task route: task new -> task plan set -> task plan approve -> task start-ready -> task verify-show -> verify -> finish.",
     "Use `agentplane task next-action <task-id> --explain` only for full route diagnostics.",
     "Use `agentplane help task plan`, `agentplane help task doc`, and `agentplane help task verify` to inspect task sub-areas.",
     "Verification recording and closure stay top-level lifecycle commands: `agentplane verify ...` and `agentplane finish ...`.",
   ],
   examples: [
     {
-      cmd: 'agentplane task new --title "Fix parser edge case" --description "Handle the rejected input" --owner CODER --tag code',
-      why: "Create a task without synthesizing or approving semantic work.",
+      cmd: 'agentplane task create "Fix the parser edge case"',
+      why: "Create a task from the desired outcome and show its inferred execution route.",
     },
     {
       cmd: "agentplane task advance <task-id> --agent-json",
@@ -37,7 +37,7 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
     },
     {
       cmd: 'agentplane task new --title "..." --description "..." --owner CODER --tag code',
-      why: "Create a task with the explicit primitive command.",
+      why: "Create a task with the advanced explicit primitive command.",
     },
     {
       cmd: 'agentplane task plan set <task-id> --text "..." --updated-by ORCHESTRATOR',

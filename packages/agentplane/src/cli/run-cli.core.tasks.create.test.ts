@@ -315,6 +315,89 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     });
   });
 
+  it("task create infers bounded code intent and returns one semantic next step", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "create",
+        "Fix the parser edge case",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        task_id: string;
+        status: string;
+        inferred_intent: {
+          code: string;
+          task_kind: string;
+          mutation_scope: string;
+          blueprint_request: string;
+        };
+        execution_route: { requested_mode: string; selected_mode: string; reason_codes: string[] };
+        required_role: string;
+        next_command: string;
+      };
+      expect(payload.status).toBe("semantic_input_required");
+      expect(payload.inferred_intent).toMatchObject({
+        code: "bounded_code_change",
+        task_kind: "code",
+        mutation_scope: "code",
+        blueprint_request: "code.direct",
+      });
+      expect(payload.execution_route).toMatchObject({
+        requested_mode: "auto",
+        selected_mode: "direct",
+        reason_codes: ["automatic_safe_direct"],
+      });
+      expect(payload.required_role).toBe("PLANNER");
+      expect(payload.next_command).toBe(`agentplane task advance ${payload.task_id} --agent-json`);
+
+      const task = await readTask({ cwd: root, rootOverride: root, taskId: payload.task_id });
+      expect(task.frontmatter.execution_route).toEqual(
+        expect.objectContaining({
+          requested_mode: "auto",
+          selected_mode: "direct",
+          frozen: true,
+        }),
+      );
+      expect(task.frontmatter.blueprint_request).toBe("code.direct");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task create conservatively isolates complex and release outcomes", async () => {
+    const root = await mkGitRepoRoot();
+    const outcomes = [
+      ["Refactor the task framework", "complex_code_change", "code.branch_pr"],
+      ["Выпусти следующий патч-релиз", "release_intent", "release.strict"],
+    ] as const;
+
+    for (const [outcome, inferenceCode, blueprint] of outcomes) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["task", "create", outcome, "--json", "--root", root]);
+        expect(code).toBe(0);
+        const payload = JSON.parse(io.stdout) as {
+          inferred_intent: { code: string; blueprint_request: string };
+          execution_route: { selected_mode: string; reason_codes: string[] };
+        };
+        expect(payload.inferred_intent).toMatchObject({
+          code: inferenceCode,
+          blueprint_request: blueprint,
+        });
+        expect(payload.execution_route.selected_mode).toBe("branch_pr");
+        expect(payload.execution_route.reason_codes.length).toBeGreaterThan(0);
+      } finally {
+        io.restore();
+      }
+    }
+  });
+
   it("task new can preview the resolved blueprint route without changing stdout", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();

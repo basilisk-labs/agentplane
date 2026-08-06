@@ -68,10 +68,10 @@ Field names and casing are exact. Optional fields are omitted when no value is a
   - [task ask](#task-ask)
   - [task brief](#task-brief)
   - [task comment](#task-comment)
+  - [task create](#task-create)
   - [task doc set](#task-doc-set)
   - [task doc show](#task-doc-show)
   - [task list](#task-list)
-  - [task new](#task-new)
   - [task next](#task-next)
   - [task plan approve](#task-plan-approve)
   - [task plan set](#task-plan-set)
@@ -599,6 +599,42 @@ agentplane task comment 202602030608-F1Q8AB --author CODER --body "Investigated 
 
 - Add a comment and bump doc metadata.
 
+### task create
+
+Create a task from a natural-language outcome and explain its execution route.
+
+Infers conservative structured intent, stores an explainable automatic route, and stops at the semantic planning boundary.
+
+Usage:
+
+```text
+agentplane task create <outcome> [options]
+```
+
+Options:
+
+- `--description <text>`: Additional task context. Defaults to the requested outcome.
+- `--owner <id>`: Task owner id. (default=CODER)
+- `--priority <low|normal|med|high>`: Task priority. (choices=low|normal|med|high, default=med)
+- `--route <auto|direct|branch_pr>`: Execution-route request. auto is conservative and explainable. (choices=auto|direct|branch_pr, default=auto)
+- `--verify <command>`: Repeatable. Seed an explicit verification command. (repeatable)
+- `--allow-duplicate`: Allow an exact duplicate of an open task. (default=false)
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane task create "Fix the parser edge case"
+```
+
+- Create a bounded task with automatic route selection.
+
+```sh
+agentplane task create "Publish the next patch release" --json
+```
+
+- Create a high-risk task and return its branch_pr decision as JSON.
+
 ### task doc set
 
 Update a task README section.
@@ -706,54 +742,6 @@ agentplane task list --status TODO --owner CODER
 ```
 
 - List filtered tasks.
-
-### task new
-
-Create a new task (prints the generated task id).
-
-Creates a TODO task with doc_version=3, seeds the README v3 section layout, and writes it via the configured task backend.
-
-Usage:
-
-```text
-agentplane task new --title <text> --description <text> --owner <id> [options]
-```
-
-Options:
-
-- `--title <text>`: Task title. (required)
-- `--description <text>`: Task description. (required)
-- `--owner <id>`: Owner id (e.g. CODER). (required)
-- `--priority <low|normal|med|high>`: Task priority (default: med). (choices=low|normal|med|high, default=med)
-- `--tag <tag>`: Repeatable. Adds a tag (must provide at least one). (repeatable)
-- `--task-kind <analysis|content|docs|code|release|ops|context>`: Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops|context)
-- `--mutation-scope <none|docs|code|release|ops|context|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
-- `--risk <risk>`: Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
-- `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|context.maximum_assimilation|post_run.improvement_review|release.strict|ops.approval)
-- `--depends-on <task-id>`: Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
-- `--verify <command>`: Repeatable. Verification commands/checks to run for this task. (repeatable)
-- `--show-blueprint`: Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
-- `--allow-duplicate`: Allow creating a task even when an open task with a highly similar title already exists. (default=false)
-
-Notes:
-
-- Task creation defaults to doc_version=3 and seeds the README v3 section contract automatically.
-- For verify-required primary tags, this command seeds a default ## Verify Steps acceptance contract in README.
-- \`--show-blueprint\` writes route preview details to stderr; stdout remains only the generated task id.
-
-Examples:
-
-```sh
-agentplane task new --title "Refactor CLI" --description "Improve CLI output" --owner CODER --tag cli
-```
-
-- Create a new task with one tag.
-
-```sh
-agentplane task new --title "Market analysis note" --description "Analyze market context" --owner ANALYST --tag analysis --task-kind analysis --mutation-scope none --show-blueprint
-```
-
-- Create a task and preview the resolved route without changing the task-id stdout contract.
 
 ### task next
 

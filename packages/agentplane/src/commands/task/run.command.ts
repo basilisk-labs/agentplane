@@ -28,6 +28,7 @@ import {
   renderRunnerDiagnosticInspectPayload,
   renderRunnerDiagnosticStatusPayload,
   renderRunnerStatusPayload,
+  buildTaskRunExecutionPreview,
   runnerReconciliationWarning,
   renderTaskRunnerLifecyclePayload,
   reportExecutedTaskRun,
@@ -124,7 +125,10 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
         task_id: parsed.taskId,
         execution: prepared,
       });
-      const payload = renderTaskRunnerLifecyclePayload(lifecycle);
+      const payload = renderTaskRunnerLifecyclePayload(
+        lifecycle,
+        buildTaskRunExecutionPreview(prepared.bundle),
+      );
       if (parsed.json) {
         output.json(payload);
       } else {
