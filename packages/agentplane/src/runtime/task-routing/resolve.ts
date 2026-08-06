@@ -60,24 +60,35 @@ export function resolveTaskExecutionRoute(opts: {
     selectedMode = "branch_pr";
     reasons.push("repository_branch_pr_floor");
     if (requestedMode === "direct") reasons.push("direct_request_overridden");
-  } else if (requestedMode === "repository") {
-    selectedMode = "direct";
-    reasons.push("repository_mode_selected");
-  } else if (requestedMode === "branch_pr") {
-    selectedMode = "branch_pr";
-    reasons.push("explicit_branch_pr");
-  } else if (requestedMode === "direct") {
-    const forcedReasons = autoRouteReasons(opts.task);
-    selectedMode = forcedReasons.length > 0 ? "branch_pr" : "direct";
-    reasons.push(
-      ...(forcedReasons.length > 0
-        ? ["direct_request_overridden", ...forcedReasons]
-        : ["explicit_direct"]),
-    );
   } else {
-    const forcedReasons = autoRouteReasons(opts.task);
-    selectedMode = forcedReasons.length > 0 ? "branch_pr" : "direct";
-    reasons.push(...(forcedReasons.length > 0 ? forcedReasons : ["automatic_safe_direct"]));
+    switch (requestedMode) {
+      case "repository": {
+        selectedMode = "direct";
+        reasons.push("repository_mode_selected");
+        break;
+      }
+      case "branch_pr": {
+        selectedMode = "branch_pr";
+        reasons.push("explicit_branch_pr");
+        break;
+      }
+      case "direct": {
+        const forcedReasons = autoRouteReasons(opts.task);
+        selectedMode = forcedReasons.length > 0 ? "branch_pr" : "direct";
+        reasons.push(
+          ...(forcedReasons.length > 0
+            ? ["direct_request_overridden", ...forcedReasons]
+            : ["explicit_direct"]),
+        );
+        break;
+      }
+      case "auto": {
+        const forcedReasons = autoRouteReasons(opts.task);
+        selectedMode = forcedReasons.length > 0 ? "branch_pr" : "direct";
+        reasons.push(...(forcedReasons.length > 0 ? forcedReasons : ["automatic_safe_direct"]));
+        break;
+      }
+    }
   }
 
   return {

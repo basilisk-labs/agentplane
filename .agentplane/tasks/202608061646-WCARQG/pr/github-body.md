@@ -48,10 +48,10 @@ Add a backward-compatible task-level execution route that lets AgentPlane classi
  .../agentplane/src/commands/task/run.command.ts    |  14 ++-
  .../src/runtime/task-intake/resolve-materialize.ts |   3 +
  .../src/runtime/task-intake/resolve-normalize.ts   |   1 +
- .../agentplane/src/runtime/task-intake/types.ts    |   2 +
+ .../agentplane/src/runtime/task-intake/types.ts    |   3 +-
  .../agentplane/src/runtime/task-routing/index.ts   |   5 +
  .../src/runtime/task-routing/resolve.test.ts       |  75 ++++++++++++
- .../agentplane/src/runtime/task-routing/resolve.ts | 115 ++++++++++++++++++
+ .../agentplane/src/runtime/task-routing/resolve.ts | 126 +++++++++++++++++++
  .../schemas/task-readme-frontmatter.schema.json    |  42 +++++++
  packages/core/schemas/tasks-export.schema.json     |  42 +++++++
  packages/core/src/tasks/index.ts                   |   3 +
@@ -64,7 +64,7 @@ Add a backward-compatible task-level execution route that lets AgentPlane classi
  packages/spec/schemas/tasks-export.schema.json     |  42 +++++++
  schemas/task-readme-frontmatter.schema.json        |  42 +++++++
  schemas/tasks-export.schema.json                   |  42 +++++++
- 37 files changed, 814 insertions(+), 9 deletions(-)
+ 37 files changed, 825 insertions(+), 10 deletions(-)
 ```
 
 </details>
