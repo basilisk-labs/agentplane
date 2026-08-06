@@ -7,7 +7,7 @@ Created: 2026-08-06T18:52:19.901Z
 - Task: `202608061850-BZT3D9`
 - Title: Land post-merge workflow routing qualification fixes
 - Status: DONE
-- Branch: `post-merge-BZT3D9-ci-recovery`
+- Branch: `task/202608061850-BZT3D9/post-merge-ci-recovery`
 - Canonical task record: `.agentplane/tasks/202608061850-BZT3D9/README.md`
 
 ## Verification
@@ -24,8 +24,8 @@ Created: 2026-08-06T18:52:19.901Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-06T22:58:37.876Z
-- Branch: post-merge-BZT3D9-ci-recovery
+- Updated: 2026-08-06T23:40:41.495Z
+- Branch: task/202608061850-BZT3D9/post-merge-ci-recovery
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
