@@ -493,14 +493,14 @@ function validateReviewedCandidate({
   assert(
     hashJson(releaseVersionDelta) ===
       hashJson({
-        source_task: "202608041322-M26FS0",
+        source_task: "202608061244-J3EC6A",
         classification: "planned_version_parity",
         from_version: "0.6.24",
-        to_version: "0.7.3",
+        to_version: "0.7.4",
         section: "package_manifests",
         from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
-        to_sha256: "62af981925c53c759ca64ad783ec0d0b821fc10324e1270acc4bb8bea4da5fc3",
-        surface_sha256: "6414a03920d7d20425c6bddc219c4b21ba704dd01a9a6f6d503702c98075723b",
+        to_sha256: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+        surface_sha256: "e268ab12ae45c6c5620e2b92c671828ea25fbcc79fd4f21b6e9da806de08eabb",
         allowed_json_paths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
