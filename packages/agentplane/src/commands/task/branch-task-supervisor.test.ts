@@ -1,3 +1,4 @@
+import { validateCommitSubject } from "@agentplaneorg/core/commit";
 import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
 import { mkGitRepoRoot } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
@@ -15,6 +16,7 @@ import {
   superviseBranchTaskRunWithPorts,
   type BranchTaskSupervisorPorts,
 } from "./branch-task-supervisor.js";
+import { branchSupervisorArtifactCommitMessage } from "./branch-task-supervisor-episodes.js";
 import { agentTransitionId, buildAgentActionPacket } from "./agent-action-packet.js";
 
 const taskId = "202607310001-BRANCH";
@@ -438,6 +440,28 @@ function sequencePorts(
 }
 
 describe("branch_pr task supervisor", () => {
+  it("generates policy-valid task artifact commit subjects", () => {
+    for (const artifact of [
+      "verification_pass",
+      "verification_rework",
+      "evaluator_verdict",
+    ] as const) {
+      expect(
+        validateCommitSubject({
+          subject: branchSupervisorArtifactCommitMessage(taskId, artifact),
+          taskId,
+          genericTokens: ["update", "tasks", "wip"],
+          taskIntent: {
+            taskKind: "release",
+            mutationScope: "release",
+            blueprintRequest: "release.strict",
+            tags: ["code", "regression", "release"],
+          },
+        }),
+      ).toEqual({ ok: true, errors: [] });
+    }
+  });
+
   it.each([
     ["planned approval", stopDecision(11, "approval"), "approval_required", "authority_boundary"],
     ["hosted wait", stopDecision(12, "wait"), "wait_required", "external_boundary"],

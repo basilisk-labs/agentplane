@@ -42,6 +42,20 @@ import { runDirectTaskVerification } from "./direct-task-verification.js";
 import { cmdTaskSetStatus } from "./set-status.js";
 import { cmdVerifyParsed } from "./verify-record.js";
 
+export function branchSupervisorArtifactCommitMessage(
+  taskId: string,
+  artifact: "verification_pass" | "verification_rework" | "evaluator_verdict",
+): string {
+  const suffix = taskId.split("-").at(-1) ?? taskId;
+  if (artifact === "verification_pass") {
+    return `✅ ${suffix} task: record branch verification`;
+  }
+  if (artifact === "verification_rework") {
+    return `🧪 ${suffix} task: record verification rework`;
+  }
+  return `🧭 ${suffix} task: record evaluator verdict`;
+}
+
 function operationId(decision: TaskRouteDecision): string | null {
   return decision.workflowStep.kind === "cli_operation" ? decision.workflowStep.operation.id : null;
 }
@@ -436,9 +450,10 @@ async function executeBranchVerificationEpisode(opts: {
           command,
           cwd: checkout,
           task_id: opts.input.task_id,
-          message: passed
-            ? `✅ ${opts.input.task_id.split("-").at(-1)} supervisor: record branch verification`
-            : `🧪 ${opts.input.task_id.split("-").at(-1)} supervisor: record verification rework`,
+          message: branchSupervisorArtifactCommitMessage(
+            opts.input.task_id,
+            passed ? "verification_pass" : "verification_rework",
+          ),
         });
         return {
           verification: passed ? "ok" : "needs_rework",
@@ -502,7 +517,7 @@ async function executeBranchEvaluatorEpisode(opts: {
       command,
       cwd: checkout,
       task_id: opts.input.task_id,
-      message: `🧭 ${opts.input.task_id} supervisor: record evaluator verdict`,
+      message: branchSupervisorArtifactCommitMessage(opts.input.task_id, "evaluator_verdict"),
     });
   } catch (error) {
     return stoppedEpisode({
