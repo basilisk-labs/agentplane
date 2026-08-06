@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       const efficiency = await runNode([EFFICIENCY_CHECK]);
 
       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
-      expect(compatibility.stdout).toContain("259commands/179args/828options");
+      expect(compatibility.stdout).toContain("259commands/179args/829options");
       expect(compatibility.stdout).toContain(
         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
       );
@@ -193,13 +193,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202608021534-YN84E1",
           "202608022324-9VCYWG",
           "202608021535-CNQKXP",
+          "202608061646-WCARQG",
         ],
         candidate: {
-          surface_sha256: "5fe979c4175ec9d8059079384632c52cce90340697675f8eba66f8fbc808ea27",
+          surface_sha256: "c710ccaa31b43988b633441c168651a1e57aa47d17fd97f18e0acafd14776848",
           section_digests: {
             agent_facing_context_contracts:
               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
-            cli_topology: "013285a7eb1fce7e1b0138cec6da0c94c4c1c3647937f6b0d49f872b57abed0b",
+            cli_topology: "c15bff5ccf748801205499a8e483524162422c4659a06fc201ad13d9d7c1f8cc",
             machine_output_contract:
               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
             package_manifests: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
@@ -229,7 +230,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           section: "package_manifests",
           from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
           to_sha256: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
-          surface_sha256: "e268ab12ae45c6c5620e2b92c671828ea25fbcc79fd4f21b6e9da806de08eabb",
+          surface_sha256: "f1f7ba365b8912771323910df3e34843708feeccc291944d50a1ab2f7874ca01",
           allowed_json_paths: [
             "$.package_manifests[0].dependencies.@agentplaneorg/core",
             "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -556,7 +557,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           },
         });
         const before = collectCompatibilitySurface(versionedSource("0.6.24"));
-        const after = collectCompatibilitySurface(versionedSource("0.7.3"));
+        const after = collectCompatibilitySurface(versionedSource("0.7.4"));
         const sectionDigests = surfaceSectionDigests(after);
         process.stdout.write(JSON.stringify({
           packageManifestDigest: sectionDigests.package_manifests,
@@ -567,8 +568,8 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       const result = await runNode(["--input-type=module", "--eval", source]);
       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
       expect(JSON.parse(result.stdout)).toEqual({
-        packageManifestDigest: "62af981925c53c759ca64ad783ec0d0b821fc10324e1270acc4bb8bea4da5fc3",
-        surfaceDigest: "6414a03920d7d20425c6bddc219c4b21ba704dd01a9a6f6d503702c98075723b",
+        packageManifestDigest: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+        surfaceDigest: "f1f7ba365b8912771323910df3e34843708feeccc291944d50a1ab2f7874ca01",
         changedPaths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
