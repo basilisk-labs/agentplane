@@ -13,7 +13,6 @@ import {
   type TaskRunnerLifecycleResult,
 } from "../../runner/usecases/task-run-lifecycle-result.js";
 import { executeTaskRunnerExecution } from "../../runner/usecases/task-run.js";
-import { cmdCommit } from "../guard/impl/commit.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
   openSupervisorExecutionEpisode,
@@ -41,20 +40,10 @@ import { journalProjection } from "./direct-task-supervisor-result.js";
 import { runDirectTaskVerification } from "./direct-task-verification.js";
 import { cmdTaskSetStatus } from "./set-status.js";
 import { cmdVerifyParsed } from "./verify-record.js";
-
-export function branchSupervisorArtifactCommitMessage(
-  taskId: string,
-  artifact: "verification_pass" | "verification_rework" | "evaluator_verdict",
-): string {
-  const suffix = taskId.split("-").at(-1) ?? taskId;
-  if (artifact === "verification_pass") {
-    return `✅ ${suffix} task: record branch verification`;
-  }
-  if (artifact === "verification_rework") {
-    return `🧪 ${suffix} task: record verification rework`;
-  }
-  return `🧭 ${suffix} task: record evaluator verdict`;
-}
+import {
+  branchSupervisorArtifactCommitMessage,
+  commitBranchSupervisorTaskArtifacts,
+} from "./branch-task-supervisor-artifact-commit.js";
 
 function operationId(decision: TaskRouteDecision): string | null {
   return decision.workflowStep.kind === "cli_operation" ? decision.workflowStep.operation.id : null;
@@ -105,36 +94,6 @@ function stoppedEpisode(opts: {
     lifecycle_calls: opts.lifecycle_calls ?? 0,
     executor_lifecycle_event_delta: opts.executor_lifecycle_event_delta ?? null,
   };
-}
-
-async function commitTaskArtifacts(opts: {
-  command: CommandContext;
-  cwd: string;
-  task_id: string;
-  message: string;
-}): Promise<void> {
-  const exitCode = await cmdCommit({
-    ctx: opts.command,
-    cwd: opts.cwd,
-    taskId: opts.task_id,
-    message: opts.message,
-    close: false,
-    allow: [],
-    autoAllow: false,
-    allowTasks: true,
-    allowBase: false,
-    allowPolicy: false,
-    allowConfig: false,
-    allowHooks: false,
-    allowCI: false,
-    requireClean: false,
-    quiet: true,
-    closeUnstageOthers: false,
-    closeCheckOnly: false,
-  });
-  if (exitCode !== 0) {
-    throw new Error(`Task artifact commit exited with ${exitCode}.`);
-  }
 }
 
 async function executeBranchImplementationEpisode(opts: {
@@ -446,7 +405,7 @@ async function executeBranchVerificationEpisode(opts: {
           quiet: true,
         });
         if (exitCode !== 0) throw new Error(`Verification record exited with ${exitCode}.`);
-        await commitTaskArtifacts({
+        await commitBranchSupervisorTaskArtifacts({
           command,
           cwd: checkout,
           task_id: opts.input.task_id,
@@ -513,7 +472,7 @@ async function executeBranchEvaluatorEpisode(opts: {
       task_id: opts.input.task_id,
       evaluator_id: "recovery-context",
     });
-    await commitTaskArtifacts({
+    await commitBranchSupervisorTaskArtifacts({
       command,
       cwd: checkout,
       task_id: opts.input.task_id,

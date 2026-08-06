@@ -22,7 +22,6 @@ import {
 } from "../shared/supervisor-execution-episode.js";
 import {
   loadCommandContext,
-  loadTaskFromContext,
   resolveCommandGitCommonDir,
   type CommandContext,
 } from "../shared/task-backend.js";
@@ -53,12 +52,14 @@ import {
 } from "./external-agent-evaluator.js";
 import { applyExternalImplementationResult } from "./external-agent-implementation-authority.js";
 import {
+  applyExternalPlanningResult,
+  isExternalPlanningResultApplied,
+} from "./external-agent-planning-authority.js";
+import {
   externalAgentResultIdentity,
   refreshExternalAgentRoute,
 } from "./external-agent-result-routing.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
-import { cmdTaskComment } from "./comment.js";
-import { setTaskPlan } from "./plan.js";
 
 type ExternalSemanticPurpose = Extract<
   TaskRouteDecision["workflowStep"],
@@ -341,23 +342,10 @@ async function applyAcceptedResult(opts: {
   envelope: ExternalAgentResultEnvelope;
 }): Promise<void> {
   if (opts.exchange.purpose === "planning") {
-    if (opts.envelope.result.status !== "completed") {
-      await cmdTaskComment({
-        ctx: opts.command,
-        cwd: opts.exchange.checkout,
-        taskId: opts.exchange.task_id,
-        author: "PLANNER",
-        body: `Planning returned ${opts.envelope.result.status}: ${opts.envelope.result.summary}`,
-        quiet: true,
-      });
-      return;
-    }
-    await setTaskPlan({
-      ctx: opts.command,
-      cwd: opts.exchange.checkout,
-      taskId: opts.exchange.task_id,
-      text: opts.envelope.result.summary,
-      updatedBy: "PLANNER",
+    await applyExternalPlanningResult({
+      command: opts.command,
+      exchange: opts.exchange,
+      envelope: opts.envelope,
     });
     return;
   }
@@ -404,21 +392,12 @@ async function isReadOnlyResultAlreadyApplied(opts: {
   envelope: ExternalAgentResultEnvelope;
 }): Promise<boolean> {
   if (opts.exchange.purpose === "planning") {
-    if (
-      opts.decision.workflowStep.kind === "approval" &&
-      opts.decision.workflowStep.request.type === "plan_approval"
-    ) {
-      return true;
-    }
-    if (opts.envelope.result.status !== "completed") return false;
-    const task = await loadTaskFromContext({
-      ctx: opts.command,
-      taskId: opts.exchange.task_id,
+    return await isExternalPlanningResultApplied({
+      command: opts.command,
+      exchange: opts.exchange,
+      decision: opts.decision,
+      envelope: opts.envelope,
     });
-    return (
-      task.plan_approval?.state === "approved" &&
-      task.sections?.Plan?.trim() === opts.envelope.result.summary.trim()
-    );
   }
   if (opts.exchange.purpose === "quality_review") {
     return await isExternalEvaluatorResultApplied({

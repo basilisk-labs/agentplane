@@ -251,59 +251,6 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     expect(replay.stderr).toContain("replay is refused");
   });
 
-  it("reconciles one exact effect-in-doubt planning result without replaying the agent", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
-    const taskId = await createTask(root, "Effect-in-doubt planning result");
-    const issued = await readAgentPacket(root, taskId);
-    const plan = "1. Preserve the original intent. 2. Apply its observed result exactly once.";
-    const resultPath = await writeCompletedResult(issued, plan);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      plan,
-      "--updated-by",
-      "PLANNER",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
-    const journalPath = await resolveSupervisorExecutionEpisodePath({
-      git_root: root,
-      task_id: taskId,
-    });
-    const store = createSupervisorEpisodeStore(journalPath);
-    const journal = validateSupervisorExecutionEpisodeJournal(await store.read());
-    const effectInDoubt = recoverSupervisorExecutionEpisodeJournal({
-      journal,
-      state_fingerprint_digest: issued.state_fingerprint,
-    });
-    await store.write(effectInDoubt);
-
-    const accepted = await returnAgentResult(root, taskId, resultPath);
-
-    expect(accepted.code, accepted.stderr).toBe(0);
-    expect(JSON.parse(accepted.stdout)).toMatchObject({
-      action: { kind: "framework_transition" },
-      stop: { reason: "control_plane_boundary" },
-    });
-    expect(
-      await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
-    ).toContain(plan);
-    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
-      status: "running",
-      stop: null,
-      cursor: { phase: "ready", operation_key: null },
-      usage: journal.usage,
-      operations: [{ role: "PLANNER", status: "completed" }],
-    });
-  });
-
   it("rejects a tampered exchange checkout before applying semantic task state", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

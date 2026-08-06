@@ -16,7 +16,7 @@ import {
   superviseBranchTaskRunWithPorts,
   type BranchTaskSupervisorPorts,
 } from "./branch-task-supervisor.js";
-import { branchSupervisorArtifactCommitMessage } from "./branch-task-supervisor-episodes.js";
+import { branchSupervisorArtifactCommitMessage } from "./branch-task-supervisor-artifact-commit.js";
 import { agentTransitionId, buildAgentActionPacket } from "./agent-action-packet.js";
 
 const taskId = "202607310001-BRANCH";
