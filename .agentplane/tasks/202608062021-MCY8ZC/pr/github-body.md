@@ -22,12 +22,30 @@ Return an exact result_path and structured resume_argv from task advance, expose
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-06T21:35:28.993Z
+- Updated: 2026-08-06T21:35:52.329Z
 - Branch: task/202608062021-MCY8ZC/polish-the-external-supervisor-protocol-and-cano
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ docs/user/cli-reference.generated.mdx              |   1 +
+ .../run-cli.core.help-snap.test.ts.snap            |  12 +-
+ .../src/cli/run-cli.core.help-contract.test.ts     |   8 +-
+ .../src/cli/run-cli.core.task-advance.test.ts      | 211 ++++++++++++++++-----
+ .../src/cli/run-cli.core.task-guided.test.ts       |   2 +-
+ packages/agentplane/src/cli/run-cli.core.test.ts   |  18 +-
+ .../src/commands/shared/route-decision-blockers.ts |  18 ++
+ .../agentplane/src/commands/shared/route-oracle.ts |   1 +
+ .../src/commands/shared/workflow-step-branch.ts    |  14 +-
+ .../shared/workflow-step-fingerprint.test.ts       |   4 +-
+ .../src/commands/shared/workflow-step-reducer.ts   |  28 +++
+ .../src/commands/shared/workflow-step.test.ts      |  42 +++-
+ .../src/commands/shared/workflow-step.ts           |   4 +
+ .../src/commands/task/advance.command.ts           |  66 +++++--
+ .../src/commands/task/agent-action-packet.test.ts  |  78 +++++++-
+ .../src/commands/task/agent-action-packet.ts       |  71 ++++++-
+ .../agentplane/src/commands/task/begin.command.ts  |   2 +-
+ .../agentplane/src/commands/task/task.command.ts   |  59 ++----
+ 18 files changed, 495 insertions(+), 144 deletions(-)
 ```
 
 </details>

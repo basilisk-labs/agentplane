@@ -743,6 +743,55 @@ agentplane task list --status TODO --owner CODER
 
 - List filtered tasks.
 
+### task new
+
+Create a new task (prints the generated task id).
+
+Creates a TODO task with doc_version=3, seeds the README v3 section layout, and writes it via the configured task backend.
+
+Usage:
+
+```text
+agentplane task new --title <text> --description <text> --owner <id> [options]
+```
+
+Options:
+
+- `--title <text>`: Task title. (required)
+- `--description <text>`: Task description. (required)
+- `--owner <id>`: Owner id (e.g. CODER). (required)
+- `--priority <low|normal|med|high>`: Task priority (default: med). (choices=low|normal|med|high, default=med)
+- `--tag <tag>`: Repeatable. Adds a tag (must provide at least one). (repeatable)
+- `--task-kind <analysis|content|docs|code|release|ops|context>`: Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops|context)
+- `--mutation-scope <none|docs|code|release|ops|context|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
+- `--risk <risk>`: Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
+- `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|context.maximum_assimilation|post_run.improvement_review|release.strict|ops.approval)
+- `--route <repository|auto|direct|branch_pr>`: Task execution route. repository preserves legacy behavior; auto may escalate a direct repository to branch_pr when isolation risk requires it. (choices=repository|auto|direct|branch_pr, default=repository)
+- `--depends-on <task-id>`: Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
+- `--verify <command>`: Repeatable. Verification commands/checks to run for this task. (repeatable)
+- `--show-blueprint`: Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
+- `--allow-duplicate`: Allow creating a task even when an open task with a highly similar title already exists. (default=false)
+
+Notes:
+
+- Task creation defaults to doc_version=3 and seeds the README v3 section contract automatically.
+- For verify-required primary tags, this command seeds a default ## Verify Steps acceptance contract in README.
+- \`--show-blueprint\` writes route preview details to stderr; stdout remains only the generated task id.
+
+Examples:
+
+```sh
+agentplane task new --title "Refactor CLI" --description "Improve CLI output" --owner CODER --tag cli
+```
+
+- Create a new task with one tag.
+
+```sh
+agentplane task new --title "Market analysis note" --description "Analyze market context" --owner ANALYST --tag analysis --task-kind analysis --mutation-scope none --show-blueprint
+```
+
+- Create a task and preview the resolved route without changing the task-id stdout contract.
+
 ### task next
 
 List ready tasks (default status=TODO) with optional filters.

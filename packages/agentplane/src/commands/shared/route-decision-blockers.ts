@@ -11,6 +11,7 @@ import { isTaskSetLocalOnlyAdvance } from "./task-local-freshness.js";
 import type { CommandContext } from "./task-backend.js";
 import { isRecord } from "../../shared/guards.js";
 import { getHumanInputState } from "../task/human-input.js";
+import { resolveTaskDependencyState } from "../task/shared/dependencies.js";
 import { parsePrMeta, type PrMeta } from "./pr-meta.js";
 import { readTaskPrArtifact } from "../pr/internal/pr-paths.js";
 import { hasAcceptedQualityReviewProvenance } from "../task/quality-review-gate.js";
@@ -32,6 +33,7 @@ import {
 export function routeGatePriority(code: string): number {
   if (
     code === "plan_not_approved" ||
+    code === "dependency_not_ready" ||
     code === "human_input_required" ||
     code === "missing_pr_branch" ||
     code === "runner_alive" ||
@@ -323,6 +325,22 @@ export async function deriveBlockers(opts: {
     return blockers;
   }
   const normalizedTaskStatus = String(opts.task.status).toUpperCase();
+  if (normalizedTaskStatus === "TODO") {
+    const dependencies = await resolveTaskDependencyState(opts.task, opts.ctx.taskBackend);
+    if (dependencies.missing.length > 0 || dependencies.incomplete.length > 0) {
+      const details = [
+        ...(dependencies.missing.length > 0 ? [`missing: ${dependencies.missing.join(", ")}`] : []),
+        ...(dependencies.incomplete.length > 0
+          ? [`incomplete: ${dependencies.incomplete.join(", ")}`]
+          : []),
+      ];
+      addBlocker(
+        blockers,
+        "dependency_not_ready",
+        `task dependencies are not ready (${details.join("; ")})`,
+      );
+    }
+  }
   if (
     opts.workflowMode === "branch_pr" &&
     (normalizedTaskStatus === "TODO" ||

@@ -488,6 +488,12 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "on_base_checkout"),
     });
   }
+  if (
+    state.task.verification?.state !== "ok" &&
+    !(typeof state.task.commit?.hash === "string" && state.task.commit.hash.trim())
+  ) {
+    return branchImplementationStep(state);
+  }
   if (state.prFlow?.pr.state === "not_found") {
     return cliOperationStep({
       state,
@@ -498,15 +504,9 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
         includeTaskIds: primaryIncludeTaskIds(state),
       },
       code: "open_pr",
-      summary: "publish/link the task PR",
+      summary: "publish/link the task PR after the semantic implementation is committed",
       selectedBlocker: routeBlockerFor(state, "remote_pr_missing"),
     });
-  }
-  if (
-    state.task.verification?.state !== "ok" &&
-    !(typeof state.task.commit?.hash === "string" && state.task.commit.hash.trim())
-  ) {
-    return branchImplementationStep(state);
   }
   if (state.blockers.some((blocker) => blocker.code === "verification_required")) {
     return verificationStep(state);

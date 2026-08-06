@@ -517,6 +517,10 @@ export type WorkflowStep =
             type: "integration_queue_terminal";
             taskId: string;
             queueStatus: "queued" | "claimed" | "handoff" | "done";
+          }
+        | {
+            type: "dependencies_ready";
+            taskId: string;
           };
     })
   | (WorkflowStepBase & {

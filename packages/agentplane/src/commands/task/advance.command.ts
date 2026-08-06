@@ -30,15 +30,22 @@ export function makeRunTaskAdvanceHandler(deps: {
 }) {
   return async (ctx: CommandCtx, parsed: TaskAdvanceParsed): Promise<number> => {
     const command = await deps.getContext("task advance", { includeRemote: parsed.remote });
-    const decide = async (freshHead = false): Promise<TaskRouteDecision> =>
-      await buildTaskRouteDecision({
-        ctx: command,
-        cwd: ctx.cwd,
-        rootOverride: ctx.rootOverride ?? null,
+    const decide = async (freshHead = false): Promise<TaskRouteDecision> => {
+      const routeCommand = freshHead
+        ? await loadCommandContext({
+            cwd: command.resolvedProject.gitRoot,
+            rootOverride: null,
+          })
+        : command;
+      return await buildTaskRouteDecision({
+        ctx: routeCommand,
+        cwd: routeCommand.resolvedProject.gitRoot,
+        rootOverride: null,
         includeRemote: parsed.remote,
         freshHead,
         taskId: parsed.taskId,
       });
+    };
     let current: TaskRouteDecision;
     if (parsed.result) {
       const accepted = await acceptExternalAgentResult({
@@ -194,11 +201,18 @@ export function makeRunTaskAdvanceHandler(deps: {
         });
       }
     }
+    const preparationCheckout =
+      current.executionPacket.mustRunFrom ?? current.workspace.root ?? ctx.cwd;
+    const preparationCommand = await loadCommandContext({
+      cwd: preparationCheckout,
+      rootOverride: null,
+    });
+    const preparationCtx: CommandCtx = { cwd: preparationCheckout };
     const prepared = requirePreparedAgentWorkOrder(
       await prepareAgentWorkOrder({
-        command_ctx: command,
-        cwd: ctx.cwd,
-        root_override: ctx.rootOverride ?? null,
+        command_ctx: preparationCommand,
+        cwd: preparationCheckout,
+        root_override: null,
         task_id: parsed.taskId,
         ...(parsed.remote ? { include_remote: true } : {}),
         runner_command: "task advance",
@@ -206,11 +220,23 @@ export function makeRunTaskAdvanceHandler(deps: {
       }),
     );
     const exchange = await issueExternalAgentExchange({
-      ctx,
-      command,
+      ctx: preparationCtx,
+      command: preparationCommand,
       decision: prepared.route_decision,
       work_order: prepared.work_order,
     });
+    const resumeArgv = exchange
+      ? [
+          "agentplane",
+          "task",
+          "advance",
+          parsed.taskId,
+          "--result",
+          exchange.paths.result,
+          "--agent-json",
+          ...(parsed.remote ? ["--remote"] : []),
+        ]
+      : null;
     const packet = buildAgentActionPacket({
       decision: prepared.route_decision,
       work_order: exchange?.work_order ?? prepared.work_order,
@@ -221,13 +247,13 @@ export function makeRunTaskAdvanceHandler(deps: {
               work_order_ref: "work-order.json",
               result_schema_ref: "result-schema.json",
               result_ref: "result.json",
-              return_invocation:
-                `agentplane task advance <task_id> --result <exchange_directory>/<result_ref> --agent-json` +
-                (parsed.remote ? " --remote" : ""),
+              result_path: exchange.paths.result,
+              resume_argv: resumeArgv!,
             },
           }
         : {}),
       ...(recovery ? { recovery } : {}),
+      remote: parsed.remote,
     });
     assertAgentActionPacketHasNoChoreography(packet);
 
@@ -250,7 +276,19 @@ export function makeRunTaskAdvanceHandler(deps: {
               { label: "exchange_directory", value: packet.exchange.directory },
               { label: "work_order_ref", value: packet.exchange.work_order_ref },
               { label: "result_ref", value: packet.exchange.result_ref },
-              { label: "return_invocation", value: packet.exchange.return_invocation },
+              { label: "result_path", value: packet.exchange.result_path },
+              { label: "resume_argv", value: JSON.stringify(packet.exchange.resume_argv) },
+            ]
+          : []),
+        ...(packet.operator_action
+          ? [
+              { label: "operator_action", value: packet.operator_action.kind },
+              {
+                label: "operator_argv",
+                value: packet.operator_action.argv
+                  ? JSON.stringify(packet.operator_action.argv)
+                  : "provider action required",
+              },
             ]
           : []),
         ...(packet.recovery ? [{ label: "recovery", value: packet.recovery.reason }] : []),

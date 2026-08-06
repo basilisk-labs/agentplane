@@ -37,12 +37,20 @@ export type AgentActionPacket = {
     reference: string | null;
   };
   context_refs: AgentContextRef[];
+  operator_action?: {
+    kind: "approve_plan" | "grant_side_effect_authority" | "approve_provider_merge";
+    required_role: "USER";
+    cwd: string | null;
+    argv: string[] | null;
+    authority_reference: string;
+  };
   exchange?: {
     directory: string;
     work_order_ref: string;
     result_schema_ref: string;
     result_ref: string;
-    return_invocation: string;
+    result_path: string;
+    resume_argv: string[];
   };
   recovery?: {
     reason:
@@ -95,6 +103,57 @@ function semanticInstruction(
       return "Assess the scoped result against the prepared checks and report an evidence-backed outcome.";
     }
   }
+}
+
+function operatorActionFor(opts: {
+  decision: TaskRouteDecision;
+  remote: boolean;
+}): AgentActionPacket["operator_action"] {
+  const step = opts.decision.workflowStep;
+  if (step.kind !== "approval") return undefined;
+  const cwd = opts.decision.oracle?.authoritativeCheckoutPath ?? null;
+  if (step.request.type === "plan_approval") {
+    return {
+      kind: "approve_plan",
+      required_role: "USER",
+      cwd,
+      argv: ["agentplane", "task", "plan", "approve", step.request.taskId, "--by", "USER"],
+      authority_reference: step.request.authorityRef,
+    };
+  }
+  if (step.request.type === "side_effect") {
+    return {
+      kind: "grant_side_effect_authority",
+      required_role: "USER",
+      cwd,
+      argv: [
+        "agentplane",
+        "task",
+        "authority",
+        "grant",
+        step.request.taskId,
+        ...(opts.remote ? ["--remote"] : []),
+        "--operation",
+        step.request.operationId,
+        "--operation-digest",
+        step.request.operationDigest,
+        "--state-fingerprint",
+        step.request.stateFingerprintDigest,
+        "--state-scope-digest",
+        step.request.stateScopeDigest,
+        "--by",
+        "USER",
+      ],
+      authority_reference: step.request.authorityRef,
+    };
+  }
+  return {
+    kind: "approve_provider_merge",
+    required_role: "USER",
+    cwd,
+    argv: null,
+    authority_reference: step.request.authorityRef,
+  };
 }
 
 function actionFor(decision: TaskRouteDecision): Pick<AgentActionPacket, "action" | "stop"> {
@@ -199,7 +258,9 @@ function compactContextRefs(workOrder: AgentWorkOrderV2): AgentContextRef[] {
 }
 
 function packetBytes(packet: AgentActionPacket): number {
-  return Buffer.byteLength(JSON.stringify(packet), "utf8");
+  // --agent-json is rendered as indented JSON; enforce the public wire-size
+  // contract against those actual bytes rather than a smaller internal form.
+  return Buffer.byteLength(JSON.stringify(packet, null, 2), "utf8");
 }
 
 export function agentTransitionId(stepId: string): string {
@@ -211,6 +272,7 @@ export function buildAgentActionPacket(opts: {
   work_order: AgentWorkOrderV2;
   exchange?: AgentActionPacket["exchange"];
   recovery?: AgentActionPacket["recovery"];
+  remote?: boolean;
 }): AgentActionPacket {
   const projected = opts.recovery
     ? {
@@ -225,6 +287,10 @@ export function buildAgentActionPacket(opts: {
         },
       }
     : actionFor(opts.decision);
+  const operatorAction = operatorActionFor({
+    decision: opts.decision,
+    remote: opts.remote === true,
+  });
   const packet: AgentActionPacket = {
     schema_version: 1,
     task_id: opts.decision.task.id,
@@ -242,6 +308,7 @@ export function buildAgentActionPacket(opts: {
           : null,
     },
     context_refs: compactContextRefs(opts.work_order),
+    ...(operatorAction ? { operator_action: operatorAction } : {}),
     ...(projected.action.kind === "agent_episode" && opts.exchange
       ? { exchange: opts.exchange }
       : {}),

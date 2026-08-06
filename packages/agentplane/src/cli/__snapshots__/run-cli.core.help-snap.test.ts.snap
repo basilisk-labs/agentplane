@@ -9,7 +9,7 @@ Commands:
     help  Show the canonical command surface or help for one command.
     quickstart  Print the canonical agent bootstrap path and startup guidance.
   Task:
-    task  Task lifecycle and task-store commands.
+    task  Supervisor-first task commands.
     task active  Select active agent work with next actions, blockers, dependency readiness, and freshness.
     task advance  Return one compact external-agent action from the shared task supervisor state.
     task brief  Print an agent-ready task brief without remote lookups by default.
@@ -56,10 +56,15 @@ Options:
 `;
 
 exports[`runCli help snapshots (cli2) > help task --compact snapshot 1`] = `
-"task - Task lifecycle and task-store commands.
+"task - Supervisor-first task commands.
 
 Usage:
-  agentplane task <subcommand> [args] [options]
+  agentplane task new --title <text> --description <text> --owner <id> [options]
+  agentplane task active [options]
+  agentplane task advance <task-id> --agent-json [options]
+  agentplane task run <task-id> [options]
+  agentplane task brief <task-id> [options]
+  agentplane help --all  # diagnostics and compatibility commands
 "
 `;
 
@@ -95,6 +100,7 @@ Options:
   --mutation-scope <none|docs|code|release|ops|context|unknown>  Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
   --risk <risk>  Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
   --blueprint-request <id>  Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|context.maximum_assimilation|post_run.improvement_review|release.strict|ops.approval)
+  --route <repository|auto|direct|branch_pr>  Task execution route. repository preserves legacy behavior; auto may escalate a direct repository to branch_pr when isolation risk requires it. (choices=repository|auto|direct|branch_pr, default=repository)
   --depends-on <task-id>  Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
   --verify <command>  Repeatable. Verification commands/checks to run for this task. (repeatable)
   --show-blueprint  Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
