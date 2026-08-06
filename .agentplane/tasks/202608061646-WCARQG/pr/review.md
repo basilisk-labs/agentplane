@@ -70,7 +70,8 @@ Created: 2026-08-06T16:48:32.143Z
  schemas/tasks-export.schema.json                   |  42 +++++++
  .../baselines/v0.7-compatibility-candidate.json    |  32 +++--
  .../check-compatibility-contract-baseline.mjs      |  18 ++-
- 41 files changed, 881 insertions(+), 27 deletions(-)
+ website/static/llms-full.txt                       | 119 +++++++++++++-----
+ 42 files changed, 972 insertions(+), 55 deletions(-)
 ```
 
 </details>
