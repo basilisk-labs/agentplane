@@ -1,10 +1,11 @@
 ---
 id: "202608061850-BZT3D9"
 title: "Land post-merge workflow routing qualification fixes"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -61,6 +62,20 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "Hosted PR checks and merge-head equality remain intentionally deferred until after this pre-publication evaluator gate."
+token_usage:
+  agent_runs: 1
+  input_tokens: 162176
+  journal_digest: "sha256:cfb3476e9270fc33b1f32eb3bdf694f2f455f74ce956ebe77309be24080a14cc"
+  observed_agent_runs: 1
+  observed_by: "agentplane"
+  output_tokens: 1875
+  reasoning_tokens: 308
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "observed"
+  total_tokens: 164359
+  unavailable_reason: null
+  updated_at: "2026-08-06T19:01:14.461Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -69,11 +84,16 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "dc653b0db69ab83022fe1f38eab77daf4f3d92a7"
+  message: "🧪 BZT3D9 task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -88,8 +108,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Post-merge qualification fixes are isolated from merged main and pass all declared release gates."
+  -
+    type: "status"
+    at: "2026-08-06T19:01:14.461Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-06T18:58:21.263Z"
+doc_updated_at: "2026-08-06T19:01:14.471Z"
 doc_updated_by: "CODER"
 description: "Publish the already verified post-merge fixes discovered after PR #4784 auto-merged: generated schema formatting, CLI reference and llms corpus refresh, isolated routing E2E coverage, lint-safe route resolution, repaired supervisor test fixture, and reviewed compatibility candidate evidence. No new product behavior beyond task 202608061646-WCARQG."
 sections:
@@ -171,6 +198,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "2c35aa1d9848ccdc44d1c13b722dc0253f4f4f9d"
+    message: "🧹 BZT3D9 followup: drop foreign PR artifacts"
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
     version: 1
@@ -266,3 +296,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `observed`
+- Completeness: `1/1` agent runs
+- Input tokens: `162176`
+- Output tokens: `1875`
+- Reasoning tokens: `308`
+- Total tokens: `164359`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:cfb3476e9270fc33b1f32eb3bdf694f2f455f74ce956ebe77309be24080a14cc`
+- Unavailable reason: `none`
+- Updated at: `2026-08-06T19:01:14.461Z`
