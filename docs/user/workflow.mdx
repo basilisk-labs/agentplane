@@ -1,211 +1,79 @@
 ---
 title: "Workflow"
-description: "How work moves from plan to completion in Agentplane."
+description: "How Agentplane supervises work from intake to verified completion."
 ---
 
-## Default path in this repository
+## Default path
 
-Agentplane is a workflow layer around coding-agent work:
+Agentplane owns process state, repository routing, approvals, verification persistence, hosted gates,
+integration, and closeout. Agents receive only bounded semantic work that benefits from reasoning.
 
-```text
-task -> plan -> approve -> implement -> verify -> finish
+The normal agent-facing surface is:
+
+```bash
+agentplane task active
+agentplane task advance <task-id> --agent-json
 ```
 
-Use any coding agent to edit code. Use Agentplane to record the task state, plan, verification, and
-closure around those edits. The agent writes code and uses the CLI; the human sets tasks,
-guardrails, and review boundaries.
+When the packet returns `action.kind=agent_episode`:
 
-This repository is configured for `branch_pr`. After task creation and semantic plan approval, the
-normal managed route is:
+1. Perform only its semantic objective.
+2. Stay inside its authority and writable roots.
+3. Write the typed result to the exact `result_path`.
+4. Resume with the supplied `resume_argv` and request a fresh packet.
+
+For a configured managed adapter, use:
 
 ```bash
 agentplane task run <task-id>
 ```
 
-An external agent requests one bounded action instead:
+The managed and external frontends consume the same route, fingerprint, WorkOrder, evidence model,
+and stop boundaries. They differ only in who resolves the semantic episode.
+
+## First managed workflow
 
 ```bash
-agentplane task advance <task-id> --agent-json
+agentplane task new --title "Fix the reported defect" --description "Reproduce, repair, and verify the defect" --owner CODER --tag code
+agentplane task run <task-id>
 ```
 
-Immediately after creation, that packet is a read-only PLANNER request. The generated Plan is only
-a marker and cannot be approved. `task run` reports the same planning boundary without launching an
-implementation provider; managed execution begins after a task-specific plan is approved.
-
-The detailed lifecycle below is the diagnostic and recovery expansion of that route:
-
-1. Run preflight.
-2. Create the task, set the plan, and approve it.
-3. Start a dedicated branch/worktree with `agentplane work start ... --worktree`.
-4. Implement changes on the task branch, create the implementation commit there, and keep local PR artifacts current.
-5. Let normal `agentplane pr open` publish/link the hosted PR, then record verification on the task branch.
-6. Finish on the task branch with `--pre-merge-closure` so the PR carries the final task closure packet.
-7. Wait for required remote checks, then integrate on the base branch only after local verification and remote green.
-
-For the full end-to-end story (intake to export) across both modes, see [Task lifecycle](task-lifecycle).
-
-```bash
-agentplane config show
-agentplane quickstart
-agentplane task list
-git status --short --untracked-files=no
-git status --short --untracked-files=all
-agentplane work start <task-id> --agent CODER --slug <slug> --worktree
-cd .agentplane/worktrees/<task-id>-<slug>
-agentplane task start-ready <task-id> --author CODER --body "Start: ..."
-# edit files
-git add <changed-files>
-git commit -m "Implement <task>"
-agentplane task verify-show <task-id>
-agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
-agentplane pr update <task-id>
-agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
-agentplane finish <task-id> --author CODER --body "Verified: ..." --result "One-line outcome" --commit <implementation-git-rev> --pre-merge-closure
-bun run workflow:wait-remote-checks
-cd <base-checkout>
-agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
-```
-
-`direct` remains supported, but in this repository it is an explicit alternative rather than the default guarded path.
-Local `agentplane integrate` defaults to `merge` so task branch commits stay in base history. On
-protected bases, the GitHub PR finalization path prefers rebase merge so task commits remain visible
-without an extra GitHub merge commit. Pass `--merge-strategy squash` only when compacting history is
-intentional.
-Lifecycle/status commits are task-state checkpoints. They are not implementation commits.
-`finish --pre-merge-closure` is the branch_pr one-PR close path: it runs from the task worktree,
-records a `pre_merge_closure` marker in `pr/meta.json`, and commits the closure packet before the PR
-merge. `finish --commit-from-comment` remains unsupported in `branch_pr`; use explicit commit
-metadata for the verified implementation commit.
-
-The default branch contract is `task/<task-id>/<slug>` for implementation branches and
-`task-close/<task-id>/<sha12>` for close-tail branches. Repositories may override only the two
-prefixes via `branch.task_prefix` and `branch.task_close_prefix`; the task id and slug positions are
-fixed.
-
-## Default direct path
-
-When a repository intentionally operates in `direct`, the default happy path is `task start-ready -> task verify-show -> verify -> finish`.
-
-## Core flow
-
-1. Plan and create task graph.
-2. Run preflight for deterministic readiness (includes workflow-contract validation).
-3. Start work with `agentplane task start-ready` after plan approval succeeds.
-4. Implement changes.
-5. Print `Verify Steps`, then record verification outcome with `agentplane verify`.
-6. Finish task (`DOING -> DONE`) with a structured `Verified:` comment, `--result`, and commit metadata.
-
-## Harness engineering workflow style
-
-In Agentplane, speed comes from reducing ambiguity rather than skipping controls:
-
-- keep changes small and frequent;
-- run preflight/doctor early;
-- verify each increment before moving to the next one;
-- prefer deterministic recovery over manual patching.
-
-This makes high-throughput agent work predictable for both solo and team repos.
-
-## Preflight before work
-
-Use quick mode for low-latency checks:
-
-```bash
-agentplane preflight
-```
-
-Use full mode when you need backend/task-list readiness validation:
-
-```bash
-agentplane preflight --mode full
-```
-
-If preflight reports `workflow loaded: no`, fix the contract first:
-
-```bash
-agentplane doctor --fix
-agentplane doctor
-```
-
-If the active workflow is broken and doctor cannot repair it, use [Workflow contract recovery](workflow-migration).
+If planning or human approval is required, `task run` stops and returns the exact boundary. Resolve
+that boundary and run the same command again. Continue until Agentplane returns terminal evidence.
 
 ## direct mode
 
-- Work in a single checkout.
-- Per-task branches/worktrees are not required.
-- Good for solo work, prototypes, and short tasks.
-- The default happy path is `task start-ready -> task verify-show -> verify -> finish`.
-- In direct mode, `finish` creates the deterministic close commit by default.
+In `direct`, Agentplane keeps work in the current checkout. It owns formal start, verification
+records, evaluation, and closeout. The agent still receives only the semantic objective and allowed
+write scope.
 
 ## branch_pr mode
 
-- One task per branch/worktree.
-- PR artifacts live under `.agentplane/tasks/<task-id>/pr/`.
-- `agentplane work start ... --worktree` is required.
-- Implementation commits are created in the task worktree.
-- Local integration runs through `agentplane integrate`.
-- Good for teams, stricter review, and integration boundaries.
-- Hosted PR creation and remote required checks run through `gh`.
-- When remote checks are required, `agentplane integrate` and `finish --commit <implementation-git-rev> --close-commit` happen on the base checkout only after `bun run workflow:wait-remote-checks` returns green.
+In `branch_pr`, Agentplane creates or selects the task worktree, prepares context from that checkout,
+publishes the task branch and PR, waits for hosted checks, integrates, and closes the task. The caller
+does not change directory or reconstruct branch state manually.
 
-## Status transitions
+## Trust boundaries
 
-Allowed transitions in normal mode:
+- `state_fingerprint` prevents stale semantic results from mutating newer task state.
+- `authority` limits mutation, network, and external actions for the current episode.
+- `ExecutionReceipt` proves that Agentplane observed the runner outcome.
+- Independent evaluation can return pass, rework, blocked, or human review.
+- Approval, human, external, and terminal boundaries return control instead of being simulated.
 
-- `TODO -> DOING`
-- `TODO -> BLOCKED`
-- `DOING -> DONE`
-- `DOING -> BLOCKED`
-- `BLOCKED -> TODO`
-- `BLOCKED -> DOING`
+## Diagnostics and compatibility
 
-`DONE` is terminal unless `--force` is used.
+The following are operator/recovery surfaces, not the normal agent loop:
 
 ```bash
-agentplane task start-ready <task-id> --author CODER --body "Start: ..."
-agentplane block <task-id> --author CODER --body "Blocked: ..."
-agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
-agentplane finish <task-id> --author CODER --body "Verified: ..." --result "One-line outcome" --commit <git-rev>
+agentplane task brief <task-id>
+agentplane task status <task-id> --route
+agentplane task next-action <task-id> --explain
+agentplane doctor
 ```
 
-Use `--no-close-commit` only when close handling must remain manual.
+Low-level lifecycle, branch/worktree, Git publication, PR, verification persistence, integration,
+cleanup, and release commands remain available for explicit recovery and compatibility. Agents must
+not invoke them during a normal semantic episode.
 
-## Status-commit policy
-
-Comment-driven status commits are only valid for major transitions:
-
-- `TODO -> DOING`
-- `DOING -> BLOCKED`
-- `BLOCKED -> DOING`
-- `DOING -> DONE`
-
-Subject format:
-
-`<emoji> <taskSuffix> <primary>: <status>`
-
-Body format includes `Task`, `Primary`, `Status`, `Comment`.
-
-If `commit.dco.enabled=true`, Agentplane appends the configured `Signed-off-by` trailer to repository-managed commits. Manual commits must include a valid `Signed-off-by` trailer, but it can belong to the actual human author instead of the configured Agentplane default identity.
-
-## Verification model
-
-```bash
-agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
-```
-
-Key points:
-
-- `agentplane verify` is record-only. It writes to `## Verification`.
-- Verify requirements are primary-tag based (`tasks.verify.require_*_for_primary`).
-- In `branch_pr`, `agentplane integrate --run-verify` can execute `verify:` commands and append output to `pr/verify.log`.
-- `## Verify Steps` is an acceptance contract, not a commands-only scratchpad.
-- Active task-doc contract uses `## Findings` for task-local observations.
-
-## Spike tasks
-
-Use tag `spike` for research tasks. A spike should end with:
-
-- decision and findings in `## Findings`.
-- explicit exit criteria in `## Verify Steps`.
-- follow-up implementation tasks that depend on the spike.
+For the end-to-end evidence model, see [Task lifecycle](task-lifecycle).

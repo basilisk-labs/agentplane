@@ -2,9 +2,6 @@ import { COMMAND_SNIPPETS } from "./command-snippets.js";
 
 /** @dynamic Imported by scripts/checks/check-agent-bootstrap-fresh.mjs. */
 export const AGENT_BOOTSTRAP_DOC_PATH = "docs/user/agent-bootstrap.generated.mdx";
-export const BRANCH_PR_HOSTED_GATE_GUIDANCE =
-  "confirm hosted required checks through the repository's configured CI/provider gate; optional framework-maintainer helper when present: `bun run workflow:wait-remote-checks`";
-
 type BootstrapSection = {
   heading: string;
   summary: string;
@@ -13,13 +10,8 @@ type BootstrapSection = {
 };
 
 export const BOOTSTRAP_PREFLIGHT_COMMANDS = [
-  COMMAND_SNIPPETS.core.configShow,
   COMMAND_SNIPPETS.core.quickstart,
-  COMMAND_SNIPPETS.core.taskList,
   COMMAND_SNIPPETS.core.taskActive,
-  "git status --short --untracked-files=no",
-  "git status --short --untracked-files=all",
-  "git rev-parse --abbrev-ref HEAD",
 ] as const;
 
 const BOOTSTRAP_CONTEXT_COMMANDS = [
@@ -27,26 +19,15 @@ const BOOTSTRAP_CONTEXT_COMMANDS = [
   "agentplane task advance <task-id> --agent-json",
 ] as const;
 
-export const BOOTSTRAP_TASK_PREP_COMMANDS = [
-  COMMAND_SNIPPETS.core.taskNew,
-  COMMAND_SNIPPETS.core.taskPlanSet,
-  COMMAND_SNIPPETS.core.taskPlanApprove,
-];
-
 const BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS = [
-  ...BOOTSTRAP_TASK_PREP_COMMANDS,
+  COMMAND_SNIPPETS.core.taskNew,
   "agentplane task run <task-id>",
 ] as const;
 
 /** @dynamic Imported by scripts/checks/check-agent-bootstrap-fresh.mjs. */
 export const BOOTSTRAP_VERIFICATION_COMMANDS = [
-  COMMAND_SNIPPETS.core.taskVerifyShow,
-  COMMAND_SNIPPETS.core.verifyTask,
-  COMMAND_SNIPPETS.core.evaluatorRun,
-  COMMAND_SNIPPETS.core.incidentsAdvise,
-  `${COMMAND_SNIPPETS.core.incidentsCollect} --check`,
-  "agentplane doctor",
-  "node .agentplane/policy/check-routing.mjs",
+  "agentplane task advance <task-id> --agent-json",
+  "agentplane task run <task-id>",
 ] as const;
 
 const BOOTSTRAP_RECOVERY_COMMANDS = [
@@ -59,12 +40,11 @@ const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
   {
     heading: "1. Preflight",
     summary:
-      "Establish workflow mode, current branch, active task candidates, tracked-only cleanliness, and full working-tree changes.",
+      "Load the installed guidance and select ready work through the compact supervisor surface.",
     commands: BOOTSTRAP_PREFLIGHT_COMMANDS,
     notes: [
-      "Run this before any mutation.",
-      "`git status --short --untracked-files=no` is tracked-only; `git status --short --untracked-files=all` is the final artifact audit.",
-      "If the project is not initialized, stop and use `agentplane init`; otherwise use `task brief <task-id>` before owner-scoped execution.",
+      "If the project is not initialized, use `agentplane init` first.",
+      "The supervisor reads workflow mode, repository state, task readiness, and checkout ownership; do not reconstruct them from shell commands.",
     ],
   },
   {
@@ -82,29 +62,27 @@ const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
   {
     heading: "3. Direct happy path",
     summary:
-      "When a repository is intentionally configured for direct mode, create and approve the task, then let the managed supervisor own the formal lifecycle.",
+      "Create a task from ordinary language, then let the managed supervisor own planning, formal transitions, verification persistence, and closeout.",
     commands: BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS,
     notes: [
-      "Use `agentplane role ORCHESTRATOR` during planning; the runner receives the prepared owner-scoped semantic episode after approval.",
-      "Fill required task sections before approval and wait for upstream DONE tasks before `task run`.",
-      "Use the manual start/check/close commands only for diagnostics, recovery, or an explicitly external compatibility flow.",
+      "`task run` stops and returns an exact operator action when human approval or external action is required; rerun it after that boundary is resolved.",
+      "For an external agent, use `task advance --agent-json`, write the typed result to `result_path`, and resume with the returned `resume_argv`.",
     ],
   },
   {
     heading: "4. Verification and incident reuse",
     summary:
-      "Reuse historical incident advice only through targeted lookup, and validate promotable resolved external findings before `finish`.",
+      "Let the supervisor prepare verification episodes, persist observed evidence, invoke independent evaluation, and decide whether to rework or close.",
     commands: BOOTSTRAP_VERIFICATION_COMMANDS,
     notes: [
-      "Use `agentplane incidents advise <task-id>` after `start-ready` when analogous scope or tags might have prior external failure modes.",
-      'Use `agentplane task findings add <task-id> --observation "..." --impact "..." --resolution "..."` for structured Findings; promote only real reusable incidents.',
-      "Run `agentplane incidents collect <task-id> --check` before `finish` when Findings contain reusable external/process blocks; plain prose stays task-local.",
+      "The agent returns semantic evidence only; Agentplane owns verification records and terminal state.",
+      "Incident promotion and manual close controls remain operator/recovery interfaces.",
     ],
   },
   {
     heading: "5. Fallbacks and recovery",
     summary:
-      "Keep exceptional paths out of the normal route: use these only for recovery, framework upgrades, or branch_pr work.",
+      "Keep exceptional paths out of the normal route: use these only for operator recovery or framework upgrades.",
     commands: BOOTSTRAP_RECOVERY_COMMANDS,
     notes: [
       "Run `doctor` before touching managed policy files by hand.",
@@ -158,8 +136,8 @@ export function renderBootstrapDoc(): string {
     "",
     "## Non-default paths",
     "",
-    `- Diagnostic branch_pr recovery: use \`${COMMAND_SNIPPETS.core.taskBrief}\`, then \`agentplane task next-action <task-id> --explain\` for lane, checkout, blocker, and exact formal operation.`,
-    "- Manual direct lifecycle commands remain available for recovery and compatibility, but are not the default onboarding path.",
+    `- An operator may use \`${COMMAND_SNIPPETS.core.taskBrief}\`, \`agentplane task status <task-id> --route\`, or \`agentplane task next-action <task-id> --explain\` for diagnostics or an explicit recovery boundary.`,
+    "- Manual lifecycle, branch/worktree, Git publication, PR, verification persistence, integration, cleanup, and release commands remain compatibility/operator interfaces, not the normal agent route.",
     "- Use manual close flags only when a specific policy or recovery situation requires them.",
     "",
   ];

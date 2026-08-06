@@ -24,6 +24,9 @@ export async function cmdTaskUpdate(opts: {
   description?: string;
   priority?: string;
   owner?: string;
+  taskKind?: TaskData["task_kind"];
+  mutationScope?: TaskData["mutation_scope"];
+  blueprintRequest?: TaskData["blueprint_request"];
   tags: string[];
   replaceTags: boolean;
   dependsOn: string[];
@@ -52,6 +55,22 @@ export async function cmdTaskUpdate(opts: {
       next.owner = opts.owner;
       await warnIfUnknownOwner(ctx, opts.owner);
     }
+    const reclassifying =
+      opts.taskKind !== undefined ||
+      opts.mutationScope !== undefined ||
+      opts.blueprintRequest !== undefined;
+    if (reclassifying && opts.allowPrimaryChange !== true) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message:
+          "Structured task reclassification requires --allow-primary-change. " +
+          "Review task kind, mutation scope, blueprint request, owner, and primary tag together.",
+      });
+    }
+    if (opts.taskKind !== undefined) next.task_kind = opts.taskKind;
+    if (opts.mutationScope !== undefined) next.mutation_scope = opts.mutationScope;
+    if (opts.blueprintRequest !== undefined) next.blueprint_request = opts.blueprintRequest;
 
     const currentPrimary = resolvePrimaryTag(toStringArray(next.tags), ctx).primary;
     const existingTags = opts.replaceTags ? [] : dedupeStrings(toStringArray(next.tags));

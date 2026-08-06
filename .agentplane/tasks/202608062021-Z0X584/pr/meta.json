@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608062021-Z0X584/converge-generated-agent-guidance-on-the-supervi",
+  "created_at": "2026-08-06T20:27:51.883Z",
+  "diffstat_sha256": "sha256:128b490fa894498f0ed91371a8ba93dc2e6e00c7f38e4b31f18f6323eb2c399f",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608062021-Z0X584",
+  "updated_at": "2026-08-06T20:27:51.883Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

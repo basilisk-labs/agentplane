@@ -9,34 +9,20 @@ Use this module when `workflow_mode=branch_pr`.
 
 ## Required sequence
 
-1. CHECKPOINT A: plan/approve on base checkout.
-2. Start work with dedicated task branch + worktree.
-3. Continue owner-scoped execution from the task worktree (not the base checkout).
-4. Keep single-writer discipline per task worktree.
-5. Publish/update PR artifacts from the task worktree.
-6. Verify on the task branch.
-7. Finish the task on the task branch with `--pre-merge-closure` so the PR carries the final
-   closure packet before merge.
-8. Queue verified task branches for serialized integration when more than one agent is ready to merge.
-9. CHECKPOINT B: INTEGRATOR runs integration from the base checkout; protected bases finalize through the task GitHub PR merge, not a direct local base mutation.
-10. CHECKPOINT C: hosted close is a no-op when pre-merge closure is present; otherwise it remains the close-tail recovery route.
-11. Remove merged task branches/worktrees once the hosted-close/finish route has landed.
+1. Select ready work with `agentplane task active`.
+2. Request one bounded action with `agentplane task advance <task-id> --agent-json`.
+3. Let AgentPlane perform eligible deterministic branch, worktree, task-state, PR-artifact,
+   verification-persistence, integration, hosted-close, and cleanup transitions.
+4. If `action.kind=agent_episode`, perform only the supplied semantic objective in the authoritative
+   task checkout and writable roots named by the packet.
+5. Write the typed result to the supplied result path and resume with the packet's exact argv.
+6. Repeat with a fresh packet until AgentPlane returns an approval, human, hosted/external, or
+   terminal boundary.
+7. For a configured managed runner, use `agentplane task run <task-id>` instead of the external
+   exchange loop.
 
-## Related task batch worktrees
-
-When several approved tasks form one dependent change, they MAY be executed in one primary task
-worktree instead of one worktree per task. Use this only when splitting the work into separate PRs
-would add coordination risk without improving review.
-
-Batch worktree rules:
-
-- One task is the primary integration task and owns the branch, worktree, and PR.
-- Every included task id MUST be listed in the primary task plan or PR artifact before mutation.
-- Each included task MUST keep its own plan, start-ready record, Verify Steps, verification result,
-  and finish evidence.
-- Commits SHOULD mention the relevant task suffixes when a change serves more than one included
-  task.
-- The final PR MUST describe the full included task set and merge the complete result into `main`.
+The caller does not create branch names, switch cwd, publish PRs, persist verification, integrate,
+or clean worktrees during a normal semantic episode.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.branch_pr.commands.command.contract" slot="commands" mutability="replaceable" -->
@@ -44,20 +30,13 @@ Batch worktree rules:
 ## Command contract
 
 ```bash
-agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree
-agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
-agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
-agentplane pr update <task-id>
-agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
-agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev> --pre-merge-closure
-agentplane integrate queue enqueue <task-id> --branch task/<task-id>/<slug>
-agentplane integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000
-agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
+agentplane task advance <task-id> --agent-json
+agentplane task advance <task-id> --result <exact-result-path> --agent-json
+agentplane task run <task-id>
 ```
 
-Default branch names are `task/<task-id>/<slug>` for implementation branches and `task-close/<task-id>/<sha12>` for close-tail branches. Repositories MAY override only the prefixes through `branch.task_prefix` and `branch.task_close_prefix`; task id, slug, and sha positions remain fixed.
-
-Before manually filling `<slug>` or `<branch>`, use `agentplane task brief <task-id>` or `agentplane task next-action <task-id> --explain` and prefer the emitted concrete command. Treat AgentPlane-owned PR artifacts, quality-review freshness, integration lane, hosted-close, and cleanup as CLI-owned automation unless route output delegates a manual fallback.
+Low-level branch and PR commands are operator/recovery interfaces. Use them only when AgentPlane
+returns an explicit manual-compatibility route; never derive their arguments from prose.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.branch_pr.hard_constraint.constraints" slot="hard_constraint" mutability="append_only" -->
@@ -65,34 +44,12 @@ Before manually filling `<slug>` or `<branch>`, use `agentplane task brief <task
 ## Constraints
 
 - MUST NOT perform mutating actions before explicit user approval.
-- Task documentation updates MAY be batched within one turn before approval.
-- MUST run `task plan approve` then `task start-ready` as `Step 1 -> wait -> Step 2` (never parallel).
-- In `branch_pr`, `task start-ready`, `pr open`, `pr update`, and verification commands SHOULD be run from the task worktree created by `work start`.
-- A related task batch MAY reuse one primary task worktree when all included tasks are approved, listed, verified independently, and merged through the primary task PR.
-- `pr open` without `--sync-only` SHOULD complete in one pass: sync local artifacts, auto-publish the task branch to `origin` when it has no upstream yet, then create/link the remote GitHub PR.
-- In `branch_pr`, the task GitHub PR is the primary integration mechanism. Local `integrate`
-  serializes the lane and drives the provider merge route; it MUST NOT treat GitHub PR merge as an
-  exceptional shortcut around local base mutation.
-- Before release recovery mutation, classify the route as implementation, metadata closure, included-task closure, stale branch cleanup, or provider merge; use GitHub truth for PR/merge state and pass Markdown bodies via files or structured APIs, not inline shell text.
-- If protected `main` requires GitHub PR merges, the agent MUST create/update the GitHub PR,
-  wait until all hosted checks are complete and stable (including late agent checks that appear
-  after the first green rollup), then merge it through GitHub. If auto-merge remains blocked
-  after stable green checks, the agent MUST continue with the permitted GitHub merge route
-  available to its credentials instead of stopping at enabled auto-merge.
-- Claude Code and other agents that inherit the user's GitHub session MUST treat `gh pr merge`,
-  GitHub UI merge, and auto-merge enablement as user-attributed publication. Before using those
-  actions, verify the integration queue/handoff route, stable hosted checks, and explicit approval
-  for the merge lane; record the GitHub PR number and merge commit in task artifacts after merge.
-- If a task is already `DONE` and needs a post-merge fix, create a new task unless the follow-up
-  branch slug explicitly starts with `post-merge-` or uses `followup` as a separate slug token
-  bounded by the start, end, or hyphens; generic slugs under an already closed task id are treated
-  as conflicting closure attempts.
-- `integrate` defaults to the `merge` strategy so task branch commits stay in base history. Use `--merge-strategy squash` only when intentionally compacting branch history.
-- When several task PRs are ready together, use the integration queue so only one branch owns the merge lane; agents waiting behind `claimed` or `handoff` entries SHOULD use bounded polling (`--wait --poll-interval-ms 30000 --timeout-ms 600000`) instead of retrying ad hoc; stale branch heads move to rework instead of blocking later queued work.
-- `task start-ready` MAY surface targeted incident advice for analogous scope/tags; follow it before widening scope.
-- Keep structured resolved external findings in the task README; mark reusable ones with `Fixability: external` (or `IncidentExternal: true`) and let base-branch `finish` or `agentplane incidents collect <task-id>` promote them into `.agentplane/policy/incidents.md`, using optional `Incident*` fields only when the inferred scope/advice needs refinement. Plain `Findings` text remains task-local and does not update the shared incident registry.
+- MUST stay inside the semantic objective, authoritative checkout, writable roots, network policy,
+  and stop rules in the current packet.
+- MUST NOT invoke work start, start-ready, PR lifecycle, verify, finish, integrate, cleanup, Git
+  branch/worktree, commit, merge, rebase, or provider CLI commands during a normal semantic episode.
+- MUST NOT edit AgentPlane-owned PR, quality, integration, hosted-close, or cleanup artifacts.
+- MUST NOT treat agent-reported checks or provider state as persisted verification or merge truth.
+- MUST return control at approval, human, hosted/external, or effect-in-doubt boundaries.
 - MUST stop and request re-approval on material drift.
-- Planning and closure happen on base checkout.
-- Do not export task snapshots from task branches.
-- After merged closure, remove stale task branches/worktrees via the cleanup route; preserve/report dirty worktree state instead of leaving orphaned local state behind or deleting it silently.
 <!-- /ap:fragment -->

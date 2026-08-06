@@ -730,6 +730,7 @@ Options:
 - `--mutation-scope <none|docs|code|release|ops|context|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
 - `--risk <risk>`: Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
 - `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|context.maximum_assimilation|post_run.improvement_review|release.strict|ops.approval)
+- `--route <repository|auto|direct|branch_pr>`: Task execution route. repository preserves legacy behavior; auto may escalate a direct repository to branch_pr when isolation risk requires it. (choices=repository|auto|direct|branch_pr, default=repository)
 - `--depends-on <task-id>`: Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
 - `--verify <command>`: Repeatable. Verification commands/checks to run for this task. (repeatable)
 - `--show-blueprint`: Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)

@@ -16,21 +16,28 @@ Use AgentPlane through its CLI instead of editing `.agentplane/` state directly.
 ## Startup
 
 1. If the repository is not initialized, run `ap init` or `agentplane init`.
-2. Run `ap quickstart`.
-3. Inspect `AGENTS.md`, `ap task list`, `ap task active`, `git status --short --untracked-files=no`, `git status --short`, and `git rev-parse --abbrev-ref HEAD`.
-4. Use `ap task brief <task-id>` before owner-scoped execution; add `--remote` only when hosted PR/check/review state is needed.
-5. Use `ap role ORCHESTRATOR` while planning and approvals are active.
-6. Switch to `ap role <ROLE>` before owner-scoped execution or verification.
+2. Select ready work with `ap task active`.
+3. Request one bounded external-agent action with `ap task advance <task-id> --agent-json`.
+4. When `action.kind=agent_episode`, perform only the supplied semantic objective inside the
+   supplied authority and write the typed result to the supplied result path.
+5. Resume with the exact argv from the packet and request a fresh packet after every state change.
+6. If the repository has a configured managed runner, use `ap task run <task-id>` instead of the
+   external exchange loop.
 
 ## Rules
 
 - Treat `AGENTS.md`, `ap quickstart`, and `ap role <ROLE>` as the policy surface.
-- Use `ap task ...`, `ap work ...`, `ap verify ...`, and `ap finish ...`; do not edit `.agentplane/tasks.json` manually.
-- Prefer `ap task brief <task-id>` and `ap task next-action <task-id> --explain` over manually combining task docs, route status, Verify Steps, PR metadata, and policy notes.
-- In `branch_pr`, use the concrete route command emitted by `task brief` or `task next-action` when available; fall back to `ap work start <task-id> --agent <ROLE> --slug <slug> --worktree` only as the low-level command contract.
-- Treat weak `source_confidence` or non-ready `verify_steps_quality` as a context gap to resolve before mutation.
+- Use `ap task advance` or `ap task run` as the normal protocol; do not edit `.agentplane/` state
+  directly.
+- Do not invoke work start, start-ready, verify, finish, integrate, cleanup, Git branch/worktree,
+  commit, or PR lifecycle commands during a normal semantic episode.
+- Treat approval, human, hosted/external, stale-state, and effect-in-doubt stops as hard boundaries;
+  return control instead of reconstructing the process.
+- Use `task brief`, `task status --route`, and `task next-action --explain` only for an explicit
+  operator/recovery request.
 - Keep repository artifacts in English unless the user explicitly requests another language for a specific artifact.
-- Record verification evidence in the task README and through `ap verify`.
+- Return semantic check evidence through the typed result; AgentPlane persists verification and
+  terminal evidence separately.
 
 ## Limits
 

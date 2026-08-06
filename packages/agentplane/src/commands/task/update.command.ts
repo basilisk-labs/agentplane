@@ -12,6 +12,21 @@ export type TaskUpdateParsed = {
   description?: string;
   priority?: "low" | "normal" | "med" | "high";
   owner?: string;
+  taskKind?: "analysis" | "content" | "docs" | "code" | "release" | "ops" | "context";
+  mutationScope?: "none" | "docs" | "code" | "release" | "ops" | "context" | "unknown";
+  blueprintRequest?:
+    | "analysis.light"
+    | "content.light"
+    | "docs.change"
+    | "code.direct"
+    | "code.branch_pr"
+    | "performance.benchmark"
+    | "quality.regression"
+    | "context.assimilation"
+    | "context.maximum_assimilation"
+    | "post_run.improvement_review"
+    | "release.strict"
+    | "ops.approval";
   tags: string[];
   replaceTags: boolean;
   dependsOn: string[];
@@ -42,6 +57,42 @@ export const taskUpdateSpec: CommandSpec<TaskUpdateParsed> = {
       description: "Optional. New priority.",
     },
     { kind: "string", name: "owner", valueHint: "<id>", description: "Optional. New owner id." },
+    {
+      kind: "string",
+      name: "task-kind",
+      valueHint: "<analysis|content|docs|code|release|ops|context>",
+      choices: ["analysis", "content", "docs", "code", "release", "ops", "context"],
+      description:
+        "Optional. Replace structured task-kind intent; requires --allow-primary-change.",
+    },
+    {
+      kind: "string",
+      name: "mutation-scope",
+      valueHint: "<none|docs|code|release|ops|context|unknown>",
+      choices: ["none", "docs", "code", "release", "ops", "context", "unknown"],
+      description: "Optional. Replace structured mutation scope; requires --allow-primary-change.",
+    },
+    {
+      kind: "string",
+      name: "blueprint-request",
+      valueHint: "<id>",
+      choices: [
+        "analysis.light",
+        "content.light",
+        "docs.change",
+        "code.direct",
+        "code.branch_pr",
+        "performance.benchmark",
+        "quality.regression",
+        "context.assimilation",
+        "context.maximum_assimilation",
+        "post_run.improvement_review",
+        "release.strict",
+        "ops.approval",
+      ],
+      description:
+        "Optional. Replace the explicit blueprint request; requires --allow-primary-change.",
+    },
     {
       kind: "string",
       name: "tag",
@@ -132,6 +183,9 @@ export const taskUpdateSpec: CommandSpec<TaskUpdateParsed> = {
       description: typeof raw.opts.description === "string" ? raw.opts.description : undefined,
       priority: raw.opts.priority as TaskUpdateParsed["priority"],
       owner: typeof raw.opts.owner === "string" ? raw.opts.owner : undefined,
+      taskKind: raw.opts["task-kind"] as TaskUpdateParsed["taskKind"],
+      mutationScope: raw.opts["mutation-scope"] as TaskUpdateParsed["mutationScope"],
+      blueprintRequest: raw.opts["blueprint-request"] as TaskUpdateParsed["blueprintRequest"],
       tags,
       replaceTags: raw.opts["replace-tags"] === true,
       dependsOn,
@@ -154,6 +208,9 @@ export function makeRunTaskUpdateHandler(getCtx: (cmd: string) => Promise<Comman
       description: p.description,
       priority: p.priority,
       owner: p.owner,
+      taskKind: p.taskKind,
+      mutationScope: p.mutationScope,
+      blueprintRequest: p.blueprintRequest,
       tags: p.tags,
       replaceTags: p.replaceTags,
       dependsOn: p.dependsOn,
