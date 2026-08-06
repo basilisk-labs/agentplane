@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608061244-J3EC6A/publish-agentplane-0-7-4-from-the-verified-prote",
+  "created_at": "2026-08-06T12:45:45.075Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608061244-J3EC6A",
+  "updated_at": "2026-08-06T12:45:45.075Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
