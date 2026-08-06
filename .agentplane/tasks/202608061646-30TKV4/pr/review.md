@@ -13,7 +13,7 @@ Created: 2026-08-06T19:12:24.484Z
 ## Verification
 
 - State: ok
-- Note: Verified the re-approved user-first task contract: cli-core 37/37 covers route inference and overrides, invalid inputs, simultaneous duplicate creation, persisted route consistency, dry-run preview, and task advance --agent-json compatibility; docs, onboarding, types, and routing also pass.
+- Note: The refreshed user-first intake and execution preview pass the full declared UX verification surface on current main.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

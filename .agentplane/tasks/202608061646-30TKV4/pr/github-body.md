@@ -19,10 +19,8 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 - Note:
 
 ```text
-Verified the re-approved user-first task contract: cli-core 37/37 covers route inference and
-overrides, invalid inputs, simultaneous duplicate creation, persisted route consistency, dry-run
-preview, and task advance --agent-json compatibility; docs, onboarding, types, and routing also
-pass.
+The refreshed user-first intake and execution preview pass the full declared UX verification surface
+on current main.
 ```
 - Canonical workflow state lives in the task README.
 
