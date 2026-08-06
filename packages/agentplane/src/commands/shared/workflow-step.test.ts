@@ -319,7 +319,14 @@ describe("typed WorkflowStep reducer", () => {
   });
 
   it("covers cli operation, agent episode, approval, human input, wait, and terminal variants", () => {
-    const cli = reduceRouteState(routeState());
+    const cli = reduceRouteState(
+      routeStateWithAuthority({
+        task: {
+          ...task,
+          commit: { hash: resume.head_sha, message: "feat: complete semantic implementation" },
+        },
+      }),
+    );
     const agent = reduceRouteState(
       routeState({
         prFlow: prFlow("OPEN"),
@@ -397,7 +404,7 @@ describe("typed WorkflowStep reducer", () => {
       humanInput.kind,
       wait.kind,
       terminal.kind,
-    ]).toEqual(["approval", "agent_episode", "approval", "human_input", "wait", "terminal"]);
+    ]).toEqual(["cli_operation", "agent_episode", "approval", "human_input", "wait", "terminal"]);
   });
 
   it("never substitutes an unrelated blocker for human-input or runner-wait authority", () => {
@@ -445,7 +452,11 @@ describe("typed WorkflowStep reducer", () => {
   });
 
   it("requires a scoped authority before opening a PR, then restores the exact operation", () => {
-    const approval = reduceRouteState(routeState());
+    const implementedTask = {
+      ...task,
+      commit: { hash: resume.head_sha, message: "feat: complete semantic implementation" },
+    };
+    const approval = reduceRouteState(routeState({ task: implementedTask }));
     expect(approval).toMatchObject({
       kind: "approval",
       phase: "side_effect_authority_required",
@@ -457,7 +468,7 @@ describe("typed WorkflowStep reducer", () => {
         ) as unknown as string,
       },
     });
-    const step = reduceRouteState(routeStateWithAuthority());
+    const step = reduceRouteState(routeStateWithAuthority({ task: implementedTask }));
     expect(step).toMatchObject({
       kind: "cli_operation",
       phase: "pr_needed",
@@ -488,7 +499,15 @@ describe("typed WorkflowStep reducer", () => {
   });
 
   it("preserves hosted route context in the emitted authority grant", () => {
-    const approval = reduceRouteState(routeState({ remoteEnabled: true }));
+    const approval = reduceRouteState(
+      routeState({
+        remoteEnabled: true,
+        task: {
+          ...task,
+          commit: { hash: resume.head_sha, message: "feat: complete semantic implementation" },
+        },
+      }),
+    );
 
     expect(approval).toMatchObject({
       kind: "approval",
@@ -781,6 +800,10 @@ describe("typed WorkflowStep reducer", () => {
   it("materializes every primary batch include-task in PR argv", () => {
     const step = reduceRouteState(
       routeStateWithAuthority({
+        task: {
+          ...task,
+          commit: { hash: resume.head_sha, message: "feat: complete semantic implementation" },
+        },
         batchOwnership: {
           role: "primary",
           primaryTaskId: task.id,
@@ -917,10 +940,15 @@ describe("typed WorkflowStep reducer", () => {
   });
 
   it("derives deterministic fingerprints, idempotency keys, and compatibility projections", () => {
-    const first = reduceRouteState(routeStateWithAuthority());
-    const repeated = reduceRouteState(routeStateWithAuthority());
+    const implementedTask = {
+      ...task,
+      commit: { hash: resume.head_sha, message: "feat: complete semantic implementation" },
+    };
+    const first = reduceRouteState(routeStateWithAuthority({ task: implementedTask }));
+    const repeated = reduceRouteState(routeStateWithAuthority({ task: implementedTask }));
     const changed = reduceRouteState(
       routeStateWithAuthority({
+        task: implementedTask,
         resume: { ...resume, head_sha: "2222222222222222222222222222222222222222" },
       }),
     );

@@ -182,7 +182,7 @@ describe("cli help contract", () => {
       expect(code).toBe(0);
       expect(io.stdout).not.toContain("release  Prepare a release");
       expect(io.stdout).not.toContain("Framework Dev:");
-      expect(io.stdout).toContain("task  Task lifecycle and task-store commands.");
+      expect(io.stdout).toContain("task  Supervisor-first task commands.");
       expect(io.stdout).toContain("task advance  Return one compact external-agent action");
       expect(io.stdout).toContain("task run  Supervise a direct or branch_pr task");
     } finally {
@@ -321,9 +321,9 @@ describe("cli help contract", () => {
     try {
       const code = await runCli(["task", "--help"]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("task - Task lifecycle and task-store commands.");
-      expect(io.stdout).toContain("agentplane task <subcommand> [args] [options]");
-      expect(io.stdout).toContain("agentplane task plan set <task-id> --text");
+      expect(io.stdout).toContain("task - Supervisor-first task commands.");
+      expect(io.stdout).toContain("agentplane task advance <task-id> --agent-json [options]");
+      expect(io.stdout).toContain("agentplane help --all");
       expect(io.stdout).not.toContain("Unknown command: task");
     } finally {
       io.restore();

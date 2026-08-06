@@ -63,12 +63,20 @@ type AgentPacket = {
     reference: string | null;
   };
   context_refs: { kind: string; ref: string; digest?: string }[];
+  operator_action?: {
+    kind: string;
+    required_role: string;
+    cwd: string | null;
+    argv: string[] | null;
+    authority_reference: string;
+  };
   exchange?: {
     directory: string;
     work_order_ref: string;
     result_schema_ref: string;
     result_ref: string;
-    return_invocation: string;
+    result_path: string;
+    resume_argv: string[];
   };
   recovery?: { reason: string; evidence_digest: string };
   stop: { reason: string; resume: string };
@@ -218,6 +226,16 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
       work_order_ref: "work-order.json",
       result_schema_ref: "result-schema.json",
       result_ref: "result.json",
+      result_path: path.join(first.exchange!.directory, "result.json"),
+      resume_argv: [
+        "agentplane",
+        "task",
+        "advance",
+        taskId,
+        "--result",
+        path.join(first.exchange!.directory, "result.json"),
+        "--agent-json",
+      ],
     });
     expect(JSON.stringify(first)).not.toMatch(
       /(?:\bgit\s|\bgh\s|worktree|pr open|\bverify\b|\bfinish\b|\bintegrate\b|\bcleanup\b)/iu,
@@ -242,6 +260,11 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     expect(next.action.kind).toBe("approval_required");
     expect(next.stop.reason).toBe("authority_boundary");
     expect(next.exchange).toBeUndefined();
+    expect(next.operator_action).toMatchObject({
+      kind: "approve_plan",
+      required_role: "USER",
+      argv: ["agentplane", "task", "plan", "approve", taskId, "--by", "USER"],
+    });
     expect(
       await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
     ).toContain(plan);
@@ -249,6 +272,69 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const replay = await returnAgentResult(root, taskId, resultPath);
     expect(replay.code).not.toBe(0);
     expect(replay.stderr).toContain("replay is refused");
+  });
+
+  it("returns an external wait instead of advertising start-ready for incomplete dependencies", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const dependencyId = await createTask(root, "Unfinished prerequisite");
+    const io = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Dependency-bound route",
+        "--description",
+        "Wait for the declared prerequisite before starting.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--depends-on",
+        dependencyId,
+        "--verify",
+        "bun run test:critical",
+        "--root",
+        root,
+      ]);
+      expect(code, io.stderr).toBe(0);
+      taskId = io.stdout.trim();
+    } finally {
+      io.restore();
+    }
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Implement only after the declared prerequisite is complete.",
+      "--updated-by",
+      "PLANNER",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]);
+
+    const packet = await readAgentPacket(root, taskId);
+
+    expect(packet).toMatchObject({
+      transition_id: agentTransitionId("wait.dependencies"),
+      action: { kind: "external_wait" },
+      stop: { reason: "external_boundary", resume: "request_fresh_packet" },
+    });
+    expect(packet.exchange).toBeUndefined();
+    const readme = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(readme).toContain('status: "TODO"');
   });
 
   it("rejects a tampered exchange checkout before applying semantic task state", async () => {
@@ -760,7 +846,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     }
   });
 
-  it("executes one authoritative branch transition once and keeps rendering side-effect free", async () => {
+  it("advances once from the base checkout into one worktree-bound semantic episode", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -780,44 +866,53 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
       root,
     ]);
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await writeFile(
+      path.join(root, ".gitignore"),
+      [
+        ".agentplane/bin/",
+        ".agentplane/cache.sqlite-*",
+        "agentplane-recipes",
+        "node_modules",
+        "packages/",
+        "website/",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
     await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["add", ".gitignore"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed authoritative advance task"], {
       cwd: root,
     });
 
-    const branch = `task/${taskId}/advance-parity`;
-    const taskWorktree = path.join(root, ".agentplane", "worktrees", `${taskId}-advance-parity`);
-    await mkdir(path.dirname(taskWorktree), { recursive: true });
-    await execFileAsync("git", ["worktree", "add", "-b", branch, taskWorktree], { cwd: root });
+    const initialReadme = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    const callerCwd = process.cwd();
+    const jsonPacket = await readAgentPacket(root, taskId);
+    expect(process.cwd()).toBe(callerCwd);
+    if (!jsonPacket.exchange) throw new Error("expected a worktree-bound semantic exchange");
+    const workOrder = JSON.parse(
+      await readFile(
+        path.join(jsonPacket.exchange.directory, jsonPacket.exchange.work_order_ref),
+        "utf8",
+      ),
+    ) as AgentWorkOrderV2;
+    const taskWorktree = workOrder.state_fingerprint.worktree;
+    const branchResult = await execFileAsync("git", ["branch", "--show-current"], {
+      cwd: taskWorktree,
+    });
+    const headResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: taskWorktree,
+    });
+    const branch = branchResult.stdout.trim();
+    const head = headResult.stdout.trim();
     const readmePath = path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md");
-    const initialReadme = await readFile(readmePath, "utf8");
     const journalPath = await resolveSupervisorExecutionEpisodePath({
       git_root: root,
       task_id: taskId,
     });
-    const authorityRoute = await readRoute(taskWorktree, taskId);
-    const authorityRequest = authorityRoute.workflow_step.request;
-    if (authorityRequest?.type === "side_effect") {
-      await runCliSilent([
-        "task",
-        "authority",
-        "grant",
-        taskId,
-        "--operation",
-        authorityRequest.operationId,
-        "--operation-digest",
-        authorityRequest.operationDigest,
-        "--state-fingerprint",
-        authorityRequest.stateFingerprintDigest,
-        "--state-scope-digest",
-        authorityRequest.stateScopeDigest,
-        "--by",
-        "USER",
-        "--root",
-        taskWorktree,
-      ]);
-    }
-    const jsonPacket = await readAgentPacket(taskWorktree, taskId);
     const jsonReadme = await readFile(readmePath, "utf8");
     const jsonJournal = JSON.parse(await readFile(journalPath, "utf8")) as {
       operations: {
@@ -826,14 +921,40 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
         postcondition_fingerprint_digest: string | null;
       }[];
     };
-    expect(jsonPacket).toMatchObject({
-      transition_id: agentTransitionId("approval.pr.open"),
-      action: { kind: "approval_required" },
-      stop: { reason: "authority_boundary" },
+    const worktreeStatus = await execFileAsync("git", ["status", "--porcelain=v1"], {
+      cwd: taskWorktree,
     });
+    expect(jsonPacket.transition_id, worktreeStatus.stdout).toBe(
+      agentTransitionId("agent.branch_implementation"),
+    );
+    expect(jsonPacket).toMatchObject({
+      action: { kind: "agent_episode" },
+      authority: { role: "EXECUTOR", mutation: "scoped_write" },
+      stop: { reason: "semantic_boundary" },
+    });
+    expect(branch).toMatch(new RegExp(`^task/${taskId}/`, "u"));
+    expect(workOrder.state_fingerprint.git_head).toBe(head);
+    expect(workOrder.authority.writable_roots).toEqual([taskWorktree]);
+    expect(jsonPacket.exchange.result_path).toBe(
+      path.join(jsonPacket.exchange.directory, "result.json"),
+    );
+    expect(jsonPacket.exchange.resume_argv).toContain(jsonPacket.exchange.result_path);
+    const persistedExchange = JSON.parse(
+      await readFile(path.join(jsonPacket.exchange.directory, "exchange.json"), "utf8"),
+    ) as ExternalAgentExchange;
+    expect(persistedExchange.checkout).toBe(taskWorktree);
+    const taskInput = workOrder.required_inputs.find((input) => input.kind === "task_document");
+    expect(taskInput?.path).toBe(`.agentplane/tasks/${taskId}/README.md`);
+    await expect(readFile(path.join(taskWorktree, taskInput!.path!), "utf8")).resolves.toContain(
+      taskId,
+    );
     expect(jsonReadme).toContain('status: "DOING"');
-    expect(jsonJournal.operations).toHaveLength(1);
-    expect(jsonJournal.operations[0]).toMatchObject({ status: "completed" });
+    expect(jsonJournal.operations).toHaveLength(3);
+    expect(jsonJournal.operations).toEqual([
+      expect.objectContaining({ status: "completed" }),
+      expect.objectContaining({ status: "completed" }),
+      expect.objectContaining({ status: "intent" }),
+    ]);
 
     await execFileAsync("git", ["restore", ".agentplane/tasks/" + taskId + "/README.md"], {
       cwd: taskWorktree,
@@ -844,13 +965,10 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     let humanOutput = "";
     const humanIo = captureStdIO();
     try {
-      expect(
-        await runCli(["task", "advance", taskId, "--root", taskWorktree]),
-        humanIo.stderr,
-      ).toBe(0);
+      expect(await runCli(["task", "advance", taskId, "--root", root]), humanIo.stderr).toBe(0);
       expect(humanIo.stdout).toContain("action");
-      expect(humanIo.stdout).toContain("approval_required");
-      expect(humanIo.stdout).toContain("authority_boundary");
+      expect(humanIo.stdout).toContain("agent_episode");
+      expect(humanIo.stdout).toContain("semantic_boundary");
       humanOutput = humanIo.stdout;
     } finally {
       humanIo.restore();
@@ -858,9 +976,12 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const humanReadme = await readFile(readmePath, "utf8");
     const humanJournal = JSON.parse(await readFile(journalPath, "utf8")) as typeof jsonJournal;
     expect(withoutTimestamps(humanReadme)).toBe(withoutTimestamps(jsonReadme));
-    expect(humanJournal.operations.map(({ status }) => status)).toEqual(
-      jsonJournal.operations.map(({ status }) => status),
-    );
+    expect(humanJournal.operations.map(({ status }) => status)).toEqual(["completed", "intent"]);
+    expect(jsonJournal.operations.map(({ status }) => status)).toEqual([
+      "completed",
+      "completed",
+      "intent",
+    ]);
     expect(humanJournal.operations[0]?.precondition_fingerprint_digest).toMatch(/^sha256:/u);
     expect(jsonJournal.operations[0]?.precondition_fingerprint_digest).toMatch(/^sha256:/u);
     expect(humanJournal.operations[0]?.postcondition_fingerprint_digest).toMatch(/^sha256:/u);
@@ -868,7 +989,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
 
     const beforeRenderOnly = await readFile(readmePath, "utf8");
     const journalBeforeRenderOnly = await readFile(journalPath, "utf8");
-    const stablePacket = await readAgentPacket(taskWorktree, taskId);
+    const stablePacket = await readAgentPacket(root, taskId);
     expect(stablePacket.transition_id).toBe(jsonPacket.transition_id);
     expect(stablePacket.action).toEqual(jsonPacket.action);
     expect(humanOutput).toContain(stablePacket.state_fingerprint);

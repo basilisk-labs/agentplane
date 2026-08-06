@@ -80,9 +80,9 @@ describe("runCli", () => {
       const code = await runCli(["task", "--help"]);
       expect(code).toBe(0);
       expect(taskIo.stdout.trim()).toBe(helpText.trim());
-      expect(taskIo.stdout).toContain("task - Task lifecycle and task-store commands.");
-      expect(taskIo.stdout).toContain("agentplane task <subcommand> [args] [options]");
-      expect(taskIo.stdout).toContain("agentplane task plan set <task-id> --text");
+      expect(taskIo.stdout).toContain("task - Supervisor-first task commands.");
+      expect(taskIo.stdout).toContain("agentplane task advance <task-id> --agent-json [options]");
+      expect(taskIo.stdout).toContain("agentplane help --all");
     } finally {
       taskIo.restore();
     }
@@ -125,7 +125,7 @@ describe("runCli", () => {
         exitCode: 0,
         hasData: false,
       });
-      expect(payload.stdout).toContain("task - Task lifecycle and task-store commands.");
+      expect(payload.stdout).toContain("task - Supervisor-first task commands.");
       expect(payload.stdout).toContain("Usage:");
       expect(payload.stderr).toBe("");
     } finally {
@@ -214,7 +214,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["task", "--help", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("agentplane task <subcommand> [args] [options]");
+      expect(io.stdout).toContain("agentplane task advance <task-id> --agent-json [options]");
       expect(process.env[marker]).toBeUndefined();
     } finally {
       delete process.env[marker];
@@ -663,10 +663,10 @@ describe("runCli", () => {
     try {
       const code = await runCli(["help", "task"]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("task - Task lifecycle and task-store commands.");
-      expect(io.stdout).toContain("agentplane task <subcommand> [args] [options]");
-      expect(io.stdout).toContain("agentplane task plan set <task-id> --text");
-      expect(io.stdout).toContain("agentplane finish ...");
+      expect(io.stdout).toContain("task - Supervisor-first task commands.");
+      expect(io.stdout).toContain("agentplane task advance <task-id> --agent-json [options]");
+      expect(io.stdout).toContain("agentplane help --all");
+      expect(io.stdout).not.toContain("agentplane finish ...");
     } finally {
       io.restore();
     }

@@ -173,6 +173,15 @@ describe("compact agent action packet", () => {
       MAX_AGENT_ACTION_PACKET_BYTES,
     );
     expect(() => assertAgentActionPacketHasNoChoreography(packet)).not.toThrow();
+    if (workflowStep.kind === "approval" && workflowStep.request.type === "plan_approval") {
+      expect(packet.operator_action).toEqual({
+        kind: "approve_plan",
+        required_role: "USER",
+        cwd: null,
+        argv: ["agentplane", "task", "plan", "approve", TASK_ID, "--by", "USER"],
+        authority_reference: "plan",
+      });
+    }
   });
 
   it("projects the direct runner operation as the external semantic boundary", () => {
@@ -188,6 +197,63 @@ describe("compact agent action packet", () => {
     );
     expect(packet.action.kind).toBe("agent_episode");
     expect(packet.stop.reason).toBe("semantic_boundary");
+  });
+
+  it("returns exact typed authority argv at a protected side-effect boundary", () => {
+    const operationDigest = `sha256:${"b".repeat(64)}`;
+    const stateScopeDigest = `sha256:${"c".repeat(64)}`;
+    const packet = buildAgentActionPacket({
+      decision: decision(
+        step({
+          kind: "approval",
+          request: {
+            type: "side_effect",
+            taskId: TASK_ID,
+            authorityRef: "route:test",
+            operationId: "pr.open",
+            operation: {
+              id: "pr.open",
+              type: "pr_sync",
+              params: { taskId: TASK_ID, author: "CODER", includeTaskIds: [] },
+            },
+            operationDigest,
+            stateFingerprintDigest: FINGERPRINT,
+            stateScopeDigest,
+            policyRule: "workflow.external_reversible",
+          },
+        }),
+      ),
+      work_order: workOrder(),
+      remote: true,
+    });
+
+    expect(packet.operator_action).toEqual({
+      kind: "grant_side_effect_authority",
+      required_role: "USER",
+      cwd: null,
+      argv: [
+        "agentplane",
+        "task",
+        "authority",
+        "grant",
+        TASK_ID,
+        "--remote",
+        "--operation",
+        "pr.open",
+        "--operation-digest",
+        operationDigest,
+        "--state-fingerprint",
+        FINGERPRINT,
+        "--state-scope-digest",
+        stateScopeDigest,
+        "--by",
+        "USER",
+      ],
+      authority_reference: "route:test",
+    });
+    expect(Buffer.byteLength(JSON.stringify(packet, null, 2), "utf8")).toBeLessThanOrEqual(
+      MAX_AGENT_ACTION_PACKET_BYTES,
+    );
   });
 
   it("keeps formal operations inside the control-plane boundary", () => {
@@ -250,8 +316,16 @@ describe("compact agent action packet", () => {
         work_order_ref: "work-order.json",
         result_schema_ref: "result-schema.json",
         result_ref: "result.json",
-        return_invocation:
-          "agentplane task advance <task_id> --result <exchange_directory>/<result_ref> --agent-json",
+        result_path: `/repo/.agentplane/worktrees/${TASK_ID}/.git/agentplane/exchanges/current/result.json`,
+        resume_argv: [
+          "agentplane",
+          "task",
+          "advance",
+          TASK_ID,
+          "--result",
+          `/repo/.agentplane/worktrees/${TASK_ID}/.git/agentplane/exchanges/current/result.json`,
+          "--agent-json",
+        ],
       },
     });
 

@@ -116,6 +116,34 @@ export function reduceRouteState(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "plan_not_approved"),
     });
   }
+  if (state.blockers.some((blocker) => blocker.code === "dependency_not_ready")) {
+    const summary =
+      routeBlockerFor(state, "dependency_not_ready")?.summary ??
+      "wait until every task dependency is complete";
+    return {
+      schemaVersion: 1,
+      id: "wait.dependencies",
+      kind: "wait",
+      phase: "dependency_wait",
+      authoritativeCheckout: "base_checkout",
+      summary,
+      blockers: routeBlockerSnapshot(state),
+      selectedBlocker: routeBlockerFor(state, "dependency_not_ready"),
+      compatibility: {
+        code: "wait_dependencies",
+        command: null,
+        summary,
+        requiresApproval: false,
+      },
+      preconditionFingerprint: state.preconditionFingerprint,
+      condition: { type: "dependencies_ready", taskId: id },
+      execution: commonExecution({
+        actionKind: "wait",
+        role: "USER",
+        mustNot: ["do not start or force the task while declared dependencies are incomplete"],
+      }),
+    };
+  }
   if (state.workflowMode === "branch_pr" && state.batchOwnership.role === "included") {
     return includedBatchStep(state);
   }

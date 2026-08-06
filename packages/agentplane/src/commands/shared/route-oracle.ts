@@ -6,6 +6,7 @@ export type RouteBlockerCode =
   | "close_tail_open"
   | "cleanup_blocked"
   | "dirty_task_artifacts"
+  | "dependency_not_ready"
   | "human_input_required"
   | "implementation_rework_required"
   | "included_batch_verification_pending"

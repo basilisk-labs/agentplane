@@ -202,7 +202,7 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
     );
     expect(readme).toContain('status: "TODO"');
     expect(readme).toContain('state: "pending"');
-    expect(readme).toContain('doc_updated_by: "PLANNER"');
+    expect(readme).toContain('doc_updated_by: "USER"');
     expect(readme).toContain("Implement the explicit branch change");
   });
 
