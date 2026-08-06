@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "verification-sequencing",
+      "severity": "low",
+      "summary": "Hosted PR checks and merge-head equality remain intentionally deferred until after this pre-publication evaluator gate.",
+      "broken_invariant": "No implementation invariant is currently broken; final integration still depends on completing Verify Step 6 after publication.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061850-BZT3D9/README.md",
+          "sha256": "sha256:06d5d75c12f5ab608e31339d0eb0c9301cb9bae6832a234b95d7a257aed23fa7",
+          "section": "Plan and Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608061850-BZT3D9/verification/20260806185820398-e69d19c8c3ce3d85.json",
+          "sha256": "sha256:2d0c55ab972477f1b942d6506cbddd8e06116d9cf486b2d435a26b25b0172f27",
+          "section": "scope"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The evaluated SHA will remain unchanged through PR publication and hosted verification; any semantic-head change requires fresh local verification and evaluator review.",
+    "The obsolete WCARQG branch will be removed only after ancestry against merged main is proven."
+  ]
+}

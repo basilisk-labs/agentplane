@@ -4,7 +4,7 @@ title: "Land post-merge workflow routing qualification fixes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -35,6 +35,32 @@ verification:
   updated_by: "TESTER"
   note: "Post-merge qualification fixes are isolated from merged main and pass all declared release gates."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-06T18:59:57.244Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "2c35aa1d9848ccdc44d1c13b722dc0253f4f4f9d"
+  blueprint_digest: "440d169b378295a6d69c4666cf3c8ed8ff4c86eec65ae304cf306267eda88e65"
+  evidence_refs:
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-185910076-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-185910076-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/d3a6d4ae8fcd916f0713cd48c0c279dd4138b3e004a9b6f0798f2d366a7cc264.md"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-185910076-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-185910076-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-185910076-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/README.md"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/e704e1f7b5b4b6e00e8798bc3aae836076195dfada0e5c1895b5f9bc8a9b53eb.patch"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/8b71d4c1bf7b7417b7a14fac84c6d7028bae350aeb7feeaec4da0c0377099db9.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/verification/20260806185820398-e69d19c8c3ce3d85.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/da1da062628bd7d3d47bb26c5ca0ec5ec0fc7cac80f1c69ecab4b123086b462d.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Hosted PR checks and merge-head equality remain intentionally deferred until after this pre-publication evaluator gate."
 execution_route:
   frozen: true
   reason_codes:
