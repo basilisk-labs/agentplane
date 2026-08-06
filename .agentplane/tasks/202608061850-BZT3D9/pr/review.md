@@ -24,7 +24,7 @@ Created: 2026-08-06T18:52:19.901Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-06T22:58:33.664Z
+- Updated: 2026-08-06T22:58:37.876Z
 - Branch: post-merge-BZT3D9-ci-recovery
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

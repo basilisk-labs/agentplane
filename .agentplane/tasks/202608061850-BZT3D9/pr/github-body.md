@@ -22,7 +22,7 @@ Publish the already verified post-merge fixes discovered after PR #4784 auto-mer
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-06T22:58:33.664Z
+- Updated: 2026-08-06T22:58:37.876Z
 - Branch: post-merge-BZT3D9-ci-recovery
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
