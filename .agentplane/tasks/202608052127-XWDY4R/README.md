@@ -4,7 +4,7 @@ title: "Keep release diagnostics on the current published target"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-06T01:38:12.738Z"
+  updated_at: "2026-08-06T01:48:41.709Z"
   updated_by: "TESTER"
-  note: "Consolidated post-release regression and exact-subject provider qualification passed with zero blocking defects."
+  note: "Exact-subject consolidated qualification and effectiveness evidence accepted in machine-parseable form."
   attempts: 0
 quality_review:
   state: "rework"
@@ -123,8 +123,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Consolidated post-release regression and exact-subject provider qualification passed with zero blocking defects."
+  -
+    type: "verify"
+    at: "2026-08-06T01:48:41.709Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Exact-subject consolidated qualification and effectiveness evidence accepted in machine-parseable form."
 doc_version: 3
-doc_updated_at: "2026-08-06T01:38:13.823Z"
+doc_updated_at: "2026-08-06T01:48:42.897Z"
 doc_updated_by: "CODER"
 description: "Prevent release next-action from mixing the current package/tag target with stale local release-plan SHA and hosted evidence; add regression coverage, merge the fix, and publish the verified v0.7.4 patch release."
 sections:
@@ -329,6 +335,61 @@ sections:
     Command set: focused recovery/supervisor/evaluator regressions, bun run typecheck, eslint, bun run ci:contract, critical CLI, release-critical, platform-critical, agentplane doctor, and routing policy check. Result: pass. Scope: every confirmed defect and touched implementation path.
 
     Residual release boundary: protected-main merge, one 0.7.4 publication, npm/tag/GitHub Release/assets/clean-install/upgrade/postpublish proof remain intentionally post-integration and must complete before task finish.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608052127-XWDY4R-keep-release-diagnostics-on-the-current-publishe/.agentplane/tasks/202608052127-XWDY4R/blueprint/resolved-snapshot.json
+    - old_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+    - current_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608052127-XWDY4R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608052127-XWDY4R
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-06T01:48:41.709Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Exact-subject consolidated qualification and effectiveness evidence accepted in machine-parseable form.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T01:38:13.823Z, excerpt_hash=sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463
+
+    Details:
+
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: clean candidate 5eb30ef1a5b12c4ea34406957cedbb167e5843fd; packed install, migration matrix 8/8, release CI base 101/101 chunks, workflow coverage 50 tests, significant coverage 204 tests, release-critical 16 tests
+    Scope: deterministic install, upgrade, lifecycle, context, evaluator, package, release, and fault-recovery contract
+
+    Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1
+    Result: pass
+    Evidence: report 42b3b345290dbd749dbaf4c97640912cb83d7a36878417331aaf83428f2a4a33; efficiency fb99dbbe91a7b65633788f8c07442c93baff152bbc0d82c07cd9e64b61261545; ready 18/19, blocking 0, runs 50/50, episodes 55/55, no retry
+    Scope: ten provider scenarios across direct, branch_pr, context gaps, stale state, evaluator rework, scope guard, adapter failure, and Hermes one-step
+
+    Command: compare provider efficiency and matched latency against frozen baselines
+    Result: pass
+    Evidence: tokens 9186747 to 7288227 reduction 20.67 percent; verified success 8 to 20; scope violations 17 to 5; golden mismatches 33 to 10; matched CLI median improved 9.39 percent cold and 9.47 percent warm; supervisor latency 4/4 passed; evidence e679dc1159d0bbc5f03001547ee3b58055bd71220a2c3e9f095900f30320b97c and 748cccbe7c257691c70e9b573550f288b9b86a2d96b4969172525cea699cd95b
+    Scope: token economy, outcome quality, boundary compliance, CLI preparation latency, and both supervisor frontends
+
+    Command: AGENTPLANE_FAST_CHANGED_FILES exact diff bun run ci:local:fast
+    Result: pass
+    Evidence: format, schemas, policy routing, parity, builds, cold-start, hotspot, lint, 540 test files and 3808 tests, critical CLI 12/12 chunks all passed
+    Scope: exact PR diff from published head 51057c116 through verification head 886e1b2eb
+
+    Command: protected-main publication boundary
+    Result: pass
+    Evidence: deferred by branch_pr contract until integration; one v0.7.4 publish plus npm, tag, GitHub Release, assets, clean install, upgrade, and postpublish audit remain mandatory before finish
+    Scope: post-integration release proof, explicitly excluded from pre-integration verification freshness
 
     BlueprintSnapshotRef:
     - state: current
@@ -584,6 +645,61 @@ Effectiveness: provider tokens fell from 9,186,747 to 7,288,227 (-20.67%); verif
 Command set: focused recovery/supervisor/evaluator regressions, bun run typecheck, eslint, bun run ci:contract, critical CLI, release-critical, platform-critical, agentplane doctor, and routing policy check. Result: pass. Scope: every confirmed defect and touched implementation path.
 
 Residual release boundary: protected-main merge, one 0.7.4 publication, npm/tag/GitHub Release/assets/clean-install/upgrade/postpublish proof remain intentionally post-integration and must complete before task finish.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608052127-XWDY4R-keep-release-diagnostics-on-the-current-publishe/.agentplane/tasks/202608052127-XWDY4R/blueprint/resolved-snapshot.json
+- old_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+- current_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608052127-XWDY4R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608052127-XWDY4R
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-06T01:48:41.709Z — VERIFY — ok
+
+By: TESTER
+
+Note: Exact-subject consolidated qualification and effectiveness evidence accepted in machine-parseable form.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T01:38:13.823Z, excerpt_hash=sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463
+
+Details:
+
+Command: bun run release:prepublish
+Result: pass
+Evidence: clean candidate 5eb30ef1a5b12c4ea34406957cedbb167e5843fd; packed install, migration matrix 8/8, release CI base 101/101 chunks, workflow coverage 50 tests, significant coverage 204 tests, release-critical 16 tests
+Scope: deterministic install, upgrade, lifecycle, context, evaluator, package, release, and fault-recovery contract
+
+Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1
+Result: pass
+Evidence: report 42b3b345290dbd749dbaf4c97640912cb83d7a36878417331aaf83428f2a4a33; efficiency fb99dbbe91a7b65633788f8c07442c93baff152bbc0d82c07cd9e64b61261545; ready 18/19, blocking 0, runs 50/50, episodes 55/55, no retry
+Scope: ten provider scenarios across direct, branch_pr, context gaps, stale state, evaluator rework, scope guard, adapter failure, and Hermes one-step
+
+Command: compare provider efficiency and matched latency against frozen baselines
+Result: pass
+Evidence: tokens 9186747 to 7288227 reduction 20.67 percent; verified success 8 to 20; scope violations 17 to 5; golden mismatches 33 to 10; matched CLI median improved 9.39 percent cold and 9.47 percent warm; supervisor latency 4/4 passed; evidence e679dc1159d0bbc5f03001547ee3b58055bd71220a2c3e9f095900f30320b97c and 748cccbe7c257691c70e9b573550f288b9b86a2d96b4969172525cea699cd95b
+Scope: token economy, outcome quality, boundary compliance, CLI preparation latency, and both supervisor frontends
+
+Command: AGENTPLANE_FAST_CHANGED_FILES exact diff bun run ci:local:fast
+Result: pass
+Evidence: format, schemas, policy routing, parity, builds, cold-start, hotspot, lint, 540 test files and 3808 tests, critical CLI 12/12 chunks all passed
+Scope: exact PR diff from published head 51057c116 through verification head 886e1b2eb
+
+Command: protected-main publication boundary
+Result: pass
+Evidence: deferred by branch_pr contract until integration; one v0.7.4 publish plus npm, tag, GitHub Release, assets, clean install, upgrade, and postpublish audit remain mandatory before finish
+Scope: post-integration release proof, explicitly excluded from pre-integration verification freshness
 
 BlueprintSnapshotRef:
 - state: current
