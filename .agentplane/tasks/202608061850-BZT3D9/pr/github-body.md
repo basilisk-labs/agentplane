@@ -16,12 +16,7 @@ Publish the already verified post-merge fixes discovered after PR #4784 auto-mer
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-CI recovery head refresh verified: implementation unchanged; typecheck, exact compatibility
-contract, and all 12 critical CLI chunks passed on e36b10803bad.
-```
+- Note: CI recovery head locally requalified with deterministic check details; hosted checks pending PR synchronize.
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -13,7 +13,7 @@ Created: 2026-08-06T18:52:19.901Z
 ## Verification
 
 - State: ok
-- Note: CI recovery head refresh verified: implementation unchanged; typecheck, exact compatibility contract, and all 12 critical CLI chunks passed on e36b10803bad.
+- Note: CI recovery head locally requalified with deterministic check details; hosted checks pending PR synchronize.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

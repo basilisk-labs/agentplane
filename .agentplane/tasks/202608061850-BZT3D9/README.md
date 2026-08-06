@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -32,26 +32,26 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-06T22:36:11.060Z"
+  updated_at: "2026-08-06T22:41:11.843Z"
   updated_by: "CODER"
-  note: "CI recovery head refresh verified: implementation unchanged; typecheck, exact compatibility contract, and all 12 critical CLI chunks passed on e36b10803bad."
+  note: "CI recovery head locally requalified with deterministic check details; hosted checks pending PR synchronize."
   attempts: 0
 quality_review:
   state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-06T22:37:04.879Z"
+  updated_at: "2026-08-06T22:38:34.987Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned blocked with 1 typed finding(s)."
   evaluated_sha: "2c35aa1d9848ccdc44d1c13b722dc0253f4f4f9d"
   blueprint_digest: "440d169b378295a6d69c4666cf3c8ed8ff4c86eec65ae304cf306267eda88e65"
   evidence_refs:
-    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223622317-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223622317-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/c46cd8a705ddca7eaaf670a61ba0b084ce5be7eb82cc708158ae3e6364468a94.md"
-    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223622317-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223622317-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223622317-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223622317-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223754924-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223754924-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/193e21694589d992a337462841ee317da4535af1da81b3d2a0f11eda10dae09f.md"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223754924-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223754924-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223754924-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223754924-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608061850-BZT3D9/README.md"
     - ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/e704e1f7b5b4b6e00e8798bc3aae836076195dfada0e5c1895b5f9bc8a9b53eb.patch"
     - ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/8967159f715c70dc39a845fbfb50cc55d258dc53097ef7703366fb083650420d.json"
@@ -61,7 +61,7 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen evidence contains no deterministic verification records, runner history, runtime evidence, or hosted-check evidence for the evaluated SHA, so the declared checks and concurrency-sensitive integration conditions cannot be validated."
+    - "The frozen packet contains no deterministic verification records for the evaluated SHA."
   recovery_reason: "deterministic_evidence_gap"
 token_usage:
   agent_runs: 1
@@ -130,8 +130,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "CI recovery head refresh verified: implementation unchanged; typecheck, exact compatibility contract, and all 12 critical CLI chunks passed on e36b10803bad."
+  -
+    type: "verify"
+    at: "2026-08-06T22:41:11.843Z"
+    author: "CODER"
+    state: "ok"
+    note: "CI recovery head locally requalified with deterministic check details; hosted checks pending PR synchronize."
 doc_version: 3
-doc_updated_at: "2026-08-06T22:37:04.896Z"
+doc_updated_at: "2026-08-06T22:41:13.788Z"
 doc_updated_by: "CODER"
 description: "Publish the already verified post-merge fixes discovered after PR #4784 auto-merged: generated schema formatting, CLI reference and llms corpus refresh, isolated routing E2E coverage, lint-safe route resolution, repaired supervisor test fixture, and reviewed compatibility candidate evidence. No new product behavior beyond task 202608061646-WCARQG."
 sections:
@@ -217,6 +223,71 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T22:34:44.521Z, excerpt_hash=sha256:49270bb1ae6e5b52fba98df041e83462fede9816891a113de985a75b612507e6
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061850-BZT3D9-land-post-merge-workflow-routing-qualification-f/.agentplane/tasks/202608061850-BZT3D9/blueprint/resolved-snapshot.json
+    - old_digest: 440d169b378295a6d69c4666cf3c8ed8ff4c86eec65ae304cf306267eda88e65
+    - current_digest: 440d169b378295a6d69c4666cf3c8ed8ff4c86eec65ae304cf306267eda88e65
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061850-BZT3D9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-06T22:41:11.843Z — VERIFY — ok
+
+    By: CODER
+
+    Note: CI recovery head locally requalified with deterministic check details; hosted checks pending PR synchronize.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T22:38:35.007Z, excerpt_hash=sha256:49270bb1ae6e5b52fba98df041e83462fede9816891a113de985a75b612507e6
+
+    Details:
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build exited 0 on the unchanged implementation and CI recovery task head.
+    Scope: Verify all workspace TypeScript packages.
+
+    Command: bun run format:check && bun run schemas:check && bun run docs:cli:check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: Formatting, schema generation, CLI docs, and policy routing checks exited 0.
+    Scope: Verify generated contracts, formatting, CLI documentation, and policy graph.
+
+    Command: node scripts/checks/check-compatibility-contract-baseline.mjs && bun run test:critical
+    Result: pass
+    Evidence: Exact cumulative compatibility candidate matched and all 12 critical CLI chunks passed.
+    Scope: Verify the reviewed compatibility contract and critical CLI behavior.
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts && bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-routing.test.ts
+    Result: pass
+    Evidence: Task routing, branch supervisor, and CLI routing regression tests exited 0.
+    Scope: Verify per-task route selection and branch supervisor behavior.
+
+    Command: bun run docs:site:check && bun run workflows:lint
+    Result: pass
+    Evidence: Static documentation build, navigation check, design language, workflow guidance, lifecycle parity, and critical route checks exited 0.
+    Scope: Verify documentation and workflow command contracts.
+
+    Command: bun run test:platform-critical
+    Result: pass
+    Evidence: 6 platform-critical files and 94 tests passed.
+    Scope: Verify platform-sensitive filesystem and process behavior.
+
+    Command: bun run coverage:significant-suite
+    Result: pass
+    Evidence: 19 significant-coverage files and 204 tests passed; 17 source targets satisfied.
+    Scope: Verify significant guard coverage.
 
     BlueprintSnapshotRef:
     - state: current
@@ -343,6 +414,71 @@ Attempts: 0
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T22:34:44.521Z, excerpt_hash=sha256:49270bb1ae6e5b52fba98df041e83462fede9816891a113de985a75b612507e6
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061850-BZT3D9-land-post-merge-workflow-routing-qualification-f/.agentplane/tasks/202608061850-BZT3D9/blueprint/resolved-snapshot.json
+- old_digest: 440d169b378295a6d69c4666cf3c8ed8ff4c86eec65ae304cf306267eda88e65
+- current_digest: 440d169b378295a6d69c4666cf3c8ed8ff4c86eec65ae304cf306267eda88e65
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061850-BZT3D9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-06T22:41:11.843Z — VERIFY — ok
+
+By: CODER
+
+Note: CI recovery head locally requalified with deterministic check details; hosted checks pending PR synchronize.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T22:38:35.007Z, excerpt_hash=sha256:49270bb1ae6e5b52fba98df041e83462fede9816891a113de985a75b612507e6
+
+Details:
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build exited 0 on the unchanged implementation and CI recovery task head.
+Scope: Verify all workspace TypeScript packages.
+
+Command: bun run format:check && bun run schemas:check && bun run docs:cli:check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: Formatting, schema generation, CLI docs, and policy routing checks exited 0.
+Scope: Verify generated contracts, formatting, CLI documentation, and policy graph.
+
+Command: node scripts/checks/check-compatibility-contract-baseline.mjs && bun run test:critical
+Result: pass
+Evidence: Exact cumulative compatibility candidate matched and all 12 critical CLI chunks passed.
+Scope: Verify the reviewed compatibility contract and critical CLI behavior.
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts && bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-routing.test.ts
+Result: pass
+Evidence: Task routing, branch supervisor, and CLI routing regression tests exited 0.
+Scope: Verify per-task route selection and branch supervisor behavior.
+
+Command: bun run docs:site:check && bun run workflows:lint
+Result: pass
+Evidence: Static documentation build, navigation check, design language, workflow guidance, lifecycle parity, and critical route checks exited 0.
+Scope: Verify documentation and workflow command contracts.
+
+Command: bun run test:platform-critical
+Result: pass
+Evidence: 6 platform-critical files and 94 tests passed.
+Scope: Verify platform-sensitive filesystem and process behavior.
+
+Command: bun run coverage:significant-suite
+Result: pass
+Evidence: 19 significant-coverage files and 204 tests passed; 17 source targets satisfied.
+Scope: Verify significant guard coverage.
 
 BlueprintSnapshotRef:
 - state: current
