@@ -342,6 +342,16 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
     let outcome: CompletedEvaluatorOutcome;
 
     if (journal.status === "running" && journal.cursor.phase === "intent_recorded") {
+      const pendingOperation = journal.operations.at(-1);
+      if (pendingOperation?.role !== "EVALUATOR" || pendingOperation.kind !== "evaluator_episode") {
+        throw new CliError({
+          code: "E_RUNTIME",
+          message:
+            "Evaluator supervisor found an unrelated pending " +
+            `${pendingOperation?.role ?? "unknown"} ${pendingOperation?.kind ?? "operation"} intent; ` +
+            "return or reconcile that operation before evaluator execution.",
+        });
+      }
       try {
         outcome = await readCompletedEvaluatorOutcome({
           git_root: opts.command.resolvedProject.gitRoot,

@@ -8,6 +8,7 @@ import {
   refreshPendingReplacementSupervisorExecutionEpisode,
   recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
+  reopenSupervisorExecutionEpisodeAfterEffectEvidence,
   retryFailedSupervisorExecutionEpisode,
   stopSupervisorExecutionEpisode,
   startSupervisorExecutionEpisode,
@@ -235,6 +236,40 @@ describe("SupervisorExecutionEpisodeJournal", () => {
       status: "stopped",
       cursor: { phase: "stopped" },
       stop: { reason: "effect_in_doubt", operation_key: prepared.operation_key },
+    });
+  });
+
+  it("reopens only the exact effect-in-doubt intent after external evidence", () => {
+    const prepared = start({ journal: journal() });
+    if (prepared.status !== "started") throw new Error("expected started episode");
+    const effectInDoubt = recoverSupervisorExecutionEpisodeJournal({
+      journal: prepared.journal,
+      state_fingerprint_digest: FINGERPRINT,
+      now: "2026-07-28T00:00:01.000Z",
+    });
+
+    expect(() =>
+      reopenSupervisorExecutionEpisodeAfterEffectEvidence({
+        journal: effectInDoubt,
+        operation_key: `sha256:${"f".repeat(64)}`,
+      }),
+    ).toThrow("requires the exact stopped effect-in-doubt operation intent");
+
+    const reopened = reopenSupervisorExecutionEpisodeAfterEffectEvidence({
+      journal: effectInDoubt,
+      operation_key: prepared.operation_key,
+      now: "2026-07-28T00:00:02.000Z",
+    });
+
+    expect(reopened).toMatchObject({
+      status: "running",
+      stop: null,
+      cursor: {
+        phase: "intent_recorded",
+        operation_key: prepared.operation_key,
+      },
+      usage: prepared.journal.usage,
+      operations: [{ status: "intent", operation_key: prepared.operation_key }],
     });
   });
 

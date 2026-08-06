@@ -156,6 +156,7 @@ export {
   refreshPendingReplacementSupervisorExecutionEpisode,
   recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
+  reopenSupervisorExecutionEpisodeAfterEffectEvidence,
   retryFailedSupervisorExecutionEpisode,
   stopSupervisorExecutionEpisode,
   startSupervisorExecutionEpisode,

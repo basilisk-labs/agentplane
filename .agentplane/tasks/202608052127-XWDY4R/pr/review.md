@@ -30,12 +30,20 @@ Created: 2026-08-05T21:28:48.428Z
 
 ```text
  .../cli/run-cli.core.pr-conflict-rework.test.ts    | 1093 ++++++++++----------
+ .../src/cli/run-cli.core.task-advance.test.ts      |   53 +
+ .../evaluator/evaluator-execute-supervisor.ts      |   10 +
+ .../evaluator/evaluator-execute.command.test.ts    |   56 +
  .../release-evidence-collect-script.test.ts        |  211 ++++
  .../release/release-next-action-script.test.ts     |   95 +-
+ .../task/external-agent-exchange-authority.ts      |   42 +-
+ .../src/commands/task/external-agent-supervisor.ts |   27 +-
+ .../runner/supervisor-execution-episode.test.ts    |   35 +
+ .../src/runner/supervisor-execution-episode.ts     |   43 +
+ packages/core/src/schemas/index.ts                 |    1 +
  scripts/release/evidence-collect.mjs               |  305 +++++-
  scripts/release/next-action.mjs                    |   95 +-
  scripts/release/state.mjs                          |   49 +
- 6 files changed, 1267 insertions(+), 581 deletions(-)
+ 14 files changed, 1527 insertions(+), 588 deletions(-)
 ```
 
 </details>
