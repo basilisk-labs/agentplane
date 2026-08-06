@@ -100,6 +100,16 @@ const TASK_KIND_SCHEMA = z.enum(TASK_KIND_VALUES);
 const TASK_MUTATION_SCOPE_SCHEMA = z.enum(TASK_MUTATION_SCOPE_VALUES);
 const TASK_RISK_FLAGS_SCHEMA = z.array(z.enum(TASK_RISK_FLAG_VALUES));
 const TASK_BLUEPRINT_REQUEST_SCHEMA = z.enum(TASK_BLUEPRINT_REQUEST_VALUES);
+const TASK_EXECUTION_ROUTE_SCHEMA = z
+  .object({
+    schema_version: z.literal(1),
+    requested_mode: z.enum(["repository", "auto", "direct", "branch_pr"]),
+    selected_mode: z.enum(["direct", "branch_pr"]),
+    repository_mode: z.enum(["direct", "branch_pr"]),
+    reason_codes: z.array(NON_EMPTY_STRING).min(1),
+    frozen: z.literal(true),
+  })
+  .strict();
 
 const TASK_ORIGIN_SCHEMA = z
   .object({
@@ -346,6 +356,7 @@ export const TASK_README_FRONTMATTER_ZOD_SCHEMA = z
     quality_review: TASK_QUALITY_REVIEW_SCHEMA.optional(),
     runner: RUNNER_OUTCOME_SCHEMA.optional(),
     token_usage: TASK_TOKEN_USAGE_SCHEMA.optional(),
+    execution_route: TASK_EXECUTION_ROUTE_SCHEMA.optional(),
     sync: TASK_SYNC_ENVELOPE_SCHEMA.optional(),
     commit: TASK_COMMIT_SCHEMA.optional(),
     comments: z.array(TASK_COMMENT_SCHEMA),
@@ -375,6 +386,7 @@ const TASKS_EXPORT_TASK_SCHEMA = z
     origin: TASK_ORIGIN_SCHEMA.optional(),
     runner: RUNNER_OUTCOME_SCHEMA.optional(),
     token_usage: TASK_TOKEN_USAGE_SCHEMA.optional(),
+    execution_route: TASK_EXECUTION_ROUTE_SCHEMA.optional(),
     depends_on: z.array(NON_EMPTY_STRING),
     tags: z.array(NON_EMPTY_STRING),
     task_kind: TASK_KIND_SCHEMA.optional(),

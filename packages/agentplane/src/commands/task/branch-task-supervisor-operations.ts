@@ -17,6 +17,7 @@ import { applyForeignTaskReadmeReplicaRepair } from "../shared/task-worktree-for
 import { cmdFinish } from "./finish-command.js";
 import { makeRunTaskHostedClosePrHandler } from "./hosted-close-pr.command.js";
 import { cmdTaskStartReady } from "./start-ready.js";
+import { withEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
 
 function observedPostconditions(operation: WorkflowOperation): string[] {
   return operation.expectedPostconditions
@@ -56,7 +57,11 @@ export async function executeBranchWorkflowOperation(opts: {
   operation: WorkflowOperation;
 }): Promise<WorkflowSupervisorOperationResult> {
   const cwd = checkoutFor(opts.decision);
-  const command = await loadCommandContext({ cwd, rootOverride: null });
+  const initialCommand = await loadCommandContext({ cwd, rootOverride: null });
+  const command = withEffectiveTaskWorkflowMode(
+    initialCommand,
+    await loadTaskFromContext({ ctx: initialCommand, taskId: opts.decision.task.id }),
+  );
   const cliContext: CommandCtx = { cwd };
   const { operation } = opts;
   let exitCode: number;

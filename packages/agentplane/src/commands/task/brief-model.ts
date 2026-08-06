@@ -6,7 +6,7 @@ import { buildRouteSourceConfidenceBase } from "../shared/source-confidence.js";
 import type { WorkflowStep } from "../shared/workflow-step.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
-import type { TaskTokenUsage } from "@agentplaneorg/core/tasks";
+import type { TaskExecutionRoute, TaskTokenUsage } from "@agentplaneorg/core/tasks";
 import {
   prepareAgentWorkOrder,
   requirePreparedAgentWorkOrder,
@@ -86,6 +86,7 @@ type TaskBriefLegacyProjection = {
     plan: string | null;
     verification: string | null;
     token_usage: TaskTokenUsage | undefined;
+    execution_route: TaskExecutionRoute | undefined;
   };
   workflow: {
     mode: string;
@@ -279,6 +280,7 @@ export function projectTaskBriefFromPreparedWorkOrder(
       plan: task.plan_approval?.state ?? null,
       verification: task.verification?.state ?? null,
       token_usage: task.token_usage,
+      execution_route: task.execution_route,
     },
     workflow: {
       mode: route.workflowMode,

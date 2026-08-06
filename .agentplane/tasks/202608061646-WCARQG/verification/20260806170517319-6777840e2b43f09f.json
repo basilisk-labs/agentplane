@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:6777840e2b43f09ffe4b2e0fbcc8116d291554b0d45d6ec159ff7e8f5b4475b1",
+  "implementation_sha": null,
+  "kind": "task_verification_record",
+  "note": "Task routing contract verified: 9 focused agentplane tests, 119 core task tests, TypeScript build, schema parity, and policy routing all pass; E2E confirms direct repository auto-escalation creates branch_pr worktree.",
+  "recorded_at": "2026-08-06T17:05:17.319Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/blueprint/task-input.test.ts\n- bunx vitest --config vitest.workspace.ts run --project core packages/core/src/tasks\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984",
+  "task_id": "202608061646-WCARQG",
+  "verification_command": "agentplane verify 202608061646-WCARQG --ok --by CODER",
+  "verifier": "CODER"
+}

@@ -15,6 +15,7 @@ import {
   RISK_FLAG_VALUES,
   TASK_KIND_VALUES,
 } from "../../backends/task-backend/shared/domain-values.js";
+import { resolveEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
 
 const CODE_TAGS = ["code", "backend", "frontend", "cli"] as const;
 const DOCS_TAGS = ["docs", "documentation", "roadmap"] as const;
@@ -65,7 +66,7 @@ export function blueprintResolveInputFromTask(opts: {
     tags: opts.task.tags ?? [],
     owner: opts.task.owner,
     taskKind: enumValue<TaskKind>(opts.task.task_kind, TASK_KIND_VALUES),
-    workflowMode: opts.workflowMode ?? workflowModeFromConfig(opts.config),
+    workflowMode: opts.workflowMode ?? resolveEffectiveTaskWorkflowMode(opts.task, opts.config),
     mutation: opts.mutation ?? opts.task.mutation_scope ?? inferMutationFromTask(opts.task),
     mutationScope: enumValue<MutationKind>(opts.task.mutation_scope, MUTATION_SCOPE_VALUES),
     riskFlags:

@@ -39,6 +39,21 @@ export function reportTaskBriefText(brief: TaskBriefWithWorkflowStep, taskId: st
           ]
         : []),
       { label: "workflow", value: brief.workflow.mode },
+      ...(brief.task.execution_route
+        ? [
+            {
+              label: "route_selection",
+              value:
+                `requested=${brief.task.execution_route.requested_mode} ` +
+                `selected=${brief.task.execution_route.selected_mode} ` +
+                `repository=${brief.task.execution_route.repository_mode}`,
+            },
+            {
+              label: "route_reasons",
+              value: brief.task.execution_route.reason_codes.join(", "),
+            },
+          ]
+        : []),
       { label: "phase", value: brief.route.phase },
       { label: "step_kind", value: brief.workflow_step.kind },
       { label: "step_id", value: brief.workflow_step.id },

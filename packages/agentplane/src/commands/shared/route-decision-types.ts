@@ -38,6 +38,7 @@ export type TaskRouteDecision = {
     verification: string | null;
     commit: string | null;
     token_usage?: TaskData["token_usage"];
+    execution_route?: TaskData["execution_route"];
   };
   workflowMode: string;
   workspace: {
@@ -94,5 +95,6 @@ export function taskSummary(task: TaskData): TaskRouteDecision["task"] {
     verification: task.verification?.state ?? null,
     commit: commitHash || null,
     token_usage: task.token_usage,
+    execution_route: task.execution_route,
   };
 }

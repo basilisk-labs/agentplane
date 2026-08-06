@@ -1,4 +1,5 @@
 import { setMarkdownSection } from "@agentplaneorg/core/tasks";
+import type { TaskExecutionRouteRequest } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, warnMessage } from "../../cli/output.js";
@@ -36,6 +37,7 @@ import {
   formatTaskBlueprintCreationPreview,
   resolveTaskBlueprintLifecycleSummary,
 } from "./blueprint-summary.js";
+import { resolveTaskExecutionRoute } from "../../runtime/task-routing/index.js";
 
 export type TaskNewParsed = {
   title: string;
@@ -47,6 +49,7 @@ export type TaskNewParsed = {
   mutationScope?: TaskData["mutation_scope"];
   riskFlags?: NonNullable<TaskData["risk_flags"]>;
   blueprintRequest?: TaskData["blueprint_request"];
+  route?: TaskExecutionRouteRequest;
   extensions?: TaskData["extensions"];
   dependsOn: string[];
   verify: string[];
@@ -141,6 +144,7 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
     p.blueprintRequest,
     BLUEPRINT_REQUEST_VALUES,
   );
+  const route = p.route ?? "repository";
 
   return {
     ...p,
@@ -152,6 +156,7 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
     mutationScope,
     riskFlags,
     blueprintRequest,
+    route,
     ...(p.extensions ? { extensions: structuredClone(p.extensions) } : {}),
     ...(p.taskDocSections ? { taskDocSections: structuredClone(p.taskDocSections) } : {}),
     dependsOn,
@@ -285,6 +290,16 @@ export async function runTaskNewParsed(opts: {
           ...(p.mutationScope ? { mutation_scope: p.mutationScope } : {}),
           ...(p.riskFlags && p.riskFlags.length > 0 ? { risk_flags: p.riskFlags } : {}),
           ...(p.blueprintRequest ? { blueprint_request: p.blueprintRequest } : {}),
+          execution_route: resolveTaskExecutionRoute({
+            config: ctx.config,
+            requestedMode: p.route,
+            task: {
+              task_kind: p.taskKind,
+              mutation_scope: p.mutationScope,
+              risk_flags: p.riskFlags,
+              blueprint_request: p.blueprintRequest,
+            },
+          }),
           ...(p.extensions ? { extensions: p.extensions } : {}),
           depends_on: p.dependsOn,
           verify: p.verify,

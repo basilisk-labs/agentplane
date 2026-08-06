@@ -1,5 +1,6 @@
 import type { ApprovalSettings } from "@agentplaneorg/core/config";
 import type { TaskDocVersion } from "@agentplaneorg/core/tasks";
+import type { TaskExecutionRoute } from "@agentplaneorg/core/tasks";
 
 import type { TaskBackendCapabilities, TaskData, TaskOrigin } from "../../backends/task-backend.js";
 import type { BehaviorLayer } from "../behavior/index.js";
@@ -105,6 +106,7 @@ export type TaskGraphDraftTask = {
   mutation_scope?: TaskData["mutation_scope"];
   risk_flags?: TaskData["risk_flags"];
   blueprint_request?: TaskData["blueprint_request"];
+  execution_route?: TaskExecutionRoute;
   extensions?: TaskData["extensions"];
   verify: string[];
   depends_on: string[];

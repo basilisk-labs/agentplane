@@ -271,6 +271,50 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     expect(task.frontmatter.blueprint_request).toBe("analysis.light");
   });
 
+  it("task new persists an explainable automatic execution route", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Publish a patch",
+        "--description",
+        "Prepare and publish a patch release",
+        "--owner",
+        "CODER",
+        "--tag",
+        "release",
+        "--task-kind",
+        "release",
+        "--mutation-scope",
+        "release",
+        "--risk",
+        "publish",
+        "--route",
+        "auto",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = io.stdout.trim();
+    } finally {
+      io.restore();
+    }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.execution_route).toEqual({
+      schema_version: 1,
+      requested_mode: "auto",
+      selected_mode: "branch_pr",
+      repository_mode: "direct",
+      reason_codes: ["mutation_requires_isolation", "risk_publish"],
+      frozen: true,
+    });
+  });
+
   it("task new can preview the resolved blueprint route without changing stdout", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
