@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:09016bc7625b3120b97089d9ab03b175fe6c33ba04a8742ce1867b970c58648a",
+  "implementation_sha": "1c7849f0ed3881ca385a7bdf8705358099fb47b2",
+  "kind": "task_verification_record",
+  "note": "Implementation 1c7849f0e remains fully verified after task-only closure artifacts.",
+  "recorded_at": "2026-08-06T17:13:54.026Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/blueprint/task-input.test.ts\n- bunx vitest --config vitest.workspace.ts run --project core packages/core/src/tasks\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984",
+  "task_id": "202608061646-WCARQG",
+  "verification_command": "agentplane verify 202608061646-WCARQG --ok --by TESTER",
+  "verifier": "TESTER"
+}
