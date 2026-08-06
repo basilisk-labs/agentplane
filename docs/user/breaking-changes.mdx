@@ -36,6 +36,24 @@ For the complete 0.6.24/0.6.26 migration and rollback procedure, see
     `agentplane repair adopt-legacy-conflict`; the former integration-queue command remains a hidden
     compatibility alias during the retirement window.
 
+## Compatibility retirement policy
+
+Every adapter reported by `agentplane doctor legacy --json` has one explicit disposition:
+
+- `scheduled_removal`: removed in the declared `remove_in` release;
+- `support_window`: supported through the declared version while users migrate;
+- `zero_usage_window`: removable only after the usage probe stays at zero for the declared number
+  of releases;
+- `archive_conversion`: active state is migrated while historical artifacts remain read-only;
+- `permanent_historical_reader`: immutable historical records remain readable, but current writers
+  never emit the legacy form.
+
+The `compatibility_scope` field distinguishes normal input boundaries from migration-only,
+recovery-only, and historical-reader paths. The 0.8 removal set currently contains supervisor
+episode v0, AgentWorkContext v1, and legacy context profile aliases. Historical task README v2,
+runner result manifest v1, and historical commit-subject readers are permanent read-only readers,
+not normal execution paths.
+
 ## Upgrade checklist
 
 1. Install the exact intended CLI version and confirm it with `agentplane runtime explain`.

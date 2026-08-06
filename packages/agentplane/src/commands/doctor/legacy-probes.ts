@@ -23,8 +23,9 @@ type LegacyAdapterUsage = CompatibilityRetirementAdapter & {
 export type LegacyDoctorReport = {
   schema_version: 1;
   kind: "agentplane.doctor.legacy";
-  manifest_schema_version: 1;
+  manifest_schema_version: 2;
   summary: Record<LegacyUsageStatus | "total", number>;
+  retirement_summary: Record<CompatibilityRetirementAdapter["retirement_policy"]["kind"], number>;
   adapters: LegacyAdapterUsage[];
 };
 
@@ -385,11 +386,20 @@ export async function inspectLegacyCompatibilityUsage(opts: {
     blocked: 0,
   };
   for (const adapter of adapters) summary[adapter.status] += 1;
+  const retirement_summary: LegacyDoctorReport["retirement_summary"] = {
+    scheduled_removal: 0,
+    support_window: 0,
+    zero_usage_window: 0,
+    archive_conversion: 0,
+    permanent_historical_reader: 0,
+  };
+  for (const adapter of adapters) retirement_summary[adapter.retirement_policy.kind] += 1;
   return {
     schema_version: 1,
     kind: "agentplane.doctor.legacy",
     manifest_schema_version: opts.manifest.schema_version,
     summary,
+    retirement_summary,
     adapters,
   };
 }

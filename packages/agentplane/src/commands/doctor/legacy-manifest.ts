@@ -18,6 +18,19 @@ const LEGACY_USAGE_PROBE_KINDS = [
 ] as const;
 
 const VERSION_SCHEMA = z.string().regex(/^\d+\.\d+\.\d+$/u);
+const RETIREMENT_POLICY_KINDS = [
+  "scheduled_removal",
+  "support_window",
+  "zero_usage_window",
+  "archive_conversion",
+  "permanent_historical_reader",
+] as const;
+const COMPATIBILITY_SCOPES = [
+  "normal_input_boundary",
+  "migration_only",
+  "recovery_only",
+  "historical_reader",
+] as const;
 const SOURCE_PATH_SCHEMA = z
   .string()
   .min(1)
@@ -34,6 +47,15 @@ const AdapterSchema = z
     deprecated_in: VERSION_SCHEMA.nullable(),
     remove_in: VERSION_SCHEMA.nullable(),
     removal_blocker: z.string().trim().min(1).nullable(),
+    retirement_policy: z
+      .object({
+        kind: z.enum(RETIREMENT_POLICY_KINDS),
+        support_until: VERSION_SCHEMA.nullable(),
+        minimum_zero_usage_releases: z.number().int().min(1).nullable(),
+        archive_conversion: z.string().trim().min(1).nullable(),
+        compatibility_scope: z.enum(COMPATIBILITY_SCOPES),
+      })
+      .strict(),
     migration_command: z.string().trim().min(1),
     usage_probe: z.object({ kind: z.enum(LEGACY_USAGE_PROBE_KINDS) }).strict(),
   })
@@ -52,18 +74,66 @@ const AdapterSchema = z
         message: "must be later than the introduction/deprecation version",
       });
     }
-    if (adapter.remove_in === null && adapter.removal_blocker === null) {
+    const policy = adapter.retirement_policy;
+    if (policy.support_until) {
+      const supportUntil = versionTuple(policy.support_until);
+      if (compareVersions(supportUntil, deprecated ?? introduced) < 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["retirement_policy", "support_until"],
+          message: "precedes introduction/deprecation version",
+        });
+      }
+      if (remove && compareVersions(supportUntil, remove) >= 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["retirement_policy", "support_until"],
+          message: "must precede remove_in",
+        });
+      }
+    }
+    if (
+      adapter.remove_in === null &&
+      adapter.removal_blocker === null &&
+      policy.kind !== "permanent_historical_reader"
+    ) {
       ctx.addIssue({
         code: "custom",
         path: ["removal_blocker"],
         message: "is required while remove_in is unset",
       });
     }
+    const requiredPolicyField: Record<(typeof RETIREMENT_POLICY_KINDS)[number], boolean> = {
+      scheduled_removal: adapter.remove_in !== null,
+      support_window: policy.support_until !== null,
+      zero_usage_window: policy.minimum_zero_usage_releases !== null,
+      archive_conversion: policy.archive_conversion !== null,
+      permanent_historical_reader:
+        adapter.remove_in === null && policy.compatibility_scope === "historical_reader",
+    };
+    if (!requiredPolicyField[policy.kind]) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["retirement_policy", "kind"],
+        message: `retirement policy ${policy.kind} is missing its required bound`,
+      });
+    }
+    if (
+      policy.kind !== "permanent_historical_reader" &&
+      policy.compatibility_scope === "historical_reader" &&
+      policy.archive_conversion === null
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["retirement_policy", "archive_conversion"],
+        message: "historical readers require an archive conversion policy or permanent status",
+      });
+    }
   });
 
 const ManifestSchema = z
   .object({
-    schema_version: z.literal(1),
+    schema_version: z.literal(2),
     kind: z.literal("agentplane.compatibility_retirement_manifest"),
     adapters: z.array(AdapterSchema).min(1),
   })
