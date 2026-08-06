@@ -13,7 +13,7 @@ Created: 2026-08-06T19:12:24.484Z
 ## Verification
 
 - State: ok
-- Note: The refreshed user-first intake and execution preview pass the full declared UX verification surface on current main.
+- Note: The current-main UX branch has complete deterministic verification evidence, including policy routing and final workspace cleanliness.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

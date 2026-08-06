@@ -19,8 +19,8 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 - Note:
 
 ```text
-The refreshed user-first intake and execution preview pass the full declared UX verification surface
-on current main.
+The current-main UX branch has complete deterministic verification evidence, including policy
+routing and final workspace cleanliness.
 ```
 - Canonical workflow state lives in the task README.
 
