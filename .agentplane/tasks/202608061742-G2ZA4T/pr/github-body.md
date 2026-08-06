@@ -15,8 +15,13 @@ Replace the long upfront questionnaire with a short user-first init path that de
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Progressive init is verified: 27 focused tests pass, onboarding and generated CLI docs are aligned,
+TypeScript compiles, and policy routing remains valid.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

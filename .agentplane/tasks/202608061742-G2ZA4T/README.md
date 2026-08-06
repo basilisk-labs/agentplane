@@ -4,7 +4,7 @@ title: "Redesign init around safe defaults and progressive disclosure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -28,16 +28,21 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-06T23:43:38.216Z"
+  updated_by: "TESTER"
+  note: "Progressive init is verified: 27 focused tests pass, onboarding and generated CLI docs are aligned, TypeScript compiles, and policy routing remains valid."
   attempts: 0
-commit: null
+commit:
+  hash: "1b63fb8813a54cc74aa197719a5c81e759110d27"
+  message: "✨ G2ZA4T ux: add progressive setup flow"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed: progressive quick/advanced init flow, exact first-task handoff, tool-specific defaults, and supervisor-first setup docs."
 events:
   -
     type: "status"
@@ -46,8 +51,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-06T23:43:10.919Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: progressive quick/advanced init flow, exact first-task handoff, tool-specific defaults, and supervisor-first setup docs."
+  -
+    type: "verify"
+    at: "2026-08-06T23:43:38.216Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Progressive init is verified: 27 focused tests pass, onboarding and generated CLI docs are aligned, TypeScript compiles, and policy routing remains valid."
 doc_version: 3
-doc_updated_at: "2026-08-06T23:23:34.973Z"
+doc_updated_at: "2026-08-06T23:43:39.071Z"
 doc_updated_by: "CODER"
 description: "Replace the long upfront questionnaire with a short user-first init path that detects repository defaults, asks only decisions that materially change policy or workflow, provides an advanced configuration path, and prints a first-task next step."
 sections:
@@ -67,6 +85,36 @@ sections:
     - node .agentplane/policy/check-routing.mjs
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-06T23:43:38.216Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Progressive init is verified: 27 focused tests pass, onboarding and generated CLI docs are aligned, TypeScript compiles, and policy routing remains valid.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T23:43:10.919Z, excerpt_hash=sha256:7e72d145f9d263a8ae6ddc091eb4cbf3aa6d1b045a24a7b0df8263a9b80b4ce7
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061742-G2ZA4T-redesign-init-around-safe-defaults-and-progressi/.agentplane/tasks/202608061742-G2ZA4T/blueprint/resolved-snapshot.json
+    - old_digest: 8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb
+    - current_digest: 8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061742-G2ZA4T
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608061742-G2ZA4T
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the init UX commit. Existing non-interactive flags and generated configuration remain the compatibility baseline; no user repository content is migrated destructively."
   Findings: ""
@@ -102,6 +150,36 @@ Replace the long upfront questionnaire with a short user-first init path that de
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-06T23:43:38.216Z — VERIFY — ok
+
+By: TESTER
+
+Note: Progressive init is verified: 27 focused tests pass, onboarding and generated CLI docs are aligned, TypeScript compiles, and policy routing remains valid.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T23:43:10.919Z, excerpt_hash=sha256:7e72d145f9d263a8ae6ddc091eb4cbf3aa6d1b045a24a7b0df8263a9b80b4ce7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061742-G2ZA4T-redesign-init-around-safe-defaults-and-progressi/.agentplane/tasks/202608061742-G2ZA4T/blueprint/resolved-snapshot.json
+- old_digest: 8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb
+- current_digest: 8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061742-G2ZA4T
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608061742-G2ZA4T
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

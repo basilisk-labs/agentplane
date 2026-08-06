@@ -12,8 +12,8 @@ Created: 2026-08-06T23:23:35.080Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Progressive init is verified: 27 focused tests pass, onboarding and generated CLI docs are aligned, TypeScript compiles, and policy routing remains valid.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

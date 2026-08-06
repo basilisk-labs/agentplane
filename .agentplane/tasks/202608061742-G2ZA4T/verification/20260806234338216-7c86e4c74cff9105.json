@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:7c86e4c74cff9105b98130e54c08fd187dc6c6115fc299defa202c63593986da",
+  "implementation_sha": "1b63fb8813a54cc74aa197719a5c81e759110d27",
+  "kind": "task_verification_record",
+  "note": "Progressive init is verified: 27 focused tests pass, onboarding and generated CLI docs are aligned, TypeScript compiles, and policy routing remains valid.",
+  "recorded_at": "2026-08-06T23:43:38.216Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli/commands/init\n- bun run docs:onboarding:check\n- bun run docs:cli:check\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:7e72d145f9d263a8ae6ddc091eb4cbf3aa6d1b045a24a7b0df8263a9b80b4ce7",
+  "task_id": "202608061742-G2ZA4T",
+  "verification_command": "agentplane verify 202608061742-G2ZA4T --ok --by TESTER",
+  "verifier": "TESTER"
+}
