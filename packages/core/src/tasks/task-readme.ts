@@ -284,6 +284,7 @@ export function renderTaskFrontmatter(frontmatter: Record<string, unknown>): str
     "quality_review",
     "runner",
     "token_usage",
+    "execution_route",
     "commit",
     "comments",
     "events",

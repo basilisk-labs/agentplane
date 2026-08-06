@@ -33,6 +33,7 @@ export type ProviderSafeTaskProjection = {
   breaking?: boolean;
   task_kind?: string;
   mutation_scope?: string;
+  execution_route?: TaskFrontmatter["execution_route"];
   plan_approval_state: PlanApprovalState;
   plan_approved: boolean;
   verification_state: VerificationState;
@@ -86,6 +87,7 @@ export type ProviderSafeTaskProjectionInput = Pick<
   | "quality_review"
   | "runner"
   | "token_usage"
+  | "execution_route"
   | "sync"
   | "sections"
   | "doc_version"
@@ -135,6 +137,7 @@ export function buildProviderSafeTaskProjection(
     ...(task.quality_review?.state ? { quality_review_state: task.quality_review.state } : {}),
     ...(task.runner?.status ? { runner_status: task.runner.status } : {}),
     ...(task.token_usage ? { token_usage: structuredClone(task.token_usage) } : {}),
+    ...(task.execution_route ? { execution_route: structuredClone(task.execution_route) } : {}),
     ...(task.commit?.hash ? { commit_hash: task.commit.hash } : {}),
     ...(task.doc_version ? { doc_version: task.doc_version } : {}),
     ...(task.doc_updated_at ? { doc_updated_at: task.doc_updated_at } : {}),

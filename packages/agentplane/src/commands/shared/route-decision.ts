@@ -55,6 +55,7 @@ import { taskCloseAlreadyRecordedOnBase } from "../task/close-tail-state.js";
 import { inspectTaskWorktreeRouteState } from "./task-worktree-foreign-artifact-route.js";
 import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
 import { hydrateTaskSideEffectAuthority } from "./side-effect-authority-store.js";
+import { withEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
 export { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
 
 const routeGitSnapshots = new WeakMap<TaskRouteDecision, GitSnapshot>();
@@ -293,16 +294,17 @@ export async function buildTaskRouteDecision(opts: {
   freshHead?: boolean;
   taskId: string;
 }): Promise<TaskRouteDecision> {
-  const ctx =
+  const initialCtx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
   const { task: loadedTask } = await loadBackendTask({
-    ctx,
+    ctx: initialCtx,
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
     taskId: opts.taskId,
-    preferBranchSnapshot: ctx.config.workflow_mode === "branch_pr",
+    preferBranchSnapshot: initialCtx.config.workflow_mode === "branch_pr",
   });
+  const ctx = withEffectiveTaskWorkflowMode(initialCtx, loadedTask);
   const task = await hydrateTaskSideEffectAuthority({
     gitRoot: ctx.resolvedProject.gitRoot,
     taskId: opts.taskId,

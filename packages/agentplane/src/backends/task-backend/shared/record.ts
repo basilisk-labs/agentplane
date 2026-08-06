@@ -68,6 +68,35 @@ function stringEnumArray<T extends string>(value: unknown, allowed: Set<string>)
   return out.length > 0 ? out : undefined;
 }
 
+function normalizeExecutionRoute(value: unknown): TaskData["execution_route"] {
+  if (!isRecord(value)) return undefined;
+  const requestedMode = value.requested_mode;
+  const selectedMode = value.selected_mode;
+  const repositoryMode = value.repository_mode;
+  const reasonCodes = toStringArray(value.reason_codes);
+  if (
+    value.schema_version !== 1 ||
+    (requestedMode !== "repository" &&
+      requestedMode !== "auto" &&
+      requestedMode !== "direct" &&
+      requestedMode !== "branch_pr") ||
+    (selectedMode !== "direct" && selectedMode !== "branch_pr") ||
+    (repositoryMode !== "direct" && repositoryMode !== "branch_pr") ||
+    reasonCodes.length === 0 ||
+    value.frozen !== true
+  ) {
+    return undefined;
+  }
+  return {
+    schema_version: 1,
+    requested_mode: requestedMode,
+    selected_mode: selectedMode,
+    repository_mode: repositoryMode,
+    reason_codes: reasonCodes,
+    frozen: true,
+  };
+}
+
 export function taskRecordToData(record: TaskRecord): TaskData {
   const fm = record.frontmatter as unknown as Record<string, unknown>;
   const comments = Array.isArray(fm.comments)
@@ -137,6 +166,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     quality_review: qualityReview ?? undefined,
     runner: runner ?? undefined,
     token_usage: tokenUsage ?? undefined,
+    execution_route: normalizeExecutionRoute(fm.execution_route),
     sync: isRecord(fm.sync) ? (fm.sync as TaskData["sync"]) : undefined,
     commit,
     comments,

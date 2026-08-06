@@ -180,6 +180,7 @@ export function makeRunTaskNextActionHandler(session: {
     if (parsed.json) {
       output.json({
         task: decision.task,
+        workflow_mode: decision.workflowMode,
         workflow_step: decision.workflowStep,
         workflowStep: decision.workflowStep,
         workflow_supervision: {
@@ -343,6 +344,21 @@ export function makeRunTaskNextActionHandler(session: {
         ...(parsed.explain
           ? [
               { label: "workflow", value: decision.workflowMode },
+              ...(decision.task.execution_route
+                ? [
+                    {
+                      label: "route_selection",
+                      value:
+                        `requested=${decision.task.execution_route.requested_mode} ` +
+                        `selected=${decision.task.execution_route.selected_mode} ` +
+                        `repository=${decision.task.execution_route.repository_mode}`,
+                    },
+                    {
+                      label: "route_reasons",
+                      value: decision.task.execution_route.reason_codes.join(", "),
+                    },
+                  ]
+                : []),
               { label: "checkout_role", value: decision.workspace.checkoutRole },
               { label: "branch", value: decision.workspace.branch ?? "unknown" },
               { label: "base_branch", value: decision.workspace.baseBranch ?? "unknown" },

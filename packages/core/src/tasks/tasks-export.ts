@@ -14,6 +14,7 @@ import {
   type TaskRunnerOutcome,
   type TaskRunnerTarget,
   type TaskTokenUsage,
+  type TaskExecutionRoute,
   type TaskSyncEnvelope,
 } from "./task-store.js";
 
@@ -485,6 +486,7 @@ export type TasksExportTask = {
   };
   runner?: TaskRunnerOutcome;
   token_usage?: TaskTokenUsage;
+  execution_route?: TaskExecutionRoute;
   sync?: TaskSyncEnvelope;
   depends_on: string[];
   tags: string[];
@@ -637,6 +639,7 @@ export async function buildTasksExportSnapshot(opts: {
       verification: normalizeTaskVerification(fm.verification),
       runner: normalizeTaskRunnerOutcome(fm.runner),
       token_usage: t.frontmatter.token_usage,
+      execution_route: t.frontmatter.execution_route,
       sync: normalizeTaskSyncEnvelope(fm.sync),
       depends_on: dependsOn,
       tags,

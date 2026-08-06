@@ -99,6 +99,15 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
     },
     {
       kind: "string",
+      name: "route",
+      valueHint: "<repository|auto|direct|branch_pr>",
+      choices: ["repository", "auto", "direct", "branch_pr"],
+      default: "repository",
+      description:
+        "Task execution route. repository preserves legacy behavior; auto may escalate a direct repository to branch_pr when isolation risk requires it.",
+    },
+    {
+      kind: "string",
       name: "depends-on",
       valueHint: "<task-id>",
       repeatable: true,
@@ -152,6 +161,7 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
     mutationScope: raw.opts["mutation-scope"] as TaskNewParsed["mutationScope"],
     riskFlags: (raw.opts.risk ?? []) as TaskNewParsed["riskFlags"],
     blueprintRequest: raw.opts["blueprint-request"] as TaskNewParsed["blueprintRequest"],
+    route: (raw.opts.route ?? "repository") as TaskNewParsed["route"],
     dependsOn: (raw.opts["depends-on"] ?? []) as string[],
     verify: (raw.opts.verify ?? []) as string[],
     showBlueprint: raw.opts["show-blueprint"] === true,

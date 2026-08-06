@@ -37,6 +37,8 @@ import {
 import { followRunnerLogs } from "./run-logs-follow.js";
 import { superviseBranchTaskRun } from "./branch-task-supervisor.js";
 import { superviseDirectTaskRun } from "./direct-task-supervisor.js";
+import { loadTaskFromContext } from "../shared/task-backend.js";
+import { withEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
 
 export {
   makeRunTaskRunResolveEffectHandler,
@@ -101,9 +103,13 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
       if (!deps.getPreparationContext) {
         throw new Error("task run dry-run was loaded without preparation capabilities");
       }
-      const commandCtx = await deps.getPreparationContext("task run", {
+      const initialCommandCtx = await deps.getPreparationContext("task run", {
         includeRemote: parsed.remote,
       });
+      const commandCtx = withEffectiveTaskWorkflowMode(
+        initialCommandCtx,
+        await loadTaskFromContext({ ctx: initialCommandCtx, taskId: parsed.taskId }),
+      );
       const prepared = await prepareTaskRunnerExecution({
         ctx: commandCtx,
         cwd: ctx.cwd,
@@ -130,9 +136,13 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
     if (!deps.getExecutionContext) {
       throw new Error("task run execution was loaded without execution capabilities");
     }
-    const commandCtx = await deps.getExecutionContext("task run", {
+    const initialCommandCtx = await deps.getExecutionContext("task run", {
       includeRemote: parsed.remote,
     });
+    const commandCtx = withEffectiveTaskWorkflowMode(
+      initialCommandCtx,
+      await loadTaskFromContext({ ctx: initialCommandCtx, taskId: parsed.taskId }),
+    );
 
     if (commandCtx.config?.workflow_mode === "direct") {
       const supervised = await superviseDirectTaskRun({

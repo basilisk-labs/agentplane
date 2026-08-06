@@ -167,6 +167,17 @@ export type TaskTokenUsage = {
   updated_at: string;
 };
 
+export type TaskExecutionRouteMode = "direct" | "branch_pr";
+export type TaskExecutionRouteRequest = "repository" | "auto" | TaskExecutionRouteMode;
+export type TaskExecutionRoute = {
+  schema_version: 1;
+  requested_mode: TaskExecutionRouteRequest;
+  selected_mode: TaskExecutionRouteMode;
+  repository_mode: TaskExecutionRouteMode;
+  reason_codes: string[];
+  frozen: true;
+};
+
 export type TaskSyncExternalRef = {
   provider: string;
   connector_kind?: string;
@@ -248,6 +259,7 @@ export type TaskFrontmatter = {
   quality_review?: QualityReviewResult;
   runner?: TaskRunnerOutcome;
   token_usage?: TaskTokenUsage;
+  execution_route?: TaskExecutionRoute;
   sync?: TaskSyncEnvelope;
   comments: { author: string; body: string }[];
   events?: TaskEvent[];

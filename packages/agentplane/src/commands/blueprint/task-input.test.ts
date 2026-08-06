@@ -82,4 +82,25 @@ describe("blueprintResolveInputFromTask", () => {
       workflowMode: "branch_pr",
     });
   });
+
+  it("uses the persisted task execution route over a less isolated repository default", () => {
+    const directConfig = { workflow_mode: "direct" } as AgentplaneConfig;
+    const input = blueprintResolveInputFromTask({
+      config: directConfig,
+      task: task({
+        task_kind: "release",
+        mutation_scope: "release",
+        execution_route: {
+          schema_version: 1,
+          requested_mode: "auto",
+          selected_mode: "branch_pr",
+          repository_mode: "direct",
+          reason_codes: ["mutation_requires_isolation"],
+          frozen: true,
+        },
+      }),
+    });
+
+    expect(input.workflowMode).toBe("branch_pr");
+  });
 });
