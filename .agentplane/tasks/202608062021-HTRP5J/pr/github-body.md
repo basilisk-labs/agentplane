@@ -22,12 +22,20 @@ Complete the compatibility retirement manifest so every adapter has an explicit 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-06T22:03:16.318Z
+- Updated: 2026-08-06T22:03:41.537Z
 - Branch: task/202608062021-HTRP5J/classify-compatibility-adapters-for-bounded-0-8
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ docs/user/breaking-changes.mdx                     | 18 ++++
+ docs/user/cli-reference.generated.mdx              |  1 +
+ docs/user/commands.mdx                             |  3 +-
+ .../assets/compatibility-retirement-manifest.json  | 96 ++++++++++++++++++++--
+ .../agentplane/src/commands/doctor-legacy.run.ts   | 24 +++++-
+ .../src/commands/doctor/legacy-manifest.ts         | 74 ++++++++++++++++-
+ .../src/commands/doctor/legacy-probes.test.ts      | 43 ++++++++++
+ .../src/commands/doctor/legacy-probes.ts           | 12 ++-
+ 8 files changed, 259 insertions(+), 12 deletions(-)
 ```
 
 </details>

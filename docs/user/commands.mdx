@@ -94,7 +94,8 @@ agentplane doctor legacy --json
 
 `doctor legacy` is read-only. It returns the packaged compatibility retirement manifest plus
 workspace probes classified as `used`, `unused`, `unknown`, or `blocked`. Each adapter names its
-introduction and deprecation versions, retirement target or blocker, and migration command.
+introduction and deprecation versions, bounded retirement policy, compatibility scope, retirement
+target or blocker, and migration command.
 
 Exceptional legacy protected-conflict recovery lives outside the normal lifecycle surface:
 

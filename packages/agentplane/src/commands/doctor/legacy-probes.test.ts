@@ -120,6 +120,16 @@ describe("doctor legacy", () => {
         (adapter) => adapter.migration_command.trim().length > 0,
       ),
     ).toBe(true);
+    expect(
+      COMPATIBILITY_RETIREMENT_MANIFEST.adapters.every(
+        (adapter) =>
+          adapter.remove_in !== null ||
+          adapter.retirement_policy.support_until !== null ||
+          adapter.retirement_policy.minimum_zero_usage_releases !== null ||
+          adapter.retirement_policy.archive_conversion !== null ||
+          adapter.retirement_policy.kind === "permanent_historical_reader",
+      ),
+    ).toBe(true);
 
     const duplicate = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST);
     duplicate.adapters.push(structuredClone(duplicate.adapters[0]!));
@@ -151,6 +161,24 @@ describe("doctor legacy", () => {
     };
     missingMigration.adapters[0]!.migration_command = null;
     expect(() => validateCompatibilityRetirementManifest(missingMigration)).toThrow();
+
+    const unboundedRetirement = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST);
+    unboundedRetirement.adapters[0]!.retirement_policy = {
+      kind: "zero_usage_window",
+      support_until: null,
+      minimum_zero_usage_releases: null,
+      archive_conversion: null,
+      compatibility_scope: "migration_only",
+    };
+    expect(() => validateCompatibilityRetirementManifest(unboundedRetirement)).toThrow(
+      /missing its required bound/u,
+    );
+
+    const unsafePermanentReader = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST);
+    unsafePermanentReader.adapters[2]!.retirement_policy.compatibility_scope = "recovery_only";
+    expect(() => validateCompatibilityRetirementManifest(unsafePermanentReader)).toThrow(
+      /missing its required bound/u,
+    );
 
     const staleSource = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST);
     staleSource.adapters[0]!.source_paths = ["packages/agentplane/src/missing-legacy-adapter.ts"];
@@ -267,6 +295,13 @@ describe("doctor legacy", () => {
     });
     expect(report.summary.used).toBe(9);
     expect(report.summary.unknown).toBe(3);
+    expect(report.retirement_summary).toEqual({
+      scheduled_removal: 3,
+      support_window: 1,
+      zero_usage_window: 3,
+      archive_conversion: 2,
+      permanent_historical_reader: 3,
+    });
   });
 
   it("reports blocked probes and emits the stable JSON command contract", async () => {
@@ -288,6 +323,7 @@ describe("doctor legacy", () => {
       const report = JSON.parse(io.stdout) as {
         kind: string;
         summary: { total: number; blocked: number };
+        retirement_summary: { permanent_historical_reader: number };
         adapters: { id: string; status: string; migration_command: string }[];
       };
       expect(report.kind).toBe("agentplane.doctor.legacy");
@@ -299,6 +335,7 @@ describe("doctor legacy", () => {
       expect(report.adapters.every((adapter) => adapter.migration_command.trim().length > 0)).toBe(
         true,
       );
+      expect(report.retirement_summary.permanent_historical_reader).toBe(3);
     } finally {
       io.restore();
     }
@@ -314,6 +351,12 @@ describe("doctor legacy", () => {
         humanIo.stdout.split("\n").filter((line) => line.startsWith("  migrate=")),
       ).toHaveLength(COMPATIBILITY_RETIREMENT_MANIFEST.adapters.length);
       expect(humanIo.stdout).not.toContain("manual policy decision required");
+      expect(humanIo.stdout).toContain(
+        "Retirement policies: remove=3 support=1 zero_usage=3 archive=2 permanent_reader=3",
+      );
+      expect(humanIo.stdout).toContain(
+        "policy=permanent_historical_reader scope=historical_reader",
+      );
     } finally {
       humanIo.restore();
     }
