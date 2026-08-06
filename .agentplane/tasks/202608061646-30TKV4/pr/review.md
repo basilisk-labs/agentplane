@@ -6,7 +6,7 @@ Created: 2026-08-06T19:12:24.484Z
 
 - Task: `202608061646-30TKV4`
 - Title: Add user-first task intake and execution preview
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608061646-30TKV4/add-user-first-task-intake-and-execution-preview`
 - Canonical task record: `.agentplane/tasks/202608061646-30TKV4/README.md`
 
@@ -29,7 +29,7 @@ Created: 2026-08-06T19:12:24.484Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/user/cli-reference.generated.mdx              |  86 ++---
+ docs/user/cli-reference.generated.mdx              |  87 ++---
  packages/agentplane/src/cli/command-invocations.ts |   1 +
  .../src/cli/run-cli.core.route-decision.test.ts    |   8 +
  .../src/cli/run-cli.core.task-run.test.ts          | 112 +++---
@@ -42,7 +42,7 @@ Created: 2026-08-06T19:12:24.484Z
  .../agentplane/src/commands/task/run.command.ts    |   6 +-
  .../agentplane/src/commands/task/status.command.ts |  13 +-
  .../agentplane/src/commands/task/task.command.ts   |  10 +-
- 13 files changed, 1056 insertions(+), 274 deletions(-)
+ 13 files changed, 1056 insertions(+), 275 deletions(-)
 ```
 
 </details>

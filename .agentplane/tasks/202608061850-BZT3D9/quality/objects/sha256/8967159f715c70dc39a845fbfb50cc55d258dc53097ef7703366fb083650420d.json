@@ -1,0 +1,25 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run format:check",
+    "bun run test:critical",
+    "bun run typecheck",
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+    "node scripts/checks/check-compatibility-contract-baseline.mjs"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-06T22:36:11.060Z",
+    "updated_by": "CODER",
+    "note": "CI recovery head refresh verified: implementation unchanged; typecheck, exact compatibility contract, and all 12 critical CLI chunks passed on e36b10803bad."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608061850-BZT3D9-bc6f14f2a85475b9e9f28f8a",
+  "task_id": "202608061850-BZT3D9",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the frozen evaluator packet with deterministic command results tied to evaluated SHA 2c35aa1d9848ccdc44d1c13b722dc0253f4f4f9d, plus hosted PR head-equality, stable required-check, ancestry, and cleanup-order evidence.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The frozen evidence contains no deterministic verification records, runner history, runtime evidence, or hosted-check evidence for the evaluated SHA, so the declared checks and concurrency-sensitive integration conditions cannot be validated.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/8967159f715c70dc39a845fbfb50cc55d258dc53097ef7703366fb083650420d.json",
+          "sha256": "sha256:8967159f715c70dc39a845fbfb50cc55d258dc53097ef7703366fb083650420d",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608061850-BZT3D9/README.md",
+          "sha256": "sha256:e09a2ffd52a10095c0bf77363566419ddf64abd29886db7ae13f125517b8038c",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks"
+        },
+        {
+          "path": ".agentplane/policy/workflow.branch_pr.md",
+          "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+          "section": "Constraints"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223622317-recovery-context/evaluator-result.json"
+}

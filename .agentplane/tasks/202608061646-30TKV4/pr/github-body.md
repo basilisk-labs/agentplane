@@ -34,7 +34,7 @@ pass.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/user/cli-reference.generated.mdx              |  86 ++---
+ docs/user/cli-reference.generated.mdx              |  87 ++---
  packages/agentplane/src/cli/command-invocations.ts |   1 +
  .../src/cli/run-cli.core.route-decision.test.ts    |   8 +
  .../src/cli/run-cli.core.task-run.test.ts          | 112 +++---
@@ -47,7 +47,7 @@ pass.
  .../agentplane/src/commands/task/run.command.ts    |   6 +-
  .../agentplane/src/commands/task/status.command.ts |  13 +-
  .../agentplane/src/commands/task/task.command.ts   |  10 +-
- 13 files changed, 1056 insertions(+), 274 deletions(-)
+ 13 files changed, 1056 insertions(+), 275 deletions(-)
 ```
 
 </details>

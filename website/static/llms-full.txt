@@ -554,7 +554,24 @@ Use any coding agent to edit code. Use Agentplane to record the task state, plan
 closure around those edits. The agent writes code and uses the CLI; the human sets tasks,
 guardrails, and review boundaries.
 
-This repository is configured for `branch_pr`, so the normal guarded route is:
+This repository is configured for `branch_pr`. After task creation and semantic plan approval, the
+normal managed route is:
+
+```bash
+agentplane task run <task-id>
+```
+
+An external agent requests one bounded action instead:
+
+```bash
+agentplane task advance <task-id> --agent-json
+```
+
+Immediately after creation, that packet is a read-only PLANNER request. The generated Plan is only
+a marker and cannot be approved. `task run` reports the same planning boundary without launching an
+implementation provider; managed execution begins after a task-specific plan is approved.
+
+The detailed lifecycle below is the diagnostic and recovery expansion of that route:
 
 1. Run preflight.
 2. Create the task, set the plan, and approve it.
@@ -738,22 +755,25 @@ Use tag `spike` for research tasks. A spike should end with:
 
 Agentplane 0.7 exposes one route model through two execution styles:
 
-- an external agent runs the exact command from `task next-action --explain` and recomputes after
-  each mutation;
-- a configured runner uses `task run <task-id>` to let the CLI supervise eligible formal steps and
-  bounded semantic episodes.
+- an external agent requests one compact packet with `task advance --agent-json`;
+- after semantic plan approval, a configured runner uses `task run <task-id>` to let the CLI
+  supervise eligible formal steps and bounded semantic episodes.
 
 The supervisor does not turn approvals, open questions, hosted waits, or semantic choices into
 automatic success. It returns a typed stop at those boundaries. See
 [Migrate to Agentplane 0.7](v0-7-migration) for compatibility and recovery rules.
+
+Immediately after task creation, `task advance --agent-json` returns a read-only `PLANNER` packet.
+The generated Plan text is a non-approvable placeholder. A task-specific plan must be recorded
+before the route can request explicit approval; `task run` reports the same typed planning stop
+without starting an implementation provider.
 
 ## Supervised lifecycle
 
 After plan approval and, for `branch_pr`, worktree creation:
 
 ```bash
-agentplane task brief <task-id>
-agentplane task next-action <task-id> --explain
+agentplane task advance <task-id> --agent-json
 agentplane task run <task-id> --dry-run
 agentplane task run <task-id>
 ```
@@ -763,7 +783,30 @@ outputs, prepared knowledge evidence, verification intent, and stop rules. The a
 semantic result; Agentplane separately records process, Git, filesystem, artifact, and check facts.
 An agent-reported check is not accepted as an observed check without supervisor evidence.
 
-## Minimal branch_pr lifecycle
+On completion, the same trust boundary produces a task-level token aggregate. Managed provider
+episodes contribute observed input, visible output, reasoning, and total tokens exactly once.
+External, malformed, legacy, or partially observed episodes remain explicitly `partial` or
+`unavailable`; the CLI does not accept agent-supplied usage and does not fabricate zeroes.
+
+## Canonical branch_pr lifecycle
+
+After task creation and semantic plan approval, the default managed path is one command:
+
+```bash
+agentplane task run <task-id>
+```
+
+For an external agent, use the compact boundary. The command may perform only eligible registered
+deterministic transitions before returning the next semantic or stop packet:
+
+```bash
+agentplane task advance <task-id> --agent-json
+```
+
+The expanded sequence below is retained for diagnostics, recovery, and compatibility. It is not
+the default agent protocol.
+
+## Manual branch_pr compatibility lifecycle
 
 This repository is configured for `branch_pr`, so the normal guarded route is:
 
@@ -809,9 +852,8 @@ with `branch.task_prefix` and `branch.task_close_prefix`; the rest of the shape 
 
 ## AgentPlane-owned automation boundaries
 
-In `branch_pr`, agents should treat `task brief` and `task next-action --explain` as the live
-boundary for operations AgentPlane already owns. Run the emitted command, then recompute the route
-before doing another lifecycle step.
+In `branch_pr`, use `task advance --agent-json` as the compact machine boundary. Use `task brief`
+and `task next-action --explain` only when expanded route evidence is needed for recovery.
 
 - `work start` / `work resume` own task branch and worktree setup; do not hand-roll branch names or
   worktree creation when the route packet gives an exact command.
@@ -877,17 +919,18 @@ Everything else in this document is either mode-specific detail or a fallback pa
 A task moves through the same core stages in both modes:
 
 1. **Intake**: a need is identified and recorded.
-2. **Plan**: ORCHESTRATOR drafts a plan and requests approval.
-3. **Create**: PLANNER creates the task, assigns ownership, and sets dependencies.
-4. **Start**: the executor marks the task DOING with a structured comment.
-5. **Implement**: code, docs, and artifacts are produced.
-6. **Verify**: checks are run (if configured) and a verification outcome is recorded.
-7. **Commit**: changes are committed with the task ID suffix.
-8. **Finish**: the task is closed with a Verified note, commit metadata, and an Agent Change Record
+2. **Create**: the CLI creates the task record, assigns ownership, and sets dependencies.
+3. **Plan**: PLANNER turns intent and prepared context into a task-specific plan.
+4. **Approve**: ORCHESTRATOR or the human explicitly approves that semantic plan.
+5. **Start**: the executor marks the task DOING with a structured comment.
+6. **Implement**: code, docs, and artifacts are produced.
+7. **Verify**: observed checks and an independent semantic review are recorded separately.
+8. **Commit**: changes are committed with the task ID suffix.
+9. **Finish**: the task is closed with a Verified note, commit metadata, and an Agent Change Record
    refresh when `acr.write_on_finish=true`.
-9. **Evidence projection**: validate the task-local Agent Change Record against task, policy,
-   verification, finish, and Git evidence.
-10. **Project and integration projections (optional)**: advanced maintenance surfaces can export or
+10. **Evidence projection**: validate the task-local Agent Change Record against task, policy,
+    verification, finish, and Git evidence.
+11. **Project and integration projections (optional)**: advanced maintenance surfaces can export or
     regenerate derived task projections from the current backend state.
 
 Task creation targets executable work only.
@@ -1158,7 +1201,20 @@ Workflow diagnostics and repair:
 
 ```bash
 agentplane doctor --fix
+agentplane doctor legacy --json
 ```
+
+`doctor legacy` is read-only. It returns the packaged compatibility retirement manifest plus
+workspace probes classified as `used`, `unused`, `unknown`, or `blocked`. Each adapter names its
+introduction and deprecation versions, retirement target or blocker, and migration command.
+
+Exceptional legacy protected-conflict recovery lives outside the normal lifecycle surface:
+
+```bash
+agentplane repair adopt-legacy-conflict <task-id> --expect-adoption-token <sha256:...>
+```
+
+Run it only with the exact token emitted by `task next-action` or `pr conflict-rework`.
 
 ## Config
 
@@ -1196,12 +1252,12 @@ agentplane task doc set <task-id> --section Summary --text "..."
 agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 ```
 
-There are two supported execution paths. An external agent can work in the authoritative checkout
-and follow the one command emitted by `task next-action`. A configured runner can ask Agentplane to
-supervise the same typed route:
+There are two canonical frontends over the same typed route. An external agent requests one compact
+packet; after plan approval, a configured runner resolves eligible implementation and review
+boundaries:
 
 ```bash
-agentplane task next-action <task-id> --explain
+agentplane task advance <task-id> --agent-json
 agentplane task run <task-id> --dry-run
 agentplane task run <task-id>
 ```
@@ -1209,8 +1265,12 @@ agentplane task run <task-id>
 `--dry-run` prepares and validates the runner bundle without starting the adapter. A real run owns
 formal lifecycle operations, invokes bounded semantic episodes, records supervisor observations,
 and stops on typed approval, input, wait, rework, or terminal outcomes. The external-agent and
-runner paths share task, fingerprint, authority, route, and evidence contracts; neither should
-reconstruct lifecycle state from prose.
+runner paths share task, fingerprint, authority, route, and evidence contracts. `task next-action
+--explain` remains the expanded forensic projection, not the normal machine protocol.
+
+Before a task-specific plan exists, both frontends expose the same `agent.planning` state. `task
+advance --agent-json` returns a read-only `PLANNER` packet; `task run` returns a typed
+`semantic_input_required` stop and does not launch an implementation provider.
 
 Runner maintenance commands remain on the advanced help surface:
 
@@ -1269,7 +1329,10 @@ agentplane acr schema --version 0.1
 These commands derive `.agentplane/tasks/<task-id>/acr.json` from existing
 task lifecycle evidence. `finish` refreshes the task-local ACR automatically when
 `acr.write_on_finish=true`; use `--no-write-acr` only for explicit recovery cases. ACR remains a
-derived projection, not a second source of truth. `acr validate --mode schema` checks only JSON
+derived projection, not a second source of truth. Completed tasks expose provider token usage as
+`token_usage` in the task README, task JSON/brief projections, and
+`extensions["agentplane.token-usage"]` in the ACR. The state is `observed`, `partial`, or
+`unavailable`; an unavailable provider signal is never serialized as zero. `acr validate --mode schema` checks only JSON
 shape; `acr check --mode ci` enforces merge-ready semantics. See
 [Agent Change Records](../reference/acr).
 
