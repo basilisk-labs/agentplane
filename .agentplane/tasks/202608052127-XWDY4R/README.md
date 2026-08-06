@@ -236,7 +236,7 @@ sections:
 
     Command: bun run release:prepublish
     Result: pass
-    Evidence: .agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-3195e6fb/logs/full-contract.log and packaged-candidate-flow.log
+    Evidence: .agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-3195e6fb/report.json
     Scope: complete build, contract, migration, packed-install, platform, workflow, coverage, and release-critical gates
 
     Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1
@@ -246,7 +246,7 @@ sections:
 
     Command: bun run ci:contract and bun run test:critical
     Result: pass
-    Evidence: .agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-3195e6fb/logs/full-contract.log and critical-cli.log
+    Evidence: .agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-3195e6fb/report.json
     Scope: repository contract plus release-critical CLI regression surface
 
     Command: bun run release:evidence:collect -- --version 0.7.3 --json
@@ -451,7 +451,7 @@ Details:
 
 Command: bun run release:prepublish
 Result: pass
-Evidence: .agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-3195e6fb/logs/full-contract.log and packaged-candidate-flow.log
+Evidence: .agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-3195e6fb/report.json
 Scope: complete build, contract, migration, packed-install, platform, workflow, coverage, and release-critical gates
 
 Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1
@@ -461,7 +461,7 @@ Scope: exact candidate 3195e6fb; 50 runs, 55 provider episodes, no retry, zero b
 
 Command: bun run ci:contract and bun run test:critical
 Result: pass
-Evidence: .agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-3195e6fb/logs/full-contract.log and critical-cli.log
+Evidence: .agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-3195e6fb/report.json
 Scope: repository contract plus release-critical CLI regression surface
 
 Command: bun run release:evidence:collect -- --version 0.7.3 --json
