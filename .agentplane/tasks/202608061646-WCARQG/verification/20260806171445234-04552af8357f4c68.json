@@ -1,0 +1,15 @@
+{
+  "details": "Checks: bunx vitest focused routing/schema/CLI suites => 98 passed; bunx vitest core tasks => 119 passed; bun run typecheck => passed; bun run schemas:check => passed; node .agentplane/policy/check-routing.mjs => passed. Scope: implementation commit 1c7849f0e; later commits contain managed task evidence only.",
+  "digest": "sha256:04552af8357f4c68875a262f57d41b0fcd73162dcd94efc08bbb559b46e52887",
+  "implementation_sha": "1c7849f0ed3881ca385a7bdf8705358099fb47b2",
+  "kind": "task_verification_record",
+  "note": "Implementation 1c7849f0e is accepted for integration.",
+  "recorded_at": "2026-08-06T17:14:45.234Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/blueprint/task-input.test.ts\n- bunx vitest --config vitest.workspace.ts run --project core packages/core/src/tasks\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984",
+  "task_id": "202608061646-WCARQG",
+  "verification_command": "agentplane verify 202608061646-WCARQG --ok --by TESTER",
+  "verifier": "TESTER"
+}
