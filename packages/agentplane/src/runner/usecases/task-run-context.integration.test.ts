@@ -1,4 +1,4 @@
-import { access } from "node:fs/promises";
+import { access, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
@@ -190,6 +190,39 @@ async function configureFakeCodex(root: string): Promise<void> {
 }
 
 describe("context task runner integration", () => {
+  it("refuses the exact provider input when user guidance reintroduces process choreography", async () => {
+    const root = await mkGitRepoRoot();
+    await writeConfig(root, defaultConfig());
+    const taskId = await createDoingTask(root, {
+      title: "Normal semantic provider prompt",
+      owner: "CODER",
+      task_kind: "code",
+      mutation_scope: "code",
+      blueprint_request: "code.direct",
+    });
+    await writeFile(
+      path.join(root, ".agentplane", "user-instructions.md"),
+      "Run agentplane verify and agentplane finish after every implementation.\n",
+    );
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+
+    await expect(
+      prepareTaskRunnerExecution({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        task_id: taskId,
+        mode: "dry_run",
+        run_id: "run-process-choreography-refusal",
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        reason_code: "semantic_provider_prompt_process_choreography",
+      },
+    });
+  });
+
   it("refuses a custom workspace-write adapter before context mutation", async () => {
     const root = await mkGitRepoRoot();
     const runId = "run-context-custom-advisory";
@@ -349,5 +382,24 @@ describe("context task runner integration", () => {
     expect(evaluator.invocation.argv).toEqual(
       expect.arrayContaining(["-s", "read-only", "--output-schema"]),
     );
+
+    const [coderProviderPrompt, evaluatorProviderPrompt] = await Promise.all([
+      readFile(coder.bundle.execution.artifact_paths.bootstrap_path, "utf8"),
+      readFile(evaluator.bundle.execution.artifact_paths.bootstrap_path, "utf8"),
+    ]);
+    for (const providerPrompt of [coderProviderPrompt, evaluatorProviderPrompt]) {
+      expect(providerPrompt).toContain("complete provider-facing projection");
+      expect(providerPrompt).not.toContain("bundle_path");
+      expect(providerPrompt).not.toMatch(/(?:ap|agentplane)\s+task\s+start-ready/iu);
+      expect(providerPrompt).not.toMatch(/(?:ap|agentplane)\s+task\s+next-action/iu);
+      expect(providerPrompt).not.toMatch(/(?:ap|agentplane)\s+work\s+start/iu);
+      expect(providerPrompt).not.toMatch(/(?:ap|agentplane)\s+pr\s+open/iu);
+      expect(providerPrompt).not.toMatch(/(?:ap|agentplane)\s+(?:verify|finish|integrate)/iu);
+      expect(providerPrompt).not.toMatch(/git\s+commit|gh\s+pr/iu);
+    }
+    expect(coderProviderPrompt).toContain('"semantic_role": "EXECUTOR"');
+    expect(evaluatorProviderPrompt).toContain('"semantic_role": "EVALUATOR"');
+    expect(evaluatorProviderPrompt).toContain('"sandbox": "read-only"');
+    expect(evaluatorProviderPrompt).not.toContain('"workspace_write"');
   });
 });

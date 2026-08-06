@@ -2,6 +2,7 @@ import {
   AgentWorkOrderPreparationError,
   assertAgentWorkOrderReadyForInvocation,
   type AgentWorkOrderV2,
+  type AgentWorkOrderRole,
   type StateFingerprint,
   type StateFingerprintPreconditionDiagnostic,
 } from "@agentplaneorg/core/schemas";
@@ -22,6 +23,7 @@ import { CliError } from "../../shared/errors.js";
 import { measurePreparationNode } from "../../shared/preparation-trace.js";
 import {
   collectRunnerBasePrompts,
+  projectRunnerPromptsForSemanticEpisode,
   RunnerPromptModuleCompilationError,
 } from "../context/base-prompts.js";
 import {
@@ -58,7 +60,10 @@ export type PreparedAgentWorkOrder = {
   /** Internal typed source for the runner only; it is never rendered as the v2 transport view. */
   route_decision: TaskRouteDecision;
   task_envelope: RunnerTaskContextEnvelope;
+  /** Full internal prompt graph used for policy and state-fingerprint resolution. */
   base_prompts: RunnerPromptBlock[];
+  /** Bounded projection serialized into the provider-facing runner bundle. */
+  provider_prompts: RunnerPromptBlock[];
   blueprint: BlueprintPlanArtifact;
   brief_projection: AgentWorkOrderLegacyBriefProjection;
   execution_context: ReadOnlyExecutionContext;
@@ -131,6 +136,7 @@ export async function prepareAgentWorkOrder(opts: {
   execution_profile?: ResolvedExecutionProfileRuntime;
   semantic_selector?: SemanticRetrievalSelector;
   prepared_route_decision?: TaskRouteDecision;
+  semantic_role?: AgentWorkOrderRole;
 }): Promise<AgentWorkOrderPreparationResult> {
   const includeRunnerState = opts.include_runner_state;
   const executionContext =
@@ -305,9 +311,14 @@ export async function prepareAgentWorkOrder(opts: {
         task_envelope: taskEnvelope,
         execution_context: executionContext,
         route_decision: routeDecision,
+        ...(opts.semantic_role ? { semantic_role: opts.semantic_role } : {}),
       },
       source_manifest: sourceManifest,
       knowledge_retrieval: knowledgeRetrieval,
+    });
+    const semanticBasePrompts = projectRunnerPromptsForSemanticEpisode({
+      prompts: basePrompts,
+      role: canonicalWorkOrder.role,
     });
     const preparation: AgentWorkOrderPreparationView = {
       schema_version: 2,
@@ -331,6 +342,7 @@ export async function prepareAgentWorkOrder(opts: {
         route_decision: routeDecision,
         task_envelope: taskEnvelope,
         base_prompts: basePrompts,
+        provider_prompts: semanticBasePrompts,
         blueprint,
         brief_projection: briefProjection,
         execution_context: executionContext,

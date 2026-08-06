@@ -38,9 +38,9 @@ function renderEvaluatorSkepticismLines(level: EvaluatorSkepticismLevel): string
   const common = [
     "Evaluator skepticism contract:",
     `- evaluator_skepticism_level: ${level}`,
-    "- During evaluator or audit review, reconstruct the intended contract from the task, plan, Verify Steps, route decision, diff, and evidence; do not rely on the implementer's summary.",
-    "- Treat passing technical checks as evidence, not proof. Look for broken invariants, missing negative cases, stale route assumptions, and untested concurrency or lifecycle edges.",
-    "- If the run is evaluator-only, do not fix issues. Return findings, missing tests, hidden assumptions, residual risks, and a concrete rework packet for the parent runner.",
+    "- Reconstruct the intended contract from the objective, acceptance criteria, changed behavior, and supplied evidence; do not rely on the implementer's summary.",
+    "- Treat passing technical checks as evidence, not proof. Look for broken invariants, missing negative cases, stale assumptions, and untested concurrency edges.",
+    "- Remain read-only. Return findings, missing tests, hidden assumptions, residual risks, and a concrete rework packet.",
   ];
   if (level === "standard") {
     return [
@@ -58,7 +58,7 @@ function renderEvaluatorSkepticismLines(level: EvaluatorSkepticismLevel): string
   return [
     ...common,
     "- Paranoid review: assume the implementation is incomplete until each critical claim is backed by direct code, test, runtime, or task-artifact evidence.",
-    "- Prefer rework over pass for ambiguous ownership, unverified negative cases, broad diffs without targeted evidence, or lifecycle state that could be stale.",
+    "- Prefer rework over pass for ambiguous ownership, unverified negative cases, or broad diffs without targeted evidence.",
   ];
 }
 
@@ -75,32 +75,104 @@ function renderPhaseToolLines(bundle: RunnerContextBundle): string[] {
   const allowed = manifest.tools.filter((tool) => tool.allowed);
   const runScoped = allowed.filter((tool) => tool.transport === "run_scoped_command");
   const unavailable = manifest.tools.filter((tool) => !tool.allowed);
+  const effectiveRepositoryToolClasses = manifest.repository_tool_classes.filter(
+    (toolClass) =>
+      toolClass !== "workspace_write" ||
+      (bundle.execution.write_scope?.writable_roots.length ?? 0) > 0,
+  );
   return [
     "",
     "Run-scoped phase tool contract:",
     `- phase: ${manifest.phase}`,
     `- role: ${manifest.role}`,
     `- global_help_required: ${String(manifest.global_help_required)}`,
-    `- repository_tool_classes: ${JSON.stringify(manifest.repository_tool_classes)}`,
+    `- repository_tool_classes: ${JSON.stringify(effectiveRepositoryToolClasses)}`,
     ...(runScoped.length > 0
       ? [
           "- The supervisor injects the signed token and a checkout-local broker channel through the process environment. Never print the token or pass it on argv.",
-          "- For run_scoped_command tools, send one JSON object on stdin to the exact invocation below. Input schemas are in bundle.execution.phase_tools.tools.",
+          "- For run_scoped_command tools, send one JSON object on stdin to the exact invocation and schema below.",
         ]
       : [
           "- This adapter exposes no run_scoped_command transport, so no phase-tool token or broker channel is injected. Use only the declared terminal result transport.",
         ]),
     ...allowed.map(
       (tool) =>
-        `- ${tool.name}: transport=${tool.transport} enforcement=${tool.enforcement} invocation=${tool.invocation ?? "terminal AgentSemanticResult v2"}`,
+        `- ${tool.name}: transport=${tool.transport} enforcement=${tool.enforcement} invocation=${tool.invocation ?? "terminal AgentSemanticResult v2"} input_schema=${JSON.stringify(tool.input_schema)}`,
     ),
     ...unavailable.map(
       (tool) =>
         `- ${tool.name}: unavailable (${tool.reason ?? "adapter/work-order capability not granted"})`,
     ),
-    "- Lifecycle operations are never phase tools. An undeclared, expired, revoked, cross-run, cross-role, or tampered call returns a typed denial before target effects.",
+    "- An undeclared, expired, revoked, cross-run, cross-role, or tampered call returns a typed denial before target effects.",
     "- report_result and report_blocker are terminal: an accepted call revokes the token. request_knowledge, knowledge_search, and knowledge_show remain bounded to the current work-order context.",
   ];
+}
+
+function renderSemanticPromptProjectionLines(bundle: RunnerContextBundle): string[] {
+  return bundle.base_prompts.flatMap((block) => [
+    `### ${block.title ?? block.id}`,
+    `source: ${block.source ?? block.id}`,
+    "",
+    block.content.trim(),
+    "",
+  ]);
+}
+
+function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string, unknown> | null {
+  const workOrder = bundle.work_order;
+  if (!workOrder) return null;
+  const requiredInputs = workOrder.required_inputs.filter((input) => {
+    if (input.kind === "task_document" || input.kind === "policy_module") return false;
+    if (input.kind !== "source_artifact") return true;
+    const source = input.path ?? "";
+    return (
+      !source.startsWith(".agentplane/") &&
+      !source.startsWith("bundled:") &&
+      !source.startsWith("runtime:") &&
+      source !== "AGENTS.md" &&
+      source !== "CLAUDE.md"
+    );
+  });
+  const effectiveWritableRoots =
+    bundle.execution.write_scope?.writable_roots ?? workOrder.authority.writable_roots;
+  const effectiveSandbox =
+    bundle.execution.sandbox_policy?.requested ?? workOrder.authority.sandbox;
+  const effectiveToolClasses = workOrder.authority.allowed_tool_classes.filter(
+    (toolClass) => toolClass !== "workspace_write" || effectiveWritableRoots.length > 0,
+  );
+  return {
+    work_order_id: workOrder.work_order_id,
+    role: workOrder.role,
+    task: workOrder.task,
+    authority: {
+      ...workOrder.authority,
+      writable_roots: effectiveWritableRoots,
+      allowed_tool_classes: effectiveToolClasses,
+      sandbox: effectiveSandbox,
+    },
+    context_intent: {
+      purpose: "Provide the minimum semantic context required for this bounded episode.",
+      required_knowledge_ref_digests: workOrder.context_intent.required_knowledge_ref_digests,
+      require_prepared_evidence: workOrder.context_intent.require_prepared_evidence,
+    },
+    knowledge_refs: workOrder.knowledge_refs,
+    prepared_evidence: workOrder.prepared_evidence,
+    required_inputs: requiredInputs,
+    required_outputs: workOrder.required_outputs,
+    verification_intent: workOrder.verification_intent,
+    semantic_result_schema: workOrder.semantic_result_schema,
+    stop_rules: [
+      "Stop and return a blocked semantic result when required context is missing or stale.",
+      "Stop before exceeding the granted authority, writable roots, network policy, or protected paths.",
+      "Return one typed semantic result when the objective is satisfied or blocked.",
+    ],
+  };
+}
+
+function renderSemanticWorkOrderLines(bundle: RunnerContextBundle): string[] {
+  const projection = semanticWorkOrderProjection(bundle);
+  if (!projection) return [];
+  return ["## Semantic work order", "", "```json", JSON.stringify(projection, null, 2), "```", ""];
 }
 
 export function renderTaskRunnerBootstrap(
@@ -117,10 +189,6 @@ export function renderTaskRunnerBootstrap(
   const verifierChecks = bundle.playbook?.final_verifier.checks ?? [];
   const evaluatorSkepticismLevel =
     bundle.execution.evaluator_skepticism_level ?? ("standard" satisfies EvaluatorSkepticismLevel);
-  const route = bundle.route_decision;
-  const workflowOperation =
-    route?.workflowStep.kind === "cli_operation" ? route.workflowStep.operation : undefined;
-  const routeMustNot = route?.executionPacket.mustNot ?? [];
   const sandboxPolicy = bundle.execution.sandbox_policy;
   const knowledgeRequestAuthorized =
     bundle.work_order?.authority.allowed_tool_classes.includes("knowledge_request");
@@ -134,58 +202,43 @@ export function renderTaskRunnerBootstrap(
     ...(codexGoalLine ? [codexGoalLine, ""] : []),
     "# agentplane runner bootstrap",
     "",
-    "This invocation is already inside an approved runner execution.",
-    "- Do not run repository startup commands such as `agentplane config show`, `agentplane quickstart`, `agentplane task list`, `git status`, or `git rev-parse` unless the bundle explicitly requires them as task work.",
-    "- Do not create, approve, start, verify, finish, block, or rerun tasks unless the bundle explicitly requires task metadata edits.",
-    "- Keep lifecycle authority with the parent AgentPlane workflow; do not open PRs, merge, release, push publication artifacts, or clean worktrees unless the bundle explicitly delegates that action.",
-    "- Do not recursively invoke runner entrypoints such as `agentplane task run` or `agentplane recipes scenario execute` from inside this run.",
-    "- Do not invoke `ap` or `agentplane` for lifecycle, context preparation, repository diagnosis, or formal verification. The parent CLI owns those actions. The only exception is an exact run-scoped phase-tool invocation listed below.",
+    "This invocation is one approved semantic episode inside a supervisor-owned execution.",
+    "- Work only on the semantic objective and authority projected below.",
+    "- Keep all control-plane operations with the parent supervisor.",
+    "- Do not invoke nested supervisor entrypoints or inspect supervisor-owned state artifacts.",
+    "- Use only an exact run-scoped phase-tool invocation declared below; all other supervisor interfaces remain unavailable in this episode.",
     "- Assume sibling runners may be executing concurrently. Keep writes inside the task scope, avoid broad refactors or shared policy edits, and report possible write conflicts in the result manifest instead of resolving them speculatively.",
-    "- Open bundle.json immediately, execute the requested work directly, and stop when the requested outcome is satisfied.",
+    "- Execute the projected work directly and stop when the requested semantic outcome is satisfied.",
     "",
     `- target: ${targetLabel}`,
     `- adapter: ${bundle.execution.adapter_id}`,
     `- mode: ${bundle.execution.mode}`,
     `- run_id: ${bundle.execution.run_id}`,
     `- work_order_id: ${bundle.work_order?.work_order_id ?? invocation?.work_order_id ?? bundle.execution.run_id}`,
-    `- bundle_path: ${bundle.execution.artifact_paths.bundle_path}`,
     `- result_path: ${bundle.execution.artifact_paths.result_path}`,
     `- receipt_path: ${bundle.execution.artifact_paths.receipt_path}`,
-    `- bootstrap_path: ${bundle.execution.artifact_paths.bootstrap_path}`,
+    `- repository_root: ${bundle.repository.git_root}`,
     `- sandbox_requested: ${sandboxPolicy?.requested ?? "unknown"}`,
     `- sandbox_source: ${sandboxPolicy?.source ?? "unknown"}`,
     `- execution_role: ${sandboxPolicy?.role ?? "unknown"}`,
     `- sandbox_enforcement: ${sandboxDecision?.status ?? "unknown"}`,
     `- writable_roots: ${JSON.stringify(writeScope?.writable_roots ?? [])}`,
     `- protected_paths: ${JSON.stringify(writeScope?.protected_paths ?? [])}`,
-    ...(route
-      ? [
-          `- checkout_role: ${route.workspace.checkoutRole}`,
-          `- route_phase: ${route.oracle.phase}`,
-          `- workflow_step_kind: ${route.workflowStep.kind}`,
-          `- workflow_step_id: ${route.workflowStep.id}`,
-          `- workflow_operation_id: ${workflowOperation?.id ?? "none"}`,
-          `- route_mutation_path_hint: ${route.oracle.mutationPathHint ?? "none"}`,
-          `- route_safe_to_mutate: ${String(route.executionPacket.safeToMutate)}`,
-          `- route_recommended_role: ${route.executionPacket.recommendedRole}`,
-          `- route_must_run_from: ${route.executionPacket.mustRunFrom ?? "unknown"}`,
-          `- route_return_control_when: ${route.executionPacket.returnControlWhen}`,
-        ]
-      : []),
     "",
-    "Use bundle.json as the complete runner input. Do not reconstruct prompts or route decisions from CLI argv.",
-    "Treat the rendered route fields as supervisor-resolved constraints. Do not recompute workflow state or invoke task lifecycle commands from this run.",
-    "For file-edit tools that do not accept cwd/workdir, use absolute paths under route_mutation_path_hint when route_safe_to_mutate is true; otherwise stop before mutating files.",
-    "Stop according to route_return_control_when; the parent supervisor owns the next state transition.",
+    "The content below is the complete provider-facing projection for this episode. Do not open the internal supervisor bundle.",
+    "For file-edit tools that do not accept cwd/workdir, use absolute paths under writable_roots; stop before writing when no writable root is granted.",
+    "The parent supervisor owns every formal transition after the semantic result is returned.",
     "Treat protected_paths as forbidden even when the native sandbox permits them. The supervisor evaluates actual writes after the run.",
-    ...(routeMustNot.length > 0
-      ? ["Route must-not rules:", ...routeMustNot.map((rule) => `- ${rule}`)]
-      : []),
+    "",
+    "## Semantic policy and role context",
+    "",
+    ...renderSemanticPromptProjectionLines(bundle),
+    ...renderSemanticWorkOrderLines(bundle),
     ...(knowledgeRequestAuthorized
       ? [
           "When bounded task context is missing, return status=needs_context with a KnowledgeRequest v1 in the semantic result.",
           "KnowledgeRequest is limited to scope=task_context, a declared desired_kind, and blocking=true only when work cannot proceed without it.",
-          "Do not use repository search or lifecycle commands to fill that gap; the parent CLI validates the request, retrieves digest-valid references, and records its audit.",
+          "Use only the declared bounded knowledge channel for that gap; the parent supervisor validates the request and retrieves digest-valid references.",
         ]
       : []),
     ...renderPhaseToolLines(bundle),

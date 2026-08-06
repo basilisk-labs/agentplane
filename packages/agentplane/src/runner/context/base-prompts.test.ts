@@ -9,8 +9,10 @@ import { afterEach, describe, expect, it } from "vitest";
 import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
 import type { RunnerTaskContext } from "../types.js";
 import {
+  assertSemanticProviderPromptHasNoProcessChoreography,
   collectRunnerBasePrompts,
   compileRunnerPromptModuleGraph,
+  projectRunnerPromptsForSemanticEpisode,
   resolveOwnerProfilePromptSource,
   resolvePolicyGatewayPromptSource,
   runnerPromptBlocksToModuleGraph,
@@ -31,6 +33,95 @@ afterEach(async () => {
 });
 
 describe("collectRunnerBasePrompts", () => {
+  it("projects structured gateway fragments and role constraints for semantic episodes", async () => {
+    const root = await makeTempRepo();
+    const agentsDir = path.join(root, ".agentplane", "agents");
+    await mkdir(agentsDir, { recursive: true });
+    await writeFile(
+      path.join(root, "AGENTS.md"),
+      [
+        '<!-- ap:fragment id="project.purpose" slot="purpose" mutability="replaceable" -->',
+        "# Project purpose",
+        "Build the bounded requested behavior.",
+        "<!-- /ap:fragment -->",
+        '<!-- ap:fragment id="project.scope" slot="hard_constraint" mutability="append_only" -->',
+        "Stay inside the supplied writable roots.",
+        "<!-- /ap:fragment -->",
+        '<!-- ap:fragment id="project.commands" slot="commands" mutability="replaceable" -->',
+        "agentplane task start-ready TASK --author CODER",
+        "git commit -m implementation",
+        "<!-- /ap:fragment -->",
+      ].join("\n"),
+    );
+    await writeFile(
+      path.join(agentsDir, "CODER.json"),
+      JSON.stringify(
+        {
+          id: "CODER",
+          role: "Run agentplane verify and agentplane finish after implementation.",
+        },
+        null,
+        2,
+      ),
+    );
+
+    const prompts = await collectRunnerBasePrompts({
+      git_root: root,
+      owner_id: "CODER",
+    });
+    const projected = projectRunnerPromptsForSemanticEpisode({
+      prompts,
+      role: "EXECUTOR",
+    });
+    const serialized = projected.map((prompt) => prompt.content).join("\n");
+
+    expect(projected.find((prompt) => prompt.id === "base.policy_gateway")?.content).toContain(
+      "Build the bounded requested behavior.",
+    );
+    expect(serialized).toContain("Stay inside the supplied writable roots.");
+    expect(serialized).toContain('"semantic_role": "EXECUTOR"');
+    expect(serialized).not.toContain("task start-ready");
+    expect(serialized).not.toContain("git commit");
+    expect(serialized).not.toContain("agentplane verify");
+    expect(() =>
+      assertSemanticProviderPromptHasNoProcessChoreography({ prompt: serialized }),
+    ).not.toThrow();
+  });
+
+  it.each(["PLANNER", "EXECUTOR", "EVALUATOR"] as const)(
+    "rejects process choreography in an exact %s provider prompt",
+    (role) => {
+      const safePrompt = `semantic_role=${role}\nobjective=Implement the supplied behavior.`;
+      expect(() =>
+        assertSemanticProviderPromptHasNoProcessChoreography({ prompt: safePrompt }),
+      ).not.toThrow();
+      expect(() =>
+        assertSemanticProviderPromptHasNoProcessChoreography({
+          prompt: `${safePrompt}\nagentplane task next-action TASK --explain`,
+        }),
+      ).toThrow(/process choreography/u);
+    },
+  );
+
+  it("keeps the bundled semantic projection materially smaller than the internal policy graph", async () => {
+    const root = await makeTempRepo();
+    const prompts = await collectRunnerBasePrompts({
+      git_root: root,
+      owner_id: "CODER",
+    });
+    const projected = projectRunnerPromptsForSemanticEpisode({
+      prompts,
+      role: "EXECUTOR",
+    });
+    const fullBytes = Buffer.byteLength(JSON.stringify(prompts), "utf8");
+    const projectedBytes = Buffer.byteLength(JSON.stringify(projected), "utf8");
+
+    expect(projectedBytes).toBeLessThan(fullBytes * 0.5);
+    expect(projected.map((prompt) => prompt.content).join("\n")).not.toContain(
+      "agentplane task start-ready",
+    );
+  });
+
   it("exposes precedence traces for owner profile and policy gateway source selection", async () => {
     const root = await makeTempRepo();
     const agentsDir = path.join(root, ".runtime", "agents");

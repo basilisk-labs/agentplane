@@ -29,7 +29,7 @@ import {
   type RunnerStateFingerprintComponentProbes,
   type RunnerStateFingerprintObservedComponents,
 } from "./state-fingerprint-observation.js";
-import type { RunnerContextBundle } from "./types.js";
+import type { RunnerContextBundle, RunnerPromptBlock } from "./types.js";
 
 export const RUNNER_STATE_FINGERPRINT_POLICY = {
   required_components: [
@@ -307,6 +307,7 @@ export async function capturePreparedRunnerStateFingerprint(opts: {
   bundle: RunnerContextBundle;
   git: GitSnapshot;
   probes?: RunnerStateFingerprintProbes;
+  policy_prompts?: RunnerPromptBlock[];
 }): Promise<StateFingerprint> {
   const components = await observePreparedRunnerStateComponents(opts);
   return buildRunnerStateFingerprint({
