@@ -13,7 +13,7 @@ Created: 2026-08-06T16:48:32.143Z
 ## Verification
 
 - State: ok
-- Note: Post-closure verification confirms f60c230c4931 adds only task closure artifacts on top of already verified implementation 1c7849f0e; 98 focused tests, typecheck, schema parity, and policy routing remain the accepted evidence.
+- Note: Verification refreshed for task-artifact head 8c032b7fa; implementation remains 1c7849f0e and the accepted 98 focused tests, typecheck, schema parity, and policy routing evidence are unchanged.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
