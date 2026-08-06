@@ -5,19 +5,19 @@
   "diffstat_sha256": "sha256:a5737bb31def863f2aa32aecad7e6d3cf94637bb442487452f54ddbea5489ced",
   "last_verified_at": "2026-08-06T22:41:11.843Z",
   "last_verified_diffstat_sha256": "sha256:a5737bb31def863f2aa32aecad7e6d3cf94637bb442487452f54ddbea5489ced",
-  "pr_number": 4793,
-  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4793",
+  "pr_number": 4795,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4795",
   "pre_merge_closure": {
-    "basis_commit": "14526cb606f858b5de3b4ac87dc983f6681228fa",
-    "branch": "task/202608061850-BZT3D9/land-post-merge-workflow-routing-qualification-f",
-    "pr_number": 4785,
-    "recorded_at": "2026-08-06T22:45:57.295Z",
+    "basis_commit": "4c07d105bec7f52aa2d6259967225e05217cf84c",
+    "branch": "task/202608061850-BZT3D9/post-merge-ci-recovery",
+    "pr_number": 4795,
+    "recorded_at": "2026-08-06T23:41:10.211Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608061850-BZT3D9",
-  "updated_at": "2026-08-06T23:40:41.495Z",
+  "updated_at": "2026-08-06T23:40:45.442Z",
   "verify": {
     "status": "pass"
   }
