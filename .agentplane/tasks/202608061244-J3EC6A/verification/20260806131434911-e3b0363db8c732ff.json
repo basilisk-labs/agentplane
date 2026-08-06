@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run release:prepublish\nResult: PASS; 101/101 release-ci-base chunks, 13 workflow files/50 tests, 19 significant files/204 tests, and 4 release-critical files/16 tests passed; local tarball install smoke and 8 migration scenarios passed.\nEvidence: local release worktree at implementation commit 302b60da59b526b71c36db569988a1107b4a79ce; package versions agentplane, @agentplaneorg/core, and @agentplaneorg/recipes are exactly 0.7.4; compatibility surface e268ab12ae45c6c5620e2b92c671828ea25fbcc79fd4f21b6e9da806de08eabb.\nScope: release-only diff reviewed against origin/main; changes are version parity, English release notes, deterministic documentation/social assets, ACR example formatting, and the reviewed cumulative compatibility ratchet.",
+  "digest": "sha256:e3b0363db8c732ff18a1adb4ebf71c03a54ed70bd09c4624f7e6faad8925e803",
+  "implementation_sha": "302b60da59b526b71c36db569988a1107b4a79ce",
+  "kind": "task_verification_record",
+  "note": "PASS: the complete 0.7.4 prepublish contract and release-only semantic diff are valid.",
+  "recorded_at": "2026-08-06T13:14:34.911Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Publish AgentPlane 0.7.4 from the verified protected-main merge\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Publish AgentPlane 0.7.4 from the verified protected-main merge\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:1cb1f639921c885abb6f55a8c86e5955a563df6bd3a71644824bdd230d88c069",
+  "task_id": "202608061244-J3EC6A",
+  "verification_command": "agentplane verify 202608061244-J3EC6A --ok --by TESTER",
+  "verifier": "TESTER"
+}
