@@ -13,6 +13,11 @@ import {
   evidenceVerifySpec,
 } from "../../../commands/evidence/evidence.command.js";
 import {
+  evidenceCompactSpec,
+  evidenceGcSpec,
+  evidenceStatsSpec,
+} from "../../../commands/evidence/evidence-maintenance.command.js";
+import {
   blueprintDriftSpec,
   blueprintExamplesSpec,
   blueprintExplainSpec,
@@ -149,6 +154,9 @@ import {
   loadAcrExplainSpec,
   fromCommandsEvidenceCommand,
   loadEvidenceBundleSpec,
+  loadEvidenceCompactSpec,
+  loadEvidenceGcSpec,
+  loadEvidenceStatsSpec,
   loadEvidenceVerifySpec,
   loadBlueprintSpec,
   loadBlueprintListSpec,
@@ -197,6 +205,18 @@ export const PROJECT_COMMANDS = [
   declareCommand(evidenceVerifySpec, {
     load: loadEvidenceVerifySpec,
     requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
+  }),
+  declareCommand(evidenceStatsSpec, {
+    load: loadEvidenceStatsSpec,
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
+  }),
+  declareCommand(evidenceCompactSpec, {
+    load: loadEvidenceCompactSpec,
+    requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
+  }),
+  declareCommand(evidenceGcSpec, {
+    load: loadEvidenceGcSpec,
+    requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
   }),
   ...HERMES_COMMANDS,
   declareCommand(blueprintSpec, {

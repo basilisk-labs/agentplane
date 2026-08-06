@@ -24,12 +24,22 @@ Created: 2026-08-06T22:11:26.099Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-06T22:11:26.099Z
+- Updated: 2026-08-06T22:11:40.567Z
 - Branch: task/202608062023-V3WHE9/add-safe-local-evidence-retention-statistics-and
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ docs/user/cli-reference.generated.mdx              |  98 ++++++
+ docs/user/commands.mdx                             |  39 +++
+ .../src/cli/run-cli.core.evidence.test.ts          |  55 ++++
+ .../src/cli/run-cli/command-catalog/project.ts     |  20 ++
+ .../src/cli/run-cli/command-loaders/project.ts     |  23 ++
+ .../src/commands/evidence/evidence-inventory.ts    | 354 ++++++++++++++++++++
+ .../evidence/evidence-maintenance.command.ts       | 185 +++++++++++
+ .../commands/evidence/evidence-maintenance.test.ts | 360 +++++++++++++++++++++
+ .../src/commands/evidence/evidence-maintenance.ts  | 216 +++++++++++++
+ .../src/commands/evidence/evidence.command.ts      |   4 +-
+ 10 files changed, 1352 insertions(+), 2 deletions(-)
 ```
 
 </details>

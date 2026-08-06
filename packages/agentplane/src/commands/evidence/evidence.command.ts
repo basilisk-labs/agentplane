@@ -43,9 +43,9 @@ export type EvidenceVerifyParsed = {
 export const evidenceSpec: CommandSpec<GroupCommandParsed> = {
   id: ["evidence"],
   group: "Evidence",
-  summary: "Create and verify deterministic task evidence bundle manifests.",
+  summary: "Create, verify, inspect, compact, and retain local evidence.",
   description:
-    "This is a command group. Use `agentplane evidence bundle <task-id>` or `agentplane evidence verify <task-id-or-manifest>`.",
+    "This is a command group. Bundle and verify task evidence, inspect local storage with stats, or run dry-run-first compact and gc maintenance.",
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [
     {

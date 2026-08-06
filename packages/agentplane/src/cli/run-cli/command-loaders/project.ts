@@ -113,6 +113,29 @@ export const loadEvidenceVerifySpec = (session: TaskRouteLocalSession) =>
   import("../../../commands/evidence/evidence.command.js").then((m) =>
     m.makeRunEvidenceVerifyHandler(getTaskRouteLocalContext(session)),
   );
+export const loadEvidenceStatsSpec = (session: ProjectConfigSession) =>
+  import("../../../commands/evidence/evidence-maintenance.command.js").then((m) =>
+    m.makeRunEvidenceStatsHandler({
+      getResolvedProject: (command) => session.require("project", command),
+      getLoadedConfig: (command) => session.require("config", command),
+    }),
+  );
+export const loadEvidenceCompactSpec = (session: LocalOpsWriteSession) =>
+  import("../../../commands/evidence/evidence-maintenance.command.js").then((m) =>
+    m.makeRunEvidenceCompactHandler({
+      getResolvedProject: (command) => session.require("project", command),
+      getLoadedConfig: (command) => session.require("config", command),
+      getMutationContext: getLocalOpsWriteContext(session),
+    }),
+  );
+export const loadEvidenceGcSpec = (session: LocalOpsWriteSession) =>
+  import("../../../commands/evidence/evidence-maintenance.command.js").then((m) =>
+    m.makeRunEvidenceGcHandler({
+      getResolvedProject: (command) => session.require("project", command),
+      getLoadedConfig: (command) => session.require("config", command),
+      getMutationContext: getLocalOpsWriteContext(session),
+    }),
+  );
 export const loadHermesSpec = (_session: NoContextSession) =>
   loadDeferredRuntime().then((m) => m.runHermesGroup);
 export const loadHermesEnqueueSpec = (session: HermesProjectionSession) =>

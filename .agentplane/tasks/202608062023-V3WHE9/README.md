@@ -4,10 +4,11 @@ title: "Add safe local evidence retention, statistics, and garbage collection"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
-depends_on: []
+depends_on:
+  - "202608061850-BZT3D9"
 tags:
   - "code"
   - "evidence"
