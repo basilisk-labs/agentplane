@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608061646-WCARQG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-06T17:07:55.990Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "1c7849f0ed3881ca385a7bdf8705358099fb47b2",
+  "blueprint_digest": "faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde",
+  "findings": [
+    "The current hosted branch contains deterministic route selection, schema persistence, route-aware blueprint/supervisor behavior, and passing focused E2E coverage.",
+    "Repository branch_pr remains a policy floor and legacy repository-mode tasks retain their execution semantics."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608061646-WCARQG/quality/objects/sha256/87f84112d774433f055ea519380015d5122ef389b7a1a79603a89a9b96fcd741.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

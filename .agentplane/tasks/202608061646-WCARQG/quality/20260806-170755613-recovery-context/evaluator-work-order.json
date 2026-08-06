@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608061646-WCARQG-789d31e2f64ac05975670cbf",
+  "prepared_at": "2026-08-06T17:07:55.613Z",
+  "task": {
+    "id": "202608061646-WCARQG",
+    "revision": 10,
+    "objective": "Add explainable per-task workflow routing\n\nAdd a backward-compatible task-level execution route that lets AgentPlane classify task isolation risk and deterministically select direct or branch_pr, with policy overrides, stable reason codes, persisted evidence, and no route changes after mutation starts.",
+    "acceptance_criteria": [
+      "bun run typecheck",
+      "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/blueprint/task-input.test.ts",
+      "- In scope: Add a backward-compatible task-level execution route that lets AgentPlane classify task isolation risk and deterministically select direct or branch_pr, with policy overrides, stable reason codes, persisted evidence, and no route changes after mutation starts.\n- Out of scope: unrelated refactors not required for \"Add explainable per-task workflow routing\".",
+      "1. Add an optional persisted execution_route contract to task artifacts without changing legacy workflow_mode defaults. 2. Implement a deterministic route classifier from task kind, mutation scope, risk flags, repository policy, and checkout safety. 3. Resolve the route before blueprint/supervisor execution, freeze it once mutation starts, and emit stable reason codes plus human-readable explanation. 4. Cover direct, branch_pr, forced-policy, ambiguous, and backward-compatibility cases. Approved scope: packages/core/src/tasks/**, packages/core/src/config/**, packages/agentplane/src/runtime/task-routing/**, packages/agentplane/src/runtime/task-intake/**, packages/agentplane/src/commands/blueprint/**, packages/agentplane/src/commands/task/**, related schemas/generated artifacts and focused tests.",
+      "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/blueprint/task-input.test.ts\n- bunx vitest --config vitest.workspace.ts run --project core packages/core/src/tasks\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs"
+    ]
+  },
+  "evaluated_sha": "1c7849f0ed3881ca385a7bdf8705358099fb47b2",
+  "diff_base_sha": "f89392c2f479a4b2eaa79c628912152e68ab6094",
+  "blueprint_digest": "faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608061646-WCARQG/quality/20260806-170755613-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:82684db9b8cc801451412009745c660319611ed75e67e7c8a7d036ea266a6a37",
+    "prompt_path": ".agentplane/tasks/202608061646-WCARQG/quality/objects/sha256/f4ee118f97f70bec975adb63180c2c01ca5e626d2b5e71c48047b73eb3955be0.md",
+    "result_schema_path": ".agentplane/tasks/202608061646-WCARQG/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608061646-WCARQG/README.md",
+      "sha256": "sha256:ad748c9504c05161c8662f333764bdd7a304d100f8ecd6e7526683a8b2eb2ae1",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608061646-WCARQG/quality/objects/sha256/87f84112d774433f055ea519380015d5122ef389b7a1a79603a89a9b96fcd741.patch",
+      "sha256": "sha256:87f84112d774433f055ea519380015d5122ef389b7a1a79603a89a9b96fcd741",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608061646-WCARQG/quality/objects/sha256/4ea725efd15e7a172a34cc59cd140494798621a94e0743208b4124ff7266f438.json",
+      "sha256": "sha256:4ea725efd15e7a172a34cc59cd140494798621a94e0743208b4124ff7266f438",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608061646-WCARQG/quality/objects/sha256/98612f88fee45e5df9dc5991375942860d92e08303638847628e14aa3b8b9cf8.json",
+      "sha256": "sha256:98612f88fee45e5df9dc5991375942860d92e08303638847628e14aa3b8b9cf8",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

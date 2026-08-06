@@ -19,15 +19,16 @@ Add a backward-compatible task-level execution route that lets AgentPlane classi
 - Note:
 
 ```text
-Post-commit verification binds the passing focused tests, 119 core task tests, typecheck, schema
-parity, and policy routing evidence to implementation commit b060e9b18.
+Post-closure verification confirms f60c230c4931 adds only task closure artifacts on top of already
+verified implementation 1c7849f0e; 98 focused tests, typecheck, schema parity, and policy routing
+remain the accepted evidence.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-06T16:48:32.143Z
+- Updated: 2026-08-06T17:06:45.437Z
 - Branch: task/202608061646-WCARQG/add-explainable-per-task-workflow-routing
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

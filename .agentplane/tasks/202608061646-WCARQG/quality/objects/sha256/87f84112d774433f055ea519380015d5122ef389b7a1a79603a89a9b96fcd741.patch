@@ -1,0 +1,4364 @@
+diff --git a/packages/agentplane/src/backends/task-backend/shared/record.ts b/packages/agentplane/src/backends/task-backend/shared/record.ts
+index abbdce6d0..0b44a70bd 100644
+--- a/packages/agentplane/src/backends/task-backend/shared/record.ts
++++ b/packages/agentplane/src/backends/task-backend/shared/record.ts
+@@ -68,6 +68,35 @@ function stringEnumArray<T extends string>(value: unknown, allowed: Set<string>)
+   return out.length > 0 ? out : undefined;
+ }
+ 
++function normalizeExecutionRoute(value: unknown): TaskData["execution_route"] {
++  if (!isRecord(value)) return undefined;
++  const requestedMode = value.requested_mode;
++  const selectedMode = value.selected_mode;
++  const repositoryMode = value.repository_mode;
++  const reasonCodes = toStringArray(value.reason_codes);
++  if (
++    value.schema_version !== 1 ||
++    (requestedMode !== "repository" &&
++      requestedMode !== "auto" &&
++      requestedMode !== "direct" &&
++      requestedMode !== "branch_pr") ||
++    (selectedMode !== "direct" && selectedMode !== "branch_pr") ||
++    (repositoryMode !== "direct" && repositoryMode !== "branch_pr") ||
++    reasonCodes.length === 0 ||
++    value.frozen !== true
++  ) {
++    return undefined;
++  }
++  return {
++    schema_version: 1,
++    requested_mode: requestedMode,
++    selected_mode: selectedMode,
++    repository_mode: repositoryMode,
++    reason_codes: reasonCodes,
++    frozen: true,
++  };
++}
++
+ export function taskRecordToData(record: TaskRecord): TaskData {
+   const fm = record.frontmatter as unknown as Record<string, unknown>;
+   const comments = Array.isArray(fm.comments)
+@@ -137,6 +166,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
+     quality_review: qualityReview ?? undefined,
+     runner: runner ?? undefined,
+     token_usage: tokenUsage ?? undefined,
++    execution_route: normalizeExecutionRoute(fm.execution_route),
+     sync: isRecord(fm.sync) ? (fm.sync as TaskData["sync"]) : undefined,
+     commit,
+     comments,
+diff --git a/packages/agentplane/src/backends/task-backend/shared/types.ts b/packages/agentplane/src/backends/task-backend/shared/types.ts
+index b56f61abe..3a0d45769 100644
+--- a/packages/agentplane/src/backends/task-backend/shared/types.ts
++++ b/packages/agentplane/src/backends/task-backend/shared/types.ts
+@@ -6,6 +6,7 @@ import type {
+   TaskOrigin,
+   TaskRunnerOutcome,
+   TaskTokenUsage,
++  TaskExecutionRoute,
+   TaskSyncEnvelope,
+   QualityReviewResult,
+   VerificationResult,
+@@ -71,6 +72,7 @@ export type TaskData = {
+   quality_review?: QualityReviewResult;
+   runner?: TaskRunnerOutcome;
+   token_usage?: TaskTokenUsage;
++  execution_route?: TaskExecutionRoute;
+   sync?: TaskSyncEnvelope;
+   commit?: { hash: string; message: string } | null;
+   comments?: { author: string; body: string }[];
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+index 24dc04980..081231835 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+@@ -77,6 +77,110 @@ async function withFakeGh<T>(
+ }
+ 
+ describe("runCli route decision commands", () => {
++  it("escalates an auto-routed task from a direct repository into a branch_pr worktree", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    await writeFile(path.join(root, "README.md"), "# Fixture\n", "utf8");
++    await execFileAsync("git", ["add", "README.md"], { cwd: root });
++    await execFileAsync(
++      "git",
++      [
++        "-c",
++        "user.name=AgentPlane Test",
++        "-c",
++        "user.email=test@example.invalid",
++        "commit",
++        "-m",
++        "initial",
++      ],
++      { cwd: root },
++    );
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    await writeConfig(root, config);
++    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++
++    const taskIo = captureStdIO();
++    let taskId = "";
++    try {
++      const code = await runCli([
++        "task",
++        "new",
++        "--title",
++        "Publish an isolated patch",
++        "--description",
++        "Exercise automatic route escalation",
++        "--owner",
++        "CODER",
++        "--tag",
++        "release",
++        "--task-kind",
++        "release",
++        "--mutation-scope",
++        "release",
++        "--risk",
++        "publish",
++        "--route",
++        "auto",
++        "--root",
++        root,
++      ]);
++      expect(code).toBe(0);
++      taskId = taskIo.stdout.trim();
++    } finally {
++      taskIo.restore();
++    }
++    await runCliSilent([
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      "Verify automatic route escalation.",
++      "--updated-by",
++      "PLANNER",
++      "--root",
++      root,
++    ]);
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++
++    const [code, payload] = await runJson<{
++      workflow_mode: string;
++      next_action: { code: string; command: string };
++      task: { execution_route: { selected_mode: string; reason_codes: string[] } };
++    }>(["task", "next-action", taskId, "--json", "--root", root]);
++    expect(code).toBe(0);
++    expect(payload.workflow_mode).toBe("branch_pr");
++    expect(payload.task.execution_route.selected_mode).toBe("branch_pr");
++    expect(payload.task.execution_route.reason_codes).toContain("risk_publish");
++    expect(payload.next_action.code).toBe("start_or_recover_worktree");
++
++    const worktreePath = path.join(
++      root,
++      ".agentplane",
++      "worktrees",
++      `${taskId}-publish-an-isolated-patch`,
++    );
++    const workIo = captureStdIO();
++    try {
++      const workCode = await runCli([
++        "work",
++        "start",
++        taskId,
++        "--agent",
++        "CODER",
++        "--slug",
++        "publish-an-isolated-patch",
++        "--worktree",
++        "--root",
++        root,
++      ]);
++      expect(workCode, workIo.stderr).toBe(0);
++    } finally {
++      workIo.restore();
++    }
++    await expect(realpath(worktreePath)).resolves.toContain(taskId);
++  });
++
+   it("reports status, next action, work resume, and dry-run repair", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+diff --git a/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts b/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts
+index 37c76406e..2eb177298 100644
+--- a/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts
+@@ -271,6 +271,50 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
+     expect(task.frontmatter.blueprint_request).toBe("analysis.light");
+   });
+ 
++  it("task new persists an explainable automatic execution route", async () => {
++    const root = await mkGitRepoRoot();
++    const io = captureStdIO();
++    let taskId = "";
++    try {
++      const code = await runCli([
++        "task",
++        "new",
++        "--title",
++        "Publish a patch",
++        "--description",
++        "Prepare and publish a patch release",
++        "--owner",
++        "CODER",
++        "--tag",
++        "release",
++        "--task-kind",
++        "release",
++        "--mutation-scope",
++        "release",
++        "--risk",
++        "publish",
++        "--route",
++        "auto",
++        "--root",
++        root,
++      ]);
++      expect(code).toBe(0);
++      taskId = io.stdout.trim();
++    } finally {
++      io.restore();
++    }
++
++    const task = await readTask({ cwd: root, rootOverride: root, taskId });
++    expect(task.frontmatter.execution_route).toEqual({
++      schema_version: 1,
++      requested_mode: "auto",
++      selected_mode: "branch_pr",
++      repository_mode: "direct",
++      reason_codes: ["mutation_requires_isolation", "risk_publish"],
++      frozen: true,
++    });
++  });
++
+   it("task new can preview the resolved blueprint route without changing stdout", async () => {
+     const root = await mkGitRepoRoot();
+     const io = captureStdIO();
+diff --git a/packages/agentplane/src/commands/blueprint/task-input.test.ts b/packages/agentplane/src/commands/blueprint/task-input.test.ts
+index 1c9ca5d3e..389819281 100644
+--- a/packages/agentplane/src/commands/blueprint/task-input.test.ts
++++ b/packages/agentplane/src/commands/blueprint/task-input.test.ts
+@@ -82,4 +82,25 @@ describe("blueprintResolveInputFromTask", () => {
+       workflowMode: "branch_pr",
+     });
+   });
++
++  it("uses the persisted task execution route over a less isolated repository default", () => {
++    const directConfig = { workflow_mode: "direct" } as AgentplaneConfig;
++    const input = blueprintResolveInputFromTask({
++      config: directConfig,
++      task: task({
++        task_kind: "release",
++        mutation_scope: "release",
++        execution_route: {
++          schema_version: 1,
++          requested_mode: "auto",
++          selected_mode: "branch_pr",
++          repository_mode: "direct",
++          reason_codes: ["mutation_requires_isolation"],
++          frozen: true,
++        },
++      }),
++    });
++
++    expect(input.workflowMode).toBe("branch_pr");
++  });
+ });
+diff --git a/packages/agentplane/src/commands/blueprint/task-input.ts b/packages/agentplane/src/commands/blueprint/task-input.ts
+index 978b1d0d6..690bcfe7f 100644
+--- a/packages/agentplane/src/commands/blueprint/task-input.ts
++++ b/packages/agentplane/src/commands/blueprint/task-input.ts
+@@ -15,6 +15,7 @@ import {
+   RISK_FLAG_VALUES,
+   TASK_KIND_VALUES,
+ } from "../../backends/task-backend/shared/domain-values.js";
++import { resolveEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
+ 
+ const CODE_TAGS = ["code", "backend", "frontend", "cli"] as const;
+ const DOCS_TAGS = ["docs", "documentation", "roadmap"] as const;
+@@ -65,7 +66,7 @@ export function blueprintResolveInputFromTask(opts: {
+     tags: opts.task.tags ?? [],
+     owner: opts.task.owner,
+     taskKind: enumValue<TaskKind>(opts.task.task_kind, TASK_KIND_VALUES),
+-    workflowMode: opts.workflowMode ?? workflowModeFromConfig(opts.config),
++    workflowMode: opts.workflowMode ?? resolveEffectiveTaskWorkflowMode(opts.task, opts.config),
+     mutation: opts.mutation ?? opts.task.mutation_scope ?? inferMutationFromTask(opts.task),
+     mutationScope: enumValue<MutationKind>(opts.task.mutation_scope, MUTATION_SCOPE_VALUES),
+     riskFlags:
+diff --git a/packages/agentplane/src/commands/branch/work-start.command.ts b/packages/agentplane/src/commands/branch/work-start.command.ts
+index 9f195d8ce..1d941e952 100644
+--- a/packages/agentplane/src/commands/branch/work-start.command.ts
++++ b/packages/agentplane/src/commands/branch/work-start.command.ts
+@@ -2,7 +2,9 @@ import type { CommandHandler, CommandSpec, CommandCtx } from "../../cli/spec/spe
+ import { usageError } from "../../cli/spec/errors.js";
+ 
+ import type { CommandContext } from "../shared/task-backend.js";
++import { loadTaskFromContext } from "../shared/task-backend.js";
+ import { cmdWorkStart } from "./index.js";
++import { withEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
+ 
+ export type WorkStartParsed = {
+   taskId: string;
+@@ -69,7 +71,11 @@ export function makeRunWorkStartHandler(
+   getCtx: (commandForErrorContext: string) => Promise<CommandContext>,
+ ): CommandHandler<WorkStartParsed> {
+   return async (ctx: CommandCtx, p: WorkStartParsed) => {
+-    const commandCtx = await getCtx("work start");
++    const initialCommandCtx = await getCtx("work start");
++    const commandCtx = withEffectiveTaskWorkflowMode(
++      initialCommandCtx,
++      await loadTaskFromContext({ ctx: initialCommandCtx, taskId: p.taskId }),
++    );
+     const mode = commandCtx.config.workflow_mode;
+     if (mode === "branch_pr" && !p.worktree) {
+       throw usageError({
+diff --git a/packages/agentplane/src/commands/shared/route-decision-types.ts b/packages/agentplane/src/commands/shared/route-decision-types.ts
+index 444050bad..b4a6ac87b 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-types.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-types.ts
+@@ -38,6 +38,7 @@ export type TaskRouteDecision = {
+     verification: string | null;
+     commit: string | null;
+     token_usage?: TaskData["token_usage"];
++    execution_route?: TaskData["execution_route"];
+   };
+   workflowMode: string;
+   workspace: {
+@@ -94,5 +95,6 @@ export function taskSummary(task: TaskData): TaskRouteDecision["task"] {
+     verification: task.verification?.state ?? null,
+     commit: commitHash || null,
+     token_usage: task.token_usage,
++    execution_route: task.execution_route,
+   };
+ }
+diff --git a/packages/agentplane/src/commands/shared/route-decision.ts b/packages/agentplane/src/commands/shared/route-decision.ts
+index ddf70d930..f0ce2e35e 100644
+--- a/packages/agentplane/src/commands/shared/route-decision.ts
++++ b/packages/agentplane/src/commands/shared/route-decision.ts
+@@ -55,6 +55,7 @@ import { taskCloseAlreadyRecordedOnBase } from "../task/close-tail-state.js";
+ import { inspectTaskWorktreeRouteState } from "./task-worktree-foreign-artifact-route.js";
+ import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
+ import { hydrateTaskSideEffectAuthority } from "./side-effect-authority-store.js";
++import { withEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
+ export { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
+ 
+ const routeGitSnapshots = new WeakMap<TaskRouteDecision, GitSnapshot>();
+@@ -293,16 +294,17 @@ export async function buildTaskRouteDecision(opts: {
+   freshHead?: boolean;
+   taskId: string;
+ }): Promise<TaskRouteDecision> {
+-  const ctx =
++  const initialCtx =
+     opts.ctx ??
+     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+   const { task: loadedTask } = await loadBackendTask({
+-    ctx,
++    ctx: initialCtx,
+     cwd: opts.cwd,
+     rootOverride: opts.rootOverride ?? null,
+     taskId: opts.taskId,
+-    preferBranchSnapshot: ctx.config.workflow_mode === "branch_pr",
++    preferBranchSnapshot: initialCtx.config.workflow_mode === "branch_pr",
+   });
++  const ctx = withEffectiveTaskWorkflowMode(initialCtx, loadedTask);
+   const task = await hydrateTaskSideEffectAuthority({
+     gitRoot: ctx.resolvedProject.gitRoot,
+     taskId: opts.taskId,
+diff --git a/packages/agentplane/src/commands/shared/task-backend.ts b/packages/agentplane/src/commands/shared/task-backend.ts
+index 331ab5ce2..3115d21f3 100644
+--- a/packages/agentplane/src/commands/shared/task-backend.ts
++++ b/packages/agentplane/src/commands/shared/task-backend.ts
+@@ -116,6 +116,7 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
+     quality_review: task.quality_review ?? undefined,
+     runner: task.runner ?? undefined,
+     token_usage: task.token_usage ?? undefined,
++    execution_route: task.execution_route ?? undefined,
+     commit: task.commit ?? null,
+     comments: task.comments ?? [],
+     events: task.events ?? [],
+diff --git a/packages/agentplane/src/commands/task/begin.command.ts b/packages/agentplane/src/commands/task/begin.command.ts
+index 3e642f78f..d88339b1f 100644
+--- a/packages/agentplane/src/commands/task/begin.command.ts
++++ b/packages/agentplane/src/commands/task/begin.command.ts
+@@ -164,6 +164,7 @@ export function makeRunTaskBeginHandler(
+         mutationScope: p.mutationScope,
+         riskFlags: [],
+         blueprintRequest: p.blueprintRequest,
++        route: "repository",
+         dependsOn: [],
+         verify: p.verify,
+         showBlueprint: false,
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
+index 12e8970eb..598e80658 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
+@@ -17,6 +17,7 @@ import { applyForeignTaskReadmeReplicaRepair } from "../shared/task-worktree-for
+ import { cmdFinish } from "./finish-command.js";
+ import { makeRunTaskHostedClosePrHandler } from "./hosted-close-pr.command.js";
+ import { cmdTaskStartReady } from "./start-ready.js";
++import { withEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
+ 
+ function observedPostconditions(operation: WorkflowOperation): string[] {
+   return operation.expectedPostconditions
+@@ -56,7 +57,11 @@ export async function executeBranchWorkflowOperation(opts: {
+   operation: WorkflowOperation;
+ }): Promise<WorkflowSupervisorOperationResult> {
+   const cwd = checkoutFor(opts.decision);
+-  const command = await loadCommandContext({ cwd, rootOverride: null });
++  const initialCommand = await loadCommandContext({ cwd, rootOverride: null });
++  const command = withEffectiveTaskWorkflowMode(
++    initialCommand,
++    await loadTaskFromContext({ ctx: initialCommand, taskId: opts.decision.task.id }),
++  );
+   const cliContext: CommandCtx = { cwd };
+   const { operation } = opts;
+   let exitCode: number;
+diff --git a/packages/agentplane/src/commands/task/brief-model.ts b/packages/agentplane/src/commands/task/brief-model.ts
+index cd8d083e3..1364dcf59 100644
+--- a/packages/agentplane/src/commands/task/brief-model.ts
++++ b/packages/agentplane/src/commands/task/brief-model.ts
+@@ -6,7 +6,7 @@ import { buildRouteSourceConfidenceBase } from "../shared/source-confidence.js";
+ import type { WorkflowStep } from "../shared/workflow-step.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+-import type { TaskTokenUsage } from "@agentplaneorg/core/tasks";
++import type { TaskExecutionRoute, TaskTokenUsage } from "@agentplaneorg/core/tasks";
+ import {
+   prepareAgentWorkOrder,
+   requirePreparedAgentWorkOrder,
+@@ -86,6 +86,7 @@ type TaskBriefLegacyProjection = {
+     plan: string | null;
+     verification: string | null;
+     token_usage: TaskTokenUsage | undefined;
++    execution_route: TaskExecutionRoute | undefined;
+   };
+   workflow: {
+     mode: string;
+@@ -279,6 +280,7 @@ export function projectTaskBriefFromPreparedWorkOrder(
+       plan: task.plan_approval?.state ?? null,
+       verification: task.verification?.state ?? null,
+       token_usage: task.token_usage,
++      execution_route: task.execution_route,
+     },
+     workflow: {
+       mode: route.workflowMode,
+diff --git a/packages/agentplane/src/commands/task/brief-render.ts b/packages/agentplane/src/commands/task/brief-render.ts
+index d52395a57..3612f1326 100644
+--- a/packages/agentplane/src/commands/task/brief-render.ts
++++ b/packages/agentplane/src/commands/task/brief-render.ts
+@@ -39,6 +39,21 @@ export function reportTaskBriefText(brief: TaskBriefWithWorkflowStep, taskId: st
+           ]
+         : []),
+       { label: "workflow", value: brief.workflow.mode },
++      ...(brief.task.execution_route
++        ? [
++            {
++              label: "route_selection",
++              value:
++                `requested=${brief.task.execution_route.requested_mode} ` +
++                `selected=${brief.task.execution_route.selected_mode} ` +
++                `repository=${brief.task.execution_route.repository_mode}`,
++            },
++            {
++              label: "route_reasons",
++              value: brief.task.execution_route.reason_codes.join(", "),
++            },
++          ]
++        : []),
+       { label: "phase", value: brief.route.phase },
+       { label: "step_kind", value: brief.workflow_step.kind },
+       { label: "step_id", value: brief.workflow_step.id },
+diff --git a/packages/agentplane/src/commands/task/new.spec.ts b/packages/agentplane/src/commands/task/new.spec.ts
+index 1aaae5b0f..4f355b6a5 100644
+--- a/packages/agentplane/src/commands/task/new.spec.ts
++++ b/packages/agentplane/src/commands/task/new.spec.ts
+@@ -97,6 +97,15 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
+       ],
+       description: "Explicit blueprint request stored on the task; resolver still validates it.",
+     },
++    {
++      kind: "string",
++      name: "route",
++      valueHint: "<repository|auto|direct|branch_pr>",
++      choices: ["repository", "auto", "direct", "branch_pr"],
++      default: "repository",
++      description:
++        "Task execution route. repository preserves legacy behavior; auto may escalate a direct repository to branch_pr when isolation risk requires it.",
++    },
+     {
+       kind: "string",
+       name: "depends-on",
+@@ -152,6 +161,7 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
+     mutationScope: raw.opts["mutation-scope"] as TaskNewParsed["mutationScope"],
+     riskFlags: (raw.opts.risk ?? []) as TaskNewParsed["riskFlags"],
+     blueprintRequest: raw.opts["blueprint-request"] as TaskNewParsed["blueprintRequest"],
++    route: (raw.opts.route ?? "repository") as TaskNewParsed["route"],
+     dependsOn: (raw.opts["depends-on"] ?? []) as string[],
+     verify: (raw.opts.verify ?? []) as string[],
+     showBlueprint: raw.opts["show-blueprint"] === true,
+diff --git a/packages/agentplane/src/commands/task/new.ts b/packages/agentplane/src/commands/task/new.ts
+index 115b1046b..825fc8668 100644
+--- a/packages/agentplane/src/commands/task/new.ts
++++ b/packages/agentplane/src/commands/task/new.ts
+@@ -1,4 +1,5 @@
+ import { setMarkdownSection } from "@agentplaneorg/core/tasks";
++import type { TaskExecutionRouteRequest } from "@agentplaneorg/core/tasks";
+ 
+ import { mapBackendError } from "../../cli/error-map.js";
+ import { backendNotSupportedMessage, warnMessage } from "../../cli/output.js";
+@@ -36,6 +37,7 @@ import {
+   formatTaskBlueprintCreationPreview,
+   resolveTaskBlueprintLifecycleSummary,
+ } from "./blueprint-summary.js";
++import { resolveTaskExecutionRoute } from "../../runtime/task-routing/index.js";
+ 
+ export type TaskNewParsed = {
+   title: string;
+@@ -47,6 +49,7 @@ export type TaskNewParsed = {
+   mutationScope?: TaskData["mutation_scope"];
+   riskFlags?: NonNullable<TaskData["risk_flags"]>;
+   blueprintRequest?: TaskData["blueprint_request"];
++  route?: TaskExecutionRouteRequest;
+   extensions?: TaskData["extensions"];
+   dependsOn: string[];
+   verify: string[];
+@@ -141,6 +144,7 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
+     p.blueprintRequest,
+     BLUEPRINT_REQUEST_VALUES,
+   );
++  const route = p.route ?? "repository";
+ 
+   return {
+     ...p,
+@@ -152,6 +156,7 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
+     mutationScope,
+     riskFlags,
+     blueprintRequest,
++    route,
+     ...(p.extensions ? { extensions: structuredClone(p.extensions) } : {}),
+     ...(p.taskDocSections ? { taskDocSections: structuredClone(p.taskDocSections) } : {}),
+     dependsOn,
+@@ -285,6 +290,16 @@ export async function runTaskNewParsed(opts: {
+           ...(p.mutationScope ? { mutation_scope: p.mutationScope } : {}),
+           ...(p.riskFlags && p.riskFlags.length > 0 ? { risk_flags: p.riskFlags } : {}),
+           ...(p.blueprintRequest ? { blueprint_request: p.blueprintRequest } : {}),
++          execution_route: resolveTaskExecutionRoute({
++            config: ctx.config,
++            requestedMode: p.route,
++            task: {
++              task_kind: p.taskKind,
++              mutation_scope: p.mutationScope,
++              risk_flags: p.riskFlags,
++              blueprint_request: p.blueprintRequest,
++            },
++          }),
+           ...(p.extensions ? { extensions: p.extensions } : {}),
+           depends_on: p.dependsOn,
+           verify: p.verify,
+diff --git a/packages/agentplane/src/commands/task/next-action.command.ts b/packages/agentplane/src/commands/task/next-action.command.ts
+index 56630098c..13e232d27 100644
+--- a/packages/agentplane/src/commands/task/next-action.command.ts
++++ b/packages/agentplane/src/commands/task/next-action.command.ts
+@@ -180,6 +180,7 @@ export function makeRunTaskNextActionHandler(session: {
+     if (parsed.json) {
+       output.json({
+         task: decision.task,
++        workflow_mode: decision.workflowMode,
+         workflow_step: decision.workflowStep,
+         workflowStep: decision.workflowStep,
+         workflow_supervision: {
+@@ -343,6 +344,21 @@ export function makeRunTaskNextActionHandler(session: {
+         ...(parsed.explain
+           ? [
+               { label: "workflow", value: decision.workflowMode },
++              ...(decision.task.execution_route
++                ? [
++                    {
++                      label: "route_selection",
++                      value:
++                        `requested=${decision.task.execution_route.requested_mode} ` +
++                        `selected=${decision.task.execution_route.selected_mode} ` +
++                        `repository=${decision.task.execution_route.repository_mode}`,
++                    },
++                    {
++                      label: "route_reasons",
++                      value: decision.task.execution_route.reason_codes.join(", "),
++                    },
++                  ]
++                : []),
+               { label: "checkout_role", value: decision.workspace.checkoutRole },
+               { label: "branch", value: decision.workspace.branch ?? "unknown" },
+               { label: "base_branch", value: decision.workspace.baseBranch ?? "unknown" },
+diff --git a/packages/agentplane/src/commands/task/run.command.ts b/packages/agentplane/src/commands/task/run.command.ts
+index bc926031d..b5366ebea 100644
+--- a/packages/agentplane/src/commands/task/run.command.ts
++++ b/packages/agentplane/src/commands/task/run.command.ts
+@@ -37,6 +37,8 @@ import {
+ import { followRunnerLogs } from "./run-logs-follow.js";
+ import { superviseBranchTaskRun } from "./branch-task-supervisor.js";
+ import { superviseDirectTaskRun } from "./direct-task-supervisor.js";
++import { loadTaskFromContext } from "../shared/task-backend.js";
++import { withEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
+ 
+ export {
+   makeRunTaskRunResolveEffectHandler,
+@@ -101,9 +103,13 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
+       if (!deps.getPreparationContext) {
+         throw new Error("task run dry-run was loaded without preparation capabilities");
+       }
+-      const commandCtx = await deps.getPreparationContext("task run", {
++      const initialCommandCtx = await deps.getPreparationContext("task run", {
+         includeRemote: parsed.remote,
+       });
++      const commandCtx = withEffectiveTaskWorkflowMode(
++        initialCommandCtx,
++        await loadTaskFromContext({ ctx: initialCommandCtx, taskId: parsed.taskId }),
++      );
+       const prepared = await prepareTaskRunnerExecution({
+         ctx: commandCtx,
+         cwd: ctx.cwd,
+@@ -130,9 +136,13 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
+     if (!deps.getExecutionContext) {
+       throw new Error("task run execution was loaded without execution capabilities");
+     }
+-    const commandCtx = await deps.getExecutionContext("task run", {
++    const initialCommandCtx = await deps.getExecutionContext("task run", {
+       includeRemote: parsed.remote,
+     });
++    const commandCtx = withEffectiveTaskWorkflowMode(
++      initialCommandCtx,
++      await loadTaskFromContext({ ctx: initialCommandCtx, taskId: parsed.taskId }),
++    );
+ 
+     if (commandCtx.config?.workflow_mode === "direct") {
+       const supervised = await superviseDirectTaskRun({
+diff --git a/packages/agentplane/src/runtime/task-intake/resolve-materialize.ts b/packages/agentplane/src/runtime/task-intake/resolve-materialize.ts
+index c9278070b..2e21e4921 100644
+--- a/packages/agentplane/src/runtime/task-intake/resolve-materialize.ts
++++ b/packages/agentplane/src/runtime/task-intake/resolve-materialize.ts
+@@ -78,6 +78,9 @@ function buildMaterializedTask(opts: {
+     ...(opts.draftTask.blueprint_request
+       ? { blueprint_request: opts.draftTask.blueprint_request }
+       : {}),
++    ...(opts.draftTask.execution_route
++      ? { execution_route: structuredClone(opts.draftTask.execution_route) }
++      : {}),
+     ...(opts.draftTask.extensions
+       ? { extensions: structuredClone(opts.draftTask.extensions) }
+       : {}),
+diff --git a/packages/agentplane/src/runtime/task-intake/resolve-normalize.ts b/packages/agentplane/src/runtime/task-intake/resolve-normalize.ts
+index 01a335603..97440065f 100644
+--- a/packages/agentplane/src/runtime/task-intake/resolve-normalize.ts
++++ b/packages/agentplane/src/runtime/task-intake/resolve-normalize.ts
+@@ -105,6 +105,7 @@ export function normalizeDraftTasks(tasks: readonly TaskGraphDraftTask[]): TaskG
+         ? { risk_flags: dedupeTrimmed(task.risk_flags).toSorted() as typeof task.risk_flags }
+         : {}),
+       ...(task.blueprint_request ? { blueprint_request: task.blueprint_request } : {}),
++      ...(task.execution_route ? { execution_route: structuredClone(task.execution_route) } : {}),
+       ...(task.extensions ? { extensions: structuredClone(task.extensions) } : {}),
+       verify: dedupeTrimmed(task.verify).toSorted(),
+       depends_on: dedupeTrimmed(task.depends_on).toSorted(),
+diff --git a/packages/agentplane/src/runtime/task-intake/types.ts b/packages/agentplane/src/runtime/task-intake/types.ts
+index 5d2aa7b55..8baf7ec90 100644
+--- a/packages/agentplane/src/runtime/task-intake/types.ts
++++ b/packages/agentplane/src/runtime/task-intake/types.ts
+@@ -1,5 +1,6 @@
+ import type { ApprovalSettings } from "@agentplaneorg/core/config";
+ import type { TaskDocVersion } from "@agentplaneorg/core/tasks";
++import type { TaskExecutionRoute } from "@agentplaneorg/core/tasks";
+ 
+ import type { TaskBackendCapabilities, TaskData, TaskOrigin } from "../../backends/task-backend.js";
+ import type { BehaviorLayer } from "../behavior/index.js";
+@@ -105,6 +106,7 @@ export type TaskGraphDraftTask = {
+   mutation_scope?: TaskData["mutation_scope"];
+   risk_flags?: TaskData["risk_flags"];
+   blueprint_request?: TaskData["blueprint_request"];
++  execution_route?: TaskExecutionRoute;
+   extensions?: TaskData["extensions"];
+   verify: string[];
+   depends_on: string[];
+diff --git a/packages/agentplane/src/runtime/task-routing/index.ts b/packages/agentplane/src/runtime/task-routing/index.ts
+new file mode 100644
+index 000000000..17da4ea28
+--- /dev/null
++++ b/packages/agentplane/src/runtime/task-routing/index.ts
+@@ -0,0 +1,5 @@
++export {
++  resolveEffectiveTaskWorkflowMode,
++  resolveTaskExecutionRoute,
++  withEffectiveTaskWorkflowMode,
++} from "./resolve.js";
+diff --git a/packages/agentplane/src/runtime/task-routing/resolve.test.ts b/packages/agentplane/src/runtime/task-routing/resolve.test.ts
+new file mode 100644
+index 000000000..fe1cdf4a3
+--- /dev/null
++++ b/packages/agentplane/src/runtime/task-routing/resolve.test.ts
+@@ -0,0 +1,75 @@
++import { describe, expect, it } from "vitest";
++
++import { defaultConfig } from "@agentplaneorg/core/config";
++
++import { resolveEffectiveTaskWorkflowMode, resolveTaskExecutionRoute } from "./resolve.js";
++
++describe("task execution route", () => {
++  it("keeps legacy task new behavior when repository mode is requested", () => {
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    expect(
++      resolveTaskExecutionRoute({
++        config,
++        requestedMode: "repository",
++        task: { task_kind: "release", mutation_scope: "release", risk_flags: ["publish"] },
++      }),
++    ).toMatchObject({ selected_mode: "direct", reason_codes: ["repository_mode_selected"] });
++  });
++
++  it("escalates an automatic release task from direct to branch_pr", () => {
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    const route = resolveTaskExecutionRoute({
++      config,
++      requestedMode: "auto",
++      task: { task_kind: "release", mutation_scope: "release", risk_flags: ["publish"] },
++    });
++    expect(route.selected_mode).toBe("branch_pr");
++    expect(route.reason_codes).toEqual(["mutation_requires_isolation", "risk_publish"]);
++  });
++
++  it("keeps a safe automatic docs task direct", () => {
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    expect(
++      resolveTaskExecutionRoute({
++        config,
++        requestedMode: "auto",
++        task: { task_kind: "docs", mutation_scope: "docs", risk_flags: [] },
++      }).selected_mode,
++    ).toBe("direct");
++  });
++
++  it("treats repository branch_pr mode as a non-downgradeable policy floor", () => {
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    const route = resolveTaskExecutionRoute({
++      config,
++      requestedMode: "direct",
++      task: { task_kind: "docs", mutation_scope: "docs", risk_flags: [] },
++    });
++    expect(route.selected_mode).toBe("branch_pr");
++    expect(route.reason_codes).toContain("direct_request_overridden");
++  });
++
++  it("lets a persisted route escalate a direct repository", () => {
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    expect(
++      resolveEffectiveTaskWorkflowMode(
++        {
++          execution_route: {
++            schema_version: 1,
++            requested_mode: "auto",
++            selected_mode: "branch_pr",
++            repository_mode: "direct",
++            reason_codes: ["risk_publish"],
++            frozen: true,
++          },
++        },
++        config,
++      ),
++    ).toBe("branch_pr");
++  });
++});
+diff --git a/packages/agentplane/src/runtime/task-routing/resolve.ts b/packages/agentplane/src/runtime/task-routing/resolve.ts
+new file mode 100644
+index 000000000..ef37b5163
+--- /dev/null
++++ b/packages/agentplane/src/runtime/task-routing/resolve.ts
+@@ -0,0 +1,115 @@
++import type { AgentplaneConfig } from "@agentplaneorg/core/config";
++import type {
++  TaskExecutionRoute,
++  TaskExecutionRouteMode,
++  TaskExecutionRouteRequest,
++} from "@agentplaneorg/core/tasks";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import type { CommandContext } from "../../commands/shared/task-backend.js";
++
++type RouteTaskInput = Pick<
++  TaskData,
++  "task_kind" | "mutation_scope" | "risk_flags" | "blueprint_request"
++>;
++
++const BRANCH_PR_RISK_FLAGS = new Set([
++  "credentials",
++  "deploy",
++  "publish",
++  "merge",
++  "security",
++  "external_system",
++]);
++
++function repositoryMode(config: AgentplaneConfig): TaskExecutionRouteMode {
++  return config.workflow_mode === "branch_pr" ? "branch_pr" : "direct";
++}
++
++function autoRouteReasons(task: RouteTaskInput): string[] {
++  const reasons: string[] = [];
++  if (task.blueprint_request === "code.branch_pr" || task.blueprint_request === "release.strict") {
++    reasons.push("blueprint_requires_branch_pr");
++  }
++  if (
++    task.task_kind === "release" ||
++    task.task_kind === "ops" ||
++    task.mutation_scope === "release" ||
++    task.mutation_scope === "ops"
++  ) {
++    reasons.push("mutation_requires_isolation");
++  }
++  if (task.mutation_scope === "unknown") reasons.push("mutation_scope_unknown");
++  for (const risk of task.risk_flags ?? []) {
++    if (BRANCH_PR_RISK_FLAGS.has(risk)) reasons.push(`risk_${risk}`);
++  }
++  return [...new Set(reasons)].toSorted();
++}
++
++export function resolveTaskExecutionRoute(opts: {
++  config: AgentplaneConfig;
++  task: RouteTaskInput;
++  requestedMode?: TaskExecutionRouteRequest;
++}): TaskExecutionRoute {
++  const repoMode = repositoryMode(opts.config);
++  const requestedMode = opts.requestedMode ?? "repository";
++  const reasons: string[] = [];
++  let selectedMode: TaskExecutionRouteMode;
++
++  if (repoMode === "branch_pr") {
++    selectedMode = "branch_pr";
++    reasons.push("repository_branch_pr_floor");
++    if (requestedMode === "direct") reasons.push("direct_request_overridden");
++  } else if (requestedMode === "repository") {
++    selectedMode = "direct";
++    reasons.push("repository_mode_selected");
++  } else if (requestedMode === "branch_pr") {
++    selectedMode = "branch_pr";
++    reasons.push("explicit_branch_pr");
++  } else if (requestedMode === "direct") {
++    const forcedReasons = autoRouteReasons(opts.task);
++    selectedMode = forcedReasons.length > 0 ? "branch_pr" : "direct";
++    reasons.push(
++      ...(forcedReasons.length > 0
++        ? ["direct_request_overridden", ...forcedReasons]
++        : ["explicit_direct"]),
++    );
++  } else {
++    const forcedReasons = autoRouteReasons(opts.task);
++    selectedMode = forcedReasons.length > 0 ? "branch_pr" : "direct";
++    reasons.push(...(forcedReasons.length > 0 ? forcedReasons : ["automatic_safe_direct"]));
++  }
++
++  return {
++    schema_version: 1,
++    requested_mode: requestedMode,
++    selected_mode: selectedMode,
++    repository_mode: repoMode,
++    reason_codes: [...new Set(reasons)].toSorted(),
++    frozen: true,
++  };
++}
++
++export function resolveEffectiveTaskWorkflowMode(
++  task: Pick<TaskData, "execution_route">,
++  config: AgentplaneConfig,
++): TaskExecutionRouteMode {
++  const repoMode = repositoryMode(config);
++  if (repoMode === "branch_pr") return "branch_pr";
++  return task.execution_route?.selected_mode ?? repoMode;
++}
++
++export function withEffectiveTaskWorkflowMode(
++  ctx: CommandContext,
++  task: Pick<TaskData, "execution_route">,
++): CommandContext {
++  const workflowMode = resolveEffectiveTaskWorkflowMode(task, ctx.config);
++  if (workflowMode === ctx.config.workflow_mode) return ctx;
++  return {
++    ...ctx,
++    config: {
++      ...ctx.config,
++      workflow_mode: workflowMode,
++    },
++  };
++}
+diff --git a/packages/core/schemas/task-readme-frontmatter.schema.json b/packages/core/schemas/task-readme-frontmatter.schema.json
+index f39a06ee4..0d158dee6 100644
+--- a/packages/core/schemas/task-readme-frontmatter.schema.json
++++ b/packages/core/schemas/task-readme-frontmatter.schema.json
+@@ -18,18 +18,32 @@
+     },
+     "risk_level": {
+       "type": "string",
+-      "enum": ["low", "med", "high"]
++      "enum": [
++        "low",
++        "med",
++        "high"
++      ]
+     },
+     "breaking": {
+       "type": "boolean"
+     },
+     "status": {
+       "type": "string",
+-      "enum": ["TODO", "DOING", "DONE", "BLOCKED"]
++      "enum": [
++        "TODO",
++        "DOING",
++        "DONE",
++        "BLOCKED"
++      ]
+     },
+     "priority": {
+       "type": "string",
+-      "enum": ["low", "normal", "med", "high"]
++      "enum": [
++        "low",
++        "normal",
++        "med",
++        "high"
++      ]
+     },
+     "owner": {
+       "type": "string",
+@@ -72,7 +86,9 @@
+           "minLength": 1
+         }
+       },
+-      "required": ["system"],
++      "required": [
++        "system"
++      ],
+       "additionalProperties": {
+         "type": "string"
+       }
+@@ -93,11 +109,27 @@
+     },
+     "task_kind": {
+       "type": "string",
+-      "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
++      "enum": [
++        "analysis",
++        "content",
++        "docs",
++        "code",
++        "release",
++        "ops",
++        "context"
++      ]
+     },
+     "mutation_scope": {
+       "type": "string",
+-      "enum": ["none", "docs", "code", "release", "ops", "context", "unknown"]
++      "enum": [
++        "none",
++        "docs",
++        "code",
++        "release",
++        "ops",
++        "context",
++        "unknown"
++      ]
+     },
+     "risk_flags": {
+       "type": "array",
+@@ -144,7 +176,11 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": ["pending", "approved", "rejected"]
++          "enum": [
++            "pending",
++            "approved",
++            "rejected"
++          ]
+         },
+         "updated_at": {
+           "anyOf": [
+@@ -179,7 +215,12 @@
+           ]
+         }
+       },
+-      "required": ["state", "updated_at", "updated_by", "note"],
++      "required": [
++        "state",
++        "updated_at",
++        "updated_by",
++        "note"
++      ],
+       "additionalProperties": {}
+     },
+     "verification": {
+@@ -187,7 +228,12 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": ["pending", "ok", "needs_rework", "blocked_external"]
++          "enum": [
++            "pending",
++            "ok",
++            "needs_rework",
++            "blocked_external"
++          ]
+         },
+         "attempts": {
+           "type": "integer",
+@@ -227,7 +273,12 @@
+           ]
+         }
+       },
+-      "required": ["state", "updated_at", "updated_by", "note"],
++      "required": [
++        "state",
++        "updated_at",
++        "updated_by",
++        "note"
++      ],
+       "additionalProperties": {}
+     },
+     "quality_review": {
+@@ -235,11 +286,20 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": ["pending", "pass", "rework", "blocked", "human_review"]
++          "enum": [
++            "pending",
++            "pass",
++            "rework",
++            "blocked",
++            "human_review"
++          ]
+         },
+         "provenance": {
+           "type": "string",
+-          "enum": ["human_supplied", "evaluator_supplied"]
++          "enum": [
++            "human_supplied",
++            "evaluator_supplied"
++          ]
+         },
+         "updated_at": {
+           "anyOf": [
+@@ -327,7 +387,14 @@
+         },
+         "status": {
+           "type": "string",
+-          "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
++          "enum": [
++            "prepared",
++            "running",
++            "success",
++            "failed",
++            "blocked",
++            "cancelled"
++          ]
+         },
+         "adapter_id": {
+           "type": "string",
+@@ -335,7 +402,10 @@
+         },
+         "mode": {
+           "type": "string",
+-          "enum": ["execute", "dry_run"]
++          "enum": [
++            "execute",
++            "dry_run"
++          ]
+         },
+         "created_at": {
+           "type": "string",
+@@ -374,7 +444,10 @@
+           "properties": {
+             "kind": {
+               "type": "string",
+-              "enum": ["task", "recipe_scenario"]
++              "enum": [
++                "task",
++                "recipe_scenario"
++              ]
+             },
+             "task_id": {
+               "type": "string",
+@@ -389,7 +462,9 @@
+               "minLength": 1
+             }
+           },
+-          "required": ["kind"],
++          "required": [
++            "kind"
++          ],
+           "additionalProperties": {}
+         },
+         "summary": {
+@@ -489,14 +564,24 @@
+             },
+             "verification_state": {
+               "type": "string",
+-              "enum": ["observed_success", "rejected", "unverified", "compatibility_unverified"]
++              "enum": [
++                "observed_success",
++                "rejected",
++                "unverified",
++                "compatibility_unverified"
++              ]
+             },
+             "observed_by": {
+               "type": "string",
+               "const": "agentplane"
+             }
+           },
+-          "required": ["path", "sha256", "verification_state", "observed_by"],
++          "required": [
++            "path",
++            "sha256",
++            "verification_state",
++            "observed_by"
++          ],
+           "additionalProperties": false
+         },
+         "history": {
+@@ -510,7 +595,14 @@
+               },
+               "status": {
+                 "type": "string",
+-                "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
++                "enum": [
++                  "prepared",
++                  "running",
++                  "success",
++                  "failed",
++                  "blocked",
++                  "cancelled"
++                ]
+               },
+               "adapter_id": {
+                 "type": "string",
+@@ -518,7 +610,10 @@
+               },
+               "mode": {
+                 "type": "string",
+-                "enum": ["execute", "dry_run"]
++                "enum": [
++                  "execute",
++                  "dry_run"
++                ]
+               },
+               "created_at": {
+                 "type": "string",
+@@ -557,7 +652,10 @@
+                 "properties": {
+                   "kind": {
+                     "type": "string",
+-                    "enum": ["task", "recipe_scenario"]
++                    "enum": [
++                      "task",
++                      "recipe_scenario"
++                    ]
+                   },
+                   "task_id": {
+                     "type": "string",
+@@ -572,7 +670,9 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": ["kind"],
++                "required": [
++                  "kind"
++                ],
+                 "additionalProperties": {}
+               },
+               "summary": {
+@@ -684,7 +784,12 @@
+                     "const": "agentplane"
+                   }
+                 },
+-                "required": ["path", "sha256", "verification_state", "observed_by"],
++                "required": [
++                  "path",
++                  "sha256",
++                  "verification_state",
++                  "observed_by"
++                ],
+                 "additionalProperties": false
+               }
+             },
+@@ -701,7 +806,15 @@
+           }
+         }
+       },
+-      "required": ["run_id", "status", "adapter_id", "mode", "updated_at", "exit_code", "target"],
++      "required": [
++        "run_id",
++        "status",
++        "adapter_id",
++        "mode",
++        "updated_at",
++        "exit_code",
++        "target"
++      ],
+       "additionalProperties": {}
+     },
+     "token_usage": {
+@@ -713,7 +826,11 @@
+         },
+         "state": {
+           "type": "string",
+-          "enum": ["observed", "partial", "unavailable"]
++          "enum": [
++            "observed",
++            "partial",
++            "unavailable"
++          ]
+         },
+         "input_tokens": {
+           "anyOf": [
+@@ -775,7 +892,10 @@
+         },
+         "source": {
+           "type": "string",
+-          "enum": ["supervisor_journal", "unavailable"]
++          "enum": [
++            "supervisor_journal",
++            "unavailable"
++          ]
+         },
+         "observed_by": {
+           "type": "string",
+@@ -826,6 +946,59 @@
+       ],
+       "additionalProperties": false
+     },
++    "execution_route": {
++      "type": "object",
++      "properties": {
++        "schema_version": {
++          "type": "number",
++          "const": 1
++        },
++        "requested_mode": {
++          "type": "string",
++          "enum": [
++            "repository",
++            "auto",
++            "direct",
++            "branch_pr"
++          ]
++        },
++        "selected_mode": {
++          "type": "string",
++          "enum": [
++            "direct",
++            "branch_pr"
++          ]
++        },
++        "repository_mode": {
++          "type": "string",
++          "enum": [
++            "direct",
++            "branch_pr"
++          ]
++        },
++        "reason_codes": {
++          "minItems": 1,
++          "type": "array",
++          "items": {
++            "type": "string",
++            "minLength": 1
++          }
++        },
++        "frozen": {
++          "type": "boolean",
++          "const": true
++        }
++      },
++      "required": [
++        "schema_version",
++        "requested_mode",
++        "selected_mode",
++        "repository_mode",
++        "reason_codes",
++        "frozen"
++      ],
++      "additionalProperties": false
++    },
+     "sync": {
+       "type": "object",
+       "properties": {
+@@ -881,7 +1054,10 @@
+                 "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+               }
+             },
+-            "required": ["provider", "remote_id"],
++            "required": [
++              "provider",
++              "remote_id"
++            ],
+             "additionalProperties": false
+           }
+         },
+@@ -897,7 +1073,13 @@
+             "properties": {
+               "authority": {
+                 "type": "string",
+-                "enum": ["agentplane", "provider", "bidirectional", "derived", "ignored"]
++                "enum": [
++                  "agentplane",
++                  "provider",
++                  "bidirectional",
++                  "derived",
++                  "ignored"
++                ]
+               },
+               "remote_field": {
+                 "type": "string",
+@@ -905,7 +1087,12 @@
+               },
+               "conflict_policy": {
+                 "type": "string",
+-                "enum": ["record", "manual", "agentplane_wins", "provider_wins"]
++                "enum": [
++                  "record",
++                  "manual",
++                  "agentplane_wins",
++                  "provider_wins"
++                ]
+               },
+               "updated_at": {
+                 "type": "string",
+@@ -917,7 +1104,9 @@
+                 "minLength": 1
+               }
+             },
+-            "required": ["authority"],
++            "required": [
++              "authority"
++            ],
+             "additionalProperties": false
+           }
+         },
+@@ -964,15 +1153,30 @@
+               },
+               "kind": {
+                 "type": "string",
+-                "enum": ["field", "identity", "freshness", "deletion", "dependency", "permission"]
++                "enum": [
++                  "field",
++                  "identity",
++                  "freshness",
++                  "deletion",
++                  "dependency",
++                  "permission"
++                ]
+               },
+               "severity": {
+                 "type": "string",
+-                "enum": ["info", "warning", "blocking"]
++                "enum": [
++                  "info",
++                  "warning",
++                  "blocking"
++                ]
+               },
+               "status": {
+                 "type": "string",
+-                "enum": ["open", "resolved", "ignored"]
++                "enum": [
++                  "open",
++                  "resolved",
++                  "ignored"
++                ]
+               },
+               "summary": {
+                 "type": "string",
+@@ -1009,12 +1213,21 @@
+                 "minLength": 1
+               }
+             },
+-            "required": ["id", "kind", "severity", "status", "summary", "detected_at"],
++            "required": [
++              "id",
++              "kind",
++              "severity",
++              "status",
++              "summary",
++              "detected_at"
++            ],
+             "additionalProperties": false
+           }
+         }
+       },
+-      "required": ["version"],
++      "required": [
++        "version"
++      ],
+       "additionalProperties": false
+     },
+     "commit": {
+@@ -1031,7 +1244,10 @@
+               "minLength": 1
+             }
+           },
+-          "required": ["hash", "message"],
++          "required": [
++            "hash",
++            "message"
++          ],
+           "additionalProperties": false
+         },
+         {
+@@ -1053,7 +1269,10 @@
+             "minLength": 1
+           }
+         },
+-        "required": ["author", "body"],
++        "required": [
++          "author",
++          "body"
++        ],
+         "additionalProperties": false
+       }
+     },
+@@ -1064,7 +1283,11 @@
+         "properties": {
+           "type": {
+             "type": "string",
+-            "enum": ["status", "comment", "verify"]
++            "enum": [
++              "status",
++              "comment",
++              "verify"
++            ]
+           },
+           "at": {
+             "type": "string",
+@@ -1091,7 +1314,11 @@
+             "type": "string"
+           }
+         },
+-        "required": ["type", "at", "author"],
++        "required": [
++          "type",
++          "at",
++          "author"
++        ],
+         "additionalProperties": {}
+       }
+     },
+diff --git a/packages/core/schemas/tasks-export.schema.json b/packages/core/schemas/tasks-export.schema.json
+index bfd567cf4..8c40d1d53 100644
+--- a/packages/core/schemas/tasks-export.schema.json
++++ b/packages/core/schemas/tasks-export.schema.json
+@@ -22,18 +22,32 @@
+           },
+           "risk_level": {
+             "type": "string",
+-            "enum": ["low", "med", "high"]
++            "enum": [
++              "low",
++              "med",
++              "high"
++            ]
+           },
+           "breaking": {
+             "type": "boolean"
+           },
+           "status": {
+             "type": "string",
+-            "enum": ["TODO", "DOING", "DONE", "BLOCKED"]
++            "enum": [
++              "TODO",
++              "DOING",
++              "DONE",
++              "BLOCKED"
++            ]
+           },
+           "priority": {
+             "type": "string",
+-            "enum": ["low", "normal", "med", "high"]
++            "enum": [
++              "low",
++              "normal",
++              "med",
++              "high"
++            ]
+           },
+           "owner": {
+             "type": "string",
+@@ -76,7 +90,9 @@
+                 "minLength": 1
+               }
+             },
+-            "required": ["system"],
++            "required": [
++              "system"
++            ],
+             "additionalProperties": {
+               "type": "string"
+             }
+@@ -90,7 +106,14 @@
+               },
+               "status": {
+                 "type": "string",
+-                "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
++                "enum": [
++                  "prepared",
++                  "running",
++                  "success",
++                  "failed",
++                  "blocked",
++                  "cancelled"
++                ]
+               },
+               "adapter_id": {
+                 "type": "string",
+@@ -98,7 +121,10 @@
+               },
+               "mode": {
+                 "type": "string",
+-                "enum": ["execute", "dry_run"]
++                "enum": [
++                  "execute",
++                  "dry_run"
++                ]
+               },
+               "created_at": {
+                 "type": "string",
+@@ -137,7 +163,10 @@
+                 "properties": {
+                   "kind": {
+                     "type": "string",
+-                    "enum": ["task", "recipe_scenario"]
++                    "enum": [
++                      "task",
++                      "recipe_scenario"
++                    ]
+                   },
+                   "task_id": {
+                     "type": "string",
+@@ -152,7 +181,9 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": ["kind"],
++                "required": [
++                  "kind"
++                ],
+                 "additionalProperties": {}
+               },
+               "summary": {
+@@ -264,7 +295,12 @@
+                     "const": "agentplane"
+                   }
+                 },
+-                "required": ["path", "sha256", "verification_state", "observed_by"],
++                "required": [
++                  "path",
++                  "sha256",
++                  "verification_state",
++                  "observed_by"
++                ],
+                 "additionalProperties": false
+               },
+               "history": {
+@@ -278,7 +314,14 @@
+                     },
+                     "status": {
+                       "type": "string",
+-                      "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
++                      "enum": [
++                        "prepared",
++                        "running",
++                        "success",
++                        "failed",
++                        "blocked",
++                        "cancelled"
++                      ]
+                     },
+                     "adapter_id": {
+                       "type": "string",
+@@ -286,7 +329,10 @@
+                     },
+                     "mode": {
+                       "type": "string",
+-                      "enum": ["execute", "dry_run"]
++                      "enum": [
++                        "execute",
++                        "dry_run"
++                      ]
+                     },
+                     "created_at": {
+                       "type": "string",
+@@ -325,7 +371,10 @@
+                       "properties": {
+                         "kind": {
+                           "type": "string",
+-                          "enum": ["task", "recipe_scenario"]
++                          "enum": [
++                            "task",
++                            "recipe_scenario"
++                          ]
+                         },
+                         "task_id": {
+                           "type": "string",
+@@ -340,7 +389,9 @@
+                           "minLength": 1
+                         }
+                       },
+-                      "required": ["kind"],
++                      "required": [
++                        "kind"
++                      ],
+                       "additionalProperties": {}
+                     },
+                     "summary": {
+@@ -452,7 +503,12 @@
+                           "const": "agentplane"
+                         }
+                       },
+-                      "required": ["path", "sha256", "verification_state", "observed_by"],
++                      "required": [
++                        "path",
++                        "sha256",
++                        "verification_state",
++                        "observed_by"
++                      ],
+                       "additionalProperties": false
+                     }
+                   },
+@@ -489,7 +545,11 @@
+               },
+               "state": {
+                 "type": "string",
+-                "enum": ["observed", "partial", "unavailable"]
++                "enum": [
++                  "observed",
++                  "partial",
++                  "unavailable"
++                ]
+               },
+               "input_tokens": {
+                 "anyOf": [
+@@ -551,7 +611,10 @@
+               },
+               "source": {
+                 "type": "string",
+-                "enum": ["supervisor_journal", "unavailable"]
++                "enum": [
++                  "supervisor_journal",
++                  "unavailable"
++                ]
+               },
+               "observed_by": {
+                 "type": "string",
+@@ -602,6 +665,59 @@
+             ],
+             "additionalProperties": false
+           },
++          "execution_route": {
++            "type": "object",
++            "properties": {
++              "schema_version": {
++                "type": "number",
++                "const": 1
++              },
++              "requested_mode": {
++                "type": "string",
++                "enum": [
++                  "repository",
++                  "auto",
++                  "direct",
++                  "branch_pr"
++                ]
++              },
++              "selected_mode": {
++                "type": "string",
++                "enum": [
++                  "direct",
++                  "branch_pr"
++                ]
++              },
++              "repository_mode": {
++                "type": "string",
++                "enum": [
++                  "direct",
++                  "branch_pr"
++                ]
++              },
++              "reason_codes": {
++                "minItems": 1,
++                "type": "array",
++                "items": {
++                  "type": "string",
++                  "minLength": 1
++                }
++              },
++              "frozen": {
++                "type": "boolean",
++                "const": true
++              }
++            },
++            "required": [
++              "schema_version",
++              "requested_mode",
++              "selected_mode",
++              "repository_mode",
++              "reason_codes",
++              "frozen"
++            ],
++            "additionalProperties": false
++          },
+           "depends_on": {
+             "type": "array",
+             "items": {
+@@ -618,11 +734,27 @@
+           },
+           "task_kind": {
+             "type": "string",
+-            "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
++            "enum": [
++              "analysis",
++              "content",
++              "docs",
++              "code",
++              "release",
++              "ops",
++              "context"
++            ]
+           },
+           "mutation_scope": {
+             "type": "string",
+-            "enum": ["none", "docs", "code", "release", "ops", "context", "unknown"]
++            "enum": [
++              "none",
++              "docs",
++              "code",
++              "release",
++              "ops",
++              "context",
++              "unknown"
++            ]
+           },
+           "risk_flags": {
+             "type": "array",
+@@ -669,7 +801,11 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": ["pending", "approved", "rejected"]
++                "enum": [
++                  "pending",
++                  "approved",
++                  "rejected"
++                ]
+               },
+               "updated_at": {
+                 "anyOf": [
+@@ -704,7 +840,12 @@
+                 ]
+               }
+             },
+-            "required": ["state", "updated_at", "updated_by", "note"],
++            "required": [
++              "state",
++              "updated_at",
++              "updated_by",
++              "note"
++            ],
+             "additionalProperties": {}
+           },
+           "verification": {
+@@ -712,7 +853,12 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": ["pending", "ok", "needs_rework", "blocked_external"]
++                "enum": [
++                  "pending",
++                  "ok",
++                  "needs_rework",
++                  "blocked_external"
++                ]
+               },
+               "attempts": {
+                 "type": "integer",
+@@ -752,7 +898,12 @@
+                 ]
+               }
+             },
+-            "required": ["state", "updated_at", "updated_by", "note"],
++            "required": [
++              "state",
++              "updated_at",
++              "updated_by",
++              "note"
++            ],
+             "additionalProperties": {}
+           },
+           "quality_review": {
+@@ -760,11 +911,20 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": ["pending", "pass", "rework", "blocked", "human_review"]
++                "enum": [
++                  "pending",
++                  "pass",
++                  "rework",
++                  "blocked",
++                  "human_review"
++                ]
+               },
+               "provenance": {
+                 "type": "string",
+-                "enum": ["human_supplied", "evaluator_supplied"]
++                "enum": [
++                  "human_supplied",
++                  "evaluator_supplied"
++                ]
+               },
+               "updated_at": {
+                 "anyOf": [
+@@ -857,7 +1017,10 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": ["hash", "message"],
++                "required": [
++                  "hash",
++                  "message"
++                ],
+                 "additionalProperties": false
+               },
+               {
+@@ -879,7 +1042,10 @@
+                   "minLength": 1
+                 }
+               },
+-              "required": ["author", "body"],
++              "required": [
++                "author",
++                "body"
++              ],
+               "additionalProperties": false
+             }
+           },
+@@ -890,7 +1056,11 @@
+               "properties": {
+                 "type": {
+                   "type": "string",
+-                  "enum": ["status", "comment", "verify"]
++                  "enum": [
++                    "status",
++                    "comment",
++                    "verify"
++                  ]
+                 },
+                 "at": {
+                   "type": "string",
+@@ -917,7 +1087,11 @@
+                   "type": "string"
+                 }
+               },
+-              "required": ["type", "at", "author"],
++              "required": [
++                "type",
++                "at",
++                "author"
++              ],
+               "additionalProperties": {}
+             }
+           },
+@@ -976,7 +1150,10 @@
+                       "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                     }
+                   },
+-                  "required": ["provider", "remote_id"],
++                  "required": [
++                    "provider",
++                    "remote_id"
++                  ],
+                   "additionalProperties": false
+                 }
+               },
+@@ -992,7 +1169,13 @@
+                   "properties": {
+                     "authority": {
+                       "type": "string",
+-                      "enum": ["agentplane", "provider", "bidirectional", "derived", "ignored"]
++                      "enum": [
++                        "agentplane",
++                        "provider",
++                        "bidirectional",
++                        "derived",
++                        "ignored"
++                      ]
+                     },
+                     "remote_field": {
+                       "type": "string",
+@@ -1000,7 +1183,12 @@
+                     },
+                     "conflict_policy": {
+                       "type": "string",
+-                      "enum": ["record", "manual", "agentplane_wins", "provider_wins"]
++                      "enum": [
++                        "record",
++                        "manual",
++                        "agentplane_wins",
++                        "provider_wins"
++                      ]
+                     },
+                     "updated_at": {
+                       "type": "string",
+@@ -1012,7 +1200,9 @@
+                       "minLength": 1
+                     }
+                   },
+-                  "required": ["authority"],
++                  "required": [
++                    "authority"
++                  ],
+                   "additionalProperties": false
+                 }
+               },
+@@ -1070,11 +1260,19 @@
+                     },
+                     "severity": {
+                       "type": "string",
+-                      "enum": ["info", "warning", "blocking"]
++                      "enum": [
++                        "info",
++                        "warning",
++                        "blocking"
++                      ]
+                     },
+                     "status": {
+                       "type": "string",
+-                      "enum": ["open", "resolved", "ignored"]
++                      "enum": [
++                        "open",
++                        "resolved",
++                        "ignored"
++                      ]
+                     },
+                     "summary": {
+                       "type": "string",
+@@ -1111,12 +1309,21 @@
+                       "minLength": 1
+                     }
+                   },
+-                  "required": ["id", "kind", "severity", "status", "summary", "detected_at"],
++                  "required": [
++                    "id",
++                    "kind",
++                    "severity",
++                    "status",
++                    "summary",
++                    "detected_at"
++                  ],
+                   "additionalProperties": false
+                 }
+               }
+             },
+-            "required": ["version"],
++            "required": [
++              "version"
++            ],
+             "additionalProperties": false
+           },
+           "doc_version": {
+@@ -1186,10 +1393,18 @@
+           "minLength": 1
+         }
+       },
+-      "required": ["schema_version", "managed_by", "checksum_algo", "checksum"],
++      "required": [
++        "schema_version",
++        "managed_by",
++        "checksum_algo",
++        "checksum"
++      ],
+       "additionalProperties": false
+     }
+   },
+-  "required": ["tasks", "meta"],
++  "required": [
++    "tasks",
++    "meta"
++  ],
+   "additionalProperties": false
+ }
+diff --git a/packages/core/src/tasks/index.ts b/packages/core/src/tasks/index.ts
+index 759423288..21ceca7fa 100644
+--- a/packages/core/src/tasks/index.ts
++++ b/packages/core/src/tasks/index.ts
+@@ -127,6 +127,9 @@ export {
+   type TaskRunnerTarget,
+   type TaskTokenUsage,
+   type TaskTokenUsageState,
++  type TaskExecutionRoute,
++  type TaskExecutionRouteMode,
++  type TaskExecutionRouteRequest,
+   type TaskSyncConflict,
+   type TaskSyncConflictPolicy,
+   type TaskSyncEnvelope,
+diff --git a/packages/core/src/tasks/task-artifact-schema.task.ts b/packages/core/src/tasks/task-artifact-schema.task.ts
+index 098511e27..2eeb27d1d 100644
+--- a/packages/core/src/tasks/task-artifact-schema.task.ts
++++ b/packages/core/src/tasks/task-artifact-schema.task.ts
+@@ -100,6 +100,16 @@ const TASK_KIND_SCHEMA = z.enum(TASK_KIND_VALUES);
+ const TASK_MUTATION_SCOPE_SCHEMA = z.enum(TASK_MUTATION_SCOPE_VALUES);
+ const TASK_RISK_FLAGS_SCHEMA = z.array(z.enum(TASK_RISK_FLAG_VALUES));
+ const TASK_BLUEPRINT_REQUEST_SCHEMA = z.enum(TASK_BLUEPRINT_REQUEST_VALUES);
++const TASK_EXECUTION_ROUTE_SCHEMA = z
++  .object({
++    schema_version: z.literal(1),
++    requested_mode: z.enum(["repository", "auto", "direct", "branch_pr"]),
++    selected_mode: z.enum(["direct", "branch_pr"]),
++    repository_mode: z.enum(["direct", "branch_pr"]),
++    reason_codes: z.array(NON_EMPTY_STRING).min(1),
++    frozen: z.literal(true),
++  })
++  .strict();
+ 
+ const TASK_ORIGIN_SCHEMA = z
+   .object({
+@@ -346,6 +356,7 @@ export const TASK_README_FRONTMATTER_ZOD_SCHEMA = z
+     quality_review: TASK_QUALITY_REVIEW_SCHEMA.optional(),
+     runner: RUNNER_OUTCOME_SCHEMA.optional(),
+     token_usage: TASK_TOKEN_USAGE_SCHEMA.optional(),
++    execution_route: TASK_EXECUTION_ROUTE_SCHEMA.optional(),
+     sync: TASK_SYNC_ENVELOPE_SCHEMA.optional(),
+     commit: TASK_COMMIT_SCHEMA.optional(),
+     comments: z.array(TASK_COMMENT_SCHEMA),
+@@ -375,6 +386,7 @@ const TASKS_EXPORT_TASK_SCHEMA = z
+     origin: TASK_ORIGIN_SCHEMA.optional(),
+     runner: RUNNER_OUTCOME_SCHEMA.optional(),
+     token_usage: TASK_TOKEN_USAGE_SCHEMA.optional(),
++    execution_route: TASK_EXECUTION_ROUTE_SCHEMA.optional(),
+     depends_on: z.array(NON_EMPTY_STRING),
+     tags: z.array(NON_EMPTY_STRING),
+     task_kind: TASK_KIND_SCHEMA.optional(),
+diff --git a/packages/core/src/tasks/task-provider-safe-projection.ts b/packages/core/src/tasks/task-provider-safe-projection.ts
+index 747f9b116..463a64305 100644
+--- a/packages/core/src/tasks/task-provider-safe-projection.ts
++++ b/packages/core/src/tasks/task-provider-safe-projection.ts
+@@ -33,6 +33,7 @@ export type ProviderSafeTaskProjection = {
+   breaking?: boolean;
+   task_kind?: string;
+   mutation_scope?: string;
++  execution_route?: TaskFrontmatter["execution_route"];
+   plan_approval_state: PlanApprovalState;
+   plan_approved: boolean;
+   verification_state: VerificationState;
+@@ -86,6 +87,7 @@ export type ProviderSafeTaskProjectionInput = Pick<
+   | "quality_review"
+   | "runner"
+   | "token_usage"
++  | "execution_route"
+   | "sync"
+   | "sections"
+   | "doc_version"
+@@ -135,6 +137,7 @@ export function buildProviderSafeTaskProjection(
+     ...(task.quality_review?.state ? { quality_review_state: task.quality_review.state } : {}),
+     ...(task.runner?.status ? { runner_status: task.runner.status } : {}),
+     ...(task.token_usage ? { token_usage: structuredClone(task.token_usage) } : {}),
++    ...(task.execution_route ? { execution_route: structuredClone(task.execution_route) } : {}),
+     ...(task.commit?.hash ? { commit_hash: task.commit.hash } : {}),
+     ...(task.doc_version ? { doc_version: task.doc_version } : {}),
+     ...(task.doc_updated_at ? { doc_updated_at: task.doc_updated_at } : {}),
+diff --git a/packages/core/src/tasks/task-readme.ts b/packages/core/src/tasks/task-readme.ts
+index eb09561ed..b80c257d8 100644
+--- a/packages/core/src/tasks/task-readme.ts
++++ b/packages/core/src/tasks/task-readme.ts
+@@ -284,6 +284,7 @@ export function renderTaskFrontmatter(frontmatter: Record<string, unknown>): str
+     "quality_review",
+     "runner",
+     "token_usage",
++    "execution_route",
+     "commit",
+     "comments",
+     "events",
+diff --git a/packages/core/src/tasks/task-store.ts b/packages/core/src/tasks/task-store.ts
+index 2ff731d18..da9db2fdb 100644
+--- a/packages/core/src/tasks/task-store.ts
++++ b/packages/core/src/tasks/task-store.ts
+@@ -167,6 +167,17 @@ export type TaskTokenUsage = {
+   updated_at: string;
+ };
+ 
++export type TaskExecutionRouteMode = "direct" | "branch_pr";
++export type TaskExecutionRouteRequest = "repository" | "auto" | TaskExecutionRouteMode;
++export type TaskExecutionRoute = {
++  schema_version: 1;
++  requested_mode: TaskExecutionRouteRequest;
++  selected_mode: TaskExecutionRouteMode;
++  repository_mode: TaskExecutionRouteMode;
++  reason_codes: string[];
++  frozen: true;
++};
++
+ export type TaskSyncExternalRef = {
+   provider: string;
+   connector_kind?: string;
+@@ -248,6 +259,7 @@ export type TaskFrontmatter = {
+   quality_review?: QualityReviewResult;
+   runner?: TaskRunnerOutcome;
+   token_usage?: TaskTokenUsage;
++  execution_route?: TaskExecutionRoute;
+   sync?: TaskSyncEnvelope;
+   comments: { author: string; body: string }[];
+   events?: TaskEvent[];
+diff --git a/packages/core/src/tasks/tasks-export.ts b/packages/core/src/tasks/tasks-export.ts
+index 24d1fe8d7..3d23891c3 100644
+--- a/packages/core/src/tasks/tasks-export.ts
++++ b/packages/core/src/tasks/tasks-export.ts
+@@ -14,6 +14,7 @@ import {
+   type TaskRunnerOutcome,
+   type TaskRunnerTarget,
+   type TaskTokenUsage,
++  type TaskExecutionRoute,
+   type TaskSyncEnvelope,
+ } from "./task-store.js";
+ 
+@@ -485,6 +486,7 @@ export type TasksExportTask = {
+   };
+   runner?: TaskRunnerOutcome;
+   token_usage?: TaskTokenUsage;
++  execution_route?: TaskExecutionRoute;
+   sync?: TaskSyncEnvelope;
+   depends_on: string[];
+   tags: string[];
+@@ -637,6 +639,7 @@ export async function buildTasksExportSnapshot(opts: {
+       verification: normalizeTaskVerification(fm.verification),
+       runner: normalizeTaskRunnerOutcome(fm.runner),
+       token_usage: t.frontmatter.token_usage,
++      execution_route: t.frontmatter.execution_route,
+       sync: normalizeTaskSyncEnvelope(fm.sync),
+       depends_on: dependsOn,
+       tags,
+diff --git a/packages/spec/schemas/task-readme-frontmatter.schema.json b/packages/spec/schemas/task-readme-frontmatter.schema.json
+index f39a06ee4..0d158dee6 100644
+--- a/packages/spec/schemas/task-readme-frontmatter.schema.json
++++ b/packages/spec/schemas/task-readme-frontmatter.schema.json
+@@ -18,18 +18,32 @@
+     },
+     "risk_level": {
+       "type": "string",
+-      "enum": ["low", "med", "high"]
++      "enum": [
++        "low",
++        "med",
++        "high"
++      ]
+     },
+     "breaking": {
+       "type": "boolean"
+     },
+     "status": {
+       "type": "string",
+-      "enum": ["TODO", "DOING", "DONE", "BLOCKED"]
++      "enum": [
++        "TODO",
++        "DOING",
++        "DONE",
++        "BLOCKED"
++      ]
+     },
+     "priority": {
+       "type": "string",
+-      "enum": ["low", "normal", "med", "high"]
++      "enum": [
++        "low",
++        "normal",
++        "med",
++        "high"
++      ]
+     },
+     "owner": {
+       "type": "string",
+@@ -72,7 +86,9 @@
+           "minLength": 1
+         }
+       },
+-      "required": ["system"],
++      "required": [
++        "system"
++      ],
+       "additionalProperties": {
+         "type": "string"
+       }
+@@ -93,11 +109,27 @@
+     },
+     "task_kind": {
+       "type": "string",
+-      "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
++      "enum": [
++        "analysis",
++        "content",
++        "docs",
++        "code",
++        "release",
++        "ops",
++        "context"
++      ]
+     },
+     "mutation_scope": {
+       "type": "string",
+-      "enum": ["none", "docs", "code", "release", "ops", "context", "unknown"]
++      "enum": [
++        "none",
++        "docs",
++        "code",
++        "release",
++        "ops",
++        "context",
++        "unknown"
++      ]
+     },
+     "risk_flags": {
+       "type": "array",
+@@ -144,7 +176,11 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": ["pending", "approved", "rejected"]
++          "enum": [
++            "pending",
++            "approved",
++            "rejected"
++          ]
+         },
+         "updated_at": {
+           "anyOf": [
+@@ -179,7 +215,12 @@
+           ]
+         }
+       },
+-      "required": ["state", "updated_at", "updated_by", "note"],
++      "required": [
++        "state",
++        "updated_at",
++        "updated_by",
++        "note"
++      ],
+       "additionalProperties": {}
+     },
+     "verification": {
+@@ -187,7 +228,12 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": ["pending", "ok", "needs_rework", "blocked_external"]
++          "enum": [
++            "pending",
++            "ok",
++            "needs_rework",
++            "blocked_external"
++          ]
+         },
+         "attempts": {
+           "type": "integer",
+@@ -227,7 +273,12 @@
+           ]
+         }
+       },
+-      "required": ["state", "updated_at", "updated_by", "note"],
++      "required": [
++        "state",
++        "updated_at",
++        "updated_by",
++        "note"
++      ],
+       "additionalProperties": {}
+     },
+     "quality_review": {
+@@ -235,11 +286,20 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": ["pending", "pass", "rework", "blocked", "human_review"]
++          "enum": [
++            "pending",
++            "pass",
++            "rework",
++            "blocked",
++            "human_review"
++          ]
+         },
+         "provenance": {
+           "type": "string",
+-          "enum": ["human_supplied", "evaluator_supplied"]
++          "enum": [
++            "human_supplied",
++            "evaluator_supplied"
++          ]
+         },
+         "updated_at": {
+           "anyOf": [
+@@ -327,7 +387,14 @@
+         },
+         "status": {
+           "type": "string",
+-          "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
++          "enum": [
++            "prepared",
++            "running",
++            "success",
++            "failed",
++            "blocked",
++            "cancelled"
++          ]
+         },
+         "adapter_id": {
+           "type": "string",
+@@ -335,7 +402,10 @@
+         },
+         "mode": {
+           "type": "string",
+-          "enum": ["execute", "dry_run"]
++          "enum": [
++            "execute",
++            "dry_run"
++          ]
+         },
+         "created_at": {
+           "type": "string",
+@@ -374,7 +444,10 @@
+           "properties": {
+             "kind": {
+               "type": "string",
+-              "enum": ["task", "recipe_scenario"]
++              "enum": [
++                "task",
++                "recipe_scenario"
++              ]
+             },
+             "task_id": {
+               "type": "string",
+@@ -389,7 +462,9 @@
+               "minLength": 1
+             }
+           },
+-          "required": ["kind"],
++          "required": [
++            "kind"
++          ],
+           "additionalProperties": {}
+         },
+         "summary": {
+@@ -489,14 +564,24 @@
+             },
+             "verification_state": {
+               "type": "string",
+-              "enum": ["observed_success", "rejected", "unverified", "compatibility_unverified"]
++              "enum": [
++                "observed_success",
++                "rejected",
++                "unverified",
++                "compatibility_unverified"
++              ]
+             },
+             "observed_by": {
+               "type": "string",
+               "const": "agentplane"
+             }
+           },
+-          "required": ["path", "sha256", "verification_state", "observed_by"],
++          "required": [
++            "path",
++            "sha256",
++            "verification_state",
++            "observed_by"
++          ],
+           "additionalProperties": false
+         },
+         "history": {
+@@ -510,7 +595,14 @@
+               },
+               "status": {
+                 "type": "string",
+-                "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
++                "enum": [
++                  "prepared",
++                  "running",
++                  "success",
++                  "failed",
++                  "blocked",
++                  "cancelled"
++                ]
+               },
+               "adapter_id": {
+                 "type": "string",
+@@ -518,7 +610,10 @@
+               },
+               "mode": {
+                 "type": "string",
+-                "enum": ["execute", "dry_run"]
++                "enum": [
++                  "execute",
++                  "dry_run"
++                ]
+               },
+               "created_at": {
+                 "type": "string",
+@@ -557,7 +652,10 @@
+                 "properties": {
+                   "kind": {
+                     "type": "string",
+-                    "enum": ["task", "recipe_scenario"]
++                    "enum": [
++                      "task",
++                      "recipe_scenario"
++                    ]
+                   },
+                   "task_id": {
+                     "type": "string",
+@@ -572,7 +670,9 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": ["kind"],
++                "required": [
++                  "kind"
++                ],
+                 "additionalProperties": {}
+               },
+               "summary": {
+@@ -684,7 +784,12 @@
+                     "const": "agentplane"
+                   }
+                 },
+-                "required": ["path", "sha256", "verification_state", "observed_by"],
++                "required": [
++                  "path",
++                  "sha256",
++                  "verification_state",
++                  "observed_by"
++                ],
+                 "additionalProperties": false
+               }
+             },
+@@ -701,7 +806,15 @@
+           }
+         }
+       },
+-      "required": ["run_id", "status", "adapter_id", "mode", "updated_at", "exit_code", "target"],
++      "required": [
++        "run_id",
++        "status",
++        "adapter_id",
++        "mode",
++        "updated_at",
++        "exit_code",
++        "target"
++      ],
+       "additionalProperties": {}
+     },
+     "token_usage": {
+@@ -713,7 +826,11 @@
+         },
+         "state": {
+           "type": "string",
+-          "enum": ["observed", "partial", "unavailable"]
++          "enum": [
++            "observed",
++            "partial",
++            "unavailable"
++          ]
+         },
+         "input_tokens": {
+           "anyOf": [
+@@ -775,7 +892,10 @@
+         },
+         "source": {
+           "type": "string",
+-          "enum": ["supervisor_journal", "unavailable"]
++          "enum": [
++            "supervisor_journal",
++            "unavailable"
++          ]
+         },
+         "observed_by": {
+           "type": "string",
+@@ -826,6 +946,59 @@
+       ],
+       "additionalProperties": false
+     },
++    "execution_route": {
++      "type": "object",
++      "properties": {
++        "schema_version": {
++          "type": "number",
++          "const": 1
++        },
++        "requested_mode": {
++          "type": "string",
++          "enum": [
++            "repository",
++            "auto",
++            "direct",
++            "branch_pr"
++          ]
++        },
++        "selected_mode": {
++          "type": "string",
++          "enum": [
++            "direct",
++            "branch_pr"
++          ]
++        },
++        "repository_mode": {
++          "type": "string",
++          "enum": [
++            "direct",
++            "branch_pr"
++          ]
++        },
++        "reason_codes": {
++          "minItems": 1,
++          "type": "array",
++          "items": {
++            "type": "string",
++            "minLength": 1
++          }
++        },
++        "frozen": {
++          "type": "boolean",
++          "const": true
++        }
++      },
++      "required": [
++        "schema_version",
++        "requested_mode",
++        "selected_mode",
++        "repository_mode",
++        "reason_codes",
++        "frozen"
++      ],
++      "additionalProperties": false
++    },
+     "sync": {
+       "type": "object",
+       "properties": {
+@@ -881,7 +1054,10 @@
+                 "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+               }
+             },
+-            "required": ["provider", "remote_id"],
++            "required": [
++              "provider",
++              "remote_id"
++            ],
+             "additionalProperties": false
+           }
+         },
+@@ -897,7 +1073,13 @@
+             "properties": {
+               "authority": {
+                 "type": "string",
+-                "enum": ["agentplane", "provider", "bidirectional", "derived", "ignored"]
++                "enum": [
++                  "agentplane",
++                  "provider",
++                  "bidirectional",
++                  "derived",
++                  "ignored"
++                ]
+               },
+               "remote_field": {
+                 "type": "string",
+@@ -905,7 +1087,12 @@
+               },
+               "conflict_policy": {
+                 "type": "string",
+-                "enum": ["record", "manual", "agentplane_wins", "provider_wins"]
++                "enum": [
++                  "record",
++                  "manual",
++                  "agentplane_wins",
++                  "provider_wins"
++                ]
+               },
+               "updated_at": {
+                 "type": "string",
+@@ -917,7 +1104,9 @@
+                 "minLength": 1
+               }
+             },
+-            "required": ["authority"],
++            "required": [
++              "authority"
++            ],
+             "additionalProperties": false
+           }
+         },
+@@ -964,15 +1153,30 @@
+               },
+               "kind": {
+                 "type": "string",
+-                "enum": ["field", "identity", "freshness", "deletion", "dependency", "permission"]
++                "enum": [
++                  "field",
++                  "identity",
++                  "freshness",
++                  "deletion",
++                  "dependency",
++                  "permission"
++                ]
+               },
+               "severity": {
+                 "type": "string",
+-                "enum": ["info", "warning", "blocking"]
++                "enum": [
++                  "info",
++                  "warning",
++                  "blocking"
++                ]
+               },
+               "status": {
+                 "type": "string",
+-                "enum": ["open", "resolved", "ignored"]
++                "enum": [
++                  "open",
++                  "resolved",
++                  "ignored"
++                ]
+               },
+               "summary": {
+                 "type": "string",
+@@ -1009,12 +1213,21 @@
+                 "minLength": 1
+               }
+             },
+-            "required": ["id", "kind", "severity", "status", "summary", "detected_at"],
++            "required": [
++              "id",
++              "kind",
++              "severity",
++              "status",
++              "summary",
++              "detected_at"
++            ],
+             "additionalProperties": false
+           }
+         }
+       },
+-      "required": ["version"],
++      "required": [
++        "version"
++      ],
+       "additionalProperties": false
+     },
+     "commit": {
+@@ -1031,7 +1244,10 @@
+               "minLength": 1
+             }
+           },
+-          "required": ["hash", "message"],
++          "required": [
++            "hash",
++            "message"
++          ],
+           "additionalProperties": false
+         },
+         {
+@@ -1053,7 +1269,10 @@
+             "minLength": 1
+           }
+         },
+-        "required": ["author", "body"],
++        "required": [
++          "author",
++          "body"
++        ],
+         "additionalProperties": false
+       }
+     },
+@@ -1064,7 +1283,11 @@
+         "properties": {
+           "type": {
+             "type": "string",
+-            "enum": ["status", "comment", "verify"]
++            "enum": [
++              "status",
++              "comment",
++              "verify"
++            ]
+           },
+           "at": {
+             "type": "string",
+@@ -1091,7 +1314,11 @@
+             "type": "string"
+           }
+         },
+-        "required": ["type", "at", "author"],
++        "required": [
++          "type",
++          "at",
++          "author"
++        ],
+         "additionalProperties": {}
+       }
+     },
+diff --git a/packages/spec/schemas/tasks-export.schema.json b/packages/spec/schemas/tasks-export.schema.json
+index bfd567cf4..8c40d1d53 100644
+--- a/packages/spec/schemas/tasks-export.schema.json
++++ b/packages/spec/schemas/tasks-export.schema.json
+@@ -22,18 +22,32 @@
+           },
+           "risk_level": {
+             "type": "string",
+-            "enum": ["low", "med", "high"]
++            "enum": [
++              "low",
++              "med",
++              "high"
++            ]
+           },
+           "breaking": {
+             "type": "boolean"
+           },
+           "status": {
+             "type": "string",
+-            "enum": ["TODO", "DOING", "DONE", "BLOCKED"]
++            "enum": [
++              "TODO",
++              "DOING",
++              "DONE",
++              "BLOCKED"
++            ]
+           },
+           "priority": {
+             "type": "string",
+-            "enum": ["low", "normal", "med", "high"]
++            "enum": [
++              "low",
++              "normal",
++              "med",
++              "high"
++            ]
+           },
+           "owner": {
+             "type": "string",
+@@ -76,7 +90,9 @@
+                 "minLength": 1
+               }
+             },
+-            "required": ["system"],
++            "required": [
++              "system"
++            ],
+             "additionalProperties": {
+               "type": "string"
+             }
+@@ -90,7 +106,14 @@
+               },
+               "status": {
+                 "type": "string",
+-                "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
++                "enum": [
++                  "prepared",
++                  "running",
++                  "success",
++                  "failed",
++                  "blocked",
++                  "cancelled"
++                ]
+               },
+               "adapter_id": {
+                 "type": "string",
+@@ -98,7 +121,10 @@
+               },
+               "mode": {
+                 "type": "string",
+-                "enum": ["execute", "dry_run"]
++                "enum": [
++                  "execute",
++                  "dry_run"
++                ]
+               },
+               "created_at": {
+                 "type": "string",
+@@ -137,7 +163,10 @@
+                 "properties": {
+                   "kind": {
+                     "type": "string",
+-                    "enum": ["task", "recipe_scenario"]
++                    "enum": [
++                      "task",
++                      "recipe_scenario"
++                    ]
+                   },
+                   "task_id": {
+                     "type": "string",
+@@ -152,7 +181,9 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": ["kind"],
++                "required": [
++                  "kind"
++                ],
+                 "additionalProperties": {}
+               },
+               "summary": {
+@@ -264,7 +295,12 @@
+                     "const": "agentplane"
+                   }
+                 },
+-                "required": ["path", "sha256", "verification_state", "observed_by"],
++                "required": [
++                  "path",
++                  "sha256",
++                  "verification_state",
++                  "observed_by"
++                ],
+                 "additionalProperties": false
+               },
+               "history": {
+@@ -278,7 +314,14 @@
+                     },
+                     "status": {
+                       "type": "string",
+-                      "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
++                      "enum": [
++                        "prepared",
++                        "running",
++                        "success",
++                        "failed",
++                        "blocked",
++                        "cancelled"
++                      ]
+                     },
+                     "adapter_id": {
+                       "type": "string",
+@@ -286,7 +329,10 @@
+                     },
+                     "mode": {
+                       "type": "string",
+-                      "enum": ["execute", "dry_run"]
++                      "enum": [
++                        "execute",
++                        "dry_run"
++                      ]
+                     },
+                     "created_at": {
+                       "type": "string",
+@@ -325,7 +371,10 @@
+                       "properties": {
+                         "kind": {
+                           "type": "string",
+-                          "enum": ["task", "recipe_scenario"]
++                          "enum": [
++                            "task",
++                            "recipe_scenario"
++                          ]
+                         },
+                         "task_id": {
+                           "type": "string",
+@@ -340,7 +389,9 @@
+                           "minLength": 1
+                         }
+                       },
+-                      "required": ["kind"],
++                      "required": [
++                        "kind"
++                      ],
+                       "additionalProperties": {}
+                     },
+                     "summary": {
+@@ -452,7 +503,12 @@
+                           "const": "agentplane"
+                         }
+                       },
+-                      "required": ["path", "sha256", "verification_state", "observed_by"],
++                      "required": [
++                        "path",
++                        "sha256",
++                        "verification_state",
++                        "observed_by"
++                      ],
+                       "additionalProperties": false
+                     }
+                   },
+@@ -489,7 +545,11 @@
+               },
+               "state": {
+                 "type": "string",
+-                "enum": ["observed", "partial", "unavailable"]
++                "enum": [
++                  "observed",
++                  "partial",
++                  "unavailable"
++                ]
+               },
+               "input_tokens": {
+                 "anyOf": [
+@@ -551,7 +611,10 @@
+               },
+               "source": {
+                 "type": "string",
+-                "enum": ["supervisor_journal", "unavailable"]
++                "enum": [
++                  "supervisor_journal",
++                  "unavailable"
++                ]
+               },
+               "observed_by": {
+                 "type": "string",
+@@ -602,6 +665,59 @@
+             ],
+             "additionalProperties": false
+           },
++          "execution_route": {
++            "type": "object",
++            "properties": {
++              "schema_version": {
++                "type": "number",
++                "const": 1
++              },
++              "requested_mode": {
++                "type": "string",
++                "enum": [
++                  "repository",
++                  "auto",
++                  "direct",
++                  "branch_pr"
++                ]
++              },
++              "selected_mode": {
++                "type": "string",
++                "enum": [
++                  "direct",
++                  "branch_pr"
++                ]
++              },
++              "repository_mode": {
++                "type": "string",
++                "enum": [
++                  "direct",
++                  "branch_pr"
++                ]
++              },
++              "reason_codes": {
++                "minItems": 1,
++                "type": "array",
++                "items": {
++                  "type": "string",
++                  "minLength": 1
++                }
++              },
++              "frozen": {
++                "type": "boolean",
++                "const": true
++              }
++            },
++            "required": [
++              "schema_version",
++              "requested_mode",
++              "selected_mode",
++              "repository_mode",
++              "reason_codes",
++              "frozen"
++            ],
++            "additionalProperties": false
++          },
+           "depends_on": {
+             "type": "array",
+             "items": {
+@@ -618,11 +734,27 @@
+           },
+           "task_kind": {
+             "type": "string",
+-            "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
++            "enum": [
++              "analysis",
++              "content",
++              "docs",
++              "code",
++              "release",
++              "ops",
++              "context"
++            ]
+           },
+           "mutation_scope": {
+             "type": "string",
+-            "enum": ["none", "docs", "code", "release", "ops", "context", "unknown"]
++            "enum": [
++              "none",
++              "docs",
++              "code",
++              "release",
++              "ops",
++              "context",
++              "unknown"
++            ]
+           },
+           "risk_flags": {
+             "type": "array",
+@@ -669,7 +801,11 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": ["pending", "approved", "rejected"]
++                "enum": [
++                  "pending",
++                  "approved",
++                  "rejected"
++                ]
+               },
+               "updated_at": {
+                 "anyOf": [
+@@ -704,7 +840,12 @@
+                 ]
+               }
+             },
+-            "required": ["state", "updated_at", "updated_by", "note"],
++            "required": [
++              "state",
++              "updated_at",
++              "updated_by",
++              "note"
++            ],
+             "additionalProperties": {}
+           },
+           "verification": {
+@@ -712,7 +853,12 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": ["pending", "ok", "needs_rework", "blocked_external"]
++                "enum": [
++                  "pending",
++                  "ok",
++                  "needs_rework",
++                  "blocked_external"
++                ]
+               },
+               "attempts": {
+                 "type": "integer",
+@@ -752,7 +898,12 @@
+                 ]
+               }
+             },
+-            "required": ["state", "updated_at", "updated_by", "note"],
++            "required": [
++              "state",
++              "updated_at",
++              "updated_by",
++              "note"
++            ],
+             "additionalProperties": {}
+           },
+           "quality_review": {
+@@ -760,11 +911,20 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": ["pending", "pass", "rework", "blocked", "human_review"]
++                "enum": [
++                  "pending",
++                  "pass",
++                  "rework",
++                  "blocked",
++                  "human_review"
++                ]
+               },
+               "provenance": {
+                 "type": "string",
+-                "enum": ["human_supplied", "evaluator_supplied"]
++                "enum": [
++                  "human_supplied",
++                  "evaluator_supplied"
++                ]
+               },
+               "updated_at": {
+                 "anyOf": [
+@@ -857,7 +1017,10 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": ["hash", "message"],
++                "required": [
++                  "hash",
++                  "message"
++                ],
+                 "additionalProperties": false
+               },
+               {
+@@ -879,7 +1042,10 @@
+                   "minLength": 1
+                 }
+               },
+-              "required": ["author", "body"],
++              "required": [
++                "author",
++                "body"
++              ],
+               "additionalProperties": false
+             }
+           },
+@@ -890,7 +1056,11 @@
+               "properties": {
+                 "type": {
+                   "type": "string",
+-                  "enum": ["status", "comment", "verify"]
++                  "enum": [
++                    "status",
++                    "comment",
++                    "verify"
++                  ]
+                 },
+                 "at": {
+                   "type": "string",
+@@ -917,7 +1087,11 @@
+                   "type": "string"
+                 }
+               },
+-              "required": ["type", "at", "author"],
++              "required": [
++                "type",
++                "at",
++                "author"
++              ],
+               "additionalProperties": {}
+             }
+           },
+@@ -976,7 +1150,10 @@
+                       "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                     }
+                   },
+-                  "required": ["provider", "remote_id"],
++                  "required": [
++                    "provider",
++                    "remote_id"
++                  ],
+                   "additionalProperties": false
+                 }
+               },
+@@ -992,7 +1169,13 @@
+                   "properties": {
+                     "authority": {
+                       "type": "string",
+-                      "enum": ["agentplane", "provider", "bidirectional", "derived", "ignored"]
++                      "enum": [
++                        "agentplane",
++                        "provider",
++                        "bidirectional",
++                        "derived",
++                        "ignored"
++                      ]
+                     },
+                     "remote_field": {
+                       "type": "string",
+@@ -1000,7 +1183,12 @@
+                     },
+                     "conflict_policy": {
+                       "type": "string",
+-                      "enum": ["record", "manual", "agentplane_wins", "provider_wins"]
++                      "enum": [
++                        "record",
++                        "manual",
++                        "agentplane_wins",
++                        "provider_wins"
++                      ]
+                     },
+                     "updated_at": {
+                       "type": "string",
+@@ -1012,7 +1200,9 @@
+                       "minLength": 1
+                     }
+                   },
+-                  "required": ["authority"],
++                  "required": [
++                    "authority"
++                  ],
+                   "additionalProperties": false
+                 }
+               },
+@@ -1070,11 +1260,19 @@
+                     },
+                     "severity": {
+                       "type": "string",
+-                      "enum": ["info", "warning", "blocking"]
++                      "enum": [
++                        "info",
++                        "warning",
++                        "blocking"
++                      ]
+                     },
+                     "status": {
+                       "type": "string",
+-                      "enum": ["open", "resolved", "ignored"]
++                      "enum": [
++                        "open",
++                        "resolved",
++                        "ignored"
++                      ]
+                     },
+                     "summary": {
+                       "type": "string",
+@@ -1111,12 +1309,21 @@
+                       "minLength": 1
+                     }
+                   },
+-                  "required": ["id", "kind", "severity", "status", "summary", "detected_at"],
++                  "required": [
++                    "id",
++                    "kind",
++                    "severity",
++                    "status",
++                    "summary",
++                    "detected_at"
++                  ],
+                   "additionalProperties": false
+                 }
+               }
+             },
+-            "required": ["version"],
++            "required": [
++              "version"
++            ],
+             "additionalProperties": false
+           },
+           "doc_version": {
+@@ -1186,10 +1393,18 @@
+           "minLength": 1
+         }
+       },
+-      "required": ["schema_version", "managed_by", "checksum_algo", "checksum"],
++      "required": [
++        "schema_version",
++        "managed_by",
++        "checksum_algo",
++        "checksum"
++      ],
+       "additionalProperties": false
+     }
+   },
+-  "required": ["tasks", "meta"],
++  "required": [
++    "tasks",
++    "meta"
++  ],
+   "additionalProperties": false
+ }
+diff --git a/schemas/task-readme-frontmatter.schema.json b/schemas/task-readme-frontmatter.schema.json
+index f39a06ee4..0d158dee6 100644
+--- a/schemas/task-readme-frontmatter.schema.json
++++ b/schemas/task-readme-frontmatter.schema.json
+@@ -18,18 +18,32 @@
+     },
+     "risk_level": {
+       "type": "string",
+-      "enum": ["low", "med", "high"]
++      "enum": [
++        "low",
++        "med",
++        "high"
++      ]
+     },
+     "breaking": {
+       "type": "boolean"
+     },
+     "status": {
+       "type": "string",
+-      "enum": ["TODO", "DOING", "DONE", "BLOCKED"]
++      "enum": [
++        "TODO",
++        "DOING",
++        "DONE",
++        "BLOCKED"
++      ]
+     },
+     "priority": {
+       "type": "string",
+-      "enum": ["low", "normal", "med", "high"]
++      "enum": [
++        "low",
++        "normal",
++        "med",
++        "high"
++      ]
+     },
+     "owner": {
+       "type": "string",
+@@ -72,7 +86,9 @@
+           "minLength": 1
+         }
+       },
+-      "required": ["system"],
++      "required": [
++        "system"
++      ],
+       "additionalProperties": {
+         "type": "string"
+       }
+@@ -93,11 +109,27 @@
+     },
+     "task_kind": {
+       "type": "string",
+-      "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
++      "enum": [
++        "analysis",
++        "content",
++        "docs",
++        "code",
++        "release",
++        "ops",
++        "context"
++      ]
+     },
+     "mutation_scope": {
+       "type": "string",
+-      "enum": ["none", "docs", "code", "release", "ops", "context", "unknown"]
++      "enum": [
++        "none",
++        "docs",
++        "code",
++        "release",
++        "ops",
++        "context",
++        "unknown"
++      ]
+     },
+     "risk_flags": {
+       "type": "array",
+@@ -144,7 +176,11 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": ["pending", "approved", "rejected"]
++          "enum": [
++            "pending",
++            "approved",
++            "rejected"
++          ]
+         },
+         "updated_at": {
+           "anyOf": [
+@@ -179,7 +215,12 @@
+           ]
+         }
+       },
+-      "required": ["state", "updated_at", "updated_by", "note"],
++      "required": [
++        "state",
++        "updated_at",
++        "updated_by",
++        "note"
++      ],
+       "additionalProperties": {}
+     },
+     "verification": {
+@@ -187,7 +228,12 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": ["pending", "ok", "needs_rework", "blocked_external"]
++          "enum": [
++            "pending",
++            "ok",
++            "needs_rework",
++            "blocked_external"
++          ]
+         },
+         "attempts": {
+           "type": "integer",
+@@ -227,7 +273,12 @@
+           ]
+         }
+       },
+-      "required": ["state", "updated_at", "updated_by", "note"],
++      "required": [
++        "state",
++        "updated_at",
++        "updated_by",
++        "note"
++      ],
+       "additionalProperties": {}
+     },
+     "quality_review": {
+@@ -235,11 +286,20 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": ["pending", "pass", "rework", "blocked", "human_review"]
++          "enum": [
++            "pending",
++            "pass",
++            "rework",
++            "blocked",
++            "human_review"
++          ]
+         },
+         "provenance": {
+           "type": "string",
+-          "enum": ["human_supplied", "evaluator_supplied"]
++          "enum": [
++            "human_supplied",
++            "evaluator_supplied"
++          ]
+         },
+         "updated_at": {
+           "anyOf": [
+@@ -327,7 +387,14 @@
+         },
+         "status": {
+           "type": "string",
+-          "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
++          "enum": [
++            "prepared",
++            "running",
++            "success",
++            "failed",
++            "blocked",
++            "cancelled"
++          ]
+         },
+         "adapter_id": {
+           "type": "string",
+@@ -335,7 +402,10 @@
+         },
+         "mode": {
+           "type": "string",
+-          "enum": ["execute", "dry_run"]
++          "enum": [
++            "execute",
++            "dry_run"
++          ]
+         },
+         "created_at": {
+           "type": "string",
+@@ -374,7 +444,10 @@
+           "properties": {
+             "kind": {
+               "type": "string",
+-              "enum": ["task", "recipe_scenario"]
++              "enum": [
++                "task",
++                "recipe_scenario"
++              ]
+             },
+             "task_id": {
+               "type": "string",
+@@ -389,7 +462,9 @@
+               "minLength": 1
+             }
+           },
+-          "required": ["kind"],
++          "required": [
++            "kind"
++          ],
+           "additionalProperties": {}
+         },
+         "summary": {
+@@ -489,14 +564,24 @@
+             },
+             "verification_state": {
+               "type": "string",
+-              "enum": ["observed_success", "rejected", "unverified", "compatibility_unverified"]
++              "enum": [
++                "observed_success",
++                "rejected",
++                "unverified",
++                "compatibility_unverified"
++              ]
+             },
+             "observed_by": {
+               "type": "string",
+               "const": "agentplane"
+             }
+           },
+-          "required": ["path", "sha256", "verification_state", "observed_by"],
++          "required": [
++            "path",
++            "sha256",
++            "verification_state",
++            "observed_by"
++          ],
+           "additionalProperties": false
+         },
+         "history": {
+@@ -510,7 +595,14 @@
+               },
+               "status": {
+                 "type": "string",
+-                "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
++                "enum": [
++                  "prepared",
++                  "running",
++                  "success",
++                  "failed",
++                  "blocked",
++                  "cancelled"
++                ]
+               },
+               "adapter_id": {
+                 "type": "string",
+@@ -518,7 +610,10 @@
+               },
+               "mode": {
+                 "type": "string",
+-                "enum": ["execute", "dry_run"]
++                "enum": [
++                  "execute",
++                  "dry_run"
++                ]
+               },
+               "created_at": {
+                 "type": "string",
+@@ -557,7 +652,10 @@
+                 "properties": {
+                   "kind": {
+                     "type": "string",
+-                    "enum": ["task", "recipe_scenario"]
++                    "enum": [
++                      "task",
++                      "recipe_scenario"
++                    ]
+                   },
+                   "task_id": {
+                     "type": "string",
+@@ -572,7 +670,9 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": ["kind"],
++                "required": [
++                  "kind"
++                ],
+                 "additionalProperties": {}
+               },
+               "summary": {
+@@ -684,7 +784,12 @@
+                     "const": "agentplane"
+                   }
+                 },
+-                "required": ["path", "sha256", "verification_state", "observed_by"],
++                "required": [
++                  "path",
++                  "sha256",
++                  "verification_state",
++                  "observed_by"
++                ],
+                 "additionalProperties": false
+               }
+             },
+@@ -701,7 +806,15 @@
+           }
+         }
+       },
+-      "required": ["run_id", "status", "adapter_id", "mode", "updated_at", "exit_code", "target"],
++      "required": [
++        "run_id",
++        "status",
++        "adapter_id",
++        "mode",
++        "updated_at",
++        "exit_code",
++        "target"
++      ],
+       "additionalProperties": {}
+     },
+     "token_usage": {
+@@ -713,7 +826,11 @@
+         },
+         "state": {
+           "type": "string",
+-          "enum": ["observed", "partial", "unavailable"]
++          "enum": [
++            "observed",
++            "partial",
++            "unavailable"
++          ]
+         },
+         "input_tokens": {
+           "anyOf": [
+@@ -775,7 +892,10 @@
+         },
+         "source": {
+           "type": "string",
+-          "enum": ["supervisor_journal", "unavailable"]
++          "enum": [
++            "supervisor_journal",
++            "unavailable"
++          ]
+         },
+         "observed_by": {
+           "type": "string",
+@@ -826,6 +946,59 @@
+       ],
+       "additionalProperties": false
+     },
++    "execution_route": {
++      "type": "object",
++      "properties": {
++        "schema_version": {
++          "type": "number",
++          "const": 1
++        },
++        "requested_mode": {
++          "type": "string",
++          "enum": [
++            "repository",
++            "auto",
++            "direct",
++            "branch_pr"
++          ]
++        },
++        "selected_mode": {
++          "type": "string",
++          "enum": [
++            "direct",
++            "branch_pr"
++          ]
++        },
++        "repository_mode": {
++          "type": "string",
++          "enum": [
++            "direct",
++            "branch_pr"
++          ]
++        },
++        "reason_codes": {
++          "minItems": 1,
++          "type": "array",
++          "items": {
++            "type": "string",
++            "minLength": 1
++          }
++        },
++        "frozen": {
++          "type": "boolean",
++          "const": true
++        }
++      },
++      "required": [
++        "schema_version",
++        "requested_mode",
++        "selected_mode",
++        "repository_mode",
++        "reason_codes",
++        "frozen"
++      ],
++      "additionalProperties": false
++    },
+     "sync": {
+       "type": "object",
+       "properties": {
+@@ -881,7 +1054,10 @@
+                 "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+               }
+             },
+-            "required": ["provider", "remote_id"],
++            "required": [
++              "provider",
++              "remote_id"
++            ],
+             "additionalProperties": false
+           }
+         },
+@@ -897,7 +1073,13 @@
+             "properties": {
+               "authority": {
+                 "type": "string",
+-                "enum": ["agentplane", "provider", "bidirectional", "derived", "ignored"]
++                "enum": [
++                  "agentplane",
++                  "provider",
++                  "bidirectional",
++                  "derived",
++                  "ignored"
++                ]
+               },
+               "remote_field": {
+                 "type": "string",
+@@ -905,7 +1087,12 @@
+               },
+               "conflict_policy": {
+                 "type": "string",
+-                "enum": ["record", "manual", "agentplane_wins", "provider_wins"]
++                "enum": [
++                  "record",
++                  "manual",
++                  "agentplane_wins",
++                  "provider_wins"
++                ]
+               },
+               "updated_at": {
+                 "type": "string",
+@@ -917,7 +1104,9 @@
+                 "minLength": 1
+               }
+             },
+-            "required": ["authority"],
++            "required": [
++              "authority"
++            ],
+             "additionalProperties": false
+           }
+         },
+@@ -964,15 +1153,30 @@
+               },
+               "kind": {
+                 "type": "string",
+-                "enum": ["field", "identity", "freshness", "deletion", "dependency", "permission"]
++                "enum": [
++                  "field",
++                  "identity",
++                  "freshness",
++                  "deletion",
++                  "dependency",
++                  "permission"
++                ]
+               },
+               "severity": {
+                 "type": "string",
+-                "enum": ["info", "warning", "blocking"]
++                "enum": [
++                  "info",
++                  "warning",
++                  "blocking"
++                ]
+               },
+               "status": {
+                 "type": "string",
+-                "enum": ["open", "resolved", "ignored"]
++                "enum": [
++                  "open",
++                  "resolved",
++                  "ignored"
++                ]
+               },
+               "summary": {
+                 "type": "string",
+@@ -1009,12 +1213,21 @@
+                 "minLength": 1
+               }
+             },
+-            "required": ["id", "kind", "severity", "status", "summary", "detected_at"],
++            "required": [
++              "id",
++              "kind",
++              "severity",
++              "status",
++              "summary",
++              "detected_at"
++            ],
+             "additionalProperties": false
+           }
+         }
+       },
+-      "required": ["version"],
++      "required": [
++        "version"
++      ],
+       "additionalProperties": false
+     },
+     "commit": {
+@@ -1031,7 +1244,10 @@
+               "minLength": 1
+             }
+           },
+-          "required": ["hash", "message"],
++          "required": [
++            "hash",
++            "message"
++          ],
+           "additionalProperties": false
+         },
+         {
+@@ -1053,7 +1269,10 @@
+             "minLength": 1
+           }
+         },
+-        "required": ["author", "body"],
++        "required": [
++          "author",
++          "body"
++        ],
+         "additionalProperties": false
+       }
+     },
+@@ -1064,7 +1283,11 @@
+         "properties": {
+           "type": {
+             "type": "string",
+-            "enum": ["status", "comment", "verify"]
++            "enum": [
++              "status",
++              "comment",
++              "verify"
++            ]
+           },
+           "at": {
+             "type": "string",
+@@ -1091,7 +1314,11 @@
+             "type": "string"
+           }
+         },
+-        "required": ["type", "at", "author"],
++        "required": [
++          "type",
++          "at",
++          "author"
++        ],
+         "additionalProperties": {}
+       }
+     },
+diff --git a/schemas/tasks-export.schema.json b/schemas/tasks-export.schema.json
+index bfd567cf4..8c40d1d53 100644
+--- a/schemas/tasks-export.schema.json
++++ b/schemas/tasks-export.schema.json
+@@ -22,18 +22,32 @@
+           },
+           "risk_level": {
+             "type": "string",
+-            "enum": ["low", "med", "high"]
++            "enum": [
++              "low",
++              "med",
++              "high"
++            ]
+           },
+           "breaking": {
+             "type": "boolean"
+           },
+           "status": {
+             "type": "string",
+-            "enum": ["TODO", "DOING", "DONE", "BLOCKED"]
++            "enum": [
++              "TODO",
++              "DOING",
++              "DONE",
++              "BLOCKED"
++            ]
+           },
+           "priority": {
+             "type": "string",
+-            "enum": ["low", "normal", "med", "high"]
++            "enum": [
++              "low",
++              "normal",
++              "med",
++              "high"
++            ]
+           },
+           "owner": {
+             "type": "string",
+@@ -76,7 +90,9 @@
+                 "minLength": 1
+               }
+             },
+-            "required": ["system"],
++            "required": [
++              "system"
++            ],
+             "additionalProperties": {
+               "type": "string"
+             }
+@@ -90,7 +106,14 @@
+               },
+               "status": {
+                 "type": "string",
+-                "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
++                "enum": [
++                  "prepared",
++                  "running",
++                  "success",
++                  "failed",
++                  "blocked",
++                  "cancelled"
++                ]
+               },
+               "adapter_id": {
+                 "type": "string",
+@@ -98,7 +121,10 @@
+               },
+               "mode": {
+                 "type": "string",
+-                "enum": ["execute", "dry_run"]
++                "enum": [
++                  "execute",
++                  "dry_run"
++                ]
+               },
+               "created_at": {
+                 "type": "string",
+@@ -137,7 +163,10 @@
+                 "properties": {
+                   "kind": {
+                     "type": "string",
+-                    "enum": ["task", "recipe_scenario"]
++                    "enum": [
++                      "task",
++                      "recipe_scenario"
++                    ]
+                   },
+                   "task_id": {
+                     "type": "string",
+@@ -152,7 +181,9 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": ["kind"],
++                "required": [
++                  "kind"
++                ],
+                 "additionalProperties": {}
+               },
+               "summary": {
+@@ -264,7 +295,12 @@
+                     "const": "agentplane"
+                   }
+                 },
+-                "required": ["path", "sha256", "verification_state", "observed_by"],
++                "required": [
++                  "path",
++                  "sha256",
++                  "verification_state",
++                  "observed_by"
++                ],
+                 "additionalProperties": false
+               },
+               "history": {
+@@ -278,7 +314,14 @@
+                     },
+                     "status": {
+                       "type": "string",
+-                      "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
++                      "enum": [
++                        "prepared",
++                        "running",
++                        "success",
++                        "failed",
++                        "blocked",
++                        "cancelled"
++                      ]
+                     },
+                     "adapter_id": {
+                       "type": "string",
+@@ -286,7 +329,10 @@
+                     },
+                     "mode": {
+                       "type": "string",
+-                      "enum": ["execute", "dry_run"]
++                      "enum": [
++                        "execute",
++                        "dry_run"
++                      ]
+                     },
+                     "created_at": {
+                       "type": "string",
+@@ -325,7 +371,10 @@
+                       "properties": {
+                         "kind": {
+                           "type": "string",
+-                          "enum": ["task", "recipe_scenario"]
++                          "enum": [
++                            "task",
++                            "recipe_scenario"
++                          ]
+                         },
+                         "task_id": {
+                           "type": "string",
+@@ -340,7 +389,9 @@
+                           "minLength": 1
+                         }
+                       },
+-                      "required": ["kind"],
++                      "required": [
++                        "kind"
++                      ],
+                       "additionalProperties": {}
+                     },
+                     "summary": {
+@@ -452,7 +503,12 @@
+                           "const": "agentplane"
+                         }
+                       },
+-                      "required": ["path", "sha256", "verification_state", "observed_by"],
++                      "required": [
++                        "path",
++                        "sha256",
++                        "verification_state",
++                        "observed_by"
++                      ],
+                       "additionalProperties": false
+                     }
+                   },
+@@ -489,7 +545,11 @@
+               },
+               "state": {
+                 "type": "string",
+-                "enum": ["observed", "partial", "unavailable"]
++                "enum": [
++                  "observed",
++                  "partial",
++                  "unavailable"
++                ]
+               },
+               "input_tokens": {
+                 "anyOf": [
+@@ -551,7 +611,10 @@
+               },
+               "source": {
+                 "type": "string",
+-                "enum": ["supervisor_journal", "unavailable"]
++                "enum": [
++                  "supervisor_journal",
++                  "unavailable"
++                ]
+               },
+               "observed_by": {
+                 "type": "string",
+@@ -602,6 +665,59 @@
+             ],
+             "additionalProperties": false
+           },
++          "execution_route": {
++            "type": "object",
++            "properties": {
++              "schema_version": {
++                "type": "number",
++                "const": 1
++              },
++              "requested_mode": {
++                "type": "string",
++                "enum": [
++                  "repository",
++                  "auto",
++                  "direct",
++                  "branch_pr"
++                ]
++              },
++              "selected_mode": {
++                "type": "string",
++                "enum": [
++                  "direct",
++                  "branch_pr"
++                ]
++              },
++              "repository_mode": {
++                "type": "string",
++                "enum": [
++                  "direct",
++                  "branch_pr"
++                ]
++              },
++              "reason_codes": {
++                "minItems": 1,
++                "type": "array",
++                "items": {
++                  "type": "string",
++                  "minLength": 1
++                }
++              },
++              "frozen": {
++                "type": "boolean",
++                "const": true
++              }
++            },
++            "required": [
++              "schema_version",
++              "requested_mode",
++              "selected_mode",
++              "repository_mode",
++              "reason_codes",
++              "frozen"
++            ],
++            "additionalProperties": false
++          },
+           "depends_on": {
+             "type": "array",
+             "items": {
+@@ -618,11 +734,27 @@
+           },
+           "task_kind": {
+             "type": "string",
+-            "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
++            "enum": [
++              "analysis",
++              "content",
++              "docs",
++              "code",
++              "release",
++              "ops",
++              "context"
++            ]
+           },
+           "mutation_scope": {
+             "type": "string",
+-            "enum": ["none", "docs", "code", "release", "ops", "context", "unknown"]
++            "enum": [
++              "none",
++              "docs",
++              "code",
++              "release",
++              "ops",
++              "context",
++              "unknown"
++            ]
+           },
+           "risk_flags": {
+             "type": "array",
+@@ -669,7 +801,11 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": ["pending", "approved", "rejected"]
++                "enum": [
++                  "pending",
++                  "approved",
++                  "rejected"
++                ]
+               },
+               "updated_at": {
+                 "anyOf": [
+@@ -704,7 +840,12 @@
+                 ]
+               }
+             },
+-            "required": ["state", "updated_at", "updated_by", "note"],
++            "required": [
++              "state",
++              "updated_at",
++              "updated_by",
++              "note"
++            ],
+             "additionalProperties": {}
+           },
+           "verification": {
+@@ -712,7 +853,12 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": ["pending", "ok", "needs_rework", "blocked_external"]
++                "enum": [
++                  "pending",
++                  "ok",
++                  "needs_rework",
++                  "blocked_external"
++                ]
+               },
+               "attempts": {
+                 "type": "integer",
+@@ -752,7 +898,12 @@
+                 ]
+               }
+             },
+-            "required": ["state", "updated_at", "updated_by", "note"],
++            "required": [
++              "state",
++              "updated_at",
++              "updated_by",
++              "note"
++            ],
+             "additionalProperties": {}
+           },
+           "quality_review": {
+@@ -760,11 +911,20 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": ["pending", "pass", "rework", "blocked", "human_review"]
++                "enum": [
++                  "pending",
++                  "pass",
++                  "rework",
++                  "blocked",
++                  "human_review"
++                ]
+               },
+               "provenance": {
+                 "type": "string",
+-                "enum": ["human_supplied", "evaluator_supplied"]
++                "enum": [
++                  "human_supplied",
++                  "evaluator_supplied"
++                ]
+               },
+               "updated_at": {
+                 "anyOf": [
+@@ -857,7 +1017,10 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": ["hash", "message"],
++                "required": [
++                  "hash",
++                  "message"
++                ],
+                 "additionalProperties": false
+               },
+               {
+@@ -879,7 +1042,10 @@
+                   "minLength": 1
+                 }
+               },
+-              "required": ["author", "body"],
++              "required": [
++                "author",
++                "body"
++              ],
+               "additionalProperties": false
+             }
+           },
+@@ -890,7 +1056,11 @@
+               "properties": {
+                 "type": {
+                   "type": "string",
+-                  "enum": ["status", "comment", "verify"]
++                  "enum": [
++                    "status",
++                    "comment",
++                    "verify"
++                  ]
+                 },
+                 "at": {
+                   "type": "string",
+@@ -917,7 +1087,11 @@
+                   "type": "string"
+                 }
+               },
+-              "required": ["type", "at", "author"],
++              "required": [
++                "type",
++                "at",
++                "author"
++              ],
+               "additionalProperties": {}
+             }
+           },
+@@ -976,7 +1150,10 @@
+                       "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                     }
+                   },
+-                  "required": ["provider", "remote_id"],
++                  "required": [
++                    "provider",
++                    "remote_id"
++                  ],
+                   "additionalProperties": false
+                 }
+               },
+@@ -992,7 +1169,13 @@
+                   "properties": {
+                     "authority": {
+                       "type": "string",
+-                      "enum": ["agentplane", "provider", "bidirectional", "derived", "ignored"]
++                      "enum": [
++                        "agentplane",
++                        "provider",
++                        "bidirectional",
++                        "derived",
++                        "ignored"
++                      ]
+                     },
+                     "remote_field": {
+                       "type": "string",
+@@ -1000,7 +1183,12 @@
+                     },
+                     "conflict_policy": {
+                       "type": "string",
+-                      "enum": ["record", "manual", "agentplane_wins", "provider_wins"]
++                      "enum": [
++                        "record",
++                        "manual",
++                        "agentplane_wins",
++                        "provider_wins"
++                      ]
+                     },
+                     "updated_at": {
+                       "type": "string",
+@@ -1012,7 +1200,9 @@
+                       "minLength": 1
+                     }
+                   },
+-                  "required": ["authority"],
++                  "required": [
++                    "authority"
++                  ],
+                   "additionalProperties": false
+                 }
+               },
+@@ -1070,11 +1260,19 @@
+                     },
+                     "severity": {
+                       "type": "string",
+-                      "enum": ["info", "warning", "blocking"]
++                      "enum": [
++                        "info",
++                        "warning",
++                        "blocking"
++                      ]
+                     },
+                     "status": {
+                       "type": "string",
+-                      "enum": ["open", "resolved", "ignored"]
++                      "enum": [
++                        "open",
++                        "resolved",
++                        "ignored"
++                      ]
+                     },
+                     "summary": {
+                       "type": "string",
+@@ -1111,12 +1309,21 @@
+                       "minLength": 1
+                     }
+                   },
+-                  "required": ["id", "kind", "severity", "status", "summary", "detected_at"],
++                  "required": [
++                    "id",
++                    "kind",
++                    "severity",
++                    "status",
++                    "summary",
++                    "detected_at"
++                  ],
+                   "additionalProperties": false
+                 }
+               }
+             },
+-            "required": ["version"],
++            "required": [
++              "version"
++            ],
+             "additionalProperties": false
+           },
+           "doc_version": {
+@@ -1186,10 +1393,18 @@
+           "minLength": 1
+         }
+       },
+-      "required": ["schema_version", "managed_by", "checksum_algo", "checksum"],
++      "required": [
++        "schema_version",
++        "managed_by",
++        "checksum_algo",
++        "checksum"
++      ],
+       "additionalProperties": false
+     }
+   },
+-  "required": ["tasks", "meta"],
++  "required": [
++    "tasks",
++    "meta"
++  ],
+   "additionalProperties": false
+ }

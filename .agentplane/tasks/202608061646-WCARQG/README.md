@@ -1,10 +1,11 @@
 ---
 id: "202608061646-WCARQG"
 title: "Add explainable per-task workflow routing"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -28,42 +29,60 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-06T17:05:50.489Z"
-  updated_by: "CODER"
-  note: "Post-commit verification binds the passing focused tests, 119 core task tests, typecheck, schema parity, and policy routing evidence to implementation commit b060e9b18."
+  updated_at: "2026-08-06T17:08:56.605Z"
+  updated_by: "TESTER"
+  note: "Post-closure verification confirms f60c230c4931 adds only task closure artifacts on top of already verified implementation 1c7849f0e; 98 focused tests, typecheck, schema parity, and policy routing remain the accepted evidence."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-06T17:06:18.884Z"
+  updated_at: "2026-08-06T17:07:55.990Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 3 typed finding(s)."
-  evaluated_sha: "b060e9b18d17843cc7d36a0baf77c8ae9ae5b744"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "1c7849f0ed3881ca385a7bdf8705358099fb47b2"
   blueprint_digest: "faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde"
   evidence_refs:
-    - ".agentplane/tasks/202608061646-WCARQG/quality/20260806-170618598-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608061646-WCARQG/quality/20260806-170618598-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608061646-WCARQG/quality/objects/sha256/f0412ba4e376ac256537b815ebbde156201747cc24d497705efbd524d26e2d91.md"
-    - ".agentplane/tasks/202608061646-WCARQG/quality/20260806-170618598-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608061646-WCARQG/quality/20260806-170618598-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608061646-WCARQG/quality/20260806-170618598-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061646-WCARQG/quality/20260806-170755613-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061646-WCARQG/quality/20260806-170755613-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061646-WCARQG/quality/objects/sha256/f4ee118f97f70bec975adb63180c2c01ca5e626d2b5e71c48047b73eb3955be0.md"
+    - ".agentplane/tasks/202608061646-WCARQG/quality/20260806-170755613-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061646-WCARQG/quality/20260806-170755613-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061646-WCARQG/quality/20260806-170755613-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608061646-WCARQG/README.md"
     - ".agentplane/tasks/202608061646-WCARQG/quality/objects/sha256/87f84112d774433f055ea519380015d5122ef389b7a1a79603a89a9b96fcd741.patch"
-    - ".agentplane/tasks/202608061646-WCARQG/quality/objects/sha256/6390548bfeef48fbf0cbb1267032252ace5b9db7b9836f3bac47beeca55cd1b8.json"
+    - ".agentplane/tasks/202608061646-WCARQG/quality/objects/sha256/4ea725efd15e7a172a34cc59cd140494798621a94e0743208b4124ff7266f438.json"
     - ".agentplane/tasks/202608061646-WCARQG/quality/objects/sha256/98612f88fee45e5df9dc5991375942860d92e08303638847628e14aa3b8b9cf8.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Automatic routing is deterministic from structured task fields, emits stable reason codes, and treats branch_pr as a non-downgradeable repository policy floor."
-    - "The persisted execution_route survives README parsing, export schemas, provider-safe projection, blueprint resolution, route decisions, work start, and supervised task execution."
-    - "Focused E2E coverage proves a risky release task in a direct repository is escalated into a branch_pr worktree."
-commit: null
+    - "The current hosted branch contains deterministic route selection, schema persistence, route-aware blueprint/supervisor behavior, and passing focused E2E coverage."
+    - "Repository branch_pr remains a policy floor and legacy repository-mode tasks retain their execution semantics."
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-06T17:08:25.845Z"
+commit:
+  hash: "1c7849f0ed3881ca385a7bdf8705358099fb47b2"
+  message: "✨ WCARQG routing: add explainable task execution routes"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -84,8 +103,27 @@ events:
     author: "CODER"
     state: "ok"
     note: "Post-commit verification binds the passing focused tests, 119 core task tests, typecheck, schema parity, and policy routing evidence to implementation commit b060e9b18."
+  -
+    type: "verify"
+    at: "2026-08-06T17:07:34.361Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified commit 1c7849f0e: 98 focused routing/schema/CLI tests pass, TypeScript build passes, generated schemas are current, and policy routing passes."
+  -
+    type: "status"
+    at: "2026-08-06T17:08:25.845Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-06T17:08:56.605Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Post-closure verification confirms f60c230c4931 adds only task closure artifacts on top of already verified implementation 1c7849f0e; 98 focused tests, typecheck, schema parity, and policy routing remain the accepted evidence."
 doc_version: 3
-doc_updated_at: "2026-08-06T17:05:51.580Z"
+doc_updated_at: "2026-08-06T17:08:57.835Z"
 doc_updated_by: "CODER"
 description: "Add a backward-compatible task-level execution route that lets AgentPlane classify task isolation risk and deterministically select direct or branch_pr, with policy overrides, stable reason codes, persisted evidence, and no route changes after mutation starts."
 sections:
@@ -155,6 +193,66 @@ sections:
 
     DecisionContextRef:
     - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-06T17:07:34.361Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified commit 1c7849f0e: 98 focused routing/schema/CLI tests pass, TypeScript build passes, generated schemas are current, and policy routing passes.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T17:05:51.580Z, excerpt_hash=sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-WCARQG-add-explainable-per-task-workflow-routing/.agentplane/tasks/202608061646-WCARQG/blueprint/resolved-snapshot.json
+    - old_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+    - current_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-WCARQG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608061646-WCARQG
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-06T17:08:56.605Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Post-closure verification confirms f60c230c4931 adds only task closure artifacts on top of already verified implementation 1c7849f0e; 98 focused tests, typecheck, schema parity, and policy routing remain the accepted evidence.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T17:08:25.856Z, excerpt_hash=sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-WCARQG-add-explainable-per-task-workflow-routing/.agentplane/tasks/202608061646-WCARQG/blueprint/resolved-snapshot.json
+    - old_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+    - current_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-WCARQG
+
+    DecisionContextRef:
+    - operator_action: stop
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
@@ -261,6 +359,66 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-06T17:07:34.361Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified commit 1c7849f0e: 98 focused routing/schema/CLI tests pass, TypeScript build passes, generated schemas are current, and policy routing passes.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T17:05:51.580Z, excerpt_hash=sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-WCARQG-add-explainable-per-task-workflow-routing/.agentplane/tasks/202608061646-WCARQG/blueprint/resolved-snapshot.json
+- old_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+- current_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-WCARQG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608061646-WCARQG
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-06T17:08:56.605Z — VERIFY — ok
+
+By: TESTER
+
+Note: Post-closure verification confirms f60c230c4931 adds only task closure artifacts on top of already verified implementation 1c7849f0e; 98 focused tests, typecheck, schema parity, and policy routing remain the accepted evidence.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T17:08:25.856Z, excerpt_hash=sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-WCARQG-add-explainable-per-task-workflow-routing/.agentplane/tasks/202608061646-WCARQG/blueprint/resolved-snapshot.json
+- old_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+- current_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-WCARQG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -272,3 +430,16 @@ Revert the feature commit. Legacy tasks without execution_route continue to reso
 - Observation: Automatic execution routing is now persisted, explainable, and applied by blueprint, route decision, work start, and supervised task run.
   Impact: Risky release/ops/security tasks can gain branch isolation without changing the repository default, while branch_pr remains a non-downgradeable policy floor.
   Resolution: Added deterministic selection, frozen task evidence, scoped workflow contexts, schema/export support, and regression coverage.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-06T17:08:25.845Z`
