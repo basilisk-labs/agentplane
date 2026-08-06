@@ -16,12 +16,7 @@ Add a backward-compatible task-level execution route that lets AgentPlane classi
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Verification refreshed for task-artifact head 8c032b7fa; implementation remains 1c7849f0e and the
-accepted 98 focused tests, typecheck, schema parity, and policy routing evidence are unchanged.
-```
+- Note: Implementation 1c7849f0e remains fully verified after task-only closure artifacts.
 - Canonical workflow state lives in the task README.
 
 <details>

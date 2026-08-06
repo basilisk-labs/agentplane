@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -29,9 +29,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-06T17:10:05.208Z"
+  updated_at: "2026-08-06T17:13:54.026Z"
   updated_by: "TESTER"
-  note: "Verification refreshed for task-artifact head 8c032b7fa; implementation remains 1c7849f0e and the accepted 98 focused tests, typecheck, schema parity, and policy routing evidence are unchanged."
+  note: "Implementation 1c7849f0e remains fully verified after task-only closure artifacts."
   attempts: 0
 quality_review:
   state: "pass"
@@ -128,8 +128,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verification refreshed for task-artifact head 8c032b7fa; implementation remains 1c7849f0e and the accepted 98 focused tests, typecheck, schema parity, and policy routing evidence are unchanged."
+  -
+    type: "verify"
+    at: "2026-08-06T17:13:54.026Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Implementation 1c7849f0e remains fully verified after task-only closure artifacts."
 doc_version: 3
-doc_updated_at: "2026-08-06T17:10:11.396Z"
+doc_updated_at: "2026-08-06T17:13:55.579Z"
 doc_updated_by: "CODER"
 description: "Add a backward-compatible task-level execution route that lets AgentPlane classify task isolation risk and deterministically select direct or branch_pr, with policy overrides, stable reason codes, persisted evidence, and no route changes after mutation starts."
 sections:
@@ -298,12 +304,46 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-06T17:13:54.026Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Implementation 1c7849f0e remains fully verified after task-only closure artifacts.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T17:10:11.396Z, excerpt_hash=sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-WCARQG-add-explainable-per-task-workflow-routing/.agentplane/tasks/202608061646-WCARQG/blueprint/resolved-snapshot.json
+    - old_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+    - current_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-WCARQG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the feature commit. Legacy tasks without execution_route continue to resolve from repository workflow_mode; no migration is required."
   Findings: |-
     - Observation: Automatic execution routing is now persisted, explainable, and applied by blueprint, route decision, work start, and supervised task run.
       Impact: Risky release/ops/security tasks can gain branch isolation without changing the repository default, while branch_pr remains a non-downgradeable policy floor.
       Resolution: Added deterministic selection, frozen task evidence, scoped workflow contexts, schema/export support, and regression coverage.
+
+    - Observation: 98 focused routing, schema, and CLI tests pass; TypeScript typecheck, generated schema parity, and policy routing checks pass; commits after 1c7849f0e change only managed task evidence.
+      Impact: The persisted execution_route contract, route explanations, blueprint selection, dry-run execution, and branch worktree routing satisfy the approved acceptance criteria without regression to legacy repository routing.
+      Resolution: Accept implementation commit 1c7849f0e for integration; retain later commits as lifecycle evidence only.
 extensions:
   workflow_route_baseline:
     start_head_sha: "f89392c2f479a4b2eaa79c628912152e68ab6094"
@@ -485,6 +525,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-06T17:13:54.026Z — VERIFY — ok
+
+By: TESTER
+
+Note: Implementation 1c7849f0e remains fully verified after task-only closure artifacts.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T17:10:11.396Z, excerpt_hash=sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-WCARQG-add-explainable-per-task-workflow-routing/.agentplane/tasks/202608061646-WCARQG/blueprint/resolved-snapshot.json
+- old_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+- current_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-WCARQG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -496,6 +566,10 @@ Revert the feature commit. Legacy tasks without execution_route continue to reso
 - Observation: Automatic execution routing is now persisted, explainable, and applied by blueprint, route decision, work start, and supervised task run.
   Impact: Risky release/ops/security tasks can gain branch isolation without changing the repository default, while branch_pr remains a non-downgradeable policy floor.
   Resolution: Added deterministic selection, frozen task evidence, scoped workflow contexts, schema/export support, and regression coverage.
+
+- Observation: 98 focused routing, schema, and CLI tests pass; TypeScript typecheck, generated schema parity, and policy routing checks pass; commits after 1c7849f0e change only managed task evidence.
+  Impact: The persisted execution_route contract, route explanations, blueprint selection, dry-run execution, and branch worktree routing satisfy the approved acceptance criteria without regression to legacy repository routing.
+  Resolution: Accept implementation commit 1c7849f0e for integration; retain later commits as lifecycle evidence only.
 
 ## Token Usage
 
