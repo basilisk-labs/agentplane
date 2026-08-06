@@ -1,3 +1,4 @@
+ docs/user/cli-reference.generated.mdx              |   1 +
  .../src/backends/task-backend/shared/record.ts     |  30 ++++++
  .../src/backends/task-backend/shared/types.ts      |   2 +
  .../src/cli/run-cli.core.route-decision.test.ts    | 104 +++++++++++++++++++
@@ -34,4 +35,4 @@
  packages/spec/schemas/tasks-export.schema.json     |  42 ++++++++
  schemas/task-readme-frontmatter.schema.json        |  42 ++++++++
  schemas/tasks-export.schema.json                   |  42 ++++++++
- 36 files changed, 783 insertions(+), 9 deletions(-)
+ 37 files changed, 784 insertions(+), 9 deletions(-)
