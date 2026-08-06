@@ -39,19 +39,15 @@ export async function isExternalPlanningResultApplied(opts: {
   decision: TaskRouteDecision;
   envelope: ExternalAgentResultEnvelope;
 }): Promise<boolean> {
-  if (
-    opts.decision.workflowStep.kind === "approval" &&
-    opts.decision.workflowStep.request.type === "plan_approval"
-  ) {
-    return true;
-  }
   if (opts.envelope.result.status !== "completed") return false;
   const task = await loadTaskFromContext({
     ctx: opts.command,
     taskId: opts.exchange.task_id,
   });
+  if (task.sections?.Plan?.trim() !== opts.envelope.result.summary.trim()) return false;
   return (
-    task.plan_approval?.state === "approved" &&
-    task.sections?.Plan?.trim() === opts.envelope.result.summary.trim()
+    (opts.decision.workflowStep.kind === "approval" &&
+      opts.decision.workflowStep.request.type === "plan_approval") ||
+    task.plan_approval?.state === "approved"
   );
 }

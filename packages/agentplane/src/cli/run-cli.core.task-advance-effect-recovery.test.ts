@@ -174,4 +174,69 @@ describe("task advance effect recovery", () => {
       operations: [{ role: "PLANNER", status: "completed" }],
     });
   });
+
+  it("rejects a late planning result when a different plan awaits approval", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root);
+    const issued = await readAgentPacket(root, taskId);
+    const returnedPlan = "1. Apply the original plan exactly.";
+    const currentPlan = "1. Preserve the independently revised plan.";
+    const resultPath = await writePlanningResult(issued, returnedPlan);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      currentPlan,
+      "--updated-by",
+      "PLANNER",
+      "--root",
+      root,
+    ]);
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    const journal = validateSupervisorExecutionEpisodeJournal(await store.read());
+    await store.write(
+      recoverSupervisorExecutionEpisodeJournal({
+        journal,
+        state_fingerprint_digest: issued.state_fingerprint,
+      }),
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "advance",
+        taskId,
+        "--result",
+        resultPath,
+        "--agent-json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("External-agent result is stale");
+    } finally {
+      io.restore();
+    }
+    const readme = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(readme).toContain(currentPlan);
+    expect(readme).not.toContain(returnedPlan);
+    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
+      status: "running",
+      cursor: { phase: "intent_recorded" },
+      operations: [{ role: "PLANNER", status: "intent" }],
+    });
+  });
 });

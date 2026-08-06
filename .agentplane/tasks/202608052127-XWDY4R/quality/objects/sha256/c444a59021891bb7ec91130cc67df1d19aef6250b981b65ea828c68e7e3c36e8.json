@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-06T01:48:41.709Z",
+    "updated_by": "TESTER",
+    "note": "Exact-subject consolidated qualification and effectiveness evidence accepted in machine-parseable form."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608052127-XWDY4R/verification/20260806014841709-9ab2549d3c35fd49.json",
+      "sha256": "sha256:72a929f43bc8b707ba500566d93305ae31df92e978b0aba523bcd81f2a18f261"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
