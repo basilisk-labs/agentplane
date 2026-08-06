@@ -19,8 +19,8 @@ Replace the long upfront questionnaire with a short user-first init path that de
 - Note:
 
 ```text
-Progressive init is verified: 27 focused tests pass, onboarding and generated CLI docs are aligned,
-TypeScript compiles, and policy routing remains valid.
+Progressive init is verified with concrete local evidence across behavior, onboarding, generated
+help, types, and routing.
 ```
 - Canonical workflow state lives in the task README.
 

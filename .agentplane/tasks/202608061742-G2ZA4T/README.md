@@ -4,7 +4,7 @@ title: "Redesign init around safe defaults and progressive disclosure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -29,9 +29,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-06T23:43:38.216Z"
+  updated_at: "2026-08-06T23:45:07.136Z"
   updated_by: "TESTER"
-  note: "Progressive init is verified: 27 focused tests pass, onboarding and generated CLI docs are aligned, TypeScript compiles, and policy routing remains valid."
+  note: "Progressive init is verified with concrete local evidence across behavior, onboarding, generated help, types, and routing."
   attempts: 0
 commit:
   hash: "1b63fb8813a54cc74aa197719a5c81e759110d27"
@@ -64,8 +64,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Progressive init is verified: 27 focused tests pass, onboarding and generated CLI docs are aligned, TypeScript compiles, and policy routing remains valid."
+  -
+    type: "verify"
+    at: "2026-08-06T23:45:07.136Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Progressive init is verified with concrete local evidence across behavior, onboarding, generated help, types, and routing."
 doc_version: 3
-doc_updated_at: "2026-08-06T23:43:39.071Z"
+doc_updated_at: "2026-08-06T23:45:08.098Z"
 doc_updated_by: "CODER"
 description: "Replace the long upfront questionnaire with a short user-first init path that detects repository defaults, asks only decisions that materially change policy or workflow, provides an advanced configuration path, and prints a first-task next step."
 sections:
@@ -95,6 +101,61 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T23:43:10.919Z, excerpt_hash=sha256:7e72d145f9d263a8ae6ddc091eb4cbf3aa6d1b045a24a7b0df8263a9b80b4ce7
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061742-G2ZA4T-redesign-init-around-safe-defaults-and-progressi/.agentplane/tasks/202608061742-G2ZA4T/blueprint/resolved-snapshot.json
+    - old_digest: 8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb
+    - current_digest: 8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061742-G2ZA4T
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608061742-G2ZA4T
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-06T23:45:07.136Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Progressive init is verified with concrete local evidence across behavior, onboarding, generated help, types, and routing.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T23:43:39.071Z, excerpt_hash=sha256:7e72d145f9d263a8ae6ddc091eb4cbf3aa6d1b045a24a7b0df8263a9b80b4ce7
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli/commands/init
+    Result: pass
+    Evidence: 6 test files passed; 27 tests passed
+    Scope: progressive init behavior and init regressions
+
+    Command: bun run docs:onboarding:check
+    Result: pass
+    Evidence: agent onboarding scenario surfaces are aligned
+    Scope: first-run onboarding documentation
+
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: generated CLI reference is up to date
+    Scope: generated init help contract
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build completed with exit code 0
+    Scope: repository type safety
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK
+    Scope: policy gateway routing constraints
 
     BlueprintSnapshotRef:
     - state: current
@@ -160,6 +221,61 @@ Attempts: 0
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T23:43:10.919Z, excerpt_hash=sha256:7e72d145f9d263a8ae6ddc091eb4cbf3aa6d1b045a24a7b0df8263a9b80b4ce7
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061742-G2ZA4T-redesign-init-around-safe-defaults-and-progressi/.agentplane/tasks/202608061742-G2ZA4T/blueprint/resolved-snapshot.json
+- old_digest: 8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb
+- current_digest: 8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061742-G2ZA4T
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608061742-G2ZA4T
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-06T23:45:07.136Z — VERIFY — ok
+
+By: TESTER
+
+Note: Progressive init is verified with concrete local evidence across behavior, onboarding, generated help, types, and routing.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T23:43:39.071Z, excerpt_hash=sha256:7e72d145f9d263a8ae6ddc091eb4cbf3aa6d1b045a24a7b0df8263a9b80b4ce7
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli/commands/init
+Result: pass
+Evidence: 6 test files passed; 27 tests passed
+Scope: progressive init behavior and init regressions
+
+Command: bun run docs:onboarding:check
+Result: pass
+Evidence: agent onboarding scenario surfaces are aligned
+Scope: first-run onboarding documentation
+
+Command: bun run docs:cli:check
+Result: pass
+Evidence: generated CLI reference is up to date
+Scope: generated init help contract
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build completed with exit code 0
+Scope: repository type safety
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK
+Scope: policy gateway routing constraints
 
 BlueprintSnapshotRef:
 - state: current
