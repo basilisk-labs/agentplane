@@ -1,10 +1,11 @@
 ---
 id: "202608061742-G2ZA4T"
 title: "Redesign init around safe defaults and progressive disclosure"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -59,9 +60,23 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "The frozen aggregate diff includes the declared dependency task's artifacts and task-command implementation in addition to this task's init changes; commit-level inspection attributes the init task's own changes to the approved scope."
+token_usage:
+  agent_runs: 1
+  input_tokens: 222257
+  journal_digest: "sha256:4c3047b53b7c2d5c5814f6d3a104ae74b14f6c26974eb4d8e9793936878471f6"
+  observed_agent_runs: 1
+  observed_by: "agentplane"
+  output_tokens: 3924
+  reasoning_tokens: 509
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "observed"
+  total_tokens: 226690
+  unavailable_reason: null
+  updated_at: "2026-08-06T23:47:46.418Z"
 commit:
-  hash: "1b63fb8813a54cc74aa197719a5c81e759110d27"
-  message: "✨ G2ZA4T ux: add progressive setup flow"
+  hash: "f0e43ed985485ea4f71e2c7307d50b749d47540c"
+  message: "🧪 G2ZA4T task: record evaluator pass"
 comments:
   -
     author: "CODER"
@@ -69,6 +84,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: progressive quick/advanced init flow, exact first-task handoff, tool-specific defaults, and supervisor-first setup docs."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -96,8 +114,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Progressive init is verified with concrete local evidence across behavior, onboarding, generated help, types, and routing."
+  -
+    type: "status"
+    at: "2026-08-06T23:47:46.418Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-06T23:45:08.098Z"
+doc_updated_at: "2026-08-06T23:47:46.428Z"
 doc_updated_by: "CODER"
 description: "Replace the long upfront questionnaire with a short user-first init path that detects repository defaults, asks only decisions that materially change policy or workflow, provides an advanced configuration path, and prints a first-task next step."
 sections:
@@ -206,6 +231,9 @@ sections:
   Rollback Plan: "Revert the init UX commit. Existing non-interactive flags and generated configuration remain the compatibility baseline; no user repository content is migrated destructively."
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "1b63fb8813a54cc74aa197719a5c81e759110d27"
+    message: "✨ G2ZA4T ux: add progressive setup flow"
   workflow_route_baseline:
     start_head_sha: "762d0a6ce3d9c3b6a8e3f0781875e928abe81317"
     version: 1
@@ -329,3 +357,16 @@ DecisionContextRef:
 Revert the init UX commit. Existing non-interactive flags and generated configuration remain the compatibility baseline; no user repository content is migrated destructively.
 
 ## Findings
+
+## Token Usage
+
+- State: `observed`
+- Completeness: `1/1` agent runs
+- Input tokens: `222257`
+- Output tokens: `3924`
+- Reasoning tokens: `509`
+- Total tokens: `226690`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:4c3047b53b7c2d5c5814f6d3a104ae74b14f6c26974eb4d8e9793936878471f6`
+- Unavailable reason: `none`
+- Updated at: `2026-08-06T23:47:46.418Z`
