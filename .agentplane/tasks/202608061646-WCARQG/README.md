@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -72,10 +72,10 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-06T17:08:25.845Z"
+  updated_at: "2026-08-06T17:16:44.392Z"
 commit:
-  hash: "1c7849f0ed3881ca385a7bdf8705358099fb47b2"
-  message: "✨ WCARQG routing: add explainable task execution routes"
+  hash: "e3568ad1cdd05cab3bad63ddbb23ba35531d9618"
+  message: "🧪 WCARQG task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -83,6 +83,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -146,8 +149,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Implementation 1c7849f0e is accepted for integration with concrete check evidence."
+  -
+    type: "status"
+    at: "2026-08-06T17:16:44.392Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-06T17:15:20.316Z"
+doc_updated_at: "2026-08-06T17:16:44.420Z"
 doc_updated_by: "CODER"
 description: "Add a backward-compatible task-level execution route that lets AgentPlane classify task isolation risk and deterministically select direct or branch_pr, with policy overrides, stable reason codes, persisted evidence, and no route changes after mutation starts."
 sections:
@@ -439,6 +449,9 @@ sections:
       Impact: The persisted execution_route contract, route explanations, blueprint selection, dry-run execution, and branch worktree routing satisfy the approved acceptance criteria without regression to legacy repository routing.
       Resolution: Accept implementation commit 1c7849f0e for integration; retain later commits as lifecycle evidence only.
 extensions:
+  implementation_commit:
+    hash: "1c7849f0ed3881ca385a7bdf8705358099fb47b2"
+    message: "✨ WCARQG routing: add explainable task execution routes"
   workflow_route_baseline:
     start_head_sha: "f89392c2f479a4b2eaa79c628912152e68ab6094"
     version: 1
@@ -758,4 +771,4 @@ Revert the feature commit. Legacy tasks without execution_route continue to reso
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-06T17:08:25.845Z`
+- Updated at: `2026-08-06T17:16:44.392Z`

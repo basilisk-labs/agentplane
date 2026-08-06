@@ -8,10 +8,10 @@
   "pr_number": 4784,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4784",
   "pre_merge_closure": {
-    "basis_commit": "1c7849f0ed3881ca385a7bdf8705358099fb47b2",
+    "basis_commit": "e3568ad1cdd05cab3bad63ddbb23ba35531d9618",
     "branch": "task/202608061646-WCARQG/add-explainable-per-task-workflow-routing",
     "pr_number": 4784,
-    "recorded_at": "2026-08-06T17:08:25.913Z",
+    "recorded_at": "2026-08-06T17:16:44.473Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
