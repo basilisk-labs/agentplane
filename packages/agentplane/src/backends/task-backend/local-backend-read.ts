@@ -122,6 +122,27 @@ type ReadmeStatEntry = {
   };
 };
 
+export function buildReadmeStatEntry(opts: {
+  dirName: string;
+  readmePath: string;
+  mtimeMs: bigint;
+  mtimeNs: bigint;
+  size: bigint;
+  dev: bigint;
+  ino: bigint;
+}): ReadmeStatEntry {
+  return {
+    dirName: opts.dirName,
+    readmePath: opts.readmePath,
+    mtimeMs: Number(opts.mtimeMs) + Number(opts.mtimeNs % 1_000_000n) / 1_000_000,
+    size: Number(opts.size),
+    identity: {
+      dev: opts.dev,
+      ino: opts.ino,
+    },
+  };
+}
+
 function buildReadmeFingerprint(entries: ReadmeStatEntry[]): TaskIndexReadmeFingerprint {
   return {
     entries: entries.map(
@@ -190,18 +211,19 @@ export async function listLocalTasks(
   for (const dirName of dirs) {
     const readmePath = path.join(context.root, dirName, "README.md");
     try {
-      const stats = await lstat(readmePath);
+      const stats = await lstat(readmePath, { bigint: true });
       if (!stats.isSymbolicLink() && stats.isFile()) {
-        readmeStats.push({
-          dirName,
-          readmePath,
-          mtimeMs: stats.mtimeMs,
-          size: stats.size,
-          identity: {
-            dev: BigInt(stats.dev),
-            ino: BigInt(stats.ino),
-          },
-        });
+        readmeStats.push(
+          buildReadmeStatEntry({
+            dirName,
+            readmePath,
+            mtimeMs: stats.mtimeMs,
+            mtimeNs: stats.mtimeNs,
+            size: stats.size,
+            dev: stats.dev,
+            ino: stats.ino,
+          }),
+        );
       } else if (!(await isIgnorableMissingReadmeTaskDir(context.root, dirName))) {
         hasMissingReadmes = true;
       }
