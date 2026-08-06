@@ -2,10 +2,10 @@
 id: "202608061646-30TKV4"
 title: "Add user-first task intake and execution preview"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -92,6 +92,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: refresh the verified UX branch onto the newly qualified main and resolve the two bounded generated/test conflicts."
 events:
   -
     type: "status"
@@ -133,8 +136,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-08-06T23:52:22.696Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Rework: refresh the verified UX branch onto the newly qualified main and resolve the two bounded generated/test conflicts."
 doc_version: 3
-doc_updated_at: "2026-08-06T20:09:32.615Z"
+doc_updated_at: "2026-08-06T23:52:22.730Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
