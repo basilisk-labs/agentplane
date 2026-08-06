@@ -15,16 +15,7 @@ In scope: a consolidated post-release audit and fix set for installation and upg
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Command: verification freshness rebind after committing the archived qualification evidence. Result:
-pass. Evidence: evidence-only commit ad6c3c5e9 contains the exact already-executed provider report
-fbf20573217713c56df7418532e7fbdfa6d218b01cad361c8b5b279eff701e1a and efficiency evidence
-eb55407be4344639d669ee0ce84434586c2c0f64f3945202878ce7e67187bfc4; no implementation paths changed
-and no provider or test retry was performed. Scope: reviewed-head freshness for the committed
-evidence set; implementation remains 6c21aab823fe2019b6649b65f5bea6685be0e549.
-```
+- Note: Exact-subject provider qualification and committed evidence accepted without retry.
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -1,0 +1,3003 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
+index a95f1741a..dd07cae70 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
+@@ -17,6 +17,7 @@ import {
+ } from "@agentplane/testkit/cli-core-pr-flow";
+ 
+ const execFileAsync = promisify(execFile);
++const PROVIDER_CONFLICT_REWORK_MATRIX_TIMEOUT_MS = 120_000;
+ 
+ type ConflictRouteOutput = {
+   workflow_step: {
+@@ -378,586 +379,608 @@ describe("provider conflict rework CLI", () => {
+     );
+   });
+ 
+-  it("routes a live GitHub conflict to CODER with a fresh read-only packet", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
+-    const config = defaultConfig();
+-    config.workflow_mode = "branch_pr";
+-    await writeConfig(root, config);
+-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+-
+-    await writeFile(path.join(root, "conflict.txt"), "base\n", "utf8");
+-    await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
+-    await execFileAsync("git", ["commit", "-m", "test: seed merge conflict fixture"], {
+-      cwd: root,
+-    });
+-
+-    const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Route a provider merge conflict to semantic CODER rework.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+-
+-    const slug = "provider-conflict-route";
+-    const branch = `task/${taskId}/${slug}`;
+-    await runCliSilent([
+-      "work",
+-      "start",
+-      taskId,
+-      "--agent",
+-      "CODER",
+-      "--slug",
+-      slug,
+-      "--worktree",
+-      "--root",
+-      root,
+-    ]);
+-    const worktree = await worktreeForBranch(root, branch);
+-    await runCliSilent([
+-      "task",
+-      "start-ready",
+-      taskId,
+-      "--author",
+-      "CODER",
+-      "--body",
+-      "Start: inspect the provider conflict from the dedicated task worktree.",
+-      "--root",
+-      worktree,
+-    ]);
+-    await writeFile(path.join(worktree, "conflict.txt"), "task branch\n", "utf8");
+-    await execFileAsync("git", ["add", "-A"], { cwd: worktree });
+-    await execFileAsync("git", ["commit", "-m", "test: task side of conflict fixture"], {
+-      cwd: worktree,
+-    });
+-
+-    const taskReadmePath = path.join(worktree, ".agentplane", "tasks", taskId, "README.md");
+-    const taskReadme = await readFile(taskReadmePath, "utf8");
+-    await writeFile(
+-      taskReadmePath,
+-      taskReadme
+-        .replace('status: "DOING"', 'status: "DONE"')
+-        .replace('verification:\n  state: "pending"', 'verification:\n  state: "ok"'),
+-      "utf8",
+-    );
+-    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: worktree });
+-    await execFileAsync("git", ["commit", "-m", "test: mark task verified for queue handoff"], {
+-      cwd: worktree,
+-    });
+-
+-    await writeFile(path.join(root, "conflict.txt"), "main branch\n", "utf8");
+-    await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
+-    await execFileAsync("git", ["commit", "-m", "test: base side of conflict fixture"], {
+-      cwd: root,
+-    });
+-    const [{ stdout: headRaw }, { stdout: baseRaw }] = await Promise.all([
+-      execFileAsync("git", ["rev-parse", branch], { cwd: root }),
+-      execFileAsync("git", ["rev-parse", "main"], { cwd: root }),
+-    ]);
+-    const headSha = headRaw.trim();
+-    const baseSha = baseRaw.trim();
+-    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+-      cwd: root,
+-    });
+-    const queuePath = path.join(root, ".agentplane", "cache", "integration-queue.json");
+-    await mkdir(path.dirname(queuePath), { recursive: true });
+-    await writeFile(
+-      queuePath,
+-      `${JSON.stringify({
+-        schema_version: 1,
+-        entries: [
+-          {
+-            task_id: taskId,
+-            branch,
+-            base: "main",
+-            head_sha: headSha,
+-            base_sha: baseSha,
+-            changed_paths: ["conflict.txt"],
+-            pr_number: 4626,
+-            pr_url: "https://github.example/acme/agentplane/pull/4626",
+-            priority: 0,
+-            status: "handoff",
+-            enqueued_at: "2026-07-26T00:00:00.000Z",
+-            updated_at: "2026-07-26T00:01:00.000Z",
+-            claimed_by: "integrator",
+-            claimed_at: "2026-07-26T00:00:00.000Z",
+-            lease_expires_at: "2099-07-26T00:00:00.000Z",
+-            reason: "provider conflict",
+-          },
+-        ],
+-      })}\n`,
+-      "utf8",
+-    );
++  it(
++    "routes a live GitHub conflict to CODER with a fresh read-only packet",
++    async () => {
++      const root = await mkGitRepoRootWithBranch("main");
++      const config = defaultConfig();
++      config.workflow_mode = "branch_pr";
++      await writeConfig(root, config);
++      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++
++      await writeFile(path.join(root, "conflict.txt"), "base\n", "utf8");
++      await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
++      await execFileAsync("git", ["commit", "-m", "test: seed merge conflict fixture"], {
++        cwd: root,
++      });
+ 
+-    const fakeGhSource = [
+-      "const args = process.argv.slice(2);",
+-      `const detail = ${JSON.stringify({
+-        number: 4626,
+-        html_url: "https://github.example/acme/agentplane/pull/4626",
+-        state: "open",
+-        merged_at: null,
+-        merge_commit_sha: null,
+-        mergeable: false,
+-        mergeable_state: "dirty",
+-        head: { ref: branch, sha: headSha },
+-        base: { ref: "main", sha: baseSha },
+-      })};`,
+-      'if (args[0] === "api" && args[1] === "repos/example/repo/branches/main/protection") {',
+-      "  console.log(JSON.stringify({ required_pull_request_reviews: {} }));",
+-      "  process.exit(0);",
+-      "}",
+-      'if (args[0] === "api" && (args[1] ?? "").startsWith("repos/example/repo/pulls?")) {',
+-      "  console.log(JSON.stringify([{ number: detail.number, state: detail.state, head: detail.head, base: { ref: detail.base.ref } }]));",
+-      "  process.exit(0);",
+-      "}",
+-      'if (args[0] === "api" && args[1] === "repos/example/repo/pulls/4626") {',
+-      "  console.log(JSON.stringify(detail));",
+-      "  process.exit(0);",
+-      "}",
+-      'if (args[0] === "pr" && args[1] === "checks") {',
+-      '  console.log("[]");',
+-      "  process.exit(0);",
+-      "}",
+-      'if (args[0] === "api" && args[1] === "graphql") {',
+-      "  console.log(JSON.stringify({ data: { repository: { pullRequest: { reviewThreads: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } } } } } }));",
+-      "  process.exit(0);",
+-      "}",
+-      "console.error(`unexpected gh args: ${JSON.stringify(args)}`);",
+-      "process.exit(91);",
+-      "",
+-    ].join("\n");
+-
+-    await withFakeGh(root, fakeGhSource, async () => {
+-      const before = await execFileAsync("git", ["status", "--porcelain"], { cwd: worktree });
+-      expect(before.stdout).toBe("");
+-
+-      const route = await readRemoteRoute(root, taskId);
+-      const conflictRework = route.conflict_rework;
+-      if (conflictRework?.state !== "ready") {
+-        throw new Error("expected ready conflict-rework packet");
+-      }
++      const taskId = await createBranchPrTask(root);
++      await runCliSilent([
++        "task",
++        "plan",
++        "set",
++        taskId,
++        "--text",
++        "Route a provider merge conflict to semantic CODER rework.",
++        "--updated-by",
++        "ORCHESTRATOR",
++        "--root",
++        root,
++      ]);
++      await runCliSilent([
++        "task",
++        "plan",
++        "approve",
++        taskId,
++        "--by",
++        "ORCHESTRATOR",
++        "--root",
++        root,
++      ]);
++
++      const slug = "provider-conflict-route";
++      const branch = `task/${taskId}/${slug}`;
++      await runCliSilent([
++        "work",
++        "start",
++        taskId,
++        "--agent",
++        "CODER",
++        "--slug",
++        slug,
++        "--worktree",
++        "--root",
++        root,
++      ]);
++      const worktree = await worktreeForBranch(root, branch);
++      await runCliSilent([
++        "task",
++        "start-ready",
++        taskId,
++        "--author",
++        "CODER",
++        "--body",
++        "Start: inspect the provider conflict from the dedicated task worktree.",
++        "--root",
++        worktree,
++      ]);
++      await writeFile(path.join(worktree, "conflict.txt"), "task branch\n", "utf8");
++      await execFileAsync("git", ["add", "-A"], { cwd: worktree });
++      await execFileAsync("git", ["commit", "-m", "test: task side of conflict fixture"], {
++        cwd: worktree,
++      });
+ 
+-      expect(route.workflow_step).toMatchObject({
+-        kind: "agent_episode",
+-        id: "agent.provider_conflict_rework",
+-        authoritativeCheckout: "task_worktree",
+-        episode: { purpose: "implementation_rework", role: "CODER" },
+-        compatibility: {
+-          code: "semantic_conflict_rework_required",
+-          command: `agentplane pr conflict-rework ${taskId} --expect-freshness-token ${conflictRework.packet.freshness.token}`,
+-        },
++      const taskReadmePath = path.join(worktree, ".agentplane", "tasks", taskId, "README.md");
++      const taskReadme = await readFile(taskReadmePath, "utf8");
++      await writeFile(
++        taskReadmePath,
++        taskReadme
++          .replace('status: "DOING"', 'status: "DONE"')
++          .replace('verification:\n  state: "pending"', 'verification:\n  state: "ok"'),
++        "utf8",
++      );
++      await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: worktree });
++      await execFileAsync("git", ["commit", "-m", "test: mark task verified for queue handoff"], {
++        cwd: worktree,
+       });
+-      expect(route.execution_packet).toMatchObject({
+-        actionKind: "stop",
+-        safeToMutate: true,
+-        exactArgv: null,
+-        staleStateCheck: `agentplane task next-action ${taskId} --remote --explain`,
++
++      await writeFile(path.join(root, "conflict.txt"), "main branch\n", "utf8");
++      await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
++      await execFileAsync("git", ["commit", "-m", "test: base side of conflict fixture"], {
++        cwd: root,
+       });
+-      expect(route.blockers.map((blocker) => blocker.code)).toContain("provider_merge_conflict");
+-      expect(conflictRework).toMatchObject({
+-        state: "ready",
+-        packet: {
+-          provider: {
+-            head_sha: headSha,
+-            base_sha: baseSha,
+-            mergeability: { state: "conflicting" },
+-          },
+-          candidate_conflict_paths: { paths: ["conflict.txt"], total: 1 },
+-          safety: {
+-            preparation_mutations: [],
+-          },
++      const [{ stdout: headRaw }, { stdout: baseRaw }] = await Promise.all([
++        execFileAsync("git", ["rev-parse", branch], { cwd: root }),
++        execFileAsync("git", ["rev-parse", "main"], { cwd: root }),
++      ]);
++      const headSha = headRaw.trim();
++      const baseSha = baseRaw.trim();
++      await execFileAsync(
++        "git",
++        ["remote", "add", "origin", "https://github.com/example/repo.git"],
++        {
++          cwd: root,
+         },
+-      });
+-      expect(
+-        conflictRework.packet.safety.cli_must_not.some((rule) => rule.includes("auto-rebase")),
+-      ).toBe(true);
+-
+-      const packetIo = captureStdIO();
+-      try {
+-        const code = await runCli([
+-          "pr",
+-          "conflict-rework",
+-          taskId,
+-          "--expect-freshness-token",
+-          conflictRework.packet.freshness.token,
+-          "--json",
+-          "--root",
+-          root,
+-        ]);
+-        if (code !== 0) process.stderr.write(packetIo.stderr);
+-        expect(code).toBe(0);
+-        const packet = JSON.parse(packetIo.stdout) as {
+-          freshness: { token: string };
+-          safety: { preparation_mutations: unknown[] };
+-        };
+-        expect(packet.freshness.token).toBe(conflictRework.packet.freshness.token);
+-        expect(packet.safety.preparation_mutations).toEqual([]);
+-      } finally {
+-        packetIo.restore();
+-      }
++      );
++      const queuePath = path.join(root, ".agentplane", "cache", "integration-queue.json");
++      await mkdir(path.dirname(queuePath), { recursive: true });
++      await writeFile(
++        queuePath,
++        `${JSON.stringify({
++          schema_version: 1,
++          entries: [
++            {
++              task_id: taskId,
++              branch,
++              base: "main",
++              head_sha: headSha,
++              base_sha: baseSha,
++              changed_paths: ["conflict.txt"],
++              pr_number: 4626,
++              pr_url: "https://github.example/acme/agentplane/pull/4626",
++              priority: 0,
++              status: "handoff",
++              enqueued_at: "2026-07-26T00:00:00.000Z",
++              updated_at: "2026-07-26T00:01:00.000Z",
++              claimed_by: "integrator",
++              claimed_at: "2026-07-26T00:00:00.000Z",
++              lease_expires_at: "2099-07-26T00:00:00.000Z",
++              reason: "provider conflict",
++            },
++          ],
++        })}\n`,
++        "utf8",
++      );
+ 
+-      const after = await execFileAsync("git", ["status", "--porcelain"], { cwd: worktree });
+-      expect(after.stdout).toBe(before.stdout);
+-    });
++      const fakeGhSource = [
++        "const args = process.argv.slice(2);",
++        `const detail = ${JSON.stringify({
++          number: 4626,
++          html_url: "https://github.example/acme/agentplane/pull/4626",
++          state: "open",
++          merged_at: null,
++          merge_commit_sha: null,
++          mergeable: false,
++          mergeable_state: "dirty",
++          head: { ref: branch, sha: headSha },
++          base: { ref: "main", sha: baseSha },
++        })};`,
++        'if (args[0] === "api" && args[1] === "repos/example/repo/branches/main/protection") {',
++        "  console.log(JSON.stringify({ required_pull_request_reviews: {} }));",
++        "  process.exit(0);",
++        "}",
++        'if (args[0] === "api" && (args[1] ?? "").startsWith("repos/example/repo/pulls?")) {',
++        "  console.log(JSON.stringify([{ number: detail.number, state: detail.state, head: detail.head, base: { ref: detail.base.ref } }]));",
++        "  process.exit(0);",
++        "}",
++        'if (args[0] === "api" && args[1] === "repos/example/repo/pulls/4626") {',
++        "  console.log(JSON.stringify(detail));",
++        "  process.exit(0);",
++        "}",
++        'if (args[0] === "pr" && args[1] === "checks") {',
++        '  console.log("[]");',
++        "  process.exit(0);",
++        "}",
++        'if (args[0] === "api" && args[1] === "graphql") {',
++        "  console.log(JSON.stringify({ data: { repository: { pullRequest: { reviewThreads: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } } } } } }));",
++        "  process.exit(0);",
++        "}",
++        "console.error(`unexpected gh args: ${JSON.stringify(args)}`);",
++        "process.exit(91);",
++        "",
++      ].join("\n");
++
++      await withFakeGh(root, fakeGhSource, async () => {
++        const before = await execFileAsync("git", ["status", "--porcelain"], { cwd: worktree });
++        expect(before.stdout).toBe("");
+ 
+-    const providerCore = {
+-      number: 4626,
+-      html_url: "https://github.example/acme/agentplane/pull/4626",
+-      state: "open",
+-      merged_at: null,
+-      merge_commit_sha: null,
+-      head: { ref: branch, sha: headSha },
+-      base: { ref: "main", sha: baseSha },
+-    };
+-    const unsettledProviderDetails = [
+-      ["omitted mergeability fields", providerCore],
+-      [
+-        "contradictory false and unknown mergeability",
+-        { ...providerCore, mergeable: false, mergeable_state: "unknown" },
+-      ],
+-      [
+-        "pending unknown mergeability",
+-        { ...providerCore, mergeable: null, mergeable_state: "unknown" },
+-      ],
+-      [
+-        "unsettled null and pending mergeability",
+-        { ...providerCore, mergeable: null, mergeable_state: "pending" },
+-      ],
+-      [
+-        "contradictory true and dirty mergeability",
+-        { ...providerCore, mergeable: true, mergeable_state: "dirty" },
+-      ],
+-      [
+-        "contradictory true and conflicting mergeability",
+-        { ...providerCore, mergeable: true, mergeable_state: "conflicting" },
+-      ],
+-    ] as const;
+-    for (const [label, providerDetail] of unsettledProviderDetails) {
+-      await withFakeGh(root, fakeGithubProviderSource(providerDetail), async () => {
+-        const [rootBefore, worktreeBefore] = await Promise.all([
+-          execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
+-          execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
+-        ]);
+         const route = await readRemoteRoute(root, taskId);
++        const conflictRework = route.conflict_rework;
++        if (conflictRework?.state !== "ready") {
++          throw new Error("expected ready conflict-rework packet");
++        }
+ 
+         expect(route.workflow_step).toMatchObject({
+-          kind: "terminal",
+-          id: "terminal.provider_conflict_context_invalid",
++          kind: "agent_episode",
++          id: "agent.provider_conflict_rework",
++          authoritativeCheckout: "task_worktree",
++          episode: { purpose: "implementation_rework", role: "CODER" },
++          compatibility: {
++            code: "semantic_conflict_rework_required",
++            command: `agentplane pr conflict-rework ${taskId} --expect-freshness-token ${conflictRework.packet.freshness.token}`,
++          },
+         });
+-        expect(route.workflow_step.kind, label).not.toBe("agent_episode");
+-        expect(route.workflow_step.kind, label).not.toBe("cli_operation");
+         expect(route.execution_packet).toMatchObject({
+           actionKind: "stop",
+-          safeToMutate: false,
++          safeToMutate: true,
+           exactArgv: null,
++          staleStateCheck: `agentplane task next-action ${taskId} --remote --explain`,
+         });
+-        expect(route.blockers.map((blocker) => blocker.code)).toContain(
+-          "provider_conflict_context_invalid",
+-        );
+-        expect(route.blockers.map((blocker) => blocker.code)).not.toContain(
+-          "provider_merge_conflict",
+-        );
+-        expect(route.conflict_rework).toMatchObject({
+-          state: "invalid",
+-          reason_code: "provider_mergeability_unknown",
++        expect(route.blockers.map((blocker) => blocker.code)).toContain("provider_merge_conflict");
++        expect(conflictRework).toMatchObject({
++          state: "ready",
++          packet: {
++            provider: {
++              head_sha: headSha,
++              base_sha: baseSha,
++              mergeability: { state: "conflicting" },
++            },
++            candidate_conflict_paths: { paths: ["conflict.txt"], total: 1 },
++            safety: {
++              preparation_mutations: [],
++            },
++          },
+         });
++        expect(
++          conflictRework.packet.safety.cli_must_not.some((rule) => rule.includes("auto-rebase")),
++        ).toBe(true);
++
++        const packetIo = captureStdIO();
++        try {
++          const code = await runCli([
++            "pr",
++            "conflict-rework",
++            taskId,
++            "--expect-freshness-token",
++            conflictRework.packet.freshness.token,
++            "--json",
++            "--root",
++            root,
++          ]);
++          if (code !== 0) process.stderr.write(packetIo.stderr);
++          expect(code).toBe(0);
++          const packet = JSON.parse(packetIo.stdout) as {
++            freshness: { token: string };
++            safety: { preparation_mutations: unknown[] };
++          };
++          expect(packet.freshness.token).toBe(conflictRework.packet.freshness.token);
++          expect(packet.safety.preparation_mutations).toEqual([]);
++        } finally {
++          packetIo.restore();
++        }
+ 
+-        const [rootAfter, worktreeAfter] = await Promise.all([
+-          execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
+-          execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
+-        ]);
+-        expect(rootAfter.stdout, label).toBe(rootBefore.stdout);
+-        expect(worktreeAfter.stdout, label).toBe(worktreeBefore.stdout);
++        const after = await execFileAsync("git", ["status", "--porcelain"], { cwd: worktree });
++        expect(after.stdout).toBe(before.stdout);
+       });
+-    }
+ 
+-    const coherentNonConflictProviderDetails = ["clean", "behind", "unstable", "blocked"] as const;
+-    for (const providerState of coherentNonConflictProviderDetails) {
+-      await withFakeGh(
+-        root,
+-        fakeGithubProviderSource({
+-          ...providerCore,
+-          mergeable: true,
+-          mergeable_state: providerState,
+-        }),
+-        async () => {
++      const providerCore = {
++        number: 4626,
++        html_url: "https://github.example/acme/agentplane/pull/4626",
++        state: "open",
++        merged_at: null,
++        merge_commit_sha: null,
++        head: { ref: branch, sha: headSha },
++        base: { ref: "main", sha: baseSha },
++      };
++      const unsettledProviderDetails = [
++        ["omitted mergeability fields", providerCore],
++        [
++          "contradictory false and unknown mergeability",
++          { ...providerCore, mergeable: false, mergeable_state: "unknown" },
++        ],
++        [
++          "pending unknown mergeability",
++          { ...providerCore, mergeable: null, mergeable_state: "unknown" },
++        ],
++        [
++          "unsettled null and pending mergeability",
++          { ...providerCore, mergeable: null, mergeable_state: "pending" },
++        ],
++        [
++          "contradictory true and dirty mergeability",
++          { ...providerCore, mergeable: true, mergeable_state: "dirty" },
++        ],
++        [
++          "contradictory true and conflicting mergeability",
++          { ...providerCore, mergeable: true, mergeable_state: "conflicting" },
++        ],
++      ] as const;
++      for (const [label, providerDetail] of unsettledProviderDetails) {
++        await withFakeGh(root, fakeGithubProviderSource(providerDetail), async () => {
+           const [rootBefore, worktreeBefore] = await Promise.all([
+             execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
+             execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
+           ]);
+           const route = await readRemoteRoute(root, taskId);
+ 
+-          expect(route.conflict_rework, providerState).toBeNull();
+-          expect(route.workflow_step, providerState).toMatchObject({
+-            kind: "agent_episode",
+-            id: "agent.verification",
+-            compatibility: { code: "verification_required", command: null },
++          expect(route.workflow_step).toMatchObject({
++            kind: "terminal",
++            id: "terminal.provider_conflict_context_invalid",
+           });
+-          expect(route.execution_packet, providerState).toMatchObject({
++          expect(route.workflow_step.kind, label).not.toBe("agent_episode");
++          expect(route.workflow_step.kind, label).not.toBe("cli_operation");
++          expect(route.execution_packet).toMatchObject({
+             actionKind: "stop",
+             safeToMutate: false,
+             exactArgv: null,
+           });
+-          expect(
+-            route.blockers.map((blocker) => blocker.code),
+-            providerState,
+-          ).not.toContain("provider_conflict_context_invalid");
+-          expect(
+-            route.blockers.map((blocker) => blocker.code),
+-            providerState,
+-          ).not.toContain("provider_merge_conflict");
++          expect(route.blockers.map((blocker) => blocker.code)).toContain(
++            "provider_conflict_context_invalid",
++          );
++          expect(route.blockers.map((blocker) => blocker.code)).not.toContain(
++            "provider_merge_conflict",
++          );
++          expect(route.conflict_rework).toMatchObject({
++            state: "invalid",
++            reason_code: "provider_mergeability_unknown",
++          });
+ 
+           const [rootAfter, worktreeAfter] = await Promise.all([
+             execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
+             execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
+           ]);
+-          expect(rootAfter.stdout, providerState).toBe(rootBefore.stdout);
+-          expect(worktreeAfter.stdout, providerState).toBe(worktreeBefore.stdout);
+-        },
+-      );
+-    }
++          expect(rootAfter.stdout, label).toBe(rootBefore.stdout);
++          expect(worktreeAfter.stdout, label).toBe(worktreeBefore.stdout);
++        });
++      }
+ 
+-    await writeFile(path.join(root, "conflict.txt"), "main queue snapshot\n", "utf8");
+-    await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
+-    await execFileAsync("git", ["commit", "-m", "test: advance legacy queue snapshot"], {
+-      cwd: root,
+-    });
+-    const { stdout: queueBaseRaw } = await execFileAsync("git", ["rev-parse", "main"], {
+-      cwd: root,
+-    });
+-    const legacyQueueBase = queueBaseRaw.trim();
++      const coherentNonConflictProviderDetails = [
++        "clean",
++        "behind",
++        "unstable",
++        "blocked",
++      ] as const;
++      for (const providerState of coherentNonConflictProviderDetails) {
++        await withFakeGh(
++          root,
++          fakeGithubProviderSource({
++            ...providerCore,
++            mergeable: true,
++            mergeable_state: providerState,
++          }),
++          async () => {
++            const [rootBefore, worktreeBefore] = await Promise.all([
++              execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
++              execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
++            ]);
++            const route = await readRemoteRoute(root, taskId);
++
++            expect(route.conflict_rework, providerState).toBeNull();
++            expect(route.workflow_step, providerState).toMatchObject({
++              kind: "agent_episode",
++              id: "agent.verification",
++              compatibility: { code: "verification_required", command: null },
++            });
++            expect(route.execution_packet, providerState).toMatchObject({
++              actionKind: "stop",
++              safeToMutate: false,
++              exactArgv: null,
++            });
++            expect(
++              route.blockers.map((blocker) => blocker.code),
++              providerState,
++            ).not.toContain("provider_conflict_context_invalid");
++            expect(
++              route.blockers.map((blocker) => blocker.code),
++              providerState,
++            ).not.toContain("provider_merge_conflict");
++
++            const [rootAfter, worktreeAfter] = await Promise.all([
++              execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
++              execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
++            ]);
++            expect(rootAfter.stdout, providerState).toBe(rootBefore.stdout);
++            expect(worktreeAfter.stdout, providerState).toBe(worktreeBefore.stdout);
++          },
++        );
++      }
+ 
+-    await writeFile(path.join(root, "conflict.txt"), "main current base\n", "utf8");
+-    await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
+-    await execFileAsync(
+-      "git",
+-      ["commit", "-m", "test: advance current base beyond queue snapshot"],
+-      {
++      await writeFile(path.join(root, "conflict.txt"), "main queue snapshot\n", "utf8");
++      await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
++      await execFileAsync("git", ["commit", "-m", "test: advance legacy queue snapshot"], {
+         cwd: root,
+-      },
+-    );
+-    const { stdout: currentBaseRaw } = await execFileAsync("git", ["rev-parse", "main"], {
+-      cwd: root,
+-    });
+-    const currentBase = currentBaseRaw.trim();
+-
+-    await writeFile(
+-      queuePath,
+-      `${JSON.stringify({
+-        schema_version: 1,
+-        entries: [
+-          {
+-            task_id: taskId,
+-            branch,
+-            base: "main",
+-            head_sha: headSha,
+-            base_sha: legacyQueueBase,
+-            changed_paths: ["conflict.txt"],
++      });
++      const { stdout: queueBaseRaw } = await execFileAsync("git", ["rev-parse", "main"], {
++        cwd: root,
++      });
++      const legacyQueueBase = queueBaseRaw.trim();
++
++      await writeFile(path.join(root, "conflict.txt"), "main current base\n", "utf8");
++      await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
++      await execFileAsync(
++        "git",
++        ["commit", "-m", "test: advance current base beyond queue snapshot"],
++        {
++          cwd: root,
++        },
++      );
++      const { stdout: currentBaseRaw } = await execFileAsync("git", ["rev-parse", "main"], {
++        cwd: root,
++      });
++      const currentBase = currentBaseRaw.trim();
++
++      await writeFile(
++        queuePath,
++        `${JSON.stringify({
++          schema_version: 1,
++          entries: [
++            {
++              task_id: taskId,
++              branch,
++              base: "main",
++              head_sha: headSha,
++              base_sha: legacyQueueBase,
++              changed_paths: ["conflict.txt"],
++              pr_number: 4626,
++              pr_url: "https://github.example/acme/agentplane/pull/4626",
++              priority: 0,
++              status: "rework",
++              enqueued_at: "2026-07-26T00:00:00.000Z",
++              updated_at: "2026-07-26T05:24:58.052Z",
++              reason: "released after protected provider merge failed",
++            },
++          ],
++        })}\n`,
++        "utf8",
++      );
++      const handoffDir = path.join(root, ".agentplane", "tasks", taskId, "handoff");
++      await mkdir(handoffDir, { recursive: true });
++      await writeFile(
++        path.join(handoffDir, "latest.json"),
++        `${JSON.stringify({
++          schema_version: 1,
++          task_id: taskId,
++          created_at: "2026-07-26T00:00:00.000Z",
++          from_role: "INTEGRATOR",
++          reason: "branch_pr integration is waiting for the GitHub PR merge into main.",
++          note: "legacy protected-base handoff fixture",
++          branch,
++          base_branch: "main",
++          head_sha: headSha,
++          pr_branch: branch,
++          route: {
++            kind: "protected_base_integrate",
++            status: "awaiting_github_merge",
++            local_mutation: "not_performed",
++            finalize_via: "github_task_pr_merge_then_hosted_close",
+             pr_number: 4626,
+             pr_url: "https://github.example/acme/agentplane/pull/4626",
+-            priority: 0,
+-            status: "rework",
+-            enqueued_at: "2026-07-26T00:00:00.000Z",
+-            updated_at: "2026-07-26T05:24:58.052Z",
+-            reason: "released after protected provider merge failed",
+-          },
+-        ],
+-      })}\n`,
+-      "utf8",
+-    );
+-    const handoffDir = path.join(root, ".agentplane", "tasks", taskId, "handoff");
+-    await mkdir(handoffDir, { recursive: true });
+-    await writeFile(
+-      path.join(handoffDir, "latest.json"),
+-      `${JSON.stringify({
+-        schema_version: 1,
+-        task_id: taskId,
+-        created_at: "2026-07-26T00:00:00.000Z",
+-        from_role: "INTEGRATOR",
+-        reason: "branch_pr integration is waiting for the GitHub PR merge into main.",
+-        note: "legacy protected-base handoff fixture",
+-        branch,
+-        base_branch: "main",
+-        head_sha: headSha,
+-        pr_branch: branch,
+-        route: {
+-          kind: "protected_base_integrate",
+-          status: "awaiting_github_merge",
+-          local_mutation: "not_performed",
+-          finalize_via: "github_task_pr_merge_then_hosted_close",
+-          pr_number: 4626,
+-          pr_url: "https://github.example/acme/agentplane/pull/4626",
+-        },
+-        next_actions: [],
+-        evidence_paths: [],
+-      })}\n`,
+-      "utf8",
+-    );
+-
+-    await withFakeGh(
+-      root,
+-      fakeGithubProviderSource({
+-        ...providerCore,
+-        mergeable: false,
+-        mergeable_state: "dirty",
+-      }),
+-      async () => {
+-        const [rootBefore, worktreeBefore] = await Promise.all([
+-          execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
+-          execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
+-        ]);
+-        const route = await readRemoteRoute(root, taskId);
+-        const conflictRework = route.conflict_rework;
+-        if (conflictRework?.state !== "adoption_required") {
+-          throw new Error("expected legacy conflict-rework adoption requirement");
+-        }
+-        const grantCommand = route.workflow_step.compatibility.command;
+-        if (typeof grantCommand !== "string") throw new Error("expected authority grant command");
+-        expect(route.workflow_step).toMatchObject({
+-          kind: "approval",
+-          id: "approval.integration.adopt_legacy_protected_conflict",
+-          authoritativeCheckout: "task_worktree",
+-          compatibility: {
+-            code: "adopt_legacy_protected_conflict",
+-            command: expect.stringContaining(
+-              `agentplane task authority grant ${taskId}`,
+-            ) as unknown as string,
+-          },
+-        });
+-        await runCliSilent([...grantCommand.split(" ").slice(1), "--root", root]);
+-
+-        const authorizedRoute = await readRemoteRoute(root, taskId);
+-        expect(authorizedRoute.workflow_step).toMatchObject({
+-          kind: "cli_operation",
+-          id: "integration.adopt_legacy_protected_conflict",
+-          authoritativeCheckout: "base_checkout",
+-          operation: {
+-            params: { taskId, expectedAdoptionToken: conflictRework.adoption.token },
+           },
+-        });
+-        expect(authorizedRoute.execution_packet).toMatchObject({
+-          actionKind: "local_command",
+-          safeToMutate: true,
+-          exactArgv: [
+-            "agentplane",
+-            "repair",
+-            "adopt-legacy-conflict",
+-            taskId,
+-            "--expect-adoption-token",
+-            conflictRework.adoption.token,
+-          ],
+-        });
+-
+-        const blockedPacketIo = captureStdIO();
+-        try {
+-          const code = await runCli(["pr", "conflict-rework", taskId, "--json", "--root", root]);
+-          expect(code).not.toBe(0);
+-          expect(blockedPacketIo.stderr).toContain("explicit INTEGRATOR adoption receipt");
+-          expect(blockedPacketIo.stderr).toContain("adopt-legacy-protected-conflict");
+-          expect(blockedPacketIo.stderr).toContain(conflictRework.adoption.token);
+-        } finally {
+-          blockedPacketIo.restore();
+-        }
++          next_actions: [],
++          evidence_paths: [],
++        })}\n`,
++        "utf8",
++      );
+ 
+-        const adoptionIo = captureStdIO();
+-        try {
+-          const code = await runCli([
+-            "repair",
+-            "adopt-legacy-conflict",
+-            taskId,
+-            "--expect-adoption-token",
+-            conflictRework.adoption.token,
+-            "--root",
+-            root,
++      await withFakeGh(
++        root,
++        fakeGithubProviderSource({
++          ...providerCore,
++          mergeable: false,
++          mergeable_state: "dirty",
++        }),
++        async () => {
++          const [rootBefore, worktreeBefore] = await Promise.all([
++            execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
++            execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
+           ]);
+-          if (code !== 0) process.stderr.write(adoptionIo.stderr);
+-          expect(code).toBe(0);
+-        } finally {
+-          adoptionIo.restore();
+-        }
++          const route = await readRemoteRoute(root, taskId);
++          const conflictRework = route.conflict_rework;
++          if (conflictRework?.state !== "adoption_required") {
++            throw new Error("expected legacy conflict-rework adoption requirement");
++          }
++          const grantCommand = route.workflow_step.compatibility.command;
++          if (typeof grantCommand !== "string") throw new Error("expected authority grant command");
++          expect(route.workflow_step).toMatchObject({
++            kind: "approval",
++            id: "approval.integration.adopt_legacy_protected_conflict",
++            authoritativeCheckout: "task_worktree",
++            compatibility: {
++              code: "adopt_legacy_protected_conflict",
++              command: expect.stringContaining(
++                `agentplane task authority grant ${taskId}`,
++              ) as unknown as string,
++            },
++          });
++          await runCliSilent([...grantCommand.split(" ").slice(1), "--root", root]);
++
++          const authorizedRoute = await readRemoteRoute(root, taskId);
++          expect(authorizedRoute.workflow_step).toMatchObject({
++            kind: "cli_operation",
++            id: "integration.adopt_legacy_protected_conflict",
++            authoritativeCheckout: "base_checkout",
++            operation: {
++              params: { taskId, expectedAdoptionToken: conflictRework.adoption.token },
++            },
++          });
++          expect(authorizedRoute.execution_packet).toMatchObject({
++            actionKind: "local_command",
++            safeToMutate: true,
++            exactArgv: [
++              "agentplane",
++              "repair",
++              "adopt-legacy-conflict",
++              taskId,
++              "--expect-adoption-token",
++              conflictRework.adoption.token,
++            ],
++          });
+ 
+-        const compatibilityAliasIo = captureStdIO();
+-        try {
+-          const code = await runCli([
+-            "integrate",
+-            "queue",
+-            "adopt-legacy-protected-conflict",
+-            taskId,
+-            "--expect-adoption-token",
+-            conflictRework.adoption.token,
+-            "--root",
+-            root,
+-          ]);
+-          expect(code).toBe(0);
+-        } finally {
+-          compatibilityAliasIo.restore();
+-        }
++          const blockedPacketIo = captureStdIO();
++          try {
++            const code = await runCli(["pr", "conflict-rework", taskId, "--json", "--root", root]);
++            expect(code).not.toBe(0);
++            expect(blockedPacketIo.stderr).toContain("explicit INTEGRATOR adoption receipt");
++            expect(blockedPacketIo.stderr).toContain("adopt-legacy-protected-conflict");
++            expect(blockedPacketIo.stderr).toContain(conflictRework.adoption.token);
++          } finally {
++            blockedPacketIo.restore();
++          }
++
++          const adoptionIo = captureStdIO();
++          try {
++            const code = await runCli([
++              "repair",
++              "adopt-legacy-conflict",
++              taskId,
++              "--expect-adoption-token",
++              conflictRework.adoption.token,
++              "--root",
++              root,
++            ]);
++            if (code !== 0) process.stderr.write(adoptionIo.stderr);
++            expect(code).toBe(0);
++          } finally {
++            adoptionIo.restore();
++          }
++
++          const compatibilityAliasIo = captureStdIO();
++          try {
++            const code = await runCli([
++              "integrate",
++              "queue",
++              "adopt-legacy-protected-conflict",
++              taskId,
++              "--expect-adoption-token",
++              conflictRework.adoption.token,
++              "--root",
++              root,
++            ]);
++            expect(code).toBe(0);
++          } finally {
++            compatibilityAliasIo.restore();
++          }
++
++          const adoptedRoute = await readRemoteRoute(root, taskId);
++          const adoptedConflictRework = adoptedRoute.conflict_rework;
++          if (adoptedConflictRework?.state !== "ready") {
++            throw new Error("expected adopted legacy conflict-rework packet");
++          }
++          expect(adoptedRoute.workflow_step).toMatchObject({
++            kind: "agent_episode",
++            id: "agent.provider_conflict_rework",
++            authoritativeCheckout: "task_worktree",
++          });
++          expect(adoptedRoute.execution_packet).toMatchObject({
++            actionKind: "stop",
++            safeToMutate: true,
++          });
++          expect(adoptedConflictRework.packet).toMatchObject({
++            provider: { base_sha: baseSha },
++            base_context: {
++              provider_conflict_base_sha: baseSha,
++              current_base_sha: currentBase,
++              relation: "provider_base_ancestor_of_current_base",
++              legacy_queue_base_sha: legacyQueueBase,
++            },
++            route_evidence: {
++              kind: "legacy_adopted_protected_base_handoff",
++              queue: { status: "rework", base_sha: legacyQueueBase },
++              handoff: { provider_base_sha: null },
++            },
++          });
+ 
+-        const adoptedRoute = await readRemoteRoute(root, taskId);
+-        const adoptedConflictRework = adoptedRoute.conflict_rework;
+-        if (adoptedConflictRework?.state !== "ready") {
+-          throw new Error("expected adopted legacy conflict-rework packet");
+-        }
+-        expect(adoptedRoute.workflow_step).toMatchObject({
+-          kind: "agent_episode",
+-          id: "agent.provider_conflict_rework",
+-          authoritativeCheckout: "task_worktree",
+-        });
+-        expect(adoptedRoute.execution_packet).toMatchObject({
+-          actionKind: "stop",
+-          safeToMutate: true,
+-        });
+-        expect(adoptedConflictRework.packet).toMatchObject({
+-          provider: { base_sha: baseSha },
+-          base_context: {
+-            provider_conflict_base_sha: baseSha,
+-            current_base_sha: currentBase,
+-            relation: "provider_base_ancestor_of_current_base",
+-            legacy_queue_base_sha: legacyQueueBase,
+-          },
+-          route_evidence: {
+-            kind: "legacy_adopted_protected_base_handoff",
+-            queue: { status: "rework", base_sha: legacyQueueBase },
+-            handoff: { provider_base_sha: null },
+-          },
+-        });
++          const packetIo = captureStdIO();
++          try {
++            const code = await runCli([
++              "pr",
++              "conflict-rework",
++              taskId,
++              "--expect-freshness-token",
++              adoptedConflictRework.packet.freshness.token,
++              "--json",
++              "--root",
++              root,
++            ]);
++            if (code !== 0) process.stderr.write(packetIo.stderr);
++            expect(code).toBe(0);
++            expect(JSON.parse(packetIo.stdout)).toMatchObject({
++              base_context: { current_base_sha: currentBase },
++              route_evidence: { kind: "legacy_adopted_protected_base_handoff" },
++            });
++          } finally {
++            packetIo.restore();
++          }
+ 
+-        const packetIo = captureStdIO();
+-        try {
+-          const code = await runCli([
+-            "pr",
+-            "conflict-rework",
+-            taskId,
+-            "--expect-freshness-token",
+-            adoptedConflictRework.packet.freshness.token,
+-            "--json",
+-            "--root",
+-            root,
++          const [rootAfter, worktreeAfter] = await Promise.all([
++            execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
++            execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
+           ]);
+-          if (code !== 0) process.stderr.write(packetIo.stderr);
+-          expect(code).toBe(0);
+-          expect(JSON.parse(packetIo.stdout)).toMatchObject({
+-            base_context: { current_base_sha: currentBase },
+-            route_evidence: { kind: "legacy_adopted_protected_base_handoff" },
+-          });
+-        } finally {
+-          packetIo.restore();
+-        }
+-
+-        const [rootAfter, worktreeAfter] = await Promise.all([
+-          execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
+-          execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
+-        ]);
+-        expect(rootAfter.stdout).toBe(rootBefore.stdout);
+-        expect(worktreeAfter.stdout).toBe(worktreeBefore.stdout);
+-      },
+-    );
+-  }, 60_000);
++          expect(rootAfter.stdout).toBe(rootBefore.stdout);
++          expect(worktreeAfter.stdout).toBe(worktreeBefore.stdout);
++        },
++      );
++    },
++    PROVIDER_CONFLICT_REWORK_MATRIX_TIMEOUT_MS,
++  );
+ });
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+new file mode 100644
+index 000000000..a5bc2c09d
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+@@ -0,0 +1,242 @@
++import { readFile, writeFile } from "node:fs/promises";
++import path from "node:path";
++
++import {
++  recoverSupervisorExecutionEpisodeJournal,
++  validateSupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++import {
++  captureStdIO,
++  installRunCliIntegrationHarness,
++  mkGitRepoRootWithBranch,
++  runCliSilent,
++  writeConfig,
++} from "@agentplane/testkit";
++import { describe, expect, it } from "vitest";
++
++import {
++  createSupervisorEpisodeStore,
++  resolveSupervisorExecutionEpisodePath,
++} from "../commands/shared/supervisor-execution-episode.js";
++import { defaultConfig } from "./core-imports.js";
++import { runCli } from "./run-cli.js";
++
++installRunCliIntegrationHarness();
++
++type AgentPacket = {
++  task_id: string;
++  transition_id: string;
++  state_fingerprint: string;
++  exchange?: {
++    directory: string;
++    work_order_ref: string;
++    result_ref: string;
++  };
++};
++
++async function createTask(root: string): Promise<string> {
++  const io = captureStdIO();
++  try {
++    const code = await runCli([
++      "task",
++      "new",
++      "--title",
++      "Effect-in-doubt planning result",
++      "--description",
++      "Exercise exact late planning-result reconciliation.",
++      "--priority",
++      "med",
++      "--owner",
++      "CODER",
++      "--tag",
++      "code",
++      "--verify",
++      "bun run test:critical",
++      "--root",
++      root,
++    ]);
++    expect(code, io.stderr).toBe(0);
++    return io.stdout.trim();
++  } finally {
++    io.restore();
++  }
++}
++
++async function readAgentPacket(root: string, taskId: string): Promise<AgentPacket> {
++  const io = captureStdIO();
++  try {
++    const code = await runCli(["task", "advance", taskId, "--agent-json", "--root", root]);
++    expect(code, io.stderr).toBe(0);
++    return JSON.parse(io.stdout) as AgentPacket;
++  } finally {
++    io.restore();
++  }
++}
++
++async function writePlanningResult(packet: AgentPacket, summary: string): Promise<string> {
++  if (!packet.exchange) throw new Error("expected an external-agent exchange");
++  const workOrder = JSON.parse(
++    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
++  ) as { work_order_id: string; role: string };
++  const resultPath = path.join(packet.exchange.directory, packet.exchange.result_ref);
++  await writeFile(
++    resultPath,
++    `${JSON.stringify(
++      {
++        schema_version: 1,
++        kind: "agent_action_result",
++        task_id: packet.task_id,
++        transition_id: packet.transition_id,
++        state_fingerprint: packet.state_fingerprint,
++        role: workOrder.role,
++        result: {
++          schema_version: 2,
++          kind: "agent_semantic_result",
++          work_order_id: workOrder.work_order_id,
++          status: "completed",
++          summary,
++          findings: [],
++          uncertainty: [],
++        },
++      },
++      null,
++      2,
++    )}\n`,
++    "utf8",
++  );
++  return resultPath;
++}
++
++describe("task advance effect recovery", () => {
++  it("reconciles an exact approved planning result without replaying the agent", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    const taskId = await createTask(root);
++    const issued = await readAgentPacket(root, taskId);
++    const plan = "1. Preserve the original intent. 2. Apply its observed result exactly once.";
++    const resultPath = await writePlanningResult(issued, plan);
++    await runCliSilent([
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      plan,
++      "--updated-by",
++      "PLANNER",
++      "--root",
++      root,
++    ]);
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    const journalPath = await resolveSupervisorExecutionEpisodePath({
++      git_root: root,
++      task_id: taskId,
++    });
++    const store = createSupervisorEpisodeStore(journalPath);
++    const journal = validateSupervisorExecutionEpisodeJournal(await store.read());
++    await store.write(
++      recoverSupervisorExecutionEpisodeJournal({
++        journal,
++        state_fingerprint_digest: issued.state_fingerprint,
++      }),
++    );
++
++    const io = captureStdIO();
++    try {
++      const code = await runCli([
++        "task",
++        "advance",
++        taskId,
++        "--result",
++        resultPath,
++        "--agent-json",
++        "--root",
++        root,
++      ]);
++      expect(code, io.stderr).toBe(0);
++      expect(JSON.parse(io.stdout)).toMatchObject({
++        action: { kind: "framework_transition" },
++        stop: { reason: "control_plane_boundary" },
++      });
++    } finally {
++      io.restore();
++    }
++    expect(
++      await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
++    ).toContain(plan);
++    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
++      status: "running",
++      stop: null,
++      cursor: { phase: "ready", operation_key: null },
++      usage: journal.usage,
++      operations: [{ role: "PLANNER", status: "completed" }],
++    });
++  });
++
++  it("rejects a late planning result when a different plan awaits approval", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    const taskId = await createTask(root);
++    const issued = await readAgentPacket(root, taskId);
++    const returnedPlan = "1. Apply the original plan exactly.";
++    const currentPlan = "1. Preserve the independently revised plan.";
++    const resultPath = await writePlanningResult(issued, returnedPlan);
++    await runCliSilent([
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      currentPlan,
++      "--updated-by",
++      "PLANNER",
++      "--root",
++      root,
++    ]);
++    const journalPath = await resolveSupervisorExecutionEpisodePath({
++      git_root: root,
++      task_id: taskId,
++    });
++    const store = createSupervisorEpisodeStore(journalPath);
++    const journal = validateSupervisorExecutionEpisodeJournal(await store.read());
++    await store.write(
++      recoverSupervisorExecutionEpisodeJournal({
++        journal,
++        state_fingerprint_digest: issued.state_fingerprint,
++      }),
++    );
++
++    const io = captureStdIO();
++    try {
++      const code = await runCli([
++        "task",
++        "advance",
++        taskId,
++        "--result",
++        resultPath,
++        "--agent-json",
++        "--root",
++        root,
++      ]);
++      expect(code).toBe(3);
++      expect(io.stderr).toContain("External-agent result is stale");
++    } finally {
++      io.restore();
++    }
++    const readme = await readFile(
++      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
++      "utf8",
++    );
++    expect(readme).toContain(currentPlan);
++    expect(readme).not.toContain(returnedPlan);
++    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
++      status: "running",
++      cursor: { phase: "intent_recorded" },
++      operations: [{ role: "PLANNER", status: "intent" }],
++    });
++  });
++});
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+index 9f225faee..542143356 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+@@ -342,6 +342,16 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
+     let outcome: CompletedEvaluatorOutcome;
+ 
+     if (journal.status === "running" && journal.cursor.phase === "intent_recorded") {
++      const pendingOperation = journal.operations.at(-1);
++      if (pendingOperation?.role !== "EVALUATOR" || pendingOperation.kind !== "evaluator_episode") {
++        throw new CliError({
++          code: "E_RUNTIME",
++          message:
++            "Evaluator supervisor found an unrelated pending " +
++            `${pendingOperation?.role ?? "unknown"} ${pendingOperation?.kind ?? "operation"} intent; ` +
++            "return or reconcile that operation before evaluator execution.",
++        });
++      }
+       try {
+         outcome = await readCompletedEvaluatorOutcome({
+           git_root: opts.command.resolvedProject.gitRoot,
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+index aae449c3d..e8ea1a03d 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+@@ -535,6 +535,62 @@ describe("evaluator execute supervisor episode", () => {
+     });
+   });
+ 
++  it("leaves an unrelated pending PLANNER intent unchanged", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const taskId = "202607280000-EE12";
++    await addTask(root, taskId);
++    await commitTarget(root);
++    await writeVerificationRecord(root, taskId);
++    const fakeBin = await installFakeCodex(root);
++    const decision = await buildTaskRouteDecision({
++      cwd: root,
++      rootOverride: root,
++      taskId,
++      includeRemote: false,
++    });
++    const created = createSupervisorExecutionEpisodeJournal({
++      task_id: taskId,
++      task_revision: null,
++      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++      budget: {
++        max_episodes: 50,
++        max_agent_runs: 50,
++        max_input_tokens: 3_000_000,
++        max_output_tokens: 1_000_000,
++        max_total_tokens: 4_000_000,
++        max_wall_time_ms: 4 * 60 * 60 * 1000,
++        max_changed_files: 2000,
++        max_diff_lines: null,
++        max_no_progress_episodes: 3,
++      },
++    });
++    const started = startSupervisorExecutionEpisode({
++      journal: created,
++      role: "PLANNER",
++      kind: "agent_episode",
++      operation_identity: { purpose: "planning" },
++      precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++      authority_ref: "external-agent:planner",
++      authority_digest: decision.workflowStep.preconditionFingerprint.digest,
++      work_order_ref: ".agentplane/external-agent/planner-work-order.json",
++      effect_ref: "external-agent:planner-result",
++    });
++    if (started.status !== "started") throw new Error("expected pending PLANNER intent");
++    const journalPath = await resolveSupervisorExecutionEpisodePath({
++      git_root: root,
++      task_id: taskId,
++    });
++    const store = createSupervisorEpisodeStore(journalPath);
++    await store.write(started.journal);
++
++    const execution = await runWithFakeCodex(root, taskId, fakeBin);
++
++    expect(execution.code).toBe(8);
++    expect(execution.stderr).toContain("unrelated pending PLANNER agent_episode intent");
++    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toEqual(started.journal);
++  });
++
+   it("records a known read-only provider failure without reopening its intent", async () => {
+     const root = await mkGitRepoRoot();
+     await writeDefaultConfig(root);
+diff --git a/packages/agentplane/src/commands/release/release-evidence-collect-script.test.ts b/packages/agentplane/src/commands/release/release-evidence-collect-script.test.ts
+new file mode 100644
+index 000000000..8b0a1737a
+--- /dev/null
++++ b/packages/agentplane/src/commands/release/release-evidence-collect-script.test.ts
+@@ -0,0 +1,211 @@
++import { execFile } from "node:child_process";
++import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
++import { tmpdir } from "node:os";
++import path from "node:path";
++import { promisify } from "node:util";
++
++import { afterEach, describe, expect, it } from "vitest";
++
++const execFileAsync = promisify(execFile);
++const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/release/evidence-collect.mjs");
++const RELEASE_SHA = "a".repeat(40);
++const roots: string[] = [];
++
++async function writeExecutable(filePath: string, source: string) {
++  await writeFile(filePath, source, "utf8");
++  await chmod(filePath, 0o755);
++}
++
++async function makeHarness() {
++  const root = await mkdtemp(path.join(tmpdir(), "agentplane-release-evidence-"));
++  roots.push(root);
++  const binDir = path.join(root, "bin");
++  await mkdir(binDir, { recursive: true });
++  const publishResultPath = path.join(root, "publish-result.json");
++  const evidencePath = path.join(root, "evidence.json");
++  const artifactPath = path.join(root, "artifact.json");
++  await writeFile(
++    artifactPath,
++    `${JSON.stringify({
++      schemaVersion: 1,
++      success: true,
++      reasonCode: "publish_succeeded",
++      sha: RELEASE_SHA,
++      version: "0.7.3",
++      tag: "v0.7.3",
++    })}\n`,
++    "utf8",
++  );
++
++  await writeExecutable(
++    path.join(binDir, "git"),
++    [
++      "#!/usr/bin/env node",
++      "const args = process.argv.slice(2);",
++      `const sha = ${JSON.stringify(RELEASE_SHA)};`,
++      'if (args[0] === "rev-list") { console.log(sha); process.exit(0); }',
++      'if (args[0] === "rev-parse" && args[1] === "HEAD") { console.log("current-head"); process.exit(0); }',
++      'if (args[0] === "ls-remote") { console.log(`${sha}\\trefs/tags/v0.7.3`); process.exit(0); }',
++      "process.exit(91);",
++      "",
++    ].join("\n"),
++  );
++  await writeExecutable(
++    path.join(binDir, "npm"),
++    [
++      "#!/usr/bin/env node",
++      'if (process.argv[2] === "view") { console.log("0.7.3"); process.exit(0); }',
++      "process.exit(91);",
++      "",
++    ].join("\n"),
++  );
++  await writeExecutable(
++    path.join(binDir, "bun"),
++    [
++      "#!/usr/bin/env node",
++      'if (process.env.TEST_AUDIT_FAIL === "1") { console.log(JSON.stringify({ ok: false, failures: ["fixture"] })); process.exit(1); }',
++      "console.log(JSON.stringify({ ok: true, failures: [] }));",
++      "",
++    ].join("\n"),
++  );
++  await writeExecutable(
++    path.join(binDir, "gh"),
++    [
++      "#!/usr/bin/env node",
++      "const { copyFileSync, mkdirSync } = require('node:fs');",
++      "const path = require('node:path');",
++      "const args = process.argv.slice(2);",
++      'if (args[0] === "repo" && args[1] === "view") { console.log("basilisk-labs/agentplane"); process.exit(0); }',
++      'if (args[0] === "release" && args[1] === "view") { console.log(JSON.stringify({ tagName: "v0.7.3", isDraft: false, isPrerelease: false })); process.exit(0); }',
++      'if (args[0] === "run" && args[1] === "list") { console.log(JSON.stringify([{ databaseId: 73, headSha: process.env.TEST_RELEASE_SHA, status: "completed", conclusion: "success", createdAt: "2026-08-05T00:00:00Z" }])); process.exit(0); }',
++      'if (args[0] === "run" && args[1] === "download") {',
++      '  if (process.env.TEST_DOWNLOAD_FAIL === "1") process.exit(2);',
++      '  const dir = args[args.indexOf("--dir") + 1];',
++      "  mkdirSync(dir, { recursive: true });",
++      '  copyFileSync(process.env.TEST_PUBLISH_ARTIFACT, path.join(dir, "publish-result.json"));',
++      "  process.exit(0);",
++      "}",
++      "process.exit(91);",
++      "",
++    ].join("\n"),
++  );
++
++  return { root, binDir, publishResultPath, evidencePath, artifactPath };
++}
++
++async function runCollect(
++  harness: Awaited<ReturnType<typeof makeHarness>>,
++  extraEnv: Record<string, string> = {},
++) {
++  return execFileAsync(
++    "node",
++    [
++      SCRIPT_PATH,
++      "--version",
++      "0.7.3",
++      "--out",
++      harness.evidencePath,
++      "--publish-result",
++      harness.publishResultPath,
++      "--github-repo",
++      "basilisk-labs/agentplane",
++      "--json",
++    ],
++    {
++      cwd: process.cwd(),
++      env: {
++        ...process.env,
++        PATH: `${harness.binDir}${path.delimiter}${process.env.PATH ?? ""}`,
++        TEST_RELEASE_SHA: RELEASE_SHA,
++        TEST_PUBLISH_ARTIFACT: harness.artifactPath,
++        ...extraEnv,
++      },
++    },
++  );
++}
++
++function readErrorStdout(error: unknown): string {
++  if (!error || typeof error !== "object" || !("stdout" in error)) throw error;
++  const stdout = error.stdout;
++  if (typeof stdout === "string") return stdout;
++  if (Buffer.isBuffer(stdout)) return stdout.toString("utf8");
++  return "";
++}
++
++afterEach(async () => {
++  while (roots.length > 0) {
++    const root = roots.pop();
++    if (root) await rm(root, { recursive: true, force: true });
++  }
++});
++
++describe("release evidence collection", () => {
++  it("downloads the exact-SHA publish result and closes the evidence state", async () => {
++    const harness = await makeHarness();
++    const result = await runCollect(harness);
++    const payload = JSON.parse(result.stdout) as {
++      ok: boolean;
++      release_sha: string;
++      failures: string[];
++      publish_result: { source: string; run_id: number; identity_matches: boolean };
++    };
++
++    expect(payload).toMatchObject({
++      ok: true,
++      release_sha: RELEASE_SHA,
++      failures: [],
++      publish_result: {
++        source: "github_artifact",
++        run_id: 73,
++        identity_matches: true,
++      },
++    });
++    expect(JSON.parse(await readFile(harness.evidencePath, "utf8"))).toMatchObject({
++      ok: true,
++      tag: "v0.7.3",
++      release_sha: RELEASE_SHA,
++    });
++
++    const repeatedResult = await runCollect(harness);
++    const repeated = JSON.parse(repeatedResult.stdout) as {
++      ok: boolean;
++      publish_result: { source: string; run_id: number };
++    };
++    expect(repeated).toMatchObject({
++      ok: true,
++      publish_result: { source: "local", run_id: 73 },
++    });
++  });
++
++  it("writes diagnostic evidence and exits nonzero when hosted evidence is incomplete", async () => {
++    const harness = await makeHarness();
++    let stdout = "";
++    try {
++      await runCollect(harness, { TEST_DOWNLOAD_FAIL: "1" });
++      throw new Error("expected release evidence collection to fail");
++    } catch (error) {
++      stdout = readErrorStdout(error);
++    }
++    const payload = JSON.parse(stdout) as { ok: boolean; failures: string[] };
++
++    expect(payload.ok).toBe(false);
++    expect(payload.failures).toContain("exact-SHA publish-result artifact is unavailable");
++    expect(payload.failures).toContain("post-publish platform audit failed");
++    expect(JSON.parse(await readFile(harness.evidencePath, "utf8"))).toMatchObject({ ok: false });
++  });
++
++  it("exits nonzero when the post-publish platform audit rejects the artifact", async () => {
++    const harness = await makeHarness();
++    let stdout = "";
++    try {
++      await runCollect(harness, { TEST_AUDIT_FAIL: "1" });
++      throw new Error("expected release evidence collection to fail");
++    } catch (error) {
++      stdout = readErrorStdout(error);
++    }
++    const payload = JSON.parse(stdout) as { ok: boolean; failures: string[] };
++
++    expect(payload.ok).toBe(false);
++    expect(payload.failures).toContain("post-publish platform audit failed");
++  });
++});
+diff --git a/packages/agentplane/src/commands/release/release-next-action-script.test.ts b/packages/agentplane/src/commands/release/release-next-action-script.test.ts
+index 1eb3e7b11..b3a41cf4c 100644
+--- a/packages/agentplane/src/commands/release/release-next-action-script.test.ts
++++ b/packages/agentplane/src/commands/release/release-next-action-script.test.ts
+@@ -29,9 +29,14 @@ const releaseState = {
+   release: {
+     version: "0.6.8",
+     tag: "v0.6.8",
++    tag_exists: true,
++    tag_commit: "abc123release",
+     latest_plan: { nextTag: "v0.6.8" },
+     notes_exists: true,
+     publish_result_exists: false,
++    evidence_path: ".agentplane/.release/evidence/v0.6.8.json",
++    evidence_exists: false,
++    evidence_valid: false,
+   },
+   parity: { ok: true },
+   registry: {
+@@ -45,6 +50,10 @@ const releaseState = {
+ };
+ 
+ const recoveryReport = {
++  target: {
++    nextVersion: "0.6.8",
++    nextTag: "v0.6.8",
++  },
+   summary: {
+     state: "release_publish_already_succeeded",
+     nextAction: "Do not rerun publish; verify release evidence only.",
+@@ -154,7 +163,9 @@ describe("release next-action script", () => {
+     expect(result.stdout).toContain("NPM registry: published");
+     expect(result.stdout).toContain("Git tag: local=present; origin/v0.6.8=present");
+     expect(result.stdout).toContain("GitHub release: present");
+-    expect(result.stdout).toContain("Command: Do not rerun publish; verify release evidence only.");
++    expect(result.stdout).toContain("Release evidence: missing");
++    expect(result.stdout).toContain("Next action: collect hosted publish evidence");
++    expect(result.stdout).toContain("Command: bun run release:evidence:collect");
+   });
+ 
+   it("emits the same diagnostic contract as JSON", async () => {
+@@ -180,12 +191,92 @@ describe("release next-action script", () => {
+       releaseSha: string;
+       truth: { githubRelease: { state: string }; registry: string };
+       command: string;
++      recovery_applicability: { applicable: boolean };
+     };
+     expect(payload.schema_version).toBe(2);
+     expect(payload.releaseSha).toBe("abc123release");
+     expect(payload.truth.githubRelease.state).toBe("present");
+     expect(payload.truth.registry).toContain("@agentplaneorg/core");
+-    expect(payload.command).toBe("Do not rerun publish; verify release evidence only.");
++    expect(payload.command).toBe("bun run release:evidence:collect");
++    expect(payload.recovery_applicability.applicable).toBe(true);
++  });
++
++  it("does not mix a stale recovery plan into the current release target", async () => {
++    const currentState = structuredClone(releaseState);
++    currentState.release.version = "0.7.3";
++    currentState.release.tag = "v0.7.3";
++    currentState.release.tag_commit = "current073sha";
++    currentState.release.latest_plan = { nextTag: "v0.6.8" };
++    currentState.release.evidence_path = ".agentplane/.release/evidence/v0.7.3.json";
++    currentState.registry.packages = currentState.registry.packages.map((entry) => ({
++      ...entry,
++      version: "0.7.3",
++    }));
++    const statePath = await writeJsonFixture("state.json", currentState);
++    const recoveryPath = await writeJsonFixture("recovery.json", recoveryReport);
++    const githubReleasePath = await writeJsonFixture("github-release.json", {
++      state: "present",
++      tagName: "v0.7.3",
++    });
++
++    const result = await execFileAsync(
++      "node",
++      [SCRIPT_PATH, "--check-registry", "--check-github", "--json"],
++      {
++        env: {
++          ...process.env,
++          AGENTPLANE_TEST_RELEASE_STATE_PATH: statePath,
++          AGENTPLANE_TEST_RELEASE_RECOVERY_REPORT_PATH: recoveryPath,
++          AGENTPLANE_TEST_GITHUB_RELEASE_STATUS_PATH: githubReleasePath,
++        },
++      },
++    );
++    const payload = JSON.parse(result.stdout) as {
++      action: string;
++      command: string;
++      releaseSha: string;
++      truth: { releaseReady: string; publish: string; publishResult: string };
++      recovery: unknown;
++      recovery_applicability: { applicable: boolean; reason: string };
++    };
++
++    expect(payload.releaseSha).toBe("current073sha");
++    expect(payload.action).toBe("collect hosted publish evidence");
++    expect(payload.command).toBe("bun run release:evidence:collect");
++    expect(payload.truth).toMatchObject({
++      releaseReady: "skipped",
++      publish: "skipped",
++      publishResult: "skipped",
++    });
++    expect(payload.recovery).toBeNull();
++    expect(payload.recovery_applicability.applicable).toBe(false);
++    expect(payload.recovery_applicability.reason).toContain("does not match current v0.7.3");
++  });
++
++  it("moves to the next patch plan after exact current release evidence is valid", async () => {
++    const closedState = structuredClone(releaseState);
++    closedState.release.evidence_exists = true;
++    closedState.release.evidence_valid = true;
++    const statePath = await writeJsonFixture("state.json", closedState);
++    const recoveryPath = await writeJsonFixture("recovery.json", recoveryReport);
++    const githubReleasePath = await writeJsonFixture("github-release.json", { state: "present" });
++
++    const result = await execFileAsync(
++      "node",
++      [SCRIPT_PATH, "--check-registry", "--check-github", "--json"],
++      {
++        env: {
++          ...process.env,
++          AGENTPLANE_TEST_RELEASE_STATE_PATH: statePath,
++          AGENTPLANE_TEST_RELEASE_RECOVERY_REPORT_PATH: recoveryPath,
++          AGENTPLANE_TEST_GITHUB_RELEASE_STATUS_PATH: githubReleasePath,
++        },
++      },
++    );
++    const payload = JSON.parse(result.stdout) as { action: string; command: string };
++
++    expect(payload.action).toBe("generate a fresh release plan for the next patch");
++    expect(payload.command).toBe("ap release plan --patch");
+   });
+ 
+   it("passes --github-repo through to GitHub release lookup", async () => {
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-artifact-commit.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-artifact-commit.ts
+new file mode 100644
+index 000000000..46a5db09d
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-artifact-commit.ts
+@@ -0,0 +1,46 @@
++import { cmdCommit } from "../guard/impl/commit.js";
++import type { CommandContext } from "../shared/task-backend.js";
++
++export function branchSupervisorArtifactCommitMessage(
++  taskId: string,
++  artifact: "verification_pass" | "verification_rework" | "evaluator_verdict",
++): string {
++  const suffix = taskId.split("-").at(-1) ?? taskId;
++  if (artifact === "verification_pass") {
++    return `✅ ${suffix} task: record branch verification`;
++  }
++  if (artifact === "verification_rework") {
++    return `🧪 ${suffix} task: record verification rework`;
++  }
++  return `🧭 ${suffix} task: record evaluator verdict`;
++}
++
++export async function commitBranchSupervisorTaskArtifacts(opts: {
++  command: CommandContext;
++  cwd: string;
++  task_id: string;
++  message: string;
++}): Promise<void> {
++  const exitCode = await cmdCommit({
++    ctx: opts.command,
++    cwd: opts.cwd,
++    taskId: opts.task_id,
++    message: opts.message,
++    close: false,
++    allow: [],
++    autoAllow: false,
++    allowTasks: true,
++    allowBase: false,
++    allowPolicy: false,
++    allowConfig: false,
++    allowHooks: false,
++    allowCI: false,
++    requireClean: false,
++    quiet: true,
++    closeUnstageOthers: false,
++    closeCheckOnly: false,
++  });
++  if (exitCode !== 0) {
++    throw new Error(`Task artifact commit exited with ${exitCode}.`);
++  }
++}
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts
+index 8b3abf6ec..912f770af 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts
+@@ -13,17 +13,12 @@ import {
+   type TaskRunnerLifecycleResult,
+ } from "../../runner/usecases/task-run-lifecycle-result.js";
+ import { executeTaskRunnerExecution } from "../../runner/usecases/task-run.js";
+-import { cmdCommit } from "../guard/impl/commit.js";
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+ import {
+   openSupervisorExecutionEpisode,
+   tryAcquireSupervisorExecutionLease,
+ } from "../shared/supervisor-execution-episode.js";
+-import {
+-  loadCommandContext,
+-  loadTaskFromContext,
+-  type CommandContext,
+-} from "../shared/task-backend.js";
++import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+ import type {
+   BranchEpisodeOutcome,
+   BranchEvaluatorEvidence,
+@@ -41,6 +36,10 @@ import { journalProjection } from "./direct-task-supervisor-result.js";
+ import { runDirectTaskVerification } from "./direct-task-verification.js";
+ import { cmdTaskSetStatus } from "./set-status.js";
+ import { cmdVerifyParsed } from "./verify-record.js";
++import {
++  branchSupervisorArtifactCommitMessage,
++  commitBranchSupervisorTaskArtifacts,
++} from "./branch-task-supervisor-artifact-commit.js";
+ 
+ function operationId(decision: TaskRouteDecision): string | null {
+   return decision.workflowStep.kind === "cli_operation" ? decision.workflowStep.operation.id : null;
+@@ -93,36 +92,6 @@ function stoppedEpisode(opts: {
+   };
+ }
+ 
+-async function commitTaskArtifacts(opts: {
+-  command: CommandContext;
+-  cwd: string;
+-  task_id: string;
+-  message: string;
+-}): Promise<void> {
+-  const exitCode = await cmdCommit({
+-    ctx: opts.command,
+-    cwd: opts.cwd,
+-    taskId: opts.task_id,
+-    message: opts.message,
+-    close: false,
+-    allow: [],
+-    autoAllow: false,
+-    allowTasks: true,
+-    allowBase: false,
+-    allowPolicy: false,
+-    allowConfig: false,
+-    allowHooks: false,
+-    allowCI: false,
+-    requireClean: false,
+-    quiet: true,
+-    closeUnstageOthers: false,
+-    closeCheckOnly: false,
+-  });
+-  if (exitCode !== 0) {
+-    throw new Error(`Task artifact commit exited with ${exitCode}.`);
+-  }
+-}
+-
+ async function executeBranchImplementationEpisode(opts: {
+   input: BranchTaskSupervisorOptions;
+   decision: TaskRouteDecision;
+@@ -432,13 +401,14 @@ async function executeBranchVerificationEpisode(opts: {
+           quiet: true,
+         });
+         if (exitCode !== 0) throw new Error(`Verification record exited with ${exitCode}.`);
+-        await commitTaskArtifacts({
++        await commitBranchSupervisorTaskArtifacts({
+           command,
+           cwd: checkout,
+           task_id: opts.input.task_id,
+-          message: passed
+-            ? `✅ ${opts.input.task_id.split("-").at(-1)} supervisor: record branch verification`
+-            : `🧪 ${opts.input.task_id.split("-").at(-1)} supervisor: record verification rework`,
++          message: branchSupervisorArtifactCommitMessage(
++            opts.input.task_id,
++            passed ? "verification_pass" : "verification_rework",
++          ),
+         });
+         return {
+           verification: passed ? "ok" : "needs_rework",
+@@ -498,11 +468,11 @@ async function executeBranchEvaluatorEpisode(opts: {
+       task_id: opts.input.task_id,
+       evaluator_id: "recovery-context",
+     });
+-    await commitTaskArtifacts({
++    await commitBranchSupervisorTaskArtifacts({
+       command,
+       cwd: checkout,
+       task_id: opts.input.task_id,
+-      message: `🧭 ${opts.input.task_id} supervisor: record evaluator verdict`,
++      message: branchSupervisorArtifactCommitMessage(opts.input.task_id, "evaluator_verdict"),
+     });
+   } catch (error) {
+     return stoppedEpisode({
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor.test.ts b/packages/agentplane/src/commands/task/branch-task-supervisor.test.ts
+index 0b1ab280c..4e589fbe0 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor.test.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor.test.ts
+@@ -1,3 +1,4 @@
++import { validateCommitSubject } from "@agentplaneorg/core/commit";
+ import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
+ import { mkGitRepoRoot } from "@agentplane/testkit";
+ import { describe, expect, it } from "vitest";
+@@ -15,6 +16,7 @@ import {
+   superviseBranchTaskRunWithPorts,
+   type BranchTaskSupervisorPorts,
+ } from "./branch-task-supervisor.js";
++import { branchSupervisorArtifactCommitMessage } from "./branch-task-supervisor-artifact-commit.js";
+ import { agentTransitionId, buildAgentActionPacket } from "./agent-action-packet.js";
+ 
+ const taskId = "202607310001-BRANCH";
+@@ -438,6 +440,28 @@ function sequencePorts(
+ }
+ 
+ describe("branch_pr task supervisor", () => {
++  it("generates policy-valid task artifact commit subjects", () => {
++    for (const artifact of [
++      "verification_pass",
++      "verification_rework",
++      "evaluator_verdict",
++    ] as const) {
++      expect(
++        validateCommitSubject({
++          subject: branchSupervisorArtifactCommitMessage(taskId, artifact),
++          taskId,
++          genericTokens: ["update", "tasks", "wip"],
++          taskIntent: {
++            taskKind: "release",
++            mutationScope: "release",
++            blueprintRequest: "release.strict",
++            tags: ["code", "regression", "release"],
++          },
++        }),
++      ).toEqual({ ok: true, errors: [] });
++    }
++  });
++
+   it.each([
+     ["planned approval", stopDecision(11, "approval"), "approval_required", "authority_boundary"],
+     ["hosted wait", stopDecision(12, "wait"), "wait_required", "external_boundary"],
+diff --git a/packages/agentplane/src/commands/task/external-agent-exchange-authority.ts b/packages/agentplane/src/commands/task/external-agent-exchange-authority.ts
+index 4a91d6109..9f395c8d9 100644
+--- a/packages/agentplane/src/commands/task/external-agent-exchange-authority.ts
++++ b/packages/agentplane/src/commands/task/external-agent-exchange-authority.ts
+@@ -3,6 +3,7 @@ import path from "node:path";
+ import {
+   advanceSupervisorExecutionEpisodeState,
+   digestSupervisorEpisodeValue,
++  reopenSupervisorExecutionEpisodeAfterEffectEvidence,
+   validateSupervisorExecutionEpisodeJournal,
+   type AgentWorkOrderV2,
+   type SupervisorExecutionEpisodeJournal,
+@@ -59,11 +60,18 @@ export function assertExternalAgentSupervisorIntent(opts: {
+   work_order: AgentWorkOrderV2;
+   task_id: string;
+   state_fingerprint: string;
+-}): {
+-  state: "issued" | "completed_pending_exchange";
+-  journal: SupervisorExecutionEpisodeJournal;
+-  operation: SupervisorExecutionEpisodeJournal["operations"][number];
+-} {
++}):
++  | {
++      state: "issued" | "completed_pending_exchange";
++      journal: SupervisorExecutionEpisodeJournal;
++      operation: SupervisorExecutionEpisodeJournal["operations"][number];
++    }
++  | {
++      state: "issued_effect_in_doubt";
++      journal: SupervisorExecutionEpisodeJournal;
++      operation: SupervisorExecutionEpisodeJournal["operations"][number];
++      persisted_journal_digest: string;
++    } {
+   const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+   const operation = journal.operations.at(-1);
+   const expectedEffectRef = `external-agent-issue:${externalAgentIssueDigest({
+@@ -103,6 +111,30 @@ export function assertExternalAgentSupervisorIntent(opts: {
+   ) {
+     return { state: "completed_pending_exchange", journal, operation };
+   }
++  if (
++    journal.status === "stopped" &&
++    journal.stop?.reason === "effect_in_doubt" &&
++    journal.cursor.phase === "stopped" &&
++    journal.cursor.operation_key === operation.operation_key &&
++    journal.stop.operation_key === operation.operation_key &&
++    operation.status === "intent"
++  ) {
++    if (opts.exchange.status !== "issued" && opts.exchange.status !== "accepted") {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: "External-agent exchange state is invalid for effect reconciliation.",
++      });
++    }
++    return {
++      state: "issued_effect_in_doubt",
++      journal: reopenSupervisorExecutionEpisodeAfterEffectEvidence({
++        journal,
++        operation_key: operation.operation_key,
++      }),
++      operation,
++      persisted_journal_digest: journal.digest,
++    };
++  }
+   if (
+     journal.cursor.phase !== "intent_recorded" ||
+     operation.status !== "intent" ||
+diff --git a/packages/agentplane/src/commands/task/external-agent-planning-authority.ts b/packages/agentplane/src/commands/task/external-agent-planning-authority.ts
+new file mode 100644
+index 000000000..6f8d7c0e9
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-planning-authority.ts
+@@ -0,0 +1,53 @@
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
++
++import { cmdTaskComment } from "./comment.js";
++import type {
++  ExternalAgentExchange,
++  ExternalAgentResultEnvelope,
++} from "./external-agent-exchange.js";
++import { setTaskPlan } from "./plan.js";
++
++export async function applyExternalPlanningResult(opts: {
++  command: CommandContext;
++  exchange: ExternalAgentExchange;
++  envelope: ExternalAgentResultEnvelope;
++}): Promise<void> {
++  if (opts.envelope.result.status !== "completed") {
++    await cmdTaskComment({
++      ctx: opts.command,
++      cwd: opts.exchange.checkout,
++      taskId: opts.exchange.task_id,
++      author: "PLANNER",
++      body: `Planning returned ${opts.envelope.result.status}: ${opts.envelope.result.summary}`,
++      quiet: true,
++    });
++    return;
++  }
++  await setTaskPlan({
++    ctx: opts.command,
++    cwd: opts.exchange.checkout,
++    taskId: opts.exchange.task_id,
++    text: opts.envelope.result.summary,
++    updatedBy: "PLANNER",
++  });
++}
++
++export async function isExternalPlanningResultApplied(opts: {
++  command: CommandContext;
++  exchange: ExternalAgentExchange;
++  decision: TaskRouteDecision;
++  envelope: ExternalAgentResultEnvelope;
++}): Promise<boolean> {
++  if (opts.envelope.result.status !== "completed") return false;
++  const task = await loadTaskFromContext({
++    ctx: opts.command,
++    taskId: opts.exchange.task_id,
++  });
++  if (task.sections?.Plan?.trim() !== opts.envelope.result.summary.trim()) return false;
++  return (
++    (opts.decision.workflowStep.kind === "approval" &&
++      opts.decision.workflowStep.request.type === "plan_approval") ||
++    task.plan_approval?.state === "approved"
++  );
++}
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor.ts b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+index 86e3996fa..fa3440df8 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+@@ -51,13 +51,15 @@ import {
+   isExternalEvaluatorResultApplied,
+ } from "./external-agent-evaluator.js";
+ import { applyExternalImplementationResult } from "./external-agent-implementation-authority.js";
++import {
++  applyExternalPlanningResult,
++  isExternalPlanningResultApplied,
++} from "./external-agent-planning-authority.js";
+ import {
+   externalAgentResultIdentity,
+   refreshExternalAgentRoute,
+ } from "./external-agent-result-routing.js";
+ import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
+-import { cmdTaskComment } from "./comment.js";
+-import { setTaskPlan } from "./plan.js";
+ 
+ type ExternalSemanticPurpose = Extract<
+   TaskRouteDecision["workflowStep"],
+@@ -340,23 +342,10 @@ async function applyAcceptedResult(opts: {
+   envelope: ExternalAgentResultEnvelope;
+ }): Promise<void> {
+   if (opts.exchange.purpose === "planning") {
+-    if (opts.envelope.result.status !== "completed") {
+-      await cmdTaskComment({
+-        ctx: opts.command,
+-        cwd: opts.exchange.checkout,
+-        taskId: opts.exchange.task_id,
+-        author: "PLANNER",
+-        body: `Planning returned ${opts.envelope.result.status}: ${opts.envelope.result.summary}`,
+-        quiet: true,
+-      });
+-      return;
+-    }
+-    await setTaskPlan({
+-      ctx: opts.command,
+-      cwd: opts.exchange.checkout,
+-      taskId: opts.exchange.task_id,
+-      text: opts.envelope.result.summary,
+-      updatedBy: "PLANNER",
++    await applyExternalPlanningResult({
++      command: opts.command,
++      exchange: opts.exchange,
++      envelope: opts.envelope,
+     });
+     return;
+   }
+@@ -400,12 +389,15 @@ async function isReadOnlyResultAlreadyApplied(opts: {
+   command: CommandContext;
+   exchange: ExternalAgentExchange;
+   decision: TaskRouteDecision;
++  envelope: ExternalAgentResultEnvelope;
+ }): Promise<boolean> {
+   if (opts.exchange.purpose === "planning") {
+-    return (
+-      opts.decision.workflowStep.kind === "approval" &&
+-      opts.decision.workflowStep.request.type === "plan_approval"
+-    );
++    return await isExternalPlanningResultApplied({
++      command: opts.command,
++      exchange: opts.exchange,
++      decision: opts.decision,
++      envelope: opts.envelope,
++    });
+   }
+   if (opts.exchange.purpose === "quality_review") {
+     return await isExternalEvaluatorResultApplied({
+@@ -476,7 +468,6 @@ export async function acceptExternalAgentResult(opts: {
+       task_id: opts.task_id,
+       state_fingerprint: identity.state_fingerprint,
+     });
+-    const { journal: issuedJournal, operation } = intent;
+     const envelope = validateExternalAgentResultEnvelope({ raw, exchange, work_order: workOrder });
+     const resultDigest = externalAgentResultDigest(envelope);
+     if (exchange.status === "accepted" && exchange.result_digest !== resultDigest) {
+@@ -485,6 +476,16 @@ export async function acceptExternalAgentResult(opts: {
+         message: "A different result is already accepted for this external-agent exchange.",
+       });
+     }
++    if (
++      intent.state === "issued_effect_in_doubt" &&
++      !(await store.compareAndSwap(intent.persisted_journal_digest, intent.journal))
++    ) {
++      throw new CliError({
++        code: "E_RUNTIME",
++        message: "External-agent supervisor changed while reconciling the observed effect.",
++      });
++    }
++    const { journal: issuedJournal, operation } = intent;
+     if (exchange.status === "issued") {
+       exchange = {
+         ...exchange,
+@@ -526,6 +527,7 @@ export async function acceptExternalAgentResult(opts: {
+         command: checkoutCommand,
+         exchange,
+         decision: current,
++        envelope,
+       }));
+     if (
+       !alreadyApplied &&
+diff --git a/packages/core/src/runner/supervisor-execution-episode.test.ts b/packages/core/src/runner/supervisor-execution-episode.test.ts
+index b17bf052e..63096b337 100644
+--- a/packages/core/src/runner/supervisor-execution-episode.test.ts
++++ b/packages/core/src/runner/supervisor-execution-episode.test.ts
+@@ -8,6 +8,7 @@ import {
+   refreshPendingReplacementSupervisorExecutionEpisode,
+   recoverSupervisorExecutionEpisodeJournal,
+   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
++  reopenSupervisorExecutionEpisodeAfterEffectEvidence,
+   retryFailedSupervisorExecutionEpisode,
+   stopSupervisorExecutionEpisode,
+   startSupervisorExecutionEpisode,
+@@ -238,6 +239,40 @@ describe("SupervisorExecutionEpisodeJournal", () => {
+     });
+   });
+ 
++  it("reopens only the exact effect-in-doubt intent after external evidence", () => {
++    const prepared = start({ journal: journal() });
++    if (prepared.status !== "started") throw new Error("expected started episode");
++    const effectInDoubt = recoverSupervisorExecutionEpisodeJournal({
++      journal: prepared.journal,
++      state_fingerprint_digest: FINGERPRINT,
++      now: "2026-07-28T00:00:01.000Z",
++    });
++
++    expect(() =>
++      reopenSupervisorExecutionEpisodeAfterEffectEvidence({
++        journal: effectInDoubt,
++        operation_key: `sha256:${"f".repeat(64)}`,
++      }),
++    ).toThrow("requires the exact stopped effect-in-doubt operation intent");
++
++    const reopened = reopenSupervisorExecutionEpisodeAfterEffectEvidence({
++      journal: effectInDoubt,
++      operation_key: prepared.operation_key,
++      now: "2026-07-28T00:00:02.000Z",
++    });
++
++    expect(reopened).toMatchObject({
++      status: "running",
++      stop: null,
++      cursor: {
++        phase: "intent_recorded",
++        operation_key: prepared.operation_key,
++      },
++      usage: prepared.journal.usage,
++      operations: [{ status: "intent", operation_key: prepared.operation_key }],
++    });
++  });
++
+   it("records successful completion as a terminal journal that cannot start another operation", () => {
+     const terminal = stopSupervisorExecutionEpisode({
+       journal: journal(),
+diff --git a/packages/core/src/runner/supervisor-execution-episode.ts b/packages/core/src/runner/supervisor-execution-episode.ts
+index dc0211ede..2c590a518 100644
+--- a/packages/core/src/runner/supervisor-execution-episode.ts
++++ b/packages/core/src/runner/supervisor-execution-episode.ts
+@@ -442,6 +442,49 @@ export function recoverSupervisorExecutionEpisodeJournal(opts: {
+   return journal;
+ }
+ 
++/**
++ * Reopen one exact effect-in-doubt intent only after its external result has
++ * been validated against the original operation identity. This does not start
++ * or count another operation; it restores the recorded intent so the caller
++ * can durably complete it with the observed result.
++ */
++export function reopenSupervisorExecutionEpisodeAfterEffectEvidence(opts: {
++  journal: SupervisorExecutionEpisodeJournal;
++  operation_key: string;
++  now?: string;
++}): SupervisorExecutionEpisodeJournal {
++  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
++  const operationKey = opts.operation_key.trim();
++  const operation = journal.operations.at(-1);
++  if (
++    journal.status !== "stopped" ||
++    journal.stop?.reason !== "effect_in_doubt" ||
++    journal.cursor.phase !== "stopped" ||
++    journal.cursor.operation_key !== operationKey ||
++    journal.stop.operation_key !== operationKey ||
++    operation?.operation_key !== operationKey ||
++    operation.status !== "intent"
++  ) {
++    throw new Error(
++      "Supervisor effect recovery requires the exact stopped effect-in-doubt operation intent.",
++    );
++  }
++  const now = opts.now ?? new Date().toISOString();
++  const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
++    ...journal,
++    cursor: {
++      episode: journal.cursor.episode,
++      phase: "intent_recorded",
++      operation_key: operationKey,
++    },
++    status: "running",
++    stop: null,
++    updated_at: now,
++    previous_digest: journal.digest,
++  };
++  return createJournal(next);
++}
++
+ export function startSupervisorExecutionEpisode(opts: {
+   journal: SupervisorExecutionEpisodeJournal;
+   role: SupervisorEpisodeRole;
+diff --git a/packages/core/src/schemas/index.ts b/packages/core/src/schemas/index.ts
+index 7c80521f3..f5fc28f81 100644
+--- a/packages/core/src/schemas/index.ts
++++ b/packages/core/src/schemas/index.ts
+@@ -156,6 +156,7 @@ export {
+   refreshPendingReplacementSupervisorExecutionEpisode,
+   recoverSupervisorExecutionEpisodeJournal,
+   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
++  reopenSupervisorExecutionEpisodeAfterEffectEvidence,
+   retryFailedSupervisorExecutionEpisode,
+   stopSupervisorExecutionEpisode,
+   startSupervisorExecutionEpisode,
+diff --git a/scripts/release/evidence-collect.mjs b/scripts/release/evidence-collect.mjs
+index 6bb8e31cd..7d140af8a 100644
+--- a/scripts/release/evidence-collect.mjs
++++ b/scripts/release/evidence-collect.mjs
+@@ -1,5 +1,15 @@
+ import { execFileSync } from "node:child_process";
+-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
++import {
++  copyFileSync,
++  existsSync,
++  mkdirSync,
++  mkdtempSync,
++  readFileSync,
++  readdirSync,
++  rmSync,
++  writeFileSync,
++} from "node:fs";
++import os from "node:os";
+ import path from "node:path";
+ 
+ import { parseScriptArgs } from "../lib/script-runtime.mjs";
+@@ -32,9 +42,172 @@ function readVersion() {
+   ]).stdout;
+ }
+ 
++function parseJsonResult(result) {
++  if (!result.ok) return null;
++  try {
++    return JSON.parse(result.stdout);
++  } catch {
++    return null;
++  }
++}
++
++function readJson(filePath) {
++  try {
++    return JSON.parse(readFileSync(filePath, "utf8"));
++  } catch {
++    return null;
++  }
++}
++
++function findFileByName(root, fileName) {
++  for (const entry of readdirSync(root, { withFileTypes: true })) {
++    const fullPath = path.join(root, entry.name);
++    if (entry.isDirectory()) {
++      const nested = findFileByName(fullPath, fileName);
++      if (nested) return nested;
++      continue;
++    }
++    if (entry.isFile() && entry.name === fileName) return fullPath;
++  }
++  return null;
++}
++
++function resolveGithubRepo(explicitRepo) {
++  const requested = typeof explicitRepo === "string" ? explicitRepo.trim() : "";
++  if (requested) return requested;
++  const result = run("gh", ["repo", "view", "--json", "nameWithOwner", "--jq", ".nameWithOwner"]);
++  return result.ok ? result.stdout : "";
++}
++
++function matchingPublishResult(manifest, version, tag, releaseSha) {
++  return (
++    manifest?.success === true &&
++    manifest?.version === version &&
++    manifest?.tag === tag &&
++    manifest?.sha === releaseSha
++  );
++}
++
++function resolvePublishResult({ destinationPath, version, tag, releaseSha, repo, workflow }) {
++  const existing = existsSync(destinationPath) ? readJson(destinationPath) : null;
++  if (!repo) {
++    return {
++      ok: false,
++      path: destinationPath,
++      source: "missing",
++      workflow: { ok: false, stderr: "GitHub repository slug is unavailable" },
++      run_id: null,
++    };
++  }
++
++  const workflowResult = run("gh", [
++    "run",
++    "list",
++    "--repo",
++    repo,
++    "--workflow",
++    workflow,
++    "--commit",
++    releaseSha,
++    "--limit",
++    "20",
++    "--json",
++    "databaseId,headSha,status,conclusion,createdAt",
++  ]);
++  const runs = parseJsonResult(workflowResult);
++  const publishRun = Array.isArray(runs)
++    ? runs.find(
++        (entry) =>
++          entry?.headSha === releaseSha &&
++          entry?.status === "completed" &&
++          entry?.conclusion === "success" &&
++          entry?.databaseId,
++      )
++    : null;
++  if (!publishRun) {
++    return {
++      ok: false,
++      path: destinationPath,
++      source: "missing",
++      workflow: workflowResult.ok
++        ? {
++            ok: false,
++            stdout: workflowResult.stdout,
++            stderr: "no successful exact-SHA publish run",
++          }
++        : workflowResult,
++      run_id: null,
++    };
++  }
++  if (matchingPublishResult(existing, version, tag, releaseSha)) {
++    return {
++      ok: true,
++      path: destinationPath,
++      source: "local",
++      workflow: workflowResult,
++      run_id: publishRun.databaseId,
++    };
++  }
++
++  const tempDir = mkdtempSync(path.join(os.tmpdir(), "agentplane-release-evidence-"));
++  try {
++    const download = run("gh", [
++      "run",
++      "download",
++      String(publishRun.databaseId),
++      "--repo",
++      repo,
++      "--name",
++      "publish-result",
++      "--dir",
++      tempDir,
++    ]);
++    if (!download.ok) {
++      return {
++        ok: false,
++        path: destinationPath,
++        source: "download_failed",
++        workflow: workflowResult,
++        download,
++        run_id: publishRun.databaseId,
++      };
++    }
++    const downloadedPath = findFileByName(tempDir, "publish-result.json");
++    if (!downloadedPath) {
++      return {
++        ok: false,
++        path: destinationPath,
++        source: "artifact_missing",
++        workflow: workflowResult,
++        download,
++        run_id: publishRun.databaseId,
++      };
++    }
++    mkdirSync(path.dirname(destinationPath), { recursive: true });
++    copyFileSync(downloadedPath, destinationPath);
++    return {
++      ok: true,
++      path: destinationPath,
++      source: "github_artifact",
++      workflow: workflowResult,
++      download,
++      run_id: publishRun.databaseId,
++    };
++  } finally {
++    rmSync(tempDir, { recursive: true, force: true });
++  }
++}
++
+ function main() {
+   const { flags } = parseScriptArgs(process.argv.slice(2), {
+-    valueFlags: ["version", "out"],
++    valueFlags: [
++      "version",
++      "out",
++      "publish-result",
++      "github-repo",
++      "github-sha",
++      "publish-workflow",
++    ],
+     booleanFlags: ["json"],
+   });
+   const version = String(flags.version ?? readVersion()).trim();
+@@ -44,37 +217,115 @@ function main() {
+     ROOT,
+     String(flags.out ?? `.agentplane/.release/evidence/${tag}.json`),
+   );
++  const publishResultPath = path.resolve(
++    ROOT,
++    String(flags["publish-result"] ?? ".agentplane/.release/publish/publish-result.json"),
++  );
++  const localTag = run("git", ["rev-list", "-n", "1", `refs/tags/${tag}`]);
++  const releaseSha = String(flags["github-sha"] ?? localTag.stdout).trim();
++  const repo = resolveGithubRepo(flags["github-repo"]);
++  const publishResult = releaseSha
++    ? resolvePublishResult({
++        destinationPath: publishResultPath,
++        version,
++        tag,
++        releaseSha,
++        repo,
++        workflow: String(flags["publish-workflow"] ?? "publish.yml"),
++      })
++    : {
++        ok: false,
++        path: publishResultPath,
++        source: "missing",
++        workflow: { ok: false, stderr: "release SHA is unavailable" },
++        run_id: null,
++      };
++  const manifest = existsSync(publishResultPath) ? readJson(publishResultPath) : null;
++  const remoteTag = run("git", [
++    "ls-remote",
++    "--tags",
++    "origin",
++    `refs/tags/${tag}`,
++    `refs/tags/${tag}^{}`,
++  ]);
++  const githubRelease = run("gh", [
++    "release",
++    "view",
++    tag,
++    "--repo",
++    repo,
++    "--json",
++    "tagName,name,url,isDraft,isPrerelease",
++  ]);
++  const githubReleasePayload = parseJsonResult(githubRelease);
++  const npm = PACKAGES.map((name) => ({
++    name,
++    result: run("npm", ["view", `${name}@${version}`, "version"]),
++  }));
++  const postpublishAudit = existsSync(publishResultPath)
++    ? run("bun", [
++        "run",
++        "release:postpublish:audit",
++        "--",
++        "--publish-result",
++        path.relative(ROOT, publishResultPath),
++        "--json",
++      ])
++    : { ok: false, stdout: "", stderr: "publish-result.json is missing" };
++  const postpublishAuditPayload = parseJsonResult(postpublishAudit);
++
++  const failures = [];
++  if (!localTag.ok || !releaseSha) failures.push(`local tag ${tag} is missing`);
++  if (localTag.ok && releaseSha !== localTag.stdout) {
++    failures.push(`release SHA ${releaseSha} does not match local tag ${localTag.stdout}`);
++  }
++  if (!remoteTag.ok || !remoteTag.stdout.includes(releaseSha)) {
++    failures.push(`origin/${tag} does not resolve to ${releaseSha || "a known SHA"}`);
++  }
++  if (!repo) failures.push("GitHub repository slug is unavailable");
++  if (!githubRelease.ok || githubReleasePayload?.tagName !== tag) {
++    failures.push(`GitHub Release ${tag} is unavailable or mismatched`);
++  }
++  if (githubReleasePayload?.isDraft === true)
++    failures.push(`GitHub Release ${tag} is still a draft`);
++  if (!publishResult.ok) failures.push("exact-SHA publish-result artifact is unavailable");
++  if (!matchingPublishResult(manifest, version, tag, releaseSha)) {
++    failures.push("publish-result identity or success state does not match the current release");
++  }
++  for (const entry of npm) {
++    if (!entry.result.ok || entry.result.stdout !== version) {
++      failures.push(`${entry.name}@${version} is not confirmed in npm`);
++    }
++  }
++  if (!postpublishAudit.ok || postpublishAuditPayload?.ok !== true) {
++    failures.push("post-publish platform audit failed");
++  }
++
+   const evidence = {
+-    schema_version: 1,
++    schema_version: 2,
+     generated_at: new Date().toISOString(),
++    ok: failures.length === 0,
++    failures,
+     version,
+     tag,
++    release_sha: releaseSha || null,
+     git: {
+       head: run("git", ["rev-parse", "HEAD"]),
+-      remote_tag: run("git", ["ls-remote", "--tags", "origin", tag]),
++      local_tag: localTag,
++      remote_tag: remoteTag,
+     },
+-    npm: PACKAGES.map((name) => ({
+-      name,
+-      result: run("npm", ["view", `${name}@${version}`, "version"]),
+-    })),
+-    github_release: run("gh", [
+-      "release",
+-      "view",
+-      tag,
+-      "--json",
+-      "tagName,name,url,isDraft,isPrerelease",
+-    ]),
++    npm,
++    github_release: githubRelease,
+     publish_result: {
+-      path: ".agentplane/.release/publish/publish-result.json",
+-      exists: existsSync(path.join(ROOT, ".agentplane/.release/publish/publish-result.json")),
++      path: path.relative(ROOT, publishResultPath),
++      exists: existsSync(publishResultPath),
++      source: publishResult.source,
++      run_id: publishResult.run_id,
++      workflow: publishResult.workflow,
++      download: publishResult.download ?? null,
++      identity_matches: matchingPublishResult(manifest, version, tag, releaseSha),
+     },
+-    postpublish_audit: run("bun", [
+-      "run",
+-      "release:postpublish:audit",
+-      "--",
+-      "--publish-result",
+-      ".agentplane/.release/publish/publish-result.json",
+-    ]),
++    postpublish_audit: postpublishAudit,
+   };
+ 
+   mkdirSync(path.dirname(outPath), { recursive: true });
+@@ -82,9 +333,11 @@ function main() {
+ 
+   if (flags.json === true) {
+     process.stdout.write(`${JSON.stringify(evidence, null, 2)}\n`);
+-    return;
++  } else {
++    process.stdout.write(`release evidence: ${path.relative(ROOT, outPath)}\n`);
++    for (const failure of failures) process.stderr.write(`error: ${failure}\n`);
+   }
+-  process.stdout.write(`release evidence: ${path.relative(ROOT, outPath)}\n`);
++  if (!evidence.ok) process.exitCode = 1;
+ }
+ 
+ try {
+diff --git a/scripts/release/next-action.mjs b/scripts/release/next-action.mjs
+index 1078f8ae6..abe2edcfc 100644
+--- a/scripts/release/next-action.mjs
++++ b/scripts/release/next-action.mjs
+@@ -38,10 +38,16 @@ function loadReleaseState(flags) {
+   ]);
+ }
+ 
+-function loadRecoveryReport(flags) {
++function latestPlanTargetsCurrentRelease(state) {
++  const plan = state.release?.latest_plan;
++  return plan?.nextVersion === state.release?.version && plan?.nextTag === state.release?.tag;
++}
++
++function loadRecoveryReport(flags, state) {
+   const fixturePath = process.env.AGENTPLANE_TEST_RELEASE_RECOVERY_REPORT_PATH;
+   if (fixturePath) return readJsonFile(fixturePath);
+   if (flags["check-github"] !== true) return null;
++  if (!latestPlanTargetsCurrentRelease(state)) return null;
+ 
+   const args = [
+     "scripts/check-release-recovery-state.mjs",
+@@ -58,6 +64,29 @@ function loadRecoveryReport(flags) {
+   return runJson("node", args);
+ }
+ 
++function recoveryApplicability(state, recovery, flags) {
++  if (flags["check-github"] !== true) {
++    return { checked: false, applicable: false, reason: "github recovery check was skipped" };
++  }
++  const target = recovery?.target ?? state.release?.latest_plan ?? null;
++  if (!target) {
++    return { checked: true, applicable: false, reason: "no release recovery target is available" };
++  }
++  const applicable =
++    target.nextVersion === state.release?.version && target.nextTag === state.release?.tag;
++  return {
++    checked: true,
++    applicable,
++    reason: applicable
++      ? null
++      : `recovery target ${target.nextTag ?? "unknown"} (${target.nextVersion ?? "unknown"}) does not match current ${state.release?.tag ?? "unknown"} (${state.release?.version ?? "unknown"})`,
++    target: {
++      version: target.nextVersion ?? null,
++      tag: target.nextTag ?? null,
++    },
++  };
++}
++
+ function githubReleaseStatus(tag, flags) {
+   const fixturePath = process.env.AGENTPLANE_TEST_GITHUB_RELEASE_STATUS_PATH;
+   if (fixturePath) return readJsonFile(fixturePath);
+@@ -123,14 +152,26 @@ function publishResultSummary(report) {
+   return `${result.state}${success}${reason}`;
+ }
+ 
+-function tagSummary(report, tag) {
+-  if (!report) return `local/current only (${tag})`;
++function tagSummary(report, state) {
++  const tag = state.release.tag;
++  if (!report) {
++    const local = state.release.tag_exists === true ? "present" : "missing";
++    return `local=${local}; remote=not_checked (${tag})`;
++  }
+   const local = report.current?.localTagPresent === true ? "present" : "missing";
+   const remoteName = report.current?.remote?.name ?? "origin";
+   const remote = report.current?.remote?.tagPresent === true ? "present" : "missing";
+   return `local=${local}; ${remoteName}/${tag}=${remote}`;
+ }
+ 
++function evidenceSummary(state) {
++  if (state.release.evidence_valid === true) return `valid (${state.release.evidence_path})`;
++  if (state.release.evidence_exists === true) {
++    return `invalid (${state.release.evidence_detail ?? state.release.evidence_path})`;
++  }
++  return `missing (${state.release.evidence_path ?? "current release target"})`;
++}
++
+ function commandFromAction(action, state, report) {
+   if (report?.summary?.nextAction) return report.summary.nextAction;
+   return action.command ?? "inspect release state";
+@@ -148,6 +189,7 @@ function renderText(result) {
+     `NPM registry: ${result.truth.registry}`,
+     `Git tag: ${result.truth.tag}`,
+     `GitHub release: ${result.truth.githubRelease.state}`,
++    `Release evidence: ${result.truth.evidence}`,
+     `Next action: ${result.action}`,
+     `Command: ${result.command}`,
+   ];
+@@ -162,21 +204,26 @@ function main() {
+     valueFlags: ["github-repo", "github-sha"],
+   });
+   const state = loadReleaseState(flags);
+-  const recovery = loadRecoveryReport(flags);
+-  const releaseSha = recovery?.current?.github?.releaseSha ?? state.git.head ?? null;
++  const recovery = loadRecoveryReport(flags, state);
++  const applicability = recoveryApplicability(state, recovery, flags);
++  const applicableRecovery = applicability.applicable ? recovery : null;
++  const releaseSha =
++    applicableRecovery?.current?.github?.releaseSha ??
++    state.release?.tag_commit ??
++    state.git.head ??
++    null;
+   const githubRelease = githubReleaseStatus(state.release.tag, flags);
+ 
+-  let action = "run release candidate preparation";
+-  let command = "bun run release:candidate:prepare -- --write";
++  const defaultAction = "run release candidate preparation";
++  const defaultCommand = "bun run release:candidate:prepare -- --write";
++  let action = defaultAction;
++  let command = defaultCommand;
+   if (state.git.tracked_dirty) {
+     action = "clean tracked working tree before release work";
+     command = "git status --short --untracked-files=no";
+   } else if (state.git.upstream?.behind > 0) {
+     action = "fast-forward local branch before release planning";
+     command = "git pull --ff-only";
+-  } else if (state.release.latest_plan?.nextTag === state.release.tag) {
+-    action = "generate a fresh release plan for the next patch";
+-    command = "ap release plan --patch";
+   } else if (!state.parity.ok) {
+     action = "restore release version parity";
+     command = "bun run release:parity";
+@@ -193,16 +240,26 @@ function main() {
+   } else if (
+     state.registry.checked &&
+     state.registry.packages.every((pkg) => pkg.published === true) &&
+-    !state.release.publish_result_exists
++    state.release.evidence_valid !== true
+   ) {
+     action = "collect hosted publish evidence";
+     command = "bun run release:evidence:collect";
++  } else if (state.release.latest_plan?.nextTag === state.release.tag) {
++    action = "generate a fresh release plan for the next patch";
++    command = "ap release plan --patch";
+   }
+ 
++  const useRecoveryDecision =
++    action === defaultAction &&
++    command === defaultCommand &&
++    typeof applicableRecovery?.summary?.state === "string";
++
+   const result = {
+     schema_version: 2,
+-    action: recovery?.summary?.state ?? action,
+-    command: commandFromAction({ action, command }, state, recovery),
++    action: useRecoveryDecision ? applicableRecovery.summary.state : action,
++    command: useRecoveryDecision
++      ? commandFromAction({ action, command }, state, applicableRecovery)
++      : command,
+     target: {
+       version: state.release.version,
+       tag: state.release.tag,
+@@ -213,15 +270,17 @@ function main() {
+     },
+     releaseSha,
+     truth: {
+-      releaseReady: releaseReadySummary(recovery),
+-      publish: publishSummary(recovery),
+-      publishResult: publishResultSummary(recovery),
++      releaseReady: releaseReadySummary(applicableRecovery),
++      publish: publishSummary(applicableRecovery),
++      publishResult: publishResultSummary(applicableRecovery),
+       registry: registrySummary(state),
+-      tag: tagSummary(recovery, state.release.tag),
++      tag: tagSummary(applicableRecovery, state),
+       githubRelease,
++      evidence: evidenceSummary(state),
+     },
+     state,
+-    recovery,
++    recovery: applicableRecovery,
++    recovery_applicability: applicability,
+   };
+   if (flags.json === true) {
+     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+diff --git a/scripts/release/state.mjs b/scripts/release/state.mjs
+index 14fe8462e..c08d54077 100644
+--- a/scripts/release/state.mjs
++++ b/scripts/release/state.mjs
+@@ -30,6 +30,47 @@ function readLatestPlanVersion(planDir) {
+   }
+ }
+ 
++function readReleaseEvidence(version, tag, releaseSha) {
++  const evidencePath = `.agentplane/.release/evidence/${tag}.json`;
++  const absolutePath = path.join(ROOT, evidencePath);
++  if (!existsSync(absolutePath)) {
++    return {
++      path: evidencePath,
++      exists: false,
++      valid: false,
++      detail: "release evidence is missing",
++    };
++  }
++  try {
++    const evidence = JSON.parse(readFileSync(absolutePath, "utf8"));
++    const failures = [];
++    if (evidence?.schema_version !== 2) failures.push("evidence schema is unsupported");
++    if (evidence?.ok !== true) failures.push("evidence is not successful");
++    if (!Array.isArray(evidence?.failures) || evidence.failures.length > 0) {
++      failures.push("evidence contains failures or an invalid failure list");
++    }
++    if (evidence?.version !== version) failures.push("evidence version does not match");
++    if (evidence?.tag !== tag) failures.push("evidence tag does not match");
++    if (!releaseSha) failures.push("current release tag is missing");
++    if (releaseSha && evidence?.release_sha !== releaseSha) {
++      failures.push("evidence release SHA does not match the current tag");
++    }
++    return {
++      path: evidencePath,
++      exists: true,
++      valid: failures.length === 0,
++      detail: failures.length === 0 ? null : failures.join("; "),
++    };
++  } catch (error) {
++    return {
++      path: evidencePath,
++      exists: true,
++      valid: false,
++      detail: `release evidence is unreadable: ${error instanceof Error ? error.message : String(error)}`,
++    };
++  }
++}
++
+ function upstreamState(branch) {
+   if (!branch || branch === "HEAD") return null;
+   const upstream = runGit(["for-each-ref", "--format=%(upstream:short)", `refs/heads/${branch}`]);
+@@ -122,11 +163,13 @@ async function buildState(opts) {
+     "v[0-9]*.[0-9]*.[0-9]*",
+   ]);
+   const head = runGit(["rev-parse", "HEAD"]);
++  const tagCommit = runGit(["rev-list", "-n", "1", `refs/tags/${tag}`]);
+   const branch = runGit(["rev-parse", "--abbrev-ref", "HEAD"]);
+   const dirty = runGit(["status", "--short", "--untracked-files=no"]);
+   const latestPlan = latestPlanDir();
+   const latestPlanVersion = readLatestPlanVersion(latestPlan);
+   const upstream = upstreamState(branch);
++  const evidence = readReleaseEvidence(version, tag, tagCommit);
+ 
+   return {
+     schema_version: 1,
+@@ -142,6 +185,8 @@ async function buildState(opts) {
+     release: {
+       version,
+       tag,
++      tag_exists: Boolean(tagCommit),
++      tag_commit: tagCommit,
+       latest_plan_dir: latestPlan,
+       latest_plan: latestPlanVersion,
+       notes_path: notesPath,
+@@ -150,6 +195,10 @@ async function buildState(opts) {
+       publish_result_exists: existsSync(path.join(ROOT, publishResultPath)),
+       release_distribution_path: releaseDistributionPath,
+       release_distribution_exists: existsSync(path.join(ROOT, releaseDistributionPath)),
++      evidence_path: evidence.path,
++      evidence_exists: evidence.exists,
++      evidence_valid: evidence.valid,
++      evidence_detail: evidence.detail,
+     },
+     parity: {
+       ok: parityErrors.length === 0,
