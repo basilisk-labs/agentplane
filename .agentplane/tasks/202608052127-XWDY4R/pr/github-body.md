@@ -15,7 +15,12 @@ In scope: a consolidated post-release audit and fix set for installation and upg
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note:
+
+```text
+Consolidated post-release regression and exact-subject provider qualification passed with zero
+blocking defects.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

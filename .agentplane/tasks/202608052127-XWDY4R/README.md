@@ -4,7 +4,7 @@ title: "Keep release diagnostics on the current published target"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-06T00:09:30.562Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  updated_at: "2026-08-06T01:38:12.738Z"
+  updated_by: "TESTER"
+  note: "Consolidated post-release regression and exact-subject provider qualification passed with zero blocking defects."
   attempts: 0
 quality_review:
   state: "rework"
@@ -117,8 +117,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "verify"
+    at: "2026-08-06T01:38:12.738Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Consolidated post-release regression and exact-subject provider qualification passed with zero blocking defects."
 doc_version: 3
-doc_updated_at: "2026-08-06T00:09:31.825Z"
+doc_updated_at: "2026-08-06T01:38:13.823Z"
 doc_updated_by: "CODER"
 description: "Prevent release next-action from mixing the current package/tag target with stale local release-plan SHA and hosted evidence; add regression coverage, merge the fix, and publish the verified v0.7.4 patch release."
 sections:
@@ -283,6 +289,46 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-05T23:49:11.218Z, excerpt_hash=sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608052127-XWDY4R-keep-release-diagnostics-on-the-current-publishe/.agentplane/tasks/202608052127-XWDY4R/blueprint/resolved-snapshot.json
+    - old_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+    - current_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608052127-XWDY4R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608052127-XWDY4R
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-06T01:38:12.738Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Consolidated post-release regression and exact-subject provider qualification passed with zero blocking defects.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T00:09:31.825Z, excerpt_hash=sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463
+
+    Details:
+
+    Command: bun run release:prepublish. Result: pass on clean candidate 5eb30ef1a5b12c4ea34406957cedbb167e5843fd; packed install, migration matrix (8), release CI base (101/101 chunks), workflow coverage (50 tests), significant coverage (204 tests), and release-critical gates (16 tests) passed. Evidence: command output and exact clean Git subject. Scope: deterministic prepublish contract.
+
+    Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1. Result: ready; 18/19 scenarios passed, 0 blocking; 50/50 replay runs and 55/55 provider episodes passed without retry. Evidence: .agentplane/reports/v0.7.1-qualification/2026-08-06T00-47-19-117Z/report.json sha256 42b3b345290dbd749dbaf4c97640912cb83d7a36878417331aaf83428f2a4a33; efficiency-evidence.json sha256 fb99dbbe91a7b65633788f8c07442c93baff152bbc0d82c07cd9e64b61261545. Scope: all 10 semantic scenarios, direct and branch_pr, context, evaluator, stale state, scope guard, adapter failure, and Hermes one-step.
+
+    Effectiveness: provider tokens fell from 9,186,747 to 7,288,227 (-20.67%); verified successes rose 8 to 20; scope violations fell 17 to 5; golden mismatches fell 33 to 10. Matched provider-excluded CLI median improved 9.39% cold and 9.47% warm versus 0.6.26. Supervisor latency matrix passed all four cold/warm frontend comparisons. Evidence: matched-cli-latency.json sha256 e679dc1159d0bbc5f03001547ee3b58055bd71220a2c3e9f095900f30320b97c; supervisor-latency.json sha256 748cccbe7c257691c70e9b573550f288b9b86a2d96b4969172525cea699cd95b.
+
+    Command set: focused recovery/supervisor/evaluator regressions, bun run typecheck, eslint, bun run ci:contract, critical CLI, release-critical, platform-critical, agentplane doctor, and routing policy check. Result: pass. Scope: every confirmed defect and touched implementation path.
+
+    Residual release boundary: protected-main merge, one 0.7.4 publication, npm/tag/GitHub Release/assets/clean-install/upgrade/postpublish proof remain intentionally post-integration and must complete before task finish.
 
     BlueprintSnapshotRef:
     - state: current
@@ -498,6 +544,46 @@ Attempts: 0
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-05T23:49:11.218Z, excerpt_hash=sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608052127-XWDY4R-keep-release-diagnostics-on-the-current-publishe/.agentplane/tasks/202608052127-XWDY4R/blueprint/resolved-snapshot.json
+- old_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+- current_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608052127-XWDY4R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608052127-XWDY4R
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-06T01:38:12.738Z — VERIFY — ok
+
+By: TESTER
+
+Note: Consolidated post-release regression and exact-subject provider qualification passed with zero blocking defects.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T00:09:31.825Z, excerpt_hash=sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463
+
+Details:
+
+Command: bun run release:prepublish. Result: pass on clean candidate 5eb30ef1a5b12c4ea34406957cedbb167e5843fd; packed install, migration matrix (8), release CI base (101/101 chunks), workflow coverage (50 tests), significant coverage (204 tests), and release-critical gates (16 tests) passed. Evidence: command output and exact clean Git subject. Scope: deterministic prepublish contract.
+
+Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1. Result: ready; 18/19 scenarios passed, 0 blocking; 50/50 replay runs and 55/55 provider episodes passed without retry. Evidence: .agentplane/reports/v0.7.1-qualification/2026-08-06T00-47-19-117Z/report.json sha256 42b3b345290dbd749dbaf4c97640912cb83d7a36878417331aaf83428f2a4a33; efficiency-evidence.json sha256 fb99dbbe91a7b65633788f8c07442c93baff152bbc0d82c07cd9e64b61261545. Scope: all 10 semantic scenarios, direct and branch_pr, context, evaluator, stale state, scope guard, adapter failure, and Hermes one-step.
+
+Effectiveness: provider tokens fell from 9,186,747 to 7,288,227 (-20.67%); verified successes rose 8 to 20; scope violations fell 17 to 5; golden mismatches fell 33 to 10. Matched provider-excluded CLI median improved 9.39% cold and 9.47% warm versus 0.6.26. Supervisor latency matrix passed all four cold/warm frontend comparisons. Evidence: matched-cli-latency.json sha256 e679dc1159d0bbc5f03001547ee3b58055bd71220a2c3e9f095900f30320b97c; supervisor-latency.json sha256 748cccbe7c257691c70e9b573550f288b9b86a2d96b4969172525cea699cd95b.
+
+Command set: focused recovery/supervisor/evaluator regressions, bun run typecheck, eslint, bun run ci:contract, critical CLI, release-critical, platform-critical, agentplane doctor, and routing policy check. Result: pass. Scope: every confirmed defect and touched implementation path.
+
+Residual release boundary: protected-main merge, one 0.7.4 publication, npm/tag/GitHub Release/assets/clean-install/upgrade/postpublish proof remain intentionally post-integration and must complete before task finish.
 
 BlueprintSnapshotRef:
 - state: current
