@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -94,6 +94,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "CI recovery: refreshed the task artifact without changing implementation so GitHub can create a new pull_request synchronize check suite after the Actions outage."
 events:
   -
     type: "status"
@@ -115,8 +118,13 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "comment"
+    at: "2026-08-06T22:34:44.490Z"
+    author: "CODER"
+    body: "CI recovery: refreshed the task artifact without changing implementation so GitHub can create a new pull_request synchronize check suite after the Actions outage."
 doc_version: 3
-doc_updated_at: "2026-08-06T19:01:14.471Z"
+doc_updated_at: "2026-08-06T22:34:44.521Z"
 doc_updated_by: "CODER"
 description: "Publish the already verified post-merge fixes discovered after PR #4784 auto-merged: generated schema formatting, CLI reference and llms corpus refresh, isolated routing E2E coverage, lint-safe route resolution, repaired supervisor test fixture, and reviewed compatibility candidate evidence. No new product behavior beyond task 202608061646-WCARQG."
 sections:
