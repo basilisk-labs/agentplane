@@ -33,7 +33,7 @@ In scope: a consolidated post-release audit and fix set for installation and upg
  .../release-evidence-collect-script.test.ts        |  211 ++++
  .../release/release-next-action-script.test.ts     |   95 +-
  .../task/branch-task-supervisor-artifact-commit.ts |   46 +
- .../task/branch-task-supervisor-episodes.ts        |   48 +-
+ .../task/branch-task-supervisor-episodes.ts        |   54 +-
  .../commands/task/branch-task-supervisor.test.ts   |   24 +
  .../task/external-agent-exchange-authority.ts      |   42 +-
  .../task/external-agent-planning-authority.ts      |   57 +
@@ -44,7 +44,7 @@ In scope: a consolidated post-release audit and fix set for installation and upg
  scripts/release/evidence-collect.mjs               |  305 +++++-
  scripts/release/next-action.mjs                    |   95 +-
  scripts/release/state.mjs                          |   49 +
- 18 files changed, 1790 insertions(+), 647 deletions(-)
+ 18 files changed, 1791 insertions(+), 652 deletions(-)
 ```
 
 </details>

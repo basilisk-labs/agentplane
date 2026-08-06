@@ -18,11 +18,7 @@ import {
   openSupervisorExecutionEpisode,
   tryAcquireSupervisorExecutionLease,
 } from "../shared/supervisor-execution-episode.js";
-import {
-  loadCommandContext,
-  loadTaskFromContext,
-  type CommandContext,
-} from "../shared/task-backend.js";
+import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 import type {
   BranchEpisodeOutcome,
   BranchEvaluatorEvidence,

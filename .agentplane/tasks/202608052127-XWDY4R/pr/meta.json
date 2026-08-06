@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608052127-XWDY4R/keep-release-diagnostics-on-the-current-publishe",
   "created_at": "2026-08-05T21:28:48.428Z",
-  "diffstat_sha256": "sha256:06d65a94a12f8870653ee88e6a3aebae1f0d9bcaa2aefc7aa934890f60b1e360",
+  "diffstat_sha256": "sha256:6c5a404890cc5a744cc2ae18419ee798141fb7db8b0dc4776f1211a492e799d0",
   "last_verified_at": "2026-08-06T00:09:30.562Z",
   "last_verified_diffstat_sha256": "sha256:236cf7e8238869ce8a7f2f9f5d3c19d8b7ec8c4dc748ae6099e0f50f12e1a4d7",
   "pr_number": 4780,
