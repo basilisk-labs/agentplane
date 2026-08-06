@@ -12,8 +12,8 @@ Created: 2026-08-06T19:28:55.153Z
 
 ## Verification
 
-- State: ok
-- Note: Verified exact README identity handling: backend suite 32/32, typecheck, and platform-critical 94/94 pass. Full critical awaits PR #4785 compatibility-baseline repair; exact Windows hosted proof remains an integration gate.
+- State: needs_rework
+- Note: The exact NTFS scan-path regression, typecheck, and platform-critical suite pass. Verification remains rework because the mandatory full critical suite cannot pass until pending PR #4785 repairs the pre-existing compatibility baseline; after it merges, rebase and rerun the complete check before evaluation or integration.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
