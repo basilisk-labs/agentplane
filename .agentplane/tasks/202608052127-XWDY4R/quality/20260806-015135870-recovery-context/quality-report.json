@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608052127-XWDY4R",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-06T01:51:36.387Z",
+  "provenance": "human_supplied",
+  "verdict": "rework",
+  "summary": "Late planning-result reconciliation is not exact while the task is awaiting plan approval.",
+  "evaluated_sha": "b3b7e62da34ebfec7ea3789daa2183705e53d841",
+  "blueprint_digest": "3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94",
+  "findings": [
+    "isExternalPlanningResultApplied returns true for every plan_approval route before comparing the persisted plan with the returned PLANNER summary; a stale result can therefore complete against a different plan."
+  ],
+  "evidence_refs": [
+    "packages/agentplane/src/commands/task/external-agent-planning-authority.ts",
+    "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+  ],
+  "missing_tests": [
+    "Reject an effect-in-doubt PLANNER result when a different plan is currently awaiting approval, without consuming the exchange or completing the journal operation."
+  ],
+  "hidden_assumptions": [
+    "The plan_approval route was treated as proof that the exact returned plan had already been applied."
+  ],
+  "residual_risks": []
+}

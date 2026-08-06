@@ -30,7 +30,7 @@ Created: 2026-08-05T21:28:48.428Z
 
 ```text
  .../cli/run-cli.core.pr-conflict-rework.test.ts    | 1093 ++++++++++----------
- ...n-cli.core.task-advance-effect-recovery.test.ts |  177 ++++
+ ...n-cli.core.task-advance-effect-recovery.test.ts |  242 +++++
  .../evaluator/evaluator-execute-supervisor.ts      |   10 +
  .../evaluator/evaluator-execute.command.test.ts    |   56 +
  .../release-evidence-collect-script.test.ts        |  211 ++++
@@ -39,7 +39,7 @@ Created: 2026-08-05T21:28:48.428Z
  .../task/branch-task-supervisor-episodes.ts        |   54 +-
  .../commands/task/branch-task-supervisor.test.ts   |   24 +
  .../task/external-agent-exchange-authority.ts      |   42 +-
- .../task/external-agent-planning-authority.ts      |   57 +
+ .../task/external-agent-planning-authority.ts      |   53 +
  .../src/commands/task/external-agent-supervisor.ts |   50 +-
  .../runner/supervisor-execution-episode.test.ts    |   35 +
  .../src/runner/supervisor-execution-episode.ts     |   43 +
@@ -47,7 +47,7 @@ Created: 2026-08-05T21:28:48.428Z
  scripts/release/evidence-collect.mjs               |  305 +++++-
  scripts/release/next-action.mjs                    |   95 +-
  scripts/release/state.mjs                          |   49 +
- 18 files changed, 1791 insertions(+), 652 deletions(-)
+ 18 files changed, 1852 insertions(+), 652 deletions(-)
 ```
 
 </details>
