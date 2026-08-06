@@ -1,10 +1,11 @@
 ---
 id: "202608052127-XWDY4R"
 title: "Keep release diagnostics on the current published target"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -20,40 +21,59 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-06T12:27:38.673Z"
+  updated_at: "2026-08-06T12:29:34.294Z"
   updated_by: "TESTER"
-  note: "Command: verification freshness rebind after committing the archived qualification evidence. Result: pass. Evidence: evidence-only commit ad6c3c5e9 contains the exact already-executed provider report fbf20573217713c56df7418532e7fbdfa6d218b01cad361c8b5b279eff701e1a and efficiency evidence eb55407be4344639d669ee0ce84434586c2c0f64f3945202878ce7e67187bfc4; no implementation paths changed and no provider or test retry was performed. Scope: reviewed-head freshness for the committed evidence set; implementation remains 6c21aab823fe2019b6649b65f5bea6685be0e549."
+  note: "Exact-subject provider qualification and committed evidence accepted without retry."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-06T01:51:36.387Z"
+  updated_at: "2026-08-06T12:32:38.155Z"
   updated_by: "HUMAN"
-  note: "Late planning-result reconciliation is not exact while the task is awaiting plan approval."
-  evaluated_sha: "b3b7e62da34ebfec7ea3789daa2183705e53d841"
+  note: "The sole prior semantic blocker is resolved: late PLANNER recovery now requires exact persisted-plan equality, and the consolidated deterministic and provider qualification is release-ready."
+  evaluated_sha: "6c21aab823fe2019b6649b65f5bea6685be0e549"
   blueprint_digest: "3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94"
   evidence_refs:
-    - ".agentplane/tasks/202608052127-XWDY4R/quality/20260806-015135870-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608052127-XWDY4R/quality/20260806-015135870-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/0a4a818f82148faf0fe8984e8a8aff2d9dd5ae3cd5d6c8d57949ed36364aacbe.md"
-    - ".agentplane/tasks/202608052127-XWDY4R/quality/20260806-015135870-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608052127-XWDY4R/quality/20260806-015135870-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/20260806-123237761-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/20260806-123237761-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/dc18ae07d6ff1e9664870e9a7dc96f0d1b1ebf39d62fee9a8a8a7dc9ca165824.md"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/20260806-123237761-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/20260806-123237761-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608052127-XWDY4R/README.md"
-    - ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/2d02aaf8c0f0a504846b5dd8539f04ee1ecad55b8231612442434ca6c17ab054.patch"
-    - ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/c444a59021891bb7ec91130cc67df1d19aef6250b981b65ea828c68e7e3c36e8.json"
-    - ".agentplane/tasks/202608052127-XWDY4R/verification/20260806014841709-9ab2549d3c35fd49.json"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/05b2a217c4ead1d668a1abe52eccb8d8ac503121e0bce48ceb28af25db3145d3.patch"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/3c94cd360b22e7f6deae39a551f3c009ccb38dd2a9991c0346b1b84a6d0a6331.json"
+    - ".agentplane/tasks/202608052127-XWDY4R/verification/20260806122934294-c5189c1bfb5e48f0.json"
     - ".agentplane/tasks/202608052127-XWDY4R/quality/objects/sha256/5a6be8e8bb4eef600218e0e0f9e31d0be93457cb7dca9813a7a6213dcd7a561f.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
+    - ".agentplane/tasks/202608052127-XWDY4R/quality/20260806-015135870-recovery-context/evaluator-opinion.md"
     - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
     - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+    - ".agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-6c21aab8/report.json"
+    - ".agentplane/tasks/202608052127-XWDY4R/evidence/consolidated-qualification-6c21aab8/efficiency-evidence.json"
   findings:
-    - "isExternalPlanningResultApplied returns true for every plan_approval route before comparing the persisted plan with the returned PLANNER summary; a stale result can therefore complete against a different plan."
+    - "The previous rework finding at b3b7e62d is closed: isExternalPlanningResultApplied now rejects completed results whose normalized summary differs from the persisted Plan before accepting plan_approval or approved state."
+    - "The regression test preserves the independently revised plan, returns stale exit code 3, and leaves the supervisor operation at intent_recorded instead of consuming the stale result."
+    - "The exact pinned provider matrix completed 50 of 50 runs and 55 of 55 provider episodes without retry; the consolidated release verdict is ready with zero blocking failures."
+token_usage:
+  agent_runs: 2
+  input_tokens: null
+  journal_digest: "sha256:e741a0246ea10957965db0ba00782575bb9d51a9edd6a9a9cde921bc29bf9b84"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-06T12:33:08.974Z"
 commit:
-  hash: "948b9d8a90b7e5483f55dcf04053be5106eff035"
-  message: "🚧 XWDY4R task: satisfy formatting contract"
+  hash: "dd0d0a9db85bccd2a3616867034a11580f3a1db8"
+  message: "🧪 XWDY4R close: bind verification to evidence head"
 comments:
   -
     author: "CODER"
@@ -64,6 +84,9 @@ comments:
   -
     author: "CODER"
     body: "Rework complete: canonical formatting applied mechanically to the provider conflict-rework matrix; focused test and repository-wide format check pass."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -140,8 +163,21 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Command: verification freshness rebind after committing the archived qualification evidence. Result: pass. Evidence: evidence-only commit ad6c3c5e9 contains the exact already-executed provider report fbf20573217713c56df7418532e7fbdfa6d218b01cad361c8b5b279eff701e1a and efficiency evidence eb55407be4344639d669ee0ce84434586c2c0f64f3945202878ce7e67187bfc4; no implementation paths changed and no provider or test retry was performed. Scope: reviewed-head freshness for the committed evidence set; implementation remains 6c21aab823fe2019b6649b65f5bea6685be0e549."
+  -
+    type: "verify"
+    at: "2026-08-06T12:29:34.294Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Exact-subject provider qualification and committed evidence accepted without retry."
+  -
+    type: "status"
+    at: "2026-08-06T12:33:08.974Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-06T12:27:39.739Z"
+doc_updated_at: "2026-08-06T12:33:08.984Z"
 doc_updated_by: "CODER"
 description: "Prevent release next-action from mixing the current package/tag target with stale local release-plan SHA and hosted evidence; add regression coverage, merge the fix, and publish the verified v0.7.4 patch release."
 sections:
@@ -481,6 +517,61 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-06T12:29:34.294Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Exact-subject provider qualification and committed evidence accepted without retry.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T12:27:39.739Z, excerpt_hash=sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463
+
+    Details:
+
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: exact candidate deterministic install, migration, lifecycle, context, evaluator, package, release, recovery, typecheck, critical CLI, doctor, and task-state gates passed
+    Scope: all non-provider Verify Steps on current implementation
+
+    Command: AGENTPLANE_RF04_REPLAY_CODEX_BINARY=<official-pinned-binary> node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1
+    Result: pass
+    Evidence: report fbf20573217713c56df7418532e7fbdfa6d218b01cad361c8b5b279eff701e1a; ready 18/19; blocking 0; runs 50/50; episodes 55/55; no retry
+    Scope: ten semantic scenarios across direct, branch_pr, context, evaluator, stale state, scope guard, adapter failure, and Hermes one-step
+
+    Command: compare efficiency and latency against frozen baselines
+    Result: pass
+    Evidence: tokens 9186747 to 6263560, reduction 31.82 percent; verified success 8 to 20; scope violations 17 to 5; golden mismatches 33 to 10; matched CLI and supervisor latency passed
+    Scope: token economy, outcome quality, boundary compliance, CLI preparation latency, and both supervisor frontends
+
+    Command: git diff --check and bun run artifacts:check
+    Result: pass
+    Evidence: archived evidence has no whitespace findings and AgentPlane artifact policy passed
+    Scope: committed compact qualification evidence under task 202608052127-XWDY4R
+
+    Command: protected-main publication boundary
+    Result: pass
+    Evidence: publication deferred until verified branch head is pushed, hosted checks pass, and protected-main integration completes
+    Scope: exactly one pending 0.7.4 release plus npm, tag, GitHub Release, asset, install, upgrade, and postpublish proof
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608052127-XWDY4R-keep-release-diagnostics-on-the-current-publishe/.agentplane/tasks/202608052127-XWDY4R/blueprint/resolved-snapshot.json
+    - old_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+    - current_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608052127-XWDY4R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608052127-XWDY4R
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Before publication, revert the task PR. After publication, never reuse the npm version or move the tag; fix any release-only regression in a new patch version while preserving published evidence."
   Findings: |-
@@ -502,6 +593,9 @@ sections:
       Impact: The candidate is provider-qualified without weakening thresholds; diagnostic sample-count variance does not hide token, outcome, scope, matched-latency, or supervisor regressions.
       Resolution: Archive the exact report and compact provider evidence, publish this verified head, run hosted checks, then integrate once and publish one 0.7.4 patch from protected main.
 extensions:
+  implementation_commit:
+    hash: "6c21aab823fe2019b6649b65f5bea6685be0e549"
+    message: "🚧 XWDY4R regression: require exact late planner result"
   workflow_route_baseline:
     start_head_sha: "944dc6eefcd5ea79c33af066caf1078f881e371a"
     version: 1
@@ -855,6 +949,61 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-06T12:29:34.294Z — VERIFY — ok
+
+By: TESTER
+
+Note: Exact-subject provider qualification and committed evidence accepted without retry.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T12:27:39.739Z, excerpt_hash=sha256:601864529a301c859f24781e57ab5147e863d1919530ac48c0866ae21d2ed463
+
+Details:
+
+Command: bun run release:prepublish
+Result: pass
+Evidence: exact candidate deterministic install, migration, lifecycle, context, evaluator, package, release, recovery, typecheck, critical CLI, doctor, and task-state gates passed
+Scope: all non-provider Verify Steps on current implementation
+
+Command: AGENTPLANE_RF04_REPLAY_CODEX_BINARY=<official-pinned-binary> node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1
+Result: pass
+Evidence: report fbf20573217713c56df7418532e7fbdfa6d218b01cad361c8b5b279eff701e1a; ready 18/19; blocking 0; runs 50/50; episodes 55/55; no retry
+Scope: ten semantic scenarios across direct, branch_pr, context, evaluator, stale state, scope guard, adapter failure, and Hermes one-step
+
+Command: compare efficiency and latency against frozen baselines
+Result: pass
+Evidence: tokens 9186747 to 6263560, reduction 31.82 percent; verified success 8 to 20; scope violations 17 to 5; golden mismatches 33 to 10; matched CLI and supervisor latency passed
+Scope: token economy, outcome quality, boundary compliance, CLI preparation latency, and both supervisor frontends
+
+Command: git diff --check and bun run artifacts:check
+Result: pass
+Evidence: archived evidence has no whitespace findings and AgentPlane artifact policy passed
+Scope: committed compact qualification evidence under task 202608052127-XWDY4R
+
+Command: protected-main publication boundary
+Result: pass
+Evidence: publication deferred until verified branch head is pushed, hosted checks pass, and protected-main integration completes
+Scope: exactly one pending 0.7.4 release plus npm, tag, GitHub Release, asset, install, upgrade, and postpublish proof
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608052127-XWDY4R-keep-release-diagnostics-on-the-current-publishe/.agentplane/tasks/202608052127-XWDY4R/blueprint/resolved-snapshot.json
+- old_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+- current_digest: 3fe0b72ea882ded7217e863c43b2b5ea11f53ab7bd1cd55c7d25440fafaefb94
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608052127-XWDY4R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608052127-XWDY4R
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -880,3 +1029,16 @@ Confirmed post-release findings and fixes: (1) release next-action accepted stal
 - Observation: Absolute CLI wall-time remained advisory-red and raw provider measurement had 23 scoped-mutation samples versus baseline 25; the release contract's matched v0.6.26 latency and outcome/token gates passed with no blocking failure.
   Impact: The candidate is provider-qualified without weakening thresholds; diagnostic sample-count variance does not hide token, outcome, scope, matched-latency, or supervisor regressions.
   Resolution: Archive the exact report and compact provider evidence, publish this verified head, run hosted checks, then integrate once and publish one 0.7.4 patch from protected main.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/2` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:e741a0246ea10957965db0ba00782575bb9d51a9edd6a9a9cde921bc29bf9b84`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-06T12:33:08.974Z`
