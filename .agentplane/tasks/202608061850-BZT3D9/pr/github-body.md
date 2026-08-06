@@ -16,7 +16,12 @@ Publish the already verified post-merge fixes discovered after PR #4784 auto-mer
 ## Verification
 
 - State: ok
-- Note: Post-merge qualification fixes are isolated from merged main and pass all declared release gates.
+- Note:
+
+```text
+CI recovery head refresh verified: implementation unchanged; typecheck, exact compatibility
+contract, and all 12 critical CLI chunks passed on e36b10803bad.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The frozen evidence contains no deterministic verification records, runner history, runtime evidence, or hosted-check evidence for the evaluated SHA, so the declared checks and concurrency-sensitive integration conditions cannot be validated.",
+      "broken_invariant": "Pass requires frozen evidence covering the task's positive, negative, and concurrency-sensitive paths; DoD also requires all Verify Steps to be executed and recorded, including stable hosted checks and PR-head equality before protected integration.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/8967159f715c70dc39a845fbfb50cc55d258dc53097ef7703366fb083650420d.json",
+          "sha256": "sha256:8967159f715c70dc39a845fbfb50cc55d258dc53097ef7703366fb083650420d",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608061850-BZT3D9/README.md",
+          "sha256": "sha256:e09a2ffd52a10095c0bf77363566419ddf64abd29886db7ae13f125517b8038c",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks"
+        },
+        {
+          "path": ".agentplane/policy/workflow.branch_pr.md",
+          "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+          "section": "Constraints"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Frozen command-level results for every declared and task-specific verification command at evaluated SHA 2c35aa1d9848ccdc44d1c13b722dc0253f4f4f9d.",
+    "Frozen evidence that the hosted PR head equals the verified head and that all required and late-appearing hosted checks completed successfully and remained stable.",
+    "Frozen ancestry and cleanup evidence proving protected main contains the follow-up head before removal of the obsolete WCARQG branch."
+  ],
+  "hidden_assumptions": [
+    "Narrative verification notes are assumed to represent successful executions at the evaluated SHA despite the observed-checks artifact containing no verification records or runtime evidence.",
+    "The implementation is assumed unchanged by the CI-recovery refresh even though the recovery verification note references a different head and supplies no frozen diff or check record for that head.",
+    "Hosted-check stability, protected-lane integration, and branch-cleanup ordering are assumed to be deferred safely despite being explicit acceptance criteria."
+  ],
+  "recovery_context": "Regenerate the frozen evaluator packet with deterministic command results tied to evaluated SHA 2c35aa1d9848ccdc44d1c13b722dc0253f4f4f9d, plus hosted PR head-equality, stable required-check, ancestry, and cleanup-order evidence.",
+  "recovery_reason": "deterministic_evidence_gap"
+}
