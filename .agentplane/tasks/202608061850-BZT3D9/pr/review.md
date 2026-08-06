@@ -6,7 +6,7 @@ Created: 2026-08-06T18:52:19.901Z
 
 - Task: `202608061850-BZT3D9`
 - Title: Land post-merge workflow routing qualification fixes
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608061850-BZT3D9/land-post-merge-workflow-routing-qualification-f`
 - Canonical task record: `.agentplane/tasks/202608061850-BZT3D9/README.md`
 
