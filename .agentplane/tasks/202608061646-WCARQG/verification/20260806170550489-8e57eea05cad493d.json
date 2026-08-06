@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:8e57eea05cad493dfaffa3891ca5e23eb10908df088dcef6ceabb9d4c7999c90",
+  "implementation_sha": "b060e9b18d17843cc7d36a0baf77c8ae9ae5b744",
+  "kind": "task_verification_record",
+  "note": "Post-commit verification binds the passing focused tests, 119 core task tests, typecheck, schema parity, and policy routing evidence to implementation commit b060e9b18.",
+  "recorded_at": "2026-08-06T17:05:50.489Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/blueprint/task-input.test.ts\n- bunx vitest --config vitest.workspace.ts run --project core packages/core/src/tasks\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984",
+  "task_id": "202608061646-WCARQG",
+  "verification_command": "agentplane verify 202608061646-WCARQG --ok --by CODER",
+  "verifier": "CODER"
+}

@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:7df24b5bad93b3ec95456ba1a19b9337a8ae16c472118c1db2ccad8c3dc992c5",
+  "implementation_sha": "1c7849f0ed3881ca385a7bdf8705358099fb47b2",
+  "kind": "task_verification_record",
+  "note": "Verified commit 1c7849f0e: 98 focused routing/schema/CLI tests pass, TypeScript build passes, generated schemas are current, and policy routing passes.",
+  "recorded_at": "2026-08-06T17:07:34.361Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/blueprint/task-input.test.ts\n- bunx vitest --config vitest.workspace.ts run --project core packages/core/src/tasks\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984",
+  "task_id": "202608061646-WCARQG",
+  "verification_command": "agentplane verify 202608061646-WCARQG --ok --by TESTER",
+  "verifier": "TESTER"
+}
