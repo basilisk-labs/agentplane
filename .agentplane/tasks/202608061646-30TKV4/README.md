@@ -1,10 +1,11 @@
 ---
 id: "202608061646-30TKV4"
 title: "Add user-first task intake and execution preview"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -61,9 +62,23 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "No findings."
+token_usage:
+  agent_runs: 3
+  input_tokens: 456817
+  journal_digest: "sha256:79d0693ac8b42bd0ea7e87220912eb2795bb7a52a030f3753e76dcfbd128a0f3"
+  observed_agent_runs: 2
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "partial"
+  total_tokens: 463683
+  unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
+  updated_at: "2026-08-06T20:09:32.605Z"
 commit:
-  hash: "dbb7a18e2f1a190d27cf5a10944d4add569d2795"
-  message: "🧪 30TKV4 task: harden user-first task intake"
+  hash: "9614d3f34fb5d4ed2c9ec362e961f81d0b33ea66"
+  message: "🧪 30TKV4 task: record accepted UX qualification"
 comments:
   -
     author: "CODER"
@@ -74,6 +89,9 @@ comments:
   -
     author: "CODER"
     body: "Implemented evaluator rework: corrected and re-approved the cli-core Verify Step, serialized task creation across processes, added concurrent duplicate protection with persisted route evidence, covered empty/invalid intake and explicit route overrides, and exercised the task advance --agent-json handoff. Declared focused tests 37/37 and all static/docs checks pass."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -108,8 +126,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified the re-approved user-first task contract: cli-core 37/37 covers route inference and overrides, invalid inputs, simultaneous duplicate creation, persisted route consistency, dry-run preview, and task advance --agent-json compatibility; docs, onboarding, types, and routing also pass."
+  -
+    type: "status"
+    at: "2026-08-06T20:09:32.605Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-06T20:02:10.497Z"
+doc_updated_at: "2026-08-06T20:09:32.615Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
@@ -246,6 +271,9 @@ sections:
       Impact: The literal command found no files even though the implementation tests are valid cli-core tests.
       Resolution: Executed the canonical repository selector bun run test:project -- cli-core against the exact two files; 22/22 tests passed, and recorded both the selector mismatch and replacement.
 extensions:
+  implementation_commit:
+    hash: "dbb7a18e2f1a190d27cf5a10944d4add569d2795"
+    message: "🧪 30TKV4 task: harden user-first task intake"
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
     version: 1
@@ -398,3 +426,16 @@ Revert the UX feature commit. Existing task new, task run, task status, and task
 - Observation: The original focused-test Verify Step selected the agentplane Vitest project, which intentionally excludes run-cli suites.
   Impact: The literal command found no files even though the implementation tests are valid cli-core tests.
   Resolution: Executed the canonical repository selector bun run test:project -- cli-core against the exact two files; 22/22 tests passed, and recorded both the selector mismatch and replacement.
+
+## Token Usage
+
+- State: `partial`
+- Completeness: `2/3` agent runs
+- Input tokens: `456817`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `463683`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:79d0693ac8b42bd0ea7e87220912eb2795bb7a52a030f3753e76dcfbd128a0f3`
+- Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
+- Updated at: `2026-08-06T20:09:32.605Z`
