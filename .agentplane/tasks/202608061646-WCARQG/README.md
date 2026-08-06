@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -29,9 +29,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-06T17:14:45.234Z"
+  updated_at: "2026-08-06T17:15:18.499Z"
   updated_by: "TESTER"
-  note: "Implementation 1c7849f0e is accepted for integration."
+  note: "Implementation 1c7849f0e is accepted for integration with concrete check evidence."
   attempts: 0
 quality_review:
   state: "pass"
@@ -140,8 +140,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Implementation 1c7849f0e is accepted for integration."
+  -
+    type: "verify"
+    at: "2026-08-06T17:15:18.499Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Implementation 1c7849f0e is accepted for integration with concrete check evidence."
 doc_version: 3
-doc_updated_at: "2026-08-06T17:14:46.923Z"
+doc_updated_at: "2026-08-06T17:15:20.316Z"
 doc_updated_by: "CODER"
 description: "Add a backward-compatible task-level execution route that lets AgentPlane classify task isolation risk and deterministically select direct or branch_pr, with policy overrides, stable reason codes, persisted evidence, and no route changes after mutation starts."
 sections:
@@ -352,6 +358,56 @@ sections:
     Details:
 
     Checks: bunx vitest focused routing/schema/CLI suites => 98 passed; bunx vitest core tasks => 119 passed; bun run typecheck => passed; bun run schemas:check => passed; node .agentplane/policy/check-routing.mjs => passed. Scope: implementation commit 1c7849f0e; later commits contain managed task evidence only.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-WCARQG-add-explainable-per-task-workflow-routing/.agentplane/tasks/202608061646-WCARQG/blueprint/resolved-snapshot.json
+    - old_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+    - current_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-WCARQG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-06T17:15:18.499Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Implementation 1c7849f0e is accepted for integration with concrete check evidence.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T17:14:46.923Z, excerpt_hash=sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/blueprint/task-input.test.ts
+    Result: pass
+    Evidence: 98 focused routing, schema, CLI, and worktree tests passed
+    Scope: task routing and blueprint integration
+
+    Command: bunx vitest --config vitest.workspace.ts run --project core packages/core/src/tasks
+    Result: pass
+    Evidence: 119 core task persistence and schema tests passed
+    Scope: task execution_route storage and schema compatibility
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript workspace typecheck completed successfully
+    Scope: changed core and CLI packages
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing validation passed
+    Scope: repository policy graph
 
     BlueprintSnapshotRef:
     - state: current
@@ -605,6 +661,56 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T17:13:55.579Z, excerpt_
 Details:
 
 Checks: bunx vitest focused routing/schema/CLI suites => 98 passed; bunx vitest core tasks => 119 passed; bun run typecheck => passed; bun run schemas:check => passed; node .agentplane/policy/check-routing.mjs => passed. Scope: implementation commit 1c7849f0e; later commits contain managed task evidence only.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-WCARQG-add-explainable-per-task-workflow-routing/.agentplane/tasks/202608061646-WCARQG/blueprint/resolved-snapshot.json
+- old_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+- current_digest: faeda72627b35767174ab067742fd82a40e33e572dd85a22fca7ba6668e7bfde
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-WCARQG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-06T17:15:18.499Z — VERIFY — ok
+
+By: TESTER
+
+Note: Implementation 1c7849f0e is accepted for integration with concrete check evidence.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T17:14:46.923Z, excerpt_hash=sha256:32c2f05019d838c3772bc15fea76fee9c7c68fad926dd3ae4d931fe85cc74984
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/blueprint/task-input.test.ts
+Result: pass
+Evidence: 98 focused routing, schema, CLI, and worktree tests passed
+Scope: task routing and blueprint integration
+
+Command: bunx vitest --config vitest.workspace.ts run --project core packages/core/src/tasks
+Result: pass
+Evidence: 119 core task persistence and schema tests passed
+Scope: task execution_route storage and schema compatibility
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript workspace typecheck completed successfully
+Scope: changed core and CLI packages
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing validation passed
+Scope: repository policy graph
 
 BlueprintSnapshotRef:
 - state: current
