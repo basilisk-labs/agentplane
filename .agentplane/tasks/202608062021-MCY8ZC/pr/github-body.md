@@ -16,12 +16,7 @@ Return an exact result_path and structured resume_argv from task advance, expose
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Evaluator findings resolved; compatibility, exact protocol fields, all agent guidance, docs, typing,
-routing, and critical suites pass on fd1eb488b.
-```
+- Note: All evaluator rework and declared checks pass on clean implementation SHA ada518fb9.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -49,7 +44,7 @@ routing, and critical suites pass on fd1eb488b.
  packages/agentplane/src/cli/command-guide.test.ts  |   7 +-
  packages/agentplane/src/cli/command-guide.ts       |   4 +-
  .../src/cli/run-cli.core.help-contract.test.ts     |   8 +-
- .../src/cli/run-cli.core.task-advance.test.ts      | 211 ++++++++++++++++-----
+ .../src/cli/run-cli.core.task-advance.test.ts      | 234 +++++++++++++++++----
  .../src/cli/run-cli.core.task-guided.test.ts       |   2 +-
  packages/agentplane/src/cli/run-cli.core.test.ts   |  18 +-
  .../src/commands/shared/route-decision-blockers.ts |  18 ++
@@ -60,11 +55,11 @@ routing, and critical suites pass on fd1eb488b.
  .../src/commands/shared/workflow-step.test.ts      |  42 +++-
  .../src/commands/shared/workflow-step.ts           |   4 +
  .../src/commands/task/advance.command.ts           |  62 +++++-
- .../src/commands/task/agent-action-packet.test.ts  |  90 +++++++++
- .../src/commands/task/agent-action-packet.ts       |  70 ++++++-
+ .../src/commands/task/agent-action-packet.test.ts  |  90 ++++++++
+ .../src/commands/task/agent-action-packet.ts       |  70 +++++-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
  .../agentplane/src/commands/task/task.command.ts   |  62 ++----
- 32 files changed, 564 insertions(+), 163 deletions(-)
+ 32 files changed, 588 insertions(+), 162 deletions(-)
 ```
 
 </details>
