@@ -13,7 +13,7 @@ Created: 2026-08-06T21:10:34.048Z
 ## Verification
 
 - State: ok
-- Note: Evaluator rework is resolved: mixed security fragments are preserved and exact provider input rejects every supervisor command family unless explicit repair authority is present.
+- Note: Command-family hardening passes exact compiled-provider tests and the complete critical contract.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

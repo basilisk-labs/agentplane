@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\nResult: pass\nEvidence: 3 files, 73 tests passed.\nScope: exact compiled provider rejection, Git/release families, declared phase-tool identity.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: 12 of 12 critical-cli chunks passed at the final command-family implementation.\nScope: critical CLI, efficiency, replay and trust boundaries.\n\nCommand: bun run lint:core\nResult: pass\nEvidence: ESLint exited 0.\nScope: packages and scripts.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build exited 0.\nScope: workspace type safety.\n\nCommand: bun run format:check\nResult: pass\nEvidence: all matched files use Prettier code style.\nScope: repository formatting.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK on the semantic-projection branch.\nScope: policy gateway graph.",
+  "digest": "sha256:c50e589aaf8ab4632e4acc119d8adff6550aa65ddc90a24e7c0c1064097b6b9a",
+  "implementation_sha": "dc75e47d770efb9f5db1a9f97b115aa2c81925f5",
+  "kind": "task_verification_record",
+  "note": "Command-family hardening passes exact compiled-provider tests and the complete critical contract.",
+  "recorded_at": "2026-08-07T04:51:55.634Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\n- bun run test:critical\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98",
+  "task_id": "202608062021-V2EESE",
+  "verification_command": "agentplane verify 202608062021-V2EESE --ok --by TESTER",
+  "verifier": "TESTER"
+}
