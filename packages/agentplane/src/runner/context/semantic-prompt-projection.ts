@@ -8,6 +8,60 @@ type ProcessChoreographyMatch = {
   match: string;
 };
 
+const GIT_SUPERVISOR_SUBCOMMANDS = [
+  "add",
+  "am",
+  "apply",
+  "archive",
+  "bisect",
+  "branch",
+  "bundle",
+  "checkout",
+  "cherry-pick",
+  "clean",
+  "clone",
+  "commit",
+  "config",
+  "fast-import",
+  "fetch",
+  "filter-branch",
+  "format-patch",
+  "gc",
+  "init",
+  "maintenance",
+  "merge",
+  "mergetool",
+  "mv",
+  "notes",
+  "pull",
+  "push",
+  "rebase",
+  "remote",
+  "repack",
+  "replace",
+  "request-pull",
+  "reset",
+  "restore",
+  "rev-parse",
+  "revert",
+  "rm",
+  "send-email",
+  "sparse-checkout",
+  "stash",
+  "status",
+  "submodule",
+  "switch",
+  "tag",
+  "update-index",
+  "update-ref",
+  "worktree",
+] as const;
+
+const GIT_SUPERVISOR_COMMAND_PATTERN = new RegExp(
+  String.raw`\bgit\s+(?:${GIT_SUPERVISOR_SUBCOMMANDS.join("|")})\b`,
+  "giu",
+);
+
 const PROCESS_CHOREOGRAPHY_PATTERNS = [
   {
     id: "task_command",
@@ -33,14 +87,8 @@ const PROCESS_CHOREOGRAPHY_PATTERNS = [
   },
   { id: "github_release", pattern: /\bgh\s+release\b/giu },
   {
-    id: "git_shell_control",
-    pattern:
-      /(?:^|[\n`])\s*(?:\$\s*)?git\s+(?!(?:blame|diff|grep|log|show)\b)(?:-[\w-]+\s+)*[a-z][\w-]*\b/gmu,
-  },
-  {
-    id: "git_imperative_control",
-    pattern:
-      /\b(?:run|execute|invoke|use)\s+`?git\s+(?!(?:blame|diff|grep|log|show)\b)(?:-[\w-]+\s+)*[a-z][\w-]*\b/giu,
+    id: "git_supervisor_command",
+    pattern: GIT_SUPERVISOR_COMMAND_PATTERN,
   },
   { id: "github_pr", pattern: /\bgh\s+pr\b/giu },
 ] as const;
