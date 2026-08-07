@@ -2,10 +2,10 @@
 id: "202608061646-30TKV4"
 title: "Add user-first task intake and execution preview"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on:
@@ -77,8 +77,8 @@ token_usage:
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
   updated_at: "2026-08-07T00:02:02.354Z"
 commit:
-  hash: "6431501cbe55ca87787df77b3f0b68acee66bb81"
-  message: "🧪 30TKV4 task: record cross-process evaluator pass"
+  hash: "cd8beb68ac1d516a1d1d64419dc609ac703def70"
+  message: "🧪 30TKV4 cli: align critical compatibility expectations"
 comments:
   -
     author: "CODER"
@@ -104,6 +104,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: align the reviewed compatibility candidate and critical expectations with the user-first task create surface after hosted CI."
 events:
   -
     type: "status"
@@ -197,8 +200,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "User-first task intake, duplicate serialization, route preview, and reviewed compatibility surface pass."
+  -
+    type: "status"
+    at: "2026-08-07T00:23:55.996Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Rework: align the reviewed compatibility candidate and critical expectations with the user-first task create surface after hosted CI."
 doc_version: 3
-doc_updated_at: "2026-08-07T00:22:57.678Z"
+doc_updated_at: "2026-08-07T00:23:56.034Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
