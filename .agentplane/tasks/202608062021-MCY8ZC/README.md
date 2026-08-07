@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -63,19 +63,19 @@ quality_review:
   findings:
     - "The frozen implementation and deterministic verification evidence satisfy the declared external supervisor protocol, operator-boundary, help-surface, provenance, and branch-worktree requirements."
 token_usage:
-  agent_runs: 3
-  input_tokens: 912556
-  journal_digest: "sha256:19e90c6e404fcfe2f231b11df66e8cef314b62bcb0297829a45805ae07734df4"
-  observed_agent_runs: 3
+  agent_runs: 5
+  input_tokens: 1444211
+  journal_digest: "sha256:4c9c712c34f09ab2d158e1430a2122169af49a1a621fc0e598c22d65d8bb44b5"
+  observed_agent_runs: 5
   observed_by: "agentplane"
-  output_tokens: 8881
-  reasoning_tokens: 2046
+  output_tokens: 13818
+  reasoning_tokens: 3279
   schema_version: 1
   source: "supervisor_journal"
   state: "observed"
-  total_tokens: 923483
+  total_tokens: 1461308
   unavailable_reason: null
-  updated_at: "2026-08-07T22:55:52.857Z"
+  updated_at: "2026-08-07T23:12:02.033Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -85,8 +85,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "a5e9f26e025d4c7bc538213f67bafc4d8eb201f8"
-  message: "✅ MCY8ZC supervisor: record evaluator pass"
+  hash: "651fd8abaf33bdc25879e88ac4f77efda9527e12"
+  message: "✅ MCY8ZC supervisor: record final evaluator pass"
 comments:
   -
     author: "CODER"
@@ -97,6 +97,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -161,8 +164,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Final implementation head ad1088693 passes all task, policy, docs, typing, critical, parser, and cleanliness checks."
+  -
+    type: "status"
+    at: "2026-08-07T23:12:02.033Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T23:11:11.210Z"
+doc_updated_at: "2026-08-07T23:12:02.060Z"
 doc_updated_by: "CODER"
 description: "Return an exact result_path and structured resume_argv from task advance, expose a typed operator action at approval boundaries, make quickstart and role command guides supervisor-first, show the canonical new/active/advance/run/brief subset in compact task help, attribute explicit begin plans to a human source, and add an end-to-end branch_pr test that advances once from the base checkout and receives a worktree-bound WorkOrder without caller cwd changes."
 sections:
@@ -582,8 +592,8 @@ sections:
       Resolution: Merge 202608061850-BZT3D9, rebase this branch, rerun targeted, docs, typecheck, and critical suites, then replace this rework record with verified evidence.
 extensions:
   implementation_commit:
-    hash: "ada518fb982b82bf7cb63c2576fb16b0bc56e47b"
-    message: "🧪 MCY8ZC supervisor: prove worktree source binding"
+    hash: "ad1088693203b396693c99a4ef64397ef176c461"
+    message: "🐛 MCY8ZC supervisor: accept bounded verification result detail"
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
     version: 1
@@ -1021,12 +1031,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `observed`
-- Completeness: `3/3` agent runs
-- Input tokens: `912556`
-- Output tokens: `8881`
-- Reasoning tokens: `2046`
-- Total tokens: `923483`
+- Completeness: `5/5` agent runs
+- Input tokens: `1444211`
+- Output tokens: `13818`
+- Reasoning tokens: `3279`
+- Total tokens: `1461308`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:19e90c6e404fcfe2f231b11df66e8cef314b62bcb0297829a45805ae07734df4`
+- Journal digest: `sha256:4c9c712c34f09ab2d158e1430a2122169af49a1a621fc0e598c22d65d8bb44b5`
 - Unavailable reason: `none`
-- Updated at: `2026-08-07T22:55:52.857Z`
+- Updated at: `2026-08-07T23:12:02.033Z`
