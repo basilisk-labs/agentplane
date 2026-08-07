@@ -32,7 +32,7 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
  .../src/cli/run-cli.core.route-decision.test.ts    |   8 +
  .../src/cli/run-cli.core.task-run.test.ts          | 112 +++---
  .../src/cli/run-cli.core.tasks.create.test.ts      | 282 ++++++++++++++
- ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  39 +-
  .../src/cli/run-cli/command-catalog/task.ts        |   9 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
  .../agentplane/src/commands/task/create.command.ts | 409 +++++++++++++++++++++
@@ -43,7 +43,7 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
  .../agentplane/src/commands/task/task.command.ts   |  10 +-
  .../baselines/v0.7-compatibility-candidate.json    | 193 +++++++++-
  .../check-compatibility-contract-baseline.mjs      | 135 ++++++-
- 16 files changed, 1442 insertions(+), 293 deletions(-)
+ 16 files changed, 1470 insertions(+), 293 deletions(-)
 ```
 
 </details>

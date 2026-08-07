@@ -351,6 +351,34 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           },
         },
       });
+      const cliDelta = compatibilityCandidate.deltas.find(
+        (delta) => (delta as { section?: string }).section === "cli_topology",
+      ) as
+        | {
+            source_tasks: string[];
+            evidence: {
+              added_commands: string[];
+              addition_sources: Array<{
+                kind: string;
+                command: string;
+                source_task: string;
+              }>;
+            };
+          }
+        | undefined;
+      expect(cliDelta).toMatchObject({
+        source_tasks: expect.arrayContaining(["202608061646-30TKV4"]),
+        evidence: {
+          added_commands: expect.arrayContaining(["task create"]),
+          addition_sources: expect.arrayContaining([
+            {
+              kind: "command",
+              command: "task create",
+              source_task: "202608061646-30TKV4",
+            },
+          ]),
+        },
+      });
       expect(compatibilityCandidate.deltas).toContainEqual({
         section: "agent_facing_context_contracts",
         source_tasks: [
