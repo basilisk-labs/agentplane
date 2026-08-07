@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "No contract-breaking defect was identified in the frozen implementation and verification evidence.",
+      "broken_invariant": "None; the structured semantic projection, exact compiled-prompt rejection, role parity, bounded context, and required verification checks are covered.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/ec83df6c7f976c11abcccfbf66aec702823e935c295f5386d4e80b1d445ee8c2.patch",
+          "sha256": "sha256:ec83df6c7f976c11abcccfbf66aec702823e935c295f5386d4e80b1d445ee8c2",
+          "section": "semantic prompt projection, provider-input guard, and integration tests"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/verification/20260807045726439-47f95c04a29b783c.json",
+          "sha256": "sha256:86c7b7fb555cc777c340ccfc86a0824bc4660cbf82e754b9310264817732027a",
+          "section": "passing targeted, critical, typecheck, lint, format, and routing checks"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/README.md",
+          "sha256": "sha256:2d835aaf58e9f35ed8071207a458d5d2907b89c1defb1bd2cb2883a24cf63fbf",
+          "section": "Scope, Plan, Verify Steps, and Verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The process-mechanism-repair tag and matching task intent are trusted as the explicit authority boundary for allowing lifecycle-command evidence in the compiled provider prompt.",
+    "The enumerated command-family patterns remain synchronized with all supervisor-owned lifecycle, Git, PR, publication, and release interfaces as those interfaces evolve."
+  ]
+}
