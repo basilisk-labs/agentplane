@@ -2,10 +2,10 @@
 id: "202608062021-Z0X584"
 title: "Converge generated agent guidance on the supervisor-first protocol"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -63,19 +63,19 @@ quality_review:
   findings:
     - "No contract divergence was found: the revised first workflows route initial planning through task advance, state that task run returns semantic_input_required before a task-specific plan exists, and retain managed execution only after planning and approval."
 token_usage:
-  agent_runs: 4
-  input_tokens: 773221
-  journal_digest: "sha256:327394e7565a81b3744d5f90af1d3a1cf15238e54f6f5095f1022e6268a4bd14"
-  observed_agent_runs: 4
+  agent_runs: 6
+  input_tokens: 1174647
+  journal_digest: "sha256:9fa3f86f0710107f20b003e59c8b9586c2847e46271a26b16e749673817f8ac4"
+  observed_agent_runs: 6
   observed_by: "agentplane"
-  output_tokens: 8787
-  reasoning_tokens: 1968
+  output_tokens: 13263
+  reasoning_tokens: 2938
   schema_version: 1
   source: "supervisor_journal"
   state: "observed"
-  total_tokens: 783976
+  total_tokens: 1190848
   unavailable_reason: null
-  updated_at: "2026-08-07T03:37:00.993Z"
+  updated_at: "2026-08-07T04:01:49.667Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -84,7 +84,9 @@ execution_route:
   requested_mode: "auto"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "a484050b2de32fd4b0ed0f58de06d2b44694c497"
+  message: "🚧 Z0X584 prompts: record final quality evidence"
 comments:
   -
     author: "DOCS"
@@ -92,6 +94,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation recorded: supervisor-first prompts, generated guidance, docs contracts, and safe task reclassification are committed; focused verification passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -203,8 +208,15 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "All generated agent prompts, policy guidance, onboarding docs, and exact runtime planning boundaries now converge on supervisor-first task create/advance/run UX."
+  -
+    type: "status"
+    at: "2026-08-07T04:01:49.667Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T04:01:16.348Z"
+doc_updated_at: "2026-08-07T04:01:49.694Z"
 doc_updated_by: "CODER"
 description: "Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr policy modules, Codex skill, README, and workflow docs with task active, task advance, and task run as the only normal agent paths; provide one copy-paste executable first workflow and retain manual commands only as explicit operator or recovery interfaces."
 sections:
@@ -738,8 +750,8 @@ sections:
       Resolution: All first-task surfaces now use task create, external PLANNER task advance, then task run only after planning and approval; parity checks reject stale claims.
 extensions:
   implementation_commit:
-    hash: "59df72b1e7a566d618624d4b5145783dd735ca4a"
-    message: "🧪 Z0X584 prompts: converge lifecycle contracts on supervisor route"
+    hash: "047e9077deac3afcc100824875a601f8098625ba"
+    message: "🚧 Z0X584 prompts: make first task flow executable"
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
     version: 1
@@ -1291,12 +1303,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `observed`
-- Completeness: `4/4` agent runs
-- Input tokens: `773221`
-- Output tokens: `8787`
-- Reasoning tokens: `1968`
-- Total tokens: `783976`
+- Completeness: `6/6` agent runs
+- Input tokens: `1174647`
+- Output tokens: `13263`
+- Reasoning tokens: `2938`
+- Total tokens: `1190848`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:327394e7565a81b3744d5f90af1d3a1cf15238e54f6f5095f1022e6268a4bd14`
+- Journal digest: `sha256:9fa3f86f0710107f20b003e59c8b9586c2847e46271a26b16e749673817f8ac4`
 - Unavailable reason: `none`
-- Updated at: `2026-08-07T03:37:00.993Z`
+- Updated at: `2026-08-07T04:01:49.667Z`
