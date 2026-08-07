@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 61
+revision: 62
 origin:
   system: "manual"
 depends_on:
@@ -68,22 +68,22 @@ quality_review:
   findings:
     - "No acceptance-criteria or loaded-policy violations were identified in the frozen implementation and verification evidence."
 token_usage:
-  agent_runs: 14
-  input_tokens: 2614868
-  journal_digest: "sha256:4e5290bc7aa91a266b1f8125bebe1befa2222eeb0af8d1d2cab43c1c4152eb64"
-  observed_agent_runs: 12
+  agent_runs: 15
+  input_tokens: 2990382
+  journal_digest: "sha256:6684049b42c1eb9fb119d086de280c1024d47ff93bb9e8024a178313d86f3bb6"
+  observed_agent_runs: 13
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
   state: "partial"
-  total_tokens: 2649366
+  total_tokens: 3028645
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
-  updated_at: "2026-08-07T01:09:10.200Z"
+  updated_at: "2026-08-07T01:21:27.373Z"
 commit:
-  hash: "93aa110229b691645e9f1fffefe92ae6511761b9"
-  message: "🧪 30TKV4 task: record formatted evaluator pass"
+  hash: "1b7f00c962ca2ceb1820bf77b97cc6a4a8317dd4"
+  message: "🧪 30TKV4 task: record strict CI evaluator pass"
 comments:
   -
     author: "CODER"
@@ -118,6 +118,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -324,8 +327,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "All ten declared checks pass on 856bf44a5f99, including strict lint and critical compatibility coverage."
+  -
+    type: "status"
+    at: "2026-08-07T01:21:27.373Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T01:20:22.269Z"
+doc_updated_at: "2026-08-07T01:21:27.401Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
@@ -1503,8 +1513,8 @@ sections:
       Resolution: Executed the canonical repository selector bun run test:project -- cli-core against the exact two files; 22/22 tests passed, and recorded both the selector mismatch and replacement.
 extensions:
   implementation_commit:
-    hash: "0369e3c72d1d7f08695a360a0e3384fd56803347"
-    message: "🎨 30TKV4 cli: normalize split intake test formatting"
+    hash: "856bf44a5f9975126f59286f96f5e1c11d6c7493"
+    message: "🧹 30TKV4 cli: satisfy strict compatibility lint"
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
     version: 1
@@ -2701,12 +2711,12 @@ Revert the UX feature commit. Existing task new, task run, task status, and task
 ## Token Usage
 
 - State: `partial`
-- Completeness: `12/14` agent runs
-- Input tokens: `2614868`
+- Completeness: `13/15` agent runs
+- Input tokens: `2990382`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
-- Total tokens: `2649366`
+- Total tokens: `3028645`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:4e5290bc7aa91a266b1f8125bebe1befa2222eeb0af8d1d2cab43c1c4152eb64`
+- Journal digest: `sha256:6684049b42c1eb9fb119d086de280c1024d47ff93bb9e8024a178313d86f3bb6`
 - Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
-- Updated at: `2026-08-07T01:09:10.200Z`
+- Updated at: `2026-08-07T01:21:27.373Z`
