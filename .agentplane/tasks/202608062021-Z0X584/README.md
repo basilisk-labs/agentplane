@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -31,37 +31,39 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-07T03:47:49.580Z"
-  updated_by: "CODER"
-  note: "PR review found an incorrect managed-run planning claim in the first workflow; documentation must use the external task advance planning boundary."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-07T03:50:01.999Z"
+  updated_by: "REVIEWER"
+  note: "Supervisor-first prompts and lifecycle documentation match the actual planning boundary; all declared checks pass."
+  attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T03:36:26.091Z"
+  updated_at: "2026-08-07T03:51:17.460Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "59df72b1e7a566d618624d4b5145783dd735ca4a"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "43da72da63cae5c690f8e8145dbc38b5c147bfcb"
   blueprint_digest: "5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100"
   evidence_refs:
-    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-033538447-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-033538447-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/d5b6d921d8da1b5f9ebbfdbc29eeec6d8c89a8135511854d9deb579dffb0a04a.md"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-033538447-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-033538447-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-033538447-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-035019720-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-035019720-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/1020723fcba57011cb6cda276a8d5cef6b6da082d718f8fe1dcd4eb1bd9b6dd4.md"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-035019720-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-035019720-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-035019720-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-035019720-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608062021-Z0X584/README.md"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/efcd4b9fea4846e3a8d2366aa3efbf64474a535f5ca82cf11b67320a13f2f5a8.patch"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/e4ef0dda663dc8a8df65ea59383b92d432f9a07b374d2225bbff7bd0bf712341.json"
-    - ".agentplane/tasks/202608062021-Z0X584/verification/20260807033528341-1a803fcda060b505.json"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/35ecc4bdc613572c7c9b9adbd9a7336147859cdf73510fca38d0b1c372926333.patch"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/6e3168a4908f1cb388fb9c5c82ef8371be724292a80ff34662db5b88c098f6df.json"
+    - ".agentplane/tasks/202608062021-Z0X584/verification/20260807035001999-ddeddb42eda2b594.json"
     - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/cb9bc25b71317d1d5c961b48d4eeed93cebd2712ab163ae470e33bb52e17d0ab.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen diff consistently makes task active, task advance, and task run the normal agent-facing paths while placing diagnostics and low-level lifecycle operations behind explicit operator or recovery boundaries."
+    - "The advertised first managed workflow is not executable from a newly created task: `task run` stops with `semantic_input_required`, but the workflow and generated bootstrap guidance omit the required `task advance` PLANNER exchange."
+    - "The bundled website corpus remains internally contradictory: it states that `task run` resolves the initial planning episode even though the corrected lifecycle documentation says it returns `semantic_input_required`."
 token_usage:
   agent_runs: 4
   input_tokens: 773221
@@ -191,8 +193,14 @@ events:
     author: "CODER"
     state: "needs_rework"
     note: "PR review found an incorrect managed-run planning claim in the first workflow; documentation must use the external task advance planning boundary."
+  -
+    type: "verify"
+    at: "2026-08-07T03:50:01.999Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Supervisor-first prompts and lifecycle documentation match the actual planning boundary; all declared checks pass."
 doc_version: 3
-doc_updated_at: "2026-08-07T03:47:50.874Z"
+doc_updated_at: "2026-08-07T03:51:17.482Z"
 doc_updated_by: "CODER"
 description: "Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr policy modules, Codex skill, README, and workflow docs with task active, task advance, and task run as the only normal agent paths; provide one copy-paste executable first workflow and retain manual commands only as explicit operator or recovery interfaces."
 sections:
@@ -572,6 +580,61 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-07T03:50:01.999Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Supervisor-first prompts and lifecycle documentation match the actual planning boundary; all declared checks pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T03:47:50.874Z, excerpt_hash=sha256:e9653577267767950996748213a2f0aa3639b45685585200ddac7e270aea9d00
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts
+    Result: pass
+    Evidence: 2 files, 27 tests passed
+    Scope: generated policy gateway, prompt compiler, init output
+
+    Command: bun run docs:onboarding:check
+    Result: pass
+    Evidence: agent onboarding scenario surfaces are aligned
+    Scope: README and canonical task lifecycle onboarding
+
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: generated CLI reference is unchanged and current
+    Scope: CLI documentation
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK
+    Scope: bundled policy graph and size constraints
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/command-guide.test.ts
+    Result: pass
+    Evidence: 3 files, 35 tests passed
+    Scope: task workflow compatibility and compact command guidance
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-Z0X584-converge-generated-agent-guidance-on-the-supervi/.agentplane/tasks/202608062021-Z0X584/blueprint/resolved-snapshot.json
+    - old_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+    - current_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-Z0X584
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -596,6 +659,10 @@ sections:
     - Observation: README and task-lifecycle docs claim task run resolves the initial PLANNER placeholder.
       Impact: Users receive a non-executable first workflow because runtime intentionally returns semantic_input_required.
       Resolution: Replace the first workflow with the external task advance exchange and state the managed-run boundary accurately.
+
+    - Observation: The initial docs incorrectly claimed task run resolves an unplanned task.
+      Impact: The first-run path could stop at semantic_input_required instead of the documented approval boundary.
+      Resolution: The canonical first workflow now uses task advance for the PLANNER exchange and documents when task run becomes eligible.
 extensions:
   implementation_commit:
     hash: "59df72b1e7a566d618624d4b5145783dd735ca4a"
@@ -991,6 +1058,61 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-07T03:50:01.999Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Supervisor-first prompts and lifecycle documentation match the actual planning boundary; all declared checks pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T03:47:50.874Z, excerpt_hash=sha256:e9653577267767950996748213a2f0aa3639b45685585200ddac7e270aea9d00
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts
+Result: pass
+Evidence: 2 files, 27 tests passed
+Scope: generated policy gateway, prompt compiler, init output
+
+Command: bun run docs:onboarding:check
+Result: pass
+Evidence: agent onboarding scenario surfaces are aligned
+Scope: README and canonical task lifecycle onboarding
+
+Command: bun run docs:cli:check
+Result: pass
+Evidence: generated CLI reference is unchanged and current
+Scope: CLI documentation
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK
+Scope: bundled policy graph and size constraints
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/command-guide.test.ts
+Result: pass
+Evidence: 3 files, 35 tests passed
+Scope: task workflow compatibility and compact command guidance
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-Z0X584-converge-generated-agent-guidance-on-the-supervi/.agentplane/tasks/202608062021-Z0X584/blueprint/resolved-snapshot.json
+- old_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+- current_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-Z0X584
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1019,6 +1141,10 @@ DecisionContextRef:
 - Observation: README and task-lifecycle docs claim task run resolves the initial PLANNER placeholder.
   Impact: Users receive a non-executable first workflow because runtime intentionally returns semantic_input_required.
   Resolution: Replace the first workflow with the external task advance exchange and state the managed-run boundary accurately.
+
+- Observation: The initial docs incorrectly claimed task run resolves an unplanned task.
+  Impact: The first-run path could stop at semantic_input_required instead of the documented approval boundary.
+  Resolution: The canonical first workflow now uses task advance for the PLANNER exchange and documents when task run becomes eligible.
 
 ## Token Usage
 

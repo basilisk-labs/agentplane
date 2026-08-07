@@ -21,6 +21,7 @@ const BOOTSTRAP_CONTEXT_COMMANDS = [
 
 const BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS = [
   COMMAND_SNIPPETS.core.taskNew,
+  "agentplane task advance <task-id> --agent-json",
   "agentplane task run <task-id>",
 ] as const;
 
@@ -62,11 +63,12 @@ const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
   {
     heading: "3. Direct happy path",
     summary:
-      "Create a task from ordinary language, then let the managed supervisor own planning, formal transitions, verification persistence, and closeout.",
+      "Create a task from ordinary language, return its initial PLANNER result through the external protocol, then let the supervisor own formal transitions, verification persistence, and closeout.",
     commands: BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS,
     notes: [
-      "`task run` stops and returns an exact operator action when human approval or external action is required; rerun it after that boundary is resolved.",
-      "For an external agent, use `task advance --agent-json`, write the typed result to `result_path`, and resume with the returned `resume_argv`.",
+      "Before a task-specific plan exists, `task run` returns `semantic_input_required`; use the read-only PLANNER packet from `task advance --agent-json` first.",
+      "The external agent writes its typed result to `exchange.directory/exchange.result_ref` and resumes through `exchange.return_invocation`.",
+      "After planning and approval, `task run` may resolve eligible semantic episodes through the configured managed adapter and returns control at human or external boundaries.",
     ],
   },
   {

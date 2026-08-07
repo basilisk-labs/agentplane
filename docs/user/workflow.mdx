@@ -29,17 +29,29 @@ agentplane task run <task-id>
 ```
 
 The managed and external frontends consume the same route, fingerprint, WorkOrder, evidence model,
-and stop boundaries. They differ only in who resolves the semantic episode.
+and stop boundaries. A newly created task still needs its initial PLANNER result through
+`task advance`; after planning and approval, either frontend may resolve an eligible semantic
+episode.
 
 ## First managed workflow
 
 ```bash
-agentplane task new --title "Fix the reported defect" --description "Reproduce, repair, and verify the defect" --owner CODER --tag code
-agentplane task run <task-id>
+TASK_ID=$(agentplane task new --title "Fix the reported defect" --description "Reproduce, repair, and verify the defect" --owner CODER --tag code)
+agentplane task advance "$TASK_ID" --agent-json
+agentplane task advance "$TASK_ID" --result <exchange-directory>/result.json --agent-json
 ```
 
-If planning or human approval is required, `task run` stops and returns the exact boundary. Resolve
-that boundary and run the same command again. Continue until Agentplane returns terminal evidence.
+Give the first packet to an external PLANNER, write its typed result to the packet's exchange
+directory, and return it with the second command. Agentplane persists the plan and emits the exact
+operator action if human approval is required. After approval, continue with:
+
+```bash
+agentplane task run "$TASK_ID"
+```
+
+Before the PLANNER result exists, `task run` returns `semantic_input_required` and does not invoke
+the managed adapter. After planning and approval, rerun it only after resolving the exact human,
+external, or recovery boundary Agentplane returned.
 
 ## direct mode
 

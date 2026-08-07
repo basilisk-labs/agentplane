@@ -15,12 +15,12 @@ Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-PR review found an incorrect managed-run planning claim in the first workflow; documentation must
-use the external task advance planning boundary.
+Supervisor-first prompts and lifecycle documentation match the actual planning boundary; all
+declared checks pass.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -39,9 +39,9 @@ use the external task advance planning boundary.
  .agentplane/policy/workflow.direct.md              |  55 +-
  .agentplane/policy/workflow.release.md             |  37 +-
  README.md                                          |  29 +-
- docs/user/agent-bootstrap.generated.mdx            |  48 +-
+ docs/user/agent-bootstrap.generated.mdx            |  50 +-
  docs/user/task-lifecycle.mdx                       | 422 ++++---------
- docs/user/workflow.mdx                             | 216 ++-----
+ docs/user/workflow.mdx                             | 220 ++-----
  docs/workflow-guides/branch-pr.mdx                 |  91 +--
  docs/workflow-guides/hermes-kanban.mdx             |  40 +-
  packages/agentplane/assets/AGENTS.md               |  82 +--
@@ -53,7 +53,7 @@ use the external task advance planning boundary.
  .../agentplane/assets/policy/workflow.direct.md    |  55 +-
  .../agentplane/assets/policy/workflow.release.md   |  37 +-
  .../agentplane/src/agents/agents-template.test.ts  |  45 ++
- packages/agentplane/src/cli/bootstrap-guide.ts     |  52 +-
+ packages/agentplane/src/cli/bootstrap-guide.ts     |  54 +-
  packages/agentplane/src/cli/command-guide.test.ts  |  74 +--
  packages/agentplane/src/cli/command-guide.ts       |  98 ++-
  .../src/cli/run-cli.core.init.branch-pr.test.ts    |   8 +-
@@ -61,9 +61,9 @@ use the external task advance planning boundary.
  .../agentplane/src/workflow-lifecycle/contract.ts  |  52 +-
  .../src/workflow-lifecycle/parity-check.ts         |  29 +-
  scripts/checks/check-agent-bootstrap-fresh.mjs     |  55 +-
- scripts/checks/check-agent-onboarding-scenario.mjs |  58 +-
- website/static/llms-full.txt                       | 687 ++++++---------------
- 31 files changed, 918 insertions(+), 1647 deletions(-)
+ scripts/checks/check-agent-onboarding-scenario.mjs | 122 +++-
+ website/static/llms-full.txt                       | 697 +++++++--------------
+ 31 files changed, 1008 insertions(+), 1639 deletions(-)
 ```
 
 </details>

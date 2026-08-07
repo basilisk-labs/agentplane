@@ -1,0 +1,30 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts",
+    "bun run docs:onboarding:check",
+    "bun run docs:cli:check",
+    "node .agentplane/policy/check-routing.mjs",
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/command-guide.test.ts"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-07T03:50:01.999Z",
+    "updated_by": "REVIEWER",
+    "note": "Supervisor-first prompts and lifecycle documentation match the actual planning boundary; all declared checks pass."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608062021-Z0X584/verification/20260807035001999-ddeddb42eda2b594.json",
+      "sha256": "sha256:1f31739c2c712f47c2816e6142579f474dae45c463ca504bb7970839ca61a2e3"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
