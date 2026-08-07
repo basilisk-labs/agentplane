@@ -19,8 +19,9 @@ Use AgentPlane through its CLI instead of editing `.agentplane/` state directly.
 2. Select ready work with `ap task active`.
 3. Request one bounded external-agent action with `ap task advance <task-id> --agent-json`.
 4. When `action.kind=agent_episode`, perform only the supplied semantic objective inside the
-   supplied authority and write the typed result to the supplied result path.
-5. Resume with the exact argv from the packet and request a fresh packet after every state change.
+   supplied authority and write the typed result to `exchange.result_path`.
+5. Resume with the exact `exchange.resume_argv` and request a fresh packet after every state
+   change. `exchange.return_invocation` is compatibility-only.
 6. If the repository has a configured managed runner, use `ap task run <task-id>` instead of the
    external exchange loop.
 

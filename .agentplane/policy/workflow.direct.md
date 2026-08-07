@@ -13,7 +13,8 @@ Use this module when `workflow_mode=direct`.
 2. Request one bounded action with `agentplane task advance <task-id> --agent-json`.
 3. If `action.kind=agent_episode`, perform only the supplied semantic objective in the supplied
    checkout and authority boundary.
-4. Write the typed result to the supplied result path and resume with the packet's exact argv.
+4. Write the typed result to `exchange.result_path` and resume with the exact
+   `exchange.resume_argv`; `exchange.return_invocation` is compatibility-only.
 5. Repeat with a fresh packet until AgentPlane returns an approval, human, external, or terminal
    boundary.
 6. For a configured managed runner, use `agentplane task run <task-id>` instead of the external

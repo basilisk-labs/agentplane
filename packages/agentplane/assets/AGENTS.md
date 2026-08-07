@@ -20,7 +20,7 @@ Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
 
 - Repository type: user project initialized with `agentplane`.
 - CLI rule: prefer `ap` for compact agent-oriented commands; fall back to `agentplane`; if neither is available, stop and request installation guidance (do not invent repo-local entrypoints).
-- Normal agent route: select ready work with `ap task active`, then request one bounded action with `ap task advance <task-id> --agent-json`. Execute only an emitted semantic episode, stay inside its authority, write the typed result to the supplied result path, and resume with the supplied argv. A configured managed runner uses `ap task run <task-id>`. `task brief`, `task status --route`, and `task next-action --explain` are operator/recovery diagnostics, not the normal agent protocol.
+- Normal agent route: select ready work with `ap task active`, then request one bounded action with `ap task advance <task-id> --agent-json`. Execute only an emitted semantic episode, stay inside its authority, write the typed result to `exchange.result_path`, and resume with the exact `exchange.resume_argv`. `exchange.return_invocation` is compatibility-only. A configured managed runner uses `ap task run <task-id>`. `task brief`, `task status --route`, and `task next-action --explain` are operator/recovery diagnostics, not the normal agent protocol.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.agents.source_of_truth.sources.of.truth" slot="source_of_truth" mutability="replaceable" -->
@@ -63,8 +63,8 @@ ap task advance <task-id> --result <exact-result-path> --agent-json
 ```
 
 When `action.kind=agent_episode`, perform only the supplied semantic objective. Do not infer or run
-formal lifecycle transitions. After writing the result, use the exact resume argv from the packet
-when available and request a fresh packet after every state change.
+formal lifecycle transitions. After writing the result to `exchange.result_path`, use the exact
+`exchange.resume_argv` and request a fresh packet after every state change.
 
 ### Managed runner
 

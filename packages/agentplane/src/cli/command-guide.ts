@@ -23,7 +23,7 @@ const ROUTE_ORACLE_NOTE =
   "- Diagnostics only: an operator may use `agentplane task brief <task-id>`, `agentplane task status <task-id> --route`, or `agentplane task next-action <task-id> --explain` when the supervisor explicitly returns a recovery boundary.";
 
 const SEMANTIC_EPISODE_NOTE =
-  "- During an `agent_episode`, perform only the supplied semantic objective, stay inside its authority and writable roots, write the typed result to the supplied result path, and request a fresh packet.";
+  "- During an `agent_episode`, perform only the supplied semantic objective, stay inside its authority and writable roots, write the typed result to `exchange.result_path`, resume with the exact `exchange.resume_argv`, and request a fresh packet. `exchange.return_invocation` is compatibility-only.";
 
 const NO_CHOREOGRAPHY_NOTE =
   "- Do not run manual task lifecycle, branch/worktree, Git publication, PR, verification persistence, integration, cleanup, or release commands during a normal semantic episode; those are supervisor-owned operator/recovery interfaces.";
@@ -214,7 +214,7 @@ function renderQuickstartWorkflowNotes(mode: QuickstartWorkflowMode): string[] {
     "- Agentplane reads the configured workflow mode and owns its formal transitions; agents do not need to reconstruct the state machine.";
   const shared = [
     "- Use `agentplane task active` to pick ready work, then `agentplane task advance <task-id> --agent-json` for one bounded external-agent action or `agentplane task run <task-id>` for managed execution.",
-    "- During an agent episode, follow only the supplied objective, authority, context references, output schema, and stop rule. Return the typed result and request a fresh packet.",
+    "- During an agent episode, follow only the supplied objective, authority, context references, output schema, and stop rule. Write the typed result to `exchange.result_path`, resume with `exchange.resume_argv`, and request a fresh packet; `exchange.return_invocation` is compatibility-only.",
     "- Manual lifecycle, branch/worktree, Git publication, PR, verification persistence, integration, cleanup, and release commands are operator/recovery interfaces, not the normal agent route.",
   ];
   const branchPr = [

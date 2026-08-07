@@ -247,6 +247,9 @@ export function makeRunTaskAdvanceHandler(deps: {
               work_order_ref: "work-order.json",
               result_schema_ref: "result-schema.json",
               result_ref: "result.json",
+              return_invocation:
+                `agentplane task advance <task_id> --result <exchange_directory>/<result_ref> --agent-json` +
+                (parsed.remote ? " --remote" : ""),
               result_path: exchange.paths.result,
               resume_argv: resumeArgv!,
             },
@@ -276,6 +279,7 @@ export function makeRunTaskAdvanceHandler(deps: {
               { label: "exchange_directory", value: packet.exchange.directory },
               { label: "work_order_ref", value: packet.exchange.work_order_ref },
               { label: "result_ref", value: packet.exchange.result_ref },
+              { label: "return_invocation", value: packet.exchange.return_invocation },
               { label: "result_path", value: packet.exchange.result_path },
               { label: "resume_argv", value: JSON.stringify(packet.exchange.resume_argv) },
             ]

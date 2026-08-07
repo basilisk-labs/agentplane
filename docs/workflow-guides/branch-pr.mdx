@@ -29,8 +29,9 @@ agentplane task advance <task-id> --agent-json
 ```
 
 When the packet returns `action.kind=agent_episode`, the agent performs only that objective in the
-authoritative worktree and writable roots supplied by Agentplane. It writes the typed result to the
-packet's result location and resumes with the supplied invocation.
+authoritative worktree and writable roots supplied by Agentplane. It writes the typed result to
+`exchange.result_path` and resumes with the exact `exchange.resume_argv`;
+`exchange.return_invocation` is compatibility-only.
 
 The caller does not create branch names, change cwd, publish the PR, persist verification, merge,
 or clean the worktree.

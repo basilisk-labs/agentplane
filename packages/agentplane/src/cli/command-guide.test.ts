@@ -50,6 +50,8 @@ describe("command-guide", () => {
     expect(text).toContain("CLI/runtime notes:");
     expect(text).toContain("agentplane task advance <task-id> --agent-json");
     expect(text).toContain("perform only the supplied semantic objective");
+    expect(text).toContain("exchange.result_path");
+    expect(text).toContain("exchange.resume_argv");
   });
 
   it("returns null for missing or unknown roles", () => {
@@ -134,8 +136,9 @@ describe("command-guide", () => {
     expect(text).toContain("agentplane task run <task-id>");
     expect(text).toContain("state fingerprint");
     expect(text).toContain("authority boundary");
-    expect(text).toContain("exchange.directory/exchange.result_ref");
-    expect(text).toContain("exchange.return_invocation");
+    expect(text).toContain("exchange.result_path");
+    expect(text).toContain("exchange.resume_argv");
+    expect(text).toContain("exchange.return_invocation` remains compatibility-only");
     expect(text).toContain("semantic_input_required");
     expect(text).toContain("Agentplane owns verification records and terminal state");
     expect(text).toContain("expanded diagnostic evidence");

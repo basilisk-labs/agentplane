@@ -120,8 +120,9 @@ agentplane task advance <task-id> --agent-json
 
 The first response includes the task ID, selected route, and the exact second command. Give the
 returned packet to Claude Code, Codex, Cursor, Aider, or another external agent. The agent performs
-only the packet's semantic objective, writes the typed result to
-`exchange.directory/exchange.result_ref`, and resumes with:
+only the packet's semantic objective, writes the typed result to the exact
+`exchange.result_path`, and executes the exact `exchange.resume_argv`. The legacy
+`exchange.return_invocation` field remains compatibility-only. Its equivalent shell form is:
 
 ```bash
 agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
