@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, stat, utimes, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, stat, symlink, utimes, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -212,6 +212,23 @@ describe("collectRunnerBasePrompts", () => {
     expect(projected[0]?.source).toBe("bundled:policy/security.must.md");
     expect(projected[0]?.content).toContain("MUST NOT commit secrets");
     expect(projected[0]?.content).not.toContain("verification-persistence");
+  });
+
+  it("rejects a semantic policy module symlink before reading an outside-repository target", async () => {
+    const root = await makeTempRepo();
+    const outside = await makeTempRepo();
+    const policyRoot = path.join(root, ".agentplane", "policy");
+    const outsidePolicy = path.join(outside, "outside-security.must.md");
+    await mkdir(policyRoot, { recursive: true });
+    await writeFile(outsidePolicy, "# Outside policy\n\nDO_NOT_PROJECT_THIS_CONTENT\n", "utf8");
+    await symlink(outsidePolicy, path.join(policyRoot, "security.must.md"), "file");
+
+    await expect(
+      collectSemanticPolicyModulePrompts({
+        git_root: root,
+        policy_modules: [".agentplane/policy/security.must.md"],
+      }),
+    ).rejects.toThrow("Refusing symlinked semantic policy module");
   });
 
   it.each(["PLANNER", "EXECUTOR", "EVALUATOR"] as const)(

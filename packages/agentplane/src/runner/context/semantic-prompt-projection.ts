@@ -7,6 +7,7 @@ import {
   parsePromptMarkdownFragments,
   type PromptMarkdownFragment,
 } from "../../runtime/prompt-fragments/index.js";
+import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
 import { resolveAgentplaneAssetUrl } from "../../shared/package-paths.js";
 import type { RunnerPromptBlock, RunnerTaskContext } from "../types.js";
 
@@ -108,6 +109,7 @@ const PROCESS_CHOREOGRAPHY_PATTERNS = [
 const PROCESS_REPAIR_AUTHORITY_TAG = "process-mechanism-repair";
 const PROCESS_REPAIR_INTENT =
   /\b(?:lifecycle|orchestration|provider prompt|process choreography|supervisor protocol)\b/iu;
+const SEMANTIC_POLICY_MODULE_MAX_BYTES = 256 * 1024;
 
 const CANONICAL_SEMANTIC_GATEWAY_FRAGMENT_IDS = new Set([
   "gateway.agents.purpose.purpose",
@@ -216,7 +218,12 @@ export async function collectSemanticPolicyModulePrompts(opts: {
     let source: string;
     let sourceRef = modulePath;
     try {
-      source = await readFile(absolutePath, "utf8");
+      source = await readContainedStableTextNoFollow({
+        repository_root: gitRoot,
+        file_path: absolutePath,
+        label: `semantic policy module ${modulePath}`,
+        max_bytes: SEMANTIC_POLICY_MODULE_MAX_BYTES,
+      });
     } catch (error) {
       if (!isMissingFileError(error)) throw error;
       if (!canonicalSecurityModule) continue;

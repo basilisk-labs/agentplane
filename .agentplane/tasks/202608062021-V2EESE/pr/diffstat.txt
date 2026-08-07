@@ -2,11 +2,11 @@
  .../evaluator/evaluator-episode.stdin.test.ts      |   9 +-
  .../src/commands/evaluator/evaluator-episode.ts    |  38 +-
  .../src/runner/context/base-prompt-sources.ts      |  17 +-
- .../src/runner/context/base-prompts.test.ts        | 312 ++++++++++++++++
+ .../src/runner/context/base-prompts.test.ts        | 331 ++++++++++++++++-
  .../agentplane/src/runner/context/base-prompts.ts  |   6 +
  .../src/runner/context/prompt-block-shared.ts      |   5 +
  .../src/runner/context/prompt-module-bridge.ts     |   4 +
- .../runner/context/semantic-prompt-projection.ts   | 393 +++++++++++++++++++++
+ .../runner/context/semantic-prompt-projection.ts   | 400 +++++++++++++++++++++
  .../src/runner/state-fingerprint-observation.ts    |   3 +-
  .../agentplane/src/runner/state-fingerprint.ts     |   3 +-
  packages/agentplane/src/runner/types/prompts.ts    |   3 +
@@ -18,4 +18,4 @@
  .../usecases/task-run-context.integration.test.ts  | 152 +++++++-
  .../runner/usecases/task-run-semantic-prompt.ts    |  42 +++
  .../agentplane/src/runner/usecases/task-run.ts     |  10 +-
- 20 files changed, 1152 insertions(+), 168 deletions(-)
+ 20 files changed, 1177 insertions(+), 169 deletions(-)
