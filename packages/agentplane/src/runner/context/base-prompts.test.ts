@@ -12,6 +12,7 @@ import {
   assertSemanticProviderPromptHasNoProcessChoreography,
   collectRunnerBasePrompts,
   compileRunnerPromptModuleGraph,
+  hasExplicitProcessMechanismRepairAuthority,
   projectRunnerPromptsForSemanticEpisode,
   resolveOwnerProfilePromptSource,
   resolvePolicyGatewayPromptSource,
@@ -46,6 +47,7 @@ describe("collectRunnerBasePrompts", () => {
         "<!-- /ap:fragment -->",
         '<!-- ap:fragment id="project.scope" slot="hard_constraint" mutability="append_only" -->',
         "Stay inside the supplied writable roots.",
+        "Keep secrets out of logs. Run agentplane task start-ready TASK only from recovery mode.",
         "<!-- /ap:fragment -->",
         '<!-- ap:fragment id="project.commands" slot="commands" mutability="replaceable" -->',
         "agentplane task start-ready TASK --author CODER",
@@ -79,6 +81,7 @@ describe("collectRunnerBasePrompts", () => {
       "Build the bounded requested behavior.",
     );
     expect(serialized).toContain("Stay inside the supplied writable roots.");
+    expect(serialized).toContain("Keep secrets out of logs.");
     expect(serialized).toContain('"semantic_role": "EXECUTOR"');
     expect(serialized).not.toContain("task start-ready");
     expect(serialized).not.toContain("git commit");
@@ -102,6 +105,51 @@ describe("collectRunnerBasePrompts", () => {
       ).toThrow(/process choreography/u);
     },
   );
+
+  it.each([
+    "agentplane config show",
+    "ap quickstart",
+    "agentplane task active",
+    "ap task advance TASK --agent-json",
+    "agentplane task run TASK",
+    "ap task plan approve TASK --by ORCHESTRATOR",
+    "agentplane task verify-show TASK",
+    "ap evaluator execute TASK",
+    "git status --short",
+    "git rev-parse HEAD",
+    "git commit -m implementation",
+    "git push origin task/TASK/fix",
+    "git worktree remove /tmp/worktree",
+    "agentplane pr update TASK",
+    "gh pr create --fill",
+    "agentplane verify TASK --ok --by TESTER",
+    "agentplane integrate TASK --branch task/TASK/fix",
+    "agentplane cleanup TASK",
+    "agentplane release plan --patch",
+    "npm publish",
+  ])("rejects forbidden provider choreography: %s", (command) => {
+    expect(() =>
+      assertSemanticProviderPromptHasNoProcessChoreography({ prompt: command }),
+    ).toThrow(/process choreography/u);
+  });
+
+  it("requires an explicit process-repair authority tag before allowing mechanism evidence", () => {
+    const genericTask = {
+      metadata: { tags: ["prompts", "supervisor"] },
+      narrative: {
+        title: "Review provider prompts",
+        description: "Inspect process choreography in the supervisor protocol.",
+        sections: [],
+      },
+    } as unknown as RunnerTaskContext;
+    const explicitTask = {
+      ...genericTask,
+      metadata: { tags: ["prompts", "process-mechanism-repair"] },
+    } as unknown as RunnerTaskContext;
+
+    expect(hasExplicitProcessMechanismRepairAuthority(genericTask)).toBe(false);
+    expect(hasExplicitProcessMechanismRepairAuthority(explicitTask)).toBe(true);
+  });
 
   it("keeps the bundled semantic projection materially smaller than the internal policy graph", async () => {
     const root = await makeTempRepo();

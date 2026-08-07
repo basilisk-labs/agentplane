@@ -9,19 +9,38 @@ type ProcessChoreographyMatch = {
 };
 
 const PROCESS_CHOREOGRAPHY_PATTERNS = [
+  { id: "config_show", pattern: /\b(?:ap|agentplane)\s+config\s+show\b/giu },
+  { id: "quickstart", pattern: /\b(?:ap|agentplane)\s+quickstart\b/giu },
+  { id: "task_list", pattern: /\b(?:ap|agentplane)\s+task\s+list\b/giu },
+  { id: "task_active", pattern: /\b(?:ap|agentplane)\s+task\s+active\b/giu },
+  { id: "task_advance", pattern: /\b(?:ap|agentplane)\s+task\s+advance\b/giu },
+  { id: "task_run", pattern: /\b(?:ap|agentplane)\s+task\s+run\b/giu },
   { id: "task_start_ready", pattern: /\b(?:ap|agentplane)?\s*task\s+start-ready\b/giu },
   { id: "task_next_action", pattern: /\b(?:ap|agentplane)?\s*task\s+next-action\b/giu },
+  { id: "task_plan", pattern: /\b(?:ap|agentplane)\s+task\s+plan\b/giu },
+  { id: "task_verify_show", pattern: /\b(?:ap|agentplane)\s+task\s+verify-show\b/giu },
+  { id: "task_complete", pattern: /\b(?:ap|agentplane)\s+task\s+complete\b/giu },
   { id: "work_start", pattern: /\b(?:ap|agentplane)?\s*work\s+start\b/giu },
-  { id: "pr_open", pattern: /\b(?:ap|agentplane)?\s*pr\s+open\b/giu },
+  { id: "work_control", pattern: /\b(?:ap|agentplane)\s+work\s+(?:resume|cleanup)\b/giu },
+  { id: "pr_control", pattern: /\b(?:ap|agentplane)?\s*pr\s+(?:open|update|check)\b/giu },
   { id: "verify_command", pattern: /\b(?:ap|agentplane)\s+verify\b/giu },
+  { id: "evaluator_execute", pattern: /\b(?:ap|agentplane)\s+evaluator\s+execute\b/giu },
   { id: "finish_command", pattern: /\b(?:ap|agentplane)\s+finish\b/giu },
   { id: "integrate_command", pattern: /\b(?:ap|agentplane)\s+integrate\b/giu },
-  { id: "cleanup_command", pattern: /\b(?:ap|agentplane)\s+cleanup\b/giu },
-  { id: "git_commit", pattern: /\bgit\s+commit\b/giu },
+  {
+    id: "release_or_publish",
+    pattern: /\b(?:(?:ap|agentplane)\s+(?:release|publish)|(?:npm|bun)\s+publish)\b/giu,
+  },
+  { id: "cleanup_command", pattern: /\b(?:ap|agentplane)\s+(?:cleanup|worktree)\b/giu },
+  {
+    id: "git_control",
+    pattern:
+      /\bgit\s+(?:commit|push|merge|rebase|checkout|switch|branch|worktree|status|rev-parse)\b/giu,
+  },
   { id: "github_pr", pattern: /\bgh\s+pr\b/giu },
 ] as const;
 
-const PROCESS_REPAIR_TAGS = new Set(["lifecycle", "orchestration", "prompts", "supervisor"]);
+const PROCESS_REPAIR_AUTHORITY_TAG = "process-mechanism-repair";
 const PROCESS_REPAIR_INTENT =
   /\b(?:lifecycle|orchestration|provider prompt|process choreography|supervisor protocol)\b/iu;
 
@@ -65,6 +84,26 @@ function semanticTextHasProcessChoreography(value: string): boolean {
   return processChoreographyMatches(value).length > 0;
 }
 
+function projectSemanticFragmentText(value: string): string {
+  const projected = value
+    .split("\n")
+    .flatMap((line) => {
+      if (!semanticTextHasProcessChoreography(line)) return [line];
+
+      const prefix = /^\s*(?:(?:[-*+] |\d+\.\s+))?/u.exec(line)?.[0] ?? "";
+      const body = line.slice(prefix.length);
+      const safeSegments = body
+        .split(/(?<=[.!?;])\s+/u)
+        .filter((segment) => segment.trim() && !semanticTextHasProcessChoreography(segment));
+      if (safeSegments.length === 0) return [];
+      return [`${prefix}${safeSegments.join(" ")}`.trimEnd()];
+    })
+    .join("\n")
+    .replaceAll(/```[^\n]*\n\s*```/gu, "")
+    .trim();
+  return projected;
+}
+
 function isSemanticGatewayFragment(fragment: PromptMarkdownFragment): boolean {
   if (fragment.id === "gateway.user.instructions") return false;
   if (fragment.id === "gateway.agents.hard_constraint.size.budget") return false;
@@ -75,10 +114,9 @@ function isSemanticGatewayFragment(fragment: PromptMarkdownFragment): boolean {
 function projectGatewayBlock(block: RunnerPromptBlock): RunnerPromptBlock {
   const fragments = (block.fragments ?? [])
     .filter((fragment) => isSemanticGatewayFragment(fragment))
-    .filter((fragment) => processChoreographyMatches(fragment.text).length === 0);
+    .map((fragment) => projectSemanticFragmentText(fragment.text))
+    .filter(Boolean);
   const projected = fragments
-    .map((fragment) => fragment.text.trim())
-    .filter(Boolean)
     .join("\n\n");
   return {
     ...block,
@@ -166,10 +204,14 @@ export function projectRunnerPromptsForSemanticEpisode(opts: {
   });
 }
 
-export function isExplicitProcessMechanismTask(task: RunnerTaskContext | undefined): boolean {
+export function hasExplicitProcessMechanismRepairAuthority(
+  task: RunnerTaskContext | undefined,
+): boolean {
   if (!task) return false;
-  const hasRepairTag = task.metadata.tags.some((tag) => PROCESS_REPAIR_TAGS.has(tag.toLowerCase()));
-  if (!hasRepairTag) return false;
+  const hasExplicitAuthority = task.metadata.tags.some(
+    (tag) => tag.toLowerCase() === PROCESS_REPAIR_AUTHORITY_TAG,
+  );
+  if (!hasExplicitAuthority) return false;
   const intent = [
     task.narrative.title,
     task.narrative.description,
@@ -180,9 +222,9 @@ export function isExplicitProcessMechanismTask(task: RunnerTaskContext | undefin
 
 export function assertSemanticProviderPromptHasNoProcessChoreography(opts: {
   prompt: string;
-  allow_process_mechanism_task?: boolean;
+  process_mechanism_repair_authorized?: boolean;
 }): void {
-  if (opts.allow_process_mechanism_task) return;
+  if (opts.process_mechanism_repair_authorized) return;
   const matches = processChoreographyMatches(opts.prompt);
   if (matches.length === 0) return;
   const summary = matches

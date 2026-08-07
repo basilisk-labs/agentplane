@@ -17,7 +17,7 @@ import { appendFrameworkExplainBehaviorInputs } from "../../runtime/explain/inde
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import {
   assertSemanticProviderPromptHasNoProcessChoreography,
-  isExplicitProcessMechanismTask,
+  hasExplicitProcessMechanismRepairAuthority,
 } from "../context/base-prompts.js";
 import type { RunnerAdapter } from "../adapters/shared.js";
 import { createRunnerAdapter } from "../adapters/index.js";
@@ -281,7 +281,8 @@ export async function prepareTaskRunnerExecution(opts: {
     try {
       assertSemanticProviderPromptHasNoProcessChoreography({
         prompt: bootstrapMarkdown,
-        allow_process_mechanism_task: isExplicitProcessMechanismTask(bundle.task),
+        process_mechanism_repair_authorized:
+          hasExplicitProcessMechanismRepairAuthority(bundle.task),
       });
     } catch (error) {
       throw new CliError({
