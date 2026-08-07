@@ -13,7 +13,7 @@ Created: 2026-08-06T21:10:34.048Z
 ## Verification
 
 - State: ok
-- Note: Current implementation head passes exact three-role security projection tests, typecheck, critical suite, routing, and full ci:contract.
+- Note: Current implementation head has frozen command-level verification for semantic security projection and choreography exclusion.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

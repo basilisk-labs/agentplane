@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -33,37 +33,37 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T09:57:48.330Z"
+  updated_at: "2026-08-07T10:01:06.835Z"
   updated_by: "TESTER"
-  note: "Current implementation head passes exact three-role security projection tests, typecheck, critical suite, routing, and full ci:contract."
+  note: "Current implementation head has frozen command-level verification for semantic security projection and choreography exclusion."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T09:44:05.808Z"
+  updated_at: "2026-08-07T09:59:43.157Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "ef6f3b728827fc2948d8ca7f475dc63310deaf7b"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "4ed5bbb5b3e4042db0f5841e6477f9c62c9bcd56"
   blueprint_digest: "ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26"
   evidence_refs:
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-094302845-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-094302845-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/079c8d629f960f9821e6d602faa07ad6c6fbf6a40ff4cef48a43860d77e56761.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-094302845-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-094302845-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-094302845-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-094302845-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-095811356-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-095811356-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/95cb9178d406ad4adfcec1c48b0cd3e49d29e65236d6b18e238b4609c458f0f3.md"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-095811356-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-095811356-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-095811356-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-095811356-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608062021-V2EESE/README.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/c93b091fe243e4afbbce445ca2caf17ae75d02284d5c1b665de9f26bdc216a39.patch"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/852e54a3f0f5a691b1d6514041ea1ca3ea6e8e4cfd593c66d1a63c2addba5256.json"
-    - ".agentplane/tasks/202608062021-V2EESE/verification/20260807094129426-a13411414bd3e042.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/e80c79ea465c47c132263113cbf88097ef7ca5e2f16cf8512b34ce608fc6c386.patch"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/c169c22a6714054011b23923699eeeb3d5542ffa8635328de98175f048fd7d45.json"
     - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/95733d97fca351adc4547b7181a057ce60fc567aeb7afbf37c59f69aa9b36417.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The semantic projection omits loaded security policy modules from provider input."
+    - "The frozen observed-checks artifact contains no verification records or runtime evidence for the evaluated SHA; the latest task verification entries assert success without command-level details."
+  recovery_reason: "deterministic_evidence_gap"
 token_usage:
   agent_runs: 5
   input_tokens: 792013
@@ -197,8 +197,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Current implementation head passes exact three-role security projection tests, typecheck, critical suite, routing, and full ci:contract."
+  -
+    type: "verify"
+    at: "2026-08-07T10:01:06.835Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Current implementation head has frozen command-level verification for semantic security projection and choreography exclusion."
 doc_version: 3
-doc_updated_at: "2026-08-07T09:57:49.665Z"
+doc_updated_at: "2026-08-07T10:01:07.982Z"
 doc_updated_by: "CODER"
 description: "Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt."
 sections:
@@ -827,6 +833,61 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T09:56:39.233Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+    - old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608062021-V2EESE
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T10:01:06.835Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Current implementation head has frozen command-level verification for semantic security projection and choreography exclusion.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T09:59:43.179Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts
+    Result: pass
+    Evidence: 3 files, 83 tests passed; exact compiled PLANNER, EXECUTOR, and EVALUATOR prompts preserve all five selected security.must constraints; forbidden lifecycle/Git/PR commands are rejected; explicit process-repair authority remains bounded by tag and intent.
+    Scope: semantic security projection, exact provider bootstrap, negative choreography cases, repair-authority behavior on implementation SHA 4ed5bbb5b3e4042db0f5841e6477f9c62c9bcd56
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical-cli chunks passed.
+    Scope: efficiency, replay, trust boundaries, protected paths, symlink roots, and critical CLI behavior
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build completed with exit code 0.
+    Scope: workspace TypeScript contracts
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK.
+    Scope: policy graph and loaded-policy budgets
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: formatting, schemas, docs parity, 50-run replay baseline, hotspots, lifecycle invariants, lint, architecture, clone baseline, Knip, and coverage thresholds passed.
+    Scope: full repository contract after repo-local runtime rebuild
 
     BlueprintSnapshotRef:
     - state: current
@@ -1503,6 +1564,61 @@ Attempts: 0
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T09:56:39.233Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+- old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608062021-V2EESE
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T10:01:06.835Z — VERIFY — ok
+
+By: TESTER
+
+Note: Current implementation head has frozen command-level verification for semantic security projection and choreography exclusion.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T09:59:43.179Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts
+Result: pass
+Evidence: 3 files, 83 tests passed; exact compiled PLANNER, EXECUTOR, and EVALUATOR prompts preserve all five selected security.must constraints; forbidden lifecycle/Git/PR commands are rejected; explicit process-repair authority remains bounded by tag and intent.
+Scope: semantic security projection, exact provider bootstrap, negative choreography cases, repair-authority behavior on implementation SHA 4ed5bbb5b3e4042db0f5841e6477f9c62c9bcd56
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical-cli chunks passed.
+Scope: efficiency, replay, trust boundaries, protected paths, symlink roots, and critical CLI behavior
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build completed with exit code 0.
+Scope: workspace TypeScript contracts
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK.
+Scope: policy graph and loaded-policy budgets
+
+Command: bun run ci:contract
+Result: pass
+Evidence: formatting, schemas, docs parity, 50-run replay baseline, hotspots, lifecycle invariants, lint, architecture, clone baseline, Knip, and coverage thresholds passed.
+Scope: full repository contract after repo-local runtime rebuild
 
 BlueprintSnapshotRef:
 - state: current
