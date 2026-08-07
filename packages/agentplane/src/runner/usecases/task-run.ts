@@ -281,8 +281,9 @@ export async function prepareTaskRunnerExecution(opts: {
     try {
       assertSemanticProviderPromptHasNoProcessChoreography({
         prompt: bootstrapMarkdown,
-        process_mechanism_repair_authorized:
-          hasExplicitProcessMechanismRepairAuthority(bundle.task),
+        process_mechanism_repair_authorized: hasExplicitProcessMechanismRepairAuthority(
+          bundle.task,
+        ),
       });
     } catch (error) {
       throw new CliError({
