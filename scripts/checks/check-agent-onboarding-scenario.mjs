@@ -41,7 +41,7 @@ function assertTextOrder(haystack, needles, label) {
   let cursor = -1;
   for (const needle of needles) {
     const next = haystack.indexOf(needle, cursor + 1);
-    if (next < 0) {
+    if (next === -1) {
       throw new Error(`${label} is missing ordered text: ${needle}`);
     }
     cursor = next;

@@ -15,13 +15,8 @@ Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr
 
 ## Verification
 
-- State: ok
-- Note:
-
-```text
-All generated agent prompts, policy guidance, onboarding docs, and exact runtime planning boundaries
-now converge on supervisor-first task create/advance/run UX.
-```
+- State: needs_rework
+- Note: Hosted verify-static found unicorn/consistent-existence-index-check in the new onboarding order helper.
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -6,14 +6,14 @@ Created: 2026-08-06T20:27:51.883Z
 
 - Task: `202608062021-Z0X584`
 - Title: Converge generated agent guidance on the supervisor-first protocol
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608062021-Z0X584/converge-generated-agent-guidance-on-the-supervi`
 - Canonical task record: `.agentplane/tasks/202608062021-Z0X584/README.md`
 
 ## Verification
 
-- State: ok
-- Note: All generated agent prompts, policy guidance, onboarding docs, and exact runtime planning boundaries now converge on supervisor-first task create/advance/run UX.
+- State: needs_rework
+- Note: Hosted verify-static found unicorn/consistent-existence-index-check in the new onboarding order helper.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

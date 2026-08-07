@@ -2,10 +2,10 @@
 id: "202608062021-Z0X584"
 title: "Converge generated agent guidance on the supervisor-first protocol"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -31,11 +31,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-07T04:00:12.032Z"
-  updated_by: "REVIEWER"
-  note: "All generated agent prompts, policy guidance, onboarding docs, and exact runtime planning boundaries now converge on supervisor-first task create/advance/run UX."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-07T04:07:09.302Z"
+  updated_by: "CODER"
+  note: "Hosted verify-static found unicorn/consistent-existence-index-check in the new onboarding order helper."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -84,9 +84,7 @@ execution_route:
   requested_mode: "auto"
   schema_version: 1
   selected_mode: "branch_pr"
-commit:
-  hash: "a484050b2de32fd4b0ed0f58de06d2b44694c497"
-  message: "🚧 Z0X584 prompts: record final quality evidence"
+commit: null
 comments:
   -
     author: "DOCS"
@@ -215,8 +213,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-07T04:07:09.302Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "Hosted verify-static found unicorn/consistent-existence-index-check in the new onboarding order helper."
 doc_version: 3
-doc_updated_at: "2026-08-07T04:01:49.694Z"
+doc_updated_at: "2026-08-07T04:07:10.591Z"
 doc_updated_by: "CODER"
 description: "Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr policy modules, Codex skill, README, and workflow docs with task active, task advance, and task run as the only normal agent paths; provide one copy-paste executable first workflow and retain manual commands only as explicit operator or recovery interfaces."
 sections:
@@ -716,6 +720,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-07T04:07:09.302Z — VERIFY — needs_rework
+
+    By: CODER
+
+    Note: Hosted verify-static found unicorn/consistent-existence-index-check in the new onboarding order helper.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T04:01:49.694Z, excerpt_hash=sha256:e9653577267767950996748213a2f0aa3639b45685585200ddac7e270aea9d00
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-Z0X584-converge-generated-agent-guidance-on-the-supervi/.agentplane/tasks/202608062021-Z0X584/blueprint/resolved-snapshot.json
+    - old_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+    - current_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-Z0X584
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -748,6 +782,10 @@ sections:
     - Observation: Generated bootstrap, workflow docs, and llms-full previously contradicted the runtime PLANNER boundary.
       Impact: Agents could be told to invoke task run before a semantic plan exists and spend cognition recovering from semantic_input_required.
       Resolution: All first-task surfaces now use task create, external PLANNER task advance, then task run only after planning and approval; parity checks reject stale claims.
+
+    - Observation: check-agent-onboarding-scenario.mjs used next < 0 for indexOf non-existence.
+      Impact: Hosted lint blocks PR integration although behavioral tests pass.
+      Resolution: Use the repository lint convention next === -1, run lint:core locally, and republish.
 extensions:
   implementation_commit:
     hash: "047e9077deac3afcc100824875a601f8098625ba"
@@ -1263,6 +1301,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-07T04:07:09.302Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: Hosted verify-static found unicorn/consistent-existence-index-check in the new onboarding order helper.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T04:01:49.694Z, excerpt_hash=sha256:e9653577267767950996748213a2f0aa3639b45685585200ddac7e270aea9d00
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-Z0X584-converge-generated-agent-guidance-on-the-supervi/.agentplane/tasks/202608062021-Z0X584/blueprint/resolved-snapshot.json
+- old_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+- current_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-Z0X584
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1299,6 +1367,10 @@ DecisionContextRef:
 - Observation: Generated bootstrap, workflow docs, and llms-full previously contradicted the runtime PLANNER boundary.
   Impact: Agents could be told to invoke task run before a semantic plan exists and spend cognition recovering from semantic_input_required.
   Resolution: All first-task surfaces now use task create, external PLANNER task advance, then task run only after planning and approval; parity checks reject stale claims.
+
+- Observation: check-agent-onboarding-scenario.mjs used next < 0 for indexOf non-existence.
+  Impact: Hosted lint blocks PR integration although behavioral tests pass.
+  Resolution: Use the repository lint convention next === -1, run lint:core locally, and republish.
 
 ## Token Usage
 
