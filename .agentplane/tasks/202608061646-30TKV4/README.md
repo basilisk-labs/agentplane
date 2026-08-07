@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 64
+revision: 65
 origin:
   system: "manual"
 depends_on:
@@ -38,9 +38,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T01:17:33.745Z"
+  updated_at: "2026-08-07T01:33:24.508Z"
   updated_by: "TESTER"
-  note: "All ten declared checks pass on 856bf44a5f99, including strict lint and critical compatibility coverage."
+  note: "All eleven declared checks pass on 60c5d0c9a, including the hosted-static Knip budget."
   attempts: 0
 quality_review:
   state: "pass"
@@ -335,8 +335,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-07T01:33:24.508Z"
+    author: "TESTER"
+    state: "ok"
+    note: "All eleven declared checks pass on 60c5d0c9a, including the hosted-static Knip budget."
 doc_version: 3
-doc_updated_at: "2026-08-07T01:30:59.627Z"
+doc_updated_at: "2026-08-07T01:33:26.028Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
@@ -1487,6 +1493,91 @@ sections:
     Result: pass
     Evidence: ESLint completed with zero errors.
     Scope: Packages, scripts, and repository TypeScript lint contract.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-30TKV4-add-user-first-task-intake-and-execution-preview/.agentplane/tasks/202608061646-30TKV4/blueprint/resolved-snapshot.json
+    - old_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+    - current_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-30TKV4
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T01:33:24.508Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: All eleven declared checks pass on 60c5d0c9a, including the hosted-static Knip budget.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T01:30:59.627Z, excerpt_hash=sha256:052b9225fab1447a460c10aa435470026aedc04d19b3e72ca506f07d3493080c
+
+    Details:
+
+    Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+    Result: 4 files, 37 tests passed
+    Evidence: focused user-first task creation, execution preview, task run, and task advance coverage
+    Scope: covers canonical CLI behavior on the current implementation head
+
+    Command: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+    Result: 9 tests passed
+    Evidence: critical compatibility and agent-efficiency baseline
+    Scope: confirms the reviewed CLI surface and RF-04 contract remain reproducible
+
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: generated CLI reference freshness
+    Scope: confirms CLI documentation matches the current command catalog
+
+    Command: bun run docs:onboarding:check
+    Result: pass
+    Evidence: onboarding scenario alignment
+    Scope: confirms the executable first-run path remains aligned across surfaces
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: all TypeScript workspaces
+    Scope: confirms the internal dependency type change is type-safe
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing and size budgets
+    Scope: confirms repository policy routing remains valid
+
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: runtime and test hotspot budgets
+    Scope: confirms the responsibility split stays within enforced size limits
+
+    Command: bun run bench:compatibility:check
+    Result: pass
+    Evidence: approved 260 command compatibility surface
+    Scope: confirms no unreviewed CLI topology drift
+
+    Command: bun run format:check
+    Result: pass
+    Evidence: repository formatting
+    Scope: confirms all changed files match formatting policy
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: strict repository lint
+    Scope: confirms no lint or unsafe assertion regressions
+
+    Command: bun run knip:check
+    Result: pass
+    Evidence: dead-code package budgets
+    Scope: confirms the agentplane CLI remains at zero unused findings
 
     BlueprintSnapshotRef:
     - state: current
@@ -2679,6 +2770,91 @@ Command: bun run lint:core
 Result: pass
 Evidence: ESLint completed with zero errors.
 Scope: Packages, scripts, and repository TypeScript lint contract.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-30TKV4-add-user-first-task-intake-and-execution-preview/.agentplane/tasks/202608061646-30TKV4/blueprint/resolved-snapshot.json
+- old_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+- current_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-30TKV4
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T01:33:24.508Z — VERIFY — ok
+
+By: TESTER
+
+Note: All eleven declared checks pass on 60c5d0c9a, including the hosted-static Knip budget.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T01:30:59.627Z, excerpt_hash=sha256:052b9225fab1447a460c10aa435470026aedc04d19b3e72ca506f07d3493080c
+
+Details:
+
+Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+Result: 4 files, 37 tests passed
+Evidence: focused user-first task creation, execution preview, task run, and task advance coverage
+Scope: covers canonical CLI behavior on the current implementation head
+
+Command: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+Result: 9 tests passed
+Evidence: critical compatibility and agent-efficiency baseline
+Scope: confirms the reviewed CLI surface and RF-04 contract remain reproducible
+
+Command: bun run docs:cli:check
+Result: pass
+Evidence: generated CLI reference freshness
+Scope: confirms CLI documentation matches the current command catalog
+
+Command: bun run docs:onboarding:check
+Result: pass
+Evidence: onboarding scenario alignment
+Scope: confirms the executable first-run path remains aligned across surfaces
+
+Command: bun run typecheck
+Result: pass
+Evidence: all TypeScript workspaces
+Scope: confirms the internal dependency type change is type-safe
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing and size budgets
+Scope: confirms repository policy routing remains valid
+
+Command: bun run hotspots:check
+Result: pass
+Evidence: runtime and test hotspot budgets
+Scope: confirms the responsibility split stays within enforced size limits
+
+Command: bun run bench:compatibility:check
+Result: pass
+Evidence: approved 260 command compatibility surface
+Scope: confirms no unreviewed CLI topology drift
+
+Command: bun run format:check
+Result: pass
+Evidence: repository formatting
+Scope: confirms all changed files match formatting policy
+
+Command: bun run lint:core
+Result: pass
+Evidence: strict repository lint
+Scope: confirms no lint or unsafe assertion regressions
+
+Command: bun run knip:check
+Result: pass
+Evidence: dead-code package budgets
+Scope: confirms the agentplane CLI remains at zero unused findings
 
 BlueprintSnapshotRef:
 - state: current

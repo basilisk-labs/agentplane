@@ -16,7 +16,7 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 ## Verification
 
 - State: ok
-- Note: All ten declared checks pass on 856bf44a5f99, including strict lint and critical compatibility coverage.
+- Note: All eleven declared checks pass on 60c5d0c9a, including the hosted-static Knip budget.
 - Canonical workflow state lives in the task README.
 
 <details>
