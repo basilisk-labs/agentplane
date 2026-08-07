@@ -15,8 +15,33 @@ Replace the obsolete global-regex String.replace call in the social image genera
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Release lint baseline restored with a behavior-preserving String.replaceAll migration.
+
+Command: bunx eslint website/scripts/generate-social-images.mjs
+Result: pass
+Evidence: targeted ESLint completed with exit code 0
+Scope: social image generator lint regression
+
+Command: bun run lint
+Result: pass
+Evidence: core and website ESLint completed with exit code 0
+Scope: complete repository lint surface
+
+Command: bun run docs:social:check
+Result: pass
+Evidence: checked 226 documentation social images
+Scope: generated social preview parity
+
+Command: bun run format:check
+Result: pass
+Evidence: all matched files use Prettier code style
+Scope: repository formatting
+
+Command: bun run typecheck
+Result: pass
+Evidence: repository TypeScript build completed with exit code 0
+Scope: TypeScript contracts
 - Canonical workflow state lives in the task README.
 
 <details>
