@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608062021-V2EESE-bb0cf1e6fe4a4af9d42482a0",
+  "task_id": "202608062021-V2EESE",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Attach deterministic command-level evidence for all four mandatory Verify Steps, tied to evaluated SHA 93ee2eeefe2979918848780b6d0c7e0d78910800, then rerun evaluation.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The frozen observed-checks artifact contains no verification records, runner history, or runtime evidence for any of the four mandatory acceptance checks.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/88dfd86bc801cbb7b188c8f2a7ee7f3dde79ac4e17863ce42e92158e6a482d80.json",
+          "sha256": "sha256:88dfd86bc801cbb7b188c8f2a7ee7f3dde79ac4e17863ce42e92158e6a482d80",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/README.md",
+          "sha256": "sha256:2623a316d8355b891d735b2c309086a6f956d15e74a737133baa10008321aa22",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608062021-V2EESE/quality/20260807-104924935-recovery-context/evaluator-result.json"
+}
