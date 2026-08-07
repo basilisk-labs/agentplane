@@ -16,7 +16,12 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
 ## Verification
 
 - State: ok
-- Note: All four declared Verify Steps passed against implementation 93ee2eeefe2979918848780b6d0c7e0d78910800.
+- Note:
+
+```text
+Symlink-safe semantic policy loading and all declared Verify Steps passed against implementation
+1269fc2e4064fc5b784b0b14fc96bfad6a6d21a4.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

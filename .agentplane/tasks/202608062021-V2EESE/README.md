@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 39
+revision: 40
 origin:
   system: "manual"
 depends_on: []
@@ -33,9 +33,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T22:01:18.773Z"
+  updated_at: "2026-08-07T22:07:36.195Z"
   updated_by: "TESTER"
-  note: "All four declared Verify Steps passed against implementation 93ee2eeefe2979918848780b6d0c7e0d78910800."
+  note: "Symlink-safe semantic policy loading and all declared Verify Steps passed against implementation 1269fc2e4064fc5b784b0b14fc96bfad6a6d21a4."
   attempts: 0
 quality_review:
   state: "rework"
@@ -231,8 +231,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "All four declared Verify Steps passed against implementation 93ee2eeefe2979918848780b6d0c7e0d78910800."
+  -
+    type: "verify"
+    at: "2026-08-07T22:07:36.195Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Symlink-safe semantic policy loading and all declared Verify Steps passed against implementation 1269fc2e4064fc5b784b0b14fc96bfad6a6d21a4."
 doc_version: 3
-doc_updated_at: "2026-08-07T22:02:46.093Z"
+doc_updated_at: "2026-08-07T22:07:37.623Z"
 doc_updated_by: "CODER"
 description: "Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt."
 sections:
@@ -1033,6 +1039,61 @@ sections:
     Result: pass
     Evidence: policy routing OK.
     Scope: policy gateway routing and loaded policy graph.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+    - old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608062021-V2EESE
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T22:07:36.195Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Symlink-safe semantic policy loading and all declared Verify Steps passed against implementation 1269fc2e4064fc5b784b0b14fc96bfad6a6d21a4.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T22:02:46.093Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts
+    Result: pass
+    Evidence: 3 test files passed; 85 tests passed; includes outside-repository policy symlink rejection.
+    Scope: semantic provider prompt projection, task-run context integration, bounded agent action packets, and policy-module containment.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: 12 of 12 critical CLI chunks passed; 84 tests passed.
+    Scope: agent-efficiency, replay hardening, exit codes, Git edges, protected paths, scope isolation, symlink roots, and trust-boundary ratchets.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build completed with exit code 0.
+    Scope: workspace TypeScript contracts for the current implementation.
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK.
+    Scope: policy gateway routing and loaded policy graph.
+
+    Command: git status --short
+    Result: pass
+    Evidence: no output; tracked and untracked task worktree state was clean after all checks at implementation 1269fc2e4064fc5b784b0b14fc96bfad6a6d21a4.
+    Scope: final repository-state cleanliness before verification persistence.
 
     BlueprintSnapshotRef:
     - state: current
@@ -1881,6 +1942,61 @@ Command: node .agentplane/policy/check-routing.mjs
 Result: pass
 Evidence: policy routing OK.
 Scope: policy gateway routing and loaded policy graph.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+- old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608062021-V2EESE
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T22:07:36.195Z — VERIFY — ok
+
+By: TESTER
+
+Note: Symlink-safe semantic policy loading and all declared Verify Steps passed against implementation 1269fc2e4064fc5b784b0b14fc96bfad6a6d21a4.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T22:02:46.093Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts
+Result: pass
+Evidence: 3 test files passed; 85 tests passed; includes outside-repository policy symlink rejection.
+Scope: semantic provider prompt projection, task-run context integration, bounded agent action packets, and policy-module containment.
+
+Command: bun run test:critical
+Result: pass
+Evidence: 12 of 12 critical CLI chunks passed; 84 tests passed.
+Scope: agent-efficiency, replay hardening, exit codes, Git edges, protected paths, scope isolation, symlink roots, and trust-boundary ratchets.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build completed with exit code 0.
+Scope: workspace TypeScript contracts for the current implementation.
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK.
+Scope: policy gateway routing and loaded policy graph.
+
+Command: git status --short
+Result: pass
+Evidence: no output; tracked and untracked task worktree state was clean after all checks at implementation 1269fc2e4064fc5b784b0b14fc96bfad6a6d21a4.
+Scope: final repository-state cleanliness before verification persistence.
 
 BlueprintSnapshotRef:
 - state: current
