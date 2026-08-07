@@ -1,0 +1,1082 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-run.test.ts b/packages/agentplane/src/cli/run-cli.core.task-run.test.ts
+index eb196e331..1d8bf8e80 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-run.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-run.test.ts
+@@ -256,7 +256,8 @@ describe("runCli task run", () => {
+       expect(bootstrap.split("\n")[0]).toBe(
+         `/goal Execute AgentPlane task ${taskId}: Run task through Codex goal`,
+       );
+-      expect(bootstrap).toContain("Use bundle.json as the complete runner input.");
++      expect(bootstrap).toContain("complete provider-facing projection for this episode");
++      expect(bootstrap).not.toContain("bundle_path");
+       expect(bootstrap).toContain(
+         "Do not attempt to write result_path. Return the AgentSemanticResult v2 object",
+       );
+diff --git a/packages/agentplane/src/runner/context/base-prompt-sources.ts b/packages/agentplane/src/runner/context/base-prompt-sources.ts
+index 1c673e15a..d39b8b272 100644
+--- a/packages/agentplane/src/runner/context/base-prompt-sources.ts
++++ b/packages/agentplane/src/runner/context/base-prompt-sources.ts
+@@ -1,7 +1,11 @@
+ import { readFile, readdir } from "node:fs/promises";
+ import path from "node:path";
+ 
+-import { loadAgentTemplates, loadPolicyGatewayTemplate } from "../../agents/agents-template.js";
++import {
++  loadAgentTemplates,
++  loadPolicyGatewayMarkdownTemplate,
++  renderMarkdownPromptTemplate,
++} from "../../agents/agents-template.js";
+ import { fileExists } from "../../cli/fs-utils.js";
+ import { resolveBehavior, type BehaviorCandidate } from "../../runtime/behavior/index.js";
+ import type { ResolvedExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
+@@ -117,6 +121,10 @@ export async function resolvePolicyGatewayPromptSource(opts: {
+ 
+   if (await fileExists(gateway.absPath)) {
+     const source = path.relative(opts.git_root, gateway.absPath).replaceAll("\\", "/");
++    const rendered = renderMarkdownPromptTemplate(await readFile(gateway.absPath, "utf8"), {
++      source_ref: source,
++      fallback_id: `gateway.${gateway.flavor}.file.repository`,
++    });
+     candidates.push(
+       promptCandidate({
+         layer: "harness",
+@@ -124,12 +132,14 @@ export async function resolvePolicyGatewayPromptSource(opts: {
+         value: {
+           source,
+           title: `Repository Policy Gateway (${gateway.fileName})`,
+-          content: normalizeText(await readFile(gateway.absPath, "utf8")),
++          content: rendered.contents,
++          fragments: rendered.fragments,
+         },
+       }),
+     );
+   }
+ 
++  const bundledTemplate = await loadPolicyGatewayMarkdownTemplate(gateway.flavor);
+   candidates.push(
+     promptCandidate({
+       layer: "builtin",
+@@ -137,7 +147,8 @@ export async function resolvePolicyGatewayPromptSource(opts: {
+       value: {
+         source: `bundled:policy-gateway:${gateway.fileName}`,
+         title: `Bundled Policy Gateway Fallback (${gateway.fileName})`,
+-        content: await loadPolicyGatewayTemplate(gateway.flavor),
++        content: bundledTemplate.contents,
++        fragments: bundledTemplate.fragments,
+       },
+       order: 10,
+     }),
+diff --git a/packages/agentplane/src/runner/context/base-prompts.test.ts b/packages/agentplane/src/runner/context/base-prompts.test.ts
+index 42f57a6d3..3bfe19e83 100644
+--- a/packages/agentplane/src/runner/context/base-prompts.test.ts
++++ b/packages/agentplane/src/runner/context/base-prompts.test.ts
+@@ -9,8 +9,10 @@ import { afterEach, describe, expect, it } from "vitest";
+ import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
+ import type { RunnerTaskContext } from "../types.js";
+ import {
++  assertSemanticProviderPromptHasNoProcessChoreography,
+   collectRunnerBasePrompts,
+   compileRunnerPromptModuleGraph,
++  projectRunnerPromptsForSemanticEpisode,
+   resolveOwnerProfilePromptSource,
+   resolvePolicyGatewayPromptSource,
+   runnerPromptBlocksToModuleGraph,
+@@ -31,6 +33,95 @@ afterEach(async () => {
+ });
+ 
+ describe("collectRunnerBasePrompts", () => {
++  it("projects structured gateway fragments and role constraints for semantic episodes", async () => {
++    const root = await makeTempRepo();
++    const agentsDir = path.join(root, ".agentplane", "agents");
++    await mkdir(agentsDir, { recursive: true });
++    await writeFile(
++      path.join(root, "AGENTS.md"),
++      [
++        '<!-- ap:fragment id="project.purpose" slot="purpose" mutability="replaceable" -->',
++        "# Project purpose",
++        "Build the bounded requested behavior.",
++        "<!-- /ap:fragment -->",
++        '<!-- ap:fragment id="project.scope" slot="hard_constraint" mutability="append_only" -->',
++        "Stay inside the supplied writable roots.",
++        "<!-- /ap:fragment -->",
++        '<!-- ap:fragment id="project.commands" slot="commands" mutability="replaceable" -->',
++        "agentplane task start-ready TASK --author CODER",
++        "git commit -m implementation",
++        "<!-- /ap:fragment -->",
++      ].join("\n"),
++    );
++    await writeFile(
++      path.join(agentsDir, "CODER.json"),
++      JSON.stringify(
++        {
++          id: "CODER",
++          role: "Run agentplane verify and agentplane finish after implementation.",
++        },
++        null,
++        2,
++      ),
++    );
++
++    const prompts = await collectRunnerBasePrompts({
++      git_root: root,
++      owner_id: "CODER",
++    });
++    const projected = projectRunnerPromptsForSemanticEpisode({
++      prompts,
++      role: "EXECUTOR",
++    });
++    const serialized = projected.map((prompt) => prompt.content).join("\n");
++
++    expect(projected.find((prompt) => prompt.id === "base.policy_gateway")?.content).toContain(
++      "Build the bounded requested behavior.",
++    );
++    expect(serialized).toContain("Stay inside the supplied writable roots.");
++    expect(serialized).toContain('"semantic_role": "EXECUTOR"');
++    expect(serialized).not.toContain("task start-ready");
++    expect(serialized).not.toContain("git commit");
++    expect(serialized).not.toContain("agentplane verify");
++    expect(() =>
++      assertSemanticProviderPromptHasNoProcessChoreography({ prompt: serialized }),
++    ).not.toThrow();
++  });
++
++  it.each(["PLANNER", "EXECUTOR", "EVALUATOR"] as const)(
++    "rejects process choreography in an exact %s provider prompt",
++    (role) => {
++      const safePrompt = `semantic_role=${role}\nobjective=Implement the supplied behavior.`;
++      expect(() =>
++        assertSemanticProviderPromptHasNoProcessChoreography({ prompt: safePrompt }),
++      ).not.toThrow();
++      expect(() =>
++        assertSemanticProviderPromptHasNoProcessChoreography({
++          prompt: `${safePrompt}\nagentplane task next-action TASK --explain`,
++        }),
++      ).toThrow(/process choreography/u);
++    },
++  );
++
++  it("keeps the bundled semantic projection materially smaller than the internal policy graph", async () => {
++    const root = await makeTempRepo();
++    const prompts = await collectRunnerBasePrompts({
++      git_root: root,
++      owner_id: "CODER",
++    });
++    const projected = projectRunnerPromptsForSemanticEpisode({
++      prompts,
++      role: "EXECUTOR",
++    });
++    const fullBytes = Buffer.byteLength(JSON.stringify(prompts), "utf8");
++    const projectedBytes = Buffer.byteLength(JSON.stringify(projected), "utf8");
++
++    expect(projectedBytes).toBeLessThan(fullBytes * 0.5);
++    expect(projected.map((prompt) => prompt.content).join("\n")).not.toContain(
++      "agentplane task start-ready",
++    );
++  });
++
+   it("exposes precedence traces for owner profile and policy gateway source selection", async () => {
+     const root = await makeTempRepo();
+     const agentsDir = path.join(root, ".runtime", "agents");
+diff --git a/packages/agentplane/src/runner/context/base-prompts.ts b/packages/agentplane/src/runner/context/base-prompts.ts
+index 7a779dce6..953ff8b18 100644
+--- a/packages/agentplane/src/runner/context/base-prompts.ts
++++ b/packages/agentplane/src/runner/context/base-prompts.ts
+@@ -23,6 +23,11 @@ export {
+   RunnerPromptModuleCompilationError,
+   runnerPromptBlocksToModuleGraph,
+ } from "./prompt-module-bridge.js";
++export {
++  assertSemanticProviderPromptHasNoProcessChoreography,
++  isExplicitProcessMechanismTask,
++  projectRunnerPromptsForSemanticEpisode,
++} from "./semantic-prompt-projection.js";
+ 
+ export async function collectRunnerBasePrompts(opts: {
+   git_root: string;
+diff --git a/packages/agentplane/src/runner/context/prompt-block-shared.ts b/packages/agentplane/src/runner/context/prompt-block-shared.ts
+index fcf24929f..6aee02b87 100644
+--- a/packages/agentplane/src/runner/context/prompt-block-shared.ts
++++ b/packages/agentplane/src/runner/context/prompt-block-shared.ts
+@@ -8,6 +8,7 @@ import {
+ } from "../../runtime/behavior/index.js";
+ import type { RunnerPromptBlock, RunnerPromptRole } from "../types.js";
+ import { renderMarkdownPromptTemplate } from "../../agents/agents-template.js";
++import type { PromptMarkdownFragment } from "../../runtime/prompt-fragments/index.js";
+ import { resolveAgentplaneAssetUrl } from "../../shared/package-paths.js";
+ export { isRecord } from "../../shared/guards.js";
+ 
+@@ -85,6 +86,7 @@ export type PromptSourcePayload = {
+   source: string;
+   title: string;
+   content: string;
++  fragments?: PromptMarkdownFragment[];
+ };
+ 
+ export type PromptSourceTraceMetadata = {
+@@ -123,6 +125,9 @@ export function promptBlockFromResolved(opts: {
+     source: opts.resolved.value.source,
+     priority: opts.priority,
+     content: opts.resolved.value.content,
++    ...(opts.resolved.value.fragments
++      ? { fragments: structuredClone(opts.resolved.value.fragments) }
++      : {}),
+     resolution: stripBehaviorValue(opts.resolved),
+   };
+ }
+diff --git a/packages/agentplane/src/runner/context/prompt-module-bridge.ts b/packages/agentplane/src/runner/context/prompt-module-bridge.ts
+index 25c30bf27..eb80dd54e 100644
+--- a/packages/agentplane/src/runner/context/prompt-module-bridge.ts
++++ b/packages/agentplane/src/runner/context/prompt-module-bridge.ts
+@@ -17,6 +17,7 @@ import {
+   PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
+ } from "../../runtime/prompt-modules/index.js";
+ import type { RunnerPromptBlock, RunnerPromptRole } from "../types.js";
++import type { PromptMarkdownFragment } from "../../runtime/prompt-fragments/index.js";
+ 
+ type RunnerPromptBlockModuleContent = {
+   id: string;
+@@ -28,6 +29,7 @@ type RunnerPromptBlockModuleContent = {
+   surface?: RunnerPromptBlock["surface"];
+   strength?: RunnerPromptBlock["strength"];
+   resolution?: RunnerPromptBlock["resolution"];
++  fragments?: PromptMarkdownFragment[];
+ };
+ 
+ type RunnerPromptModule = PromptModule<RunnerPromptBlockModuleContent>;
+@@ -142,6 +144,7 @@ function promptBlockContent(block: RunnerPromptBlock): RunnerPromptBlockModuleCo
+     ...(block.surface === undefined ? {} : { surface: block.surface }),
+     ...(block.strength === undefined ? {} : { strength: block.strength }),
+     ...(block.resolution === undefined ? {} : { resolution: block.resolution }),
++    ...(block.fragments === undefined ? {} : { fragments: block.fragments }),
+   };
+ }
+ 
+@@ -210,6 +213,7 @@ function moduleToRunnerPromptBlock(module: PromptModule): RunnerPromptBlock {
+     ...(content.surface === undefined ? {} : { surface: content.surface }),
+     ...(content.strength === undefined ? {} : { strength: content.strength }),
+     ...(content.resolution === undefined ? {} : { resolution: content.resolution }),
++    ...(content.fragments === undefined ? {} : { fragments: content.fragments }),
+   };
+ }
+ 
+diff --git a/packages/agentplane/src/runner/context/semantic-prompt-projection.ts b/packages/agentplane/src/runner/context/semantic-prompt-projection.ts
+new file mode 100644
+index 000000000..e077a0439
+--- /dev/null
++++ b/packages/agentplane/src/runner/context/semantic-prompt-projection.ts
+@@ -0,0 +1,195 @@
++import type { AgentWorkOrderRole } from "@agentplaneorg/core/schemas";
++
++import type { PromptMarkdownFragment } from "../../runtime/prompt-fragments/index.js";
++import type { RunnerPromptBlock, RunnerTaskContext } from "../types.js";
++
++type ProcessChoreographyMatch = {
++  id: string;
++  match: string;
++};
++
++const PROCESS_CHOREOGRAPHY_PATTERNS = [
++  { id: "task_start_ready", pattern: /\b(?:ap|agentplane)?\s*task\s+start-ready\b/giu },
++  { id: "task_next_action", pattern: /\b(?:ap|agentplane)?\s*task\s+next-action\b/giu },
++  { id: "work_start", pattern: /\b(?:ap|agentplane)?\s*work\s+start\b/giu },
++  { id: "pr_open", pattern: /\b(?:ap|agentplane)?\s*pr\s+open\b/giu },
++  { id: "verify_command", pattern: /\b(?:ap|agentplane)\s+verify\b/giu },
++  { id: "finish_command", pattern: /\b(?:ap|agentplane)\s+finish\b/giu },
++  { id: "integrate_command", pattern: /\b(?:ap|agentplane)\s+integrate\b/giu },
++  { id: "cleanup_command", pattern: /\b(?:ap|agentplane)\s+cleanup\b/giu },
++  { id: "git_commit", pattern: /\bgit\s+commit\b/giu },
++  { id: "github_pr", pattern: /\bgh\s+pr\b/giu },
++] as const;
++
++const PROCESS_REPAIR_TAGS = new Set(["lifecycle", "orchestration", "prompts", "supervisor"]);
++const PROCESS_REPAIR_INTENT =
++  /\b(?:lifecycle|orchestration|provider prompt|process choreography|supervisor protocol)\b/iu;
++
++const SEMANTIC_GATEWAY_BODY_FRAGMENT_IDS = new Set(["gateway.agents.body.shared.prompt.contract"]);
++
++const SEMANTIC_ROLE_CONTRACTS: Record<AgentWorkOrderRole, string[]> = {
++  PLANNER: [
++    "Produce the semantic plan, acceptance criteria, unresolved questions, and risk notes requested by the work order.",
++    "Do not perform repository mutations or formal state transitions.",
++  ],
++  CURATOR: [
++    "Resolve the supplied sources into bounded semantic context with explicit provenance and uncertainty.",
++    "Write only the context outputs granted by the work order.",
++  ],
++  EXECUTOR: [
++    "Implement only the supplied objective inside the granted writable roots.",
++    "Return claims and check results through the declared semantic result schema.",
++  ],
++  EVALUATOR: [
++    "Judge the supplied implementation and evidence against the acceptance and verification intent.",
++    "Remain read-only and return a typed verdict with concrete findings and residual risk.",
++  ],
++};
++
++function normalizeText(value: string): string {
++  const trimmed = value.trim();
++  return trimmed ? `${trimmed}\n` : "";
++}
++
++function processChoreographyMatches(value: string): ProcessChoreographyMatch[] {
++  const matches: ProcessChoreographyMatch[] = [];
++  for (const rule of PROCESS_CHOREOGRAPHY_PATTERNS) {
++    for (const match of value.matchAll(rule.pattern)) {
++      matches.push({ id: rule.id, match: match[0] });
++    }
++  }
++  return matches;
++}
++
++function semanticTextHasProcessChoreography(value: string): boolean {
++  return processChoreographyMatches(value).length > 0;
++}
++
++function isSemanticGatewayFragment(fragment: PromptMarkdownFragment): boolean {
++  if (fragment.id === "gateway.user.instructions") return false;
++  if (fragment.id === "gateway.agents.hard_constraint.size.budget") return false;
++  if (fragment.slot === "purpose" || fragment.slot === "hard_constraint") return true;
++  return fragment.slot === "body" && SEMANTIC_GATEWAY_BODY_FRAGMENT_IDS.has(fragment.id);
++}
++
++function projectGatewayBlock(block: RunnerPromptBlock): RunnerPromptBlock {
++  const fragments = (block.fragments ?? [])
++    .filter((fragment) => isSemanticGatewayFragment(fragment))
++    .filter((fragment) => processChoreographyMatches(fragment.text).length === 0);
++  const projected = fragments
++    .map((fragment) => fragment.text.trim())
++    .filter(Boolean)
++    .join("\n\n");
++  return {
++    ...block,
++    title: "Semantic Policy Gateway Projection",
++    source: `${block.source ?? block.id}#phase=semantic_episode`,
++    content: normalizeText(
++      [
++        "# Semantic policy projection",
++        "",
++        "Only policy that constrains the current semantic episode is projected here.",
++        projected,
++      ]
++        .filter(Boolean)
++        .join("\n"),
++    ),
++    fragments: undefined,
++  };
++}
++
++function projectOwnerProfileBlock(
++  block: RunnerPromptBlock,
++  role: AgentWorkOrderRole,
++): RunnerPromptBlock {
++  let sourceId: string = role;
++  try {
++    const parsed = JSON.parse(block.content) as { id?: unknown };
++    if (typeof parsed.id === "string" && parsed.id.trim()) sourceId = parsed.id.trim();
++  } catch {
++    // The provider receives a normalized semantic role even when a custom profile is malformed.
++  }
++  return {
++    ...block,
++    title: `Semantic Role Projection (${role})`,
++    source: `${block.source ?? block.id}#phase=semantic_episode`,
++    content: normalizeText(
++      JSON.stringify(
++        {
++          id: sourceId,
++          semantic_role: role,
++          phase: "semantic_episode",
++          contract: SEMANTIC_ROLE_CONTRACTS[role],
++        },
++        null,
++        2,
++      ),
++    ),
++    fragments: undefined,
++  };
++}
++
++function projectExecutionProfileBlock(block: RunnerPromptBlock): RunnerPromptBlock {
++  let projected: Record<string, unknown> = {};
++  try {
++    const parsed = JSON.parse(block.content) as Record<string, unknown>;
++    projected = {
++      profile: parsed.profile,
++      reasoning_effort: parsed.reasoning_effort,
++      text_verbosity: parsed.text_verbosity,
++      budget: parsed.budget,
++      unsafe_actions_requiring_explicit_user_ok: parsed.unsafe_actions_requiring_explicit_user_ok,
++    };
++  } catch {
++    projected = { phase: "semantic_episode" };
++  }
++  return {
++    ...block,
++    title: "Semantic Execution Profile Projection",
++    source: `${block.source ?? block.id}#phase=semantic_episode`,
++    content: normalizeText(JSON.stringify(projected, null, 2)),
++    fragments: undefined,
++  };
++}
++
++export function projectRunnerPromptsForSemanticEpisode(opts: {
++  prompts: RunnerPromptBlock[];
++  role: AgentWorkOrderRole;
++}): RunnerPromptBlock[] {
++  return opts.prompts.flatMap((block) => {
++    if (block.id === "base.policy_gateway") return [projectGatewayBlock(block)];
++    if (block.id === "base.owner_profile") return [projectOwnerProfileBlock(block, opts.role)];
++    if (block.id === "base.execution_profile") return [projectExecutionProfileBlock(block)];
++    if (block.id === "gateway.user.instructions") return [{ ...block, fragments: undefined }];
++    if (semanticTextHasProcessChoreography(block.content)) return [];
++    return [{ ...block, fragments: undefined }];
++  });
++}
++
++export function isExplicitProcessMechanismTask(task: RunnerTaskContext | undefined): boolean {
++  if (!task) return false;
++  const hasRepairTag = task.metadata.tags.some((tag) => PROCESS_REPAIR_TAGS.has(tag.toLowerCase()));
++  if (!hasRepairTag) return false;
++  const intent = [
++    task.narrative.title,
++    task.narrative.description,
++    ...task.narrative.sections.map((section) => section.text),
++  ].join("\n");
++  return PROCESS_REPAIR_INTENT.test(intent);
++}
++
++export function assertSemanticProviderPromptHasNoProcessChoreography(opts: {
++  prompt: string;
++  allow_process_mechanism_task?: boolean;
++}): void {
++  if (opts.allow_process_mechanism_task) return;
++  const matches = processChoreographyMatches(opts.prompt);
++  if (matches.length === 0) return;
++  const summary = matches
++    .map((match) => `${match.id}:${JSON.stringify(match.match)}`)
++    .filter((entry, index, values) => values.indexOf(entry) === index)
++    .join(", ");
++  throw new Error(
++    `Semantic provider prompt contains supervisor-owned process choreography (${summary}).`,
++  );
++}
+diff --git a/packages/agentplane/src/runner/state-fingerprint-observation.ts b/packages/agentplane/src/runner/state-fingerprint-observation.ts
+index 157383771..4e4dfc60e 100644
+--- a/packages/agentplane/src/runner/state-fingerprint-observation.ts
++++ b/packages/agentplane/src/runner/state-fingerprint-observation.ts
+@@ -348,6 +348,7 @@ export async function observePreparedRunnerStateComponents(opts: {
+   ctx: CommandContext;
+   bundle: RunnerContextBundle;
+   probes?: RunnerStateFingerprintComponentProbes;
++  policy_prompts?: RunnerPromptBlock[];
+ }): Promise<RunnerStateFingerprintObservedComponents> {
+   // TaskEpisodeView deliberately excludes full lifecycle state. Re-observe the
+   // backend projection while preparing the fingerprint instead of retaining a
+@@ -363,7 +364,7 @@ export async function observePreparedRunnerStateComponents(opts: {
+     opts.probes?.observe_policy?.() ??
+       observeRunnerPolicyComponent({
+         repository_root: repositoryRoot,
+-        prompts: opts.bundle.base_prompts,
++        prompts: opts.policy_prompts ?? opts.bundle.base_prompts,
+         policy_modules: opts.bundle.blueprint?.policyModules ?? [],
+         evaluator_skepticism_level: opts.ctx.config.evaluator.skepticism_level,
+         harness_task: opts.bundle.framework_explain?.harness.task,
+diff --git a/packages/agentplane/src/runner/state-fingerprint.ts b/packages/agentplane/src/runner/state-fingerprint.ts
+index 893171aab..afcf7465b 100644
+--- a/packages/agentplane/src/runner/state-fingerprint.ts
++++ b/packages/agentplane/src/runner/state-fingerprint.ts
+@@ -29,7 +29,7 @@ import {
+   type RunnerStateFingerprintComponentProbes,
+   type RunnerStateFingerprintObservedComponents,
+ } from "./state-fingerprint-observation.js";
+-import type { RunnerContextBundle } from "./types.js";
++import type { RunnerContextBundle, RunnerPromptBlock } from "./types.js";
+ 
+ export const RUNNER_STATE_FINGERPRINT_POLICY = {
+   required_components: [
+@@ -307,6 +307,7 @@ export async function capturePreparedRunnerStateFingerprint(opts: {
+   bundle: RunnerContextBundle;
+   git: GitSnapshot;
+   probes?: RunnerStateFingerprintProbes;
++  policy_prompts?: RunnerPromptBlock[];
+ }): Promise<StateFingerprint> {
+   const components = await observePreparedRunnerStateComponents(opts);
+   return buildRunnerStateFingerprint({
+diff --git a/packages/agentplane/src/runner/types/prompts.ts b/packages/agentplane/src/runner/types/prompts.ts
+index c1d4dc3d7..41b729ca1 100644
+--- a/packages/agentplane/src/runner/types/prompts.ts
++++ b/packages/agentplane/src/runner/types/prompts.ts
+@@ -1,6 +1,7 @@
+ import type { OverlayStrength, OverlaySurface } from "@agentplaneorg/recipes";
+ 
+ import type { BehaviorResolutionTrace } from "../../runtime/behavior/index.js";
++import type { PromptMarkdownFragment } from "../../runtime/prompt-fragments/index.js";
+ 
+ export type RunnerPromptRole = "system" | "policy" | "profile" | "task" | "context";
+ 
+@@ -16,4 +17,6 @@ export type RunnerPromptBlock = {
+   surface?: RunnerPromptSurface;
+   strength?: OverlayStrength;
+   resolution?: BehaviorResolutionTrace<Record<string, unknown>>;
++  /** Structured source fragments retained until the provider-phase projection is compiled. */
++  fragments?: PromptMarkdownFragment[];
+ };
+diff --git a/packages/agentplane/src/runner/usecases/agent-work-order-build.ts b/packages/agentplane/src/runner/usecases/agent-work-order-build.ts
+index 4f29fdd18..aba6307a1 100644
+--- a/packages/agentplane/src/runner/usecases/agent-work-order-build.ts
++++ b/packages/agentplane/src/runner/usecases/agent-work-order-build.ts
+@@ -316,6 +316,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
+     task_envelope: RunnerTaskContextEnvelope;
+     execution_context: ReadOnlyExecutionContext;
+     route_decision: TaskRouteDecision;
++    semantic_role?: AgentWorkOrderRole;
+   };
+   source_manifest: AgentWorkOrderSourceManifest;
+   knowledge_retrieval: TaskKnowledgeRetrieval;
+@@ -326,7 +327,9 @@ export function buildCanonicalAgentWorkOrder(opts: {
+     route_decision: decision,
+   } = opts.prepared;
+   const task = taskEnvelope.task;
+-  const role = workOrderRole(decision.executionPacket.recommendedRole ?? task.metadata.owner ?? "");
++  const role =
++    opts.prepared.semantic_role ??
++    workOrderRole(decision.executionPacket.recommendedRole ?? task.metadata.owner ?? "");
+   const stateFingerprint = structuredClone(decision.workflowStep.preconditionFingerprint);
+   const mutationPath = decision.oracle.mutationPathHint;
+   const canMutate = decision.executionPacket.safeToMutate && mutationPath !== null;
+diff --git a/packages/agentplane/src/runner/usecases/agent-work-order.ts b/packages/agentplane/src/runner/usecases/agent-work-order.ts
+index a1160bb63..8f944b586 100644
+--- a/packages/agentplane/src/runner/usecases/agent-work-order.ts
++++ b/packages/agentplane/src/runner/usecases/agent-work-order.ts
+@@ -2,6 +2,7 @@ import {
+   AgentWorkOrderPreparationError,
+   assertAgentWorkOrderReadyForInvocation,
+   type AgentWorkOrderV2,
++  type AgentWorkOrderRole,
+   type StateFingerprint,
+   type StateFingerprintPreconditionDiagnostic,
+ } from "@agentplaneorg/core/schemas";
+@@ -22,6 +23,7 @@ import { CliError } from "../../shared/errors.js";
+ import { measurePreparationNode } from "../../shared/preparation-trace.js";
+ import {
+   collectRunnerBasePrompts,
++  projectRunnerPromptsForSemanticEpisode,
+   RunnerPromptModuleCompilationError,
+ } from "../context/base-prompts.js";
+ import {
+@@ -58,7 +60,10 @@ export type PreparedAgentWorkOrder = {
+   /** Internal typed source for the runner only; it is never rendered as the v2 transport view. */
+   route_decision: TaskRouteDecision;
+   task_envelope: RunnerTaskContextEnvelope;
++  /** Full internal prompt graph used for policy and state-fingerprint resolution. */
+   base_prompts: RunnerPromptBlock[];
++  /** Bounded projection serialized into the provider-facing runner bundle. */
++  provider_prompts: RunnerPromptBlock[];
+   blueprint: BlueprintPlanArtifact;
+   brief_projection: AgentWorkOrderLegacyBriefProjection;
+   execution_context: ReadOnlyExecutionContext;
+@@ -131,6 +136,7 @@ export async function prepareAgentWorkOrder(opts: {
+   execution_profile?: ResolvedExecutionProfileRuntime;
+   semantic_selector?: SemanticRetrievalSelector;
+   prepared_route_decision?: TaskRouteDecision;
++  semantic_role?: AgentWorkOrderRole;
+ }): Promise<AgentWorkOrderPreparationResult> {
+   const includeRunnerState = opts.include_runner_state;
+   const executionContext =
+@@ -305,10 +311,15 @@ export async function prepareAgentWorkOrder(opts: {
+         task_envelope: taskEnvelope,
+         execution_context: executionContext,
+         route_decision: routeDecision,
++        ...(opts.semantic_role ? { semantic_role: opts.semantic_role } : {}),
+       },
+       source_manifest: sourceManifest,
+       knowledge_retrieval: knowledgeRetrieval,
+     });
++    const semanticBasePrompts = projectRunnerPromptsForSemanticEpisode({
++      prompts: basePrompts,
++      role: canonicalWorkOrder.role,
++    });
+     const preparation: AgentWorkOrderPreparationView = {
+       schema_version: 2,
+       kind: "agent_work_order_preparation",
+@@ -331,6 +342,7 @@ export async function prepareAgentWorkOrder(opts: {
+         route_decision: routeDecision,
+         task_envelope: taskEnvelope,
+         base_prompts: basePrompts,
++        provider_prompts: semanticBasePrompts,
+         blueprint,
+         brief_projection: briefProjection,
+         execution_context: executionContext,
+diff --git a/packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts b/packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts
+index 9f8114f4d..50a2510ff 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts
+@@ -19,13 +19,11 @@ describe("runner blueprint guards", () => {
+       "/goal Execute AgentPlane task 202605271519-3ES6T7: Start Codex runner prompts with /goal",
+     );
+     expect(bootstrap).toContain("# agentplane runner bootstrap");
+-    expect(bootstrap).toContain(
+-      "- bundle_path: /repo/.agentplane/tasks/202605271519-3ES6T7/runs/run-123/bundle.json",
+-    );
++    expect(bootstrap).not.toContain("bundle_path");
+     expect(bootstrap).toContain(
+       "- result_path: /repo/.agentplane/tasks/202605271519-3ES6T7/runs/run-123/result.json",
+     );
+-    expect(bootstrap).toContain("Keep lifecycle authority with the parent AgentPlane workflow");
++    expect(bootstrap).toContain("Keep all control-plane operations with the parent supervisor");
+     expect(bootstrap).toContain("Assume sibling runners may be executing concurrently");
+     expect(bootstrap).toContain("report possible write conflicts in the result manifest");
+   });
+@@ -43,7 +41,7 @@ describe("runner blueprint guards", () => {
+     expect(bootstrap).not.toContain("/goal");
+   });
+ 
+-  it("renders route oracle fields into the runner bootstrap", () => {
++  it("keeps route choreography out of the provider bootstrap", () => {
+     const bundle = makeRunnerContextBundle();
+     bundle.route_decision = {
+       workflowStep: {
+@@ -98,28 +96,19 @@ describe("runner blueprint guards", () => {
+ 
+     const bootstrap = renderTaskRunnerBootstrap(bundle);
+ 
+-    expect(bootstrap).toContain("- route_phase: worktree_needed");
+-    expect(bootstrap).toContain("- workflow_step_kind: cli_operation");
+-    expect(bootstrap).toContain("- workflow_step_id: worktree.prepare");
+-    expect(bootstrap).toContain("- workflow_operation_id: worktree.prepare");
+-    expect(bootstrap).toContain("- route_mutation_path_hint: /repo");
+-    expect(bootstrap).toContain("- route_safe_to_mutate: true");
+-    expect(bootstrap).toContain("- route_must_run_from: /repo");
+-    expect(bootstrap).toContain("- route_return_control_when: after the exact command exits");
+-    expect(bootstrap).toContain(
+-      "Treat the rendered route fields as supervisor-resolved constraints",
+-    );
+-    expect(bootstrap).toContain("Do not recompute workflow state");
+-    expect(bootstrap).toContain("use absolute paths under route_mutation_path_hint");
+-    expect(bootstrap).toContain("the parent supervisor owns the next state transition");
+-    expect(bootstrap).toContain("Route must-not rules:");
++    expect(bootstrap).not.toContain("route_phase");
++    expect(bootstrap).not.toContain("workflow_step_kind");
++    expect(bootstrap).not.toContain("workflow_operation_id");
++    expect(bootstrap).not.toContain("route_mutation_path_hint");
++    expect(bootstrap).not.toContain("agentplane work start");
++    expect(bootstrap).not.toContain("agentplane task next-action");
++    expect(bootstrap).toContain("use absolute paths under writable_roots");
++    expect(bootstrap).toContain("parent supervisor owns every formal transition");
+     expect(bootstrap).not.toContain("- route_next_command:");
+     expect(bootstrap).not.toContain("- route_exact_argv:");
+     expect(bootstrap).not.toContain("- route_stale_state_check:");
+     expect(bootstrap).not.toContain("- route_requires_provider_action:");
+-    expect(bootstrap).not.toContain(
+-      "run `agentplane task next-action <task-id> --explain` before mutating",
+-    );
++    expect(bootstrap).toContain("complete provider-facing projection");
+   });
+ 
+   it("renders configured evaluator skepticism into the runner bootstrap", () => {
+diff --git a/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts b/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
+index f051d1d50..5fde368c9 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
+@@ -106,7 +106,7 @@ describe("runner bootstrap result examples", () => {
+     expect(bootstrap).toContain("Do not attempt to write result_path.");
+     expect(bootstrap).toContain("the supervisor writes and validates result_path");
+     expect(bootstrap).toContain(
+-      "The parent CLI owns those actions. The only exception is an exact run-scoped phase-tool invocation listed below.",
++      "Use only an exact run-scoped phase-tool invocation declared below",
+     );
+     expect(bootstrap).not.toContain(
+       "Execute-mode runs must write a valid AgentSemanticResult v2 JSON manifest",
+diff --git a/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts b/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
+index 22971a732..dcb15d359 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
+@@ -38,9 +38,9 @@ function renderEvaluatorSkepticismLines(level: EvaluatorSkepticismLevel): string
+   const common = [
+     "Evaluator skepticism contract:",
+     `- evaluator_skepticism_level: ${level}`,
+-    "- During evaluator or audit review, reconstruct the intended contract from the task, plan, Verify Steps, route decision, diff, and evidence; do not rely on the implementer's summary.",
+-    "- Treat passing technical checks as evidence, not proof. Look for broken invariants, missing negative cases, stale route assumptions, and untested concurrency or lifecycle edges.",
+-    "- If the run is evaluator-only, do not fix issues. Return findings, missing tests, hidden assumptions, residual risks, and a concrete rework packet for the parent runner.",
++    "- Reconstruct the intended contract from the objective, acceptance criteria, changed behavior, and supplied evidence; do not rely on the implementer's summary.",
++    "- Treat passing technical checks as evidence, not proof. Look for broken invariants, missing negative cases, stale assumptions, and untested concurrency edges.",
++    "- Remain read-only. Return findings, missing tests, hidden assumptions, residual risks, and a concrete rework packet.",
+   ];
+   if (level === "standard") {
+     return [
+@@ -58,7 +58,7 @@ function renderEvaluatorSkepticismLines(level: EvaluatorSkepticismLevel): string
+   return [
+     ...common,
+     "- Paranoid review: assume the implementation is incomplete until each critical claim is backed by direct code, test, runtime, or task-artifact evidence.",
+-    "- Prefer rework over pass for ambiguous ownership, unverified negative cases, broad diffs without targeted evidence, or lifecycle state that could be stale.",
++    "- Prefer rework over pass for ambiguous ownership, unverified negative cases, or broad diffs without targeted evidence.",
+   ];
+ }
+ 
+@@ -75,34 +75,106 @@ function renderPhaseToolLines(bundle: RunnerContextBundle): string[] {
+   const allowed = manifest.tools.filter((tool) => tool.allowed);
+   const runScoped = allowed.filter((tool) => tool.transport === "run_scoped_command");
+   const unavailable = manifest.tools.filter((tool) => !tool.allowed);
++  const effectiveRepositoryToolClasses = manifest.repository_tool_classes.filter(
++    (toolClass) =>
++      toolClass !== "workspace_write" ||
++      (bundle.execution.write_scope?.writable_roots.length ?? 0) > 0,
++  );
+   return [
+     "",
+     "Run-scoped phase tool contract:",
+     `- phase: ${manifest.phase}`,
+     `- role: ${manifest.role}`,
+     `- global_help_required: ${String(manifest.global_help_required)}`,
+-    `- repository_tool_classes: ${JSON.stringify(manifest.repository_tool_classes)}`,
++    `- repository_tool_classes: ${JSON.stringify(effectiveRepositoryToolClasses)}`,
+     ...(runScoped.length > 0
+       ? [
+           "- The supervisor injects the signed token and a checkout-local broker channel through the process environment. Never print the token or pass it on argv.",
+-          "- For run_scoped_command tools, send one JSON object on stdin to the exact invocation below. Input schemas are in bundle.execution.phase_tools.tools.",
++          "- For run_scoped_command tools, send one JSON object on stdin to the exact invocation and schema below.",
+         ]
+       : [
+           "- This adapter exposes no run_scoped_command transport, so no phase-tool token or broker channel is injected. Use only the declared terminal result transport.",
+         ]),
+     ...allowed.map(
+       (tool) =>
+-        `- ${tool.name}: transport=${tool.transport} enforcement=${tool.enforcement} invocation=${tool.invocation ?? "terminal AgentSemanticResult v2"}`,
++        `- ${tool.name}: transport=${tool.transport} enforcement=${tool.enforcement} invocation=${tool.invocation ?? "terminal AgentSemanticResult v2"} input_schema=${JSON.stringify(tool.input_schema)}`,
+     ),
+     ...unavailable.map(
+       (tool) =>
+         `- ${tool.name}: unavailable (${tool.reason ?? "adapter/work-order capability not granted"})`,
+     ),
+-    "- Lifecycle operations are never phase tools. An undeclared, expired, revoked, cross-run, cross-role, or tampered call returns a typed denial before target effects.",
++    "- An undeclared, expired, revoked, cross-run, cross-role, or tampered call returns a typed denial before target effects.",
+     "- report_result and report_blocker are terminal: an accepted call revokes the token. request_knowledge, knowledge_search, and knowledge_show remain bounded to the current work-order context.",
+   ];
+ }
+ 
++function renderSemanticPromptProjectionLines(bundle: RunnerContextBundle): string[] {
++  return bundle.base_prompts.flatMap((block) => [
++    `### ${block.title ?? block.id}`,
++    `source: ${block.source ?? block.id}`,
++    "",
++    block.content.trim(),
++    "",
++  ]);
++}
++
++function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string, unknown> | null {
++  const workOrder = bundle.work_order;
++  if (!workOrder) return null;
++  const requiredInputs = workOrder.required_inputs.filter((input) => {
++    if (input.kind === "task_document" || input.kind === "policy_module") return false;
++    if (input.kind !== "source_artifact") return true;
++    const source = input.path ?? "";
++    return (
++      !source.startsWith(".agentplane/") &&
++      !source.startsWith("bundled:") &&
++      !source.startsWith("runtime:") &&
++      source !== "AGENTS.md" &&
++      source !== "CLAUDE.md"
++    );
++  });
++  const effectiveWritableRoots =
++    bundle.execution.write_scope?.writable_roots ?? workOrder.authority.writable_roots;
++  const effectiveSandbox =
++    bundle.execution.sandbox_policy?.requested ?? workOrder.authority.sandbox;
++  const effectiveToolClasses = workOrder.authority.allowed_tool_classes.filter(
++    (toolClass) => toolClass !== "workspace_write" || effectiveWritableRoots.length > 0,
++  );
++  return {
++    work_order_id: workOrder.work_order_id,
++    role: workOrder.role,
++    task: workOrder.task,
++    authority: {
++      ...workOrder.authority,
++      writable_roots: effectiveWritableRoots,
++      allowed_tool_classes: effectiveToolClasses,
++      sandbox: effectiveSandbox,
++    },
++    context_intent: {
++      purpose: "Provide the minimum semantic context required for this bounded episode.",
++      required_knowledge_ref_digests: workOrder.context_intent.required_knowledge_ref_digests,
++      require_prepared_evidence: workOrder.context_intent.require_prepared_evidence,
++    },
++    knowledge_refs: workOrder.knowledge_refs,
++    prepared_evidence: workOrder.prepared_evidence,
++    required_inputs: requiredInputs,
++    required_outputs: workOrder.required_outputs,
++    verification_intent: workOrder.verification_intent,
++    semantic_result_schema: workOrder.semantic_result_schema,
++    stop_rules: [
++      "Stop and return a blocked semantic result when required context is missing or stale.",
++      "Stop before exceeding the granted authority, writable roots, network policy, or protected paths.",
++      "Return one typed semantic result when the objective is satisfied or blocked.",
++    ],
++  };
++}
++
++function renderSemanticWorkOrderLines(bundle: RunnerContextBundle): string[] {
++  const projection = semanticWorkOrderProjection(bundle);
++  if (!projection) return [];
++  return ["## Semantic work order", "", "```json", JSON.stringify(projection, null, 2), "```", ""];
++}
++
+ export function renderTaskRunnerBootstrap(
+   bundle: RunnerContextBundle,
+   invocation?: RunnerInvocation,
+@@ -117,10 +189,6 @@ export function renderTaskRunnerBootstrap(
+   const verifierChecks = bundle.playbook?.final_verifier.checks ?? [];
+   const evaluatorSkepticismLevel =
+     bundle.execution.evaluator_skepticism_level ?? ("standard" satisfies EvaluatorSkepticismLevel);
+-  const route = bundle.route_decision;
+-  const workflowOperation =
+-    route?.workflowStep.kind === "cli_operation" ? route.workflowStep.operation : undefined;
+-  const routeMustNot = route?.executionPacket.mustNot ?? [];
+   const sandboxPolicy = bundle.execution.sandbox_policy;
+   const knowledgeRequestAuthorized =
+     bundle.work_order?.authority.allowed_tool_classes.includes("knowledge_request");
+@@ -134,58 +202,43 @@ export function renderTaskRunnerBootstrap(
+     ...(codexGoalLine ? [codexGoalLine, ""] : []),
+     "# agentplane runner bootstrap",
+     "",
+-    "This invocation is already inside an approved runner execution.",
+-    "- Do not run repository startup commands such as `agentplane config show`, `agentplane quickstart`, `agentplane task list`, `git status`, or `git rev-parse` unless the bundle explicitly requires them as task work.",
+-    "- Do not create, approve, start, verify, finish, block, or rerun tasks unless the bundle explicitly requires task metadata edits.",
+-    "- Keep lifecycle authority with the parent AgentPlane workflow; do not open PRs, merge, release, push publication artifacts, or clean worktrees unless the bundle explicitly delegates that action.",
+-    "- Do not recursively invoke runner entrypoints such as `agentplane task run` or `agentplane recipes scenario execute` from inside this run.",
+-    "- Do not invoke `ap` or `agentplane` for lifecycle, context preparation, repository diagnosis, or formal verification. The parent CLI owns those actions. The only exception is an exact run-scoped phase-tool invocation listed below.",
++    "This invocation is one approved semantic episode inside a supervisor-owned execution.",
++    "- Work only on the semantic objective and authority projected below.",
++    "- Keep all control-plane operations with the parent supervisor.",
++    "- Do not invoke nested supervisor entrypoints or inspect supervisor-owned state artifacts.",
++    "- Use only an exact run-scoped phase-tool invocation declared below; all other supervisor interfaces remain unavailable in this episode.",
+     "- Assume sibling runners may be executing concurrently. Keep writes inside the task scope, avoid broad refactors or shared policy edits, and report possible write conflicts in the result manifest instead of resolving them speculatively.",
+-    "- Open bundle.json immediately, execute the requested work directly, and stop when the requested outcome is satisfied.",
++    "- Execute the projected work directly and stop when the requested semantic outcome is satisfied.",
+     "",
+     `- target: ${targetLabel}`,
+     `- adapter: ${bundle.execution.adapter_id}`,
+     `- mode: ${bundle.execution.mode}`,
+     `- run_id: ${bundle.execution.run_id}`,
+     `- work_order_id: ${bundle.work_order?.work_order_id ?? invocation?.work_order_id ?? bundle.execution.run_id}`,
+-    `- bundle_path: ${bundle.execution.artifact_paths.bundle_path}`,
+     `- result_path: ${bundle.execution.artifact_paths.result_path}`,
+     `- receipt_path: ${bundle.execution.artifact_paths.receipt_path}`,
+-    `- bootstrap_path: ${bundle.execution.artifact_paths.bootstrap_path}`,
++    `- repository_root: ${bundle.repository.git_root}`,
+     `- sandbox_requested: ${sandboxPolicy?.requested ?? "unknown"}`,
+     `- sandbox_source: ${sandboxPolicy?.source ?? "unknown"}`,
+     `- execution_role: ${sandboxPolicy?.role ?? "unknown"}`,
+     `- sandbox_enforcement: ${sandboxDecision?.status ?? "unknown"}`,
+     `- writable_roots: ${JSON.stringify(writeScope?.writable_roots ?? [])}`,
+     `- protected_paths: ${JSON.stringify(writeScope?.protected_paths ?? [])}`,
+-    ...(route
+-      ? [
+-          `- checkout_role: ${route.workspace.checkoutRole}`,
+-          `- route_phase: ${route.oracle.phase}`,
+-          `- workflow_step_kind: ${route.workflowStep.kind}`,
+-          `- workflow_step_id: ${route.workflowStep.id}`,
+-          `- workflow_operation_id: ${workflowOperation?.id ?? "none"}`,
+-          `- route_mutation_path_hint: ${route.oracle.mutationPathHint ?? "none"}`,
+-          `- route_safe_to_mutate: ${String(route.executionPacket.safeToMutate)}`,
+-          `- route_recommended_role: ${route.executionPacket.recommendedRole}`,
+-          `- route_must_run_from: ${route.executionPacket.mustRunFrom ?? "unknown"}`,
+-          `- route_return_control_when: ${route.executionPacket.returnControlWhen}`,
+-        ]
+-      : []),
+     "",
+-    "Use bundle.json as the complete runner input. Do not reconstruct prompts or route decisions from CLI argv.",
+-    "Treat the rendered route fields as supervisor-resolved constraints. Do not recompute workflow state or invoke task lifecycle commands from this run.",
+-    "For file-edit tools that do not accept cwd/workdir, use absolute paths under route_mutation_path_hint when route_safe_to_mutate is true; otherwise stop before mutating files.",
+-    "Stop according to route_return_control_when; the parent supervisor owns the next state transition.",
++    "The content below is the complete provider-facing projection for this episode. Do not open the internal supervisor bundle.",
++    "For file-edit tools that do not accept cwd/workdir, use absolute paths under writable_roots; stop before writing when no writable root is granted.",
++    "The parent supervisor owns every formal transition after the semantic result is returned.",
+     "Treat protected_paths as forbidden even when the native sandbox permits them. The supervisor evaluates actual writes after the run.",
+-    ...(routeMustNot.length > 0
+-      ? ["Route must-not rules:", ...routeMustNot.map((rule) => `- ${rule}`)]
+-      : []),
++    "",
++    "## Semantic policy and role context",
++    "",
++    ...renderSemanticPromptProjectionLines(bundle),
++    ...renderSemanticWorkOrderLines(bundle),
+     ...(knowledgeRequestAuthorized
+       ? [
+           "When bounded task context is missing, return status=needs_context with a KnowledgeRequest v1 in the semantic result.",
+           "KnowledgeRequest is limited to scope=task_context, a declared desired_kind, and blocking=true only when work cannot proceed without it.",
+-          "Do not use repository search or lifecycle commands to fill that gap; the parent CLI validates the request, retrieves digest-valid references, and records its audit.",
++          "Use only the declared bounded knowledge channel for that gap; the parent supervisor validates the request and retrieves digest-valid references.",
+         ]
+       : []),
+     ...renderPhaseToolLines(bundle),
+diff --git a/packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts b/packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts
+index 22ecd470d..78389fa41 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts
+@@ -1,4 +1,4 @@
+-import { access } from "node:fs/promises";
++import { access, readFile, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import { defaultConfig } from "@agentplaneorg/core/config";
+@@ -190,6 +190,39 @@ async function configureFakeCodex(root: string): Promise<void> {
+ }
+ 
+ describe("context task runner integration", () => {
++  it("refuses the exact provider input when user guidance reintroduces process choreography", async () => {
++    const root = await mkGitRepoRoot();
++    await writeConfig(root, defaultConfig());
++    const taskId = await createDoingTask(root, {
++      title: "Normal semantic provider prompt",
++      owner: "CODER",
++      task_kind: "code",
++      mutation_scope: "code",
++      blueprint_request: "code.direct",
++    });
++    await writeFile(
++      path.join(root, ".agentplane", "user-instructions.md"),
++      "Run agentplane verify and agentplane finish after every implementation.\n",
++    );
++    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
++
++    await expect(
++      prepareTaskRunnerExecution({
++        ctx,
++        cwd: root,
++        rootOverride: root,
++        task_id: taskId,
++        mode: "dry_run",
++        run_id: "run-process-choreography-refusal",
++      }),
++    ).rejects.toMatchObject({
++      code: "E_VALIDATION",
++      context: {
++        reason_code: "semantic_provider_prompt_process_choreography",
++      },
++    });
++  });
++
+   it("refuses a custom workspace-write adapter before context mutation", async () => {
+     const root = await mkGitRepoRoot();
+     const runId = "run-context-custom-advisory";
+@@ -349,5 +382,24 @@ describe("context task runner integration", () => {
+     expect(evaluator.invocation.argv).toEqual(
+       expect.arrayContaining(["-s", "read-only", "--output-schema"]),
+     );
++
++    const [coderProviderPrompt, evaluatorProviderPrompt] = await Promise.all([
++      readFile(coder.bundle.execution.artifact_paths.bootstrap_path, "utf8"),
++      readFile(evaluator.bundle.execution.artifact_paths.bootstrap_path, "utf8"),
++    ]);
++    for (const providerPrompt of [coderProviderPrompt, evaluatorProviderPrompt]) {
++      expect(providerPrompt).toContain("complete provider-facing projection");
++      expect(providerPrompt).not.toContain("bundle_path");
++      expect(providerPrompt).not.toMatch(/(?:ap|agentplane)\s+task\s+start-ready/iu);
++      expect(providerPrompt).not.toMatch(/(?:ap|agentplane)\s+task\s+next-action/iu);
++      expect(providerPrompt).not.toMatch(/(?:ap|agentplane)\s+work\s+start/iu);
++      expect(providerPrompt).not.toMatch(/(?:ap|agentplane)\s+pr\s+open/iu);
++      expect(providerPrompt).not.toMatch(/(?:ap|agentplane)\s+(?:verify|finish|integrate)/iu);
++      expect(providerPrompt).not.toMatch(/git\s+commit|gh\s+pr/iu);
++    }
++    expect(coderProviderPrompt).toContain('"semantic_role": "EXECUTOR"');
++    expect(evaluatorProviderPrompt).toContain('"semantic_role": "EVALUATOR"');
++    expect(evaluatorProviderPrompt).toContain('"sandbox": "read-only"');
++    expect(evaluatorProviderPrompt).not.toContain('"workspace_write"');
+   });
+ });
+diff --git a/packages/agentplane/src/runner/usecases/task-run.ts b/packages/agentplane/src/runner/usecases/task-run.ts
+index 241fc633b..3f5b57dba 100644
+--- a/packages/agentplane/src/runner/usecases/task-run.ts
++++ b/packages/agentplane/src/runner/usecases/task-run.ts
+@@ -1,3 +1,4 @@
++import { type AgentWorkOrderRole } from "@agentplaneorg/core/schemas";
+ import {
+   loadCommandContext,
+   resolveCommandGitCommonDir,
+@@ -14,6 +15,10 @@ import { issueRunnerPhaseToolGrant } from "../phase-tools/token.js";
+ import { consumeExecutionProfileBudget } from "../../runtime/execution-profile/index.js";
+ import { appendFrameworkExplainBehaviorInputs } from "../../runtime/explain/index.js";
+ import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
++import {
++  assertSemanticProviderPromptHasNoProcessChoreography,
++  isExplicitProcessMechanismTask,
++} from "../context/base-prompts.js";
+ import type { RunnerAdapter } from "../adapters/shared.js";
+ import { createRunnerAdapter } from "../adapters/index.js";
+ import { readRecipeRunProfile } from "../adapters/recipe-run-profile.js";
+@@ -96,6 +101,14 @@ export type {
+ } from "./task-run-execution.js";
+ export type { TaskRunnerReplayProvenance } from "./task-run-replay-anchor.js";
+ 
++function semanticRoleFromExecutionRole(value: string | undefined): AgentWorkOrderRole | undefined {
++  const normalized = value?.trim().toUpperCase();
++  if (normalized === "PLANNER" || normalized === "CURATOR" || normalized === "EVALUATOR") {
++    return normalized;
++  }
++  return normalized ? "EXECUTOR" : undefined;
++}
++
+ export async function prepareTaskRunnerExecution(opts: {
+   ctx?: CommandContext;
+   cwd: string;
+@@ -137,10 +150,11 @@ export async function prepareTaskRunnerExecution(opts: {
+     runner_command: runnerCommand,
+     execution_context: executionContext,
+     execution_profile: executionProfile,
++    semantic_role: semanticRoleFromExecutionRole(opts.execution_role),
+   });
+   executionProfile = preparedWorkOrder.execution_profile;
+   const taskEnvelope = preparedWorkOrder.task_envelope;
+-  const base_prompts = preparedWorkOrder.base_prompts;
++  const base_prompts = preparedWorkOrder.provider_prompts;
+   const blueprint = preparedWorkOrder.blueprint;
+   const route_decision = preparedWorkOrder.route_decision;
+   const framework_explain = appendFrameworkExplainBehaviorInputs(
+@@ -239,6 +253,7 @@ export async function prepareTaskRunnerExecution(opts: {
+     ctx: command,
+     bundle,
+     git: preparationGitSnapshot,
++    policy_prompts: preparedWorkOrder.base_prompts,
+   });
+   const precondition_policy = resolveRunnerStateFingerprintPolicy(command);
+   bundle.state_fingerprint = precondition_fingerprint;
+@@ -252,6 +267,7 @@ export async function prepareTaskRunnerExecution(opts: {
+     bundle.execution.phase_tools = phaseToolGrant.manifest;
+   }
+   let invocation: RunnerInvocation;
++  let bootstrapMarkdown: string;
+   try {
+     assertRunnerPolicyCompatibility(bundle);
+     await repository.assertBoundary("before writing the blueprint snapshot");
+@@ -261,6 +277,21 @@ export async function prepareTaskRunnerExecution(opts: {
+     await repository.assertBoundary("after writing the blueprint snapshot");
+     invocation = await adapter.prepare(bundle);
+     attachRunnerPhaseToolBrokerEnv({ bundle, invocation, grant: phaseToolGrant });
++    bootstrapMarkdown = renderTaskRunnerBootstrap(bundle, invocation);
++    try {
++      assertSemanticProviderPromptHasNoProcessChoreography({
++        prompt: bootstrapMarkdown,
++        allow_process_mechanism_task: isExplicitProcessMechanismTask(bundle.task),
++      });
++    } catch (error) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: error instanceof Error ? error.message : "Semantic provider prompt is unsafe.",
++        context: {
++          reason_code: "semantic_provider_prompt_process_choreography",
++        },
++      });
++    }
+   } catch (err) {
+     if (err instanceof CliError) {
+       bundle.execution.policy_decision = applyRunnerPolicyRefusal({
+@@ -281,7 +312,7 @@ export async function prepareTaskRunnerExecution(opts: {
+   }
+   const state = await repository.writePrepared({
+     bundle,
+-    bootstrap_markdown: renderTaskRunnerBootstrap(bundle, invocation),
++    bootstrap_markdown: bootstrapMarkdown,
+     invocation,
+   });
+   const preparedEffectOperation = await persistPreparedTaskRunnerEffectOperation({

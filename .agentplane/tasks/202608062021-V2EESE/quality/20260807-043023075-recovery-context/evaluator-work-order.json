@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608062021-V2EESE-a51a393ce3e5151dd840c429",
+  "prepared_at": "2026-08-07T04:30:23.075Z",
+  "task": {
+    "id": "202608062021-V2EESE",
+    "revision": 10,
+    "objective": "Project semantic-only provider prompts and reject process choreography\n\nCompile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt.",
+    "acceptance_criteria": [
+      "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts",
+      "bun run test:critical",
+      "bun run typecheck",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt.\n- Out of scope: unrelated refactors not required for \"Project semantic-only provider prompts and reject process choreography\".",
+      "1. Add a structured semantic-episode projection for policy gateway fragments instead of regex-based section removal. 2. Include only project purpose, scope and security boundaries, user instructions, semantic role constraints, approved objective, authority, writable roots, required inputs, output schema, and stop rules for PLANNER, EXECUTOR, and EVALUATOR provider calls. 3. Keep the full gateway available to operator and recovery surfaces while preventing normal semantic prompts from receiving startup, route, Git, PR, verification persistence, integration, cleanup, or release choreography. 4. Capture the exact compiled provider input and fail qualification when forbidden lifecycle commands appear outside an explicitly lifecycle-repair episode. 5. Verify parity, bounded context, and no regression in runner recovery or critical contracts.",
+      "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\n- bun run test:critical\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs"
+    ]
+  },
+  "evaluated_sha": "056b9ca2963094d47e6887403f34ce7b78f10e87",
+  "diff_base_sha": "12cbea72152bde3b201028a47be17f68f75325c0",
+  "blueprint_digest": "1c1d94c37ff9878ab6fb6e28b8b4c63748c940cecc376d0b37495b7d1dd57fd1",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608062021-V2EESE/quality/20260807-043023075-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:2fcc985be07824c951a60757e8a3f10b913abe844f254310476e56cf0ca65591",
+    "prompt_path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/d7388a2a9051c9315cec2f9a835206ea30e5bb2bc0db636986817f7a2e74fd3b.md",
+    "result_schema_path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608062021-V2EESE/README.md",
+      "sha256": "sha256:232119cacc85dc2b0b4757ca6ad5420bf57ded90e529d1391b485a0594487fe6",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/e0e656aa3c8ddf8d862d7ccca8df62d94b2adb6d32cb4b945538cb35bd0eb8cd.patch",
+      "sha256": "sha256:e0e656aa3c8ddf8d862d7ccca8df62d94b2adb6d32cb4b945538cb35bd0eb8cd",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/b1be7fc632a01ceb8cdbd3b5e97501ba4d87191614429e9c447b311442d83ad8.json",
+      "sha256": "sha256:b1be7fc632a01ceb8cdbd3b5e97501ba4d87191614429e9c447b311442d83ad8",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608062021-V2EESE/verification/20260807042943950-233d3e877ff8fa97.json",
+      "sha256": "sha256:1d0aa41f71f52fbd07c72b3d64d8482ad94993b392cf4e8508cd1094ff5d9d9d",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/a07b7ada05783ebf06c2b120a892bc4258d10c3f42cdc44cd613cb60e0045920.json",
+      "sha256": "sha256:a07b7ada05783ebf06c2b120a892bc4258d10c3f42cdc44cd613cb60e0045920",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:3f76f4fa59568e0b2866d69789e49707ac6271d4ecf761baacce13596851f988",
+      "required": true
+    }
+  ]
+}
