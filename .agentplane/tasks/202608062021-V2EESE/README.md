@@ -4,7 +4,7 @@ title: "Project semantic-only provider prompts and reject process choreography"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -30,11 +30,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-06T21:32:55.493Z"
+  state: "ok"
+  updated_at: "2026-08-07T04:29:43.950Z"
   updated_by: "TESTER"
-  note: "Targeted semantic prompt, context, supervisor, and state-fingerprint checks pass; full test:critical remains blocked by the pre-existing compatibility ratchet drift on current main pending foundational PR BZT3D9."
-  attempts: 1
+  note: "Semantic-only provider prompt projection and exact-input choreography guard pass the declared contract."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -72,8 +72,14 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Targeted semantic prompt, context, supervisor, and state-fingerprint checks pass; full test:critical remains blocked by the pre-existing compatibility ratchet drift on current main pending foundational PR BZT3D9."
+  -
+    type: "verify"
+    at: "2026-08-07T04:29:43.950Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Semantic-only provider prompt projection and exact-input choreography guard pass the declared contract."
 doc_version: 3
-doc_updated_at: "2026-08-06T21:32:56.328Z"
+doc_updated_at: "2026-08-07T04:29:44.810Z"
 doc_updated_by: "CODER"
 description: "Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt."
 sections:
@@ -116,6 +122,56 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608062021-V2EESE
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T04:29:43.950Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Semantic-only provider prompt projection and exact-input choreography guard pass the declared contract.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T21:32:56.328Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts
+    Result: pass
+    Evidence: 3 files, 33 tests passed.
+    Scope: semantic projection, exact provider prompt rejection, task-run context.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: 12 of 12 critical-cli chunks passed.
+    Scope: critical CLI, efficiency, replay, trust-boundary and platform contracts.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build exited 0.
+    Scope: workspace type safety.
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK.
+    Scope: policy gateway graph.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+    - old_digest: 1c1d94c37ff9878ab6fb6e28b8b4c63748c940cecc376d0b37495b7d1dd57fd1
+    - current_digest: 1c1d94c37ff9878ab6fb6e28b8b4c63748c940cecc376d0b37495b7d1dd57fd1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -185,6 +241,56 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608062021-V2EESE
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T04:29:43.950Z — VERIFY — ok
+
+By: TESTER
+
+Note: Semantic-only provider prompt projection and exact-input choreography guard pass the declared contract.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T21:32:56.328Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts
+Result: pass
+Evidence: 3 files, 33 tests passed.
+Scope: semantic projection, exact provider prompt rejection, task-run context.
+
+Command: bun run test:critical
+Result: pass
+Evidence: 12 of 12 critical-cli chunks passed.
+Scope: critical CLI, efficiency, replay, trust-boundary and platform contracts.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build exited 0.
+Scope: workspace type safety.
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK.
+Scope: policy gateway graph.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+- old_digest: 1c1d94c37ff9878ab6fb6e28b8b4c63748c940cecc376d0b37495b7d1dd57fd1
+- current_digest: 1c1d94c37ff9878ab6fb6e28b8b4c63748c940cecc376d0b37495b7d1dd57fd1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
