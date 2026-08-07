@@ -36,23 +36,23 @@ the provider episode.
  .../evaluator/evaluator-episode.stdin.test.ts      |   9 +-
  .../src/commands/evaluator/evaluator-episode.ts    |  38 ++-
  .../src/runner/context/base-prompt-sources.ts      |  17 +-
- .../src/runner/context/base-prompts.test.ts        | 189 +++++++++++++
+ .../src/runner/context/base-prompts.test.ts        | 231 +++++++++++++++
  .../agentplane/src/runner/context/base-prompts.ts  |   5 +
  .../src/runner/context/prompt-block-shared.ts      |   5 +
  .../src/runner/context/prompt-module-bridge.ts     |   4 +
- .../runner/context/semantic-prompt-projection.ts   | 304 +++++++++++++++++++++
+ .../runner/context/semantic-prompt-projection.ts   | 318 +++++++++++++++++++++
  .../src/runner/state-fingerprint-observation.ts    |   3 +-
  .../agentplane/src/runner/state-fingerprint.ts     |   3 +-
  packages/agentplane/src/runner/types/prompts.ts    |   3 +
  .../src/runner/usecases/agent-work-order-build.ts  |   5 +-
  .../src/runner/usecases/agent-work-order.ts        |  12 +
- .../src/runner/usecases/task-run-blueprint.test.ts |  50 ++--
- .../task-run-bootstrap.result-examples.test.ts     |  20 +-
- .../src/runner/usecases/task-run-bootstrap.ts      | 180 ++++++------
- .../usecases/task-run-context.integration.test.ts  | 127 ++++++++-
+ .../src/runner/usecases/task-run-blueprint.test.ts |  56 ++--
+ .../task-run-bootstrap.result-examples.test.ts     |  33 +--
+ .../src/runner/usecases/task-run-bootstrap.ts      | 201 +++++++------
+ .../usecases/task-run-context.integration.test.ts  | 133 ++++++++-
  .../runner/usecases/task-run-semantic-prompt.ts    |  42 +++
  .../agentplane/src/runner/usecases/task-run.ts     |  10 +-
- 20 files changed, 888 insertions(+), 147 deletions(-)
+ 20 files changed, 972 insertions(+), 165 deletions(-)
 ```
 
 </details>

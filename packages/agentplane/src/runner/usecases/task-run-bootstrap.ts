@@ -82,29 +82,23 @@ function renderPhaseToolLines(bundle: RunnerContextBundle): string[] {
   );
   return [
     "",
-    "Run-scoped phase tool contract:",
-    `- phase: ${manifest.phase}`,
-    `- role: ${manifest.role}`,
-    `- global_help_required: ${String(manifest.global_help_required)}`,
+    "Declared semantic tools:",
     `- repository_tool_classes: ${JSON.stringify(effectiveRepositoryToolClasses)}`,
     ...(runScoped.length > 0
       ? [
-          "- The supervisor injects the signed token and a checkout-local broker channel through the process environment. Never print the token or pass it on argv.",
-          "- For run_scoped_command tools, send one JSON object on stdin to the exact invocation and schema below.",
+          "- The signed transport is preconfigured. Never print its token or pass it on argv.",
+          "- Send one JSON object on stdin to an exact declared invocation and schema below.",
         ]
-      : [
-          "- This adapter exposes no run_scoped_command transport, so no phase-tool token or broker channel is injected. Use only the declared terminal result transport.",
-        ]),
+      : ["- No command transport is granted. Use only the configured typed-result channel."]),
     ...allowed.map(
       (tool) =>
-        `- ${tool.name}: transport=${tool.transport} enforcement=${tool.enforcement} invocation=${tool.invocation ?? "terminal AgentSemanticResult v2"} input_schema=${JSON.stringify(tool.input_schema)}`,
+        `- ${tool.name}: transport=${tool.transport} invocation=${tool.invocation ?? "typed AgentSemanticResult v2"} input_schema=${JSON.stringify(tool.input_schema)}`,
     ),
     ...unavailable.map(
       (tool) =>
         `- ${tool.name}: unavailable (${tool.reason ?? "adapter/work-order capability not granted"})`,
     ),
-    "- An undeclared, expired, revoked, cross-run, cross-role, or tampered call returns a typed denial before target effects.",
-    "- report_result and report_blocker are terminal: an accepted call revokes the token. request_knowledge, knowledge_search, and knowledge_show remain bounded to the current work-order context.",
+    "- Use no undeclared tool or transport. Keep knowledge tools bounded to the current work-order context.",
   ];
 }
 
@@ -159,7 +153,11 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
     prepared_evidence: workOrder.prepared_evidence,
     required_inputs: requiredInputs,
     required_outputs: workOrder.required_outputs,
-    verification_intent: workOrder.verification_intent,
+    semantic_checks: workOrder.verification_intent.requirements.map((requirement) => ({
+      id: requirement.id,
+      description: requirement.description,
+      required: requirement.required,
+    })),
     semantic_result_schema: workOrder.semantic_result_schema,
     stop_rules: [
       "Stop and return a blocked semantic result when required context is missing or stale.",
@@ -189,6 +187,8 @@ export function renderTaskRunnerBootstrap(
   const evaluatorSkepticismLevel =
     bundle.execution.evaluator_skepticism_level ?? ("standard" satisfies EvaluatorSkepticismLevel);
   const sandboxPolicy = bundle.execution.sandbox_policy;
+  const evaluatorEpisode =
+    bundle.work_order?.role === "EVALUATOR" || sandboxPolicy?.role === "EVALUATOR";
   const knowledgeRequestAuthorized =
     bundle.work_order?.authority.allowed_tool_classes.includes("knowledge_request");
   const writeScope = bundle.execution.write_scope;
@@ -197,11 +197,9 @@ export function renderTaskRunnerBootstrap(
     ...(codexGoalLine ? [codexGoalLine, ""] : []),
     "# agentplane runner bootstrap",
     "",
-    "This invocation is one approved semantic episode inside a supervisor-owned execution.",
-    "- Work only on the semantic objective and authority projected below.",
-    "- Keep all control-plane operations with the parent supervisor.",
-    "- Do not invoke nested supervisor entrypoints or inspect supervisor-owned state artifacts.",
-    "- Use only an exact run-scoped phase-tool invocation declared below; all other supervisor interfaces remain unavailable in this episode.",
+    "Work only on the semantic objective and authority projected below.",
+    "- Use only the supplied context, writable roots, and declared tools.",
+    "- Do not inspect internal orchestration artifacts or invoke undeclared interfaces.",
     "- Assume sibling runners may be executing concurrently. Keep writes inside the task scope, avoid broad refactors or shared policy edits, and report possible write conflicts in the typed result instead of resolving them speculatively.",
     "- Execute the projected work directly and stop when the requested semantic outcome is satisfied.",
     "",
@@ -211,10 +209,9 @@ export function renderTaskRunnerBootstrap(
     `- writable_roots: ${JSON.stringify(writeScope?.writable_roots ?? [])}`,
     `- protected_paths: ${JSON.stringify(writeScope?.protected_paths ?? [])}`,
     "",
-    "The content below is the complete provider-facing projection for this episode. Do not open the internal supervisor bundle.",
+    "The content below is the complete provider-facing projection for this episode.",
     "For file-edit tools that do not accept cwd/workdir, use absolute paths under writable_roots; stop before writing when no writable root is granted.",
-    "The parent supervisor owns every formal transition after the semantic result is returned.",
-    "Treat protected_paths as forbidden even when the native sandbox permits them. The supervisor evaluates actual writes after the run.",
+    "Treat protected_paths as forbidden even when the native sandbox permits them.",
     "",
     "## Semantic policy and role context",
     "",
@@ -224,13 +221,13 @@ export function renderTaskRunnerBootstrap(
       ? [
           "When bounded task context is missing, return status=needs_context with a KnowledgeRequest v1 in the semantic result.",
           "KnowledgeRequest is limited to scope=task_context, a declared desired_kind, and blocking=true only when work cannot proceed without it.",
-          "Use only the declared bounded knowledge channel for that gap; the parent supervisor validates the request and retrieves digest-valid references.",
+          "Use only the declared bounded knowledge channel for that gap and request digest-valid references.",
         ]
       : []),
     ...renderPhaseToolLines(bundle),
-    "If the requested work cannot be completed without widening lifecycle authority or touching likely sibling-owned files, stop and write a blocked semantic result with blocker.summary and blocker.recommended_action; the supervisor owns path and conflict observation.",
+    "If the requested work exceeds the granted authority or touches likely sibling-owned files, return a blocked semantic result with blocker.summary and blocker.recommended_action; do not widen scope.",
     "",
-    ...renderEvaluatorSkepticismLines(evaluatorSkepticismLevel),
+    ...(evaluatorEpisode ? renderEvaluatorSkepticismLines(evaluatorSkepticismLevel) : []),
     ...(stopRules.length > 0
       ? [
           "",
@@ -245,7 +242,7 @@ export function renderTaskRunnerBootstrap(
           ...verifierChecks.map((check) => `- ${check.id}: ${check.description}`),
         ]
       : []),
-    "Return one AgentSemanticResult v2 object through the configured result channel. The supervisor owns persistence and validation outside the semantic episode.",
+    "Return one AgentSemanticResult v2 object through the configured result channel.",
     "Select the example matching the semantic outcome, keep work_order_id unchanged, and edit only semantic fields:",
     ...renderRunnerResultManifestExampleLines(invocation?.work_order_id ?? bundle.execution.run_id),
   ].join("\n");

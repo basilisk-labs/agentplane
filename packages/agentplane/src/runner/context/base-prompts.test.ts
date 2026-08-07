@@ -48,6 +48,8 @@ describe("collectRunnerBasePrompts", () => {
         '<!-- ap:fragment id="project.scope" slot="hard_constraint" mutability="append_only" -->',
         "Stay inside the supplied writable roots.",
         "Keep secrets out of logs. Run agentplane task start-ready TASK only from recovery mode.",
+        "Preserve API compatibility. Return typed output to the supplied result path.",
+        "Keep failure evidence. Request a fresh packet after a state transition.",
         "<!-- /ap:fragment -->",
         '<!-- ap:fragment id="project.commands" slot="commands" mutability="replaceable" -->',
         "agentplane task start-ready TASK --author CODER",
@@ -82,14 +84,54 @@ describe("collectRunnerBasePrompts", () => {
     );
     expect(serialized).toContain("Stay inside the supplied writable roots.");
     expect(serialized).toContain("Keep secrets out of logs.");
+    expect(serialized).toContain("Preserve API compatibility.");
+    expect(serialized).toContain("Keep failure evidence.");
     expect(serialized).toContain('"semantic_role": "EXECUTOR"');
     expect(serialized).not.toContain("task start-ready");
     expect(serialized).not.toContain("git commit");
     expect(serialized).not.toContain("agentplane verify");
+    expect(serialized).not.toMatch(/result path|fresh packet|state transition/iu);
     expect(() =>
       assertSemanticProviderPromptHasNoProcessChoreography({ prompt: serialized }),
     ).not.toThrow();
   });
+
+  it.each(["PLANNER", "EXECUTOR", "EVALUATOR"] as const)(
+    "allowlists only canonical semantic gateway fragments for %s",
+    async (role) => {
+      const root = await makeTempRepo();
+      await writeFile(
+        path.join(root, "AGENTS.md"),
+        [
+          '<!-- ap:fragment id="gateway.agents.purpose.purpose" slot="purpose" mutability="replaceable" -->',
+          "Build the requested product behavior.",
+          "<!-- /ap:fragment -->",
+          '<!-- ap:fragment id="gateway.agents.purpose.project" slot="purpose" mutability="replaceable" -->',
+          "Return output to the supplied result path and request a fresh packet.",
+          "<!-- /ap:fragment -->",
+          '<!-- ap:fragment id="gateway.agents.hard_constraint.scope.boundary" slot="hard_constraint" mutability="append_only" -->',
+          "Stay inside the repository and granted writable roots.",
+          "<!-- /ap:fragment -->",
+          '<!-- ap:fragment id="gateway.agents.hard_constraint.must.must.not" slot="hard_constraint" mutability="append_only" -->',
+          "Defer every formal transition and verification persistence operation.",
+          "<!-- /ap:fragment -->",
+        ].join("\n"),
+      );
+      const prompts = await collectRunnerBasePrompts({
+        git_root: root,
+        owner_id: role === "EXECUTOR" ? "CODER" : role,
+      });
+      const serialized = projectRunnerPromptsForSemanticEpisode({ prompts, role })
+        .map((prompt) => prompt.content)
+        .join("\n");
+
+      expect(serialized).toContain("Build the requested product behavior.");
+      expect(serialized).toContain("Stay inside the repository and granted writable roots.");
+      expect(serialized).not.toMatch(
+        /result path|fresh packet|formal transition|verification persistence/iu,
+      );
+    },
+  );
 
   it.each(["PLANNER", "EXECUTOR", "EVALUATOR"] as const)(
     "rejects process choreography in an exact %s provider prompt",

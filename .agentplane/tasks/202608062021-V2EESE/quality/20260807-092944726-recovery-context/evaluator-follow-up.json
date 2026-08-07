@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608062021-V2EESE-d5a3918bc6d1722733c81595",
+  "task_id": "202608062021-V2EESE",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Replace blacklist-only filtering of hard-constraint prose with an explicit allowlisted semantic projection, then qualify the exact compiled prompts against lifecycle and persistence concepts expressed both as commands and ordinary prose.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The structured gateway projection still admits lifecycle and persistence instructions written without command syntax or underscore-form artifact names, including instructions to return output to a “result path,” request a fresh packet, and defer formal transitions.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/664313f67f436b594b6967f22f2b442433c92bdb4cbaa86d9c11fef3c6bdfaa5.patch",
+          "sha256": "sha256:664313f67f436b594b6967f22f2b442433c92bdb4cbaa86d9c11fef3c6bdfaa5",
+          "section": "packages/agentplane/src/runner/context/semantic-prompt-projection.ts"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608062021-V2EESE/quality/20260807-092944726-recovery-context/evaluator-result.json"
+}

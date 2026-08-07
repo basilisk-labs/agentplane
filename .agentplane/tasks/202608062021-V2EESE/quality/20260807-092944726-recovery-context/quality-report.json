@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608062021-V2EESE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T09:31:17.774Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "712ce1727f10f5ad75291b80433863546be725c6",
+  "blueprint_digest": "ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26",
+  "findings": [
+    "The structured gateway projection still admits lifecycle and persistence instructions written without command syntax or underscore-form artifact names, including instructions to return output to a “result path,” request a fresh packet, and defer formal transitions."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/664313f67f436b594b6967f22f2b442433c92bdb4cbaa86d9c11fef3c6bdfaa5.patch"
+  ],
+  "missing_tests": [
+    "Compile the real policy gateway for each semantic role and assert that prose variants such as “result path,” “fresh packet,” “state transition,” and “formal transition” are absent from the exact provider input.",
+    "Add a mixed hard-constraint fragment test proving that semantic safety constraints are retained while lifecycle and persistence sentences without CLI command syntax are removed."
+  ],
+  "hidden_assumptions": [
+    "Forbidden choreography is assumed to be identifiable through command-shaped text or underscore-form artifact names.",
+    "All hard_constraint fragments are assumed to be provider-semantic unless individual lines match the current blacklist."
+  ],
+  "residual_risks": [
+    "Replace blacklist-only filtering of hard-constraint prose with an explicit allowlisted semantic projection, then qualify the exact compiled prompts against lifecycle and persistence concepts expressed both as commands and ordinary prose."
+  ]
+}
