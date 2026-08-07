@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on:
@@ -32,9 +32,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T00:22:56.271Z"
+  updated_at: "2026-08-07T00:24:11.519Z"
   updated_by: "TESTER"
-  note: "User-first task intake, duplicate serialization, route preview, and reviewed compatibility surface pass."
+  note: "Hosted CI compatibility follow-up and complete task intake surface pass."
   attempts: 0
 quality_review:
   state: "pass"
@@ -207,8 +207,14 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Rework: align the reviewed compatibility candidate and critical expectations with the user-first task create surface after hosted CI."
+  -
+    type: "verify"
+    at: "2026-08-07T00:24:11.519Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Hosted CI compatibility follow-up and complete task intake surface pass."
 doc_version: 3
-doc_updated_at: "2026-08-07T00:23:56.034Z"
+doc_updated_at: "2026-08-07T00:24:12.845Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
@@ -549,6 +555,38 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T00:24:11.519Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Hosted CI compatibility follow-up and complete task intake surface pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T00:23:56.034Z, excerpt_hash=sha256:1e3e36afade323c09657b8fd8b642e24388663392d4ee528edb44f7db34b8c89
+
+    Details:
+
+    PASS: cli-core task create/run/advance 3 files and 37 tests; critical CLI 12 files and 84 tests; compatibility ratchet approved release-version surface cd30e3bf with 260 commands, 180 args, 836 options and immutable baseline verified; docs CLI/onboarding, TypeScript build, policy routing, full core lint, git diff check, and clean status passed.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-30TKV4-add-user-first-task-intake-and-execution-preview/.agentplane/tasks/202608061646-30TKV4/blueprint/resolved-snapshot.json
+    - old_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+    - current_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-30TKV4
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608061646-30TKV4
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -917,6 +955,38 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T00:24:11.519Z — VERIFY — ok
+
+By: TESTER
+
+Note: Hosted CI compatibility follow-up and complete task intake surface pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T00:23:56.034Z, excerpt_hash=sha256:1e3e36afade323c09657b8fd8b642e24388663392d4ee528edb44f7db34b8c89
+
+Details:
+
+PASS: cli-core task create/run/advance 3 files and 37 tests; critical CLI 12 files and 84 tests; compatibility ratchet approved release-version surface cd30e3bf with 260 commands, 180 args, 836 options and immutable baseline verified; docs CLI/onboarding, TypeScript build, policy routing, full core lint, git diff check, and clean status passed.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-30TKV4-add-user-first-task-intake-and-execution-preview/.agentplane/tasks/202608061646-30TKV4/blueprint/resolved-snapshot.json
+- old_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+- current_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-30TKV4
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608061646-30TKV4
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

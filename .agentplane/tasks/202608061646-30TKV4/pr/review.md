@@ -6,14 +6,14 @@ Created: 2026-08-06T19:12:24.484Z
 
 - Task: `202608061646-30TKV4`
 - Title: Add user-first task intake and execution preview
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608061646-30TKV4/add-user-first-task-intake-and-execution-preview`
 - Canonical task record: `.agentplane/tasks/202608061646-30TKV4/README.md`
 
 ## Verification
 
 - State: ok
-- Note: User-first task intake, duplicate serialization, route preview, and reviewed compatibility surface pass.
+- Note: Hosted CI compatibility follow-up and complete task intake surface pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -16,7 +16,7 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 ## Verification
 
 - State: ok
-- Note: User-first task intake, duplicate serialization, route preview, and reviewed compatibility surface pass.
+- Note: Hosted CI compatibility follow-up and complete task intake surface pass.
 - Canonical workflow state lives in the task README.
 
 <details>
