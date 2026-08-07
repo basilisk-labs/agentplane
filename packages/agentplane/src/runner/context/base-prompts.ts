@@ -25,6 +25,7 @@ export {
 } from "./prompt-module-bridge.js";
 export {
   assertSemanticProviderPromptHasNoProcessChoreography,
+  collectSemanticPolicyModulePrompts,
   hasExplicitProcessMechanismRepairAuthority,
   projectRunnerPromptsForSemanticEpisode,
 } from "./semantic-prompt-projection.js";

@@ -372,16 +372,16 @@ describe("context task runner integration", () => {
     const plannerTaskId = await createDoingTask(root, {
       title: "Planner role-derived sandbox",
       owner: "PLANNER",
-      task_kind: "analysis",
-      mutation_scope: "none",
-      blueprint_request: "analysis.light",
+      task_kind: "code",
+      mutation_scope: "code",
+      blueprint_request: "code.direct",
     });
     const evaluatorTaskId = await createDoingTask(root, {
       title: "Evaluator role-derived sandbox",
       owner: "EVALUATOR",
-      task_kind: "analysis",
-      mutation_scope: "none",
-      blueprint_request: "analysis.light",
+      task_kind: "code",
+      mutation_scope: "code",
+      blueprint_request: "code.direct",
     });
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
 
@@ -453,6 +453,19 @@ describe("context task runner integration", () => {
       evaluatorProviderPrompt,
     ]) {
       expect(providerPrompt).toContain("complete provider-facing projection");
+      expect(providerPrompt).toContain("MUST NOT commit secrets, credentials, or private keys.");
+      expect(providerPrompt).toContain(
+        "MUST NOT access outside-repo files without explicit user approval.",
+      );
+      expect(providerPrompt).toContain(
+        "MUST NOT perform network actions when approval is required and not granted.",
+      );
+      expect(providerPrompt).toContain(
+        "MUST NOT modify auth/crypto/security-critical codepaths without explicit scope approval.",
+      );
+      expect(providerPrompt).toContain(
+        "MUST report security-sensitive drift immediately and stop before mutation.",
+      );
       expect(providerPrompt).not.toContain("bundle_path");
       expect(providerPrompt).not.toContain("bootstrap_path");
       expect(providerPrompt).not.toContain("result_path");
