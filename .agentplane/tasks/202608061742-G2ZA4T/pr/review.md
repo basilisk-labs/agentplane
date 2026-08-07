@@ -96,26 +96,27 @@ Created: 2026-08-06T23:23:35.080Z
  docs/user/cli-reference.generated.mdx              |  91 +--
  docs/user/setup.mdx                                |  53 +-
  packages/agentplane/src/cli/command-invocations.ts |   1 +
- .../src/cli/run-cli.core.init.interactive.test.ts  | 115 ++-
+ .../src/cli/run-cli.core.init.interactive.test.ts  | 151 +++-
  .../agentplane/src/cli/run-cli.core.init.test.ts   |  43 +-
  .../src/cli/run-cli.core.route-decision.test.ts    |   8 +
  .../src/cli/run-cli.core.task-run.test.ts          | 112 +--
  .../src/cli/run-cli.core.tasks.create.test.ts      | 282 +++++++
  .../src/cli/run-cli/command-catalog/task.ts        |   9 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
- .../src/cli/run-cli/commands/init/answers.ts       | 173 +++-
+ .../src/cli/run-cli/commands/init/answers.ts       | 194 ++++-
  .../cli/run-cli/commands/init/execution.test.ts    |   1 +
  .../src/cli/run-cli/commands/init/execution.ts     |   4 +
  .../src/cli/run-cli/commands/init/init-plan.ts     |   7 +-
  .../src/cli/run-cli/commands/init/model.ts         |   1 +
  .../src/cli/run-cli/commands/init/modes.ts         |   9 +-
  .../src/cli/run-cli/commands/init/orchestrate.ts   |  24 +-
+ .../run-cli/commands/init/repository-defaults.ts   | 128 +++
  .../src/cli/run-cli/commands/init/spec.ts          |   7 +-
  .../cli/run-cli/commands/init/steps/contracts.ts   |   6 +-
  .../src/cli/run-cli/commands/init/steps/index.ts   |   2 +
  .../cli/run-cli/commands/init/steps/init-mode.ts   |  34 +
  .../commands/init/steps/prompt-steps.test.ts       |  32 +-
- .../src/cli/run-cli/commands/init/steps/tool.ts    |  37 +
+ .../src/cli/run-cli/commands/init/steps/tool.ts    |  38 +
  .../cli/run-cli/commands/init/steps/workflow.ts    |   9 +-
  .../agentplane/src/cli/run-cli/commands/init/ui.ts |   9 +-
  .../agentplane/src/commands/task/create.command.ts | 409 ++++++++++
@@ -124,7 +125,7 @@ Created: 2026-08-06T23:23:35.080Z
  .../agentplane/src/commands/task/run.command.ts    |   6 +-
  .../agentplane/src/commands/task/status.command.ts |  13 +-
  .../agentplane/src/commands/task/task.command.ts   |  10 +-
- 95 files changed, 5059 insertions(+), 360 deletions(-)
+ 96 files changed, 5245 insertions(+), 360 deletions(-)
 ```
 
 </details>

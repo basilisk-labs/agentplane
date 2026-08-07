@@ -35,6 +35,10 @@ import {
   resolveRunnerProfileFromFlags,
   resolveToolDefaults,
 } from "./modes.js";
+import {
+  detectInitRepositoryDefaults,
+  type InitRepositoryDefaults,
+} from "./repository-defaults.js";
 
 export type InitAnswers = {
   setupProfile: SetupProfilePreset;
@@ -111,9 +115,11 @@ function quickDecisionReasons(opts: {
   workflowExplicit: boolean;
   setupProfile: SetupProfilePreset;
   backend: NonNullable<InitFlags["backend"]>;
+  repositoryDefaults: InitRepositoryDefaults;
 }): string[] {
   return [
     "Setup depth: quick keeps optional controls out of the first-run path.",
+    ...opts.repositoryDefaults.decisionReasons,
     `Agent surface: ${opts.tool}; gateway, IDE integration, and managed-runner defaults are derived from this choice.`,
     `Workflow: ${opts.workflow}${opts.workflowExplicit ? " selected explicitly" : " selected in this dialog"}.`,
     `Guardrails: ${opts.setupProfile} applies a coherent approval, hook, and execution profile.`,
@@ -125,6 +131,7 @@ function quickDecisionReasons(opts: {
 async function promptQuickAnswers(opts: {
   flags: InitParsed;
   clack: InitPromptClack & Pick<InitClackPrompts, "log" | "note">;
+  targetRoot: string;
 }): Promise<InitAnswers> {
   section(
     opts.clack,
@@ -133,7 +140,12 @@ async function promptQuickAnswers(opts: {
   );
   const setupProfile = opts.flags.setupProfile ?? "normal";
   const selectedPreset = setupProfilePresets[setupProfile];
-  const { tool } = await promptToolStep({ clack: opts.clack, flags: opts.flags });
+  const repositoryDefaults = await detectInitRepositoryDefaults(opts.targetRoot);
+  const { tool } = await promptToolStep({
+    clack: opts.clack,
+    flags: opts.flags,
+    defaultTool: repositoryDefaults.tool,
+  });
   const toolDefaults = resolveToolDefaults(tool);
   const workflow = await promptWorkflowStep({
     clack: opts.clack,
@@ -141,6 +153,10 @@ async function promptQuickAnswers(opts: {
     setupProfileMode: "compact",
     promptWorkflow: true,
     promptDirectCloseDirtyPolicy: false,
+    defaults: {
+      workflow: repositoryDefaults.workflow,
+      directCloseDirtyPolicy: INIT_DEFAULTS.directCloseDirtyPolicy,
+    },
   });
   const advanced = await promptAdvancedSettingsStep({
     clack: opts.clack,
@@ -176,6 +192,7 @@ async function promptQuickAnswers(opts: {
       workflowExplicit: opts.flags.workflow !== undefined,
       setupProfile,
       backend,
+      repositoryDefaults,
     }),
   };
 }
@@ -277,7 +294,11 @@ export async function promptInteractiveAnswers(opts: {
   const initMode = await promptInitModeStep({ clack: promptClack, flags: opts.flags });
   const answers =
     initMode === "quick"
-      ? await promptQuickAnswers({ flags: opts.flags, clack: promptClack })
+      ? await promptQuickAnswers({
+          flags: opts.flags,
+          clack: promptClack,
+          targetRoot: opts.targetRoot,
+        })
       : await promptDetailedAnswers({
           flags: opts.flags,
           clack: promptClack,

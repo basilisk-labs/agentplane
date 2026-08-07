@@ -203,7 +203,14 @@ describe("runCli interactive init UI", () => {
     }
 
     expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
+    expect(mocks.selectMock).toHaveBeenCalledWith(
+      expect.objectContaining({ message: "Workflow mode", initialValue: "direct" }),
+    );
     expect(mocks.noteMock).toHaveBeenCalledWith(expect.any(String), "Install preview");
+    expect(mocks.noteMock).toHaveBeenCalledWith(
+      expect.stringContaining("no Git remote or CI configuration was detected"),
+      "Install preview",
+    );
     expect(mocks.confirmMock).toHaveBeenCalledWith({
       message: "Apply this init plan?",
       initialValue: true,
@@ -226,6 +233,35 @@ describe("runCli interactive init UI", () => {
     await expect(pathExists(path.join(root, "AGENTS.md"))).resolves.toBe(true);
     await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(true);
     await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
+  });
+
+  it("derives the quick workflow default from repository CI facts and explains the decision", async () => {
+    const root = await mkTempDir();
+    await mkdir(path.join(root, ".github", "workflows"), { recursive: true });
+    await writeFile(path.join(root, ".github", "workflows", "ci.yml"), "name: CI\n", "utf8");
+    mocks.selectMock
+      .mockResolvedValueOnce("quick")
+      .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("branch_pr");
+    mocks.confirmMock.mockResolvedValueOnce(true);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--root", root]);
+      expect(code, io.stderr).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    expect(mocks.selectMock).toHaveBeenCalledWith(
+      expect.objectContaining({ message: "Workflow mode", initialValue: "branch_pr" }),
+    );
+    expect(mocks.noteMock).toHaveBeenCalledWith(
+      expect.stringContaining("detected GitHub Actions CI"),
+      "Install preview",
+    );
+    const { config } = await loadConfig(path.join(root, ".agentplane"));
+    expect(config.workflow_mode).toBe("branch_pr");
   });
 
   it("respects explicit init flags on the default interactive route", async () => {

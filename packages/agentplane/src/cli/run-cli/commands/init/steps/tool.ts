@@ -24,13 +24,14 @@ const toolOptions: { value: InitTool; label: string; hint: string }[] = [
 export async function promptToolStep(opts: {
   clack: InitPromptClack;
   flags: Pick<InitFlags, "tool">;
+  defaultTool?: InitTool;
 }): Promise<ToolStepAnswers> {
   const tool: InitTool =
     opts.flags.tool ??
     (await selectStepValue<InitTool>(opts.clack, {
       message: "Primary agent surface",
       options: toolOptions,
-      initialValue: "codex",
+      initialValue: opts.defaultTool ?? "codex",
       cancelMessage: "Agent surface selection cancelled.",
     }));
   return { tool };
