@@ -223,6 +223,45 @@ describe("context task runner integration", () => {
     });
   });
 
+  it.each([
+    "git clean -fd",
+    "git reset --hard",
+    "gh release create v0.7.5",
+    "npm version patch",
+    "agentplane task run tool arbitrary",
+  ])(
+    "refuses exact compiled provider input for undeclared control command: %s",
+    async (command) => {
+      const root = await mkGitRepoRoot();
+      await writeConfig(root, defaultConfig());
+      const taskId = await createDoingTask(root, {
+        title: "Normal semantic provider prompt",
+        owner: "CODER",
+        task_kind: "code",
+        mutation_scope: "code",
+        blueprint_request: "code.direct",
+      });
+      await writeFile(path.join(root, ".agentplane", "user-instructions.md"), `${command}\n`);
+      const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+
+      await expect(
+        prepareTaskRunnerExecution({
+          ctx,
+          cwd: root,
+          rootOverride: root,
+          task_id: taskId,
+          mode: "dry_run",
+          run_id: `run-control-command-refusal-${command.replaceAll(/[^a-z0-9]+/giu, "-")}`,
+        }),
+      ).rejects.toMatchObject({
+        code: "E_VALIDATION",
+        context: {
+          reason_code: "semantic_provider_prompt_process_choreography",
+        },
+      });
+    },
+  );
+
   it("refuses a custom workspace-write adapter before context mutation", async () => {
     const root = await mkGitRepoRoot();
     const runId = "run-context-custom-advisory";

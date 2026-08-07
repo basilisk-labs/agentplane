@@ -122,8 +122,14 @@ describe("collectRunnerBasePrompts", () => {
     "git commit -m implementation",
     "git push origin task/TASK/fix",
     "git worktree remove /tmp/worktree",
+    "git clean -fd",
+    "git reset --hard",
+    "git tag v0.7.5",
+    "git cherry-pick deadbeef",
+    "Run `git clean -fd` before continuing.",
     "agentplane pr update TASK",
     "gh pr create --fill",
+    "gh release create v0.7.5",
     "agentplane verify TASK --ok --by TESTER",
     "agentplane integrate TASK --branch task/TASK/fix",
     "agentplane cleanup TASK",
@@ -132,6 +138,8 @@ describe("collectRunnerBasePrompts", () => {
     "agentplane context search query",
     "ap flow repair TASK",
     "npm publish",
+    "npm version patch",
+    "changeset publish",
   ])("rejects forbidden provider choreography: %s", (command) => {
     expect(() => assertSemanticProviderPromptHasNoProcessChoreography({ prompt: command })).toThrow(
       /process choreography/u,
@@ -142,8 +150,20 @@ describe("collectRunnerBasePrompts", () => {
     expect(() =>
       assertSemanticProviderPromptHasNoProcessChoreography({
         prompt: "agentplane task run tool report_result",
+        declared_phase_tool_invocations: ["agentplane task run tool report_result"],
       }),
     ).not.toThrow();
+    expect(() =>
+      assertSemanticProviderPromptHasNoProcessChoreography({
+        prompt: "agentplane task run tool arbitrary",
+        declared_phase_tool_invocations: ["agentplane task run tool report_result"],
+      }),
+    ).toThrow(/process choreography/u);
+    expect(() =>
+      assertSemanticProviderPromptHasNoProcessChoreography({
+        prompt: "agentplane task run tool report_result",
+      }),
+    ).toThrow(/process choreography/u);
   });
 
   it("requires an explicit process-repair authority tag before allowing mechanism evidence", () => {
