@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The implementation satisfies the user-first intake, route preview, status, dry-run preview, compatibility, and concurrency requirements, with deterministic verification at the evaluated SHA.",
+      "broken_invariant": "No invariant is broken; positive, negative, compatibility, persisted-route, and cross-process concurrency paths required by the approved contract are covered.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/2337bf8a3670b3ab32353448cb8cbc402d18fb41a738304a7cbae8616f732ad1.patch",
+          "sha256": "sha256:2337bf8a3670b3ab32353448cb8cbc402d18fb41a738304a7cbae8616f732ad1"
+        },
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/verification/20260807000019724-a1dd7242eb62686b.json",
+          "sha256": "sha256:26289056ed7269eaa3b879b7a8d320366133130d4904c07c837bdca15e77039f"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
