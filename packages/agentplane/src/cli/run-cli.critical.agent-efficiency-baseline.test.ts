@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       const efficiency = await runNode([EFFICIENCY_CHECK]);
 
       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
-      expect(compatibility.stdout).toContain("259commands/179args/829options");
+      expect(compatibility.stdout).toContain("260commands/180args/836options");
       expect(compatibility.stdout).toContain(
         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
       );
@@ -569,7 +569,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
       expect(JSON.parse(result.stdout)).toEqual({
         packageManifestDigest: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
-        surfaceDigest: "f1f7ba365b8912771323910df3e34843708feeccc291944d50a1ab2f7874ca01",
+        surfaceDigest: "cd30e3bf54b3c211f2d174939e1b8f402075fa2efc745598d98386082da1fe3a",
         changedPaths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",

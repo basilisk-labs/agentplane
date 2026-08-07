@@ -34,6 +34,7 @@ Created: 2026-08-06T19:12:24.484Z
  .../src/cli/run-cli.core.route-decision.test.ts    |   8 +
  .../src/cli/run-cli.core.task-run.test.ts          | 112 +++---
  .../src/cli/run-cli.core.tasks.create.test.ts      | 282 ++++++++++++++
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   4 +-
  .../src/cli/run-cli/command-catalog/task.ts        |   9 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
  .../agentplane/src/commands/task/create.command.ts | 409 +++++++++++++++++++++
@@ -42,7 +43,9 @@ Created: 2026-08-06T19:12:24.484Z
  .../agentplane/src/commands/task/run.command.ts    |   6 +-
  .../agentplane/src/commands/task/status.command.ts |  13 +-
  .../agentplane/src/commands/task/task.command.ts   |  10 +-
- 13 files changed, 1121 insertions(+), 275 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    | 193 +++++++++-
+ .../check-compatibility-contract-baseline.mjs      | 135 ++++++-
+ 16 files changed, 1438 insertions(+), 290 deletions(-)
 ```
 
 </details>

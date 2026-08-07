@@ -562,7 +562,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
   it("task create serializes cross-process exact duplicates and preserves the selected route", async () => {
     const root = await mkGitRepoRoot();
     const args = ["task", "create", "Fix the concurrent parser path", "--json", "--root", root];
-    const startAt = Date.now() + 1_000;
+    const startAt = Date.now() + 1000;
     const results = await Promise.all([
       runSynchronizedCliProcess({ args, startAt }),
       runSynchronizedCliProcess({ args, startAt }),
