@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts\nResult: pass\nEvidence: Vitest exited 0 with 3 files and 18 tests passed at ad1088693203b396693c99a4ef64397ef176c461.\nScope: external supervisor CLI, packet, route, and worktree binding.\n\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts\nResult: pass\nEvidence: Vitest exited 0 with 5 files and 46 tests passed, including bounded Result commentary parsing.\nScope: protocol compatibility, prompt surfaces, and durable verification evidence parsing.\n\nCommand: bun run docs:bootstrap:check && bun run docs:cli:check\nResult: pass\nEvidence: generated bootstrap and CLI documentation checks exited 0.\nScope: generated documentation.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing and mirror budgets exited 0.\nScope: policy parity, routing, and size budgets.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build exited 0 at ad1088693203b396693c99a4ef64397ef176c461.\nScope: repository TypeScript contracts.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: critical-cli completed all 12 chunks with 84 tests passed.\nScope: compatibility and trust-boundary ratchets.\n\nCommand: git status --short --untracked-files=all\nResult: pass\nEvidence: stdout was empty before this verification receipt.\nScope: final repository cleanliness and unintended-drift check.",
+  "digest": "sha256:6b651866acfadd5b276948d11ee858f059d2400352838e84a3351dd5b1f83d7b",
+  "implementation_sha": "ad1088693203b396693c99a4ef64397ef176c461",
+  "kind": "task_verification_record",
+  "note": "Final implementation head ad1088693 passes all task, policy, docs, typing, critical, parser, and cleanliness checks.",
+  "recorded_at": "2026-08-07T23:09:15.786Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts\n- bun run docs:cli:check\n- bun run typecheck\n- bun run test:critical",
+  "scope_digest": "sha256:e7b785b4af2458a5bf3ddea4bbab3158dc569e3b026d3f1b1fc95a2df69b1c31",
+  "task_id": "202608062021-MCY8ZC",
+  "verification_command": "agentplane verify 202608062021-MCY8ZC --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -32,9 +32,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T22:58:24.875Z"
+  updated_at: "2026-08-07T23:09:15.786Z"
   updated_by: "TESTER"
-  note: "Final pre-merge closure head b652c4cc2 passes all task, policy, docs, typing, critical, and cleanliness checks."
+  note: "Final implementation head ad1088693 passes all task, policy, docs, typing, critical, parser, and cleanliness checks."
   attempts: 0
 quality_review:
   state: "blocked"
@@ -156,8 +156,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Final pre-merge closure head b652c4cc2 passes all task, policy, docs, typing, critical, and cleanliness checks."
+  -
+    type: "verify"
+    at: "2026-08-07T23:09:15.786Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Final implementation head ad1088693 passes all task, policy, docs, typing, critical, parser, and cleanliness checks."
 doc_version: 3
-doc_updated_at: "2026-08-07T22:59:38.699Z"
+doc_updated_at: "2026-08-07T23:09:17.311Z"
 doc_updated_by: "CODER"
 description: "Return an exact result_path and structured resume_argv from task advance, expose a typed operator action at approval boundaries, make quickstart and role command guides supervisor-first, show the canonical new/active/advance/run/brief subset in compact task help, attribute explicit begin plans to a human source, and add an end-to-end branch_pr test that advances once from the base checkout and receives a worktree-bound WorkOrder without caller cwd changes."
 sections:
@@ -475,6 +481,71 @@ sections:
     Command: git status --short --untracked-files=all
     Result: pass; stdout was empty.
     Evidence: authoritative worktree had no tracked modifications or untracked files at b652c4cc29e6cc371d4ebb679b42c5d41eb37142 before this receipt.
+    Scope: final repository cleanliness and unintended-drift check.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-MCY8ZC-polish-the-external-supervisor-protocol-and-cano/.agentplane/tasks/202608062021-MCY8ZC/blueprint/resolved-snapshot.json
+    - old_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+    - current_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-MCY8ZC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T23:09:15.786Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Final implementation head ad1088693 passes all task, policy, docs, typing, critical, parser, and cleanliness checks.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T22:59:38.699Z, excerpt_hash=sha256:e7b785b4af2458a5bf3ddea4bbab3158dc569e3b026d3f1b1fc95a2df69b1c31
+
+    Details:
+
+    Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts
+    Result: pass
+    Evidence: Vitest exited 0 with 3 files and 18 tests passed at ad1088693203b396693c99a4ef64397ef176c461.
+    Scope: external supervisor CLI, packet, route, and worktree binding.
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+    Result: pass
+    Evidence: Vitest exited 0 with 5 files and 46 tests passed, including bounded Result commentary parsing.
+    Scope: protocol compatibility, prompt surfaces, and durable verification evidence parsing.
+
+    Command: bun run docs:bootstrap:check && bun run docs:cli:check
+    Result: pass
+    Evidence: generated bootstrap and CLI documentation checks exited 0.
+    Scope: generated documentation.
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing and mirror budgets exited 0.
+    Scope: policy parity, routing, and size budgets.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build exited 0 at ad1088693203b396693c99a4ef64397ef176c461.
+    Scope: repository TypeScript contracts.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: critical-cli completed all 12 chunks with 84 tests passed.
+    Scope: compatibility and trust-boundary ratchets.
+
+    Command: git status --short --untracked-files=all
+    Result: pass
+    Evidence: stdout was empty before this verification receipt.
     Scope: final repository cleanliness and unintended-drift check.
 
     BlueprintSnapshotRef:
@@ -843,6 +914,71 @@ Scope: compatibility and trust-boundary ratchets.
 Command: git status --short --untracked-files=all
 Result: pass; stdout was empty.
 Evidence: authoritative worktree had no tracked modifications or untracked files at b652c4cc29e6cc371d4ebb679b42c5d41eb37142 before this receipt.
+Scope: final repository cleanliness and unintended-drift check.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-MCY8ZC-polish-the-external-supervisor-protocol-and-cano/.agentplane/tasks/202608062021-MCY8ZC/blueprint/resolved-snapshot.json
+- old_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+- current_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-MCY8ZC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T23:09:15.786Z — VERIFY — ok
+
+By: TESTER
+
+Note: Final implementation head ad1088693 passes all task, policy, docs, typing, critical, parser, and cleanliness checks.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T22:59:38.699Z, excerpt_hash=sha256:e7b785b4af2458a5bf3ddea4bbab3158dc569e3b026d3f1b1fc95a2df69b1c31
+
+Details:
+
+Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts
+Result: pass
+Evidence: Vitest exited 0 with 3 files and 18 tests passed at ad1088693203b396693c99a4ef64397ef176c461.
+Scope: external supervisor CLI, packet, route, and worktree binding.
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+Result: pass
+Evidence: Vitest exited 0 with 5 files and 46 tests passed, including bounded Result commentary parsing.
+Scope: protocol compatibility, prompt surfaces, and durable verification evidence parsing.
+
+Command: bun run docs:bootstrap:check && bun run docs:cli:check
+Result: pass
+Evidence: generated bootstrap and CLI documentation checks exited 0.
+Scope: generated documentation.
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing and mirror budgets exited 0.
+Scope: policy parity, routing, and size budgets.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build exited 0 at ad1088693203b396693c99a4ef64397ef176c461.
+Scope: repository TypeScript contracts.
+
+Command: bun run test:critical
+Result: pass
+Evidence: critical-cli completed all 12 chunks with 84 tests passed.
+Scope: compatibility and trust-boundary ratchets.
+
+Command: git status --short --untracked-files=all
+Result: pass
+Evidence: stdout was empty before this verification receipt.
 Scope: final repository cleanliness and unintended-drift check.
 
 BlueprintSnapshotRef:
