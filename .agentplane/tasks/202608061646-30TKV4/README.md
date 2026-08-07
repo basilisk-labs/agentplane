@@ -2,10 +2,10 @@
 id: "202608061646-30TKV4"
 title: "Add user-first task intake and execution preview"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on:
@@ -63,22 +63,22 @@ quality_review:
   findings:
     - "The implementation satisfies the user-first intake, route preview, status, dry-run preview, compatibility, and concurrency requirements, with deterministic verification at the evaluated SHA."
 token_usage:
-  agent_runs: 3
-  input_tokens: 456817
-  journal_digest: "sha256:79d0693ac8b42bd0ea7e87220912eb2795bb7a52a030f3753e76dcfbd128a0f3"
-  observed_agent_runs: 2
+  agent_runs: 6
+  input_tokens: 1065531
+  journal_digest: "sha256:1eddef1b99d3836dcd192752821fe605e9abccde77e516bd1b909cf74678442c"
+  observed_agent_runs: 5
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
   state: "partial"
-  total_tokens: 463683
+  total_tokens: 1080717
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
-  updated_at: "2026-08-06T20:09:32.605Z"
+  updated_at: "2026-08-07T00:02:02.354Z"
 commit:
-  hash: "d5856d4e9f7df6d42b3ca43f1221866148fdc54c"
-  message: "🧪 30TKV4 ux: test cross-process duplicate serialization"
+  hash: "6431501cbe55ca87787df77b3f0b68acee66bb81"
+  message: "🧪 30TKV4 task: record cross-process evaluator pass"
 comments:
   -
     author: "CODER"
@@ -101,6 +101,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework committed: duplicate creation is now exercised by two independently spawned CLI processes released against the same start barrier."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -181,8 +184,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "The current-main UX branch and its filesystem transaction are verified across two synchronized independent CLI processes with complete deterministic evidence."
+  -
+    type: "status"
+    at: "2026-08-07T00:02:02.354Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T00:01:23.476Z"
+doc_updated_at: "2026-08-07T00:02:02.375Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
@@ -505,8 +515,8 @@ sections:
       Resolution: Executed the canonical repository selector bun run test:project -- cli-core against the exact two files; 22/22 tests passed, and recorded both the selector mismatch and replacement.
 extensions:
   implementation_commit:
-    hash: "dbb7a18e2f1a190d27cf5a10944d4add569d2795"
-    message: "🧪 30TKV4 task: harden user-first task intake"
+    hash: "d5856d4e9f7df6d42b3ca43f1221866148fdc54c"
+    message: "🧪 30TKV4 ux: test cross-process duplicate serialization"
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
     version: 1
@@ -848,12 +858,12 @@ Revert the UX feature commit. Existing task new, task run, task status, and task
 ## Token Usage
 
 - State: `partial`
-- Completeness: `2/3` agent runs
-- Input tokens: `456817`
+- Completeness: `5/6` agent runs
+- Input tokens: `1065531`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
-- Total tokens: `463683`
+- Total tokens: `1080717`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:79d0693ac8b42bd0ea7e87220912eb2795bb7a52a030f3753e76dcfbd128a0f3`
+- Journal digest: `sha256:1eddef1b99d3836dcd192752821fe605e9abccde77e516bd1b909cf74678442c`
 - Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
-- Updated at: `2026-08-06T20:09:32.605Z`
+- Updated at: `2026-08-07T00:02:02.354Z`
