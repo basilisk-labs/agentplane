@@ -16,17 +16,22 @@ Replace the obsolete global-regex String.replace call in the social image genera
 ## Verification
 
 - State: ok
-- Note: Release lint baseline restored with a behavior-preserving String.replaceAll migration.
+- Note: Fresh deterministic evidence on implementation SHA 17dc364080b8c5763eb478ea5b0a328168ba2518.
+
+Command: git show main:website/scripts/generate-social-images.mjs | bunx eslint --stdin --stdin-filename website/scripts/generate-social-images.mjs
+Result: pass
+Evidence: original main content reproducibly exits 1 with unicorn/prefer-string-replace-all at line 207
+Scope: original failure reproduction
 
 Command: bunx eslint website/scripts/generate-social-images.mjs
 Result: pass
-Evidence: targeted ESLint completed with exit code 0
-Scope: social image generator lint regression
+Evidence: fixed file exits 0 with no findings
+Scope: focused regression check
 
 Command: bun run lint
 Result: pass
 Evidence: core and website ESLint completed with exit code 0
-Scope: complete repository lint surface
+Scope: full local repository lint gate
 
 Command: bun run docs:social:check
 Result: pass
@@ -42,12 +47,17 @@ Command: bun run typecheck
 Result: pass
 Evidence: repository TypeScript build completed with exit code 0
 Scope: TypeScript contracts
+
+Command: gh pr checks 4796
+Result: pass
+Evidence: PR verification, docs, CodeQL, Analyze actions, and Analyze javascript-typescript passed on head 8345e2aeda332dd80572b9e0f63cbb83e14e5b23
+Scope: complete hosted route selected for the docs/website-only diff
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-07T02:35:47.801Z
+- Updated: 2026-08-07T02:40:39.441Z
 - Branch: task/202608070235-JPPAMT/restore-the-release-lint-baseline
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

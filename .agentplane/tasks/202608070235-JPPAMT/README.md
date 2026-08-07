@@ -4,7 +4,7 @@ title: "Restore the release lint baseline"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -18,20 +18,25 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T02:38:47.071Z"
+  updated_at: "2026-08-07T02:44:36.609Z"
   updated_by: "TESTER"
   note: |-
-    Release lint baseline restored with a behavior-preserving String.replaceAll migration.
+    Fresh deterministic evidence on implementation SHA 17dc364080b8c5763eb478ea5b0a328168ba2518.
+
+    Command: git show main:website/scripts/generate-social-images.mjs | bunx eslint --stdin --stdin-filename website/scripts/generate-social-images.mjs
+    Result: pass
+    Evidence: original main content reproducibly exits 1 with unicorn/prefer-string-replace-all at line 207
+    Scope: original failure reproduction
 
     Command: bunx eslint website/scripts/generate-social-images.mjs
     Result: pass
-    Evidence: targeted ESLint completed with exit code 0
-    Scope: social image generator lint regression
+    Evidence: fixed file exits 0 with no findings
+    Scope: focused regression check
 
     Command: bun run lint
     Result: pass
     Evidence: core and website ESLint completed with exit code 0
-    Scope: complete repository lint surface
+    Scope: full local repository lint gate
 
     Command: bun run docs:social:check
     Result: pass
@@ -47,6 +52,11 @@ verification:
     Result: pass
     Evidence: repository TypeScript build completed with exit code 0
     Scope: TypeScript contracts
+
+    Command: gh pr checks 4796
+    Result: pass
+    Evidence: PR verification, docs, CodeQL, Analyze actions, and Analyze javascript-typescript passed on head 8345e2aeda332dd80572b9e0f63cbb83e14e5b23
+    Scope: complete hosted route selected for the docs/website-only diff
   attempts: 0
 quality_review:
   state: "blocked"
@@ -128,8 +138,50 @@ events:
       Result: pass
       Evidence: repository TypeScript build completed with exit code 0
       Scope: TypeScript contracts
+  -
+    type: "verify"
+    at: "2026-08-07T02:44:36.609Z"
+    author: "TESTER"
+    state: "ok"
+    note: |-
+      Fresh deterministic evidence on implementation SHA 17dc364080b8c5763eb478ea5b0a328168ba2518.
+
+      Command: git show main:website/scripts/generate-social-images.mjs | bunx eslint --stdin --stdin-filename website/scripts/generate-social-images.mjs
+      Result: pass
+      Evidence: original main content reproducibly exits 1 with unicorn/prefer-string-replace-all at line 207
+      Scope: original failure reproduction
+
+      Command: bunx eslint website/scripts/generate-social-images.mjs
+      Result: pass
+      Evidence: fixed file exits 0 with no findings
+      Scope: focused regression check
+
+      Command: bun run lint
+      Result: pass
+      Evidence: core and website ESLint completed with exit code 0
+      Scope: full local repository lint gate
+
+      Command: bun run docs:social:check
+      Result: pass
+      Evidence: checked 226 documentation social images
+      Scope: generated social preview parity
+
+      Command: bun run format:check
+      Result: pass
+      Evidence: all matched files use Prettier code style
+      Scope: repository formatting
+
+      Command: bun run typecheck
+      Result: pass
+      Evidence: repository TypeScript build completed with exit code 0
+      Scope: TypeScript contracts
+
+      Command: gh pr checks 4796
+      Result: pass
+      Evidence: PR verification, docs, CodeQL, Analyze actions, and Analyze javascript-typescript passed on head 8345e2aeda332dd80572b9e0f63cbb83e14e5b23
+      Scope: complete hosted route selected for the docs/website-only diff
 doc_version: 3
-doc_updated_at: "2026-08-07T02:38:47.983Z"
+doc_updated_at: "2026-08-07T02:44:37.824Z"
 doc_updated_by: "CODER"
 description: "Replace the obsolete global-regex String.replace call in the social image generator so the current main branch and every 0.7.5 PR pass the repository lint gate."
 sections:
@@ -201,6 +253,71 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T02:44:36.609Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Fresh deterministic evidence on implementation SHA 17dc364080b8c5763eb478ea5b0a328168ba2518.
+
+    Command: git show main:website/scripts/generate-social-images.mjs | bunx eslint --stdin --stdin-filename website/scripts/generate-social-images.mjs
+    Result: pass
+    Evidence: original main content reproducibly exits 1 with unicorn/prefer-string-replace-all at line 207
+    Scope: original failure reproduction
+
+    Command: bunx eslint website/scripts/generate-social-images.mjs
+    Result: pass
+    Evidence: fixed file exits 0 with no findings
+    Scope: focused regression check
+
+    Command: bun run lint
+    Result: pass
+    Evidence: core and website ESLint completed with exit code 0
+    Scope: full local repository lint gate
+
+    Command: bun run docs:social:check
+    Result: pass
+    Evidence: checked 226 documentation social images
+    Scope: generated social preview parity
+
+    Command: bun run format:check
+    Result: pass
+    Evidence: all matched files use Prettier code style
+    Scope: repository formatting
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: repository TypeScript build completed with exit code 0
+    Scope: TypeScript contracts
+
+    Command: gh pr checks 4796
+    Result: pass
+    Evidence: PR verification, docs, CodeQL, Analyze actions, and Analyze javascript-typescript passed on head 8345e2aeda332dd80572b9e0f63cbb83e14e5b23
+    Scope: complete hosted route selected for the docs/website-only diff
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T02:38:47.983Z, excerpt_hash=sha256:7f173c5cc5fd73e72050c28a776005e92d52c750e6b14d54ef63dfbdbe07e11c
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608070235-JPPAMT-restore-the-release-lint-baseline/.agentplane/tasks/202608070235-JPPAMT/blueprint/resolved-snapshot.json
+    - old_digest: e6918be9c187948088eeee72c070745720938b0e5e20a11ccdb3664f8e226b94
+    - current_digest: e6918be9c187948088eeee72c070745720938b0e5e20a11ccdb3664f8e226b94
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608070235-JPPAMT
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608070235-JPPAMT
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -295,6 +412,71 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T02:44:36.609Z — VERIFY — ok
+
+By: TESTER
+
+Note: Fresh deterministic evidence on implementation SHA 17dc364080b8c5763eb478ea5b0a328168ba2518.
+
+Command: git show main:website/scripts/generate-social-images.mjs | bunx eslint --stdin --stdin-filename website/scripts/generate-social-images.mjs
+Result: pass
+Evidence: original main content reproducibly exits 1 with unicorn/prefer-string-replace-all at line 207
+Scope: original failure reproduction
+
+Command: bunx eslint website/scripts/generate-social-images.mjs
+Result: pass
+Evidence: fixed file exits 0 with no findings
+Scope: focused regression check
+
+Command: bun run lint
+Result: pass
+Evidence: core and website ESLint completed with exit code 0
+Scope: full local repository lint gate
+
+Command: bun run docs:social:check
+Result: pass
+Evidence: checked 226 documentation social images
+Scope: generated social preview parity
+
+Command: bun run format:check
+Result: pass
+Evidence: all matched files use Prettier code style
+Scope: repository formatting
+
+Command: bun run typecheck
+Result: pass
+Evidence: repository TypeScript build completed with exit code 0
+Scope: TypeScript contracts
+
+Command: gh pr checks 4796
+Result: pass
+Evidence: PR verification, docs, CodeQL, Analyze actions, and Analyze javascript-typescript passed on head 8345e2aeda332dd80572b9e0f63cbb83e14e5b23
+Scope: complete hosted route selected for the docs/website-only diff
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T02:38:47.983Z, excerpt_hash=sha256:7f173c5cc5fd73e72050c28a776005e92d52c750e6b14d54ef63dfbdbe07e11c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608070235-JPPAMT-restore-the-release-lint-baseline/.agentplane/tasks/202608070235-JPPAMT/blueprint/resolved-snapshot.json
+- old_digest: e6918be9c187948088eeee72c070745720938b0e5e20a11ccdb3664f8e226b94
+- current_digest: e6918be9c187948088eeee72c070745720938b0e5e20a11ccdb3664f8e226b94
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608070235-JPPAMT
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608070235-JPPAMT
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
