@@ -1,4 +1,3 @@
-import { type AgentWorkOrderRole } from "@agentplaneorg/core/schemas";
 import {
   loadCommandContext,
   resolveCommandGitCommonDir,
@@ -15,10 +14,6 @@ import { issueRunnerPhaseToolGrant } from "../phase-tools/token.js";
 import { consumeExecutionProfileBudget } from "../../runtime/execution-profile/index.js";
 import { appendFrameworkExplainBehaviorInputs } from "../../runtime/explain/index.js";
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
-import {
-  assertSemanticProviderPromptHasNoProcessChoreography,
-  hasExplicitProcessMechanismRepairAuthority,
-} from "../context/base-prompts.js";
 import type { RunnerAdapter } from "../adapters/shared.js";
 import { createRunnerAdapter } from "../adapters/index.js";
 import { readRecipeRunProfile } from "../adapters/recipe-run-profile.js";
@@ -46,7 +41,6 @@ import {
   reconcileTerminalTaskRunnerActiveClaim,
   recordActiveClaimCleanupFailure,
 } from "./task-run-active-claim-runtime.js";
-import { renderTaskRunnerBootstrap } from "./task-run-bootstrap.js";
 export { renderTaskRunnerBootstrap } from "./task-run-bootstrap.js";
 export { assertRunnerBlueprintPolicyModuleBudget } from "./task-run-blueprint-plan.js";
 import {
@@ -54,6 +48,7 @@ import {
   writeTaskBlueprintSnapshot,
 } from "./task-run-blueprint-plan.js";
 import { prepareTaskRunnerAgentWorkOrder } from "./task-run-work-order.js";
+import { renderSemanticBootstrap, semanticRole } from "./task-run-semantic-prompt.js";
 import { RunnerPreparationCliError, writeRunnerRefusalArtifacts } from "./task-run-refusal.js";
 import { collectTaskRunnerFrameworkExplainBehaviorInputs } from "./task-run-framework-explain.js";
 import {
@@ -101,14 +96,6 @@ export type {
 } from "./task-run-execution.js";
 export type { TaskRunnerReplayProvenance } from "./task-run-replay-anchor.js";
 
-function semanticRoleFromExecutionRole(value: string | undefined): AgentWorkOrderRole | undefined {
-  const normalized = value?.trim().toUpperCase();
-  if (normalized === "PLANNER" || normalized === "CURATOR" || normalized === "EVALUATOR") {
-    return normalized;
-  }
-  return normalized ? "EXECUTOR" : undefined;
-}
-
 export async function prepareTaskRunnerExecution(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -150,7 +137,7 @@ export async function prepareTaskRunnerExecution(opts: {
     runner_command: runnerCommand,
     execution_context: executionContext,
     execution_profile: executionProfile,
-    semantic_role: semanticRoleFromExecutionRole(opts.execution_role),
+    semantic_role: semanticRole(opts.execution_role),
   });
   executionProfile = preparedWorkOrder.execution_profile;
   const taskEnvelope = preparedWorkOrder.task_envelope;
@@ -277,26 +264,7 @@ export async function prepareTaskRunnerExecution(opts: {
     await repository.assertBoundary("after writing the blueprint snapshot");
     invocation = await adapter.prepare(bundle);
     attachRunnerPhaseToolBrokerEnv({ bundle, invocation, grant: phaseToolGrant });
-    bootstrapMarkdown = renderTaskRunnerBootstrap(bundle, invocation);
-    try {
-      assertSemanticProviderPromptHasNoProcessChoreography({
-        prompt: bootstrapMarkdown,
-        process_mechanism_repair_authorized: hasExplicitProcessMechanismRepairAuthority(
-          bundle.task,
-        ),
-        declared_phase_tool_invocations: bundle.execution.phase_tools?.tools.flatMap((tool) =>
-          tool.allowed && tool.invocation ? [tool.invocation] : [],
-        ),
-      });
-    } catch (error) {
-      throw new CliError({
-        code: "E_VALIDATION",
-        message: error instanceof Error ? error.message : "Semantic provider prompt is unsafe.",
-        context: {
-          reason_code: "semantic_provider_prompt_process_choreography",
-        },
-      });
-    }
+    bootstrapMarkdown = renderSemanticBootstrap(bundle, invocation);
   } catch (err) {
     if (err instanceof CliError) {
       bundle.execution.policy_decision = applyRunnerPolicyRefusal({

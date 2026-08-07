@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:252b0eea786cdabc50974527761a718d5f65028272251b6f628b515441e899a4",
+  "implementation_sha": "60c6416fb08858e79d2b22c227363cb068d25ce8",
+  "kind": "task_verification_record",
+  "note": "Hosted contract CI rejected the prompt guard integration because task-run.ts exceeded the 600-line runtime hotspot limit.",
+  "recorded_at": "2026-08-07T05:10:09.901Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\n- bun run test:critical\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98",
+  "task_id": "202608062021-V2EESE",
+  "verification_command": "agentplane verify 202608062021-V2EESE --rework --by REVIEWER",
+  "verifier": "REVIEWER"
+}

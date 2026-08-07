@@ -15,12 +15,12 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-Verified: blueprint snapshot refreshed after explicit repair-authority tag; implementation and
-checks are unchanged.
+Hosted contract CI rejected the prompt guard integration because task-run.ts exceeded the 600-line
+runtime hotspot limit.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -48,8 +48,9 @@ checks are unchanged.
  .../task-run-bootstrap.result-examples.test.ts     |   2 +-
  .../src/runner/usecases/task-run-bootstrap.ts      | 139 +++++++---
  .../usecases/task-run-context.integration.test.ts  |  95 ++++++-
- .../agentplane/src/runner/usecases/task-run.ts     |  40 ++-
- 17 files changed, 772 insertions(+), 77 deletions(-)
+ .../runner/usecases/task-run-semantic-prompt.ts    |  42 +++
+ .../agentplane/src/runner/usecases/task-run.ts     |  10 +-
+ 18 files changed, 783 insertions(+), 78 deletions(-)
 ```
 
 </details>
