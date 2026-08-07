@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The implementation and frozen verification evidence cover the declared external exchange fields, typed approval boundaries, canonical task guidance, human plan attribution, dependency-sensitive routing, and branch_pr worktree handoff.",
+      "broken_invariant": "None; the reviewed implementation satisfies the declared contract and loaded policy invariants.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/585d79e02b16931d74c4da7f8059956a361a573fd691f6dbe24b774ba8686f9d.patch",
+          "sha256": "sha256:585d79e02b16931d74c4da7f8059956a361a573fd691f6dbe24b774ba8686f9d"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/verification/20260807235708836-c0e03e83d8770f18.json",
+          "sha256": "sha256:214fd6d99d291d0ce57b0cdce61b134816c565818ac8232798ddbbb4f8c5be88"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

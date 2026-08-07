@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 38
 origin:
   system: "manual"
 depends_on: []
@@ -39,29 +39,29 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T23:30:45.787Z"
+  updated_at: "2026-08-07T23:58:44.485Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "032a2b8ab4180f16251f367b36ee462d2b108b92"
+  evaluated_sha: "75263193a470d21f58f842d55d2c8fab711d1bd4"
   blueprint_digest: "98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5"
   evidence_refs:
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-232944278-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-232944278-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/639e8bbd2176eeb0c2bd4914156e7e632203b1c76e8f1835aa467fdc587779ab.md"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-232944278-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-232944278-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-232944278-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-235756138-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-235756138-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/6c20d610bfeadfe768bf90feb6af2cad8bb673d39129a3f09c88a7525e37f312.md"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-235756138-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-235756138-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-235756138-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608062021-MCY8ZC/README.md"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/694efa032cf1b600e02fb97fc9f2d68cc7cf0c5a5dcdd072f152e522e0a98342.patch"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/aeec3cdf5541204fe15cf4104caf23b6e37b51d090b9126b3e3d59e35f174466.json"
-    - ".agentplane/tasks/202608062021-MCY8ZC/verification/20260807232931756-e836ce6638c37cc5.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/585d79e02b16931d74c4da7f8059956a361a573fd691f6dbe24b774ba8686f9d.patch"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/e2a0f9edb32d9c00f6ebe86693fbb52486a526326d50d7bf4351d08811121c61.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/verification/20260807235708836-c0e03e83d8770f18.json"
     - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/b9ec9d466ef8872c88b80f76b9ceb07256be22c1879b47a8a56de950a4cc9057.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The implementation, focused integration coverage, and deterministic verification evidence satisfy the declared external-supervisor protocol, operator-boundary, guidance, provenance, and branch-worktree requirements."
+    - "The implementation and frozen verification evidence cover the declared external exchange fields, typed approval boundaries, canonical task guidance, human plan attribution, dependency-sensitive routing, and branch_pr worktree handoff."
 token_usage:
   agent_runs: 7
   input_tokens: 1941964
@@ -228,7 +228,7 @@ events:
     state: "ok"
     note: "Implementation commit 75263193a passes the complete hosted-equivalent unit suite plus every declared verification and repository contract."
 doc_version: 3
-doc_updated_at: "2026-08-07T23:57:10.549Z"
+doc_updated_at: "2026-08-07T23:58:44.509Z"
 doc_updated_by: "CODER"
 description: "Return an exact result_path and structured resume_argv from task advance, expose a typed operator action at approval boundaries, make quickstart and role command guides supervisor-first, show the canonical new/active/advance/run/brief subset in compact task help, attribute explicit begin plans to a human source, and add an end-to-end branch_pr test that advances once from the base checkout and receives a worktree-bound WorkOrder without caller cwd changes."
 sections:
