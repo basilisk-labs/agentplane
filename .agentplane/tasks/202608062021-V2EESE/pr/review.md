@@ -13,7 +13,7 @@ Created: 2026-08-06T21:10:34.048Z
 ## Verification
 
 - State: ok
-- Note: Evaluator persistence-path rework is resolved in exact compiled prompts for every semantic role.
+- Note: Evaluator timeout failures are classified and the configured runner wall-clock policy now governs the provider episode.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
