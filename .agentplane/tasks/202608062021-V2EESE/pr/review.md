@@ -13,7 +13,7 @@ Created: 2026-08-06T21:10:34.048Z
 ## Verification
 
 - State: ok
-- Note: Hosted regressions repaired; semantic prompt projection preserves policy source identity and degrades safely for historical worktrees.
+- Note: All four declared Verify Steps passed against implementation 93ee2eeefe2979918848780b6d0c7e0d78910800.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
