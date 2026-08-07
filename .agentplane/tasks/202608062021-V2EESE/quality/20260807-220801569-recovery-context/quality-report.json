@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608062021-V2EESE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T22:08:55.037Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "1269fc2e4064654a87b1af11a2cc8389f06d3d2c",
+  "blueprint_digest": "ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26",
+  "findings": [
+    "No acceptance-criteria violation was found in the frozen implementation and verification evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/0cbee0fae9467b2908bf5280227187139106ae8a73dda4f90eae36c523804632.patch",
+    ".agentplane/tasks/202608062021-V2EESE/verification/20260807220736195-b5e8b98fdfb01380.json",
+    ".agentplane/tasks/202608062021-V2EESE/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The explicit process-mechanism-repair tag combined with matching task intent is the authoritative permission signal for lifecycle-repair prompt content."
+  ],
+  "residual_risks": []
+}
