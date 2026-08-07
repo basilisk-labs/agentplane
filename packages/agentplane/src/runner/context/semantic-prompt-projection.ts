@@ -111,8 +111,7 @@ function projectGatewayBlock(block: RunnerPromptBlock): RunnerPromptBlock {
     .filter((fragment) => isSemanticGatewayFragment(fragment))
     .map((fragment) => projectSemanticFragmentText(fragment.text))
     .filter(Boolean);
-  const projected = fragments
-    .join("\n\n");
+  const projected = fragments.join("\n\n");
   return {
     ...block,
     title: "Semantic Policy Gateway Projection",

@@ -133,9 +133,9 @@ describe("collectRunnerBasePrompts", () => {
     "ap flow repair TASK",
     "npm publish",
   ])("rejects forbidden provider choreography: %s", (command) => {
-    expect(() =>
-      assertSemanticProviderPromptHasNoProcessChoreography({ prompt: command }),
-    ).toThrow(/process choreography/u);
+    expect(() => assertSemanticProviderPromptHasNoProcessChoreography({ prompt: command })).toThrow(
+      /process choreography/u,
+    );
   });
 
   it("allows the exact supervisor-issued phase-tool transport", () => {
