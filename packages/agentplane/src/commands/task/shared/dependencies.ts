@@ -116,6 +116,22 @@ export async function resolveTaskDependencyState(
   return { dependsOn, missing, incomplete };
 }
 
+export async function taskDependencyReadinessBlocker(
+  task: TaskData,
+  backend: Pick<TaskBackend, "getTask" | "getTasks">,
+): Promise<string | null> {
+  const dependencyState = await resolveTaskDependencyState(task, backend);
+  const details = [
+    ...(dependencyState.missing.length > 0
+      ? [`missing: ${dependencyState.missing.join(", ")}`]
+      : []),
+    ...(dependencyState.incomplete.length > 0
+      ? [`incomplete: ${dependencyState.incomplete.join(", ")}`]
+      : []),
+  ];
+  return details.length > 0 ? `task dependencies are not ready (${details.join("; ")})` : null;
+}
+
 export function dependencyWarningMessages(dep: DependencyState): string[] {
   const warnings: string[] = [];
   if (dep.missing.length > 0) {

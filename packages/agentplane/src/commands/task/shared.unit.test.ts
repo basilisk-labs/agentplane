@@ -32,6 +32,7 @@ import {
   requireStructuredComment,
   requiresVerify,
   taskObservationSectionName,
+  taskDependencyReadinessBlocker,
   taskTextBlob,
   toStringArray,
 } from "./shared.js";
@@ -321,6 +322,16 @@ describe("task shared helpers", () => {
     const b = mkTask({ id: "B", status: "DONE" });
     const state = buildDependencyState([a, b]);
     expect(state.get("A")).toEqual({ dependsOn: ["B", "C"], missing: ["C"], incomplete: [] });
+  });
+
+  it("renders a deterministic dependency readiness blocker", async () => {
+    const task = mkTask({ id: "A", depends_on: ["B", "C"] });
+    await expect(
+      taskDependencyReadinessBlocker(task, {
+        getTasks: () => Promise.resolve([mkTask({ id: "B", status: "DOING" }), null]),
+        getTask: () => Promise.resolve(null),
+      }),
+    ).resolves.toBe("task dependencies are not ready (missing: C; incomplete: B)");
   });
 
   it("queryTaskProjection shares status/owner/tag filtering and keeps dependency state from full tasks", () => {
