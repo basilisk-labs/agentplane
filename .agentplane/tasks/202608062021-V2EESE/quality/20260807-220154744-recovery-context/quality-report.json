@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202608062021-V2EESE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T22:02:46.065Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "93ee2eeefe2979918848780b6d0c7e0d78910800",
+  "blueprint_digest": "ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26",
+  "findings": [
+    "Semantic policy-module loading can follow an in-repository symlink to a file outside the repository without explicit approval."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/ec35466367477fcacaa6e34963ca56a97d64725ab49eeb96a2cd914873359c21.patch",
+    ".agentplane/policy/security.must.md"
+  ],
+  "missing_tests": [
+    "Add a test where a blueprint-selected policy-module path is lexically inside the repository but is a symlink to an outside-repository file; semantic prompt compilation must reject it before reading the target.",
+    "Record a final repository-state check covering unintended tracked changes and unreviewed untracked artifacts, as required by the loaded core DoD."
+  ],
+  "hidden_assumptions": [
+    "A policy-module path that is lexically contained by git_root is assumed to resolve physically inside git_root.",
+    "Blueprint-selected policy modules are assumed never to be symlinks to outside-repository targets.",
+    "The frozen verification summary is assumed sufficient despite containing no final git status evidence."
+  ],
+  "residual_risks": [
+    "Resolve policy-module paths against their physical filesystem targets before reading, reject targets outside the repository unless matching explicit approval exists, add the symlink escape regression test, and provide the required final repository-state evidence."
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "Semantic policy-module loading can follow an in-repository symlink to a file outside the repository without explicit approval.",
+      "broken_invariant": "The loaded security policy requires that outside-repository files are not accessed without explicit user approval, but collectSemanticPolicyModulePrompts validates only lexical path containment before readFile follows filesystem symlinks.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/ec35466367477fcacaa6e34963ca56a97d64725ab49eeb96a2cd914873359c21.patch",
+          "sha256": "sha256:ec35466367477fcacaa6e34963ca56a97d64725ab49eeb96a2cd914873359c21",
+          "section": "collectSemanticPolicyModulePrompts"
+        },
+        {
+          "path": ".agentplane/policy/security.must.md",
+          "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+          "section": "Security MUST Rules"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add a test where a blueprint-selected policy-module path is lexically inside the repository but is a symlink to an outside-repository file; semantic prompt compilation must reject it before reading the target.",
+    "Record a final repository-state check covering unintended tracked changes and unreviewed untracked artifacts, as required by the loaded core DoD."
+  ],
+  "hidden_assumptions": [
+    "A policy-module path that is lexically contained by git_root is assumed to resolve physically inside git_root.",
+    "Blueprint-selected policy modules are assumed never to be symlinks to outside-repository targets.",
+    "The frozen verification summary is assumed sufficient despite containing no final git status evidence."
+  ],
+  "recovery_context": "Resolve policy-module paths against their physical filesystem targets before reading, reject targets outside the repository unless matching explicit approval exists, add the symlink escape regression test, and provide the required final repository-state evidence."
+}
