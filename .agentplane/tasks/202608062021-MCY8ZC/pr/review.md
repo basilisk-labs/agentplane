@@ -13,7 +13,7 @@ Created: 2026-08-06T21:35:28.993Z
 ## Verification
 
 - State: ok
-- Note: Final MCY8ZC implementation head 032a2b8ab passes every declared command plus the split branch-worktree e2e and complete CI contract.
+- Note: Implementation head 75263193a aligns the canonical branch_pr WorkOrder contract and passes the complete hosted-equivalent unit suite plus every declared verification and repository contract.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -69,7 +69,8 @@ Created: 2026-08-06T21:35:28.993Z
  .../src/commands/task/shared.unit.test.ts          |  11 +
  .../src/commands/task/shared/dependencies.ts       |  16 +
  .../agentplane/src/commands/task/task.command.ts   |  62 +---
- 40 files changed, 891 insertions(+), 307 deletions(-)
+ .../usecases/agent-work-order.integration.test.ts  |   4 +-
+ 41 files changed, 893 insertions(+), 309 deletions(-)
 ```
 
 </details>

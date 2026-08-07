@@ -19,8 +19,8 @@ Return an exact result_path and structured resume_argv from task advance, expose
 - Note:
 
 ```text
-Final MCY8ZC implementation head 032a2b8ab passes every declared command plus the split
-branch-worktree e2e and complete CI contract.
+Implementation head 75263193a aligns the canonical branch_pr WorkOrder contract and passes the
+complete hosted-equivalent unit suite plus every declared verification and repository contract.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -72,7 +72,8 @@ branch-worktree e2e and complete CI contract.
  .../src/commands/task/shared.unit.test.ts          |  11 +
  .../src/commands/task/shared/dependencies.ts       |  16 +
  .../agentplane/src/commands/task/task.command.ts   |  62 +---
- 40 files changed, 891 insertions(+), 307 deletions(-)
+ .../usecases/agent-work-order.integration.test.ts  |   4 +-
+ 41 files changed, 893 insertions(+), 309 deletions(-)
 ```
 
 </details>

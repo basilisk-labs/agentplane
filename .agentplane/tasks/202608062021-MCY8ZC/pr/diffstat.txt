@@ -38,4 +38,5 @@
  .../src/commands/task/shared.unit.test.ts          |  11 +
  .../src/commands/task/shared/dependencies.ts       |  16 +
  .../agentplane/src/commands/task/task.command.ts   |  62 +---
- 40 files changed, 891 insertions(+), 307 deletions(-)
+ .../usecases/agent-work-order.integration.test.ts  |   4 +-
+ 41 files changed, 893 insertions(+), 309 deletions(-)
