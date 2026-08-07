@@ -3,8 +3,8 @@
   "branch": "task/202608061925-KANFC0/preserve-exact-windows-task-readme-file-identiti",
   "created_at": "2026-08-06T19:28:55.153Z",
   "diffstat_sha256": "sha256:f2eba31bc6acd81b6664dbac62da2b799f5a6b682df14950c6f3b9adf04b1d4c",
-  "last_verified_at": "2026-08-07T02:16:20.516Z",
-  "last_verified_diffstat_sha256": "sha256:6807a418595a767de3abfefa3ff67e95e37f30aa266b8023d36ff361c787fbbd",
+  "last_verified_at": "2026-08-07T02:59:14.407Z",
+  "last_verified_diffstat_sha256": "sha256:f2eba31bc6acd81b6664dbac62da2b799f5a6b682df14950c6f3b9adf04b1d4c",
   "pr_number": 4786,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4786",
   "pre_merge_closure": {

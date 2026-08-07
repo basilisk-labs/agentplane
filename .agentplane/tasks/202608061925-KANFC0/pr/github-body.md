@@ -19,8 +19,8 @@ Fix local task scans so NTFS file IDs above Number.MAX_SAFE_INTEGER remain exact
 - Note:
 
 ```text
-Exact NTFS identity handling and every local release gate now pass on the current main baseline;
-hosted Windows remains the pre-integration PR gate.
+Exact NTFS identity handling and all local release gates pass on current main; hosted Windows is the
+remaining PR gate.
 ```
 - Canonical workflow state lives in the task README.
 
