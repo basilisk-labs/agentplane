@@ -56,13 +56,10 @@ and focused lint also passed.
  packages/agentplane/src/cli/bootstrap-guide.ts     |  52 +-
  packages/agentplane/src/cli/command-guide.test.ts  |  74 +--
  packages/agentplane/src/cli/command-guide.ts       |  98 ++-
- .../agentplane/src/commands/task/update.command.ts |  57 ++
- packages/agentplane/src/commands/task/update.ts    |  19 +
- .../src/commands/task/update.unit.test.ts          |  45 +-
  scripts/checks/check-agent-bootstrap-fresh.mjs     |  55 +-
  scripts/checks/check-agent-onboarding-scenario.mjs |  58 +-
  website/static/llms-full.txt                       | 687 ++++++---------------
- 30 files changed, 990 insertions(+), 1582 deletions(-)
+ 27 files changed, 870 insertions(+), 1581 deletions(-)
 ```
 
 </details>
