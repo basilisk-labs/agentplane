@@ -28,6 +28,7 @@ export {
 export {
   ensureTaskDependsOnGraphIsAcyclic,
   resolveTaskDependencyState,
+  taskDependencyReadinessBlocker,
   buildDependencyState,
   formatTaskLine,
 } from "./shared/dependencies.js";
