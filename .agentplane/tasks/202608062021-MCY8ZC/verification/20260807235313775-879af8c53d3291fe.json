@@ -1,0 +1,15 @@
+{
+  "details": "Result: pass; 543 files and 3885 unit tests passed, 12 critical chunks and 84 tests passed, 3 acceptance files and 17 tests passed, ci:contract passed, docs:cli:check passed, and typecheck passed.",
+  "digest": "sha256:879af8c53d3291fe6df547a121c466ba6ed4b3c68f7824be326b9ea7d83d33cf",
+  "implementation_sha": "75263193a470d21f58f842d55d2c8fab711d1bd4",
+  "kind": "task_verification_record",
+  "note": "Implementation commit 75263193a passes the complete hosted-equivalent unit suite plus every declared verification and repository contract.",
+  "recorded_at": "2026-08-07T23:53:13.775Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts\n- bun run docs:cli:check\n- bun run typecheck\n- bun run test:critical",
+  "scope_digest": "sha256:e7b785b4af2458a5bf3ddea4bbab3158dc569e3b026d3f1b1fc95a2df69b1c31",
+  "task_id": "202608062021-MCY8ZC",
+  "verification_command": "agentplane verify 202608062021-MCY8ZC --ok --by TESTER",
+  "verifier": "TESTER"
+}
