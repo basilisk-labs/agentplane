@@ -16,7 +16,12 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
 ## Verification
 
 - State: ok
-- Note: Semantic-only provider prompt projection and exact-input choreography guard pass the declared contract.
+- Note:
+
+```text
+Evaluator rework is resolved: mixed security fragments are preserved and exact provider input
+rejects every supervisor command family unless explicit repair authority is present.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
