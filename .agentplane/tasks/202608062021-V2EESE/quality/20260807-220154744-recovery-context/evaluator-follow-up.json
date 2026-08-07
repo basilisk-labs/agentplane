@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608062021-V2EESE-554987a89be5e393f1a32645",
+  "task_id": "202608062021-V2EESE",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Resolve policy-module paths against their physical filesystem targets before reading, reject targets outside the repository unless matching explicit approval exists, add the symlink escape regression test, and provide the required final repository-state evidence.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "Semantic policy-module loading can follow an in-repository symlink to a file outside the repository without explicit approval.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/ec35466367477fcacaa6e34963ca56a97d64725ab49eeb96a2cd914873359c21.patch",
+          "sha256": "sha256:ec35466367477fcacaa6e34963ca56a97d64725ab49eeb96a2cd914873359c21",
+          "section": "collectSemanticPolicyModulePrompts"
+        },
+        {
+          "path": ".agentplane/policy/security.must.md",
+          "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+          "section": "Security MUST Rules"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608062021-V2EESE/quality/20260807-220154744-recovery-context/evaluator-result.json"
+}
