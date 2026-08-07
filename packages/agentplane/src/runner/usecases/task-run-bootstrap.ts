@@ -185,17 +185,12 @@ export function renderTaskRunnerBootstrap(
       : `recipe scenario ${bundle.target.recipe_id}:${bundle.target.scenario_id}`;
   const codexGoalLine = renderCodexGoalLine(bundle, targetLabel);
   const stopRules = bundle.blueprint?.stopReasons ?? [];
-  const playbook = bundle.playbook?.selected_playbook;
   const verifierChecks = bundle.playbook?.final_verifier.checks ?? [];
   const evaluatorSkepticismLevel =
     bundle.execution.evaluator_skepticism_level ?? ("standard" satisfies EvaluatorSkepticismLevel);
   const sandboxPolicy = bundle.execution.sandbox_policy;
   const knowledgeRequestAuthorized =
     bundle.work_order?.authority.allowed_tool_classes.includes("knowledge_request");
-  // Codex emits the typed result through its final structured response. The
-  // supervisor persists that response because runner artifacts live under
-  // `.git`, which is intentionally outside every Codex write sandbox.
-  const supervisorOwnsSemanticResult = bundle.execution.adapter_id === "codex";
   const writeScope = bundle.execution.write_scope;
   const sandboxDecision = bundle.execution.policy_decision?.fields.sandbox;
   return [
@@ -207,21 +202,12 @@ export function renderTaskRunnerBootstrap(
     "- Keep all control-plane operations with the parent supervisor.",
     "- Do not invoke nested supervisor entrypoints or inspect supervisor-owned state artifacts.",
     "- Use only an exact run-scoped phase-tool invocation declared below; all other supervisor interfaces remain unavailable in this episode.",
-    "- Assume sibling runners may be executing concurrently. Keep writes inside the task scope, avoid broad refactors or shared policy edits, and report possible write conflicts in the result manifest instead of resolving them speculatively.",
+    "- Assume sibling runners may be executing concurrently. Keep writes inside the task scope, avoid broad refactors or shared policy edits, and report possible write conflicts in the typed result instead of resolving them speculatively.",
     "- Execute the projected work directly and stop when the requested semantic outcome is satisfied.",
     "",
     `- target: ${targetLabel}`,
-    `- adapter: ${bundle.execution.adapter_id}`,
-    `- mode: ${bundle.execution.mode}`,
-    `- run_id: ${bundle.execution.run_id}`,
     `- work_order_id: ${bundle.work_order?.work_order_id ?? invocation?.work_order_id ?? bundle.execution.run_id}`,
-    `- result_path: ${bundle.execution.artifact_paths.result_path}`,
-    `- receipt_path: ${bundle.execution.artifact_paths.receipt_path}`,
-    `- repository_root: ${bundle.repository.git_root}`,
-    `- sandbox_requested: ${sandboxPolicy?.requested ?? "unknown"}`,
-    `- sandbox_source: ${sandboxPolicy?.source ?? "unknown"}`,
-    `- execution_role: ${sandboxPolicy?.role ?? "unknown"}`,
-    `- sandbox_enforcement: ${sandboxDecision?.status ?? "unknown"}`,
+    `- sandbox: ${sandboxPolicy?.requested ?? "unknown"} (${sandboxDecision?.status ?? "unknown"})`,
     `- writable_roots: ${JSON.stringify(writeScope?.writable_roots ?? [])}`,
     `- protected_paths: ${JSON.stringify(writeScope?.protected_paths ?? [])}`,
     "",
@@ -252,32 +238,15 @@ export function renderTaskRunnerBootstrap(
           ...stopRules.map((rule) => `- ${rule.severity}: ${rule.reason} (${rule.id})`),
         ]
       : []),
-    ...(bundle.playbook
+    ...(verifierChecks.length > 0
       ? [
           "",
-          "Execution playbook contract:",
-          `- blueprint_result: ${bundle.playbook.execution_blueprint.id}`,
-          `- selected_playbook: ${playbook?.id ?? "none"}`,
-          `- runtime: ${bundle.playbook.runtime_capabilities.runtime_id}`,
-          "- final verifier blocks success when required state is missing.",
-          ...(verifierChecks.length > 0
-            ? [
-                "Required final state:",
-                ...verifierChecks.map((check) => `- ${check.id}: ${check.description}`),
-              ]
-            : []),
+          "Semantic completion criteria:",
+          ...verifierChecks.map((check) => `- ${check.id}: ${check.description}`),
         ]
       : []),
-    supervisorOwnsSemanticResult
-      ? "This is a Codex run. Do not attempt to write result_path. Return the AgentSemanticResult v2 object as the final structured response; the supervisor writes and validates result_path outside the sandbox."
-      : "Execute-mode runs must write a valid AgentSemanticResult v2 JSON manifest to result_path before exiting.",
+    "Return one AgentSemanticResult v2 object through the configured result channel. The supervisor owns persistence and validation outside the semantic episode.",
     "Select the example matching the semantic outcome, keep work_order_id unchanged, and edit only semantic fields:",
     ...renderRunnerResultManifestExampleLines(invocation?.work_order_id ?? bundle.execution.run_id),
-    "",
-    "Prepared invocation:",
-    "",
-    invocation
-      ? `- argv: ${invocation.argv.join(" ")}`
-      : "- argv: <not prepared; preflight refused>",
   ].join("\n");
 }

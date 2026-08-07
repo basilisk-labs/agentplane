@@ -91,6 +91,11 @@ const PROCESS_CHOREOGRAPHY_PATTERNS = [
     pattern: GIT_SUPERVISOR_COMMAND_PATTERN,
   },
   { id: "github_pr", pattern: /\bgh\s+pr\b/giu },
+  {
+    id: "supervisor_persistence_artifact",
+    pattern:
+      /\b(?:bootstrap_path|bundle_path|events_path|receipt_path|result_path|state_path|stderr_path|trace_path)\b/giu,
+  },
 ] as const;
 
 const PROCESS_REPAIR_AUTHORITY_TAG = "process-mechanism-repair";

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -38,31 +38,32 @@ verification:
   note: "Prompt guard extraction passes declared verification and the hosted hotspot contract locally."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T05:01:10.163Z"
+  updated_at: "2026-08-07T05:21:21.617Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "60c6416fb08858e79d2b22c227363cb068d25ce8"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "573e3e685a4606f1f7484d9591b8880c03284395"
   blueprint_digest: "ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26"
   evidence_refs:
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-050012723-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-050012723-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/88658b8fd0b0ad5e2e824f2522d2f6bd6d1a30d50dd6c95ea6d494c2f71ab19c.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-050012723-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-050012723-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-050012723-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-052021309-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-052021309-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/c895aaea9344356a67e7da95334f243456bf041caf8ac6589c0f251dfe384e5d.md"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-052021309-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-052021309-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-052021309-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-052021309-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608062021-V2EESE/README.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/ec83df6c7f976c11abcccfbf66aec702823e935c295f5386d4e80b1d445ee8c2.patch"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/28fb63753a5ffd39bda9827ca4e0759b9c14a7a5e37fab762ad3c9f7fdd80e66.json"
-    - ".agentplane/tasks/202608062021-V2EESE/verification/20260807045726439-47f95c04a29b783c.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/c6a02de08077afae6487ba6a56448964774496de64f5f5bf10c0d301c187abfe.patch"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/f4209ccc0cf6c408ebc3cb586f211da5013bc5be1e63b9c963ed234ce37ea115.json"
+    - ".agentplane/tasks/202608062021-V2EESE/verification/20260807051615831-9a9afec1dfbdaf3a.json"
     - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/95733d97fca351adc4547b7181a057ce60fc567aeb7afbf37c59f69aa9b36417.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No contract-breaking defect was identified in the frozen implementation and verification evidence."
+    - "The compiled semantic provider prompt still exposes supervisor persistence artifacts (`result_path` and `receipt_path`), although the approved contract limits provider input to the semantic output schema and explicitly excludes verification-persistence choreography."
 token_usage:
   agent_runs: 5
   input_tokens: 792013
@@ -167,7 +168,7 @@ events:
     state: "ok"
     note: "Prompt guard extraction passes declared verification and the hosted hotspot contract locally."
 doc_version: 3
-doc_updated_at: "2026-08-07T05:16:16.700Z"
+doc_updated_at: "2026-08-07T05:21:21.639Z"
 doc_updated_by: "CODER"
 description: "Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt."
 sections:

@@ -258,9 +258,9 @@ describe("runCli task run", () => {
       );
       expect(bootstrap).toContain("complete provider-facing projection for this episode");
       expect(bootstrap).not.toContain("bundle_path");
-      expect(bootstrap).toContain(
-        "Do not attempt to write result_path. Return the AgentSemanticResult v2 object",
-      );
+      expect(bootstrap).toContain("Return one AgentSemanticResult v2 object");
+      expect(bootstrap).not.toContain("result_path");
+      expect(bootstrap).not.toContain("receipt_path");
     } finally {
       prepareSpy.mockRestore();
       io.restore();

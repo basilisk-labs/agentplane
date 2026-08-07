@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608062021-V2EESE-455cf6060f0da0e0e950d9d4",
+  "task_id": "202608062021-V2EESE",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Remove supervisor persistence artifact paths from the provider-facing bootstrap and add exact-prompt assertions covering all semantic roles while retaining the semantic result schema and supervisor-side persistence.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The compiled semantic provider prompt still exposes supervisor persistence artifacts (`result_path` and `receipt_path`), although the approved contract limits provider input to the semantic output schema and explicitly excludes verification-persistence choreography.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/README.md",
+          "sha256": "sha256:5da8259ade481caefafeed8fe498b0f07e4e2553d8b7ea752ea51a16723eafb3",
+          "section": "Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/c6a02de08077afae6487ba6a56448964774496de64f5f5bf10c0d301c187abfe.patch",
+          "sha256": "sha256:c6a02de08077afae6487ba6a56448964774496de64f5f5bf10c0d301c187abfe",
+          "section": "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts and task-run-blueprint.test.ts"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608062021-V2EESE/quality/20260807-052021309-recovery-context/evaluator-result.json"
+}

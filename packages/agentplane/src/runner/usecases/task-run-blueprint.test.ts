@@ -20,12 +20,12 @@ describe("runner blueprint guards", () => {
     );
     expect(bootstrap).toContain("# agentplane runner bootstrap");
     expect(bootstrap).not.toContain("bundle_path");
-    expect(bootstrap).toContain(
-      "- result_path: /repo/.agentplane/tasks/202605271519-3ES6T7/runs/run-123/result.json",
-    );
+    expect(bootstrap).not.toContain("result_path");
+    expect(bootstrap).not.toContain("receipt_path");
+    expect(bootstrap).not.toContain("Prepared invocation:");
     expect(bootstrap).toContain("Keep all control-plane operations with the parent supervisor");
     expect(bootstrap).toContain("Assume sibling runners may be executing concurrently");
-    expect(bootstrap).toContain("report possible write conflicts in the result manifest");
+    expect(bootstrap).toContain("report possible write conflicts in the typed result");
   });
 
   it("leaves non-codex task bootstraps on the standard runner heading", () => {
@@ -188,7 +188,7 @@ describe("runner blueprint guards", () => {
     expect(renderTaskRunnerBootstrap(bundle)).toContain("hard: Task scope changed. (scope_drift)");
   });
 
-  it("renders execution playbook verifier checks into the runner bootstrap", () => {
+  it("projects playbook checks as semantic completion criteria", () => {
     const bundle = makeRunnerContextBundle({
       title: "Capture inbox item",
       description: "Create capture, distill card, thread update, and retire the source.",
@@ -197,8 +197,9 @@ describe("runner blueprint guards", () => {
 
     const bootstrap = renderTaskRunnerBootstrap(bundle);
 
-    expect(bootstrap).toContain("Execution playbook contract:");
-    expect(bootstrap).toContain("selected_playbook: knowledge_capture_pipeline");
+    expect(bootstrap).toContain("Semantic completion criteria:");
+    expect(bootstrap).not.toContain("final verifier");
+    expect(bootstrap).not.toContain("selected_playbook:");
     expect(bootstrap).toContain("source_retired");
   });
 });

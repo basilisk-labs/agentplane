@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The compiled semantic provider prompt still exposes supervisor persistence artifacts (`result_path` and `receipt_path`), although the approved contract limits provider input to the semantic output schema and explicitly excludes verification-persistence choreography.",
+      "broken_invariant": "Normal PLANNER, EXECUTOR, and EVALUATOR provider input must contain only the declared semantic context categories and must exclude supervisor-owned verification persistence. The implementation deliberately renders result and receipt artifact paths, and its tests preserve `result_path` instead of asserting that both persistence paths are absent.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/README.md",
+          "sha256": "sha256:5da8259ade481caefafeed8fe498b0f07e4e2553d8b7ea752ea51a16723eafb3",
+          "section": "Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/c6a02de08077afae6487ba6a56448964774496de64f5f5bf10c0d301c187abfe.patch",
+          "sha256": "sha256:c6a02de08077afae6487ba6a56448964774496de64f5f5bf10c0d301c187abfe",
+          "section": "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts and task-run-blueprint.test.ts"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "An exact compiled-provider qualification test asserting that `result_path`, `receipt_path`, and other supervisor persistence artifact locations are absent for PLANNER, EXECUTOR, and EVALUATOR episodes."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes supervisor-owned result and receipt paths qualify as semantic output context, although the approved contract specifies an output schema and assigns persistence to the supervisor."
+  ],
+  "recovery_context": "Remove supervisor persistence artifact paths from the provider-facing bootstrap and add exact-prompt assertions covering all semantic roles while retaining the semantic result schema and supervisor-side persistence."
+}
