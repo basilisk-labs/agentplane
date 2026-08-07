@@ -13,7 +13,7 @@ Created: 2026-08-06T21:10:34.048Z
 ## Verification
 
 - State: ok
-- Note: Embedded Git control commands are rejected in any prose position while read-only Git inspection remains available.
+- Note: Verified: blueprint snapshot refreshed after explicit repair-authority tag; implementation and checks are unchanged.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -10,7 +10,8 @@
       "prompts",
       "quality",
       "supervisor",
-      "v0.7.5"
+      "v0.7.5",
+      "process-mechanism-repair"
     ],
     "owner": "CODER",
     "taskKind": "code",
@@ -593,6 +594,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "1c1d94c37ff9878ab6fb6e28b8b4c63748c940cecc376d0b37495b7d1dd57fd1"
+    "value": "ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26"
   }
 }
