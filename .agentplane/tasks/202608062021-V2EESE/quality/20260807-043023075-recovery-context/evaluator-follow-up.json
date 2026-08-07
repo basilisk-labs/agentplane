@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608062021-V2EESE-a51a393ce3e5151dd840c429",
+  "task_id": "202608062021-V2EESE",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Replace whole-fragment suppression with a structured projection that preserves required semantic and security constraints, make forbidden-choreography qualification cover every declared process category, narrow lifecycle-repair authorization so it cannot disable the entire exact-input check, and add the listed negative tests before reevaluation.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The semantic projection drops an entire eligible gateway fragment whenever any forbidden command appears in that fragment, so mixed fragments lose valid scope or security constraints together with process choreography.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/e0e656aa3c8ddf8d862d7ccca8df62d94b2adb6d32cb4b945538cb35bd0eb8cd.patch",
+          "sha256": "sha256:e0e656aa3c8ddf8d862d7ccca8df62d94b2adb6d32cb4b945538cb35bd0eb8cd",
+          "line": 342,
+          "lines": "342-365",
+          "section": "projectGatewayBlock"
+        },
+        {
+          "path": ".agentplane/policy/security.must.md",
+          "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+          "line": 3,
+          "lines": "3-9",
+          "section": "Security MUST Rules"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "The exact-provider-input guard covers only a narrow command list and then bypasses all inspection for broadly classified process-mechanism tasks; forbidden startup, task-run/advance, Git push, release, cleanup, and verification-persistence choreography can therefore reach the provider prompt without rejection.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/README.md",
+          "sha256": "sha256:232119cacc85dc2b0b4757ca6ad5420bf57ded90e529d1391b485a0594487fe6",
+          "line": 55,
+          "lines": "55-57",
+          "section": "Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/e0e656aa3c8ddf8d862d7ccca8df62d94b2adb6d32cb4b945538cb35bd0eb8cd.patch",
+          "sha256": "sha256:e0e656aa3c8ddf8d862d7ccca8df62d94b2adb6d32cb4b945538cb35bd0eb8cd",
+          "line": 278,
+          "lines": "278-293",
+          "section": "PROCESS_CHOREOGRAPHY_PATTERNS and repair classification"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/e0e656aa3c8ddf8d862d7ccca8df62d94b2adb6d32cb4b945538cb35bd0eb8cd.patch",
+          "sha256": "sha256:e0e656aa3c8ddf8d862d7ccca8df62d94b2adb6d32cb4b945538cb35bd0eb8cd",
+          "line": 436,
+          "lines": "436-460",
+          "section": "isExplicitProcessMechanismTask and assertion bypass"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608062021-V2EESE/quality/20260807-043023075-recovery-context/evaluator-result.json"
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "task_id": "202608062021-V2EESE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T04:31:31.961Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "056b9ca2963094d47e6887403f34ce7b78f10e87",
+  "blueprint_digest": "1c1d94c37ff9878ab6fb6e28b8b4c63748c940cecc376d0b37495b7d1dd57fd1",
+  "findings": [
+    "The semantic projection drops an entire eligible gateway fragment whenever any forbidden command appears in that fragment, so mixed fragments lose valid scope or security constraints together with process choreography.",
+    "The exact-provider-input guard covers only a narrow command list and then bypasses all inspection for broadly classified process-mechanism tasks; forbidden startup, task-run/advance, Git push, release, cleanup, and verification-persistence choreography can therefore reach the provider prompt without rejection."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/e0e656aa3c8ddf8d862d7ccca8df62d94b2adb6d32cb4b945538cb35bd0eb8cd.patch",
+    ".agentplane/policy/security.must.md",
+    ".agentplane/tasks/202608062021-V2EESE/README.md"
+  ],
+  "missing_tests": [
+    "A projection test with one hard_constraint fragment containing both a required security rule and a forbidden lifecycle command, asserting that the security rule remains in the exact provider prompt.",
+    "Exact-provider-input rejection tests for ap task advance, ap task run, git push, release/publish commands, verification-persistence commands, and cleanup/worktree commands.",
+    "A negative test proving that generic prompts/supervisor tags plus incidental provider-prompt wording do not disable choreography inspection; the exception must require explicit lifecycle-repair authority."
+  ],
+  "hidden_assumptions": [
+    "Gateway fragments are assumed to be semantically homogeneous enough that dropping a whole fragment cannot remove required scope or security constraints.",
+    "The enumerated regular expressions are assumed to represent every forbidden lifecycle and release surface named by the acceptance criteria.",
+    "Task tags and narrative keywords are assumed to be sufficient authority to bypass the exact compiled-prompt guard."
+  ],
+  "residual_risks": [
+    "Replace whole-fragment suppression with a structured projection that preserves required semantic and security constraints, make forbidden-choreography qualification cover every declared process category, narrow lifecycle-repair authorization so it cannot disable the entire exact-input check, and add the listed negative tests before reevaluation."
+  ]
+}
