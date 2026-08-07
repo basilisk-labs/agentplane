@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608062021-V2EESE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T09:59:43.157Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "4ed5bbb5b3e4042db0f5841e6477f9c62c9bcd56",
+  "blueprint_digest": "ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26",
+  "findings": [
+    "The frozen observed-checks artifact contains no verification records or runtime evidence for the evaluated SHA; the latest task verification entries assert success without command-level details."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/c169c22a6714054011b23923699eeeb3d5542ffa8635328de98175f048fd7d45.json",
+    ".agentplane/tasks/202608062021-V2EESE/README.md"
+  ],
+  "missing_tests": [
+    "Capture deterministic current-SHA results for the declared targeted Vitest command, bun run test:critical, bun run typecheck, and node .agentplane/policy/check-routing.mjs.",
+    "Capture an exact compiled-provider-prompt qualification run for PLANNER, EXECUTOR, and EVALUATOR after the security-policy projection change, including forbidden choreography negative cases and explicit repair-authority behavior."
+  ],
+  "hidden_assumptions": [
+    "The latest verification notes are assumed to describe checks executed against evaluated SHA 4ed5bbb5b3e4042db0f5841e6477f9c62c9bcd56 despite the absence of command-level records.",
+    "Earlier detailed verification is assumed to remain valid after the subsequent security-policy projection change."
+  ],
+  "residual_risks": [
+    "Provide frozen, command-level deterministic verification evidence for evaluated SHA 4ed5bbb5b3e4042db0f5841e6477f9c62c9bcd56, including the declared checks and exact three-role compiled-prompt positive and negative cases, then repeat evaluation."
+  ]
+}

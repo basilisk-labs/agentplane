@@ -19,8 +19,8 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
 - Note:
 
 ```text
-Current implementation head passes exact three-role security projection tests, typecheck, critical
-suite, routing, and full ci:contract.
+Current implementation head has frozen command-level verification for semantic security projection
+and choreography exclusion.
 ```
 - Canonical workflow state lives in the task README.
 

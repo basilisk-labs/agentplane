@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts",
+    "bun run test:critical",
+    "bun run typecheck",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-07T09:57:48.330Z",
+    "updated_by": "TESTER",
+    "note": "Current implementation head passes exact three-role security projection tests, typecheck, critical suite, routing, and full ci:contract."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

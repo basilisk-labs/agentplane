@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608062021-V2EESE-4c1e83eb8d802ede2aa9e1f5",
+  "task_id": "202608062021-V2EESE",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Provide frozen, command-level deterministic verification evidence for evaluated SHA 4ed5bbb5b3e4042db0f5841e6477f9c62c9bcd56, including the declared checks and exact three-role compiled-prompt positive and negative cases, then repeat evaluation.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen observed-checks artifact contains no verification records or runtime evidence for the evaluated SHA; the latest task verification entries assert success without command-level details.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/c169c22a6714054011b23923699eeeb3d5542ffa8635328de98175f048fd7d45.json",
+          "sha256": "sha256:c169c22a6714054011b23923699eeeb3d5542ffa8635328de98175f048fd7d45",
+          "section": "verification_records, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/README.md",
+          "sha256": "sha256:2d5dc5bc56223ab2b61b67d6f332e1928028c20609ae9d4f5606bb8ee7e83d83",
+          "line": 1496,
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608062021-V2EESE/quality/20260807-095811356-recovery-context/evaluator-result.json"
+}
