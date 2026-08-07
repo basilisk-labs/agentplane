@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\nResult: pass\nEvidence: 3 files, 60 tests passed after rework and formatting.\nScope: structured projection, exact provider input, explicit repair authority, phase-tool exception.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: 12 of 12 critical-cli chunks passed after evaluator rework.\nScope: critical CLI, efficiency, replay and trust boundaries.\n\nCommand: bun run lint:core\nResult: pass\nEvidence: ESLint exited 0.\nScope: packages and scripts.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build exited 0.\nScope: workspace type safety.\n\nCommand: bun run format:check\nResult: pass\nEvidence: all matched files use Prettier code style.\nScope: repository formatting.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: policy gateway graph.",
+  "digest": "sha256:b6a89b57419e958cd4073464f4253ea1aa641bf4636a52bdf57b1e88aa9a38df",
+  "implementation_sha": "e265524d4429d647ef4f08e5cece772ac4cbf35a",
+  "kind": "task_verification_record",
+  "note": "Evaluator rework is resolved: mixed security fragments are preserved and exact provider input rejects every supervisor command family unless explicit repair authority is present.",
+  "recorded_at": "2026-08-07T04:43:34.465Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\n- bun run test:critical\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98",
+  "task_id": "202608062021-V2EESE",
+  "verification_command": "agentplane verify 202608062021-V2EESE --ok --by TESTER",
+  "verifier": "TESTER"
+}
