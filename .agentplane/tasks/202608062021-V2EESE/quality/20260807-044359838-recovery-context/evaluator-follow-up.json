@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608062021-V2EESE-3ead1c3cc387ccdc03f8389d",
+  "task_id": "202608062021-V2EESE",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Expand the exact-prompt choreography classifier and its negative tests to cover the full declared Git, release, and cleanup families, and constrain the phase-tool exception to declared invocations before resubmitting the frozen implementation for evaluation.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The exact-provider-input guard still permits Git and release/cleanup choreography outside repair-authorized episodes because its command-family patterns enumerate only selected subcommands.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/95d8ad739385442fe8b741d140c1a7768db0305da3b54d43c56782c79fb99dad.patch",
+          "sha256": "sha256:95d8ad739385442fe8b741d140c1a7768db0305da3b54d43c56782c79fb99dad",
+          "section": "semantic-prompt-projection.ts PROCESS_CHOREOGRAPHY_PATTERNS and base-prompts.test.ts forbidden-provider-choreography cases"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/README.md",
+          "sha256": "sha256:d93581d31b824848f6eb8d7c97dc273ff7b7a6625e40032c9adc21b629f63286",
+          "section": "Plan items 3–4 and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608062021-V2EESE/quality/20260807-044359838-recovery-context/evaluator-result.json"
+}
