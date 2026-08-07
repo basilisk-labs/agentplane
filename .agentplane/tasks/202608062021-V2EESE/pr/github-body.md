@@ -16,7 +16,12 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
 ## Verification
 
 - State: ok
-- Note: Command-family hardening passes exact compiled-provider tests and the complete critical contract.
+- Note:
+
+```text
+Embedded Git control commands are rejected in any prose position while read-only Git inspection
+remains available.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
