@@ -3,11 +3,14 @@
   "branch": "task/202608070235-JPPAMT/restore-the-release-lint-baseline",
   "created_at": "2026-08-07T02:35:47.801Z",
   "diffstat_sha256": "sha256:ee82afd35c36aa0b07ebc0cd51f6a48e947203f3741041781ca314a11c2d9105",
-  "last_verified_at": "2026-08-07T02:38:47.071Z",
+  "last_verified_at": "2026-08-07T02:44:36.609Z",
   "last_verified_diffstat_sha256": "sha256:ee82afd35c36aa0b07ebc0cd51f6a48e947203f3741041781ca314a11c2d9105",
+  "pr_number": 4796,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4796",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202608070235-JPPAMT",
-  "updated_at": "2026-08-07T02:35:47.801Z",
+  "updated_at": "2026-08-07T02:40:39.441Z",
   "verify": {
     "status": "pass"
   }
