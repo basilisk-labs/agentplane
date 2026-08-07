@@ -1,10 +1,11 @@
 ---
 id: "202608061925-KANFC0"
 title: "Preserve exact Windows task README file identities"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -54,6 +55,20 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "Hosted Windows CI evidence is intentionally deferred to the post-quality PR gate and is not present in this evaluator packet."
+token_usage:
+  agent_runs: 2
+  input_tokens: 163979
+  journal_digest: "sha256:7754bd8ea66d3816af10c306afe36a416d424e5260861fe4f4d91f9833bb2042"
+  observed_agent_runs: 2
+  observed_by: "agentplane"
+  output_tokens: 3061
+  reasoning_tokens: 604
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "observed"
+  total_tokens: 167644
+  unavailable_reason: null
+  updated_at: "2026-08-07T02:18:07.959Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -62,7 +77,9 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "42de275d5de74771b725ef8347fd956afa150524"
+  message: "🧪 KANFC0 task: record Windows evaluator pass"
 comments:
   -
     author: "CODER"
@@ -73,6 +90,9 @@ comments:
   -
     author: "CODER"
     body: "Implemented rework: the NTFS regression now exercises the complete task scan, containment checks, path lstat checks, stable file-handle reads, and exact bigint identity comparison. Focused backend 32/32, typecheck, lint, and diff checks pass; test:critical was executed and fails only on the known pre-existing compatibility baseline fixed by pending PR #4785."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -119,8 +139,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Exact NTFS identity handling and every local release gate now pass on the current main baseline; hosted Windows remains the pre-integration PR gate."
+  -
+    type: "status"
+    at: "2026-08-07T02:18:07.959Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T02:16:21.518Z"
+doc_updated_at: "2026-08-07T02:18:07.970Z"
 doc_updated_by: "CODER"
 description: "Fix local task scans so NTFS file IDs above Number.MAX_SAFE_INTEGER remain exact across pre-scan and stable-read identity checks, preventing false unreadable_readme failures in verify and finish."
 sections:
@@ -351,6 +378,9 @@ sections:
       Impact: The Windows fix is focused and platform-critical checks pass, but this task cannot claim full DoD until the branch is rebased after PR #4785 and every critical chunk passes.
       Resolution: Keep verification in rework; rebase on repaired main, rerun backend, typecheck, platform-critical, and full critical suites, then request fresh evaluation and Windows hosted proof.
 extensions:
+  implementation_commit:
+    hash: "0d19a7479fbad6327a015231bd553a7d50e6624c"
+    message: "🧩 KANFC0 task: merge current main before Windows verification"
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
     version: 1
@@ -596,3 +626,16 @@ DecisionContextRef:
 - Observation: bun run test:critical executed on the task head and stopped in chunk 1 only on the known compatibility-baseline failures inherited from main.
   Impact: The Windows fix is focused and platform-critical checks pass, but this task cannot claim full DoD until the branch is rebased after PR #4785 and every critical chunk passes.
   Resolution: Keep verification in rework; rebase on repaired main, rerun backend, typecheck, platform-critical, and full critical suites, then request fresh evaluation and Windows hosted proof.
+
+## Token Usage
+
+- State: `observed`
+- Completeness: `2/2` agent runs
+- Input tokens: `163979`
+- Output tokens: `3061`
+- Reasoning tokens: `604`
+- Total tokens: `167644`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:7754bd8ea66d3816af10c306afe36a416d424e5260861fe4f4d91f9833bb2042`
+- Unavailable reason: `none`
+- Updated at: `2026-08-07T02:18:07.959Z`
