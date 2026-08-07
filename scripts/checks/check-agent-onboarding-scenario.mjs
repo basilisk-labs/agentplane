@@ -93,7 +93,7 @@ const onboardingScenarios = [
       ["lifecycle", "## Managed-runner route"],
       ["lifecycle", "## First complete workflow"],
       ["workflow", "## First managed workflow"],
-      ["workflow", "agentplane task advance \"$TASK_ID\" --agent-json"],
+      ["workflow", "agentplane task advance <task-id> --agent-json"],
       ["workflow", "`semantic_input_required`"],
       ["workflow", "agentplane task run <task-id>"],
     ],
@@ -223,6 +223,7 @@ const main = defineScript({
       fileContents.bootstrap,
       [
         "## 3. Direct happy path",
+        'agentplane task create "<outcome>"',
         "agentplane task advance <task-id> --agent-json",
         "agentplane task run <task-id>",
         "semantic_input_required",
@@ -233,7 +234,8 @@ const main = defineScript({
       fileContents.lifecycle,
       [
         "## First complete workflow",
-        'agentplane task advance "$TASK_ID" --agent-json',
+        'agentplane task create "Inspect Agentplane artifacts',
+        "agentplane task advance <task-id> --result",
         "`task run` for an eligible configured managed-runner episode",
         "semantic_input_required",
       ],
@@ -247,8 +249,9 @@ const main = defineScript({
         fileContents[fileKey],
         [
           "## First managed workflow",
-          'agentplane task advance "$TASK_ID" --agent-json',
-          'agentplane task run "$TASK_ID"',
+          'agentplane task create "Fix the reported defect"',
+          "agentplane task advance <task-id> --agent-json",
+          "agentplane task run <task-id>",
           "semantic_input_required",
         ],
         `${label} planning boundary`,

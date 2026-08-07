@@ -83,7 +83,7 @@ describe("command-guide", () => {
     expect(text).toContain("## First visible payoff");
     expect(text).toContain("agentplane demo");
     expect(text).toContain("agentplane acr validate <task-id> --mode local");
-    expect(text).toContain('agentplane task new --title "Inspect AgentPlane artifacts"');
+    expect(text).toContain('agentplane task create "Inspect AgentPlane artifacts"');
     expect(text).toContain("agentplane task advance <task-id> --agent-json");
     expect(text).toContain("agentplane task run <task-id>");
     expect(text).toContain(".agentplane/tasks/<task-id>/");
@@ -134,8 +134,9 @@ describe("command-guide", () => {
     expect(text).toContain("agentplane task run <task-id>");
     expect(text).toContain("state fingerprint");
     expect(text).toContain("authority boundary");
-    expect(text).toContain("result_path");
-    expect(text).toContain("resume_argv");
+    expect(text).toContain("exchange.directory/exchange.result_ref");
+    expect(text).toContain("exchange.return_invocation");
+    expect(text).toContain("semantic_input_required");
     expect(text).toContain("Agentplane owns verification records and terminal state");
     expect(text).toContain("expanded diagnostic evidence");
     expect(text).not.toContain("agentplane verify");

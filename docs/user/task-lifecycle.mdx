@@ -68,16 +68,16 @@ terminal boundaries. Rerun `task run` only after the returned boundary has been 
 Create a task and request its bounded planning episode:
 
 ```bash
-TASK_ID=$(agentplane task new --title "Inspect Agentplane artifacts" --description "Review the generated task record and summarize what Agentplane created" --owner DOCS --tag docs)
-agentplane task advance "$TASK_ID" --agent-json
+agentplane task create "Inspect Agentplane artifacts and summarize what was created"
 ```
 
-Give the returned packet to an external agent. It reads `exchange.work_order_ref`, performs only the
+Run the exact `task advance` command in the response and give its packet to an external agent. It
+reads `exchange.work_order_ref`, performs only the
 PLANNER objective, writes a typed result matching `exchange.result_schema_ref` to
 `exchange.directory/exchange.result_ref`, and returns it with:
 
 ```bash
-agentplane task advance "$TASK_ID" --result <exchange-directory>/result.json --agent-json
+agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
 ```
 
 Agentplane persists the semantic plan and emits the exact operator action if human approval is

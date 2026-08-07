@@ -65,13 +65,13 @@ function checkOnboarding(failures) {
     failures.push("quickstart still recommends the semantic task begin shortcut");
   }
   const canonicalFlow = [
-    'agentplane task new --title "Inspect Agentplane artifacts"',
+    'agentplane task create "Inspect Agentplane artifacts',
     "agentplane task advance <task-id> --agent-json",
     "agentplane task run <task-id>",
   ];
   const positions = canonicalFlow.map((command) => readme.indexOf(command));
   if (positions.includes(-1)) {
-    failures.push("README omits the canonical task new / task advance / task run flow");
+    failures.push("README omits the canonical task create / task advance / task run flow");
   } else if (!(positions[0] < positions[1] && positions[1] < positions[2])) {
     failures.push("README presents the canonical supervisor flow out of order");
   }
@@ -123,7 +123,7 @@ function checkCanonicalHelp(failures) {
     const ids = JSON.parse(result.stdout).map((entry) => entry.id.join(" "));
     if (ids.length > 12)
       failures.push(`canonical help exposes ${ids.length} commands; maximum is 12`);
-    for (const required of ["task new", "task advance", "task run", "context search"]) {
+    for (const required of ["task create", "task advance", "task run", "context search"]) {
       if (!ids.includes(required)) failures.push(`canonical help omits ${required}`);
     }
     if (ids.includes("task begin") || ids.includes("task complete")) {

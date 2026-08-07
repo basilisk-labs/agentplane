@@ -11,6 +11,7 @@ export const COMMAND_SNIPPETS = {
     taskShow: invoke(["task", "show"]),
     taskBegin: invoke(["task", "begin"]),
     taskComplete: invoke(["task", "complete"]),
+    taskCreate: invoke(["task", "create"]),
     taskNew: invoke(["task", "new"]),
     taskPlanSet: invoke(["task", "plan", "set"]),
     taskPlanApprove: invoke(["task", "plan", "approve"]),

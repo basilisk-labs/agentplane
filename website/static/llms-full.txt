@@ -575,8 +575,8 @@ When the packet returns `action.kind=agent_episode`:
 
 1. Perform only its semantic objective.
 2. Stay inside its authority and writable roots.
-3. Write the typed result to the exact `result_path`.
-4. Resume with the supplied `resume_argv` and request a fresh packet.
+3. Write the typed result to `exchange.directory/exchange.result_ref`.
+4. Resume through `exchange.return_invocation` and request a fresh packet.
 
 For a configured managed adapter, use:
 
@@ -592,9 +592,9 @@ episode.
 ## First managed workflow
 
 ```bash
-TASK_ID=$(agentplane task new --title "Fix the reported defect" --description "Reproduce, repair, and verify the defect" --owner CODER --tag code)
-agentplane task advance "$TASK_ID" --agent-json
-agentplane task advance "$TASK_ID" --result <exchange-directory>/result.json --agent-json
+agentplane task create "Fix the reported defect"
+agentplane task advance <task-id> --agent-json
+agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
 ```
 
 Give the first packet to an external PLANNER, write its typed result to the packet's exchange
@@ -602,7 +602,7 @@ directory, and return it with the second command. Agentplane persists the plan a
 operator action if human approval is required. After approval, continue with:
 
 ```bash
-agentplane task run "$TASK_ID"
+agentplane task run <task-id>
 ```
 
 Before the PLANNER result exists, `task run` returns `semantic_input_required` and does not invoke
@@ -713,16 +713,16 @@ terminal boundaries. Rerun `task run` only after the returned boundary has been 
 Create a task and request its bounded planning episode:
 
 ```bash
-TASK_ID=$(agentplane task new --title "Inspect Agentplane artifacts" --description "Review the generated task record and summarize what Agentplane created" --owner DOCS --tag docs)
-agentplane task advance "$TASK_ID" --agent-json
+agentplane task create "Inspect Agentplane artifacts and summarize what was created"
 ```
 
-Give the returned packet to an external agent. It reads `exchange.work_order_ref`, performs only the
+Run the exact `task advance` command in the response and give its packet to an external agent. It
+reads `exchange.work_order_ref`, performs only the
 PLANNER objective, writes a typed result matching `exchange.result_schema_ref` to
 `exchange.directory/exchange.result_ref`, and returns it with:
 
 ```bash
-agentplane task advance "$TASK_ID" --result <exchange-directory>/result.json --agent-json
+agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
 ```
 
 Agentplane persists the semantic plan and emits the exact operator action if human approval is

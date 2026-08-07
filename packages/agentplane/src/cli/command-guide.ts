@@ -262,7 +262,7 @@ export function renderQuickstartForMode(mode: QuickstartWorkflowMode = null): st
     "For a real first task, create it without synthetic planning, then request one compact action:",
     "",
     ...renderQuickstartCommandBlock([
-      'agentplane task new --title "Inspect AgentPlane artifacts" --description "Review the generated task record" --owner DOCS --tag docs',
+      'agentplane task create "Inspect AgentPlane artifacts"',
       "agentplane task advance <task-id> --agent-json",
     ]),
     "",

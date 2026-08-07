@@ -114,21 +114,22 @@ A new task stops at a semantic planning boundary. Start that boundary through th
 protocol:
 
 ```bash
-TASK_ID=$(agentplane task new --title "Inspect Agentplane artifacts" --description "Review the generated task record and summarize what Agentplane created" --owner DOCS --tag docs)
-agentplane task advance "$TASK_ID" --agent-json
+agentplane task create "Inspect Agentplane artifacts and summarize what was created"
+agentplane task advance <task-id> --agent-json
 ```
 
-Give the returned packet to Claude Code, Codex, Cursor, Aider, or another external agent. The agent
-performs only the packet's semantic objective, writes the typed result to
+The first response includes the task ID, selected route, and the exact second command. Give the
+returned packet to Claude Code, Codex, Cursor, Aider, or another external agent. The agent performs
+only the packet's semantic objective, writes the typed result to
 `exchange.directory/exchange.result_ref`, and resumes with:
 
 ```bash
-agentplane task advance "$TASK_ID" --result <exchange-directory>/result.json --agent-json
+agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
 ```
 
 Agentplane persists the returned plan and emits the exact human approval action when approval is
 required. After that action, continue with `task advance` for an external agent, or use
-`agentplane task run "$TASK_ID"` for semantic episodes supported by the configured managed runner.
+`agentplane task run <task-id>` for semantic episodes supported by the configured managed runner.
 Repeat only the action Agentplane returns until it reports a human, hosted/external, recovery, or
 terminal boundary. Agentplane owns plan persistence, worktree/PR operations, verification
 persistence, integration, and closure.

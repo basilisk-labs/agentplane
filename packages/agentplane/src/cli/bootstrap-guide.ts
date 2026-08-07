@@ -20,7 +20,7 @@ const BOOTSTRAP_CONTEXT_COMMANDS = [
 ] as const;
 
 const BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS = [
-  COMMAND_SNIPPETS.core.taskNew,
+  COMMAND_SNIPPETS.core.taskCreate,
   "agentplane task advance <task-id> --agent-json",
   "agentplane task run <task-id>",
 ] as const;

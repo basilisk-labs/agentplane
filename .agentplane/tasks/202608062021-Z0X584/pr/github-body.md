@@ -38,8 +38,8 @@ declared checks pass.
  .agentplane/policy/workflow.branch_pr.md           |  95 +--
  .agentplane/policy/workflow.direct.md              |  55 +-
  .agentplane/policy/workflow.release.md             |  37 +-
- README.md                                          |  29 +-
- docs/user/agent-bootstrap.generated.mdx            |  50 +-
+ README.md                                          |  28 +-
+ docs/user/agent-bootstrap.generated.mdx            |  52 +-
  docs/user/task-lifecycle.mdx                       | 422 ++++---------
  docs/user/workflow.mdx                             | 220 ++-----
  docs/workflow-guides/branch-pr.mdx                 |  91 +--
@@ -54,16 +54,18 @@ declared checks pass.
  .../agentplane/assets/policy/workflow.release.md   |  37 +-
  .../agentplane/src/agents/agents-template.test.ts  |  45 ++
  packages/agentplane/src/cli/bootstrap-guide.ts     |  54 +-
- packages/agentplane/src/cli/command-guide.test.ts  |  74 +--
- packages/agentplane/src/cli/command-guide.ts       |  98 ++-
+ packages/agentplane/src/cli/command-guide.test.ts  |  77 +--
+ packages/agentplane/src/cli/command-guide.ts       | 100 ++-
+ packages/agentplane/src/cli/command-snippets.ts    |   1 +
  .../src/cli/run-cli.core.init.branch-pr.test.ts    |   8 +-
  .../cli/run-cli/commands/init/steps/apply.test.ts  |  16 +-
  .../agentplane/src/workflow-lifecycle/contract.ts  |  52 +-
  .../src/workflow-lifecycle/parity-check.ts         |  29 +-
  scripts/checks/check-agent-bootstrap-fresh.mjs     |  55 +-
- scripts/checks/check-agent-onboarding-scenario.mjs | 122 +++-
+ scripts/checks/check-agent-onboarding-scenario.mjs | 125 +++-
+ .../check-v0.7.1-product-contract.mjs              |   6 +-
  website/static/llms-full.txt                       | 697 +++++++--------------
- 31 files changed, 1008 insertions(+), 1639 deletions(-)
+ 33 files changed, 1019 insertions(+), 1644 deletions(-)
 ```
 
 </details>
