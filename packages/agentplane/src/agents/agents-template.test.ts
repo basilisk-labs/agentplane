@@ -108,6 +108,24 @@ describe("agents-template", () => {
         expect(contents, `${relativePath} contains ${String(pattern)}`).not.toMatch(pattern);
       }
     }
+
+    const protocolSurfacePaths = [
+      "packages/agentplane/assets/AGENTS.md",
+      "packages/agentplane/assets/policy/workflow.direct.md",
+      "packages/agentplane/assets/policy/workflow.branch_pr.md",
+      "packages/agentplane/assets/codex-plugin/skills/agentplane/SKILL.md",
+      "packages/agentplane/src/cli/command-guide.ts",
+      "packages/agentplane/src/cli/bootstrap-guide.ts",
+      "README.md",
+      "docs/user/task-lifecycle.mdx",
+      "docs/workflow-guides/branch-pr.mdx",
+      "docs/workflow-guides/hermes-kanban.mdx",
+    ];
+    for (const relativePath of protocolSurfacePaths) {
+      const contents = await readFile(path.join(process.cwd(), relativePath), "utf8");
+      expect(contents, relativePath).toContain("exchange.result_path");
+      expect(contents, relativePath).toContain("exchange.resume_argv");
+    }
   });
 
   it("bundled agents match framework assets/agents", async () => {

@@ -4,7 +4,7 @@ title: "Polish the external supervisor protocol and canonical task help"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -35,6 +35,34 @@ verification:
   updated_by: "TESTER"
   note: "All declared checks pass on committed implementation SHA c49bacfa4."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-07T22:35:02.572Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 3 typed finding(s)."
+  evaluated_sha: "c49bacfa46fde8a89a5232714c064ca424c2dfc2"
+  blueprint_digest: "98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5"
+  evidence_refs:
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-223350452-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-223350452-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/41d12693cdaf9517f1edfb199970600d72f082fe13ae90c474121181d687f2e6.md"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-223350452-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-223350452-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-223350452-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-223350452-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/README.md"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/17dda360dee0a66312d85c8e80851a738217c2827955cec3eebc920c62d989bd.patch"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/ab16c0aaec6db923449f8f09f93cc95858c3b43345ef6d0868f1c1d89bba81fb.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/b9ec9d466ef8872c88b80f76b9ceb07256be22c1879b47a8a56de950a4cc9057.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The external-agent packet removes the compatibility field `exchange.return_invocation` instead of preserving it alongside `result_path` and `resume_argv`."
+    - "The frozen diff does not update runtime quickstart, role guidance, or mode notes, leaving the documented external protocol on the removed compatibility field."
+    - "The doc_version 3 task document has no `Findings` section."
 execution_route:
   frozen: true
   reason_codes:

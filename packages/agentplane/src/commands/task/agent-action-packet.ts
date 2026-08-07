@@ -49,6 +49,7 @@ export type AgentActionPacket = {
     work_order_ref: string;
     result_schema_ref: string;
     result_ref: string;
+    return_invocation: string;
     result_path: string;
     resume_argv: string[];
   };

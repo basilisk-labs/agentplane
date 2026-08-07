@@ -15,7 +15,8 @@ Use this module when `workflow_mode=branch_pr`.
    verification-persistence, integration, hosted-close, and cleanup transitions.
 4. If `action.kind=agent_episode`, perform only the supplied semantic objective in the authoritative
    task checkout and writable roots named by the packet.
-5. Write the typed result to the supplied result path and resume with the packet's exact argv.
+5. Write the typed result to `exchange.result_path` and resume with the exact
+   `exchange.resume_argv`; `exchange.return_invocation` is compatibility-only.
 6. Repeat with a fresh packet until AgentPlane returns an approval, human, hosted/external, or
    terminal boundary.
 7. For a configured managed runner, use `agentplane task run <task-id>` instead of the external

@@ -316,6 +316,8 @@ describe("compact agent action packet", () => {
         work_order_ref: "work-order.json",
         result_schema_ref: "result-schema.json",
         result_ref: "result.json",
+        return_invocation:
+          "agentplane task advance <task_id> --result <exchange_directory>/<result_ref> --agent-json",
         result_path: `/repo/.agentplane/worktrees/${TASK_ID}/.git/agentplane/exchanges/current/result.json`,
         resume_argv: [
           "agentplane",
@@ -329,6 +331,20 @@ describe("compact agent action packet", () => {
       },
     });
 
+    expect(packet.exchange).toMatchObject({
+      return_invocation:
+        "agentplane task advance <task_id> --result <exchange_directory>/<result_ref> --agent-json",
+      result_path: expect.stringContaining("/result.json"),
+      resume_argv: [
+        "agentplane",
+        "task",
+        "advance",
+        TASK_ID,
+        "--result",
+        expect.any(String),
+        "--agent-json",
+      ],
+    });
     expect(() => assertAgentActionPacketHasNoChoreography(packet)).not.toThrow();
   });
 

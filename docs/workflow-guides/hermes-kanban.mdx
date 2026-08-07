@@ -181,7 +181,8 @@ agent:
 2. Resolve or create the Agentplane task id.
 3. Run `agentplane task advance <task-id> --agent-json`.
 4. When it returns an agent episode, dispatch only the supplied semantic objective and authority.
-5. Write the typed result to the supplied exchange path and resume with the supplied invocation.
+5. Write the typed result to `exchange.result_path` and resume with the exact
+   `exchange.resume_argv`; `exchange.return_invocation` is compatibility-only.
 6. At approval, human, hosted/external, stale-state, or effect-in-doubt boundaries, stop and project
    the boundary to Hermes without inventing progress.
 7. Write a structured Hermes comment with run id, previous revision, new revision, and evidence

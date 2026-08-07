@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608062021-MCY8ZC-1e92ae3820ed09fb4f30d3eb",
+  "task_id": "202608062021-MCY8ZC",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Restore `exchange.return_invocation` as a compatibility field, update every runtime guidance surface to the new exact-path and structured-argv protocol, add the missing compatibility/documentation tests, and complete the task README `Findings` section before rerunning the declared checks.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The external-agent packet removes the compatibility field `exchange.return_invocation` instead of preserving it alongside `result_path` and `resume_argv`.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/17dda360dee0a66312d85c8e80851a738217c2827955cec3eebc920c62d989bd.patch",
+          "sha256": "sha256:17dda360dee0a66312d85c8e80851a738217c2827955cec3eebc920c62d989bd",
+          "section": "agent-action-packet.ts and advance.command.ts diffs"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/README.md",
+          "sha256": "sha256:2556fd2921a661e9277e0e399334de715fe38fc4ad6c1f07da514596f6d9de67",
+          "section": "Plan"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "The frozen diff does not update runtime quickstart, role guidance, or mode notes, leaving the documented external protocol on the removed compatibility field.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/17dda360dee0a66312d85c8e80851a738217c2827955cec3eebc920c62d989bd.patch",
+          "sha256": "sha256:17dda360dee0a66312d85c8e80851a738217c2827955cec3eebc920c62d989bd",
+          "section": "Complete changed-file patch"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/README.md",
+          "sha256": "sha256:2556fd2921a661e9277e0e399334de715fe38fc4ad6c1f07da514596f6d9de67",
+          "section": "Plan"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "summary": "The doc_version 3 task document has no `Findings` section.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/README.md",
+          "sha256": "sha256:2556fd2921a661e9277e0e399334de715fe38fc4ad6c1f07da514596f6d9de67",
+          "section": "sections"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Required task README contract"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-223350452-recovery-context/evaluator-result.json"
+}

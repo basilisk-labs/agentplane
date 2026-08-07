@@ -31,8 +31,8 @@ When `action.kind=agent_episode`:
 
 1. Read the supplied objective, role, authority, context references, required output, and stop rules.
 2. Perform only that semantic objective in the supplied checkout and writable roots.
-3. Write a typed semantic result to the result location supplied by the packet.
-4. Resume with the return invocation supplied by Agentplane.
+3. Write a typed semantic result to the exact `exchange.result_path` supplied by the packet.
+4. Resume with the exact `exchange.resume_argv`; `exchange.return_invocation` is compatibility-only.
 5. Request a fresh packet after every state change.
 
 Do not reconstruct the state machine from prose. Do not switch checkout, create branches, publish
@@ -72,9 +72,9 @@ agentplane task create "Inspect Agentplane artifacts and summarize what was crea
 ```
 
 Run the exact `task advance` command in the response and give its packet to an external agent. It
-reads `exchange.work_order_ref`, performs only the
-PLANNER objective, writes a typed result matching `exchange.result_schema_ref` to
-`exchange.directory/exchange.result_ref`, and returns it with:
+reads `exchange.work_order_ref`, performs only the PLANNER objective, writes a typed result matching
+`exchange.result_schema_ref` to `exchange.result_path`, and resumes with the exact
+`exchange.resume_argv`. Its equivalent shell form is:
 
 ```bash
 agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
