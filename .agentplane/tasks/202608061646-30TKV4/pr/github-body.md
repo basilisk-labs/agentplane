@@ -19,8 +19,8 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 - Note:
 
 ```text
-User-first intake, execution preview, generated CLI docs, onboarding, type safety, policy routing,
-hotspot and compatibility contracts pass after CI-driven responsibility split.
+All declared user-first CLI, docs, type, routing, maintainability, and compatibility checks pass on
+dca066f829e3.
 ```
 - Canonical workflow state lives in the task README.
 
