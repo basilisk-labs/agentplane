@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -40,29 +40,29 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T02:17:27.394Z"
+  updated_at: "2026-08-07T03:00:24.393Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "0d19a7479fbad6327a015231bd553a7d50e6624c"
+  evaluated_sha: "7918002b6bb9873c63b88bd3499b12cfbbf9c387"
   blueprint_digest: "addd84cbd305a906371cd8cbf627e52cc1a6a49f14daa3cf478383c3d09bd0e2"
   evidence_refs:
-    - ".agentplane/tasks/202608061925-KANFC0/quality/20260807-021641392-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608061925-KANFC0/quality/20260807-021641392-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/b638a49bc78ed0ce6c7260cd5bba05b1fee3e536b1c80da23a98a2993967b9cf.md"
-    - ".agentplane/tasks/202608061925-KANFC0/quality/20260807-021641392-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608061925-KANFC0/quality/20260807-021641392-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608061925-KANFC0/quality/20260807-021641392-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061925-KANFC0/quality/20260807-025943744-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061925-KANFC0/quality/20260807-025943744-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/faaa9d52847f9dcbed4cf22bb39adcb41db2d9584bf1f511cb1d7f29adec1c6e.md"
+    - ".agentplane/tasks/202608061925-KANFC0/quality/20260807-025943744-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061925-KANFC0/quality/20260807-025943744-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061925-KANFC0/quality/20260807-025943744-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608061925-KANFC0/README.md"
-    - ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/8bdb0d1b4dd81040c226af0b46563a46c4d22e383e5364efad904cbf3473df34.patch"
-    - ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/6eb70de4e617362f8b5e4e6580cac5a459c0802d9116be4d624c5608294a40cf.json"
-    - ".agentplane/tasks/202608061925-KANFC0/verification/20260807021620516-41245418ac3a8430.json"
+    - ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/8a68366d923c435e22105af80e571889fda31103983d7e127dec2b3febd4f908.patch"
+    - ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/2153a515d9b726a2cddb3114d1c9961e01fa815fd28b13d87dd548fef41eee5f.json"
+    - ".agentplane/tasks/202608061925-KANFC0/verification/20260807025914407-a2c462adf5f96718.json"
     - ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/bf5780f48a58ae1343c240359cca134d113d3d93bbd40c7beab88a82a18a5dad.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Hosted Windows CI evidence is intentionally deferred to the post-quality PR gate and is not present in this evaluator packet."
+    - "Hosted Windows CI evidence is not included in this pre-merge quality packet and remains deferred to the required hosted-check gate on the exact PR head."
 token_usage:
   agent_runs: 2
   input_tokens: 163979
@@ -161,7 +161,7 @@ events:
     state: "ok"
     note: "Exact NTFS identity handling and all local release gates pass on current main; hosted Windows is the remaining PR gate."
 doc_version: 3
-doc_updated_at: "2026-08-07T02:59:15.607Z"
+doc_updated_at: "2026-08-07T03:00:24.417Z"
 doc_updated_by: "CODER"
 description: "Fix local task scans so NTFS file IDs above Number.MAX_SAFE_INTEGER remain exact across pre-scan and stable-read identity checks, preventing false unreadable_readme failures in verify and finish."
 sections:
