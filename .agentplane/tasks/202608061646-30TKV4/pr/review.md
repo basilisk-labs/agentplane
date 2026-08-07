@@ -6,7 +6,7 @@ Created: 2026-08-06T19:12:24.484Z
 
 - Task: `202608061646-30TKV4`
 - Title: Add user-first task intake and execution preview
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608061646-30TKV4/add-user-first-task-intake-and-execution-preview`
 - Canonical task record: `.agentplane/tasks/202608061646-30TKV4/README.md`
 
