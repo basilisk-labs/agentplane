@@ -32,9 +32,10 @@ hosted Windows remains the pre-integration PR gate.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/backends/task-backend.local.test.ts        | 102 ++++++++++++++++++++-
- .../backends/task-backend/local-backend-read.ts    |  44 ++++++---
- 2 files changed, 133 insertions(+), 13 deletions(-)
+ .../task-backend.local.windows-identity.test.ts    | 120 +++++++++++++++++++++
+ .../backends/task-backend/local-backend-read.ts    |  44 ++++++--
+ scripts/lib/test-route-registry.mjs                |   2 +
+ 3 files changed, 155 insertions(+), 11 deletions(-)
 ```
 
 </details>

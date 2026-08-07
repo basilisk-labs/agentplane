@@ -272,6 +272,7 @@ const PRECOMMIT_FILES = [
 ];
 
 const PLATFORM_CRITICAL_FILES = [
+  "packages/agentplane/src/backends/task-backend.local.windows-identity.test.ts",
   "packages/agentplane/src/commands/shared/pr-meta.test.ts",
   "packages/agentplane/src/commands/scenario/impl/commands.test.ts",
   "packages/agentplane/src/cli/run-cli.core.init.test.ts",
@@ -283,6 +284,7 @@ const PLATFORM_CRITICAL_FILES = [
 const BACKEND_CRITICAL_FILES = [
   "packages/agentplane/src/backends/task-backend.test.ts",
   "packages/agentplane/src/backends/task-backend.local.test.ts",
+  "packages/agentplane/src/backends/task-backend.local.windows-identity.test.ts",
   "packages/agentplane/src/backends/task-backend.load.test.ts",
   "packages/agentplane/src/commands/backend.test.ts",
   "packages/agentplane/src/commands/shared/task-backend.test.ts",
