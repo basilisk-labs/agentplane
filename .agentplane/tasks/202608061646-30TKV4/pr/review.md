@@ -13,7 +13,7 @@ Created: 2026-08-06T19:12:24.484Z
 ## Verification
 
 - State: ok
-- Note: All seven declared verification steps pass on dca066f829e3.
+- Note: All seven declared verification steps pass on dca066f829e3 with machine-readable evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

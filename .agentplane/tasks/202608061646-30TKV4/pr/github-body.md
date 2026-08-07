@@ -16,7 +16,7 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 ## Verification
 
 - State: ok
-- Note: All seven declared verification steps pass on dca066f829e3.
+- Note: All seven declared verification steps pass on dca066f829e3 with machine-readable evidence.
 - Canonical workflow state lives in the task README.
 
 <details>
