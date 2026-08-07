@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608061742-G2ZA4T-86123ebfadd3e7d82aa50b9f",
+  "prepared_at": "2026-08-07T02:00:20.533Z",
+  "task": {
+    "id": "202608061742-G2ZA4T",
+    "revision": 19,
+    "objective": "Redesign init around safe defaults and progressive disclosure\n\nReplace the long upfront questionnaire with a short user-first init path that detects repository defaults, asks only decisions that materially change policy or workflow, provides an advanced configuration path, and prints a first-task next step.",
+    "acceptance_criteria": [
+      "bun run docs:onboarding:check",
+      "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.init.test.ts",
+      "bun run format:check",
+      "bun run lint:core",
+      "bun run knip:check",
+      "bun run bench:compatibility:check",
+      "- In scope: Replace the long upfront questionnaire with a short user-first init path that detects repository defaults, asks only decisions that materially change policy or workflow, provides an advanced configuration path, and prints a first-task next step.\n- Out of scope: unrelated refactors not required for \"Redesign init around safe defaults and progressive disclosure\".",
+      "1. Replace the default init questionnaire with a short path that detects repository facts and applies explicit safe defaults. 2. Ask only workflow, automation/provider, and policy decisions that materially change generated configuration; keep advanced controls behind one optional path. 3. Render a final configuration summary with reasons and the exact first-task command. 4. Preserve non-interactive flags and existing config compatibility. 5. Cover new, existing, non-interactive, cancelled, and advanced init paths. Approved scope: packages/agentplane/src/commands/init/**, packages/agentplane/src/cli/run-cli/commands/init/**, packages/agentplane/src/cli/**/*init*.test.ts, docs/user/**, README.md, generated onboarding artifacts, and focused snapshots.",
+      "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli/commands/init\n- bun run docs:onboarding:check\n- bun run docs:cli:check\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs\n- bun run format:check\n- bun run lint:core\n- bun run knip:check\n- bun run bench:compatibility:check"
+    ]
+  },
+  "evaluated_sha": "f743f09a82022e5a15dadb00814f8d8b0f9cb068",
+  "diff_base_sha": "4e87059c9240a42b7710ce27d4b08e91cc4fccb2",
+  "blueprint_digest": "8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-020020533-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:72b4ad235d5901fb7dde30d004d0b4dc9131642a9e0296aaa0ad9f7c5e7d6fc3",
+    "prompt_path": ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/5f26ff2894a188c0855e4c845df929eeba052c6dee285621545b7c53fc3701d8.md",
+    "result_schema_path": ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608061742-G2ZA4T/README.md",
+      "sha256": "sha256:66c62bff17a61ee04d75f1f6baf57853e7768b2438c85c0ed206da9874938259",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/161593483b94843e3ff41ac27f62673e7bd91b3a2c11d3c03aa4818ab6e47749.patch",
+      "sha256": "sha256:161593483b94843e3ff41ac27f62673e7bd91b3a2c11d3c03aa4818ab6e47749",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/ef8b38a0d184e85577f7fda8d2058a80d10695da99628a3d60c620d0d0de88d5.json",
+      "sha256": "sha256:ef8b38a0d184e85577f7fda8d2058a80d10695da99628a3d60c620d0d0de88d5",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608061742-G2ZA4T/verification/20260807015604899-1390c0d1a47296d4.json",
+      "sha256": "sha256:5146e63b1ce963cbb64b017fff0a3a0b979d92c1aaea4ebd012743dc1d84433e",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/f8d50aeb6c6ba67e5bbdc1ef85fee8250df89013e0dfe3d833853945634456ca.json",
+      "sha256": "sha256:f8d50aeb6c6ba67e5bbdc1ef85fee8250df89013e0dfe3d833853945634456ca",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

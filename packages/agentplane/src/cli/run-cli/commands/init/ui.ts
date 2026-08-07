@@ -48,8 +48,13 @@ export function previewInstall(
   clack.note(renderInitPreview(items), "Install preview");
 }
 
-export function outroSuccess(clack: Pick<InitClackPrompts, "outro">, root: string): void {
-  clack.outro(`AgentPlane initialized in ${root}.`);
+export function outroSuccess(
+  clack: Pick<InitClackPrompts, "outro">,
+  root: string,
+  firstTaskCommand?: string,
+): void {
+  const next = firstTaskCommand ? `\nNext: ${firstTaskCommand}` : "";
+  clack.outro(`AgentPlane initialized in ${root}.${next}`);
 }
 
 export function outroError(clack: Pick<InitClackPrompts, "log" | "outro">, error: unknown): void {

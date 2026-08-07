@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202608061742-G2ZA4T-2031c696e9cd061ea6fecf7e",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061742-G2ZA4T-redesign-init-around-safe-defaults-and-progressi",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061742-G2ZA4T-redesign-init-around-safe-defaults-and-progressi/.agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-08-06T23:45:31.773Z",
+  "ended_at": "2026-08-06T23:47:08.675Z",
+  "stdout_bytes": 165918,
+  "stderr_bytes": 1206,
+  "provider_usage": {
+    "input_tokens": 222257,
+    "output_tokens": 4433,
+    "total_tokens": 226690,
+    "visible_output_tokens": 3924,
+    "reasoning_tokens": 509
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:28b907c6ebae0b7d57796bdb321c22a6f721be4e645764fc7bb3ef7fddef5e64"
+}

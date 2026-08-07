@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli/commands/init\nResult: pass\nEvidence: 6 test files passed; 27 tests passed on the qualified UX base\nScope: progressive quick and advanced init behavior, compatibility flags, tool mapping, and first-task handoff\n\nCommand: bun run docs:onboarding:check\nResult: pass\nEvidence: agent onboarding scenario surfaces are aligned\nScope: first-run onboarding documentation\n\nCommand: bun run docs:cli:check\nResult: pass\nEvidence: generated CLI reference is up to date\nScope: generated init help contract\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit code 0\nScope: repository type safety\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK\nScope: policy gateway routing constraints\n\nCommand: git diff --check\nResult: pass\nEvidence: no whitespace or conflict-marker errors\nScope: refreshed branch patch integrity\n\nCommand: git status --short --untracked-files=all\nResult: pass\nEvidence: command produced no output after the implementation receipt was committed\nScope: final tracked and untracked workspace cleanliness",
+  "digest": "sha256:e15ac0daed8217c4f771615f6b3fab51182da14b1aa4ecae476cb5747342e647",
+  "implementation_sha": "66d9c65fad5062fbf5a4b35f0fa05ceb6ddb3cfd",
+  "kind": "task_verification_record",
+  "note": "Progressive init is verified on the qualified user-first intake base with complete deterministic evidence and a clean worktree.",
+  "recorded_at": "2026-08-07T00:04:07.415Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli/commands/init\n- bun run docs:onboarding:check\n- bun run docs:cli:check\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:7e72d145f9d263a8ae6ddc091eb4cbf3aa6d1b045a24a7b0df8263a9b80b4ce7",
+  "task_id": "202608061742-G2ZA4T",
+  "verification_command": "agentplane verify 202608061742-G2ZA4T --ok --by TESTER",
+  "verifier": "TESTER"
+}

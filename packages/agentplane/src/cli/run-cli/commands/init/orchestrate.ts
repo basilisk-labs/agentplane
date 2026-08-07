@@ -24,9 +24,16 @@ import {
 import { buildNonInteractiveAnswers, promptInteractiveAnswers } from "./answers.js";
 import { outroError, outroSuccess } from "./ui.js";
 import { resolveInitMode } from "./modes.js";
+import { FIRST_TASK_COMMAND } from "./init-plan.js";
 
 function shouldRunInteractiveInit(flags: InitParsed): boolean {
-  if (flags.yes || flags.dryRun || process.env.AGENTPLANE_PROMPTS === "plain") return false;
+  if (
+    flags.yes ||
+    flags.dryRun ||
+    flags.initMode === "ci" ||
+    process.env.AGENTPLANE_PROMPTS === "plain"
+  )
+    return false;
   return shouldUseInitClackPrompts();
 }
 
@@ -35,7 +42,8 @@ function assertNonInteractiveInitAllowed(opts: {
   spec: CommandSpec<InitParsed>;
   interactive: boolean;
 }): void {
-  if (opts.interactive || opts.flags.yes || opts.flags.setupProfile) return;
+  if (opts.interactive || opts.flags.yes || opts.flags.initMode === "ci" || opts.flags.setupProfile)
+    return;
   if (opts.flags.dryRun) return;
   if (opts.flags.workflow && opts.flags.requireNetworkApproval !== undefined) return;
   throw usageError({
@@ -62,6 +70,8 @@ function renderDryRunPlanText(plan: ReturnType<typeof buildInitPlan>): string {
     ...(plan.warnings.length > 0
       ? ["Warnings:", ...plan.warnings.map((warning) => `- ${warning}`)]
       : []),
+    "Why:",
+    ...plan.decisionReasons.map((reason) => `- ${reason}`),
     "Effects:",
     ...plan.effects.map((effect) => {
       const pathSuffix = effect.path ? ` ${effect.path}` : "";
@@ -93,15 +103,17 @@ export async function cmdInit(opts: {
   spec: CommandSpec<InitParsed>;
 }): Promise<number> {
   const interactive = shouldRunInteractiveInit(opts.flags);
-  const initMode = resolveInitMode({ flags: opts.flags, interactive });
+  const requestedInitMode = resolveInitMode({ flags: opts.flags, interactive });
   assertNonInteractiveInitAllowed({ flags: opts.flags, spec: opts.spec, interactive });
   const clack = interactive ? requireInitClack(await loadInitClackPrompts(), opts.spec) : null;
   const targetRoot = path.resolve(opts.rootOverride ?? opts.cwd);
 
   try {
-    const answers = clack
+    const interactiveAnswers = clack
       ? await promptInteractiveAnswers({ flags: opts.flags, clack, targetRoot })
-      : buildNonInteractiveAnswers(opts.flags);
+      : null;
+    const answers = interactiveAnswers?.answers ?? buildNonInteractiveAnswers(opts.flags);
+    const initMode = interactiveAnswers?.initMode ?? requestedInitMode;
     await validateCachedRecipesSelection(answers.recipes, { cwd: targetRoot });
     await validateCachedBlueprintSelection(answers.blueprints, { cwd: targetRoot });
     const paths = await resolveInitPaths({
@@ -157,7 +169,7 @@ export async function cmdInit(opts: {
       ensureGitRoot,
     });
     if (clack) {
-      outroSuccess(clack, paths.gitRoot);
+      outroSuccess(clack, paths.gitRoot, FIRST_TASK_COMMAND);
     }
     process.stdout.write(`${path.relative(paths.gitRoot, paths.agentplaneDir)}\n`);
     return 0;

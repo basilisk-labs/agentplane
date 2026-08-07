@@ -764,10 +764,19 @@ describe("runCli", () => {
       const code = await runCli(["init", "--dry-run", "--yes", "--root", root, "--output", "json"]);
       expect(code).toBe(0);
       const envelope = JSON.parse(io.stdout) as {
-        data?: { schemaVersion?: string; effects?: { kind: string }[] };
+        data?: {
+          schemaVersion?: string;
+          effects?: { kind: string }[];
+          decisionReasons?: string[];
+          nextSteps?: string[];
+        };
       };
       expect(envelope.data?.schemaVersion).toBe("init-plan/v1");
       expect(envelope.data?.effects?.some((effect) => effect.kind === "git_init")).toBe(true);
+      expect(envelope.data?.decisionReasons?.length).toBeGreaterThan(0);
+      expect(envelope.data?.nextSteps?.[0]).toBe(
+        'agentplane task create "Describe the outcome you want"',
+      );
     } finally {
       io.restore();
     }
@@ -812,6 +821,38 @@ describe("runCli", () => {
     expect(await pathExists(path.join(root, ".git"))).toBe(false);
     expect(await pathExists(path.join(root, ".agentplane"))).toBe(false);
   });
+
+  it.each([
+    ["claude", "claude", "none"],
+    ["multiple", "codex", "none"],
+  ] as const)(
+    "init --quick --tool %s derives a portable gateway and IDE mapping",
+    async (tool, policyGateway, ide) => {
+      const root = await mkTempDir();
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "init",
+          "--dry-run",
+          "--yes",
+          "--quick",
+          "--tool",
+          tool,
+          "--root",
+          root,
+          "--output",
+          "json",
+        ]);
+        expect(code).toBe(0);
+        const envelope = JSON.parse(io.stdout) as {
+          data?: { answers?: { policyGateway?: string; ide?: string } };
+        };
+        expect(envelope.data?.answers).toMatchObject({ policyGateway, ide });
+      } finally {
+        io.restore();
+      }
+    },
+  );
 
   it("init --quick --tool hermes configures the native Hermes runner profile without IDE sync", async () => {
     const root = await mkTempDir();
