@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -23,6 +23,10 @@ blueprint_request: "code.branch_pr"
 verify:
   - "bun run docs:onboarding:check"
   - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.init.test.ts"
+  - "bun run format:check"
+  - "bun run lint:core"
+  - "bun run knip:check"
+  - "bun run bench:compatibility:check"
 plan_approval:
   state: "approved"
   updated_at: "2026-08-06T17:43:24.904Z"
@@ -159,7 +163,7 @@ events:
     to: "DOING"
     note: "Implementation rework committed: quick init now derives workflow and agent-surface defaults from local Git, remote, CI, and policy-surface facts while preserving non-interactive behavior."
 doc_version: 3
-doc_updated_at: "2026-08-07T00:09:24.084Z"
+doc_updated_at: "2026-08-07T01:54:57.473Z"
 doc_updated_by: "CODER"
 description: "Replace the long upfront questionnaire with a short user-first init path that detects repository defaults, asks only decisions that materially change policy or workflow, provides an advanced configuration path, and prints a first-task next step."
 sections:
@@ -177,6 +181,10 @@ sections:
     - bun run docs:cli:check
     - bun run typecheck
     - node .agentplane/policy/check-routing.mjs
+    - bun run format:check
+    - bun run lint:core
+    - bun run knip:check
+    - bun run bench:compatibility:check
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-08-06T23:43:38.216Z — VERIFY — ok
@@ -363,6 +371,10 @@ Replace the long upfront questionnaire with a short user-first init path that de
 - bun run docs:cli:check
 - bun run typecheck
 - node .agentplane/policy/check-routing.mjs
+- bun run format:check
+- bun run lint:core
+- bun run knip:check
+- bun run bench:compatibility:check
 
 ## Verification
 

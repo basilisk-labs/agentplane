@@ -35,7 +35,7 @@ Created: 2026-08-06T23:23:35.080Z
  .../agentplane/src/cli/run-cli.core.init.test.ts   |  43 ++++-
  .../src/cli/run-cli/commands/init/answers.ts       | 194 ++++++++++++++++++---
  .../cli/run-cli/commands/init/execution.test.ts    |   1 +
- .../src/cli/run-cli/commands/init/execution.ts     |   4 +
+ .../src/cli/run-cli/commands/init/execution.ts     |   3 +
  .../src/cli/run-cli/commands/init/init-plan.ts     |   7 +-
  .../src/cli/run-cli/commands/init/model.ts         |   1 +
  .../src/cli/run-cli/commands/init/modes.ts         |   9 +-
@@ -49,7 +49,7 @@ Created: 2026-08-06T23:23:35.080Z
  .../src/cli/run-cli/commands/init/steps/tool.ts    |  38 ++++
  .../cli/run-cli/commands/init/steps/workflow.ts    |   9 +-
  .../agentplane/src/cli/run-cli/commands/init/ui.ts |   9 +-
- 20 files changed, 671 insertions(+), 85 deletions(-)
+ 20 files changed, 670 insertions(+), 85 deletions(-)
 ```
 
 </details>

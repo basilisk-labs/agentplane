@@ -33,7 +33,6 @@ export {
   buildInitPlan,
   detectGithubCliInstalled,
   GITHUB_CLI_INIT_RECOMMENDATION,
-  FIRST_TASK_COMMAND,
 } from "./init-plan.js";
 
 export async function maybeConfirmInteractiveApply(opts: {
