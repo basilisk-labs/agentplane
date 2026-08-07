@@ -15,14 +15,12 @@ Fix local task scans so NTFS file IDs above Number.MAX_SAFE_INTEGER remain exact
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-The exact NTFS scan-path regression, typecheck, and platform-critical suite pass. Verification
-remains rework because the mandatory full critical suite cannot pass until pending PR #4785 repairs
-the pre-existing compatibility baseline; after it merges, rebase and rerun the complete check before
-evaluation or integration.
+Exact NTFS identity handling and every local release gate now pass on the current main baseline;
+hosted Windows remains the pre-integration PR gate.
 ```
 - Canonical workflow state lives in the task README.
 
