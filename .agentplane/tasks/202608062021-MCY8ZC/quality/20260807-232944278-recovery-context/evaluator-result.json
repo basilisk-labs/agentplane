@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The implementation, focused integration coverage, and deterministic verification evidence satisfy the declared external-supervisor protocol, operator-boundary, guidance, provenance, and branch-worktree requirements.",
+      "broken_invariant": "No invariant is broken; positive, negative, recovery, and branch-worktree-sensitive paths relevant to the approved task are covered.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/694efa032cf1b600e02fb97fc9f2d68cc7cf0c5a5dcdd072f152e522e0a98342.patch",
+          "sha256": "sha256:694efa032cf1b600e02fb97fc9f2d68cc7cf0c5a5dcdd072f152e522e0a98342",
+          "section": "Implementation diff and tests"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/verification/20260807232931756-e836ce6638c37cc5.json",
+          "sha256": "sha256:32632ee5f995a91ca3dcdd151486f8deaf8a8b6be8ce5c6da776a2ea58b96cd2",
+          "section": "Exact declared checks, branch-worktree integration test, CI contract, and cleanliness evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/README.md",
+          "sha256": "sha256:6920af7902842d27e80863940190883a316dbfc508b3a1957dc6bf95fee376ad",
+          "section": "Scope, plan, Verify Steps, and verification history"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
