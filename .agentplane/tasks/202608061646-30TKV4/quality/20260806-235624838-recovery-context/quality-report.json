@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608061646-30TKV4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-06T23:57:20.954Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "32d47133fd20aa05a4a47d14264eead0ddb49e95",
+  "blueprint_digest": "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62",
+  "findings": [
+    "The duplicate-creation regression test exercises two concurrent runCli calls in one process, so it does not prove the intended cross-process CLI serialization behavior."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/3a49c50099238097e8b103032d050c22a335492decec015c807fb273c428f729.patch",
+    ".agentplane/tasks/202608061646-30TKV4/README.md"
+  ],
+  "missing_tests": [
+    "Spawn two independent task create CLI processes against the same repository and outcome, synchronize their start, and assert exactly one task is persisted while the other exits with the duplicate-validation result; also assert the persisted execution_route remains frozen and consistent."
+  ],
+  "hidden_assumptions": [
+    "withTaskReadmeTransaction provides correct mutual exclusion across independent operating-system processes, not only concurrent calls within one JavaScript runtime."
+  ],
+  "residual_risks": [
+    "Add deterministic cross-process duplicate-creation coverage for the filesystem transaction, then rerun the declared verification contract and record the result against the same implementation behavior."
+  ]
+}

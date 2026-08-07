@@ -38,23 +38,18 @@ describe("command-guide", () => {
 
   it("documents merge-preserving branch_pr integration by default", () => {
     const text = renderRoleTyped("integrator");
-    expect(text).toContain("Route oracle diagnostic:");
-    expect(text).toContain("`authoritative_checkout`");
-    expect(text).toContain("do not manually reconstruct branch/worktree/PR state");
-    expect(text).toContain(
-      "agentplane integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000",
-    );
-    expect(text).toContain("protected bases merge through GitHub");
-    expect(text).toContain("Task Hosted Close finishes");
-    expect(text).not.toContain("--merge-strategy squash --run-verify");
+    expect(text).toContain("the supervisor owns the merge lane");
+    expect(text).toContain("agentplane task advance <task-id> --agent-json");
+    expect(text).toContain("agentplane task run <task-id>");
+    expect(text).not.toContain("integrate queue");
   });
 
   it("renders role blocks case-insensitively", () => {
     const text = renderRoleTyped("coder");
     expect(text).toContain("### CODER");
     expect(text).toContain("CLI/runtime notes:");
-    expect(text).toContain("agentplane task next-action <task-id> --explain");
-    expect(text).toContain("primary_blocker");
+    expect(text).toContain("agentplane task advance <task-id> --agent-json");
+    expect(text).toContain("perform only the supplied semantic objective");
   });
 
   it("returns null for missing or unknown roles", () => {
@@ -84,31 +79,26 @@ describe("command-guide", () => {
     expect(text).toContain("Canonical installed startup surface");
     expect(text).toContain("## First screen");
     expect(text).toContain("Workflow route notes:");
-    expect(text).toContain("Use `agentplane config show` as the route readback");
+    expect(text).toContain("Agentplane reads the configured workflow mode");
     expect(text).toContain("## First visible payoff");
     expect(text).toContain("agentplane demo");
     expect(text).toContain("agentplane acr validate <task-id> --mode local");
-    expect(text).toContain('agentplane task new --title "Inspect AgentPlane artifacts"');
+    expect(text).toContain('agentplane task create "Inspect AgentPlane artifacts"');
     expect(text).toContain("agentplane task advance <task-id> --agent-json");
     expect(text).toContain("agentplane task run <task-id>");
     expect(text).toContain(".agentplane/tasks/<task-id>/");
     expect(text).toContain("acr.json");
     expect(text).toContain("## Go deeper");
-    expect(text).toContain("activate ORCHESTRATOR for planning and the task owner role");
     expect(text).toContain("agentplane task active");
     expect(text).toContain("agentplane task brief <task-id>");
     expect(text).toContain("agentplane task next-action <task-id> --explain");
-    expect(text).toContain("authoritative_checkout");
-    expect(text).toContain("primary_blocker");
-    expect(text).toContain("git status --short --untracked-files=no");
-    expect(text).toContain("\ngit status --short --untracked-files=all\n");
-    expect(text).toContain("source confidence");
-    expect(text).toContain("agentplane task start-ready");
-    expect(text).toContain("agentplane pr check <task-id>");
-    expect(text).toContain("authenticated `gh`");
-    expect(text).toContain("GH_TOKEN");
-    expect(text).toContain("Framework maintainers may use repo-local helper scripts");
-    expect(text).toContain("workflow:wait-remote-checks");
+    expect(text).toContain("supervisor prepares or selects the task worktree");
+    expect(text).not.toContain("agentplane task start-ready");
+    expect(text).not.toContain("agentplane work start");
+    expect(text).not.toContain("agentplane verify");
+    expect(text).not.toContain("agentplane finish");
+    expect(text).not.toContain("agentplane integrate");
+    expect(text).not.toContain("git commit");
     expect(text).not.toContain(
       "wait for hosted required checks with `bun run workflow:wait-remote-checks`",
     );
@@ -119,21 +109,15 @@ describe("command-guide", () => {
   it("renders direct quickstart notes without branch_pr-only route guidance", () => {
     const text = renderQuickstartForModeTyped("direct");
     expect(text).toContain("Workflow route notes:");
-    expect(text).toContain("`direct`: task setup is");
-    expect(text).toContain("`direct`: execution is");
-    expect(text).not.toContain(
-      "`branch_pr`: use `agentplane task next-action <task-id> --explain`",
-    );
-    expect(text).not.toContain("`branch_pr` GitHub transport");
+    expect(text).toContain("`direct`: the supervisor keeps work in the current checkout");
+    expect(text).not.toContain("`branch_pr`: the supervisor prepares");
   });
 
   it("renders branch_pr quickstart notes without direct-only route guidance", () => {
     const text = renderQuickstartForModeTyped("branch_pr");
     expect(text).toContain("Workflow route notes:");
-    expect(text).toContain("`branch_pr`: use `agentplane task next-action <task-id> --explain`");
-    expect(text).toContain("`branch_pr` GitHub transport");
-    expect(text).not.toContain("`direct`: task setup is");
-    expect(text).not.toContain("`direct`: execution is");
+    expect(text).toContain("`branch_pr`: the supervisor prepares or selects the task worktree");
+    expect(text).not.toContain("`direct`: the supervisor keeps work in the current checkout");
   });
 
   it("renders the generated bootstrap doc", () => {
@@ -150,23 +134,18 @@ describe("command-guide", () => {
     expect(text).toContain("agentplane task run <task-id>");
     expect(text).toContain("state fingerprint");
     expect(text).toContain("authority boundary");
-    expect(text).toContain("tracked-only cleanliness");
-    expect(text).toContain("git status --short --untracked-files=no");
-    expect(text).toContain("\n- `git status --short --untracked-files=all`\n");
-    expect(text).toContain("source confidence");
-    expect(text).toContain("Use `agentplane role ORCHESTRATOR` during planning");
-    expect(text).toContain("agentplane incidents advise <task-id>");
-    expect(text).toContain("agentplane incidents collect <task-id> --check");
-    expect(text).toContain("promote only real reusable incidents");
-    expect(text).toContain("plain prose stays task-local");
+    expect(text).toContain("exchange.directory/exchange.result_ref");
+    expect(text).toContain("exchange.return_invocation");
+    expect(text).toContain("semantic_input_required");
+    expect(text).toContain("Agentplane owns verification records and terminal state");
     expect(text).toContain("expanded diagnostic evidence");
-    expect(text).not.toContain("keep PR artifacts current");
+    expect(text).not.toContain("agentplane verify");
+    expect(text).not.toContain("agentplane finish");
   });
 
-  it("updates the planner role guidance to the explicit findings promotion flow", () => {
+  it("keeps the planner role focused on semantic planning", () => {
     const text = renderRoleTyped("planner");
-    expect(text).toContain(
-      "add `--promote --external` or `--repo-fixable` only for real reusable incidents",
-    );
+    expect(text).toContain("Return an executable semantic plan");
+    expect(text).not.toContain("task plan set");
   });
 });

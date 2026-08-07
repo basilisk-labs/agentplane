@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/backends/task-backend.local.test.ts\nResult: pass\nEvidence: 1 file passed, 32 tests passed; the NTFS regression completed five path lstat identity checks and two stable file-handle stat checks\nScope: complete local task scan through containment and stable no-follow README reader\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit code 0\nScope: source and test type contracts for bigint file identity handling\n\nCommand: bun run test:platform-critical\nResult: pass\nEvidence: 6 files passed, 94 tests passed\nScope: Windows-critical CLI, task, PR, evaluator, verify, and finish behavior\n\nCommand: bun run test:critical\nResult: fail\nEvidence: stopped in chunk 1 with only two known compatibility baseline assertions; expected 79d9462b... versus current f1f7ba36..., plus the planned v0.7.4 surface digest mismatch already repaired by pending PR #4785\nScope: full critical CLI suite on the pre-#4785 main base; later chunks did not execute",
+  "digest": "sha256:6b720d714f77c777ae35c3972328a421d6a0ecdfe4a955b5a818658550a58b03",
+  "implementation_sha": "5c39042f04df40890dbe25253eef3330bd66efb9",
+  "kind": "task_verification_record",
+  "note": "The exact NTFS scan-path regression, typecheck, and platform-critical suite pass. Verification remains rework because the mandatory full critical suite cannot pass until pending PR #4785 repairs the pre-existing compatibility baseline; after it merges, rebase and rerun the complete check before evaluation or integration.",
+  "recorded_at": "2026-08-06T19:49:54.150Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/backends/task-backend.local.test.ts`. Expected: a synthetic NTFS-style file identity above `Number.MAX_SAFE_INTEGER` remains byte-exact through the scan identity helper and ordinary local task scans still pass.\n2. Run `bun run typecheck` and `bun run test:critical`. Expected: no type, local backend, verify, finish, or lifecycle regression.\n3. Confirm the implementation obtains task README metadata with `lstat(..., { bigint: true })` before passing the identity to stable protected reads. Expected: no number-to-bigint conversion occurs for `dev` or `ino`.\n4. Confirm Windows hosted CI passes before integration. Expected: required `PR verification` is green on the exact PR head.",
+  "scope_digest": "sha256:b8abbf24a61094c880d52f9eb99afc0ebf2e6cd65c626b226a80549fa6184d0d",
+  "task_id": "202608061925-KANFC0",
+  "verification_command": "agentplane verify 202608061925-KANFC0 --rework --by TESTER",
+  "verifier": "TESTER"
+}

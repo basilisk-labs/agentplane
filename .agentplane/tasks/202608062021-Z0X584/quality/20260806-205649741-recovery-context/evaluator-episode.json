@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202608062021-Z0X584-1a27bd394c8a273d6fbab382",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-Z0X584-converge-generated-agent-guidance-on-the-supervi",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-Z0X584-converge-generated-agent-guidance-on-the-supervi/.agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-08-06T20:56:50.086Z",
+  "ended_at": "2026-08-06T20:57:45.665Z",
+  "stdout_bytes": 144417,
+  "stderr_bytes": 1742,
+  "provider_usage": {
+    "input_tokens": 228172,
+    "output_tokens": 2927,
+    "total_tokens": 231099,
+    "visible_output_tokens": 2411,
+    "reasoning_tokens": 516
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:7719a986fd4c331ed5af0cfed51736ea5d3b3c3e4c86c97e8cd2ef10157b16a1"
+}

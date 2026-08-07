@@ -23,6 +23,7 @@ const answers = {
   recipes: [],
   blueprints: [],
   runnerProfile: "codex",
+  decisionReasons: ["Test fixture"],
 } satisfies InitAnswers;
 
 describe("init execution planning", () => {

@@ -1,0 +1,24 @@
+{
+  "base": "main",
+  "branch": "task/202608061646-30TKV4/add-user-first-task-intake-and-execution-preview",
+  "created_at": "2026-08-06T19:12:24.484Z",
+  "diffstat_sha256": "sha256:b2a8eb5024132cb8a8ce8f527ebfe5830fca068285368d8553e1aa755ec4e5dd",
+  "last_verified_at": "2026-08-07T01:37:59.188Z",
+  "last_verified_diffstat_sha256": "sha256:b2a8eb5024132cb8a8ce8f527ebfe5830fca068285368d8553e1aa755ec4e5dd",
+  "pr_number": 4787,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4787",
+  "pre_merge_closure": {
+    "basis_commit": "1b759d04d51d65dc657b8c534c221acfa735b013",
+    "branch": "task/202608061646-30TKV4/add-user-first-task-intake-and-execution-preview",
+    "pr_number": 4787,
+    "recorded_at": "2026-08-07T01:41:12.014Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608061646-30TKV4",
+  "updated_at": "2026-08-06T19:51:44.575Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202608061646-30TKV4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T00:55:53.782Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "dca066f829e381ad3d6e74293b4d552443f56c30",
+  "blueprint_digest": "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62",
+  "findings": [
+    "The change updates the generated CLI reference but does not update any onboarding document, despite onboarding documentation being an explicit acceptance requirement."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608061646-30TKV4/README.md",
+    ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/f03764541cec0c8b9bd0a51b34d58117711a052ef4284deec69d525a1b5ecf96.patch",
+    ".agentplane/tasks/202608061646-30TKV4/verification/20260807005409275-8701b3f2f8e9fcc4.json"
+  ],
+  "missing_tests": [
+    "Add an onboarding-content assertion that requires the user-first `task create` entrypoint and dry-run execution-preview workflow to appear in the intended onboarding document, rather than checking only existing onboarding consistency surfaces.",
+    "Add intent-inference cases for negated and ambiguous keywords to document the conservative substring-matching behavior."
+  ],
+  "hidden_assumptions": [
+    "Passing `docs:onboarding:check` is treated as proof that onboarding documentation was updated, although the frozen diff contains no onboarding-document change.",
+    "Ordered substring matching is assumed to classify natural-language intent safely even when keywords are negated or appear only as incidental context."
+  ],
+  "residual_risks": [
+    "Update the intended onboarding documentation with the new user-first task creation and execution-preview flow, add a content-level regression assertion, then rerun all seven declared verification steps at the new evaluated SHA."
+  ]
+}

@@ -41,19 +41,38 @@ agentplane init
 This creates the repo-local policy and workflow surface that agents can inspect before mutating
 files.
 
-## Hand work to an agent
+## Create the first task
 
-Give your coding agent the repository and the task. The agent should read the policy gateway,
-operate the Agentplane lifecycle, run the relevant checks, and leave Git-visible evidence.
+Describe the outcome in ordinary language. Agentplane records structured intent, chooses a safe
+initial route, and stops at the first semantic boundary:
 
-Use this prompt shape:
-
-```text
-Use Agentplane as the harness. Read AGENTS.md, create or continue the task, keep the diff inside the
-approved scope, run the verification contract, and record the result before asking for review.
+```bash
+agentplane task create "Fix the parser edge case" --json
 ```
 
-If you want to inspect the installed route yourself before handoff:
+Copy the returned `task_id`. Before starting a configured runner, inspect the exact route, bounded
+context, approvals, checks, and available budgets without invoking the provider:
+
+```bash
+agentplane task run <task-id> --dry-run --json
+```
+
+The JSON response includes `execution_preview`. Use the managed supervisor for execution:
+
+```bash
+agentplane task run <task-id>
+```
+
+For an external coding agent, request one bounded semantic action instead:
+
+```bash
+agentplane task advance <task-id> --agent-json
+```
+
+The external agent performs only the returned semantic objective and returns its typed result;
+Agentplane retains ownership of task state, routing, verification, and closeout.
+
+To inspect the installed route yourself before handoff:
 
 ```bash
 agentplane quickstart

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "Hosted Windows CI evidence is not included in this pre-merge quality packet and remains deferred to the required hosted-check gate on the exact PR head.",
+      "broken_invariant": "No implementation invariant is broken at this quality stage; the branch_pr contract requires hosted evidence before integration, and that later gate must not be bypassed.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061925-KANFC0/README.md",
+          "sha256": "sha256:a91a59652549102804b5beb94fb333896484e5f50711ceba9287e7ee1e0a19de",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/2153a515d9b726a2cddb3114d1c9961e01fa815fd28b13d87dd548fef41eee5f.json",
+          "sha256": "sha256:2153a515d9b726a2cddb3114d1c9961e01fa815fd28b13d87dd548fef41eee5f",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/bf5780f48a58ae1343c240359cca134d113d3d93bbd40c7beab88a82a18a5dad.json",
+          "sha256": "sha256:bf5780f48a58ae1343c240359cca134d113d3d93bbd40c7beab88a82a18a5dad",
+          "section": "plan.states.hosted_checks"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The synthetic bigint identity test accurately models Node.js bigint stat behavior on Windows/NTFS; the required hosted Windows job must validate this assumption on the exact PR head before integration."
+  ]
+}

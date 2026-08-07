@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608061925-KANFC0-f20c0a7525f645c05dc645f9",
+  "task_id": "202608061925-KANFC0",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Add focused end-to-end coverage from the bigint lstat pre-scan through the stable no-follow reader, then complete bun run test:critical or record a policy-complete owner-approved skip; preserve Windows hosted verification as a required pre-integration gate.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The regression test validates only the extracted stat-entry helper, not the required scan-to-stable-reader path where the precision bug occurred.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/e218134b64056582669dde7fa6d3338f14482f8dfac424e526490d92683601e1.patch",
+          "sha256": "sha256:e218134b64056582669dde7fa6d3338f14482f8dfac424e526490d92683601e1"
+        },
+        {
+          "path": ".agentplane/tasks/202608061925-KANFC0/README.md",
+          "sha256": "sha256:38096ef88149baa62e5b66acfdcd6786cf2d8c360d70246a2df595ea24424df6",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "Mandatory verification is incomplete: bun run test:critical was not executed and the recorded skip has no owner approval.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061925-KANFC0/verification/20260806193854648-823522e735c4b3a1.json",
+          "sha256": "sha256:40a6b8b79005057d653e2c9f6f53904983cbb568f0edb93c5b9917f71fe3e2e7"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks and Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608061925-KANFC0/quality/20260806-193910936-recovery-context/evaluator-result.json"
+}

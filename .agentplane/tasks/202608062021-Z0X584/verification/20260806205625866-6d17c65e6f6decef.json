@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts\nResult: pass\nEvidence: 2 test files passed, 27 tests passed.\nScope: bundled supervisor-first assets and prompt compiler/init regression surface.\n\nCommand: bun run docs:onboarding:check\nResult: pass\nEvidence: agent onboarding scenario surfaces are aligned.\nScope: generated bootstrap, workflow, lifecycle, and branch_pr onboarding.\n\nCommand: bun run docs:cli:check\nResult: pass\nEvidence: generated CLI reference is up to date.\nScope: compiled quickstart, role guide, and task update help surface.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: bundled and repo-local supervisor-first policy gateway graph.\n\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/command-guide.test.ts\nResult: pass\nEvidence: 3 test files passed, 36 tests passed.\nScope: compiled role and quickstart guidance plus explicit structured task reclassification.",
+  "digest": "sha256:6d17c65e6f6decef170ef1ae2bcb5f3b8bb9056947aed79ac34d5fc98e87654c",
+  "implementation_sha": "b5faa8b3dce64578db6160645737572acbea4239",
+  "kind": "task_verification_record",
+  "note": "All five Verify Steps passed on implementation b5faa8b3dce6 with concrete check evidence; typecheck and focused lint also passed.",
+  "recorded_at": "2026-08-06T20:56:25.866Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts\n- bun run docs:onboarding:check\n- bun run docs:cli:check\n- node .agentplane/policy/check-routing.mjs\n- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/command-guide.test.ts",
+  "scope_digest": "sha256:e9653577267767950996748213a2f0aa3639b45685585200ddac7e270aea9d00",
+  "task_id": "202608062021-Z0X584",
+  "verification_command": "agentplane verify 202608062021-Z0X584 --ok --by TESTER",
+  "verifier": "TESTER"
+}

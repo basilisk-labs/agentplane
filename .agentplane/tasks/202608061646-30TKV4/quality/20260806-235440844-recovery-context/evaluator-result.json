@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "The latest verification record does not record execution or a result for the required policy-routing check.",
+      "broken_invariant": "Every command in the approved Verify Steps must be executed and recorded with command, result, evidence, and scope before verification can establish acceptance.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/README.md",
+          "sha256": "sha256:281745bdf04bd49c97f3488cf167c6f92c0358c7bc9106a22381289facd31a36",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/verification/20260806235416823-b6355c5c52208ecf.json",
+          "sha256": "sha256:e73cccd171dac91c5721344f6141a62566da19d7e040b5d57e3dd400c9ce50a7",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "severity": "medium",
+      "summary": "The frozen closure evidence contains no final tracked/untracked workspace-status check.",
+      "broken_invariant": "Core DoD requires final evidence from `git status --short --untracked-files=all` showing no unintended tracked changes or unreviewed untracked artifacts.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/verification/20260806235416823-b6355c5c52208ecf.json",
+          "sha256": "sha256:e73cccd171dac91c5721344f6141a62566da19d7e040b5d57e3dd400c9ce50a7",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Record a passing execution of `node .agentplane/policy/check-routing.mjs` against evaluated SHA 32d47133fd20aa05a4a47d14264eead0ddb49e95.",
+    "Record `git status --short --untracked-files=all` and review any reported paths before closure."
+  ],
+  "hidden_assumptions": [
+    "The verification state assumes the declared policy-routing check passed even though the latest verification details omit that command and its result.",
+    "The closure packet assumes the final workspace has no unintended tracked or untracked artifacts without recording the required status evidence."
+  ],
+  "recovery_context": "Re-run and record the omitted policy-routing check for the evaluated SHA, capture and review the required final tracked/untracked git status, then regenerate deterministic verification evidence before reevaluation."
+}

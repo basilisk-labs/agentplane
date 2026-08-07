@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RECOVERY-CONTEXT-001",
+      "severity": "low",
+      "summary": "The evaluated SHA has a deterministic verification record covering every declared local qualification gate, and the frozen patch remains within the approved post-merge qualification scope.",
+      "broken_invariant": "No invariant is broken; the prior deterministic-evidence gap is resolved by an SHA-bound verification record with exact commands, pass results, evidence summaries, and scopes.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061850-BZT3D9/verification/20260806224111843-f84dc99bbaa19ff1.json",
+          "sha256": "sha256:cdcc07559b1a67f6afd54d08b33531ebfd4c672d877651be6d539c4a193a4214",
+          "section": "implementation_sha and verification details"
+        },
+        {
+          "path": ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/e704e1f7b5b4b6e00e8798bc3aae836076195dfada0e5c1895b5f9bc8a9b53eb.patch",
+          "sha256": "sha256:e704e1f7b5b4b6e00e8798bc3aae836076195dfada0e5c1895b5f9bc8a9b53eb",
+          "section": "complete frozen patch"
+        },
+        {
+          "path": ".agentplane/tasks/202608061850-BZT3D9/README.md",
+          "sha256": "sha256:46b23641b61d0e542e5fdc5e2032aa6ad1f5f90bf0e488c617e1b327ae4b4f52",
+          "section": "Scope, Verify Steps, and Verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Hosted PR checks and evaluated-head equality remain a later protected integration gate, consistent with the blueprint ordering of quality review before hosted checks; this pass does not attest that those hosted checks have completed."
+  ]
+}

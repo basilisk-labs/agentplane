@@ -1,0 +1,13 @@
+diff --git a/website/scripts/generate-social-images.mjs b/website/scripts/generate-social-images.mjs
+index 23260606b..344846d43 100644
+--- a/website/scripts/generate-social-images.mjs
++++ b/website/scripts/generate-social-images.mjs
+@@ -204,7 +204,7 @@ async function measureRenderedTextWidth(value, fontSize) {
+ 
+ async function assertTitleFits(entry) {
+   const layout = titleLayout(entry.title);
+-  const normalizedTitle = entry.title.trim().replace(/\s+/g, " ");
++  const normalizedTitle = entry.title.trim().replaceAll(/\s+/g, " ");
+ 
+   if (layout.lines.join(" ") !== normalizedTitle) {
+     throw new Error(

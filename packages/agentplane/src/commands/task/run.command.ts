@@ -34,6 +34,7 @@ import {
   reportPreparedTaskRun,
   tailText,
 } from "./run-render.js";
+import { buildTaskRunExecutionPreview } from "./run-execution-preview.js";
 import { followRunnerLogs } from "./run-logs-follow.js";
 import { superviseBranchTaskRun } from "./branch-task-supervisor.js";
 import { superviseDirectTaskRun } from "./direct-task-supervisor.js";
@@ -78,7 +79,7 @@ function reportTaskSupervision(opts: {
   });
 }
 
-export type TaskRunContextDependencies = {
+type TaskRunContextDependencies = {
   getPreparationContext?: (
     command: string,
     options: { includeRemote: boolean },
@@ -124,7 +125,10 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
         task_id: parsed.taskId,
         execution: prepared,
       });
-      const payload = renderTaskRunnerLifecyclePayload(lifecycle);
+      const payload = renderTaskRunnerLifecyclePayload(
+        lifecycle,
+        buildTaskRunExecutionPreview(prepared.bundle),
+      );
       if (parsed.json) {
         output.json(payload);
       } else {

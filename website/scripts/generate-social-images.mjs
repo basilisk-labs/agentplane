@@ -204,7 +204,7 @@ async function measureRenderedTextWidth(value, fontSize) {
 
 async function assertTitleFits(entry) {
   const layout = titleLayout(entry.title);
-  const normalizedTitle = entry.title.trim().replace(/\s+/g, " ");
+  const normalizedTitle = entry.title.trim().replaceAll(/\s+/g, " ");
 
   if (layout.lines.join(" ") !== normalizedTitle) {
     throw new Error(

@@ -20,7 +20,7 @@ Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
 
 - Repository type: user project initialized with `agentplane`.
 - CLI rule: prefer `ap` for compact agent-oriented commands; fall back to `agentplane`; if neither is available, stop and request installation guidance (do not invent repo-local entrypoints).
-- Startup shortcut: run `## COMMANDS -> Preflight`; use `ap quickstart`; activate `ap role ORCHESTRATOR` for planning and `ap role <ROLE>` for execution; then apply `## LOAD RULES` before mutation. The guarded route is determined by `workflow.mode` in `.agentplane/WORKFLOW.md`; treat `ap task brief <task-id>` and `ap task next-action <task-id> --explain` as the route oracle: follow the emitted checkout, blocker, and next command instead of reconstructing workflow state.
+- Normal agent route: select ready work with `ap task active`, then request one bounded action with `ap task advance <task-id> --agent-json`. Execute only an emitted semantic episode, stay inside its authority, write the typed result to the supplied result path, and resume with the supplied argv. A configured managed runner uses `ap task run <task-id>`. `task brief`, `task status --route`, and `task next-action --explain` are operator/recovery diagnostics, not the normal agent protocol.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.agents.source_of_truth.sources.of.truth" slot="source_of_truth" mutability="replaceable" -->
@@ -54,70 +54,44 @@ Conflict rule:
 
 ## COMMANDS
 
-### Preflight
+### External agent protocol
 
 ```bash
-ap config show
-ap quickstart
-ap task list
 ap task active
-git status --short --untracked-files=no
-git status --short --untracked-files=all
-git rev-parse --abbrev-ref HEAD
+ap task advance <task-id> --agent-json
+ap task advance <task-id> --result <exact-result-path> --agent-json
 ```
 
-### Route commands
+When `action.kind=agent_episode`, perform only the supplied semantic objective. Do not infer or run
+formal lifecycle transitions. After writing the result, use the exact resume argv from the packet
+when available and request a fresh packet after every state change.
+
+### Managed runner
+
+```bash
+ap task run <task-id>
+```
+
+### Operator and recovery diagnostics
 
 ```bash
 ap task brief <task-id>
+ap task status <task-id> --route
 ap task next-action <task-id> --explain
-ap work resume <task-id>
-```
-
-### Task lifecycle
-
-```bash
-ap task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>
-ap task plan set <task-id> --text "..." --updated-by <ROLE>
-ap task plan approve <task-id> --by ORCHESTRATOR
-ap task start-ready <task-id> --author <ROLE> --body "Start: ..."
-ap verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]
-ap finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>
-```
-
-### branch_pr lifecycle
-
-```bash
-ap work start <task-id> --agent <ROLE> --slug <slug> --worktree
-ap task start-ready <task-id> --author <ROLE> --body "Start: ..."
-git commit -m "Implement <task>"
-ap task verify-show <task-id>
-ap pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
-ap verify <task-id> --ok|--rework --by <ROLE> --note "..."
-ap evaluator execute <task-id> --evaluator <id>
-ap integrate <task-id> --branch task/<task-id>/<slug> --run-verify
-ap finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
-```
-
-### Verification
-
-```bash
-ap vshow <task-id>
-ap verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]
-ap evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review --summary "..." --finding "..." --evidence <path-or-check> [--missing-test "..." --hidden-assumption "..." --residual-risk "..."]
-ap incidents advise <task-id>
-ap incidents collect <task-id> --check
 ap doctor
-node .agentplane/policy/check-routing.mjs
 ```
+
+Use diagnostics or low-level lifecycle commands only when the user is acting as operator, or when
+AgentPlane returns an explicit recovery/manual-compatibility route. They MUST NOT be invoked during
+a normal semantic episode.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.agents.body.tooling" slot="body" mutability="replaceable" -->
 
 ## TOOLING
 
-- Use `## COMMANDS` as the canonical command source.
-- Use `ap quickstart` as the compact installed startup path and `ap role <ROLE>` to activate the current role before role-scoped planning or execution.
+- Use `## COMMANDS` as the canonical agent protocol.
+- Use `ap quickstart` for human/operator orientation. Normal semantic work starts from a fresh `task advance --agent-json` packet or a managed `task run`.
 - For policy changes, routing validation MUST pass via `node .agentplane/policy/check-routing.mjs`.
 
 <!-- /ap:fragment -->
@@ -129,7 +103,7 @@ node .agentplane/policy/check-routing.mjs
 - Autonomy rule: inspection and analysis stay read-only; after plan approval, complete safe in-scope local edits and validation without extra pauses; require re-approval for external writes, destructive actions, or material scope expansion.
 - Ambiguity rule: ask one narrow question only when missing information changes scope, security, task graph, or an irreversible action; otherwise act under explicit assumptions.
 - Tool rule: load only matched policy, task README, Verify Steps, and relevant files; parallelize independent reads, keep dependent actions sequential, and try a bounded fallback when required evidence is empty or suspiciously narrow.
-- Route/persistence rule: for multi-step or tool-heavy work, send a short preamble, load `ap task brief <task-id>`, follow `ap task next-action <task-id> --explain`, and persist through implementation and verification unless blocked.
+- Route/persistence rule: for multi-step or tool-heavy work, request a fresh `ap task advance <task-id> --agent-json` packet, perform only the emitted semantic objective, return the typed result, and repeat until the CLI returns an approval, human, external, or terminal boundary.
 - Response rule: lead with the outcome; preserve required facts, evidence, caveats, blockers, and next actions; remove repetition and optional background before removing decision-critical content.
 - Keep role prompts limited to role-specific behavior; they MUST NOT repeat this shared contract or full gateway command procedures.
 
@@ -175,20 +149,20 @@ Routing constraints:
 
 ## MUST / MUST NOT
 
-- MUST start with ORCHESTRATOR preflight and plan summary.
+- MUST start normal task work from a fresh supervisor packet or managed `task run` invocation.
 - MUST NOT perform mutating actions before explicit user approval.
 - MUST create/reuse executable task IDs for any repo-state mutation.
 - MUST use `ap`/`agentplane` commands for task lifecycle updates; MUST NOT manually edit `.agentplane/tasks.json`.
-- MUST run `ap task plan approve ...` and `ap task start-ready ...` sequentially (never in parallel).
-- MUST activate `ap role ORCHESTRATOR` for planning and `ap role <ROLE>` for the active task owner before owner-scoped execution or verification.
+- MUST perform only the semantic objective and mutation authority supplied by the current packet.
+- MUST return typed semantic output to the supplied result path and request a fresh packet after state changes.
+- MUST NOT invoke work start, start-ready, verify, finish, integrate, cleanup, Git branch/worktree, commit, or PR lifecycle commands during a normal semantic episode.
+- MUST NOT satisfy or simulate an approval boundary; return control to the human/operator.
 - MUST keep repository artifacts in English by default (unless user explicitly requests another language for a specific artifact).
 - MUST NOT fabricate repository facts.
-- MUST stage/commit only intentional changes for the active task scope.
 - MUST stop and request re-approval when scope, risk, or verification criteria materially drift.
-- MUST NOT let ORCHESTRATOR perform owner-scoped implementation or verification once a task owner is known, unless the approved plan explicitly makes ORCHESTRATOR the owner.
-- MUST treat user-authenticated GitHub actions as user-attributed publication and route post-merge fixes through a new task or explicit `post-merge-` branch or `followup` slug token.
+- MUST treat user-authenticated external actions as user-attributed and execute them only from an explicit operator action with matching authority.
 
-Role boundaries: ORCHESTRATOR = preflight + plan + approvals; PLANNER = executable task graph creation/update; INTEGRATOR = base integration/finish in `branch_pr`.
+Role boundaries: PLANNER, EXECUTOR, and EVALUATOR perform their bounded semantic episodes; AgentPlane owns formal transitions, repository routing, verification persistence, integration, and closure.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.agents.body.core.dod" slot="body" mutability="replaceable" -->
@@ -241,6 +215,6 @@ A task is done only when approved scope, loaded DoD modules, security gates, tas
 ## CHANGE CONTROL
 
 - Follow incident-log, immutability, and policy-budget rules in `.agentplane/policy/governance.md`.
-- Record situational incident rules only in `.agentplane/policy/incidents.md`; use targeted lookup/promotion (`task start-ready`, `incidents advise`, `incidents collect`, `finish`) instead of bulk-loading it during normal startup.
+- Record situational incident rules only in `.agentplane/policy/incidents.md`; use CLI-owned targeted lookup/promotion instead of bulk-loading it during normal semantic episodes.
 - Keep `AGENTS.md` as a gateway; move detailed procedures to canonical modules.
 <!-- /ap:fragment -->

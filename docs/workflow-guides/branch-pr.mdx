@@ -1,16 +1,17 @@
 ---
 title: "branch_pr workflow"
-description: "Use Agentplane branch_pr mode for per-task branches, PR artifacts, verification, and integration boundaries."
+description: "Use Agentplane branch_pr mode while the supervisor owns worktrees, PR evidence, hosted checks, and integration."
 ---
 
-Use this when implementation should stay separate from the base checkout until review and hosted
-checks are complete.
+Use `branch_pr` when implementation should remain separate from the base checkout until review and
+hosted checks complete.
 
-`branch_pr` is still the same harness split:
+The responsibility split is:
 
-- The human chooses the task, review boundary, and integration policy.
-- The agent creates the task branch or worktree, writes code, runs checks, and records evidence.
-- Agentplane keeps PR artifacts, verification state, and finish evidence tied to the task.
+- The human chooses the task, approval, review, and publication boundaries.
+- The semantic agent implements or reviews one bounded objective.
+- Agentplane owns branch/worktree routing, task state, PR artifacts, verification persistence,
+  hosted waits, integration, close evidence, and cleanup.
 
 ## When to use
 
@@ -18,50 +19,64 @@ checks are complete.
 - Integration should happen only after review or hosted checks.
 - You want PR metadata and verification artifacts per task.
 
-## Handoff prompt
+## External agent
 
-Give this to the coding agent instead of manually driving every command:
-
-```text
-Use Agentplane branch_pr mode. Start or resume the task in a dedicated worktree, keep the
-implementation commit on the task branch, publish PR artifacts, record verification, and stop for
-review before integration.
-```
-
-The implementation commit belongs to the task branch. The final close step records that commit from
-the base checkout after integration.
-
-## Expected repo artifacts
-
-- task branch or dedicated worktree;
-- `.agentplane/tasks/<task-id>/pr/` PR title/body/diffstat artifacts;
-- task README verification evidence;
-- base-branch finish record after integration;
-- merged branch/worktree cleanup after hosted close.
-
-Lifecycle/status commits, when a command supports them, are task-state checkpoints. They are not a
-substitute for the implementation commit that finish records after integration.
-
-## Operator reference
-
-Use the [CLI reference](../reference/cli) for exact flags. The critical route commands are
-`work start`, `pr open`, `verify`, `integrate`, `finish`, and `cleanup merged`.
-
-For agents and maintainers checking lifecycle parity, the ordered route is:
+Give the agent a task id and use the compact protocol:
 
 ```bash
-agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree
-agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
-git commit -m "Implement <task>"
-agentplane task verify-show <task-id>
-agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
-agentplane verify <task-id> --ok --by <ROLE> --note "Verified: ..."
-bun run workflow:wait-remote-checks -- <pr-number>
-agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
-agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "Merged" --commit <git-rev> --close-commit
+agentplane task active
+agentplane task advance <task-id> --agent-json
 ```
+
+When the packet returns `action.kind=agent_episode`, the agent performs only that objective in the
+authoritative worktree and writable roots supplied by Agentplane. It writes the typed result to the
+packet's result location and resumes with the supplied invocation.
+
+The caller does not create branch names, change cwd, publish the PR, persist verification, merge,
+or clean the worktree.
+
+## Managed runner
+
+With a configured adapter, use:
+
+```bash
+agentplane task run <task-id>
+```
+
+The managed and external routes share the same state fingerprint, WorkOrder, authority, semantic
+result, verification boundary, and execution journal. Both stop for human approvals and hosted or
+external work.
+
+## Expected repository evidence
+
+- a task branch and worktree managed by Agentplane;
+- `.agentplane/tasks/<task-id>/pr/` review artifacts;
+- observed verification and evaluator evidence;
+- hosted PR/check and integration identity;
+- pre-merge or hosted close evidence;
+- safe merged branch/worktree cleanup.
+
+These are CLI-owned process artifacts. The semantic agent may read referenced evidence but must not
+edit or recreate it unless the current WorkOrder explicitly makes that artifact the semantic
+objective.
+
+## Diagnostics and recovery
+
+For human/operator investigation:
+
+```bash
+agentplane task brief <task-id>
+agentplane task status <task-id> --route
+agentplane task next-action <task-id> --explain
+agentplane doctor
+```
+
+Low-level branch, PR, verification, integration, close, and cleanup commands are available through
+`agentplane help --all`. Use them only when Agentplane returns an explicit operator/recovery route;
+they are not the normal coding-agent prompt.
 
 ## Limitations
 
-`branch_pr` adds process overhead. Use `direct` for solo short loops where a separate branch or
-worktree would slow down the task without improving review.
+`branch_pr` adds hosted and worktree overhead. Per-task automatic routing can keep small, safe work
+in `direct` and escalate tasks that need isolation. Configure a repository-wide `branch_pr` floor
+when every task must use that boundary.

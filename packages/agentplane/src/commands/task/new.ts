@@ -1,4 +1,5 @@
-import { setMarkdownSection } from "@agentplaneorg/core/tasks";
+import path from "node:path";
+import { setMarkdownSection, withTaskReadmeTransaction } from "@agentplaneorg/core/tasks";
 import type { TaskExecutionRouteRequest } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError } from "../../cli/error-map.js";
@@ -176,175 +177,183 @@ export async function runTaskNewParsed(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    await ctx.taskBackend.assertLocalMutationReady?.();
-    const duplicateTasks = listOpenTaskDuplicates(await ctx.taskBackend.listTasks(), p.title);
-    const exactDuplicateTasks = duplicateTasks.filter((match) => match.severity === "exact");
-    if (exactDuplicateTasks.length > 0 && !p.allowDuplicate) {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message: formatDuplicateTaskMessage(exactDuplicateTasks, false, "blocked"),
-      });
-    }
-    if (duplicateTasks.length > 0) {
-      process.stderr.write(
-        `${warnMessage(formatDuplicateTaskMessage(duplicateTasks, p.allowDuplicate, "warning"))}\n`,
-      );
-    }
-    const suffixLength = ctx.config.tasks.id_suffix_length_default;
-    if (!ctx.taskBackend.generateTaskId) {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message: backendNotSupportedMessage("generateTaskId()"),
-      });
-    }
-    const taskId = await ctx.taskBackend.generateTaskId({ length: suffixLength, attempts: 1000 });
-    const executionContext = await makeReadOnlyExecutionContext(ctx);
-    const createdAt = nowIso();
-    let taskDoc = defaultTaskDocV3({ title: p.title, description: p.description });
-    for (const [section, text] of Object.entries(p.taskDocSections ?? {})) {
-      if (typeof text === "string" && text.trim()) {
-        taskDoc = setMarkdownSection(taskDoc, section, text.trim());
+    const creationLockPath = path.join(
+      ctx.resolvedProject.gitRoot,
+      ctx.config.paths.workflow_dir,
+      ".task-create",
+      "README.md",
+    );
+    return await withTaskReadmeTransaction(creationLockPath, async () => {
+      await ctx.taskBackend.assertLocalMutationReady?.();
+      const duplicateTasks = listOpenTaskDuplicates(await ctx.taskBackend.listTasks(), p.title);
+      const exactDuplicateTasks = duplicateTasks.filter((match) => match.severity === "exact");
+      if (exactDuplicateTasks.length > 0 && !p.allowDuplicate) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: formatDuplicateTaskMessage(exactDuplicateTasks, false, "blocked"),
+        });
       }
-    }
+      if (duplicateTasks.length > 0) {
+        process.stderr.write(
+          `${warnMessage(formatDuplicateTaskMessage(duplicateTasks, p.allowDuplicate, "warning"))}\n`,
+        );
+      }
+      const suffixLength = ctx.config.tasks.id_suffix_length_default;
+      if (!ctx.taskBackend.generateTaskId) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: backendNotSupportedMessage("generateTaskId()"),
+        });
+      }
+      const taskId = await ctx.taskBackend.generateTaskId({ length: suffixLength, attempts: 1000 });
+      const executionContext = await makeReadOnlyExecutionContext(ctx);
+      const createdAt = nowIso();
+      let taskDoc = defaultTaskDocV3({ title: p.title, description: p.description });
+      for (const [section, text] of Object.entries(p.taskDocSections ?? {})) {
+        if (typeof text === "string" && text.trim()) {
+          taskDoc = setMarkdownSection(taskDoc, section, text.trim());
+        }
+      }
 
-    const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
-    const primary = resolvePrimaryTag(p.tags, ctx);
-    if (primary.usedFallback) {
-      process.stderr.write(
-        `${warnMessage(
-          `primary tag not found in task tags; using fallback primary=${primary.primary}`,
-        )}\n`,
-      );
-    }
-    const requiresVerifySteps = requiresVerifyStepsByPrimary(p.tags, ctx.config);
-    await warnIfUnknownOwner(ctx, p.owner);
-    await ensureTaskDependsOnGraphIsAcyclic({
-      backend: ctx.taskBackend,
-      taskId,
-      dependsOn: p.dependsOn,
-    });
-    if (requiresVerifySteps && !p.taskDocSections?.["Verify Steps"]?.trim()) {
-      taskDoc = setMarkdownSection(
-        taskDoc,
-        "Verify Steps",
-        buildDefaultVerifyStepsSection({
-          primary: primary.primary,
-          verifyCommands: p.verify,
-        }),
-      );
-      process.stderr.write(
-        `${warnMessage(
-          "task requires Verify Steps by primary tag; seeded a PLANNER fallback ## Verify Steps scaffold in README (replace with task-specific acceptance coverage when available)",
-        )}\n`,
-      );
-    }
-    const hasSpike = p.tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
-    const hasImplementationTags = requiresVerifyStepsByPrimary(p.tags, ctx.config);
-    if (hasSpike && hasImplementationTags) {
-      process.stderr.write(
-        `${warnMessage(
-          "spike is combined with a primary tag that requires verify steps; consider splitting spike vs implementation tasks",
-        )}\n`,
-      );
-    }
-
-    const intakeContext = createTaskIntakeContext({
-      runtime: executionContext.taskIntake,
-      source: {
-        id: "task_new",
-        detail: "task new",
-      },
-      requested_outcome: p.title,
-      requested_owner: p.owner,
-      requested_tags: p.tags,
-      requested_verify: p.verify,
-      requested_dependencies: p.dependsOn,
-      inputs: [
-        {
-          kind: "text",
-          label: "description",
-          value: p.description,
-          required: true,
-        },
-      ],
-    });
-    const clarification = createClarificationContract({
-      context: intakeContext,
-    });
-    const draft = createTaskGraphDraft({
-      context: intakeContext,
-      clarification,
-      summary: p.title,
-      tasks: [
-        {
-          draft_id: "task_1",
-          title: p.title,
-          description: p.description,
-          owner: p.owner,
-          priority: p.priority,
-          origin: { system: "manual" },
-          tags: p.tags,
-          ...(p.taskKind ? { task_kind: p.taskKind } : {}),
-          ...(p.mutationScope ? { mutation_scope: p.mutationScope } : {}),
-          ...(p.riskFlags && p.riskFlags.length > 0 ? { risk_flags: p.riskFlags } : {}),
-          ...(p.blueprintRequest ? { blueprint_request: p.blueprintRequest } : {}),
-          execution_route: resolveTaskExecutionRoute({
-            config: ctx.config,
-            requestedMode: p.route,
-            task: {
-              task_kind: p.taskKind,
-              mutation_scope: p.mutationScope,
-              risk_flags: p.riskFlags,
-              blueprint_request: p.blueprintRequest,
-            },
+      const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
+      const primary = resolvePrimaryTag(p.tags, ctx);
+      if (primary.usedFallback) {
+        process.stderr.write(
+          `${warnMessage(
+            `primary tag not found in task tags; using fallback primary=${primary.primary}`,
+          )}\n`,
+        );
+      }
+      const requiresVerifySteps = requiresVerifyStepsByPrimary(p.tags, ctx.config);
+      await warnIfUnknownOwner(ctx, p.owner);
+      await ensureTaskDependsOnGraphIsAcyclic({
+        backend: ctx.taskBackend,
+        taskId,
+        dependsOn: p.dependsOn,
+      });
+      if (requiresVerifySteps && !p.taskDocSections?.["Verify Steps"]?.trim()) {
+        taskDoc = setMarkdownSection(
+          taskDoc,
+          "Verify Steps",
+          buildDefaultVerifyStepsSection({
+            primary: primary.primary,
+            verifyCommands: p.verify,
           }),
-          ...(p.extensions ? { extensions: p.extensions } : {}),
-          depends_on: p.dependsOn,
-          verify: p.verify,
-          doc: taskDoc,
-          doc_version: TASK_DOC_VERSION_V3,
-          id_source: "generated",
-        },
-      ],
-    });
-    const materialization = await materializeTaskGraphDraft({
-      draft,
-      task_ids: {
-        task_1: taskId,
-      },
-      created_at: createdAt,
-    });
-    const task = materialization.tasks[0]?.task;
-    if (!task) {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message: "Task intake materialization unexpectedly produced no tasks.",
-      });
-    }
+        );
+        process.stderr.write(
+          `${warnMessage(
+            "task requires Verify Steps by primary tag; seeded a PLANNER fallback ## Verify Steps scaffold in README (replace with task-specific acceptance coverage when available)",
+          )}\n`,
+        );
+      }
+      const hasSpike = p.tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
+      const hasImplementationTags = requiresVerifyStepsByPrimary(p.tags, ctx.config);
+      if (hasSpike && hasImplementationTags) {
+        process.stderr.write(
+          `${warnMessage(
+            "spike is combined with a primary tag that requires verify steps; consider splitting spike vs implementation tasks",
+          )}\n`,
+        );
+      }
 
-    const created = await writeTaskMutation({
-      ctx,
-      task,
-      writeOptions: { expectedRevision: 0 },
-    });
-    if (opts.printTaskId !== false) process.stdout.write(`${created.task_id}\n`);
-    if (p.showBlueprint) {
-      const summary = await resolveTaskBlueprintLifecycleSummary({
-        task: created.task,
-        config: ctx.config,
-        projectRoot: ctx.resolvedProject.gitRoot,
+      const intakeContext = createTaskIntakeContext({
+        runtime: executionContext.taskIntake,
+        source: {
+          id: "task_new",
+          detail: "task new",
+        },
+        requested_outcome: p.title,
+        requested_owner: p.owner,
+        requested_tags: p.tags,
+        requested_verify: p.verify,
+        requested_dependencies: p.dependsOn,
+        inputs: [
+          {
+            kind: "text",
+            label: "description",
+            value: p.description,
+            required: true,
+          },
+        ],
       });
-      process.stderr.write(formatTaskBlueprintCreationPreview(summary));
-    }
-    return {
-      task_id: created.task_id,
-      revision: created.revision,
-      backend_id: created.backend_id,
-      artifact_paths: created.artifact_paths,
-    };
+      const clarification = createClarificationContract({
+        context: intakeContext,
+      });
+      const draft = createTaskGraphDraft({
+        context: intakeContext,
+        clarification,
+        summary: p.title,
+        tasks: [
+          {
+            draft_id: "task_1",
+            title: p.title,
+            description: p.description,
+            owner: p.owner,
+            priority: p.priority,
+            origin: { system: "manual" },
+            tags: p.tags,
+            ...(p.taskKind ? { task_kind: p.taskKind } : {}),
+            ...(p.mutationScope ? { mutation_scope: p.mutationScope } : {}),
+            ...(p.riskFlags && p.riskFlags.length > 0 ? { risk_flags: p.riskFlags } : {}),
+            ...(p.blueprintRequest ? { blueprint_request: p.blueprintRequest } : {}),
+            execution_route: resolveTaskExecutionRoute({
+              config: ctx.config,
+              requestedMode: p.route,
+              task: {
+                task_kind: p.taskKind,
+                mutation_scope: p.mutationScope,
+                risk_flags: p.riskFlags,
+                blueprint_request: p.blueprintRequest,
+              },
+            }),
+            ...(p.extensions ? { extensions: p.extensions } : {}),
+            depends_on: p.dependsOn,
+            verify: p.verify,
+            doc: taskDoc,
+            doc_version: TASK_DOC_VERSION_V3,
+            id_source: "generated",
+          },
+        ],
+      });
+      const materialization = await materializeTaskGraphDraft({
+        draft,
+        task_ids: {
+          task_1: taskId,
+        },
+        created_at: createdAt,
+      });
+      const task = materialization.tasks[0]?.task;
+      if (!task) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: "Task intake materialization unexpectedly produced no tasks.",
+        });
+      }
+
+      const created = await writeTaskMutation({
+        ctx,
+        task,
+        writeOptions: { expectedRevision: 0 },
+      });
+      if (opts.printTaskId !== false) process.stdout.write(`${created.task_id}\n`);
+      if (p.showBlueprint) {
+        const summary = await resolveTaskBlueprintLifecycleSummary({
+          task: created.task,
+          config: ctx.config,
+          projectRoot: ctx.resolvedProject.gitRoot,
+        });
+        process.stderr.write(formatTaskBlueprintCreationPreview(summary));
+      }
+      return {
+        task_id: created.task_id,
+        revision: created.revision,
+        backend_id: created.backend_id,
+        artifact_paths: created.artifact_paths,
+      };
+    });
   } catch (err) {
     throw mapBackendError(err, { command: "task new", root: opts.rootOverride ?? null });
   }

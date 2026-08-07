@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608061925-KANFC0-96a350b585eb7dbebd3cd0f1",
+  "prepared_at": "2026-08-07T02:59:43.744Z",
+  "task": {
+    "id": "202608061925-KANFC0",
+    "revision": 18,
+    "objective": "Preserve exact Windows task README file identities\n\nFix local task scans so NTFS file IDs above Number.MAX_SAFE_INTEGER remain exact across pre-scan and stable-read identity checks, preventing false unreadable_readme failures in verify and finish.",
+    "acceptance_criteria": [
+      "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend.local.windows-identity.test.ts",
+      "bun run test:platform-critical",
+      "bun run hotspots:check",
+      "bun run typecheck",
+      "bun run test:critical",
+      "bun run format:check",
+      "bun run lint",
+      "bun run knip:check",
+      "bun run bench:compatibility:check",
+      "- In scope: Fix local task scans so NTFS file IDs above Number.MAX_SAFE_INTEGER remain exact across pre-scan and stable-read identity checks, preventing false unreadable_readme failures in verify and finish.\n- Out of scope: unrelated refactors not required for \"Preserve exact Windows task README file identities\".",
+      "1. Reproduce the precision boundary with a synthetic NTFS-style file identity above 2^53 and trace the local task scan into the stable no-follow reader. 2. Make the pre-scan use bigint filesystem metadata end-to-end, converting only safe cache fields such as README size and mtime to numbers. 3. Add focused regression coverage for exact high file IDs plus normal local task scans. 4. Run local backend, critical CLI, type, formatting, and Windows hosted gates. 5. Integrate before the 0.7.5 release task and record the external bug report as provenance.",
+      "1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend.local.windows-identity.test.ts`. Expected: normal local scans and a synthetic NTFS identity above Number.MAX_SAFE_INTEGER both pass.\n2. Run `bun run test:platform-critical` and `bun run hotspots:check`. Expected: the Windows regression is part of the mandatory platform suite and no oversized-test baseline debt is added.\n3. Run `bun run typecheck`, `bun run test:critical`, `bun run format:check`, `bun run lint`, `bun run knip:check`, and `bun run bench:compatibility:check`. Expected: no type, lifecycle, formatting, lint, dead-code, or CLI topology regression.\n4. Confirm Windows hosted CI passes on the exact PR head before integration. Expected: the `test-windows` job executes the registered regression and the required PR verification is green."
+    ]
+  },
+  "evaluated_sha": "7918002b6bb9873c63b88bd3499b12cfbbf9c387",
+  "diff_base_sha": "0148d74211309e8080eaa75b3a91090dc5d765f7",
+  "blueprint_digest": "addd84cbd305a906371cd8cbf627e52cc1a6a49f14daa3cf478383c3d09bd0e2",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608061925-KANFC0/quality/20260807-025943744-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:9f377f280e5513101f188af46368acec0c0999ec2053d03530dd454a71cd153e",
+    "prompt_path": ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/faaa9d52847f9dcbed4cf22bb39adcb41db2d9584bf1f511cb1d7f29adec1c6e.md",
+    "result_schema_path": ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608061925-KANFC0/README.md",
+      "sha256": "sha256:a91a59652549102804b5beb94fb333896484e5f50711ceba9287e7ee1e0a19de",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/8a68366d923c435e22105af80e571889fda31103983d7e127dec2b3febd4f908.patch",
+      "sha256": "sha256:8a68366d923c435e22105af80e571889fda31103983d7e127dec2b3febd4f908",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/2153a515d9b726a2cddb3114d1c9961e01fa815fd28b13d87dd548fef41eee5f.json",
+      "sha256": "sha256:2153a515d9b726a2cddb3114d1c9961e01fa815fd28b13d87dd548fef41eee5f",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608061925-KANFC0/verification/20260807025914407-a2c462adf5f96718.json",
+      "sha256": "sha256:6fad76c842f92260a7757a1ff2bebe24b1389f6515e615252532adf3a2999b5a",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/bf5780f48a58ae1343c240359cca134d113d3d93bbd40c7beab88a82a18a5dad.json",
+      "sha256": "sha256:bf5780f48a58ae1343c240359cca134d113d3d93bbd40c7beab88a82a18a5dad",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

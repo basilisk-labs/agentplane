@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608061646-30TKV4-60ffb41773013a8fdaf62a54",
+  "task_id": "202608061646-30TKV4",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the frozen evaluator packet with deterministic command-level results for every declared Verify Step at cd8beb68ac1d516a1d1d64419dc609ac703def70, including evidence that the negative, compatibility, persisted-route, and synchronized cross-process duplicate cases executed and passed.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The frozen packet contains no deterministic execution evidence for any declared verification check: verification_records, runner_history, and runtime_evidence are all empty. The TESTER note alone cannot establish that positive, negative, compatibility, and cross-process concurrency paths passed at the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/96513d828c41ba999cabcc27a3cb9071e18edc2193999a02dd8091c3eaaa0960.json",
+          "sha256": "sha256:96513d828c41ba999cabcc27a3cb9071e18edc2193999a02dd8091c3eaaa0960",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/README.md",
+          "sha256": "sha256:8a619a7298d5520f619329c7ab2ff85a3350b9adf22de9f64fb59c9bc7f16d53",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608061646-30TKV4/quality/20260807-002437621-recovery-context/evaluator-result.json"
+}

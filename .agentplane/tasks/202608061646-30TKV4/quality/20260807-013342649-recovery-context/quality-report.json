@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608061646-30TKV4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T01:34:28.668Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "60c5d0c9abbfc828c25bce0266916922de7309d6",
+  "blueprint_digest": "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62",
+  "findings": [
+    "Замороженный пакет заявляет прохождение всех одиннадцати проверок, но не содержит ни одной детерминированной записи выполнения: verification_records, runner_history и runtime_evidence пусты."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/a56ce10e321bcf84e1252ac05738c5e993bea1ef2fc2ab8a76533694bc1a5b91.json",
+    ".agentplane/policy/dod.code.md",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [
+    "Заморозить детерминированные результаты всех одиннадцати объявленных Verify Steps на evaluated_sha 60c5d0c9abbfc828c25bce0266916922de7309d6, включая результаты сценариев пустого ввода, неверных опций, явных route overrides, межпроцессного concurrent duplicate creation, persisted selected-route consistency и task advance --agent-json compatibility."
+  ],
+  "hidden_assumptions": [
+    "Краткая заметка TESTER о прохождении проверок предполагается достоверной и относящейся именно к evaluated_sha, хотя пакет не содержит воспроизводимых command-level записей, выводов или runtime evidence."
+  ],
+  "residual_risks": [
+    "Повторно сформировать замороженный observed-checks artifact с детерминированными записями выполнения всех объявленных проверок на SHA 60c5d0c9abbfc828c25bce0266916922de7309d6; текущая заметка verification.state=ok без записей выполнения недостаточна для семантического verdict pass."
+  ]
+}

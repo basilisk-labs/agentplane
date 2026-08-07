@@ -1,0 +1,103 @@
+diff --git a/packages/agentplane/src/backends/task-backend.local.test.ts b/packages/agentplane/src/backends/task-backend.local.test.ts
+index 9975fba5d..cd6e790c0 100644
+--- a/packages/agentplane/src/backends/task-backend.local.test.ts
++++ b/packages/agentplane/src/backends/task-backend.local.test.ts
+@@ -8,6 +8,7 @@ import {
+   readFreshSqliteTaskProjection,
+   resolveTaskProjectionSqlitePath,
+ } from "./task-backend/local-task-sqlite-cache.js";
++import { buildReadmeStatEntry } from "./task-backend/local-backend-read.js";
+ import { mkTempDir, silenceStdIO } from "@agentplane/testkit";
+ 
+ type QuerySummaryView = Pick<
+@@ -58,6 +59,27 @@ describe("LocalBackend", () => {
+     }
+   });
+ 
++  it("preserves NTFS-style README file ids above Number.MAX_SAFE_INTEGER", () => {
++    const exactDevice = 18_014_398_509_481_985n;
++    const exactInode = 25_000_000_000_000_001n;
++    expect(BigInt(Number(exactDevice))).not.toBe(exactDevice);
++    expect(BigInt(Number(exactInode))).not.toBe(exactInode);
++
++    const entry = buildReadmeStatEntry({
++      dirName: "202608061925-KANFC0",
++      readmePath: "C:\\repo\\.agentplane\\tasks\\202608061925-KANFC0\\README.md",
++      mtimeMs: 1_786_041_600_000n,
++      mtimeNs: 1_786_041_600_000_125_000n,
++      size: 4096n,
++      dev: exactDevice,
++      ino: exactInode,
++    });
++
++    expect(entry.identity).toEqual({ dev: exactDevice, ino: exactInode });
++    expect(entry.mtimeMs).toBe(1_786_041_600_000.125);
++    expect(entry.size).toBe(4096);
++  });
++
+   it("writes and reads tasks with docs and metadata", async () => {
+     const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+     const task: TaskData = {
+diff --git a/packages/agentplane/src/backends/task-backend/local-backend-read.ts b/packages/agentplane/src/backends/task-backend/local-backend-read.ts
+index 1868523cc..fa7ac06f4 100644
+--- a/packages/agentplane/src/backends/task-backend/local-backend-read.ts
++++ b/packages/agentplane/src/backends/task-backend/local-backend-read.ts
+@@ -122,6 +122,27 @@ type ReadmeStatEntry = {
+   };
+ };
+ 
++export function buildReadmeStatEntry(opts: {
++  dirName: string;
++  readmePath: string;
++  mtimeMs: bigint;
++  mtimeNs: bigint;
++  size: bigint;
++  dev: bigint;
++  ino: bigint;
++}): ReadmeStatEntry {
++  return {
++    dirName: opts.dirName,
++    readmePath: opts.readmePath,
++    mtimeMs: Number(opts.mtimeMs) + Number(opts.mtimeNs % 1_000_000n) / 1_000_000,
++    size: Number(opts.size),
++    identity: {
++      dev: opts.dev,
++      ino: opts.ino,
++    },
++  };
++}
++
+ function buildReadmeFingerprint(entries: ReadmeStatEntry[]): TaskIndexReadmeFingerprint {
+   return {
+     entries: entries.map(
+@@ -190,18 +211,19 @@ export async function listLocalTasks(
+   for (const dirName of dirs) {
+     const readmePath = path.join(context.root, dirName, "README.md");
+     try {
+-      const stats = await lstat(readmePath);
++      const stats = await lstat(readmePath, { bigint: true });
+       if (!stats.isSymbolicLink() && stats.isFile()) {
+-        readmeStats.push({
+-          dirName,
+-          readmePath,
+-          mtimeMs: stats.mtimeMs,
+-          size: stats.size,
+-          identity: {
+-            dev: BigInt(stats.dev),
+-            ino: BigInt(stats.ino),
+-          },
+-        });
++        readmeStats.push(
++          buildReadmeStatEntry({
++            dirName,
++            readmePath,
++            mtimeMs: stats.mtimeMs,
++            mtimeNs: stats.mtimeNs,
++            size: stats.size,
++            dev: stats.dev,
++            ino: stats.ino,
++          }),
++        );
+       } else if (!(await isIgnorableMissingReadmeTaskDir(context.root, dirName))) {
+         hasMissingReadmes = true;
+       }

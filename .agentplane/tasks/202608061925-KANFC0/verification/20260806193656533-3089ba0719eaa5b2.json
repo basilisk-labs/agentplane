@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:3089ba0719eaa5b2603d4ddae3b4d76a2308d9461dddabef1ae541f0568dd842",
+  "implementation_sha": "d2e5d894b25e3e4ea5438b0867b3e489e304cf60",
+  "kind": "task_verification_record",
+  "note": "Verified exact README identity handling: backend suite 32/32, typecheck, targeted lint, and platform-critical 94/94 pass. Full critical remains pending after PR #4785 updates the pre-existing compatibility baseline; Windows hosted proof is required before integration.",
+  "recorded_at": "2026-08-06T19:36:56.533Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/backends/task-backend.local.test.ts`. Expected: a synthetic NTFS-style file identity above `Number.MAX_SAFE_INTEGER` remains byte-exact through the scan identity helper and ordinary local task scans still pass.\n2. Run `bun run typecheck` and `bun run test:critical`. Expected: no type, local backend, verify, finish, or lifecycle regression.\n3. Confirm the implementation obtains task README metadata with `lstat(..., { bigint: true })` before passing the identity to stable protected reads. Expected: no number-to-bigint conversion occurs for `dev` or `ino`.\n4. Confirm Windows hosted CI passes before integration. Expected: required `PR verification` is green on the exact PR head.",
+  "scope_digest": "sha256:b8abbf24a61094c880d52f9eb99afc0ebf2e6cd65c626b226a80549fa6184d0d",
+  "task_id": "202608061925-KANFC0",
+  "verification_command": "agentplane verify 202608061925-KANFC0 --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -10,7 +10,7 @@ Agentplane helps you route local agent work through tasks, plans, verification, 
 and Git-visible evidence.
 
 ```text
-install -> init -> quickstart -> task -> verify -> acr
+install -> init -> task -> run or advance -> terminal evidence
 ```
 
 Operationalize AI-assisted engineering with reproducible local workflow records.
@@ -110,13 +110,29 @@ Read [Local context](docs/user/local-context.mdx).
 
 ## First local workflow
 
+A new task stops at a semantic planning boundary. Start that boundary through the external-agent
+protocol:
+
 ```bash
-agentplane task new --title "Inspect Agentplane artifacts" --description "Review the generated task record" --owner DOCS --tag docs
+agentplane task create "Inspect Agentplane artifacts and summarize what was created"
 agentplane task advance <task-id> --agent-json
-# A new task first returns a PLANNER packet; its generated placeholder cannot be approved.
-# After the semantic plan is recorded and approved, let the configured runner supervise the task:
-agentplane task run <task-id>
 ```
+
+The first response includes the task ID, selected route, and the exact second command. Give the
+returned packet to Claude Code, Codex, Cursor, Aider, or another external agent. The agent performs
+only the packet's semantic objective, writes the typed result to
+`exchange.directory/exchange.result_ref`, and resumes with:
+
+```bash
+agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
+```
+
+Agentplane persists the returned plan and emits the exact human approval action when approval is
+required. After that action, continue with `task advance` for an external agent, or use
+`agentplane task run <task-id>` for semantic episodes supported by the configured managed runner.
+Repeat only the action Agentplane returns until it reports a human, hosted/external, recovery, or
+terminal boundary. Agentplane owns plan persistence, worktree/PR operations, verification
+persistence, integration, and closure.
 
 When the task reaches `DONE`, Agentplane records the supervisor-observed input, visible output,
 reasoning, and total token aggregate in the task README and ACR. If provider telemetry was not
@@ -135,7 +151,7 @@ checks, ACRs, and artifacts.
 
 ## Recipes
 
-Recipes are reusable workflow overlays. Start with the task -> plan -> verify -> ACR flow first;
+Recipes are reusable workflow overlays. Start with the task -> supervisor -> evidence flow first;
 add recipes when you want a repeatable TDD, security review, or documentation update loop.
 
 - [TDD recipe](docs/recipes/tdd.mdx)

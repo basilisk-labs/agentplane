@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "Замороженный пакет заявляет прохождение всех одиннадцати проверок, но не содержит ни одной детерминированной записи выполнения: verification_records, runner_history и runtime_evidence пусты.",
+      "broken_invariant": "DoD требует выполнить и зафиксировать все Verify Steps, а evaluator допускает pass только при наличии проверяемых доказательств положительных, отрицательных и конкурентных сценариев.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/a56ce10e321bcf84e1252ac05738c5e993bea1ef2fc2ab8a76533694bc1a5b91.json",
+          "sha256": "sha256:a56ce10e321bcf84e1252ac05738c5e993bea1ef2fc2ab8a76533694bc1a5b91",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Заморозить детерминированные результаты всех одиннадцати объявленных Verify Steps на evaluated_sha 60c5d0c9abbfc828c25bce0266916922de7309d6, включая результаты сценариев пустого ввода, неверных опций, явных route overrides, межпроцессного concurrent duplicate creation, persisted selected-route consistency и task advance --agent-json compatibility."
+  ],
+  "hidden_assumptions": [
+    "Краткая заметка TESTER о прохождении проверок предполагается достоверной и относящейся именно к evaluated_sha, хотя пакет не содержит воспроизводимых command-level записей, выводов или runtime evidence."
+  ],
+  "recovery_context": "Повторно сформировать замороженный observed-checks artifact с детерминированными записями выполнения всех объявленных проверок на SHA 60c5d0c9abbfc828c25bce0266916922de7309d6; текущая заметка verification.state=ok без записей выполнения недостаточна для семантического verdict pass.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

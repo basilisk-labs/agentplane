@@ -1,361 +1,192 @@
 ---
 title: "Task lifecycle"
-description: "How tasks move from idea to closure in direct and branch_pr workflow modes."
+description: "How Agentplane supervises tasks while agents focus on bounded semantic work."
 ---
 
 ## Overview
 
-Agentplane 0.7 exposes one route model through two execution styles:
+Agentplane 0.7 exposes one supervisor state machine through two execution styles:
 
-- an external agent requests one compact packet with `task advance --agent-json`;
-- after semantic plan approval, a configured runner uses `task run <task-id>` to let the CLI
-  supervise eligible formal steps and bounded semantic episodes.
+- `task advance --agent-json` returns one compact action to an external agent;
+- `task run <task-id>` resolves eligible semantic episodes through the configured managed runner.
 
-The supervisor does not turn approvals, open questions, hosted waits, or semantic choices into
-automatic success. It returns a typed stop at those boundaries. See
-[Migrate to Agentplane 0.7](v0-7-migration) for compatibility and recovery rules.
+Agentplane owns formal process state: plan persistence, approvals, task transitions, checkout
+routing, worktrees, PR artifacts, verification records, integration, recovery, closure, and cleanup.
+The model owns only the work that needs semantic judgment.
 
-Immediately after task creation, `task advance --agent-json` returns a read-only `PLANNER` packet.
-The generated Plan text is a non-approvable placeholder. A task-specific plan must be recorded
-before the route can request explicit approval; `task run` reports the same typed planning stop
-without starting an implementation provider.
+The supervisor never converts an approval, unresolved question, hosted wait, stale state, or
+effect-in-doubt boundary into success. It returns a typed stop and waits for the appropriate human,
+provider, or recovery action.
 
-## Supervised lifecycle
+## External-agent route
 
-After plan approval and, for `branch_pr`, worktree creation:
+Select ready work and request one bounded packet:
 
 ```bash
-agentplane task advance <task-id> --agent-json
-agentplane task run <task-id> --dry-run
-agentplane task run <task-id>
-```
-
-The prepared WorkOrder contains one semantic objective, bounded authority, required inputs and
-outputs, prepared knowledge evidence, verification intent, and stop rules. The agent returns a
-semantic result; Agentplane separately records process, Git, filesystem, artifact, and check facts.
-An agent-reported check is not accepted as an observed check without supervisor evidence.
-
-On completion, the same trust boundary produces a task-level token aggregate. Managed provider
-episodes contribute observed input, visible output, reasoning, and total tokens exactly once.
-External, malformed, legacy, or partially observed episodes remain explicitly `partial` or
-`unavailable`; the CLI does not accept agent-supplied usage and does not fabricate zeroes.
-
-## Canonical branch_pr lifecycle
-
-After task creation and semantic plan approval, the default managed path is one command:
-
-```bash
-agentplane task run <task-id>
-```
-
-For an external agent, use the compact boundary. The command may perform only eligible registered
-deterministic transitions before returning the next semantic or stop packet:
-
-```bash
+agentplane task active
 agentplane task advance <task-id> --agent-json
 ```
 
-The expanded sequence below is retained for diagnostics, recovery, and compatibility. It is not
-the default agent protocol.
+When `action.kind=agent_episode`:
 
-## Manual branch_pr compatibility lifecycle
+1. Read the supplied objective, role, authority, context references, required output, and stop rules.
+2. Perform only that semantic objective in the supplied checkout and writable roots.
+3. Write a typed semantic result to the result location supplied by the packet.
+4. Resume with the return invocation supplied by Agentplane.
+5. Request a fresh packet after every state change.
 
-This repository is configured for `branch_pr`, so the normal guarded route is:
+Do not reconstruct the state machine from prose. Do not switch checkout, create branches, publish
+PRs, persist verification, integrate, close, or clean up during a normal semantic episode.
 
-1. Preflight.
-2. Create the task and approve the plan.
-3. `work start ... --worktree` on base, then execute implementation on the task branch/worktree.
-4. Run `task start-ready`, implement, and commit implementation changes in the task worktree.
-5. Keep PR artifacts current with `pr open` / `pr update`; normal `pr open` also publishes and links the hosted PR.
-6. Run `task verify-show` and `verify` on the task branch, then wait for required remote checks.
-7. `finish` on the task branch with `--commit <git-rev>` and `--pre-merge-closure`.
-8. Run `integrate` on the base branch only after verification and remote checks pass.
-9. Clean up the task worktree/branch after hosted merge closure.
+The external loop stops at one of these boundaries:
+
+- another semantic episode;
+- human approval or clarification;
+- hosted or external provider work;
+- stale state or effect-in-doubt recovery;
+- terminal completion.
+
+## Managed-runner route
+
+With a configured runner, the normal path is:
 
 ```bash
-agentplane config show
-agentplane quickstart
-agentplane task list
-git status --short --untracked-files=no
-git status --short --untracked-files=all
-agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree
-agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
-git add <changed-files>
-git commit -m "Implement <task>"
-agentplane task verify-show <task-id>
-agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
-agentplane pr update <task-id>
-agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
-agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev> --pre-merge-closure
-bun run workflow:wait-remote-checks
-agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
-agentplane cleanup merged --finalize
+agentplane task run <task-id>
 ```
 
-`direct` remains supported, but here it is an explicit alternative rather than the default guarded route.
-Local `agentplane integrate` defaults to `merge` so task branch commits stay in base history. On
-protected bases, the GitHub PR finalization path prefers rebase merge so task commits remain visible
-without an extra GitHub merge commit. Pass `--merge-strategy squash` only when compacting history is
-intentional.
+`task run` uses the same route decision, state fingerprint, WorkOrder, authority, result contract,
+verification boundary, and execution journal as `task advance`. Before a task-specific plan exists,
+`task run` returns `semantic_input_required`; obtain and return the initial PLANNER result through
+`task advance`. After planning and approval, eligible semantic episodes may be resolved by either an
+external caller or the configured runner adapter.
 
-Default branch names are `task/<task-id>/<slug>` for implementation and
-`task-close/<task-id>/<sha12>` for close-tail evidence. The repository can override the prefixes
-with `branch.task_prefix` and `branch.task_close_prefix`; the rest of the shape is fixed.
+The managed runner also stops at human approval, hosted/external, stale-state, effect-in-doubt, and
+terminal boundaries. Rerun `task run` only after the returned boundary has been resolved.
 
-## AgentPlane-owned automation boundaries
+## First complete workflow
 
-In `branch_pr`, use `task advance --agent-json` as the compact machine boundary. Use `task brief`
-and `task next-action --explain` only when expanded route evidence is needed for recovery.
-
-- `work start` / `work resume` own task branch and worktree setup; do not hand-roll branch names or
-  worktree creation when the route packet gives an exact command.
-- `pr open` / `pr update` own PR artifacts, branch publication, and hosted PR creation/linking; do
-  not edit `.agentplane/tasks/<task-id>/pr/*` or create the hosted PR manually unless the route
-  explicitly delegates a fallback.
-- `pr update` / `pr check` own PR artifact freshness; do not repair stale PR metadata with manual
-  edits or amend commits.
-- `evaluator execute` owns the frozen review packet, one read-only provider episode, result
-  validation, and `quality_review.evaluated_sha` recording for the last non-task-artifact commit.
-  If the current quality report is stale, run a fresh evaluator episode on current `HEAD` instead of
-  creating an amend commit just to align the SHA. `evaluator run` remains an explicit
-  compatibility record.
-- `integrate queue` / `integrate --run-verify` own the serialized merge lane and hosted-check
-  gate; do not merge, rebase, squash, or rewrite task branch history outside that route.
-- `finish --pre-merge-closure`, `task hosted-close-pr`, and hosted close own close-tail evidence;
-  do not recreate close-tail artifacts after upstream close has landed.
-- `cleanup merged` owns merged branch/worktree cleanup; do not silently delete task worktrees or
-  remote branches outside the cleanup route.
-
-## Route decision commands
-
-When a `branch_pr` task has been interrupted, partially verified, or merged through hosted close,
-prefer the route-decision commands before manually combining low-level diagnostics:
+Create a task and request its bounded planning episode:
 
 ```bash
+agentplane task create "Inspect Agentplane artifacts and summarize what was created"
+```
+
+Run the exact `task advance` command in the response and give its packet to an external agent. It
+reads `exchange.work_order_ref`, performs only the
+PLANNER objective, writes a typed result matching `exchange.result_schema_ref` to
+`exchange.directory/exchange.result_ref`, and returns it with:
+
+```bash
+agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
+```
+
+Agentplane persists the semantic plan and emits the exact operator action if human approval is
+required. Execute that operator action, then request the next packet with `task advance` or use
+`task run` for an eligible configured managed-runner episode. Repeat only the returned action until
+Agentplane reports a human, hosted/external, recovery, or terminal boundary. No manual lifecycle
+choreography is required from the agent.
+
+## Planning and approval
+
+A newly created task contains a non-approvable placeholder, not synthetic semantic evidence.
+`task advance` returns a read-only PLANNER episode; `task run` returns
+`semantic_input_required` until that result has been supplied through the external protocol.
+Agentplane persists the returned plan and then stops for human approval when policy requires it.
+
+Only a human/operator may satisfy an approval boundary. An agent must not approve its own plan or
+infer approval from earlier prose.
+
+## Semantic WorkOrder
+
+Each semantic episode receives a bounded WorkOrder containing:
+
+- one approved objective;
+- the semantic role and mutation/network authority;
+- the authoritative checkout and writable roots;
+- required inputs and prepared context references;
+- output schema and result location;
+- verification intent;
+- stop rules and state fingerprint.
+
+The packet stays compact. Large context remains behind references so the agent loads only what the
+current objective needs.
+
+## Direct and branch_pr modes
+
+Both modes use the same external and managed supervisor protocols.
+
+### `direct`
+
+Semantic work runs in the current checkout. Agentplane owns formal task transitions, verification
+persistence, commits, and closure.
+
+### `branch_pr`
+
+Agentplane creates or resumes the task worktree, binds the WorkOrder to that checkout, maintains PR
+artifacts, waits for hosted checks, serializes integration, records hosted close, and performs safe
+cleanup. The external caller does not change cwd or derive branch names.
+
+The human still controls review and publication policy. User-authenticated GitHub actions remain
+user-attributed external effects and require the matching operator authority.
+
+## Evidence and trust boundary
+
+The semantic result reports what the agent attempted and observed. Agentplane separately records
+process, Git, filesystem, artifact, provider, and check facts.
+
+- Agent-reported checks are not persisted as observed verification without supervisor evidence.
+- Managed provider token usage is counted exactly once from observed receipts.
+- External, malformed, legacy, or partially observed usage stays `partial` or `unavailable`; the CLI
+  does not accept model-supplied token totals or fabricate zeroes.
+- Independent evaluator evidence stays distinct from executor claims.
+- Terminal completion requires the configured observed verification and quality gates.
+
+## Diagnostics and recovery
+
+The normal agent protocol is `task advance` or `task run`. The following surfaces are diagnostic:
+
+```bash
+agentplane task brief <task-id>
 agentplane task status <task-id> --route
-agentplane task next-action <task-id>
-agentplane work resume <task-id>
-agentplane flow repair <task-id> --dry-run
+agentplane task next-action <task-id> --explain
+agentplane doctor
 ```
 
-These commands read task state, workflow mode, current checkout, PR metadata, hosted PR state, and
-close-tail state, then print a single next action plus blockers. `flow repair` is intentionally
-dry-run in this release: it classifies drift and prints the commands that would repair it, but it
-does not mutate task, branch, PR, or close-tail state.
+Use them when a human/operator is investigating drift or when Agentplane explicitly returns a
+manual recovery boundary. Low-level task, worktree, PR, verification, integration, release, and
+cleanup commands remain available through `agentplane help --all`; they are not the agent happy
+path.
 
-## Minimal direct lifecycle
+Never execute a raw route string as shell. Use typed action fields and exact argv returned by the
+CLI.
 
-If the repository is intentionally operating in `direct`, the shortest agent-first route is:
-
-1. Preflight.
-2. Create the task and approve the plan.
-3. `task start-ready`.
-4. Implement changes.
-5. `task verify-show` -> `verify`.
-6. `finish` with `--result` and `--commit`.
-
-```bash
-agentplane config show
-agentplane quickstart
-agentplane task list
-git status --short --untracked-files=no
-git status --short --untracked-files=all
-agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
-agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
-agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>
-```
-
-Everything else in this document is either mode-specific detail or a fallback path.
-
-A task moves through the same core stages in both modes:
-
-1. **Intake**: a need is identified and recorded.
-2. **Create**: the CLI creates the task record, assigns ownership, and sets dependencies.
-3. **Plan**: PLANNER turns intent and prepared context into a task-specific plan.
-4. **Approve**: ORCHESTRATOR or the human explicitly approves that semantic plan.
-5. **Start**: the executor marks the task DOING with a structured comment.
-6. **Implement**: code, docs, and artifacts are produced.
-7. **Verify**: observed checks and an independent semantic review are recorded separately.
-8. **Commit**: changes are committed with the task ID suffix.
-9. **Finish**: the task is closed with a Verified note, commit metadata, and an Agent Change Record
-   refresh when `acr.write_on_finish=true`.
-10. **Evidence projection**: validate the task-local Agent Change Record against task, policy,
-    verification, finish, and Git evidence.
-11. **Project and integration projections (optional)**: advanced maintenance surfaces can export or
-    regenerate derived task projections from the current backend state.
-
-Task creation targets executable work only.
-Task graph planning splits work into atomic tasks, each assigned to one specific owner.
-
-The differences between modes are about **where** work happens and **who** performs closure.
-
-## Lifecycle flow
+## Lifecycle model
 
 ```mermaid
 flowchart TD
-  A[Intake: need discovered] --> B[Plan: ORCHESTRATOR drafts plan]
-  B --> C{Approval granted?}
-  C -- No --> B
-  C -- Yes --> D[Create task: PLANNER assigns owner + deps]
-  D --> E[Start: executor sets DOING and Start comment]
-  E --> F[Implement changes + docs]
-  F --> G[Verify: run checks and record outcome]
-  G --> H[Commit with task suffix]
-  H --> I[Finish: Verified comment + commit metadata]
-  I --> J[Export snapshot if needed]
+  U["Human intent"] --> CLI["Agentplane supervisor"]
+  CLI -->|"semantic episode"| A["Planner / Executor / Evaluator"]
+  A -->|"typed result"| CLI
+  CLI -->|"approval or clarification"| U
+  CLI -->|"deterministic transition"| CLI
+  CLI -->|"hosted/external wait"| X["External provider"]
+  X --> CLI
+  CLI --> T["Terminal evidence"]
 ```
 
-## direct mode (single checkout)
+The lifecycle still contains intake, planning, approval, execution, verification, review,
+integration, and closure. Those stages are CLI state, not a procedure the semantic agent must
+memorize.
 
-**Where work happens:** in the current checkout.
+## Guardrails
 
-**Who closes the task:** the executor (often CODER/DOCS/TESTER) after the implementation commit.
-
-**Key outputs:**
-
-- Task README and status updates are written directly in the repo.
-- Verification records are appended to the task README under `## Verification` via `agentplane verify ...`.
-- PR artifacts are optional in this mode.
-
-### Sequence diagram (direct)
-
-```mermaid
-sequenceDiagram
-  autonumber
-  participant U as User
-  participant O as ORCHESTRATOR
-  participant P as PLANNER
-  participant E as Executor (CODER/DOCS/TESTER)
-  participant CLI as agentplane CLI
-  participant B as Backend
-  participant G as Git
-
-  U->>O: Request change
-  O->>U: Plan + approval request
-  U-->>O: Approve
-  O->>P: Plan executable task graph
-  P->>CLI: task new / update
-  CLI->>B: Write task + deps
-  E->>CLI: start <task-id>
-  CLI->>B: Update task status + comment
-  E->>G: Implement changes
-  E->>CLI: verify <task-id> --ok --by <id> --note <text>
-  CLI->>B: Append verification record
-  E->>CLI: guard commit / commit
-  CLI->>G: Create commit
-  E->>CLI: finish <task-id> --author <id> --body <text> --result <one-line>
-  CLI->>B: Close task + store commit metadata
-  CLI->>B: Refresh task-local acr.json when enabled
-  E->>CLI: acr validate / acr explain (optional)
-```
-
-## branch_pr mode
-
-**Where work happens:** in a per-task branch/worktree.
-
-**Who closes the task:** INTEGRATOR on the base branch after merge.
-
-**Key outputs:**
-
-- PR artifacts are required under `.agentplane/tasks/<task-id>/pr/`.
-- Canonical task writes happen on the base branch only.
-- Handoff notes are appended during review and carried into closure.
-- Hosted PRs and server-side required checks are separate from local `agentplane pr ...` artifacts.
-
-### Sequence diagram (branch_pr)
-
-```mermaid
-sequenceDiagram
-  autonumber
-  participant U as User
-  participant O as ORCHESTRATOR
-  participant P as PLANNER
-  participant E as Executor (CODER/DOCS/TESTER)
-  participant I as INTEGRATOR
-  participant CLI as agentplane CLI
-  participant B as Backend
-  participant G as Git
-
-  U->>O: Request change
-  O->>U: Plan + approval request
-  U-->>O: Approve
-  O->>P: Plan executable task graph
-  P->>CLI: task new / update
-  CLI->>B: Write task + deps
-  E->>CLI: work start <task-id>
-  CLI->>G: Create branch + worktree
-  E->>CLI: start <task-id>
-  CLI->>B: Update task status + comment
-  E->>G: Implement changes
-  E->>G: Commit changes
-  E->>CLI: pr open / update
-  CLI->>B: Write PR artifacts
-  CLI->>G: Publish/link hosted PR
-  E->>CLI: verify <task-id> --ok --by <id> --note <text>
-  CLI->>B: Append verification record
-  E->>G: Wait for required hosted checks
-  G-->>E: Required checks green
-  I->>CLI: pr check / integrate
-  CLI->>G: Merge to base (merge commit by default)
-  CLI->>B: Refresh diffstat + README summary
-  I->>CLI: finish <task-id> --author <id> --body <text> --result <one-line>
-  CLI->>B: Close task + store commit metadata
-  CLI->>B: Refresh task-local acr.json when enabled
-  I->>CLI: acr validate / acr explain (optional)
-```
-
-## Guardrails and policies
-
-- **Approvals**: plan, network, and verification approvals are enforced via config (`agents.approvals.*`).
-- **Preflight depth**:
-  - `agentplane preflight` uses quick mode by default (fast, no backend task-list probe).
-  - `agentplane preflight --mode full` adds backend task-list readiness checks.
-- **Status comments**: start/block/finish require structured text (Start/Blocked/Verified).
-- **Allowed status transitions**:
-  - `TODO -> DOING|BLOCKED`
-  - `DOING -> DONE|BLOCKED`
-  - `BLOCKED -> TODO|DOING`
-- **Status-commit major transitions**:
-  - `TODO -> DOING`
-  - `DOING -> BLOCKED`
-  - `BLOCKED -> DOING`
-  - `DOING -> DONE`
-- **Two-stage verification**:
-  - `## Verify Steps` is the ex-ante verification contract (criteria/protocol addressed to the verifier).
-  - `## Verification` is the ex-post append-only record written by `agentplane verify ...`.
-- **Task-local observations**:
-  - Active `doc_version=3` tasks use `## Findings` for local deviations, follow-ups, and incident candidates.
-  - Policy incidents are curated separately; they are not written directly from every task.
-- **Primary-tag verification policy**:
-  - Verify-step and verification requirements are controlled by `tasks.verify.require_steps_for_primary` and `tasks.verify.require_verification_for_primary`.
-- **branch_pr verify logs**: `agentplane integrate --run-verify` executes frontmatter `verify:` commands and appends output to `.agentplane/tasks/<task-id>/pr/verify.log`.
-- **Agent Change Record**: ACR is generated from the same lifecycle evidence, defaulting to
-  `.agentplane/tasks/<task-id>/acr.json`; it must validate against task state rather than become a
-  separate task source of truth.
-- **Commit policy**: commit subjects must include the task ID suffix.
-- **Preferred close flow (single command)**:
-  - In `direct`, `agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --commit <git-rev>` closes task metadata and creates the deterministic close commit in one step by default.
-- **Exceptional/manual close paths**:
-  - Use `--no-close-commit` only when you need to leave close handling manual.
-  - In `branch_pr`, or when you want to be explicit, use `--close-commit`.
-  - Add `--close-unstage-others` when unrelated staged files are present and you are using explicit `--close-commit`.
-- **Docs updates**: task README sections are updated via `agentplane task doc set`; keep the active `doc_version` contract explicit when editing task docs.
-- **Advanced closure and maintenance commands**: exceptional close helpers, hosted-close recovery,
-  projection export, and task migration commands are not part of the normal user lifecycle. Use
-  `agentplane help --all` when maintaining Agentplane itself or recovering legacy state.
-
-## Lifecycle and close taxonomy
-
-The close surface is locked around one rule: a close command must make the
-task state, task README, and git history agree about the terminal outcome. The
-commands below differ by workflow mode and by whether the task is closed as
-completed work, a no-op, a duplicate, or a hosted PR outcome.
-
-Normal users should use `finish` for task completion and `pr close` commands only for hosted PR
-lifecycle. The no-op, duplicate, hosted-close, hosted-close-pr, and migration helpers are advanced
-maintenance surfaces. They remain implemented and available through `agentplane help --all`, but
-they are intentionally not part of the public happy path.
+- Plans, network actions, verification records, and external effects respect repository approval
+  policy.
+- Every packet is bound to a state fingerprint; stale results are rejected.
+- Effects are journaled so interruption and process loss do not blindly replay ambiguous work.
+- `branch_pr` WorkOrders bind semantic writes to the task worktree.
+- Agentplane-owned task, PR, quality, integration, and cleanup artifacts are not model-owned state.
+- Manual compatibility commands require explicit operator/recovery context.
 
 ## Related docs
 
@@ -364,3 +195,4 @@ they are intentionally not part of the public happy path.
 - [Branching and PR artifacts](branching-and-pr-artifacts)
 - [Tasks and backends](tasks-and-backends)
 - [Configuration](configuration)
+- [Migrate to Agentplane 0.7](v0-7-migration)

@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:a6bda0fb4cfef29b7ae139ba9900d77b0132f40675c48ca40d8cb02e9bde43a2",
+  "implementation_sha": "17dc364080b8c5763eb478ea5b0a328168ba2518",
+  "kind": "task_verification_record",
+  "note": "Fresh deterministic evidence on implementation SHA 17dc364080b8c5763eb478ea5b0a328168ba2518.\n\nCommand: git show main:website/scripts/generate-social-images.mjs | bunx eslint --stdin --stdin-filename website/scripts/generate-social-images.mjs\nResult: pass\nEvidence: original main content reproducibly exits 1 with unicorn/prefer-string-replace-all at line 207\nScope: original failure reproduction\n\nCommand: bunx eslint website/scripts/generate-social-images.mjs\nResult: pass\nEvidence: fixed file exits 0 with no findings\nScope: focused regression check\n\nCommand: bun run lint\nResult: pass\nEvidence: core and website ESLint completed with exit code 0\nScope: full local repository lint gate\n\nCommand: bun run docs:social:check\nResult: pass\nEvidence: checked 226 documentation social images\nScope: generated social preview parity\n\nCommand: bun run format:check\nResult: pass\nEvidence: all matched files use Prettier code style\nScope: repository formatting\n\nCommand: bun run typecheck\nResult: pass\nEvidence: repository TypeScript build completed with exit code 0\nScope: TypeScript contracts\n\nCommand: gh pr checks 4796\nResult: pass\nEvidence: PR verification, docs, CodeQL, Analyze actions, and Analyze javascript-typescript passed on head 8345e2aeda332dd80572b9e0f63cbb83e14e5b23\nScope: complete hosted route selected for the docs/website-only diff",
+  "recorded_at": "2026-08-07T02:44:36.609Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bunx eslint website/scripts/generate-social-images.mjs`. Expected: the current lint violation is gone.\n2. Run `bun run lint`. Expected: core and website lint both pass.\n3. Run `bun run docs:social:check` and `bun run format:check`. Expected: generated social assets remain current and formatting is unchanged.\n4. Run `bun run typecheck`. Expected: repository TypeScript contracts remain valid.",
+  "scope_digest": "sha256:7f173c5cc5fd73e72050c28a776005e92d52c750e6b14d54ef63dfbdbe07e11c",
+  "task_id": "202608070235-JPPAMT",
+  "verification_command": "agentplane verify 202608070235-JPPAMT --ok --by TESTER",
+  "verifier": "TESTER"
+}
