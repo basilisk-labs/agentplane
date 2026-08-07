@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 39
 origin:
   system: "manual"
 depends_on: []
@@ -31,37 +31,37 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-07T04:07:09.302Z"
-  updated_by: "CODER"
-  note: "Hosted verify-static found unicorn/consistent-existence-index-check in the new onboarding order helper."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-07T04:09:51.276Z"
+  updated_by: "REVIEWER"
+  note: "Hosted lint defect fixed; all declared prompt/onboarding checks, full lint, and executable supervisor product contract pass at the current implementation head."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T04:01:16.325Z"
+  updated_at: "2026-08-07T04:10:43.557Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "047e9077deac3afcc100824875a601f8098625ba"
+  evaluated_sha: "5af3fdf4d7de3abc61b671922ebcc5097c66e1d9"
   blueprint_digest: "5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100"
   evidence_refs:
-    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-040022655-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-040022655-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/a59cd8abeac35bc1f7c33a0a15216f1a7f509d82bab5ddc5d615db7b10dbf278.md"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-040022655-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-040022655-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-040022655-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-041001106-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-041001106-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/de36980d95583419c1ee7d57e31b6b9aa67e61da34b864792876960ab84323a0.md"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-041001106-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-041001106-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-041001106-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608062021-Z0X584/README.md"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/6ea19d33486b02507eae6d30659d28750ab6f05a1f8980da9e84bdadff176fa7.patch"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/a6efa4e6643f5fd66d2121b39a53c92ff18a03bed1e7a3e689674e4a52c0e1f3.json"
-    - ".agentplane/tasks/202608062021-Z0X584/verification/20260807040012032-2a79bbd632f02e2a.json"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/4bb5955cee299add04d7a3311f7aa7918452386039d365041f52983421546ea0.patch"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/bc6e446cad19b500f532cd0e784a0603b1553c1fdc41609de07eddaa2dc5678c.json"
+    - ".agentplane/tasks/202608062021-Z0X584/verification/20260807040951276-aeb64177b01cc694.json"
     - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/cb9bc25b71317d1d5c961b48d4eeed93cebd2712ab163ae470e33bb52e17d0ab.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No contract divergence was found: the revised first workflows route initial planning through task advance, state that task run returns semantic_input_required before a task-specific plan exists, and retain managed execution only after planning and approval."
+    - "No contract divergence or unresolved recovery drift was found at the evaluated SHA; the only post-review implementation change corrects the onboarding order helper's lint violation without changing behavior, and the frozen verification record covers all declared checks plus full lint and the executable supervisor boundary contract."
 token_usage:
   agent_runs: 6
   input_tokens: 1174647
@@ -219,8 +219,14 @@ events:
     author: "CODER"
     state: "needs_rework"
     note: "Hosted verify-static found unicorn/consistent-existence-index-check in the new onboarding order helper."
+  -
+    type: "verify"
+    at: "2026-08-07T04:09:51.276Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Hosted lint defect fixed; all declared prompt/onboarding checks, full lint, and executable supervisor product contract pass at the current implementation head."
 doc_version: 3
-doc_updated_at: "2026-08-07T04:07:10.591Z"
+doc_updated_at: "2026-08-07T04:10:43.578Z"
 doc_updated_by: "CODER"
 description: "Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr policy modules, Codex skill, README, and workflow docs with task active, task advance, and task run as the only normal agent paths; provide one copy-paste executable first workflow and retain manual commands only as explicit operator or recovery interfaces."
 sections:
@@ -750,6 +756,71 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-07T04:09:51.276Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Hosted lint defect fixed; all declared prompt/onboarding checks, full lint, and executable supervisor product contract pass at the current implementation head.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T04:07:10.591Z, excerpt_hash=sha256:e9653577267767950996748213a2f0aa3639b45685585200ddac7e270aea9d00
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts
+    Result: pass
+    Evidence: 2 files, 27 tests passed
+    Scope: gateway and prompt surfaces
+
+    Command: bun run docs:onboarding:check
+    Result: pass
+    Evidence: onboarding scenario and generated corpus parity passed
+    Scope: first-task workflow
+
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: generated reference fresh
+    Scope: CLI docs
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK
+    Scope: policy graph
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/command-guide.test.ts
+    Result: pass
+    Evidence: 3 files, 35 tests passed
+    Scope: supervisor workflow guidance
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: full ESLint suite passed after replacing indexOf non-existence check with === -1
+    Scope: hosted verify-static lint parity
+
+    Command: node scripts/qualification/check-v0.7.1-product-contract.mjs
+    Result: pass
+    Evidence: executable task create/advance/run boundary contract passed
+    Scope: public supervisor UX
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-Z0X584-converge-generated-agent-guidance-on-the-supervi/.agentplane/tasks/202608062021-Z0X584/blueprint/resolved-snapshot.json
+    - old_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+    - current_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-Z0X584
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -786,6 +857,10 @@ sections:
     - Observation: check-agent-onboarding-scenario.mjs used next < 0 for indexOf non-existence.
       Impact: Hosted lint blocks PR integration although behavioral tests pass.
       Resolution: Use the repository lint convention next === -1, run lint:core locally, and republish.
+
+    - Observation: Hosted ESLint enforced unicorn/consistent-existence-index-check on the new documentation parity helper.
+      Impact: The PR could not integrate despite passing behavior and prompt checks.
+      Resolution: The helper now uses === -1 and the same full lint command passes locally.
 extensions:
   implementation_commit:
     hash: "047e9077deac3afcc100824875a601f8098625ba"
@@ -1331,6 +1406,71 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-07T04:09:51.276Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Hosted lint defect fixed; all declared prompt/onboarding checks, full lint, and executable supervisor product contract pass at the current implementation head.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T04:07:10.591Z, excerpt_hash=sha256:e9653577267767950996748213a2f0aa3639b45685585200ddac7e270aea9d00
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts
+Result: pass
+Evidence: 2 files, 27 tests passed
+Scope: gateway and prompt surfaces
+
+Command: bun run docs:onboarding:check
+Result: pass
+Evidence: onboarding scenario and generated corpus parity passed
+Scope: first-task workflow
+
+Command: bun run docs:cli:check
+Result: pass
+Evidence: generated reference fresh
+Scope: CLI docs
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK
+Scope: policy graph
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/command-guide.test.ts
+Result: pass
+Evidence: 3 files, 35 tests passed
+Scope: supervisor workflow guidance
+
+Command: bun run lint:core
+Result: pass
+Evidence: full ESLint suite passed after replacing indexOf non-existence check with === -1
+Scope: hosted verify-static lint parity
+
+Command: node scripts/qualification/check-v0.7.1-product-contract.mjs
+Result: pass
+Evidence: executable task create/advance/run boundary contract passed
+Scope: public supervisor UX
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-Z0X584-converge-generated-agent-guidance-on-the-supervi/.agentplane/tasks/202608062021-Z0X584/blueprint/resolved-snapshot.json
+- old_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+- current_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-Z0X584
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1371,6 +1511,10 @@ DecisionContextRef:
 - Observation: check-agent-onboarding-scenario.mjs used next < 0 for indexOf non-existence.
   Impact: Hosted lint blocks PR integration although behavioral tests pass.
   Resolution: Use the repository lint convention next === -1, run lint:core locally, and republish.
+
+- Observation: Hosted ESLint enforced unicorn/consistent-existence-index-check on the new documentation parity helper.
+  Impact: The PR could not integrate despite passing behavior and prompt checks.
+  Resolution: The helper now uses === -1 and the same full lint command passes locally.
 
 ## Token Usage
 

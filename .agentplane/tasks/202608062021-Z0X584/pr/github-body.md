@@ -15,8 +15,13 @@ Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted verify-static found unicorn/consistent-existence-index-check in the new onboarding order helper.
+- State: ok
+- Note:
+
+```text
+Hosted lint defect fixed; all declared prompt/onboarding checks, full lint, and executable
+supervisor product contract pass at the current implementation head.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

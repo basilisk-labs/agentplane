@@ -12,8 +12,8 @@ Created: 2026-08-06T20:27:51.883Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted verify-static found unicorn/consistent-existence-index-check in the new onboarding order helper.
+- State: ok
+- Note: Hosted lint defect fixed; all declared prompt/onboarding checks, full lint, and executable supervisor product contract pass at the current implementation head.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
