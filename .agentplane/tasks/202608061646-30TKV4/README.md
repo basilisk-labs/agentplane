@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 50
+revision: 51
 origin:
   system: "manual"
 depends_on:
@@ -39,32 +39,31 @@ verification:
   note: "All seven declared checks pass on a743a9c42ca4; onboarding content and conservative ambiguous-intent coverage are now explicit."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T00:55:53.782Z"
+  updated_at: "2026-08-07T01:00:19.375Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "dca066f829e381ad3d6e74293b4d552443f56c30"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "a743a9c42ca4a35915c6781157e1081db6c122ce"
   blueprint_digest: "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62"
   evidence_refs:
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005452023-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005452023-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/fcaaed172c87e7f0220c28d1158afc14c77532b685358e8faffaf0ca14ea5ac7.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005452023-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005452023-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005452023-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005452023-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005921439-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005921439-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/46dbab6aa7aaf256b570f3ba542948e336f3f1f52e62d29c0000ec00a2787c33.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005921439-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005921439-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005921439-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608061646-30TKV4/README.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/f03764541cec0c8b9bd0a51b34d58117711a052ef4284deec69d525a1b5ecf96.patch"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/2e347fb61d1b1b23de9fea4176de597b3cabbd9873ea3939e53d855ea50d9875.json"
-    - ".agentplane/tasks/202608061646-30TKV4/verification/20260807005409275-8701b3f2f8e9fcc4.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/a9d8e99889f1c01445095cccbc0543bea7ccc223931e30dfeac023cde5d1560a.patch"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/e4b80eb6bae2349c87fffb8bf37ad5a16d68789e36ed05c02f2b35df94869d62.json"
+    - ".agentplane/tasks/202608061646-30TKV4/verification/20260807005855623-14f7546d507b8ff6.json"
     - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/425dc49ad99db2ca9f60810ac83290977a16fdf6a35d74fe3f0c781f5388ee6d.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The change updates the generated CLI reference but does not update any onboarding document, despite onboarding documentation being an explicit acceptance requirement."
+    - "No acceptance-criteria or policy violations were identified in the frozen implementation and verification evidence."
 token_usage:
   agent_runs: 11
   input_tokens: 1634333
@@ -291,7 +290,7 @@ events:
     state: "ok"
     note: "All seven declared checks pass on a743a9c42ca4; onboarding content and conservative ambiguous-intent coverage are now explicit."
 doc_version: 3
-doc_updated_at: "2026-08-07T00:58:56.897Z"
+doc_updated_at: "2026-08-07T01:00:19.401Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
