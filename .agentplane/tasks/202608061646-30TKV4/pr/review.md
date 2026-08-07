@@ -13,7 +13,7 @@ Created: 2026-08-06T19:12:24.484Z
 ## Verification
 
 - State: ok
-- Note: All declared user-first CLI, docs, type, routing, maintainability, and compatibility checks pass on dca066f829e3.
+- Note: All declared checks pass on the final implementation-plus-contract head 25cdc43ee9eb.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

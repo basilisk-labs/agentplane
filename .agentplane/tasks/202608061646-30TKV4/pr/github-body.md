@@ -16,12 +16,7 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-All declared user-first CLI, docs, type, routing, maintainability, and compatibility checks pass on
-dca066f829e3.
-```
+- Note: All declared checks pass on the final implementation-plus-contract head 25cdc43ee9eb.
 - Canonical workflow state lives in the task README.
 
 <details>
