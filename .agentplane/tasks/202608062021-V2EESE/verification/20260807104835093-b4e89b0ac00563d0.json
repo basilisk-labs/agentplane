@@ -1,0 +1,15 @@
+{
+  "details": "PASS: targeted semantic/provider and hosted-regression matrix 150/150; typecheck; critical CLI 12/12 groups; policy routing; ci:contract including formatting, schemas, docs parity, RF-04 50-run baseline, lint, architecture, knip, and coverage. Full test:fast completed 531 files and 3859 tests before 16 load-induced 30s timeouts across 11 unrelated heavy files; exact sequential replay with one worker passed all 11 files and 135/135 tests, establishing resource contention rather than functional failure.",
+  "digest": "sha256:b4e89b0ac00563d0e9abd57f5c5477fd7601b2c6123a5d740e58532c4063b1b4",
+  "implementation_sha": "93ee2eeefe2979918848780b6d0c7e0d78910800",
+  "kind": "task_verification_record",
+  "note": "Hosted regressions repaired; semantic prompt projection preserves policy source identity and degrades safely for historical worktrees.",
+  "recorded_at": "2026-08-07T10:48:35.093Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\n- bun run test:critical\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98",
+  "task_id": "202608062021-V2EESE",
+  "verification_command": "agentplane verify 202608062021-V2EESE --ok --by REVIEWER",
+  "verifier": "REVIEWER"
+}

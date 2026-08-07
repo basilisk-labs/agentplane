@@ -12,8 +12,8 @@ Created: 2026-08-06T21:10:34.048Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted verify-unit exposed three semantic-policy projection regressions in minimal and residual-state fixtures.
+- State: ok
+- Note: Hosted regressions repaired; semantic prompt projection preserves policy source identity and degrades safely for historical worktrees.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

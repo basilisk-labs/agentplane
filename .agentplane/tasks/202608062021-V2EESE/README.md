@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -32,11 +32,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-07T10:13:08.221Z"
+  state: "ok"
+  updated_at: "2026-08-07T10:48:35.093Z"
   updated_by: "REVIEWER"
-  note: "Hosted verify-unit exposed three semantic-policy projection regressions in minimal and residual-state fixtures."
-  attempts: 1
+  note: "Hosted regressions repaired; semantic prompt projection preserves policy source identity and degrades safely for historical worktrees."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -218,8 +218,14 @@ events:
     author: "REVIEWER"
     state: "needs_rework"
     note: "Hosted verify-unit exposed three semantic-policy projection regressions in minimal and residual-state fixtures."
+  -
+    type: "verify"
+    at: "2026-08-07T10:48:35.093Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Hosted regressions repaired; semantic prompt projection preserves policy source identity and degrades safely for historical worktrees."
 doc_version: 3
-doc_updated_at: "2026-08-07T10:13:10.020Z"
+doc_updated_at: "2026-08-07T10:48:37.444Z"
 doc_updated_by: "CODER"
 description: "Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt."
 sections:
@@ -938,6 +944,38 @@ sections:
     Result: fail
     Evidence: hosted Core CI run 31168537746 job 92834915138; 3 failed and 3871 passed; failures in residual Git fingerprint, Hermes supervise, and foreign worktree repair.
     Scope: full fast unit and integration suite on PR #4789 head 95a76823b2d6679b2893cdd4802fa2dbb8774d76
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+    - old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T10:48:35.093Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Hosted regressions repaired; semantic prompt projection preserves policy source identity and degrades safely for historical worktrees.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T10:13:10.020Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+    Details:
+
+    PASS: targeted semantic/provider and hosted-regression matrix 150/150; typecheck; critical CLI 12/12 groups; policy routing; ci:contract including formatting, schemas, docs parity, RF-04 50-run baseline, lint, architecture, knip, and coverage. Full test:fast completed 531 files and 3859 tests before 16 load-induced 30s timeouts across 11 unrelated heavy files; exact sequential replay with one worker passed all 11 files and 135/135 tests, establishing resource contention rather than functional failure.
 
     BlueprintSnapshotRef:
     - state: current
@@ -1704,6 +1742,38 @@ Command: bun run test:fast
 Result: fail
 Evidence: hosted Core CI run 31168537746 job 92834915138; 3 failed and 3871 passed; failures in residual Git fingerprint, Hermes supervise, and foreign worktree repair.
 Scope: full fast unit and integration suite on PR #4789 head 95a76823b2d6679b2893cdd4802fa2dbb8774d76
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+- old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T10:48:35.093Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Hosted regressions repaired; semantic prompt projection preserves policy source identity and degrades safely for historical worktrees.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T10:13:10.020Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+Details:
+
+PASS: targeted semantic/provider and hosted-regression matrix 150/150; typecheck; critical CLI 12/12 groups; policy routing; ci:contract including formatting, schemas, docs parity, RF-04 50-run baseline, lint, architecture, knip, and coverage. Full test:fast completed 531 files and 3859 tests before 16 load-induced 30s timeouts across 11 unrelated heavy files; exact sequential replay with one worker passed all 11 files and 135/135 tests, establishing resource contention rather than functional failure.
 
 BlueprintSnapshotRef:
 - state: current

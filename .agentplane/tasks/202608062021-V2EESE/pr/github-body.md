@@ -15,8 +15,13 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted verify-unit exposed three semantic-policy projection regressions in minimal and residual-state fixtures.
+- State: ok
+- Note:
+
+```text
+Hosted regressions repaired; semantic prompt projection preserves policy source identity and
+degrades safely for historical worktrees.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
