@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts\nResult: pass; 3 test files and 18 tests passed.\nEvidence: Vitest exit code 0 on committed head c49bacfa4.\nScope: external supervisor packet, task routing, and command guide contracts.\n\nCommand: bun run docs:cli:check\nResult: pass.\nEvidence: generated CLI reference reported up to date on committed head c49bacfa4.\nScope: compact task help and generated reference.\n\nCommand: bun run typecheck\nResult: pass.\nEvidence: TypeScript build exited 0 on committed head c49bacfa4.\nScope: repository TypeScript contracts.\n\nCommand: bun run test:critical\nResult: pass; 12 of 12 chunks and 84 tests passed.\nEvidence: critical-cli exited 0 on committed head c49bacfa4.\nScope: compatibility, replay, protected-path, symlink, and trust-boundary ratchets.",
+  "digest": "sha256:7071ef17607ed8a559edf43ff59e3edab93804f8eac5aaa5e727213ff74298a9",
+  "implementation_sha": "c49bacfa46fde8a89a5232714c064ca424c2dfc2",
+  "kind": "task_verification_record",
+  "note": "All declared checks pass on committed implementation SHA c49bacfa4.",
+  "recorded_at": "2026-08-07T22:33:16.515Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts\n- bun run docs:cli:check\n- bun run typecheck\n- bun run test:critical",
+  "scope_digest": "sha256:e7b785b4af2458a5bf3ddea4bbab3158dc569e3b026d3f1b1fc95a2df69b1c31",
+  "task_id": "202608062021-MCY8ZC",
+  "verification_command": "agentplane verify 202608062021-MCY8ZC --ok --by TESTER",
+  "verifier": "TESTER"
+}

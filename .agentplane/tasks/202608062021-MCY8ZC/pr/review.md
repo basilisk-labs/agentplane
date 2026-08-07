@@ -13,7 +13,7 @@ Created: 2026-08-06T21:35:28.993Z
 ## Verification
 
 - State: ok
-- Note: Rebased onto current main; protocol, compact help, generated docs, type safety, and all critical compatibility gates pass.
+- Note: All declared checks pass on committed implementation SHA c49bacfa4.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,6 @@ Created: 2026-08-06T21:35:28.993Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/user/cli-reference.generated.mdx              |  49 +++++
  .../run-cli.core.help-snap.test.ts.snap            |  12 +-
  .../src/cli/run-cli.core.help-contract.test.ts     |   8 +-
  .../src/cli/run-cli.core.task-advance.test.ts      | 211 ++++++++++++++++-----
@@ -47,7 +46,7 @@ Created: 2026-08-06T21:35:28.993Z
  .../src/commands/task/agent-action-packet.ts       |  71 ++++++-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
  .../agentplane/src/commands/task/task.command.ts   |  62 ++----
- 18 files changed, 545 insertions(+), 145 deletions(-)
+ 17 files changed, 496 insertions(+), 145 deletions(-)
 ```
 
 </details>
