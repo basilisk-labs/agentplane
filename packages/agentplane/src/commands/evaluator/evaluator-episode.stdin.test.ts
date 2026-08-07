@@ -50,6 +50,7 @@ describe("Codex evaluator stdin dispatch", () => {
       work_order_path: ".agentplane/tasks/evaluator/work-order.json",
       prompt: "Review this change.",
       output_schema_path: ".agentplane/tasks/evaluator/evaluator-result.schema.json",
+      timeout_ms: 120_000,
       argv: ["codex", "exec", "-"],
     });
     const error = Object.assign(new Error("write EPIPE"), { code: "EPIPE" });
@@ -83,13 +84,17 @@ describe("Codex evaluator stdin dispatch", () => {
       work_order_path: ".agentplane/tasks/evaluator/work-order.json",
       prompt: "Review this change.",
       output_schema_path: ".agentplane/tasks/evaluator/evaluator-result.schema.json",
+      timeout_ms: 300_000,
       argv: ["codex", "exec", "-"],
     });
 
-    await vi.advanceTimersByTimeAsync(2 * 60 * 1000);
+    await vi.advanceTimersByTimeAsync(300_000);
     expect(kill).toHaveBeenCalledWith(-123, "SIGKILL");
     child.emit("close", null, "SIGKILL");
 
-    await expect(execution).rejects.toThrow("Codex evaluator exceeded 120000ms.");
+    await expect(execution).rejects.toMatchObject({
+      kind: "timeout",
+      message: "Codex evaluator exceeded 300000ms.",
+    });
   });
 });
