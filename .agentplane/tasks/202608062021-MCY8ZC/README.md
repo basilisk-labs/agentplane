@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -32,7 +32,7 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T23:53:13.775Z"
+  updated_at: "2026-08-07T23:57:08.836Z"
   updated_by: "TESTER"
   note: "Implementation commit 75263193a passes the complete hosted-equivalent unit suite plus every declared verification and repository contract."
   attempts: 0
@@ -221,8 +221,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Implementation commit 75263193a passes the complete hosted-equivalent unit suite plus every declared verification and repository contract."
+  -
+    type: "verify"
+    at: "2026-08-07T23:57:08.836Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Implementation commit 75263193a passes the complete hosted-equivalent unit suite plus every declared verification and repository contract."
 doc_version: 3
-doc_updated_at: "2026-08-07T23:53:15.421Z"
+doc_updated_at: "2026-08-07T23:57:10.549Z"
 doc_updated_by: "CODER"
 description: "Return an exact result_path and structured resume_argv from task advance, expose a typed operator action at approval boundaries, make quickstart and role command guides supervisor-first, show the canonical new/active/advance/run/brief subset in compact task help, attribute explicit begin plans to a human source, and add an end-to-end branch_pr test that advances once from the base checkout and receives a worktree-bound WorkOrder without caller cwd changes."
 sections:
@@ -823,6 +829,66 @@ sections:
     Details:
 
     Result: pass; 543 files and 3885 unit tests passed, 12 critical chunks and 84 tests passed, 3 acceptance files and 17 tests passed, ci:contract passed, docs:cli:check passed, and typecheck passed.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-MCY8ZC-polish-the-external-supervisor-protocol-and-cano/.agentplane/tasks/202608062021-MCY8ZC/blueprint/resolved-snapshot.json
+    - old_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+    - current_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-MCY8ZC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T23:57:08.836Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Implementation commit 75263193a passes the complete hosted-equivalent unit suite plus every declared verification and repository contract.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T23:53:15.421Z, excerpt_hash=sha256:e7b785b4af2458a5bf3ddea4bbab3158dc569e3b026d3f1b1fc95a2df69b1c31
+
+    Details:
+
+    Command: bun run test:fast
+    Result: pass; 543 files and 3885 tests passed.
+    Evidence: Process exited 0 on implementation commit 75263193a.
+    Scope: Complete agentplane, core, recipes, and testkit unit projects.
+
+    Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts
+    Result: pass; 3 files and 17 tests passed.
+    Evidence: Process exited 0 on implementation commit 75263193a.
+    Scope: External supervisor advance, managed run, routing, and canonical command guide.
+
+    Command: bun run docs:cli:check
+    Result: pass.
+    Evidence: Generated CLI reference was current and the process exited 0.
+    Scope: CLI documentation contract.
+
+    Command: bun run typecheck
+    Result: pass.
+    Evidence: Workspace TypeScript build completed with exit code 0.
+    Scope: TypeScript contracts.
+
+    Command: bun run test:critical
+    Result: pass; 12 chunks and 84 tests passed.
+    Evidence: Every critical CLI chunk exited 0 on implementation commit 75263193a.
+    Scope: Critical compatibility and trust-boundary paths.
+
+    Command: bun run ci:contract
+    Result: pass.
+    Evidence: Repository contract completed through coverage thresholds with exit code 0.
+    Scope: Formatting, schemas, policy, efficiency baselines, hotspots, architecture, clone, dead code, and coverage contracts.
 
     BlueprintSnapshotRef:
     - state: current
@@ -1485,6 +1551,66 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T23:52:04.955Z, excerpt_
 Details:
 
 Result: pass; 543 files and 3885 unit tests passed, 12 critical chunks and 84 tests passed, 3 acceptance files and 17 tests passed, ci:contract passed, docs:cli:check passed, and typecheck passed.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-MCY8ZC-polish-the-external-supervisor-protocol-and-cano/.agentplane/tasks/202608062021-MCY8ZC/blueprint/resolved-snapshot.json
+- old_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+- current_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-MCY8ZC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T23:57:08.836Z — VERIFY — ok
+
+By: TESTER
+
+Note: Implementation commit 75263193a passes the complete hosted-equivalent unit suite plus every declared verification and repository contract.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T23:53:15.421Z, excerpt_hash=sha256:e7b785b4af2458a5bf3ddea4bbab3158dc569e3b026d3f1b1fc95a2df69b1c31
+
+Details:
+
+Command: bun run test:fast
+Result: pass; 543 files and 3885 tests passed.
+Evidence: Process exited 0 on implementation commit 75263193a.
+Scope: Complete agentplane, core, recipes, and testkit unit projects.
+
+Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts
+Result: pass; 3 files and 17 tests passed.
+Evidence: Process exited 0 on implementation commit 75263193a.
+Scope: External supervisor advance, managed run, routing, and canonical command guide.
+
+Command: bun run docs:cli:check
+Result: pass.
+Evidence: Generated CLI reference was current and the process exited 0.
+Scope: CLI documentation contract.
+
+Command: bun run typecheck
+Result: pass.
+Evidence: Workspace TypeScript build completed with exit code 0.
+Scope: TypeScript contracts.
+
+Command: bun run test:critical
+Result: pass; 12 chunks and 84 tests passed.
+Evidence: Every critical CLI chunk exited 0 on implementation commit 75263193a.
+Scope: Critical compatibility and trust-boundary paths.
+
+Command: bun run ci:contract
+Result: pass.
+Evidence: Repository contract completed through coverage thresholds with exit code 0.
+Scope: Formatting, schemas, policy, efficiency baselines, hotspots, architecture, clone, dead code, and coverage contracts.
 
 BlueprintSnapshotRef:
 - state: current
