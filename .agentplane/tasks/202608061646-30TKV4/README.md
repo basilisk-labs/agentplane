@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 55
+revision: 56
 origin:
   system: "manual"
 depends_on:
@@ -42,29 +42,29 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T01:00:19.375Z"
+  updated_at: "2026-08-07T01:08:05.449Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "a743a9c42ca4a35915c6781157e1081db6c122ce"
+  evaluated_sha: "0369e3c72d1d7f08695a360a0e3384fd56803347"
   blueprint_digest: "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62"
   evidence_refs:
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005921439-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005921439-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/46dbab6aa7aaf256b570f3ba542948e336f3f1f52e62d29c0000ec00a2787c33.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005921439-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005921439-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005921439-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-010643772-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-010643772-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/64fc9e4bcf14cfcb4202489f21bf44f570a65bbfc101427e6afd9aa761b97fc7.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-010643772-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-010643772-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-010643772-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608061646-30TKV4/README.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/a9d8e99889f1c01445095cccbc0543bea7ccc223931e30dfeac023cde5d1560a.patch"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/e4b80eb6bae2349c87fffb8bf37ad5a16d68789e36ed05c02f2b35df94869d62.json"
-    - ".agentplane/tasks/202608061646-30TKV4/verification/20260807005855623-14f7546d507b8ff6.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/5a020615a2379365bfc3fb5ea1a4aacd8ba915fa66920fcef3887bfd48468f7d.patch"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/0777b177c47048b91c1b37e66c508150ea0d9ce9e891878119e5260dd2f2912b.json"
+    - ".agentplane/tasks/202608061646-30TKV4/verification/20260807010626351-86844d8a26edd3bb.json"
     - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/425dc49ad99db2ca9f60810ac83290977a16fdf6a35d74fe3f0c781f5388ee6d.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No acceptance-criteria or policy violations were identified in the frozen implementation and verification evidence."
+    - "No acceptance-criteria or loaded-policy violations were identified in the frozen implementation and verification evidence."
 token_usage:
   agent_runs: 13
   input_tokens: 2134945
@@ -307,7 +307,7 @@ events:
     state: "ok"
     note: "All eight declared checks pass on 0369e3c72d1d, including repository-wide formatting."
 doc_version: 3
-doc_updated_at: "2026-08-07T01:06:27.715Z"
+doc_updated_at: "2026-08-07T01:08:05.474Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:

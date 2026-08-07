@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "No acceptance-criteria or loaded-policy violations were identified in the frozen implementation and verification evidence.",
+      "broken_invariant": "None; the task contract, required negative and concurrency-sensitive cases, and all eight declared checks are covered.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/5a020615a2379365bfc3fb5ea1a4aacd8ba915fa66920fcef3887bfd48468f7d.patch",
+          "sha256": "sha256:5a020615a2379365bfc3fb5ea1a4aacd8ba915fa66920fcef3887bfd48468f7d"
+        },
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/verification/20260807010626351-86844d8a26edd3bb.json",
+          "sha256": "sha256:7f6aa09b5b7dd8a866f6298436838f82e2e023c4bc708955eef6054a3ac7c6af"
+        },
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/README.md",
+          "sha256": "sha256:d261d7dbc1780519a7f5db4d0422c567aaffb3a07dcf0acdf663fa947c558138",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
