@@ -15,8 +15,8 @@ Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr
 
 ## Verification
 
-- State: ok
-- Note: Supervisor-first generated guidance is aligned with current main and all declared/static gates pass.
+- State: needs_rework
+- Note: Hosted full-fast found stale manual-lifecycle expectations in three supervisor-first contract tests.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -51,10 +51,14 @@ Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr
  packages/agentplane/src/cli/bootstrap-guide.ts     |  52 +-
  packages/agentplane/src/cli/command-guide.test.ts  |  74 +--
  packages/agentplane/src/cli/command-guide.ts       |  98 ++-
+ .../src/cli/run-cli.core.init.branch-pr.test.ts    |   8 +-
+ .../cli/run-cli/commands/init/steps/apply.test.ts  |  16 +-
+ .../agentplane/src/workflow-lifecycle/contract.ts  |  52 +-
+ .../src/workflow-lifecycle/parity-check.ts         |  29 +-
  scripts/checks/check-agent-bootstrap-fresh.mjs     |  55 +-
  scripts/checks/check-agent-onboarding-scenario.mjs |  58 +-
  website/static/llms-full.txt                       | 687 ++++++---------------
- 27 files changed, 870 insertions(+), 1581 deletions(-)
+ 31 files changed, 909 insertions(+), 1647 deletions(-)
 ```
 
 </details>

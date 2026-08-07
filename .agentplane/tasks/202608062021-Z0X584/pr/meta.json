@@ -2,23 +2,16 @@
   "base": "main",
   "branch": "task/202608062021-Z0X584/converge-generated-agent-guidance-on-the-supervi",
   "created_at": "2026-08-06T20:27:51.883Z",
-  "diffstat_sha256": "sha256:a2f835de803af23a2850aa79fefbc93701a541d92b8bc9fd0516e4bea460aff8",
-  "last_verified_at": "2026-08-07T03:18:34.055Z",
+  "diffstat_sha256": "sha256:f39cd10604669ab2e292de56aea2c58affe1a918a3f88bbfa4ac19b67deca519",
+  "last_verified_at": "2026-08-07T03:33:12.169Z",
   "last_verified_diffstat_sha256": "sha256:a2f835de803af23a2850aa79fefbc93701a541d92b8bc9fd0516e4bea460aff8",
   "pr_number": 4788,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4788",
-  "pre_merge_closure": {
-    "basis_commit": "a8b93a05f39a7d19a5c06e3fd521f5c95001aff0",
-    "branch": "task/202608062021-Z0X584/converge-generated-agent-guidance-on-the-supervi",
-    "pr_number": 4788,
-    "recorded_at": "2026-08-07T03:20:34.859Z",
-    "state": "closed_before_merge"
-  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608062021-Z0X584",
   "updated_at": "2026-08-06T20:52:48.085Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }
