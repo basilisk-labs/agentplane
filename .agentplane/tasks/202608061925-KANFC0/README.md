@@ -4,7 +4,7 @@ title: "Preserve exact Windows task README file identities"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-06T19:49:54.150Z"
+  state: "ok"
+  updated_at: "2026-08-07T02:16:20.516Z"
   updated_by: "TESTER"
-  note: "The exact NTFS scan-path regression, typecheck, and platform-critical suite pass. Verification remains rework because the mandatory full critical suite cannot pass until pending PR #4785 repairs the pre-existing compatibility baseline; after it merges, rebase and rerun the complete check before evaluation or integration."
-  attempts: 1
+  note: "Exact NTFS identity handling and every local release gate now pass on the current main baseline; hosted Windows remains the pre-integration PR gate."
+  attempts: 0
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
@@ -115,8 +115,14 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "The exact NTFS scan-path regression, typecheck, and platform-critical suite pass. Verification remains rework because the mandatory full critical suite cannot pass until pending PR #4785 repairs the pre-existing compatibility baseline; after it merges, rebase and rerun the complete check before evaluation or integration."
+  -
+    type: "verify"
+    at: "2026-08-07T02:16:20.516Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Exact NTFS identity handling and every local release gate now pass on the current main baseline; hosted Windows remains the pre-integration PR gate."
 doc_version: 3
-doc_updated_at: "2026-08-06T19:49:55.489Z"
+doc_updated_at: "2026-08-07T02:16:21.518Z"
 doc_updated_by: "CODER"
 description: "Fix local task scans so NTFS file IDs above Number.MAX_SAFE_INTEGER remain exact across pre-scan and stable-read identity checks, preventing false unreadable_readme failures in verify and finish."
 sections:
@@ -254,6 +260,76 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608061925-KANFC0
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T02:16:20.516Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Exact NTFS identity handling and every local release gate now pass on the current main baseline; hosted Windows remains the pre-integration PR gate.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T19:49:55.489Z, excerpt_hash=sha256:b8abbf24a61094c880d52f9eb99afc0ebf2e6cd65c626b226a80549fa6184d0d
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/backends/task-backend.local.test.ts
+    Result: pass
+    Evidence: 1 file and 32 tests passed, including the exact high NTFS identity scan path
+    Scope: local task scan and stable protected README identity
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build completed
+    Scope: repository type contracts
+
+    Command: bun run test:platform-critical
+    Result: pass
+    Evidence: 6 files and 96 tests passed
+    Scope: Windows-critical CLI, task, PR, evaluator, verify, and finish behavior
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical CLI chunks passed
+    Scope: full critical CLI suite on current main
+
+    Command: bun run format:check
+    Result: pass
+    Evidence: all matched files use Prettier style
+    Scope: repository formatting
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: ESLint completed without findings
+    Scope: strict repository lint
+
+    Command: bun run knip:check
+    Result: pass
+    Evidence: CLI 0/0 and total 21/21 baseline passed
+    Scope: unused-code baseline
+
+    Command: bun run bench:compatibility:check
+    Result: pass
+    Evidence: approved 260 command compatibility surface passed
+    Scope: cumulative 0.7 compatibility contract
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061925-KANFC0-preserve-exact-windows-task-readme-file-identiti/.agentplane/tasks/202608061925-KANFC0/blueprint/resolved-snapshot.json
+    - old_digest: addd84cbd305a906371cd8cbf627e52cc1a6a49f14daa3cf478383c3d09bd0e2
+    - current_digest: addd84cbd305a906371cd8cbf627e52cc1a6a49f14daa3cf478383c3d09bd0e2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061925-KANFC0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -426,6 +502,76 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608061925-KANFC0
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T02:16:20.516Z — VERIFY — ok
+
+By: TESTER
+
+Note: Exact NTFS identity handling and every local release gate now pass on the current main baseline; hosted Windows remains the pre-integration PR gate.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T19:49:55.489Z, excerpt_hash=sha256:b8abbf24a61094c880d52f9eb99afc0ebf2e6cd65c626b226a80549fa6184d0d
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/backends/task-backend.local.test.ts
+Result: pass
+Evidence: 1 file and 32 tests passed, including the exact high NTFS identity scan path
+Scope: local task scan and stable protected README identity
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build completed
+Scope: repository type contracts
+
+Command: bun run test:platform-critical
+Result: pass
+Evidence: 6 files and 96 tests passed
+Scope: Windows-critical CLI, task, PR, evaluator, verify, and finish behavior
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical CLI chunks passed
+Scope: full critical CLI suite on current main
+
+Command: bun run format:check
+Result: pass
+Evidence: all matched files use Prettier style
+Scope: repository formatting
+
+Command: bun run lint:core
+Result: pass
+Evidence: ESLint completed without findings
+Scope: strict repository lint
+
+Command: bun run knip:check
+Result: pass
+Evidence: CLI 0/0 and total 21/21 baseline passed
+Scope: unused-code baseline
+
+Command: bun run bench:compatibility:check
+Result: pass
+Evidence: approved 260 command compatibility surface passed
+Scope: cumulative 0.7 compatibility contract
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061925-KANFC0-preserve-exact-windows-task-readme-file-identiti/.agentplane/tasks/202608061925-KANFC0/blueprint/resolved-snapshot.json
+- old_digest: addd84cbd305a906371cd8cbf627e52cc1a6a49f14daa3cf478383c3d09bd0e2
+- current_digest: addd84cbd305a906371cd8cbf627e52cc1a6a49f14daa3cf478383c3d09bd0e2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061925-KANFC0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
