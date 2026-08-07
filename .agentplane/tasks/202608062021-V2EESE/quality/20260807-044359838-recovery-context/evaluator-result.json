@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The exact-provider-input guard still permits Git and release/cleanup choreography outside repair-authorized episodes because its command-family patterns enumerate only selected subcommands.",
+      "broken_invariant": "Normal semantic provider prompts must reject Git, release, and cleanup choreography; qualification must cover the forbidden command families, not only a sampled subcommand list. Commands such as `git clean`, `git reset`, `git tag`, and `gh release` are not matched by the implemented guard and are absent from its negative tests.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/95d8ad739385442fe8b741d140c1a7768db0305da3b54d43c56782c79fb99dad.patch",
+          "sha256": "sha256:95d8ad739385442fe8b741d140c1a7768db0305da3b54d43c56782c79fb99dad",
+          "section": "semantic-prompt-projection.ts PROCESS_CHOREOGRAPHY_PATTERNS and base-prompts.test.ts forbidden-provider-choreography cases"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/README.md",
+          "sha256": "sha256:d93581d31b824848f6eb8d7c97dc273ff7b7a6625e40032c9adc21b629f63286",
+          "section": "Plan items 3–4 and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Exact compiled-provider-input rejection tests for unlisted Git control and cleanup commands, including `git clean`, `git reset`, `git tag`, and `git cherry-pick`.",
+    "Exact compiled-provider-input rejection tests for alternate release interfaces such as `gh release` and package-version/release commands.",
+    "A negative test proving the `agentplane task run tool` exception accepts only an actually declared phase-tool invocation rather than any text sharing that prefix."
+  ],
+  "hidden_assumptions": [
+    "The finite Git subcommand allowlist is assumed to represent the entire forbidden Git choreography family.",
+    "Release and cleanup choreography is assumed to occur only through `agentplane release`, `agentplane cleanup`, or package publish commands.",
+    "Any prompt text beginning with `agentplane task run tool` is assumed to be a valid supervisor-issued phase-tool transport."
+  ],
+  "recovery_context": "Expand the exact-prompt choreography classifier and its negative tests to cover the full declared Git, release, and cleanup families, and constrain the phase-tool exception to declared invocations before resubmitting the frozen implementation for evaluation."
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "202608062021-V2EESE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T04:45:10.198Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "e265524d4429d647ef4f08e5cece772ac4cbf35a",
+  "blueprint_digest": "ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26",
+  "findings": [
+    "The exact-provider-input guard still permits Git and release/cleanup choreography outside repair-authorized episodes because its command-family patterns enumerate only selected subcommands."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/95d8ad739385442fe8b741d140c1a7768db0305da3b54d43c56782c79fb99dad.patch",
+    ".agentplane/tasks/202608062021-V2EESE/README.md"
+  ],
+  "missing_tests": [
+    "Exact compiled-provider-input rejection tests for unlisted Git control and cleanup commands, including `git clean`, `git reset`, `git tag`, and `git cherry-pick`.",
+    "Exact compiled-provider-input rejection tests for alternate release interfaces such as `gh release` and package-version/release commands.",
+    "A negative test proving the `agentplane task run tool` exception accepts only an actually declared phase-tool invocation rather than any text sharing that prefix."
+  ],
+  "hidden_assumptions": [
+    "The finite Git subcommand allowlist is assumed to represent the entire forbidden Git choreography family.",
+    "Release and cleanup choreography is assumed to occur only through `agentplane release`, `agentplane cleanup`, or package publish commands.",
+    "Any prompt text beginning with `agentplane task run tool` is assumed to be a valid supervisor-issued phase-tool transport."
+  ],
+  "residual_risks": [
+    "Expand the exact-prompt choreography classifier and its negative tests to cover the full declared Git, release, and cleanup families, and constrain the phase-tool exception to declared invocations before resubmitting the frozen implementation for evaluation."
+  ]
+}

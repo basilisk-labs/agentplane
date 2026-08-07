@@ -4,7 +4,7 @@ title: "Project semantic-only provider prompts and reject process choreography"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -39,31 +39,30 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T04:31:31.961Z"
+  updated_at: "2026-08-07T04:45:10.198Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "056b9ca2963094d47e6887403f34ce7b78f10e87"
-  blueprint_digest: "1c1d94c37ff9878ab6fb6e28b8b4c63748c940cecc376d0b37495b7d1dd57fd1"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "e265524d4429d647ef4f08e5cece772ac4cbf35a"
+  blueprint_digest: "ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26"
   evidence_refs:
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-043023075-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-043023075-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/d7388a2a9051c9315cec2f9a835206ea30e5bb2bc0db636986817f7a2e74fd3b.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-043023075-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-043023075-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-043023075-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-043023075-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-044359838-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-044359838-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/6389435d51dc282ad7d4044775c8e9c2ab5d5f97049b1157bb67a7bb072d8a8e.md"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-044359838-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-044359838-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-044359838-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-044359838-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608062021-V2EESE/README.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/e0e656aa3c8ddf8d862d7ccca8df62d94b2adb6d32cb4b945538cb35bd0eb8cd.patch"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/b1be7fc632a01ceb8cdbd3b5e97501ba4d87191614429e9c447b311442d83ad8.json"
-    - ".agentplane/tasks/202608062021-V2EESE/verification/20260807042943950-233d3e877ff8fa97.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/a07b7ada05783ebf06c2b120a892bc4258d10c3f42cdc44cd613cb60e0045920.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/95d8ad739385442fe8b741d140c1a7768db0305da3b54d43c56782c79fb99dad.patch"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/735aae2b19834d975c6f0ce5847bf6d001cae92e419b1f75ae3fc7b29063a019.json"
+    - ".agentplane/tasks/202608062021-V2EESE/verification/20260807044334465-b6a89b57419e958c.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/95733d97fca351adc4547b7181a057ce60fc567aeb7afbf37c59f69aa9b36417.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The semantic projection drops an entire eligible gateway fragment whenever any forbidden command appears in that fragment, so mixed fragments lose valid scope or security constraints together with process choreography."
-    - "The exact-provider-input guard covers only a narrow command list and then bypasses all inspection for broadly classified process-mechanism tasks; forbidden startup, task-run/advance, Git push, release, cleanup, and verification-persistence choreography can therefore reach the provider prompt without rejection."
+    - "The exact-provider-input guard still permits Git and release/cleanup choreography outside repair-authorized episodes because its command-family patterns enumerate only selected subcommands."
 execution_route:
   frozen: true
   reason_codes:
