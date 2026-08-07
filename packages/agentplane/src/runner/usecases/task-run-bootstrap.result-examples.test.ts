@@ -104,11 +104,11 @@ describe("runner bootstrap result examples", () => {
     const bootstrap = renderTaskRunnerBootstrap(bundle);
 
     expect(bootstrap).toContain("Return one AgentSemanticResult v2 object");
-    expect(bootstrap).toContain("The supervisor owns persistence and validation");
+    expect(bootstrap).not.toContain("persistence");
     expect(bootstrap).not.toContain("result_path");
     expect(bootstrap).not.toContain("receipt_path");
     expect(bootstrap).toContain(
-      "Use only an exact run-scoped phase-tool invocation declared below",
+      "Use only the supplied context, writable roots, and declared tools",
     );
 
     bundle.execution.sandbox_policy.requested = "workspace-write";
@@ -168,13 +168,12 @@ describe("runner bootstrap result examples", () => {
 
     const bootstrap = renderTaskRunnerBootstrap(bundle);
 
-    expect(bootstrap).toContain("Run-scoped phase tool contract:");
-    expect(bootstrap).toContain("- global_help_required: false");
+    expect(bootstrap).toContain("Declared semantic tools:");
     expect(bootstrap).toContain(
-      "report_result: transport=run_scoped_command enforcement=supervisor invocation=agentplane task run tool report_result",
+      "report_result: transport=run_scoped_command invocation=agentplane task run tool report_result",
     );
     expect(bootstrap).toContain("knowledge_show: unavailable");
-    expect(bootstrap).toContain("Never print the token or pass it on argv.");
+    expect(bootstrap).toContain("The signed transport is preconfigured");
     expect(bootstrap).not.toContain("agentplane help");
 
     const reportResult = bundle.execution.phase_tools.tools[0]!;
@@ -183,10 +182,8 @@ describe("runner bootstrap result examples", () => {
     reportResult.invocation = null;
     reportResult.input_mode = "terminal_result";
     const terminalOnlyBootstrap = renderTaskRunnerBootstrap(bundle);
-    expect(terminalOnlyBootstrap).toContain("This adapter exposes no run_scoped_command transport");
-    expect(terminalOnlyBootstrap).not.toContain(
-      "The supervisor injects the signed token and a checkout-local broker channel",
-    );
+    expect(terminalOnlyBootstrap).toContain("No command transport is granted");
+    expect(terminalOnlyBootstrap).not.toContain("signed transport is preconfigured");
   });
 
   it.each([

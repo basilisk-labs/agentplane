@@ -102,12 +102,23 @@ const PROCESS_REPAIR_AUTHORITY_TAG = "process-mechanism-repair";
 const PROCESS_REPAIR_INTENT =
   /\b(?:lifecycle|orchestration|provider prompt|process choreography|supervisor protocol)\b/iu;
 
-const SEMANTIC_GATEWAY_BODY_FRAGMENT_IDS = new Set(["gateway.agents.body.shared.prompt.contract"]);
+const CANONICAL_SEMANTIC_GATEWAY_FRAGMENT_IDS = new Set([
+  "gateway.agents.purpose.purpose",
+  "gateway.agents.hard_constraint.scope.boundary",
+]);
+
+const PROCESS_POLICY_PROSE_PATTERNS = [
+  /\b(?:result|receipt)[\s_-]+paths?\b/iu,
+  /\bfresh\s+(?:supervisor\s+)?packets?\b/iu,
+  /\b(?:formal|lifecycle|state)\s+transitions?\b/iu,
+  /\bverification\s+persistence\b/iu,
+  /\bresume(?:\s+with)?\s+(?:the\s+)?(?:packet(?:'s)?\s+)?(?:exact\s+)?argv\b/iu,
+];
 
 const SEMANTIC_ROLE_CONTRACTS: Record<AgentWorkOrderRole, string[]> = {
   PLANNER: [
     "Produce the semantic plan, acceptance criteria, unresolved questions, and risk notes requested by the work order.",
-    "Do not perform repository mutations or formal state transitions.",
+    "Remain read-only and return only the requested semantic plan.",
   ],
   CURATOR: [
     "Resolve the supplied sources into bounded semantic context with explicit provenance and uncertainty.",
@@ -139,7 +150,10 @@ function processChoreographyMatches(value: string): ProcessChoreographyMatch[] {
 }
 
 function semanticTextHasProcessChoreography(value: string): boolean {
-  return processChoreographyMatches(value).length > 0;
+  return (
+    processChoreographyMatches(value).length > 0 ||
+    PROCESS_POLICY_PROSE_PATTERNS.some((pattern) => pattern.test(value))
+  );
 }
 
 function projectSemanticFragmentText(value: string): string {
@@ -163,10 +177,10 @@ function projectSemanticFragmentText(value: string): string {
 }
 
 function isSemanticGatewayFragment(fragment: PromptMarkdownFragment): boolean {
-  if (fragment.id === "gateway.user.instructions") return false;
-  if (fragment.id === "gateway.agents.hard_constraint.size.budget") return false;
-  if (fragment.slot === "purpose" || fragment.slot === "hard_constraint") return true;
-  return fragment.slot === "body" && SEMANTIC_GATEWAY_BODY_FRAGMENT_IDS.has(fragment.id);
+  if (fragment.id.startsWith("gateway.agents.")) {
+    return CANONICAL_SEMANTIC_GATEWAY_FRAGMENT_IDS.has(fragment.id);
+  }
+  return fragment.slot === "purpose" || fragment.slot === "hard_constraint";
 }
 
 function projectGatewayBlock(block: RunnerPromptBlock): RunnerPromptBlock {

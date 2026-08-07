@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The structured gateway projection still admits lifecycle and persistence instructions written without command syntax or underscore-form artifact names, including instructions to return output to a “result path,” request a fresh packet, and defer formal transitions.",
+      "broken_invariant": "Normal semantic provider input must contain only the declared semantic contract and must exclude lifecycle and verification-persistence choreography. The projection includes every hard_constraint fragment, while its filtering recognizes specific commands and underscore-form artifact identifiers rather than the forbidden semantic categories.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/664313f67f436b594b6967f22f2b442433c92bdb4cbaa86d9c11fef3c6bdfaa5.patch",
+          "sha256": "sha256:664313f67f436b594b6967f22f2b442433c92bdb4cbaa86d9c11fef3c6bdfaa5",
+          "section": "packages/agentplane/src/runner/context/semantic-prompt-projection.ts"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Compile the real policy gateway for each semantic role and assert that prose variants such as “result path,” “fresh packet,” “state transition,” and “formal transition” are absent from the exact provider input.",
+    "Add a mixed hard-constraint fragment test proving that semantic safety constraints are retained while lifecycle and persistence sentences without CLI command syntax are removed."
+  ],
+  "hidden_assumptions": [
+    "Forbidden choreography is assumed to be identifiable through command-shaped text or underscore-form artifact names.",
+    "All hard_constraint fragments are assumed to be provider-semantic unless individual lines match the current blacklist."
+  ],
+  "recovery_context": "Replace blacklist-only filtering of hard-constraint prose with an explicit allowlisted semantic projection, then qualify the exact compiled prompts against lifecycle and persistence concepts expressed both as commands and ordinary prose."
+}

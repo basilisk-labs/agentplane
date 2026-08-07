@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -40,30 +40,30 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T05:21:21.617Z"
+  updated_at: "2026-08-07T09:31:17.774Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "573e3e685a4606f1f7484d9591b8880c03284395"
+  evaluated_sha: "712ce1727f10f5ad75291b80433863546be725c6"
   blueprint_digest: "ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26"
   evidence_refs:
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-052021309-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-052021309-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/c895aaea9344356a67e7da95334f243456bf041caf8ac6589c0f251dfe384e5d.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-052021309-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-052021309-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-052021309-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-052021309-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-092944726-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-092944726-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/0b478ce008d13da24e8ca9da10bad24d6e54a0de91c26688bc89d90939b4bde8.md"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-092944726-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-092944726-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-092944726-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-092944726-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608062021-V2EESE/README.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/c6a02de08077afae6487ba6a56448964774496de64f5f5bf10c0d301c187abfe.patch"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/f4209ccc0cf6c408ebc3cb586f211da5013bc5be1e63b9c963ed234ce37ea115.json"
-    - ".agentplane/tasks/202608062021-V2EESE/verification/20260807051615831-9a9afec1dfbdaf3a.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/664313f67f436b594b6967f22f2b442433c92bdb4cbaa86d9c11fef3c6bdfaa5.patch"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/4e34e04ead2b876c9bf6bdfbb3ec8da68e252fe00617cfb279c8791120fc8a26.json"
+    - ".agentplane/tasks/202608062021-V2EESE/verification/20260807092906801-241aceac2503c87d.json"
     - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/95733d97fca351adc4547b7181a057ce60fc567aeb7afbf37c59f69aa9b36417.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The compiled semantic provider prompt still exposes supervisor persistence artifacts (`result_path` and `receipt_path`), although the approved contract limits provider input to the semantic output schema and explicitly excludes verification-persistence choreography."
+    - "The structured gateway projection still admits lifecycle and persistence instructions written without command syntax or underscore-form artifact names, including instructions to return output to a “result path,” request a fresh packet, and defer formal transitions."
 token_usage:
   agent_runs: 5
   input_tokens: 792013
@@ -180,7 +180,7 @@ events:
     state: "ok"
     note: "Evaluator timeout failures are classified and the configured runner wall-clock policy now governs the provider episode."
 doc_version: 3
-doc_updated_at: "2026-08-07T09:29:08.121Z"
+doc_updated_at: "2026-08-07T09:31:17.793Z"
 doc_updated_by: "CODER"
 description: "Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt."
 sections:

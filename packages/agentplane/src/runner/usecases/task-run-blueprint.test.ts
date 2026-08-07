@@ -23,7 +23,9 @@ describe("runner blueprint guards", () => {
     expect(bootstrap).not.toContain("result_path");
     expect(bootstrap).not.toContain("receipt_path");
     expect(bootstrap).not.toContain("Prepared invocation:");
-    expect(bootstrap).toContain("Keep all control-plane operations with the parent supervisor");
+    expect(bootstrap).toContain(
+      "Use only the supplied context, writable roots, and declared tools",
+    );
     expect(bootstrap).toContain("Assume sibling runners may be executing concurrently");
     expect(bootstrap).toContain("report possible write conflicts in the typed result");
   });
@@ -103,7 +105,7 @@ describe("runner blueprint guards", () => {
     expect(bootstrap).not.toContain("agentplane work start");
     expect(bootstrap).not.toContain("agentplane task next-action");
     expect(bootstrap).toContain("use absolute paths under writable_roots");
-    expect(bootstrap).toContain("parent supervisor owns every formal transition");
+    expect(bootstrap).not.toContain("formal transition");
     expect(bootstrap).not.toContain("- route_next_command:");
     expect(bootstrap).not.toContain("- route_exact_argv:");
     expect(bootstrap).not.toContain("- route_stale_state_check:");
@@ -115,6 +117,8 @@ describe("runner blueprint guards", () => {
     const bundle = makeRunnerContextBundle({
       execution: { evaluator_skepticism_level: "paranoid" },
     });
+    bundle.execution.sandbox_policy!.role = "EVALUATOR";
+    bundle.execution.sandbox_policy!.requested = "read-only";
 
     const bootstrap = renderTaskRunnerBootstrap(bundle);
 
@@ -124,6 +128,12 @@ describe("runner blueprint guards", () => {
       "assume the implementation is incomplete until each critical claim is backed by direct code",
     );
     expect(bootstrap).toContain("Prefer rework over pass for ambiguous ownership");
+  });
+
+  it("omits evaluator cognition from planner and executor bootstraps", () => {
+    const bundle = makeRunnerContextBundle();
+
+    expect(renderTaskRunnerBootstrap(bundle)).not.toContain("Evaluator skepticism contract:");
   });
 
   it("rejects bundle policy modules that exceed the resolved blueprint budget", () => {

@@ -462,6 +462,9 @@ describe("context task runner integration", () => {
       expect(providerPrompt).not.toContain("trace_path");
       expect(providerPrompt).not.toContain("stderr_path");
       expect(providerPrompt).not.toContain("Prepared invocation:");
+      expect(providerPrompt).not.toMatch(
+        /result path|fresh packet|state transition|formal transition|verification persistence/iu,
+      );
       expect(providerPrompt).not.toMatch(/(?:ap|agentplane)\s+task\s+start-ready/iu);
       expect(providerPrompt).not.toMatch(/(?:ap|agentplane)\s+task\s+next-action/iu);
       expect(providerPrompt).not.toMatch(/(?:ap|agentplane)\s+work\s+start/iu);
@@ -470,8 +473,11 @@ describe("context task runner integration", () => {
       expect(providerPrompt).not.toMatch(/git\s+commit|gh\s+pr/iu);
     }
     expect(coderProviderPrompt).toContain('"semantic_role": "EXECUTOR"');
+    expect(coderProviderPrompt).not.toContain("Evaluator skepticism contract:");
     expect(plannerProviderPrompt).toContain('"semantic_role": "PLANNER"');
+    expect(plannerProviderPrompt).not.toContain("Evaluator skepticism contract:");
     expect(evaluatorProviderPrompt).toContain('"semantic_role": "EVALUATOR"');
+    expect(evaluatorProviderPrompt).toContain("Evaluator skepticism contract:");
     expect(evaluatorProviderPrompt).toContain('"sandbox": "read-only"');
     expect(evaluatorProviderPrompt).not.toContain('"workspace_write"');
   });
