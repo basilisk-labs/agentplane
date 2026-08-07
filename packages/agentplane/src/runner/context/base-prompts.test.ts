@@ -103,6 +103,16 @@ describe("collectRunnerBasePrompts", () => {
           prompt: `${safePrompt}\nagentplane task next-action TASK --explain`,
         }),
       ).toThrow(/process choreography/u);
+      expect(() =>
+        assertSemanticProviderPromptHasNoProcessChoreography({
+          prompt: `${safePrompt}\n- result_path: /repo/.agentplane/run/result.json`,
+        }),
+      ).toThrow(/process choreography/u);
+      expect(() =>
+        assertSemanticProviderPromptHasNoProcessChoreography({
+          prompt: `${safePrompt}\n- receipt_path: /repo/.agentplane/run/receipt.json`,
+        }),
+      ).toThrow(/process choreography/u);
     },
   );
 

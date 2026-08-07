@@ -369,6 +369,13 @@ describe("context task runner integration", () => {
       mutation_scope: "code",
       blueprint_request: "code.direct",
     });
+    const plannerTaskId = await createDoingTask(root, {
+      title: "Planner role-derived sandbox",
+      owner: "PLANNER",
+      task_kind: "analysis",
+      mutation_scope: "none",
+      blueprint_request: "analysis.light",
+    });
     const evaluatorTaskId = await createDoingTask(root, {
       title: "Evaluator role-derived sandbox",
       owner: "EVALUATOR",
@@ -385,6 +392,15 @@ describe("context task runner integration", () => {
       task_id: coderTaskId,
       mode: "dry_run",
       run_id: "run-coder-role-default",
+    });
+    const planner = await prepareTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: plannerTaskId,
+      mode: "dry_run",
+      run_id: "run-planner-role-default",
+      execution_role: "PLANNER",
     });
     const evaluator = await prepareTaskRunnerExecution({
       ctx,
@@ -424,13 +440,28 @@ describe("context task runner integration", () => {
       expect.arrayContaining(["-s", "read-only", "--output-schema"]),
     );
 
-    const [coderProviderPrompt, evaluatorProviderPrompt] = await Promise.all([
-      readFile(coder.bundle.execution.artifact_paths.bootstrap_path, "utf8"),
-      readFile(evaluator.bundle.execution.artifact_paths.bootstrap_path, "utf8"),
-    ]);
-    for (const providerPrompt of [coderProviderPrompt, evaluatorProviderPrompt]) {
+    const [coderProviderPrompt, plannerProviderPrompt, evaluatorProviderPrompt] = await Promise.all(
+      [
+        readFile(coder.bundle.execution.artifact_paths.bootstrap_path, "utf8"),
+        readFile(planner.bundle.execution.artifact_paths.bootstrap_path, "utf8"),
+        readFile(evaluator.bundle.execution.artifact_paths.bootstrap_path, "utf8"),
+      ],
+    );
+    for (const providerPrompt of [
+      coderProviderPrompt,
+      plannerProviderPrompt,
+      evaluatorProviderPrompt,
+    ]) {
       expect(providerPrompt).toContain("complete provider-facing projection");
       expect(providerPrompt).not.toContain("bundle_path");
+      expect(providerPrompt).not.toContain("bootstrap_path");
+      expect(providerPrompt).not.toContain("result_path");
+      expect(providerPrompt).not.toContain("receipt_path");
+      expect(providerPrompt).not.toContain("state_path");
+      expect(providerPrompt).not.toContain("events_path");
+      expect(providerPrompt).not.toContain("trace_path");
+      expect(providerPrompt).not.toContain("stderr_path");
+      expect(providerPrompt).not.toContain("Prepared invocation:");
       expect(providerPrompt).not.toMatch(/(?:ap|agentplane)\s+task\s+start-ready/iu);
       expect(providerPrompt).not.toMatch(/(?:ap|agentplane)\s+task\s+next-action/iu);
       expect(providerPrompt).not.toMatch(/(?:ap|agentplane)\s+work\s+start/iu);
@@ -439,6 +470,7 @@ describe("context task runner integration", () => {
       expect(providerPrompt).not.toMatch(/git\s+commit|gh\s+pr/iu);
     }
     expect(coderProviderPrompt).toContain('"semantic_role": "EXECUTOR"');
+    expect(plannerProviderPrompt).toContain('"semantic_role": "PLANNER"');
     expect(evaluatorProviderPrompt).toContain('"semantic_role": "EVALUATOR"');
     expect(evaluatorProviderPrompt).toContain('"sandbox": "read-only"');
     expect(evaluatorProviderPrompt).not.toContain('"workspace_write"');

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608062021-V2EESE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T05:21:21.617Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "573e3e685a4606f1f7484d9591b8880c03284395",
+  "blueprint_digest": "ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26",
+  "findings": [
+    "The compiled semantic provider prompt still exposes supervisor persistence artifacts (`result_path` and `receipt_path`), although the approved contract limits provider input to the semantic output schema and explicitly excludes verification-persistence choreography."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608062021-V2EESE/README.md",
+    ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/c6a02de08077afae6487ba6a56448964774496de64f5f5bf10c0d301c187abfe.patch"
+  ],
+  "missing_tests": [
+    "An exact compiled-provider qualification test asserting that `result_path`, `receipt_path`, and other supervisor persistence artifact locations are absent for PLANNER, EXECUTOR, and EVALUATOR episodes."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes supervisor-owned result and receipt paths qualify as semantic output context, although the approved contract specifies an output schema and assigns persistence to the supervisor."
+  ],
+  "residual_risks": [
+    "Remove supervisor persistence artifact paths from the provider-facing bootstrap and add exact-prompt assertions covering all semantic roles while retaining the semantic result schema and supervisor-side persistence."
+  ]
+}
