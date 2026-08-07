@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608061742-G2ZA4T-816bbac32d0c53724ed9dd67",
+  "prepared_at": "2026-08-07T00:04:16.869Z",
+  "task": {
+    "id": "202608061742-G2ZA4T",
+    "revision": 14,
+    "objective": "Redesign init around safe defaults and progressive disclosure\n\nReplace the long upfront questionnaire with a short user-first init path that detects repository defaults, asks only decisions that materially change policy or workflow, provides an advanced configuration path, and prints a first-task next step.",
+    "acceptance_criteria": [
+      "bun run docs:onboarding:check",
+      "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.init.test.ts",
+      "- In scope: Replace the long upfront questionnaire with a short user-first init path that detects repository defaults, asks only decisions that materially change policy or workflow, provides an advanced configuration path, and prints a first-task next step.\n- Out of scope: unrelated refactors not required for \"Redesign init around safe defaults and progressive disclosure\".",
+      "1. Replace the default init questionnaire with a short path that detects repository facts and applies explicit safe defaults. 2. Ask only workflow, automation/provider, and policy decisions that materially change generated configuration; keep advanced controls behind one optional path. 3. Render a final configuration summary with reasons and the exact first-task command. 4. Preserve non-interactive flags and existing config compatibility. 5. Cover new, existing, non-interactive, cancelled, and advanced init paths. Approved scope: packages/agentplane/src/commands/init/**, packages/agentplane/src/cli/run-cli/commands/init/**, packages/agentplane/src/cli/**/*init*.test.ts, docs/user/**, README.md, generated onboarding artifacts, and focused snapshots.",
+      "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli/commands/init\n- bun run docs:onboarding:check\n- bun run docs:cli:check\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs"
+    ]
+  },
+  "evaluated_sha": "66d9c65fad5062fbf5a4b35f0fa05ceb6ddb3cfd",
+  "diff_base_sha": "cf0300db2d5e401dc439fbcc87d2e5fc0c45c3b9",
+  "blueprint_digest": "8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-000416869-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:7999b75bb707574ec4c7302eaa2f8dc572d361fd07f6d7ce334bb029a9002aa3",
+    "prompt_path": ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/99e30957230f81bb823ac13ba90d5dfdae0220256d009cc063cebad6e1322b01.md",
+    "result_schema_path": ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608061742-G2ZA4T/README.md",
+      "sha256": "sha256:f5943a40a6decd0c3f2edbe2632f95ae32a6992f3928cc519b31313c28b2a1e6",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/45794ad12594733c1b535de72430b46e6f8293748020a80518042a8e7ea536c0.patch",
+      "sha256": "sha256:45794ad12594733c1b535de72430b46e6f8293748020a80518042a8e7ea536c0",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/a509cd158ef62b22c7a0dafc81868b8400836a941b8a895f3d79b222a74a18d2.json",
+      "sha256": "sha256:a509cd158ef62b22c7a0dafc81868b8400836a941b8a895f3d79b222a74a18d2",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608061742-G2ZA4T/verification/20260807000407415-e15ac0daed8217c4.json",
+      "sha256": "sha256:5eef4e6503768403f6e55c99d3525ac708b9aa52ed9b7359bd3fb0b5b947afab",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/f8d50aeb6c6ba67e5bbdc1ef85fee8250df89013e0dfe3d833853945634456ca.json",
+      "sha256": "sha256:f8d50aeb6c6ba67e5bbdc1ef85fee8250df89013e0dfe3d833853945634456ca",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

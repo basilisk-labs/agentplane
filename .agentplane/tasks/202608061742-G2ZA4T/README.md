@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -35,31 +35,32 @@ verification:
   note: "Progressive init is verified on the qualified user-first intake base with complete deterministic evidence and a clean worktree."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-06T23:47:09.038Z"
+  updated_at: "2026-08-07T00:04:58.425Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "1b63fb8813a54cc74aa197719a5c81e759110d27"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "66d9c65fad5062fbf5a4b35f0fa05ceb6ddb3cfd"
   blueprint_digest: "8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb"
   evidence_refs:
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260806-234531354-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260806-234531354-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/665ca5d1a643d06acf14f1b442d3d77a1c07bc317a2c55439c0b5bae836addb3.md"
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260806-234531354-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260806-234531354-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260806-234531354-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-000416869-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-000416869-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/99e30957230f81bb823ac13ba90d5dfdae0220256d009cc063cebad6e1322b01.md"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-000416869-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-000416869-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-000416869-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-000416869-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608061742-G2ZA4T/README.md"
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/db7b2c06d6cb4e01d464a665b1b1b6b95e26a92077007eab324b6e7ca45fc3b4.patch"
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/a4d57d2e92e4eab83f5b90ce38afa2768e1cabfd16bbea7a197a42d0afa9eb78.json"
-    - ".agentplane/tasks/202608061742-G2ZA4T/verification/20260806234507136-be18675e79789f1c.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/45794ad12594733c1b535de72430b46e6f8293748020a80518042a8e7ea536c0.patch"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/a509cd158ef62b22c7a0dafc81868b8400836a941b8a895f3d79b222a74a18d2.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/verification/20260807000407415-e15ac0daed8217c4.json"
     - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/f8d50aeb6c6ba67e5bbdc1ef85fee8250df89013e0dfe3d833853945634456ca.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen aggregate diff includes the declared dependency task's artifacts and task-command implementation in addition to this task's init changes; commit-level inspection attributes the init task's own changes to the approved scope."
+    - "The redesigned quick init applies fixed defaults but does not detect repository facts and derive repository-specific defaults as required."
 token_usage:
   agent_runs: 1
   input_tokens: 222257
@@ -148,7 +149,7 @@ events:
     state: "ok"
     note: "Progressive init is verified on the qualified user-first intake base with complete deterministic evidence and a clean worktree."
 doc_version: 3
-doc_updated_at: "2026-08-07T00:04:08.905Z"
+doc_updated_at: "2026-08-07T00:04:58.445Z"
 doc_updated_by: "CODER"
 description: "Replace the long upfront questionnaire with a short user-first init path that detects repository defaults, asks only decisions that materially change policy or workflow, provides an advanced configuration path, and prints a first-task next step."
 sections:
