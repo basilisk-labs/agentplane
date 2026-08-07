@@ -4,7 +4,7 @@ title: "Polish the external supervisor protocol and canonical task help"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -36,32 +36,30 @@ verification:
   note: "All evaluator rework and declared checks pass on clean implementation SHA ada518fb9."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T22:45:02.099Z"
+  updated_at: "2026-08-07T22:54:56.647Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "fd1eb488becb4c9bd9cfc49d6dc90d13331e180d"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "ada518fb982b82bf7cb63c2576fb16b0bc56e47b"
   blueprint_digest: "98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5"
   evidence_refs:
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-224349681-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-224349681-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/e2dd5e38e3799f34dfab20fb6abbea8f8750abf75d74e466f54c3fb998faccc1.md"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-224349681-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-224349681-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-224349681-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-224349681-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-225410338-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-225410338-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/094236d9e01df86313b01f1d51158e172b2c2eb775591f2819d64947dcd5b54d.md"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-225410338-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-225410338-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-225410338-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608062021-MCY8ZC/README.md"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/8567073835e48dabdae716dcfd37749d73afbca1e3b0d88556be3d694379fa96.patch"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/40df41279e262a7eba25cbb201cf46824f635b6d2b518a8e4f8ef493e2f73a5e.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/61c4eb65278a3bcd1fecd47aec938112f8258c9f5f64fae5e404b0038c633f22.patch"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/2cd2cbb3ab37bad83069154cb126f7543357e7dace36e7aaa08337b5c79a0188.json"
     - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/b9ec9d466ef8872c88b80f76b9ceb07256be22c1879b47a8a56de950a4cc9057.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The new branch_pr end-to-end test does not assert that the WorkOrder source_manifest is bound to the created worktree, despite that being an explicit acceptance criterion."
-    - "Recorded verification omits the required final repository status evidence, so unintended tracked or untracked drift has not been ruled out by the frozen evidence."
+    - "No acceptance-criteria or policy violations were found in the frozen implementation and verification evidence."
 execution_route:
   frozen: true
   reason_codes:
