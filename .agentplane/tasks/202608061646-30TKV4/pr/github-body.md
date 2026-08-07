@@ -16,7 +16,7 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 ## Verification
 
 - State: ok
-- Note: All eleven declared checks pass on 60c5d0c9a, including the hosted-static Knip budget.
+- Note: All eleven declared checks pass on 60c5d0c9a with machine-parseable command evidence.
 - Canonical workflow state lives in the task README.
 
 <details>

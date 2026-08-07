@@ -13,7 +13,7 @@ Created: 2026-08-06T19:12:24.484Z
 ## Verification
 
 - State: ok
-- Note: All eleven declared checks pass on 60c5d0c9a, including the hosted-static Knip budget.
+- Note: All eleven declared checks pass on 60c5d0c9a with machine-parseable command evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
