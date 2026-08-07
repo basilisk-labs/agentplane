@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\nResult: pass\nEvidence: 3 test files passed; 84 tests passed; duration 6.59s.\nScope: semantic provider prompt projection, task-run context integration, and bounded agent action packets.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: 12 of 12 critical CLI chunks passed; 84 tests passed.\nScope: agent-efficiency, replay hardening, exit codes, Git edges, protected paths, scope isolation, symlink roots, and trust-boundary ratchets.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit code 0.\nScope: workspace TypeScript contracts for the current implementation.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: policy gateway routing and loaded policy graph.",
+  "digest": "sha256:5e0d893e6f4878f641371fba4f80f83d4b07163fe46cc12b06a8e85cfd825958",
+  "implementation_sha": "93ee2eeefe2979918848780b6d0c7e0d78910800",
+  "kind": "task_verification_record",
+  "note": "All four declared Verify Steps passed against implementation 93ee2eeefe2979918848780b6d0c7e0d78910800.",
+  "recorded_at": "2026-08-07T22:01:18.773Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\n- bun run test:critical\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98",
+  "task_id": "202608062021-V2EESE",
+  "verification_command": "agentplane task verify ok 202608062021-V2EESE --ok --by TESTER",
+  "verifier": "TESTER"
+}
