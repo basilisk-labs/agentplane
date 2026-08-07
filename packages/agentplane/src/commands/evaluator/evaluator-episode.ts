@@ -22,8 +22,6 @@ import {
 const EVALUATOR_EPISODE_RECEIPT_FILE = "evaluator-episode.json";
 const MAX_PROVIDER_STDOUT_BYTES = 16 * 1024 * 1024;
 const MAX_PROVIDER_STDERR_BYTES = 1024 * 1024;
-const CODEX_EVALUATOR_TIMEOUT_MS = 2 * 60 * 1000;
-
 type EvaluatorEpisodeInvocation = {
   provider: "codex";
   repository_root: string;
@@ -31,6 +29,7 @@ type EvaluatorEpisodeInvocation = {
   work_order_path: string;
   prompt: string;
   output_schema_path: string;
+  timeout_ms: number;
   argv: string[];
 };
 
@@ -46,7 +45,10 @@ type EvaluatorEpisodeProviderResult = {
 type EvaluatorProviderFailureKind =
   | "nonzero_exit"
   | "missing_structured_result"
-  | "stdin_write_failure";
+  | "stdin_write_failure"
+  | "stderr_limit"
+  | "stdout_limit"
+  | "timeout";
 
 class EvaluatorProviderFailure extends Error {
   readonly kind: EvaluatorProviderFailureKind;
@@ -57,8 +59,9 @@ class EvaluatorProviderFailure extends Error {
     kind: EvaluatorProviderFailureKind;
     exit_code?: number | null;
     signal?: string | null;
+    message?: string;
   }) {
-    super(`Codex evaluator provider failure: ${opts.kind}`);
+    super(opts.message ?? `Codex evaluator provider failure: ${opts.kind}`);
     this.name = "EvaluatorProviderFailure";
     this.kind = opts.kind;
     this.exit_code = opts.exit_code ?? null;
@@ -179,6 +182,7 @@ async function prepareEvaluatorEpisodeInvocation(opts: {
     work_order_path: relative(repositoryRoot, opts.prepared.work_order_path),
     prompt,
     output_schema_path: outputSchemaPath,
+    timeout_ms: opts.ctx.config.runner.timeouts.wall_clock_ms,
     argv: evaluatorCodexArgv({ repositoryRoot, outputSchemaPath }),
   };
 }
@@ -229,14 +233,20 @@ export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (inv
     let stdoutBuffer = "";
     let limitError: Error | null = null;
     let stdinError: Error | null = null;
-    const timeout = setTimeout(() => {
-      limitError = new Error(`Codex evaluator exceeded ${CODEX_EVALUATOR_TIMEOUT_MS}ms.`);
-      terminateEvaluatorProcess(child);
-    }, CODEX_EVALUATOR_TIMEOUT_MS);
+    const timeout =
+      invocation.timeout_ms > 0
+        ? setTimeout(() => {
+            limitError = new EvaluatorProviderFailure({
+              kind: "timeout",
+              message: `Codex evaluator exceeded ${invocation.timeout_ms}ms.`,
+            });
+            terminateEvaluatorProcess(child);
+          }, invocation.timeout_ms)
+        : null;
     const finish = (error?: Error, value?: EvaluatorEpisodeProviderResult) => {
       if (settled) return;
       settled = true;
-      clearTimeout(timeout);
+      if (timeout !== null) clearTimeout(timeout);
       if (error) reject(error);
       else if (value) resolve(value);
     };
@@ -244,7 +254,10 @@ export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (inv
     child.stdout.on("data", (chunk: Buffer) => {
       stdoutBytes += chunk.length;
       if (stdoutBytes > MAX_PROVIDER_STDOUT_BYTES) {
-        limitError = new Error("Codex evaluator exceeded the stdout safety limit.");
+        limitError = new EvaluatorProviderFailure({
+          kind: "stdout_limit",
+          message: "Codex evaluator exceeded the stdout safety limit.",
+        });
         terminateEvaluatorProcess(child);
         return;
       }
@@ -261,7 +274,10 @@ export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (inv
       stderrBytes += chunk.length;
       stderrTail = tail(stderrTail, chunk.toString("utf8"), 4096);
       if (stderrBytes > MAX_PROVIDER_STDERR_BYTES) {
-        limitError = new Error("Codex evaluator exceeded the stderr safety limit.");
+        limitError = new EvaluatorProviderFailure({
+          kind: "stderr_limit",
+          message: "Codex evaluator exceeded the stderr safety limit.",
+        });
         terminateEvaluatorProcess(child);
       }
     });

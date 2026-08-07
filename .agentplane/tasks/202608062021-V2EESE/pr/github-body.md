@@ -28,6 +28,8 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
 
 ```text
  .../src/cli/run-cli.core.task-run.test.ts          |   9 +-
+ .../evaluator/evaluator-episode.stdin.test.ts      |   9 +-
+ .../src/commands/evaluator/evaluator-episode.ts    |  38 ++-
  .../src/runner/context/base-prompt-sources.ts      |  17 +-
  .../src/runner/context/base-prompts.test.ts        | 189 +++++++++++++
  .../agentplane/src/runner/context/base-prompts.ts  |   5 +
@@ -45,7 +47,7 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
  .../usecases/task-run-context.integration.test.ts  | 127 ++++++++-
  .../runner/usecases/task-run-semantic-prompt.ts    |  42 +++
  .../agentplane/src/runner/usecases/task-run.ts     |  10 +-
- 18 files changed, 854 insertions(+), 134 deletions(-)
+ 20 files changed, 888 insertions(+), 147 deletions(-)
 ```
 
 </details>
