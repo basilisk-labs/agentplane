@@ -2,10 +2,10 @@
 id: "202608061742-G2ZA4T"
 title: "Redesign init around safe defaults and progressive disclosure"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -66,22 +66,22 @@ quality_review:
     - "Repository-aware quick init now selects branch_pr when GitHub Actions is detected, retains direct for a fresh repository, and explains both decisions in the preview."
     - "Quick and advanced paths are separated, explicit flags stay non-interactive, and the post-init next step uses the user-first task create entrypoint."
 token_usage:
-  agent_runs: 1
-  input_tokens: 222257
-  journal_digest: "sha256:4c3047b53b7c2d5c5814f6d3a104ae74b14f6c26974eb4d8e9793936878471f6"
-  observed_agent_runs: 1
+  agent_runs: 3
+  input_tokens: 389542
+  journal_digest: "sha256:6bc1a4dc2d8ce1399bc4b3998c053fb95e25b735deaa9a9ec4340a7f0865fe35"
+  observed_agent_runs: 2
   observed_by: "agentplane"
-  output_tokens: 3924
-  reasoning_tokens: 509
+  output_tokens: null
+  reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
-  state: "observed"
-  total_tokens: 226690
-  unavailable_reason: null
-  updated_at: "2026-08-06T23:47:46.418Z"
+  state: "partial"
+  total_tokens: 395884
+  unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
+  updated_at: "2026-08-07T02:01:16.433Z"
 commit:
-  hash: "497550961fda7af9c53d10ffb3267e578ca13a18"
-  message: "✨ G2ZA4T ux: derive init defaults from repository facts"
+  hash: "2c8495534dc776386a769dbfa37a0abe7221be70"
+  message: "🧪 G2ZA4T task: record final init evaluator pass"
 comments:
   -
     author: "CODER"
@@ -101,6 +101,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework committed: quick init now derives workflow and agent-surface defaults from local Git, remote, CI, and policy-surface facts while preserving non-interactive behavior."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -168,8 +171,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "All nine declared init, documentation, policy, type, format, lint, Knip, and compatibility checks pass on f743f09a8."
+  -
+    type: "status"
+    at: "2026-08-07T02:01:16.433Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T02:00:20.898Z"
+doc_updated_at: "2026-08-07T02:01:16.459Z"
 doc_updated_by: "CODER"
 description: "Replace the long upfront questionnaire with a short user-first init path that detects repository defaults, asks only decisions that materially change policy or workflow, provides an advanced configuration path, and prints a first-task next step."
 sections:
@@ -423,8 +433,8 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "1b63fb8813a54cc74aa197719a5c81e759110d27"
-    message: "✨ G2ZA4T ux: add progressive setup flow"
+    hash: "f743f09a82022e5a15dadb00814f8d8b0f9cb068"
+    message: "🧹 G2ZA4T cli: keep first-task command internal"
   workflow_route_baseline:
     start_head_sha: "762d0a6ce3d9c3b6a8e3f0781875e928abe81317"
     version: 1
@@ -695,13 +705,13 @@ Revert the init UX commit. Existing non-interactive flags and generated configur
 
 ## Token Usage
 
-- State: `observed`
-- Completeness: `1/1` agent runs
-- Input tokens: `222257`
-- Output tokens: `3924`
-- Reasoning tokens: `509`
-- Total tokens: `226690`
+- State: `partial`
+- Completeness: `2/3` agent runs
+- Input tokens: `389542`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `395884`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:4c3047b53b7c2d5c5814f6d3a104ae74b14f6c26974eb4d8e9793936878471f6`
-- Unavailable reason: `none`
-- Updated at: `2026-08-06T23:47:46.418Z`
+- Journal digest: `sha256:6bc1a4dc2d8ce1399bc4b3998c053fb95e25b735deaa9a9ec4340a7f0865fe35`
+- Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
+- Updated at: `2026-08-07T02:01:16.433Z`
