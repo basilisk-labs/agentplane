@@ -16,7 +16,7 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 ## Verification
 
 - State: ok
-- Note: All declared checks pass on the final implementation-plus-contract head 25cdc43ee9eb.
+- Note: All seven declared verification steps pass on dca066f829e3.
 - Canonical workflow state lives in the task README.
 
 <details>
