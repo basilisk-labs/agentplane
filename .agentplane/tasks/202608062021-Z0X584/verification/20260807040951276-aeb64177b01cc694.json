@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts\nResult: pass\nEvidence: 2 files, 27 tests passed\nScope: gateway and prompt surfaces\n\nCommand: bun run docs:onboarding:check\nResult: pass\nEvidence: onboarding scenario and generated corpus parity passed\nScope: first-task workflow\n\nCommand: bun run docs:cli:check\nResult: pass\nEvidence: generated reference fresh\nScope: CLI docs\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK\nScope: policy graph\n\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/command-guide.test.ts\nResult: pass\nEvidence: 3 files, 35 tests passed\nScope: supervisor workflow guidance\n\nCommand: bun run lint:core\nResult: pass\nEvidence: full ESLint suite passed after replacing indexOf non-existence check with === -1\nScope: hosted verify-static lint parity\n\nCommand: node scripts/qualification/check-v0.7.1-product-contract.mjs\nResult: pass\nEvidence: executable task create/advance/run boundary contract passed\nScope: public supervisor UX",
+  "digest": "sha256:aeb64177b01cc694cc7c48620adf71cf7cff5c78e50b9d5140606939adde09ac",
+  "implementation_sha": "5af3fdf4d7de3abc61b671922ebcc5097c66e1d9",
+  "kind": "task_verification_record",
+  "note": "Hosted lint defect fixed; all declared prompt/onboarding checks, full lint, and executable supervisor product contract pass at the current implementation head.",
+  "recorded_at": "2026-08-07T04:09:51.276Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts\n- bun run docs:onboarding:check\n- bun run docs:cli:check\n- node .agentplane/policy/check-routing.mjs\n- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/command-guide.test.ts",
+  "scope_digest": "sha256:e9653577267767950996748213a2f0aa3639b45685585200ddac7e270aea9d00",
+  "task_id": "202608062021-Z0X584",
+  "verification_command": "agentplane verify 202608062021-Z0X584 --ok --by REVIEWER",
+  "verifier": "REVIEWER"
+}

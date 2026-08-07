@@ -18,7 +18,7 @@ Adapter       = projection boundary and deterministic supervisor
 
 Hermes owns queueing, assignees, claims, retries, crash detection, comments, dashboard state, and
 human handoff. Agentplane owns task README/frontmatter, plan approval, route decisions, worktree and
-branch_pr boundaries, verification, PR artifacts, integration, finish semantics, and ACR evidence.
+branch_pr boundaries, verification, PR artifacts, integration, terminal semantics, and ACR evidence.
 
 This is a design target, not a turnkey Hermes extension point. Hermes documents a worker-lane
 contract and a plugin-provided spawn path for non-Hermes lanes, but an Agentplane integration must
@@ -173,23 +173,25 @@ summaries.
 
 ## Supervisor loop
 
-The production supervisor should execute one safe route step per claim unless a route packet
-explicitly describes a safe compound operation:
+The production adapter should use the same compact supervisor protocol as every other external
+agent:
 
 ```text
 1. Read the Hermes root card.
 2. Resolve or create the Agentplane task id.
-3. Run `agentplane task brief <task-id> --json`.
-4. Run `agentplane task next-action <task-id> --explain --json`.
-5. Classify the route action against an allowlist.
-6. Execute one typed Agentplane command.
+3. Run `agentplane task advance <task-id> --agent-json`.
+4. When it returns an agent episode, dispatch only the supplied semantic objective and authority.
+5. Write the typed result to the supplied exchange path and resume with the supplied invocation.
+6. At approval, human, hosted/external, stale-state, or effect-in-doubt boundaries, stop and project
+   the boundary to Hermes without inventing progress.
 7. Write a structured Hermes comment with run id, previous revision, new revision, and evidence
    pointers.
-8. Recompute the route.
-9. Block, delegate a phase card, or complete the root card only after the terminal gate passes.
+8. Request a fresh packet.
+9. Complete the root card only after Agentplane returns terminal engineering evidence.
 ```
 
-Never execute a raw `next_command` string as shell. Parse and classify the route action first.
+Never execute a raw route string as shell. Use typed action fields and exact argv supplied by
+Agentplane.
 
 ## Idempotency
 
@@ -201,13 +203,9 @@ Hermes board + Hermes task id + Hermes run id + Agentplane task id + Agentplane 
 the step + route action kind
 ```
 
-The adapter must treat repeat operations as recovery:
-
-- `work_start` resumes or reports the existing worktree.
-- `pr_open` updates or links the existing PR artifact.
-- `verify` avoids duplicate verification entries without a new evidence delta.
-- `finish` verifies the recorded commit and close state before trying again.
-- stale Hermes runs cannot complete the root card.
+The adapter must treat repeat deliveries as requests for a fresh packet. Agentplane owns idempotent
+worktree, PR, verification, integration, and terminal transitions; stale Hermes runs cannot submit a
+result against a new state fingerprint or complete the root card.
 
 ## Default workflow
 
@@ -216,11 +214,9 @@ For multi-agent engineering, default to Agentplane `branch_pr`.
 ```text
 Hermes root card
   -> agentplane-supervisor
-  -> Agentplane task + branch_pr worktree
-  -> coder phase
-  -> reviewer phase
-  -> integrator phase
-  -> Agentplane finish + ACR validation
+  -> Agentplane task advance / task run
+  -> bounded planner, executor, and evaluator episodes
+  -> Agentplane-owned branch_pr, verification, integration, and ACR evidence
   -> Hermes root complete
 ```
 

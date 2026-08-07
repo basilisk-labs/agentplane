@@ -158,23 +158,18 @@ const main = defineScript({
     ]);
 
     assertEqualCommandBlock(
-      extractCodeBlock(agentsRaw, "### Preflight"),
-      [...bootstrapModule.BOOTSTRAP_PREFLIGHT_COMMANDS],
-      "AGENTS preflight block",
-    );
-    assertEqualCommandBlock(
-      extractCodeBlock(agentsRaw, "### Route commands"),
+      extractCodeBlock(agentsRaw, "### External agent protocol"),
       [
-        "agentplane task brief <task-id>",
-        "agentplane task next-action <task-id> --explain",
-        "agentplane work resume <task-id>",
+        "agentplane task active",
+        "agentplane task advance <task-id> --agent-json",
+        "agentplane task advance <task-id> --result <exact-result-path> --agent-json",
       ],
-      "AGENTS route commands block",
+      "AGENTS external agent protocol block",
     );
     assertEqualCommandBlock(
-      extractCodeBlock(agentsRaw, "### Verification"),
-      [...bootstrapModule.BOOTSTRAP_VERIFICATION_COMMANDS],
-      "AGENTS verification block",
+      extractCodeBlock(agentsRaw, "### Managed runner"),
+      ["agentplane task run <task-id>"],
+      "AGENTS managed runner block",
     );
 
     const quickstartText = commandGuideModule.renderQuickstart();
@@ -183,14 +178,13 @@ const main = defineScript({
       [
         "Canonical installed startup surface",
         "agentplane quickstart",
-        "agentplane role <ROLE>",
         "agentplane help <command>",
+        "agentplane task active",
+        "agentplane task advance <task-id> --agent-json",
+        "agentplane task run <task-id>",
         "agentplane doctor",
         "agentplane upgrade",
         "agentplane runtime explain",
-        "agentplane help work start",
-        "agentplane help pr",
-        "agentplane help integrate",
       ],
       "quickstart surface",
     );
@@ -207,7 +201,7 @@ const main = defineScript({
       }
       assertIncludesAll(
         roleText,
-        ["agentplane quickstart", "agentplane role <ROLE>"],
+        ["agentplane task advance <task-id> --agent-json", "agentplane task run <task-id>"],
         `role ${role} startup reference`,
       );
       assertExcludesAll(
@@ -217,16 +211,21 @@ const main = defineScript({
       );
     }
 
-    assertIncludesAll(
-      commandGuideModule.renderRole("TESTER") ?? "",
-      ["agentplane doctor", "agentplane runtime explain"],
-      "role TESTER recovery guidance",
-    );
-    assertIncludesAll(
-      commandGuideModule.renderRole("INTEGRATOR") ?? "",
-      ["agentplane help work start", "agentplane help integrate", "agentplane help branch base"],
-      "role INTEGRATOR branch guidance",
-    );
+    for (const role of ["PLANNER", "CODER", "TESTER", "DOCS", "REVIEWER", "INTEGRATOR"]) {
+      assertExcludesAll(
+        commandGuideModule.renderRole(role) ?? "",
+        [
+          "agentplane task start-ready",
+          "agentplane work start",
+          "agentplane pr open",
+          "agentplane verify",
+          "agentplane finish",
+          "agentplane integrate",
+          "git commit",
+        ],
+        `role ${role} process choreography`,
+      );
+    }
 
     assertIncludesAll(
       commandsDoc,

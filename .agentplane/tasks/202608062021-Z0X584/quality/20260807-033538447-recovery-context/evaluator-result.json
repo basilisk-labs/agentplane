@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The frozen diff consistently makes task active, task advance, and task run the normal agent-facing paths while placing diagnostics and low-level lifecycle operations behind explicit operator or recovery boundaries.",
+      "broken_invariant": "None; the supervisor-first routing invariant is satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/efcd4b9fea4846e3a8d2366aa3efbf64474a535f5ca82cf11b67320a13f2f5a8.patch",
+          "sha256": "sha256:efcd4b9fea4846e3a8d2366aa3efbf64474a535f5ca82cf11b67320a13f2f5a8"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-Z0X584/verification/20260807033528341-1a803fcda060b505.json",
+          "sha256": "sha256:50426da5a605ab722625f474cab350a138502bef8326d4140172b8603e40b052"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

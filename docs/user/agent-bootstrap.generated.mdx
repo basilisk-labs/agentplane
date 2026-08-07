@@ -10,32 +10,21 @@ This is the docs-site rendering of the CLI bootstrap model. Installed repositori
 ## Copy-paste start block
 
 ```bash
-agentplane config show
 agentplane quickstart
-agentplane task list
 agentplane task active
-git status --short --untracked-files=no
-git status --short --untracked-files=all
-git rev-parse --abbrev-ref HEAD
 ```
 
 After preflight, use `agentplane task active` to choose ready work and `agentplane task advance <task-id> --agent-json` for the compact external-agent protocol, or `agentplane task run <task-id>` for the managed runner. Use `agentplane task brief <task-id>` and `task next-action --explain` only for expanded diagnostics.
 
 ## 1. Preflight
 
-Establish workflow mode, current branch, active task candidates, tracked-only cleanliness, and full working-tree changes.
+Load the installed guidance and select ready work through the compact supervisor surface.
 
-- `agentplane config show`
 - `agentplane quickstart`
-- `agentplane task list`
 - `agentplane task active`
-- `git status --short --untracked-files=no`
-- `git status --short --untracked-files=all`
-- `git rev-parse --abbrev-ref HEAD`
 
-- Run this before any mutation.
-- `git status --short --untracked-files=no` is tracked-only; `git status --short --untracked-files=all` is the final artifact audit.
-- If the project is not initialized, stop and use `agentplane init`; otherwise use `task brief <task-id>` before owner-scoped execution.
+- If the project is not initialized, use `agentplane init` first.
+- The supervisor reads workflow mode, repository state, task readiness, and checkout ownership; do not reconstruct them from shell commands.
 
 ## 2. Agent context
 
@@ -51,36 +40,29 @@ Request one compact external-agent action instead of manually combining task doc
 
 ## 3. Direct happy path
 
-When a repository is intentionally configured for direct mode, create and approve the task, then let the managed supervisor own the formal lifecycle.
+Create a task from ordinary language, return its initial PLANNER result through the external protocol, then let the supervisor own formal transitions, verification persistence, and closeout.
 
-- `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>`
-- `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>`
-- `agentplane task plan approve <task-id> --by ORCHESTRATOR`
+- `agentplane task create "<outcome>"`
+- `agentplane task advance <task-id> --agent-json`
 - `agentplane task run <task-id>`
 
-- Use `agentplane role ORCHESTRATOR` during planning; the runner receives the prepared owner-scoped semantic episode after approval.
-- Fill required task sections before approval and wait for upstream DONE tasks before `task run`.
-- Use the manual start/check/close commands only for diagnostics, recovery, or an explicitly external compatibility flow.
+- Before a task-specific plan exists, `task run` returns `semantic_input_required`; use the read-only PLANNER packet from `task advance --agent-json` first.
+- The external agent writes its typed result to `exchange.directory/exchange.result_ref` and resumes through `exchange.return_invocation`.
+- After planning and approval, `task run` may resolve eligible semantic episodes through the configured managed adapter and returns control at human or external boundaries.
 
 ## 4. Verification and incident reuse
 
-Reuse historical incident advice only through targeted lookup, and validate promotable resolved external findings before `finish`.
+Let the supervisor prepare verification episodes, persist observed evidence, invoke independent evaluation, and decide whether to rework or close.
 
-- `agentplane task verify-show <task-id>`
-- `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]`
-- `agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review --summary "..." --finding "..." --evidence <path-or-check> [--missing-test "..." --hidden-assumption "..." --residual-risk "..."]`
-- `agentplane incidents advise <task-id>`
-- `agentplane incidents collect <task-id> --check`
-- `agentplane doctor`
-- `node .agentplane/policy/check-routing.mjs`
+- `agentplane task advance <task-id> --agent-json`
+- `agentplane task run <task-id>`
 
-- Use `agentplane incidents advise <task-id>` after `start-ready` when analogous scope or tags might have prior external failure modes.
-- Use `agentplane task findings add <task-id> --observation "..." --impact "..." --resolution "..."` for structured Findings; promote only real reusable incidents.
-- Run `agentplane incidents collect <task-id> --check` before `finish` when Findings contain reusable external/process blocks; plain prose stays task-local.
+- The agent returns semantic evidence only; Agentplane owns verification records and terminal state.
+- Incident promotion and manual close controls remain operator/recovery interfaces.
 
 ## 5. Fallbacks and recovery
 
-Keep exceptional paths out of the normal route: use these only for recovery, framework upgrades, or branch_pr work.
+Keep exceptional paths out of the normal route: use these only for operator recovery or framework upgrades.
 
 - `agentplane doctor`
 - `agentplane upgrade --dry-run`
@@ -92,6 +74,6 @@ Keep exceptional paths out of the normal route: use these only for recovery, fra
 
 ## Non-default paths
 
-- Diagnostic branch_pr recovery: use `agentplane task brief <task-id>`, then `agentplane task next-action <task-id> --explain` for lane, checkout, blocker, and exact formal operation.
-- Manual direct lifecycle commands remain available for recovery and compatibility, but are not the default onboarding path.
+- An operator may use `agentplane task brief <task-id>`, `agentplane task status <task-id> --route`, or `agentplane task next-action <task-id> --explain` for diagnostics or an explicit recovery boundary.
+- Manual lifecycle, branch/worktree, Git publication, PR, verification persistence, integration, cleanup, and release commands remain compatibility/operator interfaces, not the normal agent route.
 - Use manual close flags only when a specific policy or recovery situation requires them.

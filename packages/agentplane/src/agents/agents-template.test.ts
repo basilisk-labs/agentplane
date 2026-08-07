@@ -65,6 +65,51 @@ describe("agents-template", () => {
     expect(bundledText).not.toContain("In this repository, `workflow_mode=branch_pr`");
   });
 
+  it("keeps normal agent guidance supervisor-first without manual lifecycle commands", async () => {
+    const relativePaths = [
+      "packages/agentplane/assets/AGENTS.md",
+      "packages/agentplane/assets/policy/workflow.direct.md",
+      "packages/agentplane/assets/policy/workflow.branch_pr.md",
+      "packages/agentplane/assets/policy/workflow.release.md",
+      "packages/agentplane/assets/policy/dod.code.md",
+      "packages/agentplane/assets/policy/dod.docs.md",
+      "packages/agentplane/assets/codex-plugin/skills/agentplane/SKILL.md",
+      "packages/agentplane/src/cli/command-guide.ts",
+      "packages/agentplane/src/cli/bootstrap-guide.ts",
+      "README.md",
+      "docs/user/task-lifecycle.mdx",
+      "docs/user/workflow.mdx",
+      "docs/workflow-guides/branch-pr.mdx",
+      "docs/workflow-guides/hermes-kanban.mdx",
+    ];
+    const semanticPolicyOnly = new Set([
+      "packages/agentplane/assets/policy/dod.code.md",
+      "packages/agentplane/assets/policy/dod.docs.md",
+    ]);
+    const forbiddenCommandPatterns = [
+      /\b(?:ap|agentplane) task start-ready\b/u,
+      /\b(?:ap|agentplane) work start\b/u,
+      /\b(?:ap|agentplane) pr open\b/u,
+      /\b(?:ap|agentplane) verify\b/u,
+      /\b(?:ap|agentplane) finish\b/u,
+      /\b(?:ap|agentplane) integrate\b/u,
+      /\b(?:ap|agentplane) cleanup\b/u,
+      /\bgit commit\b/u,
+      /\bgh pr\b/u,
+    ];
+
+    for (const relativePath of relativePaths) {
+      const contents = await readFile(path.join(process.cwd(), relativePath), "utf8");
+      if (!semanticPolicyOnly.has(relativePath)) {
+        expect(contents, relativePath).toContain("task advance");
+        expect(contents, relativePath).toContain("task run");
+      }
+      for (const pattern of forbiddenCommandPatterns) {
+        expect(contents, `${relativePath} contains ${String(pattern)}`).not.toMatch(pattern);
+      }
+    }
+  });
+
   it("bundled agents match framework assets/agents", async () => {
     const assetsAgentsDir = path.join(process.cwd(), "packages", "agentplane", "assets", "agents");
     const entries = await readdir(assetsAgentsDir);

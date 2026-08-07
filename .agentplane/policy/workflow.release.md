@@ -9,13 +9,16 @@ Use this module when task touches release/version/publish flows.
 
 ## Required sequence
 
-1. CHECKPOINT A: confirm clean tracked tree and approved scope.
-2. CHECKPOINT B: review/fix active `.agentplane/policy/incidents.md` entries through a dedicated task, archive final evidence, and clean the active incident registry.
-3. CHECKPOINT C: generate release plan and freeze version/tag target.
-4. Generate release notes with complete human-readable coverage of all task-level changes.
-5. Run release prepublish checks.
-6. CHECKPOINT D: choose the workflow-specific publication route after all gates pass.
-7. Record release evidence (commands, outputs, resulting version/tag).
+1. Request the current bounded release action with `agentplane task advance <task-id> --agent-json`,
+   or use `agentplane task run <task-id>` with a configured managed runner.
+2. Perform only the supplied semantic release objective, such as release-note drafting, defect
+   repair, or analysis of observed check output.
+3. Return the typed result and request a fresh packet.
+4. Return control at version/tag approval, publish authority, hosted checks, external provider, or
+   terminal boundaries.
+
+AgentPlane and the human operator own version freeze, release planning, prepublish gates,
+publication, hosted verification, and final release evidence.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.release.commands.command.contract" slot="commands" mutability="replaceable" -->
@@ -23,14 +26,9 @@ Use this module when task touches release/version/publish flows.
 ## Command contract
 
 ```bash
-git status --short --untracked-files=no
-agentplane task plan set <task-id> --text "Release plan: version=<v>, tag=<t>, scope=<...>" --updated-by <ROLE>
-agentplane task plan approve <task-id> --by ORCHESTRATOR
-agentplane release plan --patch
-agentplane release apply --push --yes   # direct mode only
-agentplane release candidate --push --yes   # branch_pr mode only
-agentplane verify <task-id> --ok|--rework --by <ROLE> --note "Release checks: ..."
-agentplane finish <task-id> --author <ROLE> --body "Verified: release" --result "Release <v> published" --commit <git-rev> --close-commit
+agentplane task advance <task-id> --agent-json
+agentplane task advance <task-id> --result <exact-result-path> --agent-json
+agentplane task run <task-id>
 ```
 
 <!-- /ap:fragment -->
@@ -39,10 +37,9 @@ agentplane finish <task-id> --author <ROLE> --body "Verified: release" --result 
 ## Constraints
 
 - MUST NOT perform irreversible release actions before explicit approval.
-- MUST NOT start release planning, prepublish, or publish while `.agentplane/policy/incidents.md` contains active incident entries.
-- MUST NOT skip parity/version checks.
-- MUST NOT bypass required notes validation.
+- MUST NOT invoke release plan/apply/candidate, publish, Git tag, push, merge, verify, finish, or
+  hosted-provider commands during a normal semantic episode.
+- MUST NOT infer a version, tag, publish authority, or hosted success from prose or agent output.
+- MUST return control when required evidence or authority is absent.
 - MUST stop and request re-approval if release scope/tag/version changes.
-- In `direct`, `release apply --push --yes` is the publication route and may create/push the release tag.
-- In `branch_pr`, `release apply` is not the publication route; use `release candidate --push --yes`, merge the candidate into the protected base branch, then explicitly dispatch `Publish to npm` with the release commit `sha`.
 <!-- /ap:fragment -->

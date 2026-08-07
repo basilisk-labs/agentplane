@@ -234,9 +234,11 @@ describe("runCli", () => {
     const agentsPath = path.join(root, "AGENTS.md");
     const agentsText = await readFile(agentsPath, "utf8");
     expect(agentsText).toBe(expectedAgents);
-    expect(agentsText).toContain(
-      "The guarded route is determined by `workflow.mode` in `.agentplane/WORKFLOW.md`;",
-    );
+    expect(agentsText).toContain("Normal agent route:");
+    expect(agentsText).toContain("ap task advance <task-id> --agent-json");
+    expect(agentsText).toContain("ap task run <task-id>");
+    expect(agentsText).not.toContain("ap task start-ready <task-id>");
+    expect(agentsText).not.toContain("ap finish <task-id>");
     expect(agentsText).not.toContain("In this repository, `workflow_mode=branch_pr`");
 
     const agentsDir = path.join(root, ".agentplane", "agents");

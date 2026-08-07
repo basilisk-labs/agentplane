@@ -15,9 +15,9 @@ const files = {
   lifecycle: path.join(ROOT, "docs", "user", "task-lifecycle.mdx"),
   workflow: path.join(ROOT, "docs", "user", "workflow.mdx"),
   workflowGuides: path.join(ROOT, "docs", "workflow-guides", "index.mdx"),
-  branching: path.join(ROOT, "docs", "user", "branching-and-pr-artifacts.mdx"),
   recovery: path.join(ROOT, "docs", "help", "legacy-upgrade-recovery.mdx"),
   troubleshooting: path.join(ROOT, "docs", "help", "troubleshooting.mdx"),
+  llmsFull: path.join(ROOT, "website", "static", "llms-full.txt"),
   sidebar: path.join(ROOT, "website", "sidebars.ts"),
   docusaurusConfig: path.join(ROOT, "website", "docusaurus.config.ts"),
 };
@@ -35,6 +35,17 @@ function assertScenarioText(fileContents, fileKey, needle, scenario) {
   }
 
   assertIncludes(haystack, needle, `${scenario} -> ${fileKey}`);
+}
+
+function assertTextOrder(haystack, needles, label) {
+  let cursor = -1;
+  for (const needle of needles) {
+    const next = haystack.indexOf(needle, cursor + 1);
+    if (next === -1) {
+      throw new Error(`${label} is missing ordered text: ${needle}`);
+    }
+    cursor = next;
+  }
 }
 
 const onboardingScenarios = [
@@ -73,47 +84,28 @@ const onboardingScenarios = [
     name: "direct lifecycle",
     checks: [
       ["bootstrap", "## 2. Agent context"],
-      ["bootstrap", "agentplane task brief <task-id>"],
       ["bootstrap", "agentplane task advance <task-id> --agent-json"],
       ["bootstrap", "## 3. Direct happy path"],
+      ["bootstrap", "`semantic_input_required`"],
       ["bootstrap", "agentplane task run <task-id>"],
-      [
-        "bootstrap",
-        "Use the manual start/check/close commands only for diagnostics, recovery, or an explicitly external compatibility flow.",
-      ],
       ["bootstrap", "## 4. Verification and incident reuse"],
-      ["bootstrap", "agentplane incidents advise <task-id>"],
-      ["bootstrap", "agentplane incidents collect <task-id> --check"],
       ["bootstrap", "## 5. Fallbacks and recovery"],
-      ["lifecycle", "## Minimal direct lifecycle"],
-      ["lifecycle", "**Preferred close flow (single command)**"],
-      ["workflow", "## Default direct path"],
-      [
-        "workflow",
-        "The default happy path is `task start-ready -> task verify-show -> verify -> finish`.",
-      ],
+      ["lifecycle", "## Managed-runner route"],
+      ["lifecycle", "## First complete workflow"],
+      ["workflow", "## First managed workflow"],
+      ["workflow", "agentplane task advance <task-id> --agent-json"],
+      ["workflow", "`semantic_input_required`"],
+      ["workflow", "agentplane task run <task-id>"],
     ],
   },
   {
     name: "branch_pr flow",
     checks: [
       ["commands", "## Branching (branch_pr)"],
-      ["commands", "agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify"],
       ["workflow", "## branch_pr mode"],
-      ["workflow", "- `agentplane work start ... --worktree` is required."],
-      ["lifecycle", "## branch_pr mode"],
-      ["lifecycle", "**Who closes the task:** INTEGRATOR on the base branch after merge."],
-      ["branching", "### branch_pr"],
-      ["branching", "Implementation commits happen in the task worktree."],
-      [
-        "branching",
-        "Lifecycle/status commits are task-state checkpoints and are not the implementation commit recorded at finish.",
-      ],
-      [
-        "branching",
-        "INTEGRATOR performs merge/integration and finish from the base checkout after the task branch is verified.",
-      ],
-      ["branching", "agentplane work start <task-id> --agent CODER --slug <slug> --worktree"],
+      ["workflow", "Agentplane creates or selects the task worktree"],
+      ["lifecycle", "### `branch_pr`"],
+      ["lifecycle", "The external caller does not change cwd or derive branch names."],
     ],
   },
 ];
@@ -147,8 +139,25 @@ const main = defineScript({
       "agents",
     );
 
-    assertIncludes(fileContents.lifecycle, "**Exceptional/manual close paths**", "task lifecycle");
-    assertIncludes(fileContents.lifecycle, "--no-close-commit", "task lifecycle");
+    assertIncludes(fileContents.lifecycle, "## Diagnostics and recovery", "task lifecycle");
+    assertIncludes(
+      fileContents.lifecycle,
+      "agentplane task advance <task-id> --agent-json",
+      "task lifecycle",
+    );
+    for (const forbidden of [
+      "agentplane task start-ready",
+      "agentplane work start",
+      "agentplane pr open",
+      "agentplane verify",
+      "agentplane finish",
+      "agentplane integrate",
+      "git commit",
+    ]) {
+      if (fileContents.lifecycle.includes(forbidden)) {
+        throw new Error(`task lifecycle exposes process choreography: ${forbidden}`);
+      }
+    }
 
     for (const label of [
       'label: "Start"',
@@ -195,6 +204,58 @@ const main = defineScript({
       for (const [fileKey, needle] of scenario.checks) {
         assertScenarioText(fileContents, fileKey, needle, scenario.name);
       }
+    }
+
+    for (const [fileKey, label] of [
+      ["bootstrap", "generated bootstrap"],
+      ["lifecycle", "task lifecycle"],
+      ["workflow", "workflow guide"],
+      ["llmsFull", "LLM documentation corpus"],
+    ]) {
+      const contents = fileContents[fileKey];
+      assertIncludes(contents, "semantic_input_required", label);
+      if (contents.includes("`task run` resolves the same planning episode")) {
+        throw new Error(`${label} contains the stale managed-planning claim`);
+      }
+    }
+
+    assertTextOrder(
+      fileContents.bootstrap,
+      [
+        "## 3. Direct happy path",
+        'agentplane task create "<outcome>"',
+        "agentplane task advance <task-id> --agent-json",
+        "agentplane task run <task-id>",
+        "semantic_input_required",
+      ],
+      "generated bootstrap planning boundary",
+    );
+    assertTextOrder(
+      fileContents.lifecycle,
+      [
+        "## First complete workflow",
+        'agentplane task create "Inspect Agentplane artifacts',
+        "agentplane task advance <task-id> --result",
+        "`task run` for an eligible configured managed-runner episode",
+        "semantic_input_required",
+      ],
+      "task lifecycle planning boundary",
+    );
+    for (const [fileKey, label] of [
+      ["workflow", "workflow guide"],
+      ["llmsFull", "LLM documentation corpus"],
+    ]) {
+      assertTextOrder(
+        fileContents[fileKey],
+        [
+          "## First managed workflow",
+          'agentplane task create "Fix the reported defect"',
+          "agentplane task advance <task-id> --agent-json",
+          "agentplane task run <task-id>",
+          "semantic_input_required",
+        ],
+        `${label} planning boundary`,
+      );
     }
 
     process.stdout.write("ok: agent onboarding scenario surfaces are aligned\n");

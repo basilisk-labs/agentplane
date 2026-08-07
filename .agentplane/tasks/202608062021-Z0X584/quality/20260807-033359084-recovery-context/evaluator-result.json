@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "medium",
+      "summary": "The current-SHA verification record does not show execution of four declared acceptance commands. Its details list substitute focused/full-suite and static-gate commands, while only the routing check exactly matches the declared Verify Steps.",
+      "broken_invariant": "Required task verification steps must be executed and recorded with the exact observed command, result, evidence, and scope before the implementation can pass evaluation.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-Z0X584/README.md",
+          "sha256": "sha256:9805c30a7358daf4bad1de3a7f4484519c996ed124b6e706fd4b5328e43a0e53",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-Z0X584/verification/20260807033349231-1feb176bd27580eb.json",
+          "sha256": "sha256:160f98a2c98e50d00599a2021dc64c6ec56a6833a89957e7737293f82293225a",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+          "section": "Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Record current-SHA results for the declared focused Vitest command covering agents-template, prompt compiler, and core init tests.",
+    "Record current-SHA results for `bun run docs:onboarding:check`.",
+    "Record current-SHA results for `bun run docs:cli:check`.",
+    "Record current-SHA results for the declared focused Vitest command covering task update, workflow, and command-guide tests."
+  ],
+  "hidden_assumptions": [
+    "The broader `test:fast` run is assumed to include and equivalently configure both declared focused Vitest invocations.",
+    "Formatting, lint, typecheck, or the broader test suite is assumed to cover the two dedicated generated-document freshness checks."
+  ],
+  "recovery_context": "Run and record all five declared Verify Steps at evaluated SHA 59df72b1e7a566d618624d4b5145783dd735ca4a, including exact command-level results and evidence; then resubmit the frozen evaluation packet.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

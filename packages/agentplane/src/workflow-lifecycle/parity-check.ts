@@ -33,23 +33,32 @@ const BRANCH_PR_SURFACES: readonly SurfaceCheck[] = [
     order: CODE_WORKFLOW_LIFECYCLE_CONTRACTS.branch_pr.docsCommandOrder,
   },
   {
-    file: "docs/user/commands.mdx",
-    mode: "branch_pr",
-    order: CODE_WORKFLOW_LIFECYCLE_CONTRACTS.branch_pr.docsCommandOrder,
-  },
-  {
-    file: "docs/user/branching-and-pr-artifacts.mdx",
-    mode: "branch_pr",
-    order: CODE_WORKFLOW_LIFECYCLE_CONTRACTS.branch_pr.docsCommandOrder,
-  },
-  {
     file: "docs/workflow-guides/branch-pr.mdx",
     mode: "branch_pr",
     order: CODE_WORKFLOW_LIFECYCLE_CONTRACTS.branch_pr.docsCommandOrder,
   },
 ];
 
-const DIRECT_SURFACES: readonly SurfaceCheck[] = [];
+const DIRECT_SURFACES: readonly SurfaceCheck[] = [
+  {
+    file: "docs/user/workflow.mdx",
+    mode: "direct",
+    order: CODE_WORKFLOW_LIFECYCLE_CONTRACTS.direct.docsCommandOrder,
+  },
+  {
+    file: "docs/user/task-lifecycle.mdx",
+    mode: "direct",
+    order: CODE_WORKFLOW_LIFECYCLE_CONTRACTS.direct.docsCommandOrder,
+  },
+];
+
+const BRANCH_PR_DOC_FILES = [
+  "docs/user/workflow.mdx",
+  "docs/user/task-lifecycle.mdx",
+  "docs/user/commands.mdx",
+  "docs/user/branching-and-pr-artifacts.mdx",
+  "docs/workflow-guides/branch-pr.mdx",
+] as const;
 
 const FORBIDDEN_BRANCH_PR_DOC_PATTERNS = [
   "git push -u origin task/<task-id>",
@@ -148,8 +157,8 @@ function checkQuickstart(): LifecycleParityFinding[] {
 
 async function checkForbiddenBranchPrDocs(root: string): Promise<LifecycleParityFinding[]> {
   const findings: LifecycleParityFinding[] = [];
-  for (const check of BRANCH_PR_SURFACES) {
-    const absolutePath = path.join(root, check.file);
+  for (const file of BRANCH_PR_DOC_FILES) {
+    const absolutePath = path.join(root, file);
     const text = await readFile(absolutePath, "utf8");
     for (const pattern of FORBIDDEN_BRANCH_PR_DOC_PATTERNS) {
       if (text.includes(pattern)) {
