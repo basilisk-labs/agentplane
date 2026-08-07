@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -85,8 +85,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "de6ff428d9432e51c7e91bf7c1e378bfc8008c03"
-  message: "✅ MCY8ZC supervisor: record hosted CI evaluator pass"
+  hash: "75263193a470d21f58f842d55d2c8fab711d1bd4"
+  message: "🧪 MCY8ZC supervisor: align branch work-order contract"
 comments:
   -
     author: "CODER"
@@ -103,6 +103,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Implementation: align the canonical branch_pr WorkOrder integration contract with the supervisor-first implementation route discovered by the complete hosted unit suite."
 events:
   -
     type: "status"
@@ -199,8 +202,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Implementation head 75263193a aligns the canonical branch_pr WorkOrder contract and passes the complete hosted-equivalent unit suite plus every declared verification and repository contract."
+  -
+    type: "status"
+    at: "2026-08-07T23:50:35.499Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Implementation: align the canonical branch_pr WorkOrder integration contract with the supervisor-first implementation route discovered by the complete hosted unit suite."
 doc_version: 3
-doc_updated_at: "2026-08-07T23:49:16.801Z"
+doc_updated_at: "2026-08-07T23:50:35.541Z"
 doc_updated_by: "CODER"
 description: "Return an exact result_path and structured resume_argv from task advance, expose a typed operator action at approval boundaries, make quickstart and role command guides supervisor-first, show the canonical new/active/advance/run/brief subset in compact task help, attribute explicit begin plans to a human source, and add an end-to-end branch_pr test that advances once from the base checkout and receives a worktree-bound WorkOrder without caller cwd changes."
 sections:
