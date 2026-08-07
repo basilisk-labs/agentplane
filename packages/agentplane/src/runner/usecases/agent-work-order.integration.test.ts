@@ -437,8 +437,8 @@ describe("AgentWorkOrder v2 surface integration", () => {
       expect(runnerView.work_order_preparation).toBeUndefined();
       if (workflowMode === "branch_pr") {
         expect(runnerView.execution).toMatchObject({
-          sandbox_policy: { requested: "read-only", source: "route_authority" },
-          write_scope: { writable_roots: [] },
+          sandbox_policy: { requested: "workspace-write", source: "role_default" },
+          write_scope: { writable_roots: ["."] },
         });
       }
       for (const view of [brief, nextAction, hermes]) {
