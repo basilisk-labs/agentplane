@@ -31,22 +31,22 @@ Created: 2026-08-06T21:10:34.048Z
 ```text
  .../src/cli/run-cli.core.task-run.test.ts          |   3 +-
  .../src/runner/context/base-prompt-sources.ts      |  17 +-
- .../src/runner/context/base-prompts.test.ts        | 139 ++++++++++++
+ .../src/runner/context/base-prompts.test.ts        | 152 ++++++++++++++
  .../agentplane/src/runner/context/base-prompts.ts  |   5 +
  .../src/runner/context/prompt-block-shared.ts      |   5 +
  .../src/runner/context/prompt-module-bridge.ts     |   4 +
- .../runner/context/semantic-prompt-projection.ts   | 237 +++++++++++++++++++++
+ .../runner/context/semantic-prompt-projection.ts   | 232 +++++++++++++++++++++
  .../src/runner/state-fingerprint-observation.ts    |   3 +-
  .../agentplane/src/runner/state-fingerprint.ts     |   3 +-
  packages/agentplane/src/runner/types/prompts.ts    |   3 +
  .../src/runner/usecases/agent-work-order-build.ts  |   5 +-
  .../src/runner/usecases/agent-work-order.ts        |  12 ++
- .../src/runner/usecases/task-run-blueprint.test.ts |  35 ++-
+ .../src/runner/usecases/task-run-blueprint.test.ts |  35 ++--
  .../task-run-bootstrap.result-examples.test.ts     |   2 +-
  .../src/runner/usecases/task-run-bootstrap.ts      | 139 ++++++++----
  .../usecases/task-run-context.integration.test.ts  |  54 ++++-
  .../agentplane/src/runner/usecases/task-run.ts     |  36 +++-
- 17 files changed, 625 insertions(+), 77 deletions(-)
+ 17 files changed, 633 insertions(+), 77 deletions(-)
 ```
 
 </details>
