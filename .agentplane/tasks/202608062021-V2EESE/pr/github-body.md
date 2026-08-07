@@ -19,8 +19,8 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
 - Note:
 
 ```text
-Embedded Git control commands are rejected in any prose position while read-only Git inspection
-remains available.
+Verified: blueprint snapshot refreshed after explicit repair-authority tag; implementation and
+checks are unchanged.
 ```
 - Canonical workflow state lives in the task README.
 

@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\nResult: pass\nEvidence: 3 files, 77 tests passed at implementation head 60c6416fb08858e79d2b22c227363cb068d25ce8.\nScope: semantic provider projection and exact guard.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: 12 of 12 chunks passed.\nScope: critical contract.\n\nCommand: bun run lint:core; bun run typecheck; bun run format:check; node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: lint, typecheck, formatting, and routing all exited 0.\nScope: static and policy gates.",
+  "digest": "sha256:eaa2a89ca744f9fdce0ff502b6ccf2b6e1f80bdb6101f52483dddd255be6e375",
+  "implementation_sha": "60c6416fb08858e79d2b22c227363cb068d25ce8",
+  "kind": "task_verification_record",
+  "note": "Verified: blueprint snapshot refreshed after explicit repair-authority tag; implementation and checks are unchanged.",
+  "recorded_at": "2026-08-07T05:02:46.499Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\n- bun run test:critical\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98",
+  "task_id": "202608062021-V2EESE",
+  "verification_command": "agentplane verify 202608062021-V2EESE --ok --by TESTER",
+  "verifier": "TESTER"
+}

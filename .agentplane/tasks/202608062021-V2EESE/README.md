@@ -4,7 +4,7 @@ title: "Project semantic-only provider prompts and reject process choreography"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -32,9 +32,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T04:57:26.439Z"
+  updated_at: "2026-08-07T05:02:46.499Z"
   updated_by: "TESTER"
-  note: "Embedded Git control commands are rejected in any prose position while read-only Git inspection remains available."
+  note: "Verified: blueprint snapshot refreshed after explicit repair-authority tag; implementation and checks are unchanged."
   attempts: 0
 quality_review:
   state: "pass"
@@ -123,8 +123,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Embedded Git control commands are rejected in any prose position while read-only Git inspection remains available."
+  -
+    type: "verify"
+    at: "2026-08-07T05:02:46.499Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: blueprint snapshot refreshed after explicit repair-authority tag; implementation and checks are unchanged."
 doc_version: 3
-doc_updated_at: "2026-08-07T04:57:27.759Z"
+doc_updated_at: "2026-08-07T05:02:47.648Z"
 doc_updated_by: "CODER"
 description: "Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt."
 sections:
@@ -397,6 +403,51 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608062021-V2EESE
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T05:02:46.499Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified: blueprint snapshot refreshed after explicit repair-authority tag; implementation and checks are unchanged.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T04:57:27.759Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts
+    Result: pass
+    Evidence: 3 files, 77 tests passed at implementation head 60c6416fb08858e79d2b22c227363cb068d25ce8.
+    Scope: semantic provider projection and exact guard.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: 12 of 12 chunks passed.
+    Scope: critical contract.
+
+    Command: bun run lint:core; bun run typecheck; bun run format:check; node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: lint, typecheck, formatting, and routing all exited 0.
+    Scope: static and policy gates.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+    - old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -696,6 +747,51 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608062021-V2EESE
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T05:02:46.499Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: blueprint snapshot refreshed after explicit repair-authority tag; implementation and checks are unchanged.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T04:57:27.759Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts
+Result: pass
+Evidence: 3 files, 77 tests passed at implementation head 60c6416fb08858e79d2b22c227363cb068d25ce8.
+Scope: semantic provider projection and exact guard.
+
+Command: bun run test:critical
+Result: pass
+Evidence: 12 of 12 chunks passed.
+Scope: critical contract.
+
+Command: bun run lint:core; bun run typecheck; bun run format:check; node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: lint, typecheck, formatting, and routing all exited 0.
+Scope: static and policy gates.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+- old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
