@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\nResult: pass\nEvidence: 3 files and 80 tests passed; canonical gateway fragment allowlist and exact PLANNER, EXECUTOR, and EVALUATOR prompts reject lifecycle and persistence prose.\nScope: declared semantic prompt qualification.\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: complete repository contract passed after allowlist projection and bootstrap minimization.\nScope: hosted verify-contract parity.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: all 12 critical CLI chunks passed.\nScope: critical trust-boundary and efficiency contracts.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit 0.\nScope: repository type safety.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: generated policy routing.\n\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts\nResult: pass\nEvidence: bootstrap contract tests passed within the 5-file 96-test targeted run.\nScope: role-specific cognition, typed-result, tool, and completion-criteria projection.",
+  "digest": "sha256:a13411414bd3e042ae5d251c1c42ef7c17825b171ff2af43ded5bc8d2a6e2ebc",
+  "implementation_sha": "ef6f3b728827fc2948d8ca7f475dc63310deaf7b",
+  "kind": "task_verification_record",
+  "note": "Canonical gateway allowlisting removes lifecycle and persistence prose while preserving semantic safety constraints.",
+  "recorded_at": "2026-08-07T09:41:29.426Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\n- bun run test:critical\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98",
+  "task_id": "202608062021-V2EESE",
+  "verification_command": "agentplane verify 202608062021-V2EESE --ok --by TESTER",
+  "verifier": "TESTER"
+}
