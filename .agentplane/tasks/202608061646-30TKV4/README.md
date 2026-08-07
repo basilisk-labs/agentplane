@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 67
+revision: 68
 origin:
   system: "manual"
 depends_on:
@@ -43,32 +43,31 @@ verification:
   note: "All eleven declared checks pass on 60c5d0c9a with machine-parseable command evidence."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T01:34:28.668Z"
+  updated_at: "2026-08-07T01:40:03.422Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "60c5d0c9abbfc828c25bce0266916922de7309d6"
   blueprint_digest: "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62"
   evidence_refs:
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-013342649-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-013342649-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/64ebca7b40c26176dd5a62330279f7bb9008c4b97f9720716f173516d60177c3.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-013342649-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-013342649-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-013342649-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-013342649-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-014002958-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-014002958-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/970beb6ed40429192791d5c585d639cf322c33180f65511b45f6a8811b435b92.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-014002958-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-014002958-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-014002958-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608061646-30TKV4/README.md"
     - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/322ad7a0722bdf48f38ea53122d1375a0991c1a93fad2b2697b3b6d1c1e6decb.patch"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/a56ce10e321bcf84e1252ac05738c5e993bea1ef2fc2ab8a76533694bc1a5b91.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/d3c381d381d40b9dfb1940329bb98429de003ea27a3a8768eab7b01059957c0e.json"
+    - ".agentplane/tasks/202608061646-30TKV4/verification/20260807013759188-e537d78169833114.json"
     - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/425dc49ad99db2ca9f60810ac83290977a16fdf6a35d74fe3f0c781f5388ee6d.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Замороженный пакет заявляет прохождение всех одиннадцати проверок, но не содержит ни одной детерминированной записи выполнения: verification_records, runner_history и runtime_evidence пусты."
-  recovery_reason: "deterministic_evidence_gap"
+    - "The only implementation delta after the independent pass at 856bf44a5 is making TaskRunContextDependencies module-internal; all eleven declared checks now have a valid frozen verification record and pass."
 token_usage:
   agent_runs: 15
   input_tokens: 2990382
@@ -349,7 +348,7 @@ events:
     state: "ok"
     note: "All eleven declared checks pass on 60c5d0c9a with machine-parseable command evidence."
 doc_version: 3
-doc_updated_at: "2026-08-07T01:38:00.473Z"
+doc_updated_at: "2026-08-07T01:40:03.446Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
