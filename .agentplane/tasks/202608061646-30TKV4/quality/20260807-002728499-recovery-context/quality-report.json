@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608061646-30TKV4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T00:28:06.441Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "cd8beb68ac1d516a1d1d64419dc609ac703def70",
+  "blueprint_digest": "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62",
+  "findings": [
+    "The frozen packet contains no deterministic execution evidence for any declared verification check: verification_records, runner_history, and runtime_evidence are empty despite verification being marked ok."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/22c68fa399c3283c1bf0c1c6bc325277a80d0613f2a76fa845ffc7ab33f25740.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The TESTER verification note is assumed to represent successful command execution at evaluated SHA cd8beb68ac1d516a1d1d64419dc609ac703def70, but the frozen evidence does not substantiate that assumption."
+  ],
+  "residual_risks": [
+    "Freeze deterministic command-level results for every declared Verify Step at evaluated SHA cd8beb68ac1d516a1d1d64419dc609ac703def70, including exit status and coverage of the concurrent duplicate-creation and compatibility paths, then rerun this evaluator."
+  ]
+}

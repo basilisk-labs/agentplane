@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608061646-30TKV4-f2915b011046342014a676eb",
+  "task_id": "202608061646-30TKV4",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Freeze deterministic command-level results for every declared Verify Step at evaluated SHA cd8beb68ac1d516a1d1d64419dc609ac703def70, including exit status and coverage of the concurrent duplicate-creation and compatibility paths, then rerun this evaluator.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen packet contains no deterministic execution evidence for any declared verification check: verification_records, runner_history, and runtime_evidence are empty despite verification being marked ok.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/22c68fa399c3283c1bf0c1c6bc325277a80d0613f2a76fa845ffc7ab33f25740.json",
+          "sha256": "sha256:22c68fa399c3283c1bf0c1c6bc325277a80d0613f2a76fa845ffc7ab33f25740",
+          "section": "verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608061646-30TKV4/quality/20260807-002728499-recovery-context/evaluator-result.json"
+}

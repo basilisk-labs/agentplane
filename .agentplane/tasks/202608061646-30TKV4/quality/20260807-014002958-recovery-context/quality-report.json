@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202608061646-30TKV4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T01:40:03.422Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "60c5d0c9abbfc828c25bce0266916922de7309d6",
+  "blueprint_digest": "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62",
+  "findings": [
+    "The only implementation delta after the independent pass at 856bf44a5 is making TaskRunContextDependencies module-internal; all eleven declared checks now have a valid frozen verification record and pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/322ad7a0722bdf48f38ea53122d1375a0991c1a93fad2b2697b3b6d1c1e6decb.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

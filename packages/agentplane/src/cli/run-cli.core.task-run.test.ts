@@ -19,7 +19,14 @@ import {
 } from "../runner/artifacts.js";
 import { resolveTaskRunnerPaths } from "../runner/task-run-paths.js";
 import * as taskRunUsecases from "../runner/usecases/task-run.js";
-import { makeRunTaskRunHandler } from "../commands/task/run.command.js";
+import {
+  projectExecutedTaskRunnerLifecycleResult,
+  taskRunnerLifecycleExitCode,
+} from "../runner/usecases/task-run-lifecycle-result.js";
+import {
+  renderTaskRunnerLifecyclePayload,
+  reportExecutedTaskRun,
+} from "../commands/task/run-render.js";
 import { loadCommandContext } from "../commands/shared/task-backend.js";
 import { persistRunnerOutcomeToTask } from "../runner/task-state.js";
 import { staleClaim, writeActiveClaim } from "../runner/usecases/task-run-active-claim.testkit.js";
@@ -114,7 +121,7 @@ async function createStartedRunnerTask(root: string, title: string): Promise<str
 }
 
 describe("runCli task run", () => {
-  it("reports degraded claim cleanup in JSON and human output with a nonzero exit", async () => {
+  it("reports degraded claim cleanup in JSON and human output with a nonzero exit", () => {
     const cleanup = {
       status: "cleanup_failed" as const,
       code: "E_RUNTIME",
@@ -143,60 +150,22 @@ describe("runCli task run", () => {
       bundle: {},
       active_claim_cleanup: cleanup,
     } as unknown as Awaited<ReturnType<typeof taskRunUsecases.executeTaskRunnerExecution>>;
-    const executeSpy = vi
-      .spyOn(taskRunUsecases, "executeTaskRunnerExecution")
-      .mockResolvedValue(executed);
-    const getPreparationContext = vi.fn(async () => {
-      await Promise.resolve();
-      return {} as never;
+    const lifecycle = projectExecutedTaskRunnerLifecycleResult({
+      task_id: "202607241200-DEGRADED",
+      execution: executed,
     });
-    const getExecutionContext = vi.fn(async () => {
-      await Promise.resolve();
-      return {} as never;
-    });
-    const handler = makeRunTaskRunHandler({
-      getPreparationContext,
-      getExecutionContext,
-    });
-    const commandContext = { cwd: "/repo", rootOverride: null } as never;
-    const parsed = {
-      taskId: "202607241200-DEGRADED",
-      dryRun: false,
-      remote: false,
-      allowDangerFullAccess: false,
-      json: true,
-    };
+    const payload = renderTaskRunnerLifecyclePayload(lifecycle);
+    expect(payload.lifecycle_status).toBe("degraded");
+    expect(payload.active_claim_cleanup).toEqual(cleanup);
+    expect(taskRunnerLifecycleExitCode(lifecycle)).toBe(1);
+
+    const io = captureStdIO();
     try {
-      {
-        const io = captureStdIO();
-        try {
-          await expect(handler(commandContext, parsed)).resolves.toBe(1);
-          const payload = JSON.parse(io.stdout) as {
-            lifecycle_status: string;
-            active_claim_cleanup: typeof cleanup;
-          };
-          expect(payload.lifecycle_status).toBe("degraded");
-          expect(payload.active_claim_cleanup).toEqual(cleanup);
-          expect(getPreparationContext).not.toHaveBeenCalled();
-          expect(getExecutionContext).toHaveBeenCalledWith("task run", {
-            includeRemote: false,
-          });
-        } finally {
-          io.restore();
-        }
-      }
-      {
-        const io = captureStdIO();
-        try {
-          await expect(handler(commandContext, { ...parsed, json: false })).resolves.toBe(1);
-          expect(io.stdout).toContain("degraded");
-          expect(io.stdout).toContain(cleanup.message);
-        } finally {
-          io.restore();
-        }
-      }
+      reportExecutedTaskRun(payload, "202607241200-DEGRADED");
+      expect(io.stdout).toContain("degraded");
+      expect(io.stdout).toContain(cleanup.message);
     } finally {
-      executeSpy.mockRestore();
+      io.restore();
     }
   });
 
@@ -240,11 +209,48 @@ describe("runCli task run", () => {
         run_id: string;
         bootstrap_path: string;
         result_path: string;
+        execution_preview: {
+          route: { requested_mode: string; selected_mode: string; reason_codes: string[] };
+          context: {
+            blueprint_id: string | null;
+            task_sections: number;
+            task_context_bytes: number;
+            prompt_blocks: number;
+            policy_modules: number;
+          };
+          approvals: { plan: boolean; verify: boolean; network: boolean; force: boolean };
+          checks: string[];
+          budgets: {
+            token: { state: string; reason: string };
+            context: { max_policy_modules: number; max_prompt_blocks: number | null } | null;
+          };
+        };
       };
       expect(payload.task_id).toBe(taskId);
       expect(payload.mode).toBe("dry_run");
       expect(payload.adapter_id).toBe("codex");
       expect(payload.result_path).toContain(`/runs/`);
+      expect(payload.execution_preview.route).toEqual({
+        requested_mode: "repository",
+        selected_mode: "direct",
+        reason_codes: ["repository_mode_selected"],
+      });
+      expect(payload.execution_preview.context.blueprint_id).toBe("code.direct");
+      expect(Number.isFinite(payload.execution_preview.context.task_sections)).toBe(true);
+      expect(Number.isFinite(payload.execution_preview.context.task_context_bytes)).toBe(true);
+      expect(Number.isFinite(payload.execution_preview.context.prompt_blocks)).toBe(true);
+      expect(Number.isFinite(payload.execution_preview.context.policy_modules)).toBe(true);
+      expect(payload.execution_preview.approvals).toEqual({
+        plan: true,
+        verify: true,
+        network: true,
+        force: false,
+      });
+      expect(payload.execution_preview.checks).toContain("bun run test:critical");
+      expect(payload.execution_preview.budgets.token.state).toBe("unavailable");
+      expect(Number.isFinite(payload.execution_preview.budgets.context?.max_policy_modules)).toBe(
+        true,
+      );
 
       const bootstrap = await readFile(payload.bootstrap_path, "utf8");
       expect(bootstrap.split("\n")[0]).toBe(

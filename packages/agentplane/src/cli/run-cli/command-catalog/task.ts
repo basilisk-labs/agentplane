@@ -31,6 +31,7 @@ import { taskListSpec } from "../../../commands/task/list.spec.js";
 import { taskMigrateDocSpec } from "../../../commands/task/migrate-doc.command.js";
 import { taskMigrateSpec } from "../../../commands/task/migrate.command.js";
 import { taskNewSpec } from "../../../commands/task/new.spec.js";
+import { taskCreateSpec } from "../../../commands/task/create.command.js";
 import { taskBeginSpec } from "../../../commands/task/begin.command.js";
 import { taskBriefSpec } from "../../../commands/task/brief.command.js";
 import { taskCompleteSpec } from "../../../commands/task/complete.command.js";
@@ -126,6 +127,7 @@ import {
   loadTaskNextActionSpec,
   loadTaskAdvanceSpec,
   loadTaskNewSpec,
+  loadTaskCreateSpec,
   loadTaskBeginSpec,
   loadTaskBriefSpec,
   loadTaskRunInspectSpec,
@@ -262,6 +264,13 @@ export const TASK_COMMANDS = [
     load: loadTaskNewSpec,
     requirements: TASK_WRITE_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["task", "new"]),
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  declareSessionCommand(taskCreateSpec, {
+    load: loadTaskCreateSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
+    invocation: requireCanonicalCommandInvocation(["task", "create"]),
     canonicalHelp: true,
   }),
   declareSessionCommand(taskBeginSpec, {

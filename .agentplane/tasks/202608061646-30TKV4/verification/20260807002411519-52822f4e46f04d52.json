@@ -1,0 +1,15 @@
+{
+  "details": "PASS: cli-core task create/run/advance 3 files and 37 tests; critical CLI 12 files and 84 tests; compatibility ratchet approved release-version surface cd30e3bf with 260 commands, 180 args, 836 options and immutable baseline verified; docs CLI/onboarding, TypeScript build, policy routing, full core lint, git diff check, and clean status passed.",
+  "digest": "sha256:52822f4e46f04d527d7b6657b5434acdd68bd47d7429dbb8a1d6b4a0735b7abe",
+  "implementation_sha": "cd8beb68ac1d516a1d1d64419dc609ac703def70",
+  "kind": "task_verification_record",
+  "note": "Hosted CI compatibility follow-up and complete task intake surface pass.",
+  "recorded_at": "2026-08-07T00:24:11.519Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\n- bun run docs:cli:check\n- bun run docs:onboarding:check\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:1e3e36afade323c09657b8fd8b642e24388663392d4ee528edb44f7db34b8c89",
+  "task_id": "202608061646-30TKV4",
+  "verification_command": "agentplane verify 202608061646-30TKV4 --ok --by TESTER",
+  "verifier": "TESTER"
+}

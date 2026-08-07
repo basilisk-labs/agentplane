@@ -1,19 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { execFile } from "node:child_process";
 import { readFileSync } from "node:fs";
-import {
-  chmod,
-  mkdir,
-  mkdtemp,
-  readdir,
-  readFile,
-  realpath,
-  rm,
-  writeFile,
-} from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
 import { defaultConfig, extractTaskSuffix, type ResolvedProject } from "./core-imports.js";
 import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
@@ -28,7 +17,6 @@ import {
 import * as taskBackend from "../backends/task-backend.js";
 import {
   captureStdIO,
-  cleanGitEnv,
   commitAll,
   configureGitUser,
   createUpgradeBundle,
@@ -50,7 +38,6 @@ import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 const TASKS_CLI_TIMEOUT_MS = 300_000;
-
 describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
   it("task new creates a task README and prints the id", async () => {
     const root = await mkGitRepoRoot();

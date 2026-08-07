@@ -1,0 +1,30 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
+    "bun run docs:cli:check",
+    "bun run docs:onboarding:check",
+    "bun run typecheck",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-06T23:56:16.032Z",
+    "updated_by": "TESTER",
+    "note": "The current-main UX branch has complete deterministic verification evidence, including policy routing and final workspace cleanliness."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608061646-30TKV4/verification/20260806235616032-e77244303af23abc.json",
+      "sha256": "sha256:9aaa2dc59ce1d16638e3f649a32c129d3913f943ce38553daba0290e2b80b15e"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
