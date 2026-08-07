@@ -19,8 +19,8 @@ Return an exact result_path and structured resume_argv from task advance, expose
 - Note:
 
 ```text
-Final implementation head ad1088693 passes all task, policy, docs, typing, critical, parser, and
-cleanliness checks.
+Final hosted-CI rework head 032a2b8ab passes protocol, worktree, contract, hotspot, lint, typing,
+critical, and cleanliness checks.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -51,24 +51,28 @@ cleanliness checks.
  packages/agentplane/src/cli/command-guide.test.ts  |   7 +-
  packages/agentplane/src/cli/command-guide.ts       |   4 +-
  .../src/cli/run-cli.core.help-contract.test.ts     |   8 +-
- .../src/cli/run-cli.core.task-advance.test.ts      | 234 +++++++++++++++++----
+ ...n-cli.core.task-advance.branch-worktree.test.ts | 328 +++++++++++++++++++++
+ .../src/cli/run-cli.core.task-advance.test.ts      | 276 ++++++-----------
  .../src/cli/run-cli.core.task-guided.test.ts       |   2 +-
  packages/agentplane/src/cli/run-cli.core.test.ts   |  18 +-
- .../src/commands/shared/route-decision-blockers.ts |  18 ++
+ .../src/commands/shared/route-decision-blockers.ts |   6 +
  .../agentplane/src/commands/shared/route-oracle.ts |   1 +
- .../commands/shared/verification-details.test.ts   |  54 +++++
+ .../commands/shared/verification-details.test.ts   |  54 ++++
  .../src/commands/shared/verification-details.ts    |   7 +-
  .../src/commands/shared/workflow-step-branch.ts    |  14 +-
  .../shared/workflow-step-fingerprint.test.ts       |   4 +-
- .../src/commands/shared/workflow-step-reducer.ts   |  28 +++
- .../src/commands/shared/workflow-step.test.ts      |  42 +++-
+ .../src/commands/shared/workflow-step-reducer.ts   |  28 ++
+ .../src/commands/shared/workflow-step.test.ts      |  42 ++-
  .../src/commands/shared/workflow-step.ts           |   4 +
- .../src/commands/task/advance.command.ts           |  62 +++++-
- .../src/commands/task/agent-action-packet.test.ts  |  90 ++++++++
- .../src/commands/task/agent-action-packet.ts       |  70 +++++-
+ .../src/commands/task/advance.command.ts           |  62 +++-
+ .../src/commands/task/agent-action-packet.test.ts  |  89 ++++++
+ .../src/commands/task/agent-action-packet.ts       |  70 ++++-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
- .../agentplane/src/commands/task/task.command.ts   |  62 ++----
- 36 files changed, 648 insertions(+), 165 deletions(-)
+ packages/agentplane/src/commands/task/shared.ts    |   1 +
+ .../src/commands/task/shared.unit.test.ts          |  11 +
+ .../src/commands/task/shared/dependencies.ts       |  16 +
+ .../agentplane/src/commands/task/task.command.ts   |  62 +---
+ 40 files changed, 891 insertions(+), 307 deletions(-)
 ```
 
 </details>

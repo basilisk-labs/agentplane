@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -32,9 +32,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T23:09:15.786Z"
+  updated_at: "2026-08-07T23:26:57.791Z"
   updated_by: "TESTER"
-  note: "Final implementation head ad1088693 passes all task, policy, docs, typing, critical, parser, and cleanliness checks."
+  note: "Final hosted-CI rework head 032a2b8ab passes protocol, worktree, contract, hotspot, lint, typing, critical, and cleanliness checks."
   attempts: 0
 quality_review:
   state: "pass"
@@ -171,8 +171,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-07T23:26:57.791Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Final hosted-CI rework head 032a2b8ab passes protocol, worktree, contract, hotspot, lint, typing, critical, and cleanliness checks."
 doc_version: 3
-doc_updated_at: "2026-08-07T23:12:02.060Z"
+doc_updated_at: "2026-08-07T23:26:59.210Z"
 doc_updated_by: "CODER"
 description: "Return an exact result_path and structured resume_argv from task advance, expose a typed operator action at approval boundaries, make quickstart and role command guides supervisor-first, show the canonical new/active/advance/run/brief subset in compact task help, attribute explicit begin plans to a human source, and add an end-to-end branch_pr test that advances once from the base checkout and receives a worktree-bound WorkOrder without caller cwd changes."
 sections:
@@ -546,6 +552,71 @@ sections:
     Result: pass
     Evidence: TypeScript build exited 0 at ad1088693203b396693c99a4ef64397ef176c461.
     Scope: repository TypeScript contracts.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: critical-cli completed all 12 chunks with 84 tests passed.
+    Scope: compatibility and trust-boundary ratchets.
+
+    Command: git status --short --untracked-files=all
+    Result: pass
+    Evidence: stdout was empty before this verification receipt.
+    Scope: final repository cleanliness and unintended-drift check.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-MCY8ZC-polish-the-external-supervisor-protocol-and-cano/.agentplane/tasks/202608062021-MCY8ZC/blueprint/resolved-snapshot.json
+    - old_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+    - current_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-MCY8ZC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T23:26:57.791Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Final hosted-CI rework head 032a2b8ab passes protocol, worktree, contract, hotspot, lint, typing, critical, and cleanliness checks.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T23:12:02.060Z, excerpt_hash=sha256:e7b785b4af2458a5bf3ddea4bbab3158dc569e3b026d3f1b1fc95a2df69b1c31
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+    Result: pass
+    Evidence: Vitest exited 0 with 2 files and 13 tests passed at 032a2b8ab4180f16251f367b36ee462d2b108b92.
+    Scope: external supervisor CLI and canonical base-checkout-to-worktree integration.
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/commands/task/shared.unit.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+    Result: pass
+    Evidence: Focused packet, dependency, blocker, verification-parser, and durable-record tests exited 0 across the validated runs.
+    Scope: typed protocol fields, dependency parity, evidence parsing, and route blockers.
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: Full contract suite exited 0, including formatting, schemas, policy routing, docs, compatibility and RF-04 baseline checks, hotspots, lint, architecture, clone, knip, and coverage guardrails.
+    Scope: complete CI contract and maintenance budgets.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build exited 0 at 032a2b8ab4180f16251f367b36ee462d2b108b92.
+    Scope: repository TypeScript contracts.
+
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: route-decision-blockers is 596 lines, task-advance main test is 874 lines, split branch-worktree test is 326 lines, and oversized baseline remained within 10 entries.
+    Scope: runtime and test maintainability budgets.
 
     Command: bun run test:critical
     Result: pass
@@ -979,6 +1050,71 @@ Command: bun run typecheck
 Result: pass
 Evidence: TypeScript build exited 0 at ad1088693203b396693c99a4ef64397ef176c461.
 Scope: repository TypeScript contracts.
+
+Command: bun run test:critical
+Result: pass
+Evidence: critical-cli completed all 12 chunks with 84 tests passed.
+Scope: compatibility and trust-boundary ratchets.
+
+Command: git status --short --untracked-files=all
+Result: pass
+Evidence: stdout was empty before this verification receipt.
+Scope: final repository cleanliness and unintended-drift check.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-MCY8ZC-polish-the-external-supervisor-protocol-and-cano/.agentplane/tasks/202608062021-MCY8ZC/blueprint/resolved-snapshot.json
+- old_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+- current_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-MCY8ZC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T23:26:57.791Z — VERIFY — ok
+
+By: TESTER
+
+Note: Final hosted-CI rework head 032a2b8ab passes protocol, worktree, contract, hotspot, lint, typing, critical, and cleanliness checks.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T23:12:02.060Z, excerpt_hash=sha256:e7b785b4af2458a5bf3ddea4bbab3158dc569e3b026d3f1b1fc95a2df69b1c31
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+Result: pass
+Evidence: Vitest exited 0 with 2 files and 13 tests passed at 032a2b8ab4180f16251f367b36ee462d2b108b92.
+Scope: external supervisor CLI and canonical base-checkout-to-worktree integration.
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/commands/task/shared.unit.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+Result: pass
+Evidence: Focused packet, dependency, blocker, verification-parser, and durable-record tests exited 0 across the validated runs.
+Scope: typed protocol fields, dependency parity, evidence parsing, and route blockers.
+
+Command: bun run ci:contract
+Result: pass
+Evidence: Full contract suite exited 0, including formatting, schemas, policy routing, docs, compatibility and RF-04 baseline checks, hotspots, lint, architecture, clone, knip, and coverage guardrails.
+Scope: complete CI contract and maintenance budgets.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build exited 0 at 032a2b8ab4180f16251f367b36ee462d2b108b92.
+Scope: repository TypeScript contracts.
+
+Command: bun run hotspots:check
+Result: pass
+Evidence: route-decision-blockers is 596 lines, task-advance main test is 874 lines, split branch-worktree test is 326 lines, and oversized baseline remained within 10 entries.
+Scope: runtime and test maintainability budgets.
 
 Command: bun run test:critical
 Result: pass
