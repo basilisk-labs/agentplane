@@ -1,4 +1,3 @@
- docs/user/cli-reference.generated.mdx              |  49 +++++
  .../run-cli.core.help-snap.test.ts.snap            |  12 +-
  .../src/cli/run-cli.core.help-contract.test.ts     |   8 +-
  .../src/cli/run-cli.core.task-advance.test.ts      | 211 ++++++++++++++++-----
@@ -16,4 +15,4 @@
  .../src/commands/task/agent-action-packet.ts       |  71 ++++++-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
  .../agentplane/src/commands/task/task.command.ts   |  62 ++----
- 18 files changed, 545 insertions(+), 145 deletions(-)
+ 17 files changed, 496 insertions(+), 145 deletions(-)

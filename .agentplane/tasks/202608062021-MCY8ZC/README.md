@@ -4,7 +4,7 @@ title: "Polish the external supervisor protocol and canonical task help"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -31,9 +31,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T22:30:51.490Z"
+  updated_at: "2026-08-07T22:33:16.515Z"
   updated_by: "TESTER"
-  note: "Rebased onto current main; protocol, compact help, generated docs, type safety, and all critical compatibility gates pass."
+  note: "All declared checks pass on committed implementation SHA c49bacfa4."
   attempts: 0
 execution_route:
   frozen: true
@@ -78,8 +78,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Rebased onto current main; protocol, compact help, generated docs, type safety, and all critical compatibility gates pass."
+  -
+    type: "verify"
+    at: "2026-08-07T22:33:16.515Z"
+    author: "TESTER"
+    state: "ok"
+    note: "All declared checks pass on committed implementation SHA c49bacfa4."
 doc_version: 3
-doc_updated_at: "2026-08-07T22:30:52.475Z"
+doc_updated_at: "2026-08-07T22:33:17.823Z"
 doc_updated_by: "CODER"
 description: "Return an exact result_path and structured resume_argv from task advance, expose a typed operator action at approval boundaries, make quickstart and role command guides supervisor-first, show the canonical new/active/advance/run/brief subset in compact task help, attribute explicit begin plans to a human source, and add an end-to-end branch_pr test that advances once from the base checkout and receives a worktree-bound WorkOrder without caller cwd changes."
 sections:
@@ -172,6 +178,56 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T22:33:16.515Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: All declared checks pass on committed implementation SHA c49bacfa4.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T22:30:52.475Z, excerpt_hash=sha256:e7b785b4af2458a5bf3ddea4bbab3158dc569e3b026d3f1b1fc95a2df69b1c31
+
+    Details:
+
+    Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts
+    Result: pass; 3 test files and 18 tests passed.
+    Evidence: Vitest exit code 0 on committed head c49bacfa4.
+    Scope: external supervisor packet, task routing, and command guide contracts.
+
+    Command: bun run docs:cli:check
+    Result: pass.
+    Evidence: generated CLI reference reported up to date on committed head c49bacfa4.
+    Scope: compact task help and generated reference.
+
+    Command: bun run typecheck
+    Result: pass.
+    Evidence: TypeScript build exited 0 on committed head c49bacfa4.
+    Scope: repository TypeScript contracts.
+
+    Command: bun run test:critical
+    Result: pass; 12 of 12 chunks and 84 tests passed.
+    Evidence: critical-cli exited 0 on committed head c49bacfa4.
+    Scope: compatibility, replay, protected-path, symlink, and trust-boundary ratchets.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-MCY8ZC-polish-the-external-supervisor-protocol-and-cano/.agentplane/tasks/202608062021-MCY8ZC/blueprint/resolved-snapshot.json
+    - old_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+    - current_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-MCY8ZC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608062021-MCY8ZC
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -297,6 +353,56 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T22:33:16.515Z — VERIFY — ok
+
+By: TESTER
+
+Note: All declared checks pass on committed implementation SHA c49bacfa4.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T22:30:52.475Z, excerpt_hash=sha256:e7b785b4af2458a5bf3ddea4bbab3158dc569e3b026d3f1b1fc95a2df69b1c31
+
+Details:
+
+Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts
+Result: pass; 3 test files and 18 tests passed.
+Evidence: Vitest exit code 0 on committed head c49bacfa4.
+Scope: external supervisor packet, task routing, and command guide contracts.
+
+Command: bun run docs:cli:check
+Result: pass.
+Evidence: generated CLI reference reported up to date on committed head c49bacfa4.
+Scope: compact task help and generated reference.
+
+Command: bun run typecheck
+Result: pass.
+Evidence: TypeScript build exited 0 on committed head c49bacfa4.
+Scope: repository TypeScript contracts.
+
+Command: bun run test:critical
+Result: pass; 12 of 12 chunks and 84 tests passed.
+Evidence: critical-cli exited 0 on committed head c49bacfa4.
+Scope: compatibility, replay, protected-path, symlink, and trust-boundary ratchets.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-MCY8ZC-polish-the-external-supervisor-protocol-and-cano/.agentplane/tasks/202608062021-MCY8ZC/blueprint/resolved-snapshot.json
+- old_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+- current_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-MCY8ZC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608062021-MCY8ZC
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
