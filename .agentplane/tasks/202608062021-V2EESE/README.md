@@ -4,7 +4,7 @@ title: "Project semantic-only provider prompts and reject process choreography"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -37,32 +37,31 @@ verification:
   note: "Embedded Git control commands are rejected in any prose position while read-only Git inspection remains available."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T04:53:14.886Z"
+  updated_at: "2026-08-07T05:01:10.163Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "dc75e47d770efb9f5db1a9f97b115aa2c81925f5"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "60c6416fb08858e79d2b22c227363cb068d25ce8"
   blueprint_digest: "ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26"
   evidence_refs:
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-045222022-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-045222022-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/890edcb262af79dda1b5a7f8413bd9d9424bf1f327c0d6b7e4f0b0b21fb45f5d.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-045222022-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-045222022-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-045222022-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-045222022-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-050012723-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-050012723-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/88658b8fd0b0ad5e2e824f2522d2f6bd6d1a30d50dd6c95ea6d494c2f71ab19c.md"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-050012723-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-050012723-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-050012723-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608062021-V2EESE/README.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/a70aee63b48a7a5dfe23d411a55757d2b924db1d78892c463a297a30d8e5d2ed.patch"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/19ab107c14fc62bc99732a85d957b2ac3bd74fffd71974e007fd7e82ef8f1722.json"
-    - ".agentplane/tasks/202608062021-V2EESE/verification/20260807045155634-c50e589aaf8ab463.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/ec83df6c7f976c11abcccfbf66aec702823e935c295f5386d4e80b1d445ee8c2.patch"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/28fb63753a5ffd39bda9827ca4e0759b9c14a7a5e37fab762ad3c9f7fdd80e66.json"
+    - ".agentplane/tasks/202608062021-V2EESE/verification/20260807045726439-47f95c04a29b783c.json"
     - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/95733d97fca351adc4547b7181a057ce60fc567aeb7afbf37c59f69aa9b36417.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The exact-provider-input guard still allows Git choreography embedded in ordinary prose, such as \"Commit changes with git commit\", because Git detection only covers line-start/backtick commands or four enumerated imperative verbs."
+    - "No contract-breaking defect was identified in the frozen implementation and verification evidence."
 execution_route:
   frozen: true
   reason_codes:
