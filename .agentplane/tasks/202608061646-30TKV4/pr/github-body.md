@@ -41,13 +41,13 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
  packages/agentplane/src/commands/task/new.ts       | 333 +++++++++--------
  .../src/commands/task/run-execution-preview.ts     |  83 +++++
  .../agentplane/src/commands/task/run-render.ts     |  39 +-
- .../agentplane/src/commands/task/run.command.ts    |   6 +-
+ .../agentplane/src/commands/task/run.command.ts    |   8 +-
  .../agentplane/src/commands/task/status.command.ts |  13 +-
  .../agentplane/src/commands/task/task.command.ts   |  10 +-
  .../baselines/v0.7-compatibility-candidate.json    | 193 +++++++++-
  scripts/checks/check-agent-onboarding-scenario.mjs |  11 +
  .../check-compatibility-contract-baseline.mjs      | 135 ++++++-
- 20 files changed, 1527 insertions(+), 314 deletions(-)
+ 20 files changed, 1528 insertions(+), 315 deletions(-)
 ```
 
 </details>

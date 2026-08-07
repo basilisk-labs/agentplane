@@ -79,7 +79,7 @@ function reportTaskSupervision(opts: {
   });
 }
 
-export type TaskRunContextDependencies = {
+type TaskRunContextDependencies = {
   getPreparationContext?: (
     command: string,
     options: { includeRemote: boolean },
