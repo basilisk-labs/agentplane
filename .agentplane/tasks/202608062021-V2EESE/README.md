@@ -1,10 +1,11 @@
 ---
 id: "202608062021-V2EESE"
 title: "Project semantic-only provider prompts and reject process choreography"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -62,6 +63,20 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "No contract-breaking defect was identified in the frozen implementation and verification evidence."
+token_usage:
+  agent_runs: 5
+  input_tokens: 792013
+  journal_digest: "sha256:0664d4904902a0f3abab975af5b43cbe54d2204ec90aabaac0dc47d37a993323"
+  observed_agent_runs: 4
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "partial"
+  total_tokens: 806015
+  unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
+  updated_at: "2026-08-07T05:04:53.488Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -70,7 +85,9 @@ execution_route:
   requested_mode: "auto"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "d8f3a5589cee34aee03ae555e6d9f937d4a9b5bd"
+  message: "🧩 V2EESE task: refresh blueprint closure evidence"
 comments:
   -
     author: "CODER"
@@ -78,6 +95,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: semantic-only provider prompt projection and exact process-choreography gate."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -129,8 +149,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: blueprint snapshot refreshed after explicit repair-authority tag; implementation and checks are unchanged."
+  -
+    type: "status"
+    at: "2026-08-07T05:04:53.488Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T05:02:47.648Z"
+doc_updated_at: "2026-08-07T05:04:53.500Z"
 doc_updated_by: "CODER"
 description: "Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt."
 sections:
@@ -463,6 +490,9 @@ sections:
       Impact: The semantic projection implementation is locally validated, but the mandatory cumulative critical gate cannot yet be recorded as passing.
       Resolution: Integrate BZT3D9, rebase this branch, rerun all declared Verify Steps, then record a fresh verification result.
 extensions:
+  implementation_commit:
+    hash: "60c6416fb08858e79d2b22c227363cb068d25ce8"
+    message: "🛡️ V2EESE prompts: detect embedded Git control commands"
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
     version: 1
@@ -810,3 +840,16 @@ DecisionContextRef:
 - Observation: The compatibility baseline test reports current main candidate drift before task-specific verification can complete.
   Impact: The semantic projection implementation is locally validated, but the mandatory cumulative critical gate cannot yet be recorded as passing.
   Resolution: Integrate BZT3D9, rebase this branch, rerun all declared Verify Steps, then record a fresh verification result.
+
+## Token Usage
+
+- State: `partial`
+- Completeness: `4/5` agent runs
+- Input tokens: `792013`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `806015`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:0664d4904902a0f3abab975af5b43cbe54d2204ec90aabaac0dc47d37a993323`
+- Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
+- Updated at: `2026-08-07T05:04:53.488Z`
