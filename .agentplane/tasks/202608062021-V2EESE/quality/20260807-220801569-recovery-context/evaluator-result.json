@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "low",
+      "summary": "No acceptance-criteria violation was found in the frozen implementation and verification evidence.",
+      "broken_invariant": "None; the structured semantic projection, exact compiled-prompt rejection, repository-contained policy loading, and declared verification contract are satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/0cbee0fae9467b2908bf5280227187139106ae8a73dda4f90eae36c523804632.patch",
+          "sha256": "sha256:0cbee0fae9467b2908bf5280227187139106ae8a73dda4f90eae36c523804632",
+          "section": "semantic prompt projection, choreography guard, and symlink-safe policy loading"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/verification/20260807220736195-b5e8b98fdfb01380.json",
+          "sha256": "sha256:69e77a1a8259afbe17aabc643f907ad1e0c9ef11d5e486ceaa4ebd82f4e3e6f9",
+          "section": "declared verification results"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/README.md",
+          "sha256": "sha256:b4f57ef76edb7a6ee19b55025bb96b5a3df7403a05c0b857c1ca97db25e07aa7",
+          "section": "task objective, verification, and recovery history"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The explicit process-mechanism-repair tag combined with matching task intent is the authoritative permission signal for lifecycle-repair prompt content."
+  ]
+}
