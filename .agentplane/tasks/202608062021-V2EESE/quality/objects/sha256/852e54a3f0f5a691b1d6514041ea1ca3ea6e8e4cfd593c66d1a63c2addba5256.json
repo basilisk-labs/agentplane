@@ -1,0 +1,29 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts",
+    "bun run test:critical",
+    "bun run typecheck",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-07T09:41:29.426Z",
+    "updated_by": "TESTER",
+    "note": "Canonical gateway allowlisting removes lifecycle and persistence prose while preserving semantic safety constraints."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608062021-V2EESE/verification/20260807094129426-a13411414bd3e042.json",
+      "sha256": "sha256:32b475f8c3d64fd3d0ee75ba0a1d8624b6b15a2f47264850323e0960323bd0fd"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
