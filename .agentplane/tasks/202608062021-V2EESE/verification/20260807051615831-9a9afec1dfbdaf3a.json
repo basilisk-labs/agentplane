@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\nResult: pass\nEvidence: 3 files and 77 tests passed after extracting the prompt guard.\nScope: exact compiled-provider prompt projection and agent packet contracts.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: all 12 critical CLI chunks passed.\nScope: critical trust-boundary and efficiency regressions.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit 0.\nScope: repository type safety.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: generated policy routing.\n\nCommand: bun run hotspots:check\nResult: pass\nEvidence: task-run.ts is within the 600-line hard threshold and no runtime module exceeds it.\nScope: hosted verify-contract failure remediation.",
+  "digest": "sha256:9a9afec1dfbdaf3a623543e1e148994c8084e293b2a931d6683b0b2d1cf84943",
+  "implementation_sha": "573e3e685a4606f1f7484d9591b8880c03284395",
+  "kind": "task_verification_record",
+  "note": "Prompt guard extraction passes declared verification and the hosted hotspot contract locally.",
+  "recorded_at": "2026-08-07T05:16:15.831Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\n- bun run test:critical\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98",
+  "task_id": "202608062021-V2EESE",
+  "verification_command": "agentplane verify 202608062021-V2EESE --ok --by CODER",
+  "verifier": "CODER"
+}
