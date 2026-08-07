@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -32,9 +32,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T23:29:31.756Z"
+  updated_at: "2026-08-07T23:49:15.334Z"
   updated_by: "TESTER"
-  note: "Final MCY8ZC implementation head 032a2b8ab passes every declared command plus the split branch-worktree e2e and complete CI contract."
+  note: "Implementation head 75263193a aligns the canonical branch_pr WorkOrder contract and passes the complete hosted-equivalent unit suite plus every declared verification and repository contract."
   attempts: 0
 quality_review:
   state: "pass"
@@ -193,8 +193,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-07T23:49:15.334Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Implementation head 75263193a aligns the canonical branch_pr WorkOrder contract and passes the complete hosted-equivalent unit suite plus every declared verification and repository contract."
 doc_version: 3
-doc_updated_at: "2026-08-07T23:31:33.822Z"
+doc_updated_at: "2026-08-07T23:49:16.801Z"
 doc_updated_by: "CODER"
 description: "Return an exact result_path and structured resume_argv from task advance, expose a typed operator action at approval boundaries, make quickstart and role command guides supervisor-first, show the canonical new/active/advance/run/brief subset in compact task help, attribute explicit begin plans to a human source, and add an end-to-end branch_pr test that advances once from the base checkout and receives a worktree-bound WorkOrder without caller cwd changes."
 sections:
@@ -723,6 +729,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-07T23:49:15.334Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Implementation head 75263193a aligns the canonical branch_pr WorkOrder contract and passes the complete hosted-equivalent unit suite plus every declared verification and repository contract.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T23:31:33.822Z, excerpt_hash=sha256:e7b785b4af2458a5bf3ddea4bbab3158dc569e3b026d3f1b1fc95a2df69b1c31
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-MCY8ZC-polish-the-external-supervisor-protocol-and-cano/.agentplane/tasks/202608062021-MCY8ZC/blueprint/resolved-snapshot.json
+    - old_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+    - current_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-MCY8ZC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -737,6 +773,10 @@ sections:
     - Observation: bun run test:critical stops at run-cli.critical.agent-efficiency-baseline.test.ts because the immutable v0.7.4 compatibility candidate no longer matches current shared CLI and prompt surfaces.
       Impact: The task cannot receive a passing verification record or publish its PR head until the foundational compatibility baseline is merged.
       Resolution: Merge 202608061850-BZT3D9, rebase this branch, rerun targeted, docs, typecheck, and critical suites, then replace this rework record with verified evidence.
+
+    - Observation: GitHub verify-unit exposed one stale integration expectation after the route correctly began returning the branch implementation episode before PR publication.
+      Impact: The previous assertion expected read-only authority for a semantic implementation episode and failed the complete unit job despite the runtime route being correct.
+      Resolution: Updated the canonical WorkOrder integration assertion to require workspace-write in the task worktree; verified 543 files/3885 tests, 12 critical chunks/84 tests, 3 acceptance files/17 tests, ci:contract, docs:cli:check, and typecheck.
 extensions:
   implementation_commit:
     hash: "032a2b8ab4180f16251f367b36ee462d2b108b92"
@@ -1281,6 +1321,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-07T23:49:15.334Z — VERIFY — ok
+
+By: TESTER
+
+Note: Implementation head 75263193a aligns the canonical branch_pr WorkOrder contract and passes the complete hosted-equivalent unit suite plus every declared verification and repository contract.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T23:31:33.822Z, excerpt_hash=sha256:e7b785b4af2458a5bf3ddea4bbab3158dc569e3b026d3f1b1fc95a2df69b1c31
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-MCY8ZC-polish-the-external-supervisor-protocol-and-cano/.agentplane/tasks/202608062021-MCY8ZC/blueprint/resolved-snapshot.json
+- old_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+- current_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-MCY8ZC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1299,6 +1369,10 @@ DecisionContextRef:
 - Observation: bun run test:critical stops at run-cli.critical.agent-efficiency-baseline.test.ts because the immutable v0.7.4 compatibility candidate no longer matches current shared CLI and prompt surfaces.
   Impact: The task cannot receive a passing verification record or publish its PR head until the foundational compatibility baseline is merged.
   Resolution: Merge 202608061850-BZT3D9, rebase this branch, rerun targeted, docs, typecheck, and critical suites, then replace this rework record with verified evidence.
+
+- Observation: GitHub verify-unit exposed one stale integration expectation after the route correctly began returning the branch implementation episode before PR publication.
+  Impact: The previous assertion expected read-only authority for a semantic implementation episode and failed the complete unit job despite the runtime route being correct.
+  Resolution: Updated the canonical WorkOrder integration assertion to require workspace-write in the task worktree; verified 543 files/3885 tests, 12 critical chunks/84 tests, 3 acceptance files/17 tests, ci:contract, docs:cli:check, and typecheck.
 
 ## Token Usage
 
