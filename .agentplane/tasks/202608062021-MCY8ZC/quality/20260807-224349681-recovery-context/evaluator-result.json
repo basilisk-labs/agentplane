@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The new branch_pr end-to-end test does not assert that the WorkOrder source_manifest is bound to the created worktree, despite that being an explicit acceptance criterion.",
+      "broken_invariant": "The declared integration test must verify that checkout, branch/head, writable roots, source manifest, and exchange paths all point to the automatically created worktree without changing caller cwd.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/README.md",
+          "sha256": "sha256:cd018077554c66d2d1939fb7e102aebb6c5d9a553e1a02f05e64e002283df242",
+          "section": "Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/8567073835e48dabdae716dcfd37749d73afbca1e3b0d88556be3d694379fa96.patch",
+          "sha256": "sha256:8567073835e48dabdae716dcfd37749d73afbca1e3b0d88556be3d694379fa96",
+          "section": "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "medium",
+      "summary": "Recorded verification omits the required final repository status evidence, so unintended tracked or untracked drift has not been ruled out by the frozen evidence.",
+      "broken_invariant": "DoD core requires final evidence from git status --short --untracked-files=all showing no unintended tracked changes or unreviewed untracked artifacts.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/40df41279e262a7eba25cbb201cf46824f635b6d2b518a8e4f8ef493e2f73a5e.json",
+          "sha256": "sha256:40df41279e262a7eba25cbb201cf46824f635b6d2b518a8e4f8ef493e2f73a5e",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Extend the base-checkout branch_pr integration test to inspect workOrder.source_manifest.source_paths and prove every referenced source resolves against the created task worktree rather than the caller checkout.",
+    "Record git status --short --untracked-files=all at the evaluated SHA and classify any remaining tracked or untracked artifacts."
+  ],
+  "hidden_assumptions": [
+    "Checking the task_document entry in required_inputs is assumed to cover the distinct source_manifest binding requirement.",
+    "Passing command suites is assumed to imply a clean final repository state even though no deterministic status evidence is frozen."
+  ],
+  "recovery_context": "Add explicit source_manifest worktree assertions to the branch_pr end-to-end test, rerun the declared verification, and freeze final git-status evidence demonstrating that only intended task/evaluator artifacts remain."
+}

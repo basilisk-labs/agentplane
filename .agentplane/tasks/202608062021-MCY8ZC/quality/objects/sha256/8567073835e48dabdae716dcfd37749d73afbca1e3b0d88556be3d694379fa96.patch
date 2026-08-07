@@ -1,0 +1,1413 @@
+diff --git a/.agentplane/policy/workflow.branch_pr.md b/.agentplane/policy/workflow.branch_pr.md
+index c4bdc743f..8de56e981 100644
+--- a/.agentplane/policy/workflow.branch_pr.md
++++ b/.agentplane/policy/workflow.branch_pr.md
+@@ -15,7 +15,8 @@ Use this module when `workflow_mode=branch_pr`.
+    verification-persistence, integration, hosted-close, and cleanup transitions.
+ 4. If `action.kind=agent_episode`, perform only the supplied semantic objective in the authoritative
+    task checkout and writable roots named by the packet.
+-5. Write the typed result to the supplied result path and resume with the packet's exact argv.
++5. Write the typed result to `exchange.result_path` and resume with the exact
++   `exchange.resume_argv`; `exchange.return_invocation` is compatibility-only.
+ 6. Repeat with a fresh packet until AgentPlane returns an approval, human, hosted/external, or
+    terminal boundary.
+ 7. For a configured managed runner, use `agentplane task run <task-id>` instead of the external
+diff --git a/.agentplane/policy/workflow.direct.md b/.agentplane/policy/workflow.direct.md
+index 00efeb244..cea5a7660 100644
+--- a/.agentplane/policy/workflow.direct.md
++++ b/.agentplane/policy/workflow.direct.md
+@@ -13,7 +13,8 @@ Use this module when `workflow_mode=direct`.
+ 2. Request one bounded action with `agentplane task advance <task-id> --agent-json`.
+ 3. If `action.kind=agent_episode`, perform only the supplied semantic objective in the supplied
+    checkout and authority boundary.
+-4. Write the typed result to the supplied result path and resume with the packet's exact argv.
++4. Write the typed result to `exchange.result_path` and resume with the exact
++   `exchange.resume_argv`; `exchange.return_invocation` is compatibility-only.
+ 5. Repeat with a fresh packet until AgentPlane returns an approval, human, external, or terminal
+    boundary.
+ 6. For a configured managed runner, use `agentplane task run <task-id>` instead of the external
+diff --git a/README.md b/README.md
+index 04a8e3476..831fd4d51 100644
+--- a/README.md
++++ b/README.md
+@@ -120,8 +120,9 @@ agentplane task advance <task-id> --agent-json
+ 
+ The first response includes the task ID, selected route, and the exact second command. Give the
+ returned packet to Claude Code, Codex, Cursor, Aider, or another external agent. The agent performs
+-only the packet's semantic objective, writes the typed result to
+-`exchange.directory/exchange.result_ref`, and resumes with:
++only the packet's semantic objective, writes the typed result to the exact
++`exchange.result_path`, and executes the exact `exchange.resume_argv`. The legacy
++`exchange.return_invocation` field remains compatibility-only. Its equivalent shell form is:
+ 
+ ```bash
+ agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
+diff --git a/docs/user/agent-bootstrap.generated.mdx b/docs/user/agent-bootstrap.generated.mdx
+index 735409f7e..069a1c41d 100644
+--- a/docs/user/agent-bootstrap.generated.mdx
++++ b/docs/user/agent-bootstrap.generated.mdx
+@@ -47,7 +47,7 @@ Create a task from ordinary language, return its initial PLANNER result through
+ - `agentplane task run <task-id>`
+ 
+ - Before a task-specific plan exists, `task run` returns `semantic_input_required`; use the read-only PLANNER packet from `task advance --agent-json` first.
+-- The external agent writes its typed result to `exchange.directory/exchange.result_ref` and resumes through `exchange.return_invocation`.
++- The external agent writes its typed result to `exchange.result_path` and resumes with the exact `exchange.resume_argv`; `exchange.return_invocation` remains compatibility-only.
+ - After planning and approval, `task run` may resolve eligible semantic episodes through the configured managed adapter and returns control at human or external boundaries.
+ 
+ ## 4. Verification and incident reuse
+diff --git a/docs/user/task-lifecycle.mdx b/docs/user/task-lifecycle.mdx
+index 721cf9373..6244b50e4 100644
+--- a/docs/user/task-lifecycle.mdx
++++ b/docs/user/task-lifecycle.mdx
+@@ -31,8 +31,8 @@ When `action.kind=agent_episode`:
+ 
+ 1. Read the supplied objective, role, authority, context references, required output, and stop rules.
+ 2. Perform only that semantic objective in the supplied checkout and writable roots.
+-3. Write a typed semantic result to the result location supplied by the packet.
+-4. Resume with the return invocation supplied by Agentplane.
++3. Write a typed semantic result to the exact `exchange.result_path` supplied by the packet.
++4. Resume with the exact `exchange.resume_argv`; `exchange.return_invocation` is compatibility-only.
+ 5. Request a fresh packet after every state change.
+ 
+ Do not reconstruct the state machine from prose. Do not switch checkout, create branches, publish
+@@ -72,9 +72,9 @@ agentplane task create "Inspect Agentplane artifacts and summarize what was crea
+ ```
+ 
+ Run the exact `task advance` command in the response and give its packet to an external agent. It
+-reads `exchange.work_order_ref`, performs only the
+-PLANNER objective, writes a typed result matching `exchange.result_schema_ref` to
+-`exchange.directory/exchange.result_ref`, and returns it with:
++reads `exchange.work_order_ref`, performs only the PLANNER objective, writes a typed result matching
++`exchange.result_schema_ref` to `exchange.result_path`, and resumes with the exact
++`exchange.resume_argv`. Its equivalent shell form is:
+ 
+ ```bash
+ agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
+diff --git a/docs/workflow-guides/branch-pr.mdx b/docs/workflow-guides/branch-pr.mdx
+index 502af9d54..a548feecc 100644
+--- a/docs/workflow-guides/branch-pr.mdx
++++ b/docs/workflow-guides/branch-pr.mdx
+@@ -29,8 +29,9 @@ agentplane task advance <task-id> --agent-json
+ ```
+ 
+ When the packet returns `action.kind=agent_episode`, the agent performs only that objective in the
+-authoritative worktree and writable roots supplied by Agentplane. It writes the typed result to the
+-packet's result location and resumes with the supplied invocation.
++authoritative worktree and writable roots supplied by Agentplane. It writes the typed result to
++`exchange.result_path` and resumes with the exact `exchange.resume_argv`;
++`exchange.return_invocation` is compatibility-only.
+ 
+ The caller does not create branch names, change cwd, publish the PR, persist verification, merge,
+ or clean the worktree.
+diff --git a/docs/workflow-guides/hermes-kanban.mdx b/docs/workflow-guides/hermes-kanban.mdx
+index 2cb445318..26b5b65e3 100644
+--- a/docs/workflow-guides/hermes-kanban.mdx
++++ b/docs/workflow-guides/hermes-kanban.mdx
+@@ -181,7 +181,8 @@ agent:
+ 2. Resolve or create the Agentplane task id.
+ 3. Run `agentplane task advance <task-id> --agent-json`.
+ 4. When it returns an agent episode, dispatch only the supplied semantic objective and authority.
+-5. Write the typed result to the supplied exchange path and resume with the supplied invocation.
++5. Write the typed result to `exchange.result_path` and resume with the exact
++   `exchange.resume_argv`; `exchange.return_invocation` is compatibility-only.
+ 6. At approval, human, hosted/external, stale-state, or effect-in-doubt boundaries, stop and project
+    the boundary to Hermes without inventing progress.
+ 7. Write a structured Hermes comment with run id, previous revision, new revision, and evidence
+diff --git a/packages/agentplane/assets/AGENTS.md b/packages/agentplane/assets/AGENTS.md
+index c966f1ccb..3101a5aca 100644
+--- a/packages/agentplane/assets/AGENTS.md
++++ b/packages/agentplane/assets/AGENTS.md
+@@ -20,7 +20,7 @@ Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
+ 
+ - Repository type: user project initialized with `agentplane`.
+ - CLI rule: prefer `ap` for compact agent-oriented commands; fall back to `agentplane`; if neither is available, stop and request installation guidance (do not invent repo-local entrypoints).
+-- Normal agent route: select ready work with `ap task active`, then request one bounded action with `ap task advance <task-id> --agent-json`. Execute only an emitted semantic episode, stay inside its authority, write the typed result to the supplied result path, and resume with the supplied argv. A configured managed runner uses `ap task run <task-id>`. `task brief`, `task status --route`, and `task next-action --explain` are operator/recovery diagnostics, not the normal agent protocol.
++- Normal agent route: select ready work with `ap task active`, then request one bounded action with `ap task advance <task-id> --agent-json`. Execute only an emitted semantic episode, stay inside its authority, write the typed result to `exchange.result_path`, and resume with the exact `exchange.resume_argv`. `exchange.return_invocation` is compatibility-only. A configured managed runner uses `ap task run <task-id>`. `task brief`, `task status --route`, and `task next-action --explain` are operator/recovery diagnostics, not the normal agent protocol.
+ 
+ <!-- /ap:fragment -->
+ <!-- ap:fragment id="gateway.agents.source_of_truth.sources.of.truth" slot="source_of_truth" mutability="replaceable" -->
+@@ -63,8 +63,8 @@ ap task advance <task-id> --result <exact-result-path> --agent-json
+ ```
+ 
+ When `action.kind=agent_episode`, perform only the supplied semantic objective. Do not infer or run
+-formal lifecycle transitions. After writing the result, use the exact resume argv from the packet
+-when available and request a fresh packet after every state change.
++formal lifecycle transitions. After writing the result to `exchange.result_path`, use the exact
++`exchange.resume_argv` and request a fresh packet after every state change.
+ 
+ ### Managed runner
+ 
+diff --git a/packages/agentplane/assets/codex-plugin/skills/agentplane/SKILL.md b/packages/agentplane/assets/codex-plugin/skills/agentplane/SKILL.md
+index 0d67b8c62..4b7f4d46a 100644
+--- a/packages/agentplane/assets/codex-plugin/skills/agentplane/SKILL.md
++++ b/packages/agentplane/assets/codex-plugin/skills/agentplane/SKILL.md
+@@ -19,8 +19,9 @@ Use AgentPlane through its CLI instead of editing `.agentplane/` state directly.
+ 2. Select ready work with `ap task active`.
+ 3. Request one bounded external-agent action with `ap task advance <task-id> --agent-json`.
+ 4. When `action.kind=agent_episode`, perform only the supplied semantic objective inside the
+-   supplied authority and write the typed result to the supplied result path.
+-5. Resume with the exact argv from the packet and request a fresh packet after every state change.
++   supplied authority and write the typed result to `exchange.result_path`.
++5. Resume with the exact `exchange.resume_argv` and request a fresh packet after every state
++   change. `exchange.return_invocation` is compatibility-only.
+ 6. If the repository has a configured managed runner, use `ap task run <task-id>` instead of the
+    external exchange loop.
+ 
+diff --git a/packages/agentplane/assets/policy/workflow.branch_pr.md b/packages/agentplane/assets/policy/workflow.branch_pr.md
+index c4bdc743f..8de56e981 100644
+--- a/packages/agentplane/assets/policy/workflow.branch_pr.md
++++ b/packages/agentplane/assets/policy/workflow.branch_pr.md
+@@ -15,7 +15,8 @@ Use this module when `workflow_mode=branch_pr`.
+    verification-persistence, integration, hosted-close, and cleanup transitions.
+ 4. If `action.kind=agent_episode`, perform only the supplied semantic objective in the authoritative
+    task checkout and writable roots named by the packet.
+-5. Write the typed result to the supplied result path and resume with the packet's exact argv.
++5. Write the typed result to `exchange.result_path` and resume with the exact
++   `exchange.resume_argv`; `exchange.return_invocation` is compatibility-only.
+ 6. Repeat with a fresh packet until AgentPlane returns an approval, human, hosted/external, or
+    terminal boundary.
+ 7. For a configured managed runner, use `agentplane task run <task-id>` instead of the external
+diff --git a/packages/agentplane/assets/policy/workflow.direct.md b/packages/agentplane/assets/policy/workflow.direct.md
+index 00efeb244..cea5a7660 100644
+--- a/packages/agentplane/assets/policy/workflow.direct.md
++++ b/packages/agentplane/assets/policy/workflow.direct.md
+@@ -13,7 +13,8 @@ Use this module when `workflow_mode=direct`.
+ 2. Request one bounded action with `agentplane task advance <task-id> --agent-json`.
+ 3. If `action.kind=agent_episode`, perform only the supplied semantic objective in the supplied
+    checkout and authority boundary.
+-4. Write the typed result to the supplied result path and resume with the packet's exact argv.
++4. Write the typed result to `exchange.result_path` and resume with the exact
++   `exchange.resume_argv`; `exchange.return_invocation` is compatibility-only.
+ 5. Repeat with a fresh packet until AgentPlane returns an approval, human, external, or terminal
+    boundary.
+ 6. For a configured managed runner, use `agentplane task run <task-id>` instead of the external
+diff --git a/packages/agentplane/src/agents/agents-template.test.ts b/packages/agentplane/src/agents/agents-template.test.ts
+index ac84d8d06..376a72a01 100644
+--- a/packages/agentplane/src/agents/agents-template.test.ts
++++ b/packages/agentplane/src/agents/agents-template.test.ts
+@@ -108,6 +108,24 @@ describe("agents-template", () => {
+         expect(contents, `${relativePath} contains ${String(pattern)}`).not.toMatch(pattern);
+       }
+     }
++
++    const protocolSurfacePaths = [
++      "packages/agentplane/assets/AGENTS.md",
++      "packages/agentplane/assets/policy/workflow.direct.md",
++      "packages/agentplane/assets/policy/workflow.branch_pr.md",
++      "packages/agentplane/assets/codex-plugin/skills/agentplane/SKILL.md",
++      "packages/agentplane/src/cli/command-guide.ts",
++      "packages/agentplane/src/cli/bootstrap-guide.ts",
++      "README.md",
++      "docs/user/task-lifecycle.mdx",
++      "docs/workflow-guides/branch-pr.mdx",
++      "docs/workflow-guides/hermes-kanban.mdx",
++    ];
++    for (const relativePath of protocolSurfacePaths) {
++      const contents = await readFile(path.join(process.cwd(), relativePath), "utf8");
++      expect(contents, relativePath).toContain("exchange.result_path");
++      expect(contents, relativePath).toContain("exchange.resume_argv");
++    }
+   });
+ 
+   it("bundled agents match framework assets/agents", async () => {
+diff --git a/packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap b/packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap
+index 396620fa2..941bb6a6a 100644
+--- a/packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap
++++ b/packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap
+@@ -9,7 +9,7 @@ Commands:
+     help  Show the canonical command surface or help for one command.
+     quickstart  Print the canonical agent bootstrap path and startup guidance.
+   Task:
+-    task  Task lifecycle and task-store commands.
++    task  Supervisor-first task commands.
+     task active  Select active agent work with next actions, blockers, dependency readiness, and freshness.
+     task advance  Return one compact external-agent action from the shared task supervisor state.
+     task brief  Print an agent-ready task brief without remote lookups by default.
+@@ -56,10 +56,15 @@ Options:
+ `;
+ 
+ exports[`runCli help snapshots (cli2) > help task --compact snapshot 1`] = `
+-"task - Task lifecycle and task-store commands.
++"task - Supervisor-first task commands.
+ 
+ Usage:
+-  agentplane task <subcommand> [args] [options]
++  agentplane task new --title <text> --description <text> --owner <id> [options]
++  agentplane task active [options]
++  agentplane task advance <task-id> --agent-json [options]
++  agentplane task run <task-id> [options]
++  agentplane task brief <task-id> [options]
++  agentplane help --all  # diagnostics and compatibility commands
+ "
+ `;
+ 
+@@ -95,6 +100,7 @@ Options:
+   --mutation-scope <none|docs|code|release|ops|context|unknown>  Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
+   --risk <risk>  Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
+   --blueprint-request <id>  Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|context.maximum_assimilation|post_run.improvement_review|release.strict|ops.approval)
++  --route <repository|auto|direct|branch_pr>  Task execution route. repository preserves legacy behavior; auto may escalate a direct repository to branch_pr when isolation risk requires it. (choices=repository|auto|direct|branch_pr, default=repository)
+   --depends-on <task-id>  Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
+   --verify <command>  Repeatable. Verification commands/checks to run for this task. (repeatable)
+   --show-blueprint  Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
+diff --git a/packages/agentplane/src/cli/bootstrap-guide.ts b/packages/agentplane/src/cli/bootstrap-guide.ts
+index aeac484e9..66fa24f99 100644
+--- a/packages/agentplane/src/cli/bootstrap-guide.ts
++++ b/packages/agentplane/src/cli/bootstrap-guide.ts
+@@ -67,7 +67,7 @@ const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
+     commands: BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS,
+     notes: [
+       "Before a task-specific plan exists, `task run` returns `semantic_input_required`; use the read-only PLANNER packet from `task advance --agent-json` first.",
+-      "The external agent writes its typed result to `exchange.directory/exchange.result_ref` and resumes through `exchange.return_invocation`.",
++      "The external agent writes its typed result to `exchange.result_path` and resumes with the exact `exchange.resume_argv`; `exchange.return_invocation` remains compatibility-only.",
+       "After planning and approval, `task run` may resolve eligible semantic episodes through the configured managed adapter and returns control at human or external boundaries.",
+     ],
+   },
+diff --git a/packages/agentplane/src/cli/command-guide.test.ts b/packages/agentplane/src/cli/command-guide.test.ts
+index 5cef10004..8468ff6e6 100644
+--- a/packages/agentplane/src/cli/command-guide.test.ts
++++ b/packages/agentplane/src/cli/command-guide.test.ts
+@@ -50,6 +50,8 @@ describe("command-guide", () => {
+     expect(text).toContain("CLI/runtime notes:");
+     expect(text).toContain("agentplane task advance <task-id> --agent-json");
+     expect(text).toContain("perform only the supplied semantic objective");
++    expect(text).toContain("exchange.result_path");
++    expect(text).toContain("exchange.resume_argv");
+   });
+ 
+   it("returns null for missing or unknown roles", () => {
+@@ -134,8 +136,9 @@ describe("command-guide", () => {
+     expect(text).toContain("agentplane task run <task-id>");
+     expect(text).toContain("state fingerprint");
+     expect(text).toContain("authority boundary");
+-    expect(text).toContain("exchange.directory/exchange.result_ref");
+-    expect(text).toContain("exchange.return_invocation");
++    expect(text).toContain("exchange.result_path");
++    expect(text).toContain("exchange.resume_argv");
++    expect(text).toContain("exchange.return_invocation` remains compatibility-only");
+     expect(text).toContain("semantic_input_required");
+     expect(text).toContain("Agentplane owns verification records and terminal state");
+     expect(text).toContain("expanded diagnostic evidence");
+diff --git a/packages/agentplane/src/cli/command-guide.ts b/packages/agentplane/src/cli/command-guide.ts
+index 9d6fac7f9..548c59c6e 100644
+--- a/packages/agentplane/src/cli/command-guide.ts
++++ b/packages/agentplane/src/cli/command-guide.ts
+@@ -23,7 +23,7 @@ const ROUTE_ORACLE_NOTE =
+   "- Diagnostics only: an operator may use `agentplane task brief <task-id>`, `agentplane task status <task-id> --route`, or `agentplane task next-action <task-id> --explain` when the supervisor explicitly returns a recovery boundary.";
+ 
+ const SEMANTIC_EPISODE_NOTE =
+-  "- During an `agent_episode`, perform only the supplied semantic objective, stay inside its authority and writable roots, write the typed result to the supplied result path, and request a fresh packet.";
++  "- During an `agent_episode`, perform only the supplied semantic objective, stay inside its authority and writable roots, write the typed result to `exchange.result_path`, resume with the exact `exchange.resume_argv`, and request a fresh packet. `exchange.return_invocation` is compatibility-only.";
+ 
+ const NO_CHOREOGRAPHY_NOTE =
+   "- Do not run manual task lifecycle, branch/worktree, Git publication, PR, verification persistence, integration, cleanup, or release commands during a normal semantic episode; those are supervisor-owned operator/recovery interfaces.";
+@@ -214,7 +214,7 @@ function renderQuickstartWorkflowNotes(mode: QuickstartWorkflowMode): string[] {
+     "- Agentplane reads the configured workflow mode and owns its formal transitions; agents do not need to reconstruct the state machine.";
+   const shared = [
+     "- Use `agentplane task active` to pick ready work, then `agentplane task advance <task-id> --agent-json` for one bounded external-agent action or `agentplane task run <task-id>` for managed execution.",
+-    "- During an agent episode, follow only the supplied objective, authority, context references, output schema, and stop rule. Return the typed result and request a fresh packet.",
++    "- During an agent episode, follow only the supplied objective, authority, context references, output schema, and stop rule. Write the typed result to `exchange.result_path`, resume with `exchange.resume_argv`, and request a fresh packet; `exchange.return_invocation` is compatibility-only.",
+     "- Manual lifecycle, branch/worktree, Git publication, PR, verification persistence, integration, cleanup, and release commands are operator/recovery interfaces, not the normal agent route.",
+   ];
+   const branchPr = [
+diff --git a/packages/agentplane/src/cli/run-cli.core.help-contract.test.ts b/packages/agentplane/src/cli/run-cli.core.help-contract.test.ts
+index 6563430d1..b4e193c1e 100644
+--- a/packages/agentplane/src/cli/run-cli.core.help-contract.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.help-contract.test.ts
+@@ -182,7 +182,7 @@ describe("cli help contract", () => {
+       expect(code).toBe(0);
+       expect(io.stdout).not.toContain("release  Prepare a release");
+       expect(io.stdout).not.toContain("Framework Dev:");
+-      expect(io.stdout).toContain("task  Task lifecycle and task-store commands.");
++      expect(io.stdout).toContain("task  Supervisor-first task commands.");
+       expect(io.stdout).toContain("task advance  Return one compact external-agent action");
+       expect(io.stdout).toContain("task run  Supervise a direct or branch_pr task");
+     } finally {
+@@ -321,9 +321,9 @@ describe("cli help contract", () => {
+     try {
+       const code = await runCli(["task", "--help"]);
+       expect(code).toBe(0);
+-      expect(io.stdout).toContain("task - Task lifecycle and task-store commands.");
+-      expect(io.stdout).toContain("agentplane task <subcommand> [args] [options]");
+-      expect(io.stdout).toContain("agentplane task plan set <task-id> --text");
++      expect(io.stdout).toContain("task - Supervisor-first task commands.");
++      expect(io.stdout).toContain("agentplane task advance <task-id> --agent-json [options]");
++      expect(io.stdout).toContain("agentplane help --all");
+       expect(io.stdout).not.toContain("Unknown command: task");
+     } finally {
+       io.restore();
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+index e35e0042d..ff73683ad 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+@@ -63,12 +63,20 @@ type AgentPacket = {
+     reference: string | null;
+   };
+   context_refs: { kind: string; ref: string; digest?: string }[];
++  operator_action?: {
++    kind: string;
++    required_role: string;
++    cwd: string | null;
++    argv: string[] | null;
++    authority_reference: string;
++  };
+   exchange?: {
+     directory: string;
+     work_order_ref: string;
+     result_schema_ref: string;
+     result_ref: string;
+-    return_invocation: string;
++    result_path: string;
++    resume_argv: string[];
+   };
+   recovery?: { reason: string; evidence_digest: string };
+   stop: { reason: string; resume: string };
+@@ -218,6 +226,16 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
+       work_order_ref: "work-order.json",
+       result_schema_ref: "result-schema.json",
+       result_ref: "result.json",
++      result_path: path.join(first.exchange!.directory, "result.json"),
++      resume_argv: [
++        "agentplane",
++        "task",
++        "advance",
++        taskId,
++        "--result",
++        path.join(first.exchange!.directory, "result.json"),
++        "--agent-json",
++      ],
+     });
+     expect(JSON.stringify(first)).not.toMatch(
+       /(?:\bgit\s|\bgh\s|worktree|pr open|\bverify\b|\bfinish\b|\bintegrate\b|\bcleanup\b)/iu,
+@@ -242,6 +260,11 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
+     expect(next.action.kind).toBe("approval_required");
+     expect(next.stop.reason).toBe("authority_boundary");
+     expect(next.exchange).toBeUndefined();
++    expect(next.operator_action).toMatchObject({
++      kind: "approve_plan",
++      required_role: "USER",
++      argv: ["agentplane", "task", "plan", "approve", taskId, "--by", "USER"],
++    });
+     expect(
+       await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
+     ).toContain(plan);
+@@ -251,6 +274,69 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
+     expect(replay.stderr).toContain("replay is refused");
+   });
+ 
++  it("returns an external wait instead of advertising start-ready for incomplete dependencies", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    const dependencyId = await createTask(root, "Unfinished prerequisite");
++    const io = captureStdIO();
++    let taskId = "";
++    try {
++      const code = await runCli([
++        "task",
++        "new",
++        "--title",
++        "Dependency-bound route",
++        "--description",
++        "Wait for the declared prerequisite before starting.",
++        "--priority",
++        "med",
++        "--owner",
++        "CODER",
++        "--tag",
++        "code",
++        "--depends-on",
++        dependencyId,
++        "--verify",
++        "bun run test:critical",
++        "--root",
++        root,
++      ]);
++      expect(code, io.stderr).toBe(0);
++      taskId = io.stdout.trim();
++    } finally {
++      io.restore();
++    }
++    await runCliSilent([
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      "Implement only after the declared prerequisite is complete.",
++      "--updated-by",
++      "PLANNER",
++      "--root",
++      root,
++    ]);
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]);
++
++    const packet = await readAgentPacket(root, taskId);
++
++    expect(packet).toMatchObject({
++      transition_id: agentTransitionId("wait.dependencies"),
++      action: { kind: "external_wait" },
++      stop: { reason: "external_boundary", resume: "request_fresh_packet" },
++    });
++    expect(packet.exchange).toBeUndefined();
++    const readme = await readFile(
++      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
++      "utf8",
++    );
++    expect(readme).toContain('status: "TODO"');
++  });
++
+   it("rejects a tampered exchange checkout before applying semantic task state", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+@@ -760,7 +846,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
+     }
+   });
+ 
+-  it("executes one authoritative branch transition once and keeps rendering side-effect free", async () => {
++  it("advances once from the base checkout into one worktree-bound semantic episode", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+@@ -780,44 +866,53 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
+       root,
+     ]);
+     await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await writeFile(
++      path.join(root, ".gitignore"),
++      [
++        ".agentplane/bin/",
++        ".agentplane/cache.sqlite-*",
++        "agentplane-recipes",
++        "node_modules",
++        "packages/",
++        "website/",
++        "",
++      ].join("\n"),
++      "utf8",
++    );
+     await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
++    await execFileAsync("git", ["add", ".gitignore"], { cwd: root });
+     await execFileAsync("git", ["commit", "-m", "test: seed authoritative advance task"], {
+       cwd: root,
+     });
+ 
+-    const branch = `task/${taskId}/advance-parity`;
+-    const taskWorktree = path.join(root, ".agentplane", "worktrees", `${taskId}-advance-parity`);
+-    await mkdir(path.dirname(taskWorktree), { recursive: true });
+-    await execFileAsync("git", ["worktree", "add", "-b", branch, taskWorktree], { cwd: root });
++    const initialReadme = await readFile(
++      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
++      "utf8",
++    );
++    const callerCwd = process.cwd();
++    const jsonPacket = await readAgentPacket(root, taskId);
++    expect(process.cwd()).toBe(callerCwd);
++    if (!jsonPacket.exchange) throw new Error("expected a worktree-bound semantic exchange");
++    const workOrder = JSON.parse(
++      await readFile(
++        path.join(jsonPacket.exchange.directory, jsonPacket.exchange.work_order_ref),
++        "utf8",
++      ),
++    ) as AgentWorkOrderV2;
++    const taskWorktree = workOrder.state_fingerprint.worktree;
++    const branchResult = await execFileAsync("git", ["branch", "--show-current"], {
++      cwd: taskWorktree,
++    });
++    const headResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: taskWorktree,
++    });
++    const branch = branchResult.stdout.trim();
++    const head = headResult.stdout.trim();
+     const readmePath = path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md");
+-    const initialReadme = await readFile(readmePath, "utf8");
+     const journalPath = await resolveSupervisorExecutionEpisodePath({
+       git_root: root,
+       task_id: taskId,
+     });
+-    const authorityRoute = await readRoute(taskWorktree, taskId);
+-    const authorityRequest = authorityRoute.workflow_step.request;
+-    if (authorityRequest?.type === "side_effect") {
+-      await runCliSilent([
+-        "task",
+-        "authority",
+-        "grant",
+-        taskId,
+-        "--operation",
+-        authorityRequest.operationId,
+-        "--operation-digest",
+-        authorityRequest.operationDigest,
+-        "--state-fingerprint",
+-        authorityRequest.stateFingerprintDigest,
+-        "--state-scope-digest",
+-        authorityRequest.stateScopeDigest,
+-        "--by",
+-        "USER",
+-        "--root",
+-        taskWorktree,
+-      ]);
+-    }
+-    const jsonPacket = await readAgentPacket(taskWorktree, taskId);
+     const jsonReadme = await readFile(readmePath, "utf8");
+     const jsonJournal = JSON.parse(await readFile(journalPath, "utf8")) as {
+       operations: {
+@@ -826,14 +921,40 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
+         postcondition_fingerprint_digest: string | null;
+       }[];
+     };
++    const worktreeStatus = await execFileAsync("git", ["status", "--porcelain=v1"], {
++      cwd: taskWorktree,
++    });
++    expect(jsonPacket.transition_id, worktreeStatus.stdout).toBe(
++      agentTransitionId("agent.branch_implementation"),
++    );
+     expect(jsonPacket).toMatchObject({
+-      transition_id: agentTransitionId("approval.pr.open"),
+-      action: { kind: "approval_required" },
+-      stop: { reason: "authority_boundary" },
++      action: { kind: "agent_episode" },
++      authority: { role: "EXECUTOR", mutation: "scoped_write" },
++      stop: { reason: "semantic_boundary" },
+     });
++    expect(branch).toMatch(new RegExp(`^task/${taskId}/`, "u"));
++    expect(workOrder.state_fingerprint.git_head).toBe(head);
++    expect(workOrder.authority.writable_roots).toEqual([taskWorktree]);
++    expect(jsonPacket.exchange.result_path).toBe(
++      path.join(jsonPacket.exchange.directory, "result.json"),
++    );
++    expect(jsonPacket.exchange.resume_argv).toContain(jsonPacket.exchange.result_path);
++    const persistedExchange = JSON.parse(
++      await readFile(path.join(jsonPacket.exchange.directory, "exchange.json"), "utf8"),
++    ) as ExternalAgentExchange;
++    expect(persistedExchange.checkout).toBe(taskWorktree);
++    const taskInput = workOrder.required_inputs.find((input) => input.kind === "task_document");
++    expect(taskInput?.path).toBe(`.agentplane/tasks/${taskId}/README.md`);
++    await expect(readFile(path.join(taskWorktree, taskInput!.path!), "utf8")).resolves.toContain(
++      taskId,
++    );
+     expect(jsonReadme).toContain('status: "DOING"');
+-    expect(jsonJournal.operations).toHaveLength(1);
+-    expect(jsonJournal.operations[0]).toMatchObject({ status: "completed" });
++    expect(jsonJournal.operations).toHaveLength(3);
++    expect(jsonJournal.operations).toEqual([
++      expect.objectContaining({ status: "completed" }),
++      expect.objectContaining({ status: "completed" }),
++      expect.objectContaining({ status: "intent" }),
++    ]);
+ 
+     await execFileAsync("git", ["restore", ".agentplane/tasks/" + taskId + "/README.md"], {
+       cwd: taskWorktree,
+@@ -844,13 +965,10 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
+     let humanOutput = "";
+     const humanIo = captureStdIO();
+     try {
+-      expect(
+-        await runCli(["task", "advance", taskId, "--root", taskWorktree]),
+-        humanIo.stderr,
+-      ).toBe(0);
++      expect(await runCli(["task", "advance", taskId, "--root", root]), humanIo.stderr).toBe(0);
+       expect(humanIo.stdout).toContain("action");
+-      expect(humanIo.stdout).toContain("approval_required");
+-      expect(humanIo.stdout).toContain("authority_boundary");
++      expect(humanIo.stdout).toContain("agent_episode");
++      expect(humanIo.stdout).toContain("semantic_boundary");
+       humanOutput = humanIo.stdout;
+     } finally {
+       humanIo.restore();
+@@ -858,9 +976,12 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
+     const humanReadme = await readFile(readmePath, "utf8");
+     const humanJournal = JSON.parse(await readFile(journalPath, "utf8")) as typeof jsonJournal;
+     expect(withoutTimestamps(humanReadme)).toBe(withoutTimestamps(jsonReadme));
+-    expect(humanJournal.operations.map(({ status }) => status)).toEqual(
+-      jsonJournal.operations.map(({ status }) => status),
+-    );
++    expect(humanJournal.operations.map(({ status }) => status)).toEqual(["completed", "intent"]);
++    expect(jsonJournal.operations.map(({ status }) => status)).toEqual([
++      "completed",
++      "completed",
++      "intent",
++    ]);
+     expect(humanJournal.operations[0]?.precondition_fingerprint_digest).toMatch(/^sha256:/u);
+     expect(jsonJournal.operations[0]?.precondition_fingerprint_digest).toMatch(/^sha256:/u);
+     expect(humanJournal.operations[0]?.postcondition_fingerprint_digest).toMatch(/^sha256:/u);
+@@ -868,7 +989,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
+ 
+     const beforeRenderOnly = await readFile(readmePath, "utf8");
+     const journalBeforeRenderOnly = await readFile(journalPath, "utf8");
+-    const stablePacket = await readAgentPacket(taskWorktree, taskId);
++    const stablePacket = await readAgentPacket(root, taskId);
+     expect(stablePacket.transition_id).toBe(jsonPacket.transition_id);
+     expect(stablePacket.action).toEqual(jsonPacket.action);
+     expect(humanOutput).toContain(stablePacket.state_fingerprint);
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-guided.test.ts b/packages/agentplane/src/cli/run-cli.core.task-guided.test.ts
+index bcdee2261..ad2ac6271 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-guided.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-guided.test.ts
+@@ -202,7 +202,7 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
+     );
+     expect(readme).toContain('status: "TODO"');
+     expect(readme).toContain('state: "pending"');
+-    expect(readme).toContain('doc_updated_by: "PLANNER"');
++    expect(readme).toContain('doc_updated_by: "USER"');
+     expect(readme).toContain("Implement the explicit branch change");
+   });
+ 
+diff --git a/packages/agentplane/src/cli/run-cli.core.test.ts b/packages/agentplane/src/cli/run-cli.core.test.ts
+index c27f29f10..0cc39cb79 100644
+--- a/packages/agentplane/src/cli/run-cli.core.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.test.ts
+@@ -80,9 +80,9 @@ describe("runCli", () => {
+       const code = await runCli(["task", "--help"]);
+       expect(code).toBe(0);
+       expect(taskIo.stdout.trim()).toBe(helpText.trim());
+-      expect(taskIo.stdout).toContain("task - Task lifecycle and task-store commands.");
+-      expect(taskIo.stdout).toContain("agentplane task <subcommand> [args] [options]");
+-      expect(taskIo.stdout).toContain("agentplane task plan set <task-id> --text");
++      expect(taskIo.stdout).toContain("task - Supervisor-first task commands.");
++      expect(taskIo.stdout).toContain("agentplane task advance <task-id> --agent-json [options]");
++      expect(taskIo.stdout).toContain("agentplane help --all");
+     } finally {
+       taskIo.restore();
+     }
+@@ -125,7 +125,7 @@ describe("runCli", () => {
+         exitCode: 0,
+         hasData: false,
+       });
+-      expect(payload.stdout).toContain("task - Task lifecycle and task-store commands.");
++      expect(payload.stdout).toContain("task - Supervisor-first task commands.");
+       expect(payload.stdout).toContain("Usage:");
+       expect(payload.stderr).toBe("");
+     } finally {
+@@ -214,7 +214,7 @@ describe("runCli", () => {
+     try {
+       const code = await runCli(["task", "--help", "--root", root]);
+       expect(code).toBe(0);
+-      expect(io.stdout).toContain("agentplane task <subcommand> [args] [options]");
++      expect(io.stdout).toContain("agentplane task advance <task-id> --agent-json [options]");
+       expect(process.env[marker]).toBeUndefined();
+     } finally {
+       delete process.env[marker];
+@@ -663,10 +663,10 @@ describe("runCli", () => {
+     try {
+       const code = await runCli(["help", "task"]);
+       expect(code).toBe(0);
+-      expect(io.stdout).toContain("task - Task lifecycle and task-store commands.");
+-      expect(io.stdout).toContain("agentplane task <subcommand> [args] [options]");
+-      expect(io.stdout).toContain("agentplane task plan set <task-id> --text");
+-      expect(io.stdout).toContain("agentplane finish ...");
++      expect(io.stdout).toContain("task - Supervisor-first task commands.");
++      expect(io.stdout).toContain("agentplane task advance <task-id> --agent-json [options]");
++      expect(io.stdout).toContain("agentplane help --all");
++      expect(io.stdout).not.toContain("agentplane finish ...");
+     } finally {
+       io.restore();
+     }
+diff --git a/packages/agentplane/src/commands/shared/route-decision-blockers.ts b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+index 68f153a0d..597551053 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-blockers.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+@@ -11,6 +11,7 @@ import { isTaskSetLocalOnlyAdvance } from "./task-local-freshness.js";
+ import type { CommandContext } from "./task-backend.js";
+ import { isRecord } from "../../shared/guards.js";
+ import { getHumanInputState } from "../task/human-input.js";
++import { resolveTaskDependencyState } from "../task/shared/dependencies.js";
+ import { parsePrMeta, type PrMeta } from "./pr-meta.js";
+ import { readTaskPrArtifact } from "../pr/internal/pr-paths.js";
+ import { hasAcceptedQualityReviewProvenance } from "../task/quality-review-gate.js";
+@@ -32,6 +33,7 @@ import {
+ export function routeGatePriority(code: string): number {
+   if (
+     code === "plan_not_approved" ||
++    code === "dependency_not_ready" ||
+     code === "human_input_required" ||
+     code === "missing_pr_branch" ||
+     code === "runner_alive" ||
+@@ -323,6 +325,22 @@ export async function deriveBlockers(opts: {
+     return blockers;
+   }
+   const normalizedTaskStatus = String(opts.task.status).toUpperCase();
++  if (normalizedTaskStatus === "TODO") {
++    const dependencies = await resolveTaskDependencyState(opts.task, opts.ctx.taskBackend);
++    if (dependencies.missing.length > 0 || dependencies.incomplete.length > 0) {
++      const details = [
++        ...(dependencies.missing.length > 0 ? [`missing: ${dependencies.missing.join(", ")}`] : []),
++        ...(dependencies.incomplete.length > 0
++          ? [`incomplete: ${dependencies.incomplete.join(", ")}`]
++          : []),
++      ];
++      addBlocker(
++        blockers,
++        "dependency_not_ready",
++        `task dependencies are not ready (${details.join("; ")})`,
++      );
++    }
++  }
+   if (
+     opts.workflowMode === "branch_pr" &&
+     (normalizedTaskStatus === "TODO" ||
+diff --git a/packages/agentplane/src/commands/shared/route-oracle.ts b/packages/agentplane/src/commands/shared/route-oracle.ts
+index 54505d252..47ea4ce75 100644
+--- a/packages/agentplane/src/commands/shared/route-oracle.ts
++++ b/packages/agentplane/src/commands/shared/route-oracle.ts
+@@ -6,6 +6,7 @@ export type RouteBlockerCode =
+   | "close_tail_open"
+   | "cleanup_blocked"
+   | "dirty_task_artifacts"
++  | "dependency_not_ready"
+   | "human_input_required"
+   | "implementation_rework_required"
+   | "included_batch_verification_pending"
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-branch.ts b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+index 778ae3f63..fc8ba201b 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-branch.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+@@ -488,6 +488,12 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
+       selectedBlocker: routeBlockerFor(state, "on_base_checkout"),
+     });
+   }
++  if (
++    state.task.verification?.state !== "ok" &&
++    !(typeof state.task.commit?.hash === "string" && state.task.commit.hash.trim())
++  ) {
++    return branchImplementationStep(state);
++  }
+   if (state.prFlow?.pr.state === "not_found") {
+     return cliOperationStep({
+       state,
+@@ -498,16 +504,10 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
+         includeTaskIds: primaryIncludeTaskIds(state),
+       },
+       code: "open_pr",
+-      summary: "publish/link the task PR",
++      summary: "publish/link the task PR after the semantic implementation is committed",
+       selectedBlocker: routeBlockerFor(state, "remote_pr_missing"),
+     });
+   }
+-  if (
+-    state.task.verification?.state !== "ok" &&
+-    !(typeof state.task.commit?.hash === "string" && state.task.commit.hash.trim())
+-  ) {
+-    return branchImplementationStep(state);
+-  }
+   if (state.blockers.some((blocker) => blocker.code === "verification_required")) {
+     return verificationStep(state);
+   }
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts
+index 14c78c991..3646c50f8 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts
+@@ -226,8 +226,8 @@ async function capture(opts: {
+   const state = opts.state ?? routeState(opts.worktree);
+   const step = reduceRouteState(withBootstrapWorkflowFingerprint(state));
+   expect(step).toMatchObject({
+-    kind: "approval",
+-    request: { type: "side_effect", operationId: "pr.open" },
++    kind: "agent_episode",
++    episode: { purpose: "implementation", role: "CODER" },
+     authoritativeCheckout: "task_worktree",
+   });
+   return captureWorkflowStepFingerprint({
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-reducer.ts b/packages/agentplane/src/commands/shared/workflow-step-reducer.ts
+index 51089faa5..ed60463b2 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-reducer.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-reducer.ts
+@@ -116,6 +116,34 @@ export function reduceRouteState(state: WorkflowRouteState): WorkflowStep {
+       selectedBlocker: routeBlockerFor(state, "plan_not_approved"),
+     });
+   }
++  if (state.blockers.some((blocker) => blocker.code === "dependency_not_ready")) {
++    const summary =
++      routeBlockerFor(state, "dependency_not_ready")?.summary ??
++      "wait until every task dependency is complete";
++    return {
++      schemaVersion: 1,
++      id: "wait.dependencies",
++      kind: "wait",
++      phase: "dependency_wait",
++      authoritativeCheckout: "base_checkout",
++      summary,
++      blockers: routeBlockerSnapshot(state),
++      selectedBlocker: routeBlockerFor(state, "dependency_not_ready"),
++      compatibility: {
++        code: "wait_dependencies",
++        command: null,
++        summary,
++        requiresApproval: false,
++      },
++      preconditionFingerprint: state.preconditionFingerprint,
++      condition: { type: "dependencies_ready", taskId: id },
++      execution: commonExecution({
++        actionKind: "wait",
++        role: "USER",
++        mustNot: ["do not start or force the task while declared dependencies are incomplete"],
++      }),
++    };
++  }
+   if (state.workflowMode === "branch_pr" && state.batchOwnership.role === "included") {
+     return includedBatchStep(state);
+   }
+diff --git a/packages/agentplane/src/commands/shared/workflow-step.test.ts b/packages/agentplane/src/commands/shared/workflow-step.test.ts
+index 65268208a..5338e1f2b 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step.test.ts
+@@ -319,7 +319,14 @@ describe("typed WorkflowStep reducer", () => {
+   });
+ 
+   it("covers cli operation, agent episode, approval, human input, wait, and terminal variants", () => {
+-    const cli = reduceRouteState(routeState());
++    const cli = reduceRouteState(
++      routeStateWithAuthority({
++        task: {
++          ...task,
++          commit: { hash: resume.head_sha, message: "feat: complete semantic implementation" },
++        },
++      }),
++    );
+     const agent = reduceRouteState(
+       routeState({
+         prFlow: prFlow("OPEN"),
+@@ -397,7 +404,7 @@ describe("typed WorkflowStep reducer", () => {
+       humanInput.kind,
+       wait.kind,
+       terminal.kind,
+-    ]).toEqual(["approval", "agent_episode", "approval", "human_input", "wait", "terminal"]);
++    ]).toEqual(["cli_operation", "agent_episode", "approval", "human_input", "wait", "terminal"]);
+   });
+ 
+   it("never substitutes an unrelated blocker for human-input or runner-wait authority", () => {
+@@ -445,7 +452,11 @@ describe("typed WorkflowStep reducer", () => {
+   });
+ 
+   it("requires a scoped authority before opening a PR, then restores the exact operation", () => {
+-    const approval = reduceRouteState(routeState());
++    const implementedTask = {
++      ...task,
++      commit: { hash: resume.head_sha, message: "feat: complete semantic implementation" },
++    };
++    const approval = reduceRouteState(routeState({ task: implementedTask }));
+     expect(approval).toMatchObject({
+       kind: "approval",
+       phase: "side_effect_authority_required",
+@@ -457,7 +468,7 @@ describe("typed WorkflowStep reducer", () => {
+         ) as unknown as string,
+       },
+     });
+-    const step = reduceRouteState(routeStateWithAuthority());
++    const step = reduceRouteState(routeStateWithAuthority({ task: implementedTask }));
+     expect(step).toMatchObject({
+       kind: "cli_operation",
+       phase: "pr_needed",
+@@ -488,7 +499,15 @@ describe("typed WorkflowStep reducer", () => {
+   });
+ 
+   it("preserves hosted route context in the emitted authority grant", () => {
+-    const approval = reduceRouteState(routeState({ remoteEnabled: true }));
++    const approval = reduceRouteState(
++      routeState({
++        remoteEnabled: true,
++        task: {
++          ...task,
++          commit: { hash: resume.head_sha, message: "feat: complete semantic implementation" },
++        },
++      }),
++    );
+ 
+     expect(approval).toMatchObject({
+       kind: "approval",
+@@ -781,6 +800,10 @@ describe("typed WorkflowStep reducer", () => {
+   it("materializes every primary batch include-task in PR argv", () => {
+     const step = reduceRouteState(
+       routeStateWithAuthority({
++        task: {
++          ...task,
++          commit: { hash: resume.head_sha, message: "feat: complete semantic implementation" },
++        },
+         batchOwnership: {
+           role: "primary",
+           primaryTaskId: task.id,
+@@ -917,10 +940,15 @@ describe("typed WorkflowStep reducer", () => {
+   });
+ 
+   it("derives deterministic fingerprints, idempotency keys, and compatibility projections", () => {
+-    const first = reduceRouteState(routeStateWithAuthority());
+-    const repeated = reduceRouteState(routeStateWithAuthority());
++    const implementedTask = {
++      ...task,
++      commit: { hash: resume.head_sha, message: "feat: complete semantic implementation" },
++    };
++    const first = reduceRouteState(routeStateWithAuthority({ task: implementedTask }));
++    const repeated = reduceRouteState(routeStateWithAuthority({ task: implementedTask }));
+     const changed = reduceRouteState(
+       routeStateWithAuthority({
++        task: implementedTask,
+         resume: { ...resume, head_sha: "2222222222222222222222222222222222222222" },
+       }),
+     );
+diff --git a/packages/agentplane/src/commands/shared/workflow-step.ts b/packages/agentplane/src/commands/shared/workflow-step.ts
+index 3ab19e9ee..2326dbf36 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step.ts
+@@ -517,6 +517,10 @@ export type WorkflowStep =
+             type: "integration_queue_terminal";
+             taskId: string;
+             queueStatus: "queued" | "claimed" | "handoff" | "done";
++          }
++        | {
++            type: "dependencies_ready";
++            taskId: string;
+           };
+     })
+   | (WorkflowStepBase & {
+diff --git a/packages/agentplane/src/commands/task/advance.command.ts b/packages/agentplane/src/commands/task/advance.command.ts
+index 41dac5c27..fd259c8cd 100644
+--- a/packages/agentplane/src/commands/task/advance.command.ts
++++ b/packages/agentplane/src/commands/task/advance.command.ts
+@@ -30,15 +30,22 @@ export function makeRunTaskAdvanceHandler(deps: {
+ }) {
+   return async (ctx: CommandCtx, parsed: TaskAdvanceParsed): Promise<number> => {
+     const command = await deps.getContext("task advance", { includeRemote: parsed.remote });
+-    const decide = async (freshHead = false): Promise<TaskRouteDecision> =>
+-      await buildTaskRouteDecision({
+-        ctx: command,
+-        cwd: ctx.cwd,
+-        rootOverride: ctx.rootOverride ?? null,
++    const decide = async (freshHead = false): Promise<TaskRouteDecision> => {
++      const routeCommand = freshHead
++        ? await loadCommandContext({
++            cwd: command.resolvedProject.gitRoot,
++            rootOverride: null,
++          })
++        : command;
++      return await buildTaskRouteDecision({
++        ctx: routeCommand,
++        cwd: routeCommand.resolvedProject.gitRoot,
++        rootOverride: null,
+         includeRemote: parsed.remote,
+         freshHead,
+         taskId: parsed.taskId,
+       });
++    };
+     let current: TaskRouteDecision;
+     if (parsed.result) {
+       const accepted = await acceptExternalAgentResult({
+@@ -194,11 +201,18 @@ export function makeRunTaskAdvanceHandler(deps: {
+         });
+       }
+     }
++    const preparationCheckout =
++      current.executionPacket.mustRunFrom ?? current.workspace.root ?? ctx.cwd;
++    const preparationCommand = await loadCommandContext({
++      cwd: preparationCheckout,
++      rootOverride: null,
++    });
++    const preparationCtx: CommandCtx = { cwd: preparationCheckout };
+     const prepared = requirePreparedAgentWorkOrder(
+       await prepareAgentWorkOrder({
+-        command_ctx: command,
+-        cwd: ctx.cwd,
+-        root_override: ctx.rootOverride ?? null,
++        command_ctx: preparationCommand,
++        cwd: preparationCheckout,
++        root_override: null,
+         task_id: parsed.taskId,
+         ...(parsed.remote ? { include_remote: true } : {}),
+         runner_command: "task advance",
+@@ -206,11 +220,23 @@ export function makeRunTaskAdvanceHandler(deps: {
+       }),
+     );
+     const exchange = await issueExternalAgentExchange({
+-      ctx,
+-      command,
++      ctx: preparationCtx,
++      command: preparationCommand,
+       decision: prepared.route_decision,
+       work_order: prepared.work_order,
+     });
++    const resumeArgv = exchange
++      ? [
++          "agentplane",
++          "task",
++          "advance",
++          parsed.taskId,
++          "--result",
++          exchange.paths.result,
++          "--agent-json",
++          ...(parsed.remote ? ["--remote"] : []),
++        ]
++      : null;
+     const packet = buildAgentActionPacket({
+       decision: prepared.route_decision,
+       work_order: exchange?.work_order ?? prepared.work_order,
+@@ -224,10 +250,13 @@ export function makeRunTaskAdvanceHandler(deps: {
+               return_invocation:
+                 `agentplane task advance <task_id> --result <exchange_directory>/<result_ref> --agent-json` +
+                 (parsed.remote ? " --remote" : ""),
++              result_path: exchange.paths.result,
++              resume_argv: resumeArgv!,
+             },
+           }
+         : {}),
+       ...(recovery ? { recovery } : {}),
++      remote: parsed.remote,
+     });
+     assertAgentActionPacketHasNoChoreography(packet);
+ 
+@@ -251,6 +280,19 @@ export function makeRunTaskAdvanceHandler(deps: {
+               { label: "work_order_ref", value: packet.exchange.work_order_ref },
+               { label: "result_ref", value: packet.exchange.result_ref },
+               { label: "return_invocation", value: packet.exchange.return_invocation },
++              { label: "result_path", value: packet.exchange.result_path },
++              { label: "resume_argv", value: JSON.stringify(packet.exchange.resume_argv) },
++            ]
++          : []),
++        ...(packet.operator_action
++          ? [
++              { label: "operator_action", value: packet.operator_action.kind },
++              {
++                label: "operator_argv",
++                value: packet.operator_action.argv
++                  ? JSON.stringify(packet.operator_action.argv)
++                  : "provider action required",
++              },
+             ]
+           : []),
+         ...(packet.recovery ? [{ label: "recovery", value: packet.recovery.reason }] : []),
+diff --git a/packages/agentplane/src/commands/task/agent-action-packet.test.ts b/packages/agentplane/src/commands/task/agent-action-packet.test.ts
+index 06beda16a..269f6c171 100644
+--- a/packages/agentplane/src/commands/task/agent-action-packet.test.ts
++++ b/packages/agentplane/src/commands/task/agent-action-packet.test.ts
+@@ -173,6 +173,15 @@ describe("compact agent action packet", () => {
+       MAX_AGENT_ACTION_PACKET_BYTES,
+     );
+     expect(() => assertAgentActionPacketHasNoChoreography(packet)).not.toThrow();
++    if (workflowStep.kind === "approval" && workflowStep.request.type === "plan_approval") {
++      expect(packet.operator_action).toEqual({
++        kind: "approve_plan",
++        required_role: "USER",
++        cwd: null,
++        argv: ["agentplane", "task", "plan", "approve", TASK_ID, "--by", "USER"],
++        authority_reference: "plan",
++      });
++    }
+   });
+ 
+   it("projects the direct runner operation as the external semantic boundary", () => {
+@@ -190,6 +199,63 @@ describe("compact agent action packet", () => {
+     expect(packet.stop.reason).toBe("semantic_boundary");
+   });
+ 
++  it("returns exact typed authority argv at a protected side-effect boundary", () => {
++    const operationDigest = `sha256:${"b".repeat(64)}`;
++    const stateScopeDigest = `sha256:${"c".repeat(64)}`;
++    const packet = buildAgentActionPacket({
++      decision: decision(
++        step({
++          kind: "approval",
++          request: {
++            type: "side_effect",
++            taskId: TASK_ID,
++            authorityRef: "route:test",
++            operationId: "pr.open",
++            operation: {
++              id: "pr.open",
++              type: "pr_sync",
++              params: { taskId: TASK_ID, author: "CODER", includeTaskIds: [] },
++            },
++            operationDigest,
++            stateFingerprintDigest: FINGERPRINT,
++            stateScopeDigest,
++            policyRule: "workflow.external_reversible",
++          },
++        }),
++      ),
++      work_order: workOrder(),
++      remote: true,
++    });
++
++    expect(packet.operator_action).toEqual({
++      kind: "grant_side_effect_authority",
++      required_role: "USER",
++      cwd: null,
++      argv: [
++        "agentplane",
++        "task",
++        "authority",
++        "grant",
++        TASK_ID,
++        "--remote",
++        "--operation",
++        "pr.open",
++        "--operation-digest",
++        operationDigest,
++        "--state-fingerprint",
++        FINGERPRINT,
++        "--state-scope-digest",
++        stateScopeDigest,
++        "--by",
++        "USER",
++      ],
++      authority_reference: "route:test",
++    });
++    expect(Buffer.byteLength(JSON.stringify(packet, null, 2), "utf8")).toBeLessThanOrEqual(
++      MAX_AGENT_ACTION_PACKET_BYTES,
++    );
++  });
++
+   it("keeps formal operations inside the control-plane boundary", () => {
+     const packet = packetFor(
+       step({
+@@ -252,9 +318,33 @@ describe("compact agent action packet", () => {
+         result_ref: "result.json",
+         return_invocation:
+           "agentplane task advance <task_id> --result <exchange_directory>/<result_ref> --agent-json",
++        result_path: `/repo/.agentplane/worktrees/${TASK_ID}/.git/agentplane/exchanges/current/result.json`,
++        resume_argv: [
++          "agentplane",
++          "task",
++          "advance",
++          TASK_ID,
++          "--result",
++          `/repo/.agentplane/worktrees/${TASK_ID}/.git/agentplane/exchanges/current/result.json`,
++          "--agent-json",
++        ],
+       },
+     });
+ 
++    expect(packet.exchange).toMatchObject({
++      return_invocation:
++        "agentplane task advance <task_id> --result <exchange_directory>/<result_ref> --agent-json",
++      result_path: expect.stringContaining("/result.json"),
++      resume_argv: [
++        "agentplane",
++        "task",
++        "advance",
++        TASK_ID,
++        "--result",
++        expect.any(String),
++        "--agent-json",
++      ],
++    });
+     expect(() => assertAgentActionPacketHasNoChoreography(packet)).not.toThrow();
+   });
+ 
+diff --git a/packages/agentplane/src/commands/task/agent-action-packet.ts b/packages/agentplane/src/commands/task/agent-action-packet.ts
+index 3b97e95dc..a77836b18 100644
+--- a/packages/agentplane/src/commands/task/agent-action-packet.ts
++++ b/packages/agentplane/src/commands/task/agent-action-packet.ts
+@@ -37,12 +37,21 @@ export type AgentActionPacket = {
+     reference: string | null;
+   };
+   context_refs: AgentContextRef[];
++  operator_action?: {
++    kind: "approve_plan" | "grant_side_effect_authority" | "approve_provider_merge";
++    required_role: "USER";
++    cwd: string | null;
++    argv: string[] | null;
++    authority_reference: string;
++  };
+   exchange?: {
+     directory: string;
+     work_order_ref: string;
+     result_schema_ref: string;
+     result_ref: string;
+     return_invocation: string;
++    result_path: string;
++    resume_argv: string[];
+   };
+   recovery?: {
+     reason:
+@@ -97,6 +106,57 @@ function semanticInstruction(
+   }
+ }
+ 
++function operatorActionFor(opts: {
++  decision: TaskRouteDecision;
++  remote: boolean;
++}): AgentActionPacket["operator_action"] {
++  const step = opts.decision.workflowStep;
++  if (step.kind !== "approval") return undefined;
++  const cwd = opts.decision.oracle?.authoritativeCheckoutPath ?? null;
++  if (step.request.type === "plan_approval") {
++    return {
++      kind: "approve_plan",
++      required_role: "USER",
++      cwd,
++      argv: ["agentplane", "task", "plan", "approve", step.request.taskId, "--by", "USER"],
++      authority_reference: step.request.authorityRef,
++    };
++  }
++  if (step.request.type === "side_effect") {
++    return {
++      kind: "grant_side_effect_authority",
++      required_role: "USER",
++      cwd,
++      argv: [
++        "agentplane",
++        "task",
++        "authority",
++        "grant",
++        step.request.taskId,
++        ...(opts.remote ? ["--remote"] : []),
++        "--operation",
++        step.request.operationId,
++        "--operation-digest",
++        step.request.operationDigest,
++        "--state-fingerprint",
++        step.request.stateFingerprintDigest,
++        "--state-scope-digest",
++        step.request.stateScopeDigest,
++        "--by",
++        "USER",
++      ],
++      authority_reference: step.request.authorityRef,
++    };
++  }
++  return {
++    kind: "approve_provider_merge",
++    required_role: "USER",
++    cwd,
++    argv: null,
++    authority_reference: step.request.authorityRef,
++  };
++}
++
+ function actionFor(decision: TaskRouteDecision): Pick<AgentActionPacket, "action" | "stop"> {
+   const step = decision.workflowStep;
+   if (step.kind === "agent_episode") {
+@@ -199,7 +259,9 @@ function compactContextRefs(workOrder: AgentWorkOrderV2): AgentContextRef[] {
+ }
+ 
+ function packetBytes(packet: AgentActionPacket): number {
+-  return Buffer.byteLength(JSON.stringify(packet), "utf8");
++  // --agent-json is rendered as indented JSON; enforce the public wire-size
++  // contract against those actual bytes rather than a smaller internal form.
++  return Buffer.byteLength(JSON.stringify(packet, null, 2), "utf8");
+ }
+ 
+ export function agentTransitionId(stepId: string): string {
+@@ -211,6 +273,7 @@ export function buildAgentActionPacket(opts: {
+   work_order: AgentWorkOrderV2;
+   exchange?: AgentActionPacket["exchange"];
+   recovery?: AgentActionPacket["recovery"];
++  remote?: boolean;
+ }): AgentActionPacket {
+   const projected = opts.recovery
+     ? {
+@@ -225,6 +288,10 @@ export function buildAgentActionPacket(opts: {
+         },
+       }
+     : actionFor(opts.decision);
++  const operatorAction = operatorActionFor({
++    decision: opts.decision,
++    remote: opts.remote === true,
++  });
+   const packet: AgentActionPacket = {
+     schema_version: 1,
+     task_id: opts.decision.task.id,
+@@ -242,6 +309,7 @@ export function buildAgentActionPacket(opts: {
+           : null,
+     },
+     context_refs: compactContextRefs(opts.work_order),
++    ...(operatorAction ? { operator_action: operatorAction } : {}),
+     ...(projected.action.kind === "agent_episode" && opts.exchange
+       ? { exchange: opts.exchange }
+       : {}),
+diff --git a/packages/agentplane/src/commands/task/begin.command.ts b/packages/agentplane/src/commands/task/begin.command.ts
+index d88339b1f..679421c70 100644
+--- a/packages/agentplane/src/commands/task/begin.command.ts
++++ b/packages/agentplane/src/commands/task/begin.command.ts
+@@ -179,7 +179,7 @@ export function makeRunTaskBeginHandler(
+         rootOverride: ctx.rootOverride,
+         taskId,
+         text: p.plan,
+-        updatedBy: "PLANNER",
++        updatedBy: "USER",
+       });
+     }
+ 
+diff --git a/packages/agentplane/src/commands/task/task.command.ts b/packages/agentplane/src/commands/task/task.command.ts
+index 859990d66..b82e3ca87 100644
+--- a/packages/agentplane/src/commands/task/task.command.ts
++++ b/packages/agentplane/src/commands/task/task.command.ts
+@@ -10,17 +10,23 @@ type TaskGroupParsed = GroupCommandParsed;
+ export const taskSpec: CommandSpec<TaskGroupParsed> = {
+   id: ["task"],
+   group: "Task",
+-  summary: "Task lifecycle and task-store commands.",
+-  synopsis: ["agentplane task <subcommand> [args] [options]"],
++  summary: "Supervisor-first task commands.",
++  synopsis: [
++    'agentplane task create "<desired outcome>" [options]',
++    "agentplane task new --title <text> --description <text> --owner <id> [options]",
++    "agentplane task active [options]",
++    "agentplane task advance <task-id> --agent-json [options]",
++    "agentplane task run <task-id> [options]",
++    "agentplane task brief <task-id> [options]",
++    "agentplane help --all  # diagnostics and compatibility commands",
++  ],
+   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<subcommand>" }],
+   notes: [
+-    'Default user path: task create "<outcome>" -> task advance --agent-json. Agentplane infers structured intent and an explainable execution route, then the packet exposes one bounded semantic action.',
+-    "Default managed-agent path: create the task, record and approve the semantic plan, then use task run to supervise the typed lifecycle.",
++    'Default external-agent path: task create "<outcome>" -> task advance --agent-json. Agentplane infers structured intent and an explainable route, then returns one bounded semantic action while retaining lifecycle authority.',
++    "Default managed-agent path: create the task, then use task run to supervise the typed lifecycle and stop at any operator boundary.",
+     "The generated Plan is an explicit placeholder: task plan approve fails until PLANNER or a human records a task-specific plan.",
+-    "Advanced direct task route: task new -> task plan set -> task plan approve -> task start-ready -> task verify-show -> verify -> finish.",
+     "Use `agentplane task next-action <task-id> --explain` only for full route diagnostics.",
+-    "Use `agentplane help task plan`, `agentplane help task doc`, and `agentplane help task verify` to inspect task sub-areas.",
+-    "Verification recording and closure stay top-level lifecycle commands: `agentplane verify ...` and `agentplane finish ...`.",
++    "Use `agentplane help --all` for diagnostic, recovery, and compatibility commands.",
+   ],
+   examples: [
+     {
+@@ -35,49 +41,9 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
+       cmd: "agentplane task run <task-id>",
+       why: "After plan approval, let the managed runner resolve eligible semantic boundaries using the same supervisor state.",
+     },
+-    {
+-      cmd: 'agentplane task new --title "..." --description "..." --owner CODER --tag code',
+-      why: "Create a task with the advanced explicit primitive command.",
+-    },
+-    {
+-      cmd: 'agentplane task plan set <task-id> --text "..." --updated-by ORCHESTRATOR',
+-      why: "Write the execution plan.",
+-    },
+-    {
+-      cmd: 'agentplane task start-ready <task-id> --author CODER --body "Start: ..."',
+-      why: "Start the task after approval.",
+-    },
+-    {
+-      cmd: "agentplane task verify-show <task-id>",
+-      why: "Show Verify Steps before running checks.",
+-    },
+-    {
+-      cmd: 'agentplane task handoff record <task-id> --from CODER --reason "Paused for handoff"',
+-      why: "Persist a first-class handoff snapshot.",
+-    },
+-    {
+-      cmd: 'agentplane task hosted-close --event-json "$GITHUB_EVENT_PATH"',
+-      why: "Apply deterministic task closure from a merged hosted PR event on an automation branch.",
+-    },
+-    {
+-      cmd: "agentplane task hosted-close-pr 202604091218-JREJ4K",
+-      why: "Open the hosted closure PR after a manual handoff comment leaves only the remote task-close branch.",
+-    },
+-    {
+-      cmd: "agentplane task resume-context <task-id>",
+-      why: "Inspect deterministic recovery context before another agent resumes work.",
+-    },
+-    {
+-      cmd: "agentplane task status <task-id> --route",
+-      why: "Inspect task state, branch_pr route blockers, and next safe command.",
+-    },
+-    {
+-      cmd: "agentplane task next-action <task-id>",
+-      why: "Inspect the full diagnostic route projection.",
+-    },
+     {
+       cmd: "agentplane task brief <task-id>",
+-      why: "Print an agent-ready local task brief with route, Verify Steps, and blueprint evidence.",
++      why: "Inspect a human-readable diagnostic brief when the compact action needs explanation.",
+     },
+   ],
+   parse: (raw) => parseGroupCommand(raw),
