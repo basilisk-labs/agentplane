@@ -24,7 +24,7 @@ export const initSpec: CommandSpec<InitParsed> = {
       choices: ["quick", "guided", "advanced", "ci"],
       coerce: (raw) => raw.trim().toLowerCase(),
       description:
-        "User-facing init route. TTY defaults to guided; --yes defaults to ci for automation.",
+        "User-facing init route. TTY defaults to quick with an advanced choice; --yes defaults to ci for automation.",
     },
     {
       kind: "boolean",
@@ -212,7 +212,10 @@ export const initSpec: CommandSpec<InitParsed> = {
     },
   ],
   examples: [
-    { cmd: "agentplane init", why: "Interactive setup (prompts for missing values)." },
+    {
+      cmd: "agentplane init",
+      why: "Short interactive setup for agent surface and workflow, followed by an explained preview.",
+    },
     {
       cmd: "agentplane init --setup-profile light --yes",
       why: "Non-interactive setup with flexible defaults.",

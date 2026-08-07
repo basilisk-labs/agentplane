@@ -2,7 +2,7 @@ import type { EvaluatorSkepticismLevel, ExecutionProfile } from "@agentplaneorg/
 
 import type { WorkflowMode } from "../../../../../agents/agents-template.js";
 import type { PolicyGatewayFlavor } from "../../../../../shared/policy-gateway.js";
-import type { InitFlags, InitIde, SetupProfilePreset } from "../model.js";
+import type { InitFlags, InitIde, InitTool, SetupProfilePreset } from "../model.js";
 import type { InitClackPrompts } from "../prompts.js";
 
 export type InitSetupProfileMode = "compact" | "full";
@@ -31,6 +31,10 @@ export type InitPromptClack = Pick<InitClackPrompts, "cancel" | "isCancel"> & {
 export type SetupProfileStepAnswers = {
   setupProfilePreset: SetupProfilePreset;
   setupProfileMode: InitSetupProfileMode;
+};
+
+export type ToolStepAnswers = {
+  tool: InitTool;
 };
 
 export type PolicyGatewayStepAnswers = {

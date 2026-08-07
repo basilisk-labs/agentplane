@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202608061646-30TKV4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T00:32:12.818Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "4d7ebde5495ce91ebab19921192cb5327e8738b1",
+  "blueprint_digest": "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62",
+  "findings": [
+    "The frozen packet still contains no deterministic execution evidence for any declared verification check: verification_records, runner_history, and runtime_evidence are empty although verification is marked ok."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/2e3a84b5ab094867f57ec8d4779a803d696e24ce036c5ae5a518b34fbc313f6c.json",
+    ".agentplane/policy/dod.code.md",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [
+    "Deterministic recorded results are absent for the declared focused CLI suite, including empty outcomes, invalid options, explicit route overrides, concurrent duplicate creation, persisted route consistency, dry-run preview, and task advance --agent-json compatibility.",
+    "Deterministic recorded results are absent for docs:cli:check, docs:onboarding:check, typecheck, and policy routing validation."
+  ],
+  "hidden_assumptions": [
+    "The TESTER verification note is assumed to represent successful command execution, but the frozen packet contains no command-level records or runtime evidence to prove it.",
+    "The evaluated SHA is assumed to be the exact revision on which all declared checks ran."
+  ],
+  "residual_risks": [
+    "Freeze command-level deterministic verification records for every declared Verify Step at evaluated SHA 4d7ebde5495ce91ebab19921192cb5327e8738b1, including outputs that demonstrate the required negative and concurrency-sensitive cases, then regenerate the evaluator packet."
+  ]
+}

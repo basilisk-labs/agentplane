@@ -1,0 +1,3918 @@
+diff --git a/docs/user/cli-reference.generated.mdx b/docs/user/cli-reference.generated.mdx
+index a4dd73c19..0d2a90418 100644
+--- a/docs/user/cli-reference.generated.mdx
++++ b/docs/user/cli-reference.generated.mdx
+@@ -730,6 +730,7 @@ Options:
+ - `--mutation-scope <none|docs|code|release|ops|context|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
+ - `--risk <risk>`: Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
+ - `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|context.maximum_assimilation|post_run.improvement_review|release.strict|ops.approval)
++- `--route <repository|auto|direct|branch_pr>`: Task execution route. repository preserves legacy behavior; auto may escalate a direct repository to branch_pr when isolation risk requires it. (choices=repository|auto|direct|branch_pr, default=repository)
+ - `--depends-on <task-id>`: Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
+ - `--verify <command>`: Repeatable. Verification commands/checks to run for this task. (repeatable)
+ - `--show-blueprint`: Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+index 081231835..24dc04980 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+@@ -77,110 +77,6 @@ async function withFakeGh<T>(
+ }
+ 
+ describe("runCli route decision commands", () => {
+-  it("escalates an auto-routed task from a direct repository into a branch_pr worktree", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
+-    await writeFile(path.join(root, "README.md"), "# Fixture\n", "utf8");
+-    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+-    await execFileAsync(
+-      "git",
+-      [
+-        "-c",
+-        "user.name=AgentPlane Test",
+-        "-c",
+-        "user.email=test@example.invalid",
+-        "commit",
+-        "-m",
+-        "initial",
+-      ],
+-      { cwd: root },
+-    );
+-    const config = defaultConfig();
+-    config.workflow_mode = "direct";
+-    await writeConfig(root, config);
+-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+-
+-    const taskIo = captureStdIO();
+-    let taskId = "";
+-    try {
+-      const code = await runCli([
+-        "task",
+-        "new",
+-        "--title",
+-        "Publish an isolated patch",
+-        "--description",
+-        "Exercise automatic route escalation",
+-        "--owner",
+-        "CODER",
+-        "--tag",
+-        "release",
+-        "--task-kind",
+-        "release",
+-        "--mutation-scope",
+-        "release",
+-        "--risk",
+-        "publish",
+-        "--route",
+-        "auto",
+-        "--root",
+-        root,
+-      ]);
+-      expect(code).toBe(0);
+-      taskId = taskIo.stdout.trim();
+-    } finally {
+-      taskIo.restore();
+-    }
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Verify automatic route escalation.",
+-      "--updated-by",
+-      "PLANNER",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+-
+-    const [code, payload] = await runJson<{
+-      workflow_mode: string;
+-      next_action: { code: string; command: string };
+-      task: { execution_route: { selected_mode: string; reason_codes: string[] } };
+-    }>(["task", "next-action", taskId, "--json", "--root", root]);
+-    expect(code).toBe(0);
+-    expect(payload.workflow_mode).toBe("branch_pr");
+-    expect(payload.task.execution_route.selected_mode).toBe("branch_pr");
+-    expect(payload.task.execution_route.reason_codes).toContain("risk_publish");
+-    expect(payload.next_action.code).toBe("start_or_recover_worktree");
+-
+-    const worktreePath = path.join(
+-      root,
+-      ".agentplane",
+-      "worktrees",
+-      `${taskId}-publish-an-isolated-patch`,
+-    );
+-    const workIo = captureStdIO();
+-    try {
+-      const workCode = await runCli([
+-        "work",
+-        "start",
+-        taskId,
+-        "--agent",
+-        "CODER",
+-        "--slug",
+-        "publish-an-isolated-patch",
+-        "--worktree",
+-        "--root",
+-        root,
+-      ]);
+-      expect(workCode, workIo.stderr).toBe(0);
+-    } finally {
+-      workIo.restore();
+-    }
+-    await expect(realpath(worktreePath)).resolves.toContain(taskId);
+-  });
+-
+   it("reports status, next action, work resume, and dry-run repair", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-routing.test.ts b/packages/agentplane/src/cli/run-cli.core.task-routing.test.ts
+new file mode 100644
+index 000000000..30b93a722
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.task-routing.test.ts
+@@ -0,0 +1,134 @@
++import { execFile } from "node:child_process";
++import { realpath, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++
++import { describe } from "vitest";
++
++import {
++  captureStdIO,
++  defaultConfig,
++  expect,
++  it,
++  mkGitRepoRootWithBranch,
++  runCli,
++  runCliSilent,
++  writeConfig,
++} from "@agentplane/testkit/cli-core-pr-flow";
++
++const execFileAsync = promisify(execFile);
++
++async function runJson<T>(args: string[]): Promise<[number, T]> {
++  const io = captureStdIO();
++  try {
++    return [await runCli(args), JSON.parse(io.stdout) as T];
++  } finally {
++    io.restore();
++  }
++}
++
++describe("runCli task execution routing", () => {
++  it("escalates an auto-routed task from a direct repository into a branch_pr worktree", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    await writeFile(path.join(root, "README.md"), "# Fixture\n", "utf8");
++    await execFileAsync("git", ["add", "README.md"], { cwd: root });
++    await execFileAsync(
++      "git",
++      [
++        "-c",
++        "user.name=AgentPlane Test",
++        "-c",
++        "user.email=test@example.invalid",
++        "commit",
++        "-m",
++        "initial",
++      ],
++      { cwd: root },
++    );
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    await writeConfig(root, config);
++    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++
++    const taskIo = captureStdIO();
++    let taskId = "";
++    try {
++      const code = await runCli([
++        "task",
++        "new",
++        "--title",
++        "Publish an isolated patch",
++        "--description",
++        "Exercise automatic route escalation",
++        "--owner",
++        "CODER",
++        "--tag",
++        "release",
++        "--task-kind",
++        "release",
++        "--mutation-scope",
++        "release",
++        "--risk",
++        "publish",
++        "--route",
++        "auto",
++        "--root",
++        root,
++      ]);
++      expect(code).toBe(0);
++      taskId = taskIo.stdout.trim();
++    } finally {
++      taskIo.restore();
++    }
++    await runCliSilent([
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      "Verify automatic route escalation.",
++      "--updated-by",
++      "PLANNER",
++      "--root",
++      root,
++    ]);
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++
++    const [code, payload] = await runJson<{
++      workflow_mode: string;
++      next_action: { code: string; command: string };
++      task: { execution_route: { selected_mode: string; reason_codes: string[] } };
++    }>(["task", "next-action", taskId, "--json", "--root", root]);
++    expect(code).toBe(0);
++    expect(payload.workflow_mode).toBe("branch_pr");
++    expect(payload.task.execution_route.selected_mode).toBe("branch_pr");
++    expect(payload.task.execution_route.reason_codes).toContain("risk_publish");
++    expect(payload.next_action.code).toBe("start_or_recover_worktree");
++
++    const worktreePath = path.join(
++      root,
++      ".agentplane",
++      "worktrees",
++      `${taskId}-publish-an-isolated-patch`,
++    );
++    const workIo = captureStdIO();
++    try {
++      const workCode = await runCli([
++        "work",
++        "start",
++        taskId,
++        "--agent",
++        "CODER",
++        "--slug",
++        "publish-an-isolated-patch",
++        "--worktree",
++        "--root",
++        root,
++      ]);
++      expect(workCode, workIo.stderr).toBe(0);
++    } finally {
++      workIo.restore();
++    }
++    await expect(realpath(worktreePath)).resolves.toContain(taskId);
++  });
++});
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index 0888e4886..ea4ea6da3 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       const efficiency = await runNode([EFFICIENCY_CHECK]);
+ 
+       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
+-      expect(compatibility.stdout).toContain("259commands/179args/828options");
++      expect(compatibility.stdout).toContain("259commands/179args/829options");
+       expect(compatibility.stdout).toContain(
+         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
+       );
+@@ -193,13 +193,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202608021534-YN84E1",
+           "202608022324-9VCYWG",
+           "202608021535-CNQKXP",
++          "202608061646-WCARQG",
+         ],
+         candidate: {
+-          surface_sha256: "5fe979c4175ec9d8059079384632c52cce90340697675f8eba66f8fbc808ea27",
++          surface_sha256: "c710ccaa31b43988b633441c168651a1e57aa47d17fd97f18e0acafd14776848",
+           section_digests: {
+             agent_facing_context_contracts:
+               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+-            cli_topology: "013285a7eb1fce7e1b0138cec6da0c94c4c1c3647937f6b0d49f872b57abed0b",
++            cli_topology: "c15bff5ccf748801205499a8e483524162422c4659a06fc201ad13d9d7c1f8cc",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+             package_manifests: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+@@ -229,7 +230,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           section: "package_manifests",
+           from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+           to_sha256: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+-          surface_sha256: "e268ab12ae45c6c5620e2b92c671828ea25fbcc79fd4f21b6e9da806de08eabb",
++          surface_sha256: "f1f7ba365b8912771323910df3e34843708feeccc291944d50a1ab2f7874ca01",
+           allowed_json_paths: [
+             "$.package_manifests[0].dependencies.@agentplaneorg/core",
+             "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -556,7 +557,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           },
+         });
+         const before = collectCompatibilitySurface(versionedSource("0.6.24"));
+-        const after = collectCompatibilitySurface(versionedSource("0.7.3"));
++        const after = collectCompatibilitySurface(versionedSource("0.7.4"));
+         const sectionDigests = surfaceSectionDigests(after);
+         process.stdout.write(JSON.stringify({
+           packageManifestDigest: sectionDigests.package_manifests,
+@@ -567,8 +568,8 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       const result = await runNode(["--input-type=module", "--eval", source]);
+       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
+       expect(JSON.parse(result.stdout)).toEqual({
+-        packageManifestDigest: "62af981925c53c759ca64ad783ec0d0b821fc10324e1270acc4bb8bea4da5fc3",
+-        surfaceDigest: "6414a03920d7d20425c6bddc219c4b21ba704dd01a9a6f6d503702c98075723b",
++        packageManifestDigest: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
++        surfaceDigest: "f1f7ba365b8912771323910df3e34843708feeccc291944d50a1ab2f7874ca01",
+         changedPaths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+index b08a2686c..6cd6c2d45 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+@@ -8,11 +8,12 @@ import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operati
+ const mocks = vi.hoisted(() => ({
+   cmdFinish: vi.fn(),
+   loadCommandContext: vi.fn(),
++  loadTaskFromContext: vi.fn(),
+ }));
+ 
+ vi.mock("../shared/task-backend.js", () => ({
+   loadCommandContext: mocks.loadCommandContext,
+-  loadTaskFromContext: vi.fn(),
++  loadTaskFromContext: mocks.loadTaskFromContext,
+ }));
+ 
+ vi.mock("./finish-command.js", () => ({
+@@ -52,6 +53,7 @@ function preMergeCloseOperation(): Extract<WorkflowOperation, { id: "task.pre_me
+ function routeDecision(operation: WorkflowOperation): TaskRouteDecision {
+   return {
+     executionPacket: { mustRunFrom: "/repo/task" },
++    task: { id: "202607221852-71SCSW" },
+     workflowStep: { id: operation.id, kind: "cli_operation", operation },
+   } as unknown as TaskRouteDecision;
+ }
+@@ -60,8 +62,12 @@ describe("branch task supervisor operations", () => {
+   beforeEach(() => {
+     vi.clearAllMocks();
+     mocks.loadCommandContext.mockResolvedValue({
++      config: { workflow_mode: "branch_pr" },
+       resolvedProject: { gitRoot: "/repo" },
+     } as CommandContext);
++    mocks.loadTaskFromContext.mockResolvedValue({
++      execution_route: { selected_mode: "branch_pr" },
++    });
+     mocks.cmdFinish.mockResolvedValue(0);
+   });
+ 
+diff --git a/packages/agentplane/src/runtime/task-intake/types.ts b/packages/agentplane/src/runtime/task-intake/types.ts
+index 8baf7ec90..53d97ed50 100644
+--- a/packages/agentplane/src/runtime/task-intake/types.ts
++++ b/packages/agentplane/src/runtime/task-intake/types.ts
+@@ -1,6 +1,5 @@
+ import type { ApprovalSettings } from "@agentplaneorg/core/config";
+-import type { TaskDocVersion } from "@agentplaneorg/core/tasks";
+-import type { TaskExecutionRoute } from "@agentplaneorg/core/tasks";
++import type { TaskDocVersion, TaskExecutionRoute } from "@agentplaneorg/core/tasks";
+ 
+ import type { TaskBackendCapabilities, TaskData, TaskOrigin } from "../../backends/task-backend.js";
+ import type { BehaviorLayer } from "../behavior/index.js";
+diff --git a/packages/agentplane/src/runtime/task-routing/resolve.ts b/packages/agentplane/src/runtime/task-routing/resolve.ts
+index ef37b5163..395e409b5 100644
+--- a/packages/agentplane/src/runtime/task-routing/resolve.ts
++++ b/packages/agentplane/src/runtime/task-routing/resolve.ts
+@@ -60,24 +60,35 @@ export function resolveTaskExecutionRoute(opts: {
+     selectedMode = "branch_pr";
+     reasons.push("repository_branch_pr_floor");
+     if (requestedMode === "direct") reasons.push("direct_request_overridden");
+-  } else if (requestedMode === "repository") {
+-    selectedMode = "direct";
+-    reasons.push("repository_mode_selected");
+-  } else if (requestedMode === "branch_pr") {
+-    selectedMode = "branch_pr";
+-    reasons.push("explicit_branch_pr");
+-  } else if (requestedMode === "direct") {
+-    const forcedReasons = autoRouteReasons(opts.task);
+-    selectedMode = forcedReasons.length > 0 ? "branch_pr" : "direct";
+-    reasons.push(
+-      ...(forcedReasons.length > 0
+-        ? ["direct_request_overridden", ...forcedReasons]
+-        : ["explicit_direct"]),
+-    );
+   } else {
+-    const forcedReasons = autoRouteReasons(opts.task);
+-    selectedMode = forcedReasons.length > 0 ? "branch_pr" : "direct";
+-    reasons.push(...(forcedReasons.length > 0 ? forcedReasons : ["automatic_safe_direct"]));
++    switch (requestedMode) {
++      case "repository": {
++        selectedMode = "direct";
++        reasons.push("repository_mode_selected");
++        break;
++      }
++      case "branch_pr": {
++        selectedMode = "branch_pr";
++        reasons.push("explicit_branch_pr");
++        break;
++      }
++      case "direct": {
++        const forcedReasons = autoRouteReasons(opts.task);
++        selectedMode = forcedReasons.length > 0 ? "branch_pr" : "direct";
++        reasons.push(
++          ...(forcedReasons.length > 0
++            ? ["direct_request_overridden", ...forcedReasons]
++            : ["explicit_direct"]),
++        );
++        break;
++      }
++      case "auto": {
++        const forcedReasons = autoRouteReasons(opts.task);
++        selectedMode = forcedReasons.length > 0 ? "branch_pr" : "direct";
++        reasons.push(...(forcedReasons.length > 0 ? forcedReasons : ["automatic_safe_direct"]));
++        break;
++      }
++    }
+   }
+ 
+   return {
+diff --git a/packages/core/schemas/task-readme-frontmatter.schema.json b/packages/core/schemas/task-readme-frontmatter.schema.json
+index 0d158dee6..ae12d2073 100644
+--- a/packages/core/schemas/task-readme-frontmatter.schema.json
++++ b/packages/core/schemas/task-readme-frontmatter.schema.json
+@@ -18,32 +18,18 @@
+     },
+     "risk_level": {
+       "type": "string",
+-      "enum": [
+-        "low",
+-        "med",
+-        "high"
+-      ]
++      "enum": ["low", "med", "high"]
+     },
+     "breaking": {
+       "type": "boolean"
+     },
+     "status": {
+       "type": "string",
+-      "enum": [
+-        "TODO",
+-        "DOING",
+-        "DONE",
+-        "BLOCKED"
+-      ]
++      "enum": ["TODO", "DOING", "DONE", "BLOCKED"]
+     },
+     "priority": {
+       "type": "string",
+-      "enum": [
+-        "low",
+-        "normal",
+-        "med",
+-        "high"
+-      ]
++      "enum": ["low", "normal", "med", "high"]
+     },
+     "owner": {
+       "type": "string",
+@@ -86,9 +72,7 @@
+           "minLength": 1
+         }
+       },
+-      "required": [
+-        "system"
+-      ],
++      "required": ["system"],
+       "additionalProperties": {
+         "type": "string"
+       }
+@@ -109,27 +93,11 @@
+     },
+     "task_kind": {
+       "type": "string",
+-      "enum": [
+-        "analysis",
+-        "content",
+-        "docs",
+-        "code",
+-        "release",
+-        "ops",
+-        "context"
+-      ]
++      "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
+     },
+     "mutation_scope": {
+       "type": "string",
+-      "enum": [
+-        "none",
+-        "docs",
+-        "code",
+-        "release",
+-        "ops",
+-        "context",
+-        "unknown"
+-      ]
++      "enum": ["none", "docs", "code", "release", "ops", "context", "unknown"]
+     },
+     "risk_flags": {
+       "type": "array",
+@@ -176,11 +144,7 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": [
+-            "pending",
+-            "approved",
+-            "rejected"
+-          ]
++          "enum": ["pending", "approved", "rejected"]
+         },
+         "updated_at": {
+           "anyOf": [
+@@ -215,12 +179,7 @@
+           ]
+         }
+       },
+-      "required": [
+-        "state",
+-        "updated_at",
+-        "updated_by",
+-        "note"
+-      ],
++      "required": ["state", "updated_at", "updated_by", "note"],
+       "additionalProperties": {}
+     },
+     "verification": {
+@@ -228,12 +187,7 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": [
+-            "pending",
+-            "ok",
+-            "needs_rework",
+-            "blocked_external"
+-          ]
++          "enum": ["pending", "ok", "needs_rework", "blocked_external"]
+         },
+         "attempts": {
+           "type": "integer",
+@@ -273,12 +227,7 @@
+           ]
+         }
+       },
+-      "required": [
+-        "state",
+-        "updated_at",
+-        "updated_by",
+-        "note"
+-      ],
++      "required": ["state", "updated_at", "updated_by", "note"],
+       "additionalProperties": {}
+     },
+     "quality_review": {
+@@ -286,20 +235,11 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": [
+-            "pending",
+-            "pass",
+-            "rework",
+-            "blocked",
+-            "human_review"
+-          ]
++          "enum": ["pending", "pass", "rework", "blocked", "human_review"]
+         },
+         "provenance": {
+           "type": "string",
+-          "enum": [
+-            "human_supplied",
+-            "evaluator_supplied"
+-          ]
++          "enum": ["human_supplied", "evaluator_supplied"]
+         },
+         "updated_at": {
+           "anyOf": [
+@@ -387,14 +327,7 @@
+         },
+         "status": {
+           "type": "string",
+-          "enum": [
+-            "prepared",
+-            "running",
+-            "success",
+-            "failed",
+-            "blocked",
+-            "cancelled"
+-          ]
++          "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
+         },
+         "adapter_id": {
+           "type": "string",
+@@ -402,10 +335,7 @@
+         },
+         "mode": {
+           "type": "string",
+-          "enum": [
+-            "execute",
+-            "dry_run"
+-          ]
++          "enum": ["execute", "dry_run"]
+         },
+         "created_at": {
+           "type": "string",
+@@ -444,10 +374,7 @@
+           "properties": {
+             "kind": {
+               "type": "string",
+-              "enum": [
+-                "task",
+-                "recipe_scenario"
+-              ]
++              "enum": ["task", "recipe_scenario"]
+             },
+             "task_id": {
+               "type": "string",
+@@ -462,9 +389,7 @@
+               "minLength": 1
+             }
+           },
+-          "required": [
+-            "kind"
+-          ],
++          "required": ["kind"],
+           "additionalProperties": {}
+         },
+         "summary": {
+@@ -564,24 +489,14 @@
+             },
+             "verification_state": {
+               "type": "string",
+-              "enum": [
+-                "observed_success",
+-                "rejected",
+-                "unverified",
+-                "compatibility_unverified"
+-              ]
++              "enum": ["observed_success", "rejected", "unverified", "compatibility_unverified"]
+             },
+             "observed_by": {
+               "type": "string",
+               "const": "agentplane"
+             }
+           },
+-          "required": [
+-            "path",
+-            "sha256",
+-            "verification_state",
+-            "observed_by"
+-          ],
++          "required": ["path", "sha256", "verification_state", "observed_by"],
+           "additionalProperties": false
+         },
+         "history": {
+@@ -595,14 +510,7 @@
+               },
+               "status": {
+                 "type": "string",
+-                "enum": [
+-                  "prepared",
+-                  "running",
+-                  "success",
+-                  "failed",
+-                  "blocked",
+-                  "cancelled"
+-                ]
++                "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
+               },
+               "adapter_id": {
+                 "type": "string",
+@@ -610,10 +518,7 @@
+               },
+               "mode": {
+                 "type": "string",
+-                "enum": [
+-                  "execute",
+-                  "dry_run"
+-                ]
++                "enum": ["execute", "dry_run"]
+               },
+               "created_at": {
+                 "type": "string",
+@@ -652,10 +557,7 @@
+                 "properties": {
+                   "kind": {
+                     "type": "string",
+-                    "enum": [
+-                      "task",
+-                      "recipe_scenario"
+-                    ]
++                    "enum": ["task", "recipe_scenario"]
+                   },
+                   "task_id": {
+                     "type": "string",
+@@ -670,9 +572,7 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": [
+-                  "kind"
+-                ],
++                "required": ["kind"],
+                 "additionalProperties": {}
+               },
+               "summary": {
+@@ -784,12 +684,7 @@
+                     "const": "agentplane"
+                   }
+                 },
+-                "required": [
+-                  "path",
+-                  "sha256",
+-                  "verification_state",
+-                  "observed_by"
+-                ],
++                "required": ["path", "sha256", "verification_state", "observed_by"],
+                 "additionalProperties": false
+               }
+             },
+@@ -806,15 +701,7 @@
+           }
+         }
+       },
+-      "required": [
+-        "run_id",
+-        "status",
+-        "adapter_id",
+-        "mode",
+-        "updated_at",
+-        "exit_code",
+-        "target"
+-      ],
++      "required": ["run_id", "status", "adapter_id", "mode", "updated_at", "exit_code", "target"],
+       "additionalProperties": {}
+     },
+     "token_usage": {
+@@ -826,11 +713,7 @@
+         },
+         "state": {
+           "type": "string",
+-          "enum": [
+-            "observed",
+-            "partial",
+-            "unavailable"
+-          ]
++          "enum": ["observed", "partial", "unavailable"]
+         },
+         "input_tokens": {
+           "anyOf": [
+@@ -892,10 +775,7 @@
+         },
+         "source": {
+           "type": "string",
+-          "enum": [
+-            "supervisor_journal",
+-            "unavailable"
+-          ]
++          "enum": ["supervisor_journal", "unavailable"]
+         },
+         "observed_by": {
+           "type": "string",
+@@ -955,26 +835,15 @@
+         },
+         "requested_mode": {
+           "type": "string",
+-          "enum": [
+-            "repository",
+-            "auto",
+-            "direct",
+-            "branch_pr"
+-          ]
++          "enum": ["repository", "auto", "direct", "branch_pr"]
+         },
+         "selected_mode": {
+           "type": "string",
+-          "enum": [
+-            "direct",
+-            "branch_pr"
+-          ]
++          "enum": ["direct", "branch_pr"]
+         },
+         "repository_mode": {
+           "type": "string",
+-          "enum": [
+-            "direct",
+-            "branch_pr"
+-          ]
++          "enum": ["direct", "branch_pr"]
+         },
+         "reason_codes": {
+           "minItems": 1,
+@@ -1054,10 +923,7 @@
+                 "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+               }
+             },
+-            "required": [
+-              "provider",
+-              "remote_id"
+-            ],
++            "required": ["provider", "remote_id"],
+             "additionalProperties": false
+           }
+         },
+@@ -1073,13 +939,7 @@
+             "properties": {
+               "authority": {
+                 "type": "string",
+-                "enum": [
+-                  "agentplane",
+-                  "provider",
+-                  "bidirectional",
+-                  "derived",
+-                  "ignored"
+-                ]
++                "enum": ["agentplane", "provider", "bidirectional", "derived", "ignored"]
+               },
+               "remote_field": {
+                 "type": "string",
+@@ -1087,12 +947,7 @@
+               },
+               "conflict_policy": {
+                 "type": "string",
+-                "enum": [
+-                  "record",
+-                  "manual",
+-                  "agentplane_wins",
+-                  "provider_wins"
+-                ]
++                "enum": ["record", "manual", "agentplane_wins", "provider_wins"]
+               },
+               "updated_at": {
+                 "type": "string",
+@@ -1104,9 +959,7 @@
+                 "minLength": 1
+               }
+             },
+-            "required": [
+-              "authority"
+-            ],
++            "required": ["authority"],
+             "additionalProperties": false
+           }
+         },
+@@ -1153,30 +1006,15 @@
+               },
+               "kind": {
+                 "type": "string",
+-                "enum": [
+-                  "field",
+-                  "identity",
+-                  "freshness",
+-                  "deletion",
+-                  "dependency",
+-                  "permission"
+-                ]
++                "enum": ["field", "identity", "freshness", "deletion", "dependency", "permission"]
+               },
+               "severity": {
+                 "type": "string",
+-                "enum": [
+-                  "info",
+-                  "warning",
+-                  "blocking"
+-                ]
++                "enum": ["info", "warning", "blocking"]
+               },
+               "status": {
+                 "type": "string",
+-                "enum": [
+-                  "open",
+-                  "resolved",
+-                  "ignored"
+-                ]
++                "enum": ["open", "resolved", "ignored"]
+               },
+               "summary": {
+                 "type": "string",
+@@ -1213,21 +1051,12 @@
+                 "minLength": 1
+               }
+             },
+-            "required": [
+-              "id",
+-              "kind",
+-              "severity",
+-              "status",
+-              "summary",
+-              "detected_at"
+-            ],
++            "required": ["id", "kind", "severity", "status", "summary", "detected_at"],
+             "additionalProperties": false
+           }
+         }
+       },
+-      "required": [
+-        "version"
+-      ],
++      "required": ["version"],
+       "additionalProperties": false
+     },
+     "commit": {
+@@ -1244,10 +1073,7 @@
+               "minLength": 1
+             }
+           },
+-          "required": [
+-            "hash",
+-            "message"
+-          ],
++          "required": ["hash", "message"],
+           "additionalProperties": false
+         },
+         {
+@@ -1269,10 +1095,7 @@
+             "minLength": 1
+           }
+         },
+-        "required": [
+-          "author",
+-          "body"
+-        ],
++        "required": ["author", "body"],
+         "additionalProperties": false
+       }
+     },
+@@ -1283,11 +1106,7 @@
+         "properties": {
+           "type": {
+             "type": "string",
+-            "enum": [
+-              "status",
+-              "comment",
+-              "verify"
+-            ]
++            "enum": ["status", "comment", "verify"]
+           },
+           "at": {
+             "type": "string",
+@@ -1314,11 +1133,7 @@
+             "type": "string"
+           }
+         },
+-        "required": [
+-          "type",
+-          "at",
+-          "author"
+-        ],
++        "required": ["type", "at", "author"],
+         "additionalProperties": {}
+       }
+     },
+diff --git a/packages/core/schemas/tasks-export.schema.json b/packages/core/schemas/tasks-export.schema.json
+index 8c40d1d53..70b3df237 100644
+--- a/packages/core/schemas/tasks-export.schema.json
++++ b/packages/core/schemas/tasks-export.schema.json
+@@ -22,32 +22,18 @@
+           },
+           "risk_level": {
+             "type": "string",
+-            "enum": [
+-              "low",
+-              "med",
+-              "high"
+-            ]
++            "enum": ["low", "med", "high"]
+           },
+           "breaking": {
+             "type": "boolean"
+           },
+           "status": {
+             "type": "string",
+-            "enum": [
+-              "TODO",
+-              "DOING",
+-              "DONE",
+-              "BLOCKED"
+-            ]
++            "enum": ["TODO", "DOING", "DONE", "BLOCKED"]
+           },
+           "priority": {
+             "type": "string",
+-            "enum": [
+-              "low",
+-              "normal",
+-              "med",
+-              "high"
+-            ]
++            "enum": ["low", "normal", "med", "high"]
+           },
+           "owner": {
+             "type": "string",
+@@ -90,9 +76,7 @@
+                 "minLength": 1
+               }
+             },
+-            "required": [
+-              "system"
+-            ],
++            "required": ["system"],
+             "additionalProperties": {
+               "type": "string"
+             }
+@@ -106,14 +90,7 @@
+               },
+               "status": {
+                 "type": "string",
+-                "enum": [
+-                  "prepared",
+-                  "running",
+-                  "success",
+-                  "failed",
+-                  "blocked",
+-                  "cancelled"
+-                ]
++                "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
+               },
+               "adapter_id": {
+                 "type": "string",
+@@ -121,10 +98,7 @@
+               },
+               "mode": {
+                 "type": "string",
+-                "enum": [
+-                  "execute",
+-                  "dry_run"
+-                ]
++                "enum": ["execute", "dry_run"]
+               },
+               "created_at": {
+                 "type": "string",
+@@ -163,10 +137,7 @@
+                 "properties": {
+                   "kind": {
+                     "type": "string",
+-                    "enum": [
+-                      "task",
+-                      "recipe_scenario"
+-                    ]
++                    "enum": ["task", "recipe_scenario"]
+                   },
+                   "task_id": {
+                     "type": "string",
+@@ -181,9 +152,7 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": [
+-                  "kind"
+-                ],
++                "required": ["kind"],
+                 "additionalProperties": {}
+               },
+               "summary": {
+@@ -295,12 +264,7 @@
+                     "const": "agentplane"
+                   }
+                 },
+-                "required": [
+-                  "path",
+-                  "sha256",
+-                  "verification_state",
+-                  "observed_by"
+-                ],
++                "required": ["path", "sha256", "verification_state", "observed_by"],
+                 "additionalProperties": false
+               },
+               "history": {
+@@ -314,14 +278,7 @@
+                     },
+                     "status": {
+                       "type": "string",
+-                      "enum": [
+-                        "prepared",
+-                        "running",
+-                        "success",
+-                        "failed",
+-                        "blocked",
+-                        "cancelled"
+-                      ]
++                      "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
+                     },
+                     "adapter_id": {
+                       "type": "string",
+@@ -329,10 +286,7 @@
+                     },
+                     "mode": {
+                       "type": "string",
+-                      "enum": [
+-                        "execute",
+-                        "dry_run"
+-                      ]
++                      "enum": ["execute", "dry_run"]
+                     },
+                     "created_at": {
+                       "type": "string",
+@@ -371,10 +325,7 @@
+                       "properties": {
+                         "kind": {
+                           "type": "string",
+-                          "enum": [
+-                            "task",
+-                            "recipe_scenario"
+-                          ]
++                          "enum": ["task", "recipe_scenario"]
+                         },
+                         "task_id": {
+                           "type": "string",
+@@ -389,9 +340,7 @@
+                           "minLength": 1
+                         }
+                       },
+-                      "required": [
+-                        "kind"
+-                      ],
++                      "required": ["kind"],
+                       "additionalProperties": {}
+                     },
+                     "summary": {
+@@ -503,12 +452,7 @@
+                           "const": "agentplane"
+                         }
+                       },
+-                      "required": [
+-                        "path",
+-                        "sha256",
+-                        "verification_state",
+-                        "observed_by"
+-                      ],
++                      "required": ["path", "sha256", "verification_state", "observed_by"],
+                       "additionalProperties": false
+                     }
+                   },
+@@ -545,11 +489,7 @@
+               },
+               "state": {
+                 "type": "string",
+-                "enum": [
+-                  "observed",
+-                  "partial",
+-                  "unavailable"
+-                ]
++                "enum": ["observed", "partial", "unavailable"]
+               },
+               "input_tokens": {
+                 "anyOf": [
+@@ -611,10 +551,7 @@
+               },
+               "source": {
+                 "type": "string",
+-                "enum": [
+-                  "supervisor_journal",
+-                  "unavailable"
+-                ]
++                "enum": ["supervisor_journal", "unavailable"]
+               },
+               "observed_by": {
+                 "type": "string",
+@@ -674,26 +611,15 @@
+               },
+               "requested_mode": {
+                 "type": "string",
+-                "enum": [
+-                  "repository",
+-                  "auto",
+-                  "direct",
+-                  "branch_pr"
+-                ]
++                "enum": ["repository", "auto", "direct", "branch_pr"]
+               },
+               "selected_mode": {
+                 "type": "string",
+-                "enum": [
+-                  "direct",
+-                  "branch_pr"
+-                ]
++                "enum": ["direct", "branch_pr"]
+               },
+               "repository_mode": {
+                 "type": "string",
+-                "enum": [
+-                  "direct",
+-                  "branch_pr"
+-                ]
++                "enum": ["direct", "branch_pr"]
+               },
+               "reason_codes": {
+                 "minItems": 1,
+@@ -734,27 +660,11 @@
+           },
+           "task_kind": {
+             "type": "string",
+-            "enum": [
+-              "analysis",
+-              "content",
+-              "docs",
+-              "code",
+-              "release",
+-              "ops",
+-              "context"
+-            ]
++            "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
+           },
+           "mutation_scope": {
+             "type": "string",
+-            "enum": [
+-              "none",
+-              "docs",
+-              "code",
+-              "release",
+-              "ops",
+-              "context",
+-              "unknown"
+-            ]
++            "enum": ["none", "docs", "code", "release", "ops", "context", "unknown"]
+           },
+           "risk_flags": {
+             "type": "array",
+@@ -801,11 +711,7 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": [
+-                  "pending",
+-                  "approved",
+-                  "rejected"
+-                ]
++                "enum": ["pending", "approved", "rejected"]
+               },
+               "updated_at": {
+                 "anyOf": [
+@@ -840,12 +746,7 @@
+                 ]
+               }
+             },
+-            "required": [
+-              "state",
+-              "updated_at",
+-              "updated_by",
+-              "note"
+-            ],
++            "required": ["state", "updated_at", "updated_by", "note"],
+             "additionalProperties": {}
+           },
+           "verification": {
+@@ -853,12 +754,7 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": [
+-                  "pending",
+-                  "ok",
+-                  "needs_rework",
+-                  "blocked_external"
+-                ]
++                "enum": ["pending", "ok", "needs_rework", "blocked_external"]
+               },
+               "attempts": {
+                 "type": "integer",
+@@ -898,12 +794,7 @@
+                 ]
+               }
+             },
+-            "required": [
+-              "state",
+-              "updated_at",
+-              "updated_by",
+-              "note"
+-            ],
++            "required": ["state", "updated_at", "updated_by", "note"],
+             "additionalProperties": {}
+           },
+           "quality_review": {
+@@ -911,20 +802,11 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": [
+-                  "pending",
+-                  "pass",
+-                  "rework",
+-                  "blocked",
+-                  "human_review"
+-                ]
++                "enum": ["pending", "pass", "rework", "blocked", "human_review"]
+               },
+               "provenance": {
+                 "type": "string",
+-                "enum": [
+-                  "human_supplied",
+-                  "evaluator_supplied"
+-                ]
++                "enum": ["human_supplied", "evaluator_supplied"]
+               },
+               "updated_at": {
+                 "anyOf": [
+@@ -1017,10 +899,7 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": [
+-                  "hash",
+-                  "message"
+-                ],
++                "required": ["hash", "message"],
+                 "additionalProperties": false
+               },
+               {
+@@ -1042,10 +921,7 @@
+                   "minLength": 1
+                 }
+               },
+-              "required": [
+-                "author",
+-                "body"
+-              ],
++              "required": ["author", "body"],
+               "additionalProperties": false
+             }
+           },
+@@ -1056,11 +932,7 @@
+               "properties": {
+                 "type": {
+                   "type": "string",
+-                  "enum": [
+-                    "status",
+-                    "comment",
+-                    "verify"
+-                  ]
++                  "enum": ["status", "comment", "verify"]
+                 },
+                 "at": {
+                   "type": "string",
+@@ -1087,11 +959,7 @@
+                   "type": "string"
+                 }
+               },
+-              "required": [
+-                "type",
+-                "at",
+-                "author"
+-              ],
++              "required": ["type", "at", "author"],
+               "additionalProperties": {}
+             }
+           },
+@@ -1150,10 +1018,7 @@
+                       "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                     }
+                   },
+-                  "required": [
+-                    "provider",
+-                    "remote_id"
+-                  ],
++                  "required": ["provider", "remote_id"],
+                   "additionalProperties": false
+                 }
+               },
+@@ -1169,13 +1034,7 @@
+                   "properties": {
+                     "authority": {
+                       "type": "string",
+-                      "enum": [
+-                        "agentplane",
+-                        "provider",
+-                        "bidirectional",
+-                        "derived",
+-                        "ignored"
+-                      ]
++                      "enum": ["agentplane", "provider", "bidirectional", "derived", "ignored"]
+                     },
+                     "remote_field": {
+                       "type": "string",
+@@ -1183,12 +1042,7 @@
+                     },
+                     "conflict_policy": {
+                       "type": "string",
+-                      "enum": [
+-                        "record",
+-                        "manual",
+-                        "agentplane_wins",
+-                        "provider_wins"
+-                      ]
++                      "enum": ["record", "manual", "agentplane_wins", "provider_wins"]
+                     },
+                     "updated_at": {
+                       "type": "string",
+@@ -1200,9 +1054,7 @@
+                       "minLength": 1
+                     }
+                   },
+-                  "required": [
+-                    "authority"
+-                  ],
++                  "required": ["authority"],
+                   "additionalProperties": false
+                 }
+               },
+@@ -1260,19 +1112,11 @@
+                     },
+                     "severity": {
+                       "type": "string",
+-                      "enum": [
+-                        "info",
+-                        "warning",
+-                        "blocking"
+-                      ]
++                      "enum": ["info", "warning", "blocking"]
+                     },
+                     "status": {
+                       "type": "string",
+-                      "enum": [
+-                        "open",
+-                        "resolved",
+-                        "ignored"
+-                      ]
++                      "enum": ["open", "resolved", "ignored"]
+                     },
+                     "summary": {
+                       "type": "string",
+@@ -1309,21 +1153,12 @@
+                       "minLength": 1
+                     }
+                   },
+-                  "required": [
+-                    "id",
+-                    "kind",
+-                    "severity",
+-                    "status",
+-                    "summary",
+-                    "detected_at"
+-                  ],
++                  "required": ["id", "kind", "severity", "status", "summary", "detected_at"],
+                   "additionalProperties": false
+                 }
+               }
+             },
+-            "required": [
+-              "version"
+-            ],
++            "required": ["version"],
+             "additionalProperties": false
+           },
+           "doc_version": {
+@@ -1393,18 +1228,10 @@
+           "minLength": 1
+         }
+       },
+-      "required": [
+-        "schema_version",
+-        "managed_by",
+-        "checksum_algo",
+-        "checksum"
+-      ],
++      "required": ["schema_version", "managed_by", "checksum_algo", "checksum"],
+       "additionalProperties": false
+     }
+   },
+-  "required": [
+-    "tasks",
+-    "meta"
+-  ],
++  "required": ["tasks", "meta"],
+   "additionalProperties": false
+ }
+diff --git a/packages/spec/schemas/task-readme-frontmatter.schema.json b/packages/spec/schemas/task-readme-frontmatter.schema.json
+index 0d158dee6..ae12d2073 100644
+--- a/packages/spec/schemas/task-readme-frontmatter.schema.json
++++ b/packages/spec/schemas/task-readme-frontmatter.schema.json
+@@ -18,32 +18,18 @@
+     },
+     "risk_level": {
+       "type": "string",
+-      "enum": [
+-        "low",
+-        "med",
+-        "high"
+-      ]
++      "enum": ["low", "med", "high"]
+     },
+     "breaking": {
+       "type": "boolean"
+     },
+     "status": {
+       "type": "string",
+-      "enum": [
+-        "TODO",
+-        "DOING",
+-        "DONE",
+-        "BLOCKED"
+-      ]
++      "enum": ["TODO", "DOING", "DONE", "BLOCKED"]
+     },
+     "priority": {
+       "type": "string",
+-      "enum": [
+-        "low",
+-        "normal",
+-        "med",
+-        "high"
+-      ]
++      "enum": ["low", "normal", "med", "high"]
+     },
+     "owner": {
+       "type": "string",
+@@ -86,9 +72,7 @@
+           "minLength": 1
+         }
+       },
+-      "required": [
+-        "system"
+-      ],
++      "required": ["system"],
+       "additionalProperties": {
+         "type": "string"
+       }
+@@ -109,27 +93,11 @@
+     },
+     "task_kind": {
+       "type": "string",
+-      "enum": [
+-        "analysis",
+-        "content",
+-        "docs",
+-        "code",
+-        "release",
+-        "ops",
+-        "context"
+-      ]
++      "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
+     },
+     "mutation_scope": {
+       "type": "string",
+-      "enum": [
+-        "none",
+-        "docs",
+-        "code",
+-        "release",
+-        "ops",
+-        "context",
+-        "unknown"
+-      ]
++      "enum": ["none", "docs", "code", "release", "ops", "context", "unknown"]
+     },
+     "risk_flags": {
+       "type": "array",
+@@ -176,11 +144,7 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": [
+-            "pending",
+-            "approved",
+-            "rejected"
+-          ]
++          "enum": ["pending", "approved", "rejected"]
+         },
+         "updated_at": {
+           "anyOf": [
+@@ -215,12 +179,7 @@
+           ]
+         }
+       },
+-      "required": [
+-        "state",
+-        "updated_at",
+-        "updated_by",
+-        "note"
+-      ],
++      "required": ["state", "updated_at", "updated_by", "note"],
+       "additionalProperties": {}
+     },
+     "verification": {
+@@ -228,12 +187,7 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": [
+-            "pending",
+-            "ok",
+-            "needs_rework",
+-            "blocked_external"
+-          ]
++          "enum": ["pending", "ok", "needs_rework", "blocked_external"]
+         },
+         "attempts": {
+           "type": "integer",
+@@ -273,12 +227,7 @@
+           ]
+         }
+       },
+-      "required": [
+-        "state",
+-        "updated_at",
+-        "updated_by",
+-        "note"
+-      ],
++      "required": ["state", "updated_at", "updated_by", "note"],
+       "additionalProperties": {}
+     },
+     "quality_review": {
+@@ -286,20 +235,11 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": [
+-            "pending",
+-            "pass",
+-            "rework",
+-            "blocked",
+-            "human_review"
+-          ]
++          "enum": ["pending", "pass", "rework", "blocked", "human_review"]
+         },
+         "provenance": {
+           "type": "string",
+-          "enum": [
+-            "human_supplied",
+-            "evaluator_supplied"
+-          ]
++          "enum": ["human_supplied", "evaluator_supplied"]
+         },
+         "updated_at": {
+           "anyOf": [
+@@ -387,14 +327,7 @@
+         },
+         "status": {
+           "type": "string",
+-          "enum": [
+-            "prepared",
+-            "running",
+-            "success",
+-            "failed",
+-            "blocked",
+-            "cancelled"
+-          ]
++          "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
+         },
+         "adapter_id": {
+           "type": "string",
+@@ -402,10 +335,7 @@
+         },
+         "mode": {
+           "type": "string",
+-          "enum": [
+-            "execute",
+-            "dry_run"
+-          ]
++          "enum": ["execute", "dry_run"]
+         },
+         "created_at": {
+           "type": "string",
+@@ -444,10 +374,7 @@
+           "properties": {
+             "kind": {
+               "type": "string",
+-              "enum": [
+-                "task",
+-                "recipe_scenario"
+-              ]
++              "enum": ["task", "recipe_scenario"]
+             },
+             "task_id": {
+               "type": "string",
+@@ -462,9 +389,7 @@
+               "minLength": 1
+             }
+           },
+-          "required": [
+-            "kind"
+-          ],
++          "required": ["kind"],
+           "additionalProperties": {}
+         },
+         "summary": {
+@@ -564,24 +489,14 @@
+             },
+             "verification_state": {
+               "type": "string",
+-              "enum": [
+-                "observed_success",
+-                "rejected",
+-                "unverified",
+-                "compatibility_unverified"
+-              ]
++              "enum": ["observed_success", "rejected", "unverified", "compatibility_unverified"]
+             },
+             "observed_by": {
+               "type": "string",
+               "const": "agentplane"
+             }
+           },
+-          "required": [
+-            "path",
+-            "sha256",
+-            "verification_state",
+-            "observed_by"
+-          ],
++          "required": ["path", "sha256", "verification_state", "observed_by"],
+           "additionalProperties": false
+         },
+         "history": {
+@@ -595,14 +510,7 @@
+               },
+               "status": {
+                 "type": "string",
+-                "enum": [
+-                  "prepared",
+-                  "running",
+-                  "success",
+-                  "failed",
+-                  "blocked",
+-                  "cancelled"
+-                ]
++                "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
+               },
+               "adapter_id": {
+                 "type": "string",
+@@ -610,10 +518,7 @@
+               },
+               "mode": {
+                 "type": "string",
+-                "enum": [
+-                  "execute",
+-                  "dry_run"
+-                ]
++                "enum": ["execute", "dry_run"]
+               },
+               "created_at": {
+                 "type": "string",
+@@ -652,10 +557,7 @@
+                 "properties": {
+                   "kind": {
+                     "type": "string",
+-                    "enum": [
+-                      "task",
+-                      "recipe_scenario"
+-                    ]
++                    "enum": ["task", "recipe_scenario"]
+                   },
+                   "task_id": {
+                     "type": "string",
+@@ -670,9 +572,7 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": [
+-                  "kind"
+-                ],
++                "required": ["kind"],
+                 "additionalProperties": {}
+               },
+               "summary": {
+@@ -784,12 +684,7 @@
+                     "const": "agentplane"
+                   }
+                 },
+-                "required": [
+-                  "path",
+-                  "sha256",
+-                  "verification_state",
+-                  "observed_by"
+-                ],
++                "required": ["path", "sha256", "verification_state", "observed_by"],
+                 "additionalProperties": false
+               }
+             },
+@@ -806,15 +701,7 @@
+           }
+         }
+       },
+-      "required": [
+-        "run_id",
+-        "status",
+-        "adapter_id",
+-        "mode",
+-        "updated_at",
+-        "exit_code",
+-        "target"
+-      ],
++      "required": ["run_id", "status", "adapter_id", "mode", "updated_at", "exit_code", "target"],
+       "additionalProperties": {}
+     },
+     "token_usage": {
+@@ -826,11 +713,7 @@
+         },
+         "state": {
+           "type": "string",
+-          "enum": [
+-            "observed",
+-            "partial",
+-            "unavailable"
+-          ]
++          "enum": ["observed", "partial", "unavailable"]
+         },
+         "input_tokens": {
+           "anyOf": [
+@@ -892,10 +775,7 @@
+         },
+         "source": {
+           "type": "string",
+-          "enum": [
+-            "supervisor_journal",
+-            "unavailable"
+-          ]
++          "enum": ["supervisor_journal", "unavailable"]
+         },
+         "observed_by": {
+           "type": "string",
+@@ -955,26 +835,15 @@
+         },
+         "requested_mode": {
+           "type": "string",
+-          "enum": [
+-            "repository",
+-            "auto",
+-            "direct",
+-            "branch_pr"
+-          ]
++          "enum": ["repository", "auto", "direct", "branch_pr"]
+         },
+         "selected_mode": {
+           "type": "string",
+-          "enum": [
+-            "direct",
+-            "branch_pr"
+-          ]
++          "enum": ["direct", "branch_pr"]
+         },
+         "repository_mode": {
+           "type": "string",
+-          "enum": [
+-            "direct",
+-            "branch_pr"
+-          ]
++          "enum": ["direct", "branch_pr"]
+         },
+         "reason_codes": {
+           "minItems": 1,
+@@ -1054,10 +923,7 @@
+                 "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+               }
+             },
+-            "required": [
+-              "provider",
+-              "remote_id"
+-            ],
++            "required": ["provider", "remote_id"],
+             "additionalProperties": false
+           }
+         },
+@@ -1073,13 +939,7 @@
+             "properties": {
+               "authority": {
+                 "type": "string",
+-                "enum": [
+-                  "agentplane",
+-                  "provider",
+-                  "bidirectional",
+-                  "derived",
+-                  "ignored"
+-                ]
++                "enum": ["agentplane", "provider", "bidirectional", "derived", "ignored"]
+               },
+               "remote_field": {
+                 "type": "string",
+@@ -1087,12 +947,7 @@
+               },
+               "conflict_policy": {
+                 "type": "string",
+-                "enum": [
+-                  "record",
+-                  "manual",
+-                  "agentplane_wins",
+-                  "provider_wins"
+-                ]
++                "enum": ["record", "manual", "agentplane_wins", "provider_wins"]
+               },
+               "updated_at": {
+                 "type": "string",
+@@ -1104,9 +959,7 @@
+                 "minLength": 1
+               }
+             },
+-            "required": [
+-              "authority"
+-            ],
++            "required": ["authority"],
+             "additionalProperties": false
+           }
+         },
+@@ -1153,30 +1006,15 @@
+               },
+               "kind": {
+                 "type": "string",
+-                "enum": [
+-                  "field",
+-                  "identity",
+-                  "freshness",
+-                  "deletion",
+-                  "dependency",
+-                  "permission"
+-                ]
++                "enum": ["field", "identity", "freshness", "deletion", "dependency", "permission"]
+               },
+               "severity": {
+                 "type": "string",
+-                "enum": [
+-                  "info",
+-                  "warning",
+-                  "blocking"
+-                ]
++                "enum": ["info", "warning", "blocking"]
+               },
+               "status": {
+                 "type": "string",
+-                "enum": [
+-                  "open",
+-                  "resolved",
+-                  "ignored"
+-                ]
++                "enum": ["open", "resolved", "ignored"]
+               },
+               "summary": {
+                 "type": "string",
+@@ -1213,21 +1051,12 @@
+                 "minLength": 1
+               }
+             },
+-            "required": [
+-              "id",
+-              "kind",
+-              "severity",
+-              "status",
+-              "summary",
+-              "detected_at"
+-            ],
++            "required": ["id", "kind", "severity", "status", "summary", "detected_at"],
+             "additionalProperties": false
+           }
+         }
+       },
+-      "required": [
+-        "version"
+-      ],
++      "required": ["version"],
+       "additionalProperties": false
+     },
+     "commit": {
+@@ -1244,10 +1073,7 @@
+               "minLength": 1
+             }
+           },
+-          "required": [
+-            "hash",
+-            "message"
+-          ],
++          "required": ["hash", "message"],
+           "additionalProperties": false
+         },
+         {
+@@ -1269,10 +1095,7 @@
+             "minLength": 1
+           }
+         },
+-        "required": [
+-          "author",
+-          "body"
+-        ],
++        "required": ["author", "body"],
+         "additionalProperties": false
+       }
+     },
+@@ -1283,11 +1106,7 @@
+         "properties": {
+           "type": {
+             "type": "string",
+-            "enum": [
+-              "status",
+-              "comment",
+-              "verify"
+-            ]
++            "enum": ["status", "comment", "verify"]
+           },
+           "at": {
+             "type": "string",
+@@ -1314,11 +1133,7 @@
+             "type": "string"
+           }
+         },
+-        "required": [
+-          "type",
+-          "at",
+-          "author"
+-        ],
++        "required": ["type", "at", "author"],
+         "additionalProperties": {}
+       }
+     },
+diff --git a/packages/spec/schemas/tasks-export.schema.json b/packages/spec/schemas/tasks-export.schema.json
+index 8c40d1d53..70b3df237 100644
+--- a/packages/spec/schemas/tasks-export.schema.json
++++ b/packages/spec/schemas/tasks-export.schema.json
+@@ -22,32 +22,18 @@
+           },
+           "risk_level": {
+             "type": "string",
+-            "enum": [
+-              "low",
+-              "med",
+-              "high"
+-            ]
++            "enum": ["low", "med", "high"]
+           },
+           "breaking": {
+             "type": "boolean"
+           },
+           "status": {
+             "type": "string",
+-            "enum": [
+-              "TODO",
+-              "DOING",
+-              "DONE",
+-              "BLOCKED"
+-            ]
++            "enum": ["TODO", "DOING", "DONE", "BLOCKED"]
+           },
+           "priority": {
+             "type": "string",
+-            "enum": [
+-              "low",
+-              "normal",
+-              "med",
+-              "high"
+-            ]
++            "enum": ["low", "normal", "med", "high"]
+           },
+           "owner": {
+             "type": "string",
+@@ -90,9 +76,7 @@
+                 "minLength": 1
+               }
+             },
+-            "required": [
+-              "system"
+-            ],
++            "required": ["system"],
+             "additionalProperties": {
+               "type": "string"
+             }
+@@ -106,14 +90,7 @@
+               },
+               "status": {
+                 "type": "string",
+-                "enum": [
+-                  "prepared",
+-                  "running",
+-                  "success",
+-                  "failed",
+-                  "blocked",
+-                  "cancelled"
+-                ]
++                "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
+               },
+               "adapter_id": {
+                 "type": "string",
+@@ -121,10 +98,7 @@
+               },
+               "mode": {
+                 "type": "string",
+-                "enum": [
+-                  "execute",
+-                  "dry_run"
+-                ]
++                "enum": ["execute", "dry_run"]
+               },
+               "created_at": {
+                 "type": "string",
+@@ -163,10 +137,7 @@
+                 "properties": {
+                   "kind": {
+                     "type": "string",
+-                    "enum": [
+-                      "task",
+-                      "recipe_scenario"
+-                    ]
++                    "enum": ["task", "recipe_scenario"]
+                   },
+                   "task_id": {
+                     "type": "string",
+@@ -181,9 +152,7 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": [
+-                  "kind"
+-                ],
++                "required": ["kind"],
+                 "additionalProperties": {}
+               },
+               "summary": {
+@@ -295,12 +264,7 @@
+                     "const": "agentplane"
+                   }
+                 },
+-                "required": [
+-                  "path",
+-                  "sha256",
+-                  "verification_state",
+-                  "observed_by"
+-                ],
++                "required": ["path", "sha256", "verification_state", "observed_by"],
+                 "additionalProperties": false
+               },
+               "history": {
+@@ -314,14 +278,7 @@
+                     },
+                     "status": {
+                       "type": "string",
+-                      "enum": [
+-                        "prepared",
+-                        "running",
+-                        "success",
+-                        "failed",
+-                        "blocked",
+-                        "cancelled"
+-                      ]
++                      "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
+                     },
+                     "adapter_id": {
+                       "type": "string",
+@@ -329,10 +286,7 @@
+                     },
+                     "mode": {
+                       "type": "string",
+-                      "enum": [
+-                        "execute",
+-                        "dry_run"
+-                      ]
++                      "enum": ["execute", "dry_run"]
+                     },
+                     "created_at": {
+                       "type": "string",
+@@ -371,10 +325,7 @@
+                       "properties": {
+                         "kind": {
+                           "type": "string",
+-                          "enum": [
+-                            "task",
+-                            "recipe_scenario"
+-                          ]
++                          "enum": ["task", "recipe_scenario"]
+                         },
+                         "task_id": {
+                           "type": "string",
+@@ -389,9 +340,7 @@
+                           "minLength": 1
+                         }
+                       },
+-                      "required": [
+-                        "kind"
+-                      ],
++                      "required": ["kind"],
+                       "additionalProperties": {}
+                     },
+                     "summary": {
+@@ -503,12 +452,7 @@
+                           "const": "agentplane"
+                         }
+                       },
+-                      "required": [
+-                        "path",
+-                        "sha256",
+-                        "verification_state",
+-                        "observed_by"
+-                      ],
++                      "required": ["path", "sha256", "verification_state", "observed_by"],
+                       "additionalProperties": false
+                     }
+                   },
+@@ -545,11 +489,7 @@
+               },
+               "state": {
+                 "type": "string",
+-                "enum": [
+-                  "observed",
+-                  "partial",
+-                  "unavailable"
+-                ]
++                "enum": ["observed", "partial", "unavailable"]
+               },
+               "input_tokens": {
+                 "anyOf": [
+@@ -611,10 +551,7 @@
+               },
+               "source": {
+                 "type": "string",
+-                "enum": [
+-                  "supervisor_journal",
+-                  "unavailable"
+-                ]
++                "enum": ["supervisor_journal", "unavailable"]
+               },
+               "observed_by": {
+                 "type": "string",
+@@ -674,26 +611,15 @@
+               },
+               "requested_mode": {
+                 "type": "string",
+-                "enum": [
+-                  "repository",
+-                  "auto",
+-                  "direct",
+-                  "branch_pr"
+-                ]
++                "enum": ["repository", "auto", "direct", "branch_pr"]
+               },
+               "selected_mode": {
+                 "type": "string",
+-                "enum": [
+-                  "direct",
+-                  "branch_pr"
+-                ]
++                "enum": ["direct", "branch_pr"]
+               },
+               "repository_mode": {
+                 "type": "string",
+-                "enum": [
+-                  "direct",
+-                  "branch_pr"
+-                ]
++                "enum": ["direct", "branch_pr"]
+               },
+               "reason_codes": {
+                 "minItems": 1,
+@@ -734,27 +660,11 @@
+           },
+           "task_kind": {
+             "type": "string",
+-            "enum": [
+-              "analysis",
+-              "content",
+-              "docs",
+-              "code",
+-              "release",
+-              "ops",
+-              "context"
+-            ]
++            "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
+           },
+           "mutation_scope": {
+             "type": "string",
+-            "enum": [
+-              "none",
+-              "docs",
+-              "code",
+-              "release",
+-              "ops",
+-              "context",
+-              "unknown"
+-            ]
++            "enum": ["none", "docs", "code", "release", "ops", "context", "unknown"]
+           },
+           "risk_flags": {
+             "type": "array",
+@@ -801,11 +711,7 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": [
+-                  "pending",
+-                  "approved",
+-                  "rejected"
+-                ]
++                "enum": ["pending", "approved", "rejected"]
+               },
+               "updated_at": {
+                 "anyOf": [
+@@ -840,12 +746,7 @@
+                 ]
+               }
+             },
+-            "required": [
+-              "state",
+-              "updated_at",
+-              "updated_by",
+-              "note"
+-            ],
++            "required": ["state", "updated_at", "updated_by", "note"],
+             "additionalProperties": {}
+           },
+           "verification": {
+@@ -853,12 +754,7 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": [
+-                  "pending",
+-                  "ok",
+-                  "needs_rework",
+-                  "blocked_external"
+-                ]
++                "enum": ["pending", "ok", "needs_rework", "blocked_external"]
+               },
+               "attempts": {
+                 "type": "integer",
+@@ -898,12 +794,7 @@
+                 ]
+               }
+             },
+-            "required": [
+-              "state",
+-              "updated_at",
+-              "updated_by",
+-              "note"
+-            ],
++            "required": ["state", "updated_at", "updated_by", "note"],
+             "additionalProperties": {}
+           },
+           "quality_review": {
+@@ -911,20 +802,11 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": [
+-                  "pending",
+-                  "pass",
+-                  "rework",
+-                  "blocked",
+-                  "human_review"
+-                ]
++                "enum": ["pending", "pass", "rework", "blocked", "human_review"]
+               },
+               "provenance": {
+                 "type": "string",
+-                "enum": [
+-                  "human_supplied",
+-                  "evaluator_supplied"
+-                ]
++                "enum": ["human_supplied", "evaluator_supplied"]
+               },
+               "updated_at": {
+                 "anyOf": [
+@@ -1017,10 +899,7 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": [
+-                  "hash",
+-                  "message"
+-                ],
++                "required": ["hash", "message"],
+                 "additionalProperties": false
+               },
+               {
+@@ -1042,10 +921,7 @@
+                   "minLength": 1
+                 }
+               },
+-              "required": [
+-                "author",
+-                "body"
+-              ],
++              "required": ["author", "body"],
+               "additionalProperties": false
+             }
+           },
+@@ -1056,11 +932,7 @@
+               "properties": {
+                 "type": {
+                   "type": "string",
+-                  "enum": [
+-                    "status",
+-                    "comment",
+-                    "verify"
+-                  ]
++                  "enum": ["status", "comment", "verify"]
+                 },
+                 "at": {
+                   "type": "string",
+@@ -1087,11 +959,7 @@
+                   "type": "string"
+                 }
+               },
+-              "required": [
+-                "type",
+-                "at",
+-                "author"
+-              ],
++              "required": ["type", "at", "author"],
+               "additionalProperties": {}
+             }
+           },
+@@ -1150,10 +1018,7 @@
+                       "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                     }
+                   },
+-                  "required": [
+-                    "provider",
+-                    "remote_id"
+-                  ],
++                  "required": ["provider", "remote_id"],
+                   "additionalProperties": false
+                 }
+               },
+@@ -1169,13 +1034,7 @@
+                   "properties": {
+                     "authority": {
+                       "type": "string",
+-                      "enum": [
+-                        "agentplane",
+-                        "provider",
+-                        "bidirectional",
+-                        "derived",
+-                        "ignored"
+-                      ]
++                      "enum": ["agentplane", "provider", "bidirectional", "derived", "ignored"]
+                     },
+                     "remote_field": {
+                       "type": "string",
+@@ -1183,12 +1042,7 @@
+                     },
+                     "conflict_policy": {
+                       "type": "string",
+-                      "enum": [
+-                        "record",
+-                        "manual",
+-                        "agentplane_wins",
+-                        "provider_wins"
+-                      ]
++                      "enum": ["record", "manual", "agentplane_wins", "provider_wins"]
+                     },
+                     "updated_at": {
+                       "type": "string",
+@@ -1200,9 +1054,7 @@
+                       "minLength": 1
+                     }
+                   },
+-                  "required": [
+-                    "authority"
+-                  ],
++                  "required": ["authority"],
+                   "additionalProperties": false
+                 }
+               },
+@@ -1260,19 +1112,11 @@
+                     },
+                     "severity": {
+                       "type": "string",
+-                      "enum": [
+-                        "info",
+-                        "warning",
+-                        "blocking"
+-                      ]
++                      "enum": ["info", "warning", "blocking"]
+                     },
+                     "status": {
+                       "type": "string",
+-                      "enum": [
+-                        "open",
+-                        "resolved",
+-                        "ignored"
+-                      ]
++                      "enum": ["open", "resolved", "ignored"]
+                     },
+                     "summary": {
+                       "type": "string",
+@@ -1309,21 +1153,12 @@
+                       "minLength": 1
+                     }
+                   },
+-                  "required": [
+-                    "id",
+-                    "kind",
+-                    "severity",
+-                    "status",
+-                    "summary",
+-                    "detected_at"
+-                  ],
++                  "required": ["id", "kind", "severity", "status", "summary", "detected_at"],
+                   "additionalProperties": false
+                 }
+               }
+             },
+-            "required": [
+-              "version"
+-            ],
++            "required": ["version"],
+             "additionalProperties": false
+           },
+           "doc_version": {
+@@ -1393,18 +1228,10 @@
+           "minLength": 1
+         }
+       },
+-      "required": [
+-        "schema_version",
+-        "managed_by",
+-        "checksum_algo",
+-        "checksum"
+-      ],
++      "required": ["schema_version", "managed_by", "checksum_algo", "checksum"],
+       "additionalProperties": false
+     }
+   },
+-  "required": [
+-    "tasks",
+-    "meta"
+-  ],
++  "required": ["tasks", "meta"],
+   "additionalProperties": false
+ }
+diff --git a/schemas/task-readme-frontmatter.schema.json b/schemas/task-readme-frontmatter.schema.json
+index 0d158dee6..ae12d2073 100644
+--- a/schemas/task-readme-frontmatter.schema.json
++++ b/schemas/task-readme-frontmatter.schema.json
+@@ -18,32 +18,18 @@
+     },
+     "risk_level": {
+       "type": "string",
+-      "enum": [
+-        "low",
+-        "med",
+-        "high"
+-      ]
++      "enum": ["low", "med", "high"]
+     },
+     "breaking": {
+       "type": "boolean"
+     },
+     "status": {
+       "type": "string",
+-      "enum": [
+-        "TODO",
+-        "DOING",
+-        "DONE",
+-        "BLOCKED"
+-      ]
++      "enum": ["TODO", "DOING", "DONE", "BLOCKED"]
+     },
+     "priority": {
+       "type": "string",
+-      "enum": [
+-        "low",
+-        "normal",
+-        "med",
+-        "high"
+-      ]
++      "enum": ["low", "normal", "med", "high"]
+     },
+     "owner": {
+       "type": "string",
+@@ -86,9 +72,7 @@
+           "minLength": 1
+         }
+       },
+-      "required": [
+-        "system"
+-      ],
++      "required": ["system"],
+       "additionalProperties": {
+         "type": "string"
+       }
+@@ -109,27 +93,11 @@
+     },
+     "task_kind": {
+       "type": "string",
+-      "enum": [
+-        "analysis",
+-        "content",
+-        "docs",
+-        "code",
+-        "release",
+-        "ops",
+-        "context"
+-      ]
++      "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
+     },
+     "mutation_scope": {
+       "type": "string",
+-      "enum": [
+-        "none",
+-        "docs",
+-        "code",
+-        "release",
+-        "ops",
+-        "context",
+-        "unknown"
+-      ]
++      "enum": ["none", "docs", "code", "release", "ops", "context", "unknown"]
+     },
+     "risk_flags": {
+       "type": "array",
+@@ -176,11 +144,7 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": [
+-            "pending",
+-            "approved",
+-            "rejected"
+-          ]
++          "enum": ["pending", "approved", "rejected"]
+         },
+         "updated_at": {
+           "anyOf": [
+@@ -215,12 +179,7 @@
+           ]
+         }
+       },
+-      "required": [
+-        "state",
+-        "updated_at",
+-        "updated_by",
+-        "note"
+-      ],
++      "required": ["state", "updated_at", "updated_by", "note"],
+       "additionalProperties": {}
+     },
+     "verification": {
+@@ -228,12 +187,7 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": [
+-            "pending",
+-            "ok",
+-            "needs_rework",
+-            "blocked_external"
+-          ]
++          "enum": ["pending", "ok", "needs_rework", "blocked_external"]
+         },
+         "attempts": {
+           "type": "integer",
+@@ -273,12 +227,7 @@
+           ]
+         }
+       },
+-      "required": [
+-        "state",
+-        "updated_at",
+-        "updated_by",
+-        "note"
+-      ],
++      "required": ["state", "updated_at", "updated_by", "note"],
+       "additionalProperties": {}
+     },
+     "quality_review": {
+@@ -286,20 +235,11 @@
+       "properties": {
+         "state": {
+           "type": "string",
+-          "enum": [
+-            "pending",
+-            "pass",
+-            "rework",
+-            "blocked",
+-            "human_review"
+-          ]
++          "enum": ["pending", "pass", "rework", "blocked", "human_review"]
+         },
+         "provenance": {
+           "type": "string",
+-          "enum": [
+-            "human_supplied",
+-            "evaluator_supplied"
+-          ]
++          "enum": ["human_supplied", "evaluator_supplied"]
+         },
+         "updated_at": {
+           "anyOf": [
+@@ -387,14 +327,7 @@
+         },
+         "status": {
+           "type": "string",
+-          "enum": [
+-            "prepared",
+-            "running",
+-            "success",
+-            "failed",
+-            "blocked",
+-            "cancelled"
+-          ]
++          "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
+         },
+         "adapter_id": {
+           "type": "string",
+@@ -402,10 +335,7 @@
+         },
+         "mode": {
+           "type": "string",
+-          "enum": [
+-            "execute",
+-            "dry_run"
+-          ]
++          "enum": ["execute", "dry_run"]
+         },
+         "created_at": {
+           "type": "string",
+@@ -444,10 +374,7 @@
+           "properties": {
+             "kind": {
+               "type": "string",
+-              "enum": [
+-                "task",
+-                "recipe_scenario"
+-              ]
++              "enum": ["task", "recipe_scenario"]
+             },
+             "task_id": {
+               "type": "string",
+@@ -462,9 +389,7 @@
+               "minLength": 1
+             }
+           },
+-          "required": [
+-            "kind"
+-          ],
++          "required": ["kind"],
+           "additionalProperties": {}
+         },
+         "summary": {
+@@ -564,24 +489,14 @@
+             },
+             "verification_state": {
+               "type": "string",
+-              "enum": [
+-                "observed_success",
+-                "rejected",
+-                "unverified",
+-                "compatibility_unverified"
+-              ]
++              "enum": ["observed_success", "rejected", "unverified", "compatibility_unverified"]
+             },
+             "observed_by": {
+               "type": "string",
+               "const": "agentplane"
+             }
+           },
+-          "required": [
+-            "path",
+-            "sha256",
+-            "verification_state",
+-            "observed_by"
+-          ],
++          "required": ["path", "sha256", "verification_state", "observed_by"],
+           "additionalProperties": false
+         },
+         "history": {
+@@ -595,14 +510,7 @@
+               },
+               "status": {
+                 "type": "string",
+-                "enum": [
+-                  "prepared",
+-                  "running",
+-                  "success",
+-                  "failed",
+-                  "blocked",
+-                  "cancelled"
+-                ]
++                "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
+               },
+               "adapter_id": {
+                 "type": "string",
+@@ -610,10 +518,7 @@
+               },
+               "mode": {
+                 "type": "string",
+-                "enum": [
+-                  "execute",
+-                  "dry_run"
+-                ]
++                "enum": ["execute", "dry_run"]
+               },
+               "created_at": {
+                 "type": "string",
+@@ -652,10 +557,7 @@
+                 "properties": {
+                   "kind": {
+                     "type": "string",
+-                    "enum": [
+-                      "task",
+-                      "recipe_scenario"
+-                    ]
++                    "enum": ["task", "recipe_scenario"]
+                   },
+                   "task_id": {
+                     "type": "string",
+@@ -670,9 +572,7 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": [
+-                  "kind"
+-                ],
++                "required": ["kind"],
+                 "additionalProperties": {}
+               },
+               "summary": {
+@@ -784,12 +684,7 @@
+                     "const": "agentplane"
+                   }
+                 },
+-                "required": [
+-                  "path",
+-                  "sha256",
+-                  "verification_state",
+-                  "observed_by"
+-                ],
++                "required": ["path", "sha256", "verification_state", "observed_by"],
+                 "additionalProperties": false
+               }
+             },
+@@ -806,15 +701,7 @@
+           }
+         }
+       },
+-      "required": [
+-        "run_id",
+-        "status",
+-        "adapter_id",
+-        "mode",
+-        "updated_at",
+-        "exit_code",
+-        "target"
+-      ],
++      "required": ["run_id", "status", "adapter_id", "mode", "updated_at", "exit_code", "target"],
+       "additionalProperties": {}
+     },
+     "token_usage": {
+@@ -826,11 +713,7 @@
+         },
+         "state": {
+           "type": "string",
+-          "enum": [
+-            "observed",
+-            "partial",
+-            "unavailable"
+-          ]
++          "enum": ["observed", "partial", "unavailable"]
+         },
+         "input_tokens": {
+           "anyOf": [
+@@ -892,10 +775,7 @@
+         },
+         "source": {
+           "type": "string",
+-          "enum": [
+-            "supervisor_journal",
+-            "unavailable"
+-          ]
++          "enum": ["supervisor_journal", "unavailable"]
+         },
+         "observed_by": {
+           "type": "string",
+@@ -955,26 +835,15 @@
+         },
+         "requested_mode": {
+           "type": "string",
+-          "enum": [
+-            "repository",
+-            "auto",
+-            "direct",
+-            "branch_pr"
+-          ]
++          "enum": ["repository", "auto", "direct", "branch_pr"]
+         },
+         "selected_mode": {
+           "type": "string",
+-          "enum": [
+-            "direct",
+-            "branch_pr"
+-          ]
++          "enum": ["direct", "branch_pr"]
+         },
+         "repository_mode": {
+           "type": "string",
+-          "enum": [
+-            "direct",
+-            "branch_pr"
+-          ]
++          "enum": ["direct", "branch_pr"]
+         },
+         "reason_codes": {
+           "minItems": 1,
+@@ -1054,10 +923,7 @@
+                 "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+               }
+             },
+-            "required": [
+-              "provider",
+-              "remote_id"
+-            ],
++            "required": ["provider", "remote_id"],
+             "additionalProperties": false
+           }
+         },
+@@ -1073,13 +939,7 @@
+             "properties": {
+               "authority": {
+                 "type": "string",
+-                "enum": [
+-                  "agentplane",
+-                  "provider",
+-                  "bidirectional",
+-                  "derived",
+-                  "ignored"
+-                ]
++                "enum": ["agentplane", "provider", "bidirectional", "derived", "ignored"]
+               },
+               "remote_field": {
+                 "type": "string",
+@@ -1087,12 +947,7 @@
+               },
+               "conflict_policy": {
+                 "type": "string",
+-                "enum": [
+-                  "record",
+-                  "manual",
+-                  "agentplane_wins",
+-                  "provider_wins"
+-                ]
++                "enum": ["record", "manual", "agentplane_wins", "provider_wins"]
+               },
+               "updated_at": {
+                 "type": "string",
+@@ -1104,9 +959,7 @@
+                 "minLength": 1
+               }
+             },
+-            "required": [
+-              "authority"
+-            ],
++            "required": ["authority"],
+             "additionalProperties": false
+           }
+         },
+@@ -1153,30 +1006,15 @@
+               },
+               "kind": {
+                 "type": "string",
+-                "enum": [
+-                  "field",
+-                  "identity",
+-                  "freshness",
+-                  "deletion",
+-                  "dependency",
+-                  "permission"
+-                ]
++                "enum": ["field", "identity", "freshness", "deletion", "dependency", "permission"]
+               },
+               "severity": {
+                 "type": "string",
+-                "enum": [
+-                  "info",
+-                  "warning",
+-                  "blocking"
+-                ]
++                "enum": ["info", "warning", "blocking"]
+               },
+               "status": {
+                 "type": "string",
+-                "enum": [
+-                  "open",
+-                  "resolved",
+-                  "ignored"
+-                ]
++                "enum": ["open", "resolved", "ignored"]
+               },
+               "summary": {
+                 "type": "string",
+@@ -1213,21 +1051,12 @@
+                 "minLength": 1
+               }
+             },
+-            "required": [
+-              "id",
+-              "kind",
+-              "severity",
+-              "status",
+-              "summary",
+-              "detected_at"
+-            ],
++            "required": ["id", "kind", "severity", "status", "summary", "detected_at"],
+             "additionalProperties": false
+           }
+         }
+       },
+-      "required": [
+-        "version"
+-      ],
++      "required": ["version"],
+       "additionalProperties": false
+     },
+     "commit": {
+@@ -1244,10 +1073,7 @@
+               "minLength": 1
+             }
+           },
+-          "required": [
+-            "hash",
+-            "message"
+-          ],
++          "required": ["hash", "message"],
+           "additionalProperties": false
+         },
+         {
+@@ -1269,10 +1095,7 @@
+             "minLength": 1
+           }
+         },
+-        "required": [
+-          "author",
+-          "body"
+-        ],
++        "required": ["author", "body"],
+         "additionalProperties": false
+       }
+     },
+@@ -1283,11 +1106,7 @@
+         "properties": {
+           "type": {
+             "type": "string",
+-            "enum": [
+-              "status",
+-              "comment",
+-              "verify"
+-            ]
++            "enum": ["status", "comment", "verify"]
+           },
+           "at": {
+             "type": "string",
+@@ -1314,11 +1133,7 @@
+             "type": "string"
+           }
+         },
+-        "required": [
+-          "type",
+-          "at",
+-          "author"
+-        ],
++        "required": ["type", "at", "author"],
+         "additionalProperties": {}
+       }
+     },
+diff --git a/schemas/tasks-export.schema.json b/schemas/tasks-export.schema.json
+index 8c40d1d53..70b3df237 100644
+--- a/schemas/tasks-export.schema.json
++++ b/schemas/tasks-export.schema.json
+@@ -22,32 +22,18 @@
+           },
+           "risk_level": {
+             "type": "string",
+-            "enum": [
+-              "low",
+-              "med",
+-              "high"
+-            ]
++            "enum": ["low", "med", "high"]
+           },
+           "breaking": {
+             "type": "boolean"
+           },
+           "status": {
+             "type": "string",
+-            "enum": [
+-              "TODO",
+-              "DOING",
+-              "DONE",
+-              "BLOCKED"
+-            ]
++            "enum": ["TODO", "DOING", "DONE", "BLOCKED"]
+           },
+           "priority": {
+             "type": "string",
+-            "enum": [
+-              "low",
+-              "normal",
+-              "med",
+-              "high"
+-            ]
++            "enum": ["low", "normal", "med", "high"]
+           },
+           "owner": {
+             "type": "string",
+@@ -90,9 +76,7 @@
+                 "minLength": 1
+               }
+             },
+-            "required": [
+-              "system"
+-            ],
++            "required": ["system"],
+             "additionalProperties": {
+               "type": "string"
+             }
+@@ -106,14 +90,7 @@
+               },
+               "status": {
+                 "type": "string",
+-                "enum": [
+-                  "prepared",
+-                  "running",
+-                  "success",
+-                  "failed",
+-                  "blocked",
+-                  "cancelled"
+-                ]
++                "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
+               },
+               "adapter_id": {
+                 "type": "string",
+@@ -121,10 +98,7 @@
+               },
+               "mode": {
+                 "type": "string",
+-                "enum": [
+-                  "execute",
+-                  "dry_run"
+-                ]
++                "enum": ["execute", "dry_run"]
+               },
+               "created_at": {
+                 "type": "string",
+@@ -163,10 +137,7 @@
+                 "properties": {
+                   "kind": {
+                     "type": "string",
+-                    "enum": [
+-                      "task",
+-                      "recipe_scenario"
+-                    ]
++                    "enum": ["task", "recipe_scenario"]
+                   },
+                   "task_id": {
+                     "type": "string",
+@@ -181,9 +152,7 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": [
+-                  "kind"
+-                ],
++                "required": ["kind"],
+                 "additionalProperties": {}
+               },
+               "summary": {
+@@ -295,12 +264,7 @@
+                     "const": "agentplane"
+                   }
+                 },
+-                "required": [
+-                  "path",
+-                  "sha256",
+-                  "verification_state",
+-                  "observed_by"
+-                ],
++                "required": ["path", "sha256", "verification_state", "observed_by"],
+                 "additionalProperties": false
+               },
+               "history": {
+@@ -314,14 +278,7 @@
+                     },
+                     "status": {
+                       "type": "string",
+-                      "enum": [
+-                        "prepared",
+-                        "running",
+-                        "success",
+-                        "failed",
+-                        "blocked",
+-                        "cancelled"
+-                      ]
++                      "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
+                     },
+                     "adapter_id": {
+                       "type": "string",
+@@ -329,10 +286,7 @@
+                     },
+                     "mode": {
+                       "type": "string",
+-                      "enum": [
+-                        "execute",
+-                        "dry_run"
+-                      ]
++                      "enum": ["execute", "dry_run"]
+                     },
+                     "created_at": {
+                       "type": "string",
+@@ -371,10 +325,7 @@
+                       "properties": {
+                         "kind": {
+                           "type": "string",
+-                          "enum": [
+-                            "task",
+-                            "recipe_scenario"
+-                          ]
++                          "enum": ["task", "recipe_scenario"]
+                         },
+                         "task_id": {
+                           "type": "string",
+@@ -389,9 +340,7 @@
+                           "minLength": 1
+                         }
+                       },
+-                      "required": [
+-                        "kind"
+-                      ],
++                      "required": ["kind"],
+                       "additionalProperties": {}
+                     },
+                     "summary": {
+@@ -503,12 +452,7 @@
+                           "const": "agentplane"
+                         }
+                       },
+-                      "required": [
+-                        "path",
+-                        "sha256",
+-                        "verification_state",
+-                        "observed_by"
+-                      ],
++                      "required": ["path", "sha256", "verification_state", "observed_by"],
+                       "additionalProperties": false
+                     }
+                   },
+@@ -545,11 +489,7 @@
+               },
+               "state": {
+                 "type": "string",
+-                "enum": [
+-                  "observed",
+-                  "partial",
+-                  "unavailable"
+-                ]
++                "enum": ["observed", "partial", "unavailable"]
+               },
+               "input_tokens": {
+                 "anyOf": [
+@@ -611,10 +551,7 @@
+               },
+               "source": {
+                 "type": "string",
+-                "enum": [
+-                  "supervisor_journal",
+-                  "unavailable"
+-                ]
++                "enum": ["supervisor_journal", "unavailable"]
+               },
+               "observed_by": {
+                 "type": "string",
+@@ -674,26 +611,15 @@
+               },
+               "requested_mode": {
+                 "type": "string",
+-                "enum": [
+-                  "repository",
+-                  "auto",
+-                  "direct",
+-                  "branch_pr"
+-                ]
++                "enum": ["repository", "auto", "direct", "branch_pr"]
+               },
+               "selected_mode": {
+                 "type": "string",
+-                "enum": [
+-                  "direct",
+-                  "branch_pr"
+-                ]
++                "enum": ["direct", "branch_pr"]
+               },
+               "repository_mode": {
+                 "type": "string",
+-                "enum": [
+-                  "direct",
+-                  "branch_pr"
+-                ]
++                "enum": ["direct", "branch_pr"]
+               },
+               "reason_codes": {
+                 "minItems": 1,
+@@ -734,27 +660,11 @@
+           },
+           "task_kind": {
+             "type": "string",
+-            "enum": [
+-              "analysis",
+-              "content",
+-              "docs",
+-              "code",
+-              "release",
+-              "ops",
+-              "context"
+-            ]
++            "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
+           },
+           "mutation_scope": {
+             "type": "string",
+-            "enum": [
+-              "none",
+-              "docs",
+-              "code",
+-              "release",
+-              "ops",
+-              "context",
+-              "unknown"
+-            ]
++            "enum": ["none", "docs", "code", "release", "ops", "context", "unknown"]
+           },
+           "risk_flags": {
+             "type": "array",
+@@ -801,11 +711,7 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": [
+-                  "pending",
+-                  "approved",
+-                  "rejected"
+-                ]
++                "enum": ["pending", "approved", "rejected"]
+               },
+               "updated_at": {
+                 "anyOf": [
+@@ -840,12 +746,7 @@
+                 ]
+               }
+             },
+-            "required": [
+-              "state",
+-              "updated_at",
+-              "updated_by",
+-              "note"
+-            ],
++            "required": ["state", "updated_at", "updated_by", "note"],
+             "additionalProperties": {}
+           },
+           "verification": {
+@@ -853,12 +754,7 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": [
+-                  "pending",
+-                  "ok",
+-                  "needs_rework",
+-                  "blocked_external"
+-                ]
++                "enum": ["pending", "ok", "needs_rework", "blocked_external"]
+               },
+               "attempts": {
+                 "type": "integer",
+@@ -898,12 +794,7 @@
+                 ]
+               }
+             },
+-            "required": [
+-              "state",
+-              "updated_at",
+-              "updated_by",
+-              "note"
+-            ],
++            "required": ["state", "updated_at", "updated_by", "note"],
+             "additionalProperties": {}
+           },
+           "quality_review": {
+@@ -911,20 +802,11 @@
+             "properties": {
+               "state": {
+                 "type": "string",
+-                "enum": [
+-                  "pending",
+-                  "pass",
+-                  "rework",
+-                  "blocked",
+-                  "human_review"
+-                ]
++                "enum": ["pending", "pass", "rework", "blocked", "human_review"]
+               },
+               "provenance": {
+                 "type": "string",
+-                "enum": [
+-                  "human_supplied",
+-                  "evaluator_supplied"
+-                ]
++                "enum": ["human_supplied", "evaluator_supplied"]
+               },
+               "updated_at": {
+                 "anyOf": [
+@@ -1017,10 +899,7 @@
+                     "minLength": 1
+                   }
+                 },
+-                "required": [
+-                  "hash",
+-                  "message"
+-                ],
++                "required": ["hash", "message"],
+                 "additionalProperties": false
+               },
+               {
+@@ -1042,10 +921,7 @@
+                   "minLength": 1
+                 }
+               },
+-              "required": [
+-                "author",
+-                "body"
+-              ],
++              "required": ["author", "body"],
+               "additionalProperties": false
+             }
+           },
+@@ -1056,11 +932,7 @@
+               "properties": {
+                 "type": {
+                   "type": "string",
+-                  "enum": [
+-                    "status",
+-                    "comment",
+-                    "verify"
+-                  ]
++                  "enum": ["status", "comment", "verify"]
+                 },
+                 "at": {
+                   "type": "string",
+@@ -1087,11 +959,7 @@
+                   "type": "string"
+                 }
+               },
+-              "required": [
+-                "type",
+-                "at",
+-                "author"
+-              ],
++              "required": ["type", "at", "author"],
+               "additionalProperties": {}
+             }
+           },
+@@ -1150,10 +1018,7 @@
+                       "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                     }
+                   },
+-                  "required": [
+-                    "provider",
+-                    "remote_id"
+-                  ],
++                  "required": ["provider", "remote_id"],
+                   "additionalProperties": false
+                 }
+               },
+@@ -1169,13 +1034,7 @@
+                   "properties": {
+                     "authority": {
+                       "type": "string",
+-                      "enum": [
+-                        "agentplane",
+-                        "provider",
+-                        "bidirectional",
+-                        "derived",
+-                        "ignored"
+-                      ]
++                      "enum": ["agentplane", "provider", "bidirectional", "derived", "ignored"]
+                     },
+                     "remote_field": {
+                       "type": "string",
+@@ -1183,12 +1042,7 @@
+                     },
+                     "conflict_policy": {
+                       "type": "string",
+-                      "enum": [
+-                        "record",
+-                        "manual",
+-                        "agentplane_wins",
+-                        "provider_wins"
+-                      ]
++                      "enum": ["record", "manual", "agentplane_wins", "provider_wins"]
+                     },
+                     "updated_at": {
+                       "type": "string",
+@@ -1200,9 +1054,7 @@
+                       "minLength": 1
+                     }
+                   },
+-                  "required": [
+-                    "authority"
+-                  ],
++                  "required": ["authority"],
+                   "additionalProperties": false
+                 }
+               },
+@@ -1260,19 +1112,11 @@
+                     },
+                     "severity": {
+                       "type": "string",
+-                      "enum": [
+-                        "info",
+-                        "warning",
+-                        "blocking"
+-                      ]
++                      "enum": ["info", "warning", "blocking"]
+                     },
+                     "status": {
+                       "type": "string",
+-                      "enum": [
+-                        "open",
+-                        "resolved",
+-                        "ignored"
+-                      ]
++                      "enum": ["open", "resolved", "ignored"]
+                     },
+                     "summary": {
+                       "type": "string",
+@@ -1309,21 +1153,12 @@
+                       "minLength": 1
+                     }
+                   },
+-                  "required": [
+-                    "id",
+-                    "kind",
+-                    "severity",
+-                    "status",
+-                    "summary",
+-                    "detected_at"
+-                  ],
++                  "required": ["id", "kind", "severity", "status", "summary", "detected_at"],
+                   "additionalProperties": false
+                 }
+               }
+             },
+-            "required": [
+-              "version"
+-            ],
++            "required": ["version"],
+             "additionalProperties": false
+           },
+           "doc_version": {
+@@ -1393,18 +1228,10 @@
+           "minLength": 1
+         }
+       },
+-      "required": [
+-        "schema_version",
+-        "managed_by",
+-        "checksum_algo",
+-        "checksum"
+-      ],
++      "required": ["schema_version", "managed_by", "checksum_algo", "checksum"],
+       "additionalProperties": false
+     }
+   },
+-  "required": [
+-    "tasks",
+-    "meta"
+-  ],
++  "required": ["tasks", "meta"],
+   "additionalProperties": false
+ }
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 9d5d5b030..6bb1facb3 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -29,7 +29,8 @@
+     "202608021231-SHYJGK",
+     "202608021534-YN84E1",
+     "202608022324-9VCYWG",
+-    "202608021535-CNQKXP"
++    "202608021535-CNQKXP",
++    "202608061646-WCARQG"
+   ],
+   "base": {
+     "baseline_id": "agentplane.compatibility.v0.6.24",
+@@ -38,9 +39,9 @@
+     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
+   },
+   "candidate": {
+-    "surface_sha256": "5fe979c4175ec9d8059079384632c52cce90340697675f8eba66f8fbc808ea27",
++    "surface_sha256": "c710ccaa31b43988b633441c168651a1e57aa47d17fd97f18e0acafd14776848",
+     "section_digests": {
+-      "cli_topology": "013285a7eb1fce7e1b0138cec6da0c94c4c1c3647937f6b0d49f872b57abed0b",
++      "cli_topology": "c15bff5ccf748801205499a8e483524162422c4659a06fc201ad13d9d7c1f8cc",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
+@@ -83,7 +84,7 @@
+     "section": "package_manifests",
+     "from_sha256": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+     "to_sha256": "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+-    "surface_sha256": "e268ab12ae45c6c5620e2b92c671828ea25fbcc79fd4f21b6e9da806de08eabb",
++    "surface_sha256": "f1f7ba365b8912771323910df3e34843708feeccc291944d50a1ab2f7874ca01",
+     "allowed_json_paths": [
+       "$.package_manifests[0].dependencies.@agentplaneorg/core",
+       "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -429,16 +430,17 @@
+         "202608021231-PZGG3V",
+         "202608021534-YN84E1",
+         "202608022324-9VCYWG",
+-        "202608021535-CNQKXP"
++        "202608021535-CNQKXP",
++        "202608061646-WCARQG"
+       ],
+       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+-      "to_sha256": "013285a7eb1fce7e1b0138cec6da0c94c4c1c3647937f6b0d49f872b57abed0b",
++      "to_sha256": "c15bff5ccf748801205499a8e483524162422c4659a06fc201ad13d9d7c1f8cc",
+       "classification": "additive_with_visibility_simplification",
+-      "summary": "Adds the compact external task advance packet and compatibility retirement diagnostics, promotes the managed task runner, and moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces without removing commands or options.",
++      "summary": "Adds the compact external task advance packet, explainable per-task workflow routing, and compatibility retirement diagnostics; promotes the managed task runner; and moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces without removing commands or options.",
+       "evidence": {
+         "command_count": { "from": 243, "to": 259 },
+         "positional_count": { "from": 165, "to": 179 },
+-        "option_count": { "from": 767, "to": 828 },
++        "option_count": { "from": 767, "to": 829 },
+         "added_commands": [
+           "context supervise-task",
+           "doctor legacy",
+@@ -1341,6 +1343,14 @@
+             "valueHint": null,
+             "default": false
+           },
++          {
++            "command": "task new",
++            "name": "route",
++            "kind": "string",
++            "valueHint": "<repository|auto|direct|branch_pr>",
++            "default": "repository",
++            "choices": ["repository", "auto", "direct", "branch_pr"]
++          },
+           {
+             "command": "task run",
+             "name": "allow-danger-full-access",
+@@ -1832,6 +1842,12 @@
+             "name": "accept-unobserved",
+             "source_task": "202608021534-YN84E1"
+           },
++          {
++            "kind": "option",
++            "command": "task new",
++            "name": "route",
++            "source_task": "202608061646-WCARQG"
++          },
+           {
+             "kind": "option",
+             "command": "task run",
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index 07d78ac6b..d40cb4d9f 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -339,6 +339,7 @@ function validateReviewedCandidate({
+     "202608021534-YN84E1",
+     "202608022324-9VCYWG",
+     "202608021535-CNQKXP",
++    "202608061646-WCARQG",
+   ];
+   const expectedSourceTasks = [
+     "202607221846-4VB97J",
+@@ -369,6 +370,7 @@ function validateReviewedCandidate({
+     "202608021534-YN84E1",
+     "202608022324-9VCYWG",
+     "202608021535-CNQKXP",
++    "202608061646-WCARQG",
+   ];
+   assert(
+     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
+@@ -500,7 +502,7 @@ function validateReviewedCandidate({
+         section: "package_manifests",
+         from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+         to_sha256: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+-        surface_sha256: "e268ab12ae45c6c5620e2b92c671828ea25fbcc79fd4f21b6e9da806de08eabb",
++        surface_sha256: "f1f7ba365b8912771323910df3e34843708feeccc291944d50a1ab2f7874ca01",
+         allowed_json_paths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -1658,6 +1660,14 @@ function validateReviewedCandidate({
+       valueHint: null,
+       default: false,
+     },
++    {
++      command: "task new",
++      name: "route",
++      kind: "string",
++      valueHint: "<repository|auto|direct|branch_pr>",
++      default: "repository",
++      choices: ["repository", "auto", "direct", "branch_pr"],
++    },
+     {
+       command: "task run",
+       name: "allow-danger-full-access",
+@@ -1979,6 +1989,12 @@ function validateReviewedCandidate({
+       name: "accept-unobserved",
+       source_task: "202608021534-YN84E1",
+     },
++    {
++      kind: "option",
++      command: "task new",
++      name: "route",
++      source_task: "202608061646-WCARQG",
++    },
+     {
+       kind: "option",
+       command: "task run",
+diff --git a/website/static/llms-full.txt b/website/static/llms-full.txt
+index 1c863a04d..bd453bb60 100644
+--- a/website/static/llms-full.txt
++++ b/website/static/llms-full.txt
+@@ -554,7 +554,24 @@ Use any coding agent to edit code. Use Agentplane to record the task state, plan
+ closure around those edits. The agent writes code and uses the CLI; the human sets tasks,
+ guardrails, and review boundaries.
+ 
+-This repository is configured for `branch_pr`, so the normal guarded route is:
++This repository is configured for `branch_pr`. After task creation and semantic plan approval, the
++normal managed route is:
++
++```bash
++agentplane task run <task-id>
++```
++
++An external agent requests one bounded action instead:
++
++```bash
++agentplane task advance <task-id> --agent-json
++```
++
++Immediately after creation, that packet is a read-only PLANNER request. The generated Plan is only
++a marker and cannot be approved. `task run` reports the same planning boundary without launching an
++implementation provider; managed execution begins after a task-specific plan is approved.
++
++The detailed lifecycle below is the diagnostic and recovery expansion of that route:
+ 
+ 1. Run preflight.
+ 2. Create the task, set the plan, and approve it.
+@@ -738,22 +755,25 @@ Use tag `spike` for research tasks. A spike should end with:
+ 
+ Agentplane 0.7 exposes one route model through two execution styles:
+ 
+-- an external agent runs the exact command from `task next-action --explain` and recomputes after
+-  each mutation;
+-- a configured runner uses `task run <task-id>` to let the CLI supervise eligible formal steps and
+-  bounded semantic episodes.
++- an external agent requests one compact packet with `task advance --agent-json`;
++- after semantic plan approval, a configured runner uses `task run <task-id>` to let the CLI
++  supervise eligible formal steps and bounded semantic episodes.
+ 
+ The supervisor does not turn approvals, open questions, hosted waits, or semantic choices into
+ automatic success. It returns a typed stop at those boundaries. See
+ [Migrate to Agentplane 0.7](v0-7-migration) for compatibility and recovery rules.
+ 
++Immediately after task creation, `task advance --agent-json` returns a read-only `PLANNER` packet.
++The generated Plan text is a non-approvable placeholder. A task-specific plan must be recorded
++before the route can request explicit approval; `task run` reports the same typed planning stop
++without starting an implementation provider.
++
+ ## Supervised lifecycle
+ 
+ After plan approval and, for `branch_pr`, worktree creation:
+ 
+ ```bash
+-agentplane task brief <task-id>
+-agentplane task next-action <task-id> --explain
++agentplane task advance <task-id> --agent-json
+ agentplane task run <task-id> --dry-run
+ agentplane task run <task-id>
+ ```
+@@ -763,7 +783,30 @@ outputs, prepared knowledge evidence, verification intent, and stop rules. The a
+ semantic result; Agentplane separately records process, Git, filesystem, artifact, and check facts.
+ An agent-reported check is not accepted as an observed check without supervisor evidence.
+ 
+-## Minimal branch_pr lifecycle
++On completion, the same trust boundary produces a task-level token aggregate. Managed provider
++episodes contribute observed input, visible output, reasoning, and total tokens exactly once.
++External, malformed, legacy, or partially observed episodes remain explicitly `partial` or
++`unavailable`; the CLI does not accept agent-supplied usage and does not fabricate zeroes.
++
++## Canonical branch_pr lifecycle
++
++After task creation and semantic plan approval, the default managed path is one command:
++
++```bash
++agentplane task run <task-id>
++```
++
++For an external agent, use the compact boundary. The command may perform only eligible registered
++deterministic transitions before returning the next semantic or stop packet:
++
++```bash
++agentplane task advance <task-id> --agent-json
++```
++
++The expanded sequence below is retained for diagnostics, recovery, and compatibility. It is not
++the default agent protocol.
++
++## Manual branch_pr compatibility lifecycle
+ 
+ This repository is configured for `branch_pr`, so the normal guarded route is:
+ 
+@@ -809,9 +852,8 @@ with `branch.task_prefix` and `branch.task_close_prefix`; the rest of the shape
+ 
+ ## AgentPlane-owned automation boundaries
+ 
+-In `branch_pr`, agents should treat `task brief` and `task next-action --explain` as the live
+-boundary for operations AgentPlane already owns. Run the emitted command, then recompute the route
+-before doing another lifecycle step.
++In `branch_pr`, use `task advance --agent-json` as the compact machine boundary. Use `task brief`
++and `task next-action --explain` only when expanded route evidence is needed for recovery.
+ 
+ - `work start` / `work resume` own task branch and worktree setup; do not hand-roll branch names or
+   worktree creation when the route packet gives an exact command.
+@@ -877,17 +919,18 @@ Everything else in this document is either mode-specific detail or a fallback pa
+ A task moves through the same core stages in both modes:
+ 
+ 1. **Intake**: a need is identified and recorded.
+-2. **Plan**: ORCHESTRATOR drafts a plan and requests approval.
+-3. **Create**: PLANNER creates the task, assigns ownership, and sets dependencies.
+-4. **Start**: the executor marks the task DOING with a structured comment.
+-5. **Implement**: code, docs, and artifacts are produced.
+-6. **Verify**: checks are run (if configured) and a verification outcome is recorded.
+-7. **Commit**: changes are committed with the task ID suffix.
+-8. **Finish**: the task is closed with a Verified note, commit metadata, and an Agent Change Record
++2. **Create**: the CLI creates the task record, assigns ownership, and sets dependencies.
++3. **Plan**: PLANNER turns intent and prepared context into a task-specific plan.
++4. **Approve**: ORCHESTRATOR or the human explicitly approves that semantic plan.
++5. **Start**: the executor marks the task DOING with a structured comment.
++6. **Implement**: code, docs, and artifacts are produced.
++7. **Verify**: observed checks and an independent semantic review are recorded separately.
++8. **Commit**: changes are committed with the task ID suffix.
++9. **Finish**: the task is closed with a Verified note, commit metadata, and an Agent Change Record
+    refresh when `acr.write_on_finish=true`.
+-9. **Evidence projection**: validate the task-local Agent Change Record against task, policy,
+-   verification, finish, and Git evidence.
+-10. **Project and integration projections (optional)**: advanced maintenance surfaces can export or
++10. **Evidence projection**: validate the task-local Agent Change Record against task, policy,
++    verification, finish, and Git evidence.
++11. **Project and integration projections (optional)**: advanced maintenance surfaces can export or
+     regenerate derived task projections from the current backend state.
+ 
+ Task creation targets executable work only.
+@@ -1158,8 +1201,21 @@ Workflow diagnostics and repair:
+ 
+ ```bash
+ agentplane doctor --fix
++agentplane doctor legacy --json
+ ```
+ 
++`doctor legacy` is read-only. It returns the packaged compatibility retirement manifest plus
++workspace probes classified as `used`, `unused`, `unknown`, or `blocked`. Each adapter names its
++introduction and deprecation versions, retirement target or blocker, and migration command.
++
++Exceptional legacy protected-conflict recovery lives outside the normal lifecycle surface:
++
++```bash
++agentplane repair adopt-legacy-conflict <task-id> --expect-adoption-token <sha256:...>
++```
++
++Run it only with the exact token emitted by `task next-action` or `pr conflict-rework`.
++
+ ## Config
+ 
+ ```bash
+@@ -1196,12 +1252,12 @@ agentplane task doc set <task-id> --section Summary --text "..."
+ agentplane task doc set <task-id> --full-doc --file ./task-readme.md
+ ```
+ 
+-There are two supported execution paths. An external agent can work in the authoritative checkout
+-and follow the one command emitted by `task next-action`. A configured runner can ask Agentplane to
+-supervise the same typed route:
++There are two canonical frontends over the same typed route. An external agent requests one compact
++packet; after plan approval, a configured runner resolves eligible implementation and review
++boundaries:
+ 
+ ```bash
+-agentplane task next-action <task-id> --explain
++agentplane task advance <task-id> --agent-json
+ agentplane task run <task-id> --dry-run
+ agentplane task run <task-id>
+ ```
+@@ -1209,8 +1265,12 @@ agentplane task run <task-id>
+ `--dry-run` prepares and validates the runner bundle without starting the adapter. A real run owns
+ formal lifecycle operations, invokes bounded semantic episodes, records supervisor observations,
+ and stops on typed approval, input, wait, rework, or terminal outcomes. The external-agent and
+-runner paths share task, fingerprint, authority, route, and evidence contracts; neither should
+-reconstruct lifecycle state from prose.
++runner paths share task, fingerprint, authority, route, and evidence contracts. `task next-action
++--explain` remains the expanded forensic projection, not the normal machine protocol.
++
++Before a task-specific plan exists, both frontends expose the same `agent.planning` state. `task
++advance --agent-json` returns a read-only `PLANNER` packet; `task run` returns a typed
++`semantic_input_required` stop and does not launch an implementation provider.
+ 
+ Runner maintenance commands remain on the advanced help surface:
+ 
+@@ -1269,7 +1329,10 @@ agentplane acr schema --version 0.1
+ These commands derive `.agentplane/tasks/<task-id>/acr.json` from existing
+ task lifecycle evidence. `finish` refreshes the task-local ACR automatically when
+ `acr.write_on_finish=true`; use `--no-write-acr` only for explicit recovery cases. ACR remains a
+-derived projection, not a second source of truth. `acr validate --mode schema` checks only JSON
++derived projection, not a second source of truth. Completed tasks expose provider token usage as
++`token_usage` in the task README, task JSON/brief projections, and
++`extensions["agentplane.token-usage"]` in the ACR. The state is `observed`, `partial`, or
++`unavailable`; an unavailable provider signal is never serialized as zero. `acr validate --mode schema` checks only JSON
+ shape; `acr check --mode ci` enforces merge-ready semantics. See
+ [Agent Change Records](../reference/acr).
+ 

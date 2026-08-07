@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts\nResult: pass\nEvidence: 5 test files and 47 tests passed; task create serializes cross-process exact duplicates launches two independent Node and CLI process trees on one start barrier, observes exit codes 0 and 4, persists exactly one task, and confirms the frozen direct route\nScope: natural-language intake, cross-process duplicate locking, supervisor execution, advance protocol, status route, and automatic routing\n\nCommand: bun run docs:cli:check\nResult: pass\nEvidence: generated CLI reference is up to date after conflict regeneration\nScope: generated CLI command documentation\n\nCommand: bun run docs:onboarding:check\nResult: pass\nEvidence: agent onboarding scenario surfaces are aligned\nScope: first-run agent onboarding\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit code 0\nScope: repository type safety\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK on the evaluated implementation\nScope: policy gateway routing constraints\n\nCommand: git diff --check\nResult: pass\nEvidence: no whitespace or conflict-marker errors\nScope: refreshed branch patch integrity\n\nCommand: git status --short --untracked-files=all\nResult: pass\nEvidence: command produced no output after implementation and task artifacts were committed\nScope: final tracked and untracked workspace cleanliness",
+  "digest": "sha256:a1dd7242eb62686bfdf84c544cdf8f7d9d638be5f0bbdb86e75932a6e68d7664",
+  "implementation_sha": "d5856d4e9f7df6d42b3ca43f1221866148fdc54c",
+  "kind": "task_verification_record",
+  "note": "The current-main UX branch and its filesystem transaction are verified across two synchronized independent CLI processes with complete deterministic evidence.",
+  "recorded_at": "2026-08-07T00:00:19.724Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\n- bun run docs:cli:check\n- bun run docs:onboarding:check\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:1e3e36afade323c09657b8fd8b642e24388663392d4ee528edb44f7db34b8c89",
+  "task_id": "202608061646-30TKV4",
+  "verification_command": "agentplane verify 202608061646-30TKV4 --ok --by TESTER",
+  "verifier": "TESTER"
+}

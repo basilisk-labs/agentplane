@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli/commands/init\nResult: pass\nEvidence: 6 test files passed; 27 tests passed\nScope: progressive init behavior and init regressions\n\nCommand: bun run docs:onboarding:check\nResult: pass\nEvidence: agent onboarding scenario surfaces are aligned\nScope: first-run onboarding documentation\n\nCommand: bun run docs:cli:check\nResult: pass\nEvidence: generated CLI reference is up to date\nScope: generated init help contract\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit code 0\nScope: repository type safety\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK\nScope: policy gateway routing constraints",
+  "digest": "sha256:be18675e79789f1cd53dd8dd640167820223f500e3d828b984a1f0e65738451e",
+  "implementation_sha": "1b63fb8813a54cc74aa197719a5c81e759110d27",
+  "kind": "task_verification_record",
+  "note": "Progressive init is verified with concrete local evidence across behavior, onboarding, generated help, types, and routing.",
+  "recorded_at": "2026-08-06T23:45:07.136Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli/commands/init\n- bun run docs:onboarding:check\n- bun run docs:cli:check\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:7e72d145f9d263a8ae6ddc091eb4cbf3aa6d1b045a24a7b0df8263a9b80b4ce7",
+  "task_id": "202608061742-G2ZA4T",
+  "verification_command": "agentplane verify 202608061742-G2ZA4T --ok --by TESTER",
+  "verifier": "TESTER"
+}

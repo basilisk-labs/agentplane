@@ -1,0 +1,30 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run format:check",
+    "bun run test:critical",
+    "bun run typecheck",
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+    "node scripts/checks/check-compatibility-contract-baseline.mjs"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-06T22:41:11.843Z",
+    "updated_by": "CODER",
+    "note": "CI recovery head locally requalified with deterministic check details; hosted checks pending PR synchronize."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608061850-BZT3D9/verification/20260806224111843-f84dc99bbaa19ff1.json",
+      "sha256": "sha256:cdcc07559b1a67f6afd54d08b33531ebfd4c672d877651be6d539c4a193a4214"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

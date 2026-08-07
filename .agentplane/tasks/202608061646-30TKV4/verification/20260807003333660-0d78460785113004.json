@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\nResult: pass\nEvidence: 3 files and 37 tests passed, including empty and invalid intake, explicit route overrides, persisted route consistency, dry-run preview, task advance agent-json compatibility, and synchronized cross-process duplicate creation.\nScope: user-first task intake, route selection, duplicate serialization, supervisor preview, and external protocol compatibility.\n\nCommand: bun run docs:cli:check\nResult: pass\nEvidence: generated CLI reference is current for task create and its seven options.\nScope: public CLI reference.\n\nCommand: bun run docs:onboarding:check\nResult: pass\nEvidence: agent onboarding scenario surfaces are aligned.\nScope: user-first onboarding.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit code 0.\nScope: implementation and test type contracts.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: policy gateway routing integrity.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: 12 files and 84 tests passed; the focused compatibility baseline file passed 9 of 9 after adding explicit task create provenance coverage.\nScope: critical CLI, compatibility, trust-boundary, exit-code, and replay contracts.\n\nCommand: bun run bench:compatibility:check\nResult: pass\nEvidence: approved surface cd30e3bf with 260 commands, 180 arguments, 836 options; immutable v0.6.24 baseline verified.\nScope: reviewed cumulative compatibility surface.\n\nCommand: bun run lint:core\nResult: pass\nEvidence: ESLint completed with exit code 0.\nScope: packages, scripts, and repository lint contract.",
+  "digest": "sha256:0d78460785113004215c01e3635759e321f008f9e51c6e34865a6c7e3b6f5a81",
+  "implementation_sha": "4d7ebde5495ce91ebab19921192cb5327e8738b1",
+  "kind": "task_verification_record",
+  "note": "Structured deterministic verification covers the authoritative compatibility follow-up commit.",
+  "recorded_at": "2026-08-07T00:33:33.660Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\n- bun run docs:cli:check\n- bun run docs:onboarding:check\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:1e3e36afade323c09657b8fd8b642e24388663392d4ee528edb44f7db34b8c89",
+  "task_id": "202608061646-30TKV4",
+  "verification_command": "agentplane verify 202608061646-30TKV4 --ok --by TESTER",
+  "verifier": "TESTER"
+}

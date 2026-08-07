@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "No acceptance-criteria or policy violations were identified in the frozen implementation and verification evidence.",
+      "broken_invariant": "None; the reviewed contract is satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/a9d8e99889f1c01445095cccbc0543bea7ccc223931e30dfeac023cde5d1560a.patch",
+          "sha256": "sha256:a9d8e99889f1c01445095cccbc0543bea7ccc223931e30dfeac023cde5d1560a",
+          "section": "Implementation diff"
+        },
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/verification/20260807005855623-14f7546d507b8ff6.json",
+          "sha256": "sha256:03225b50015d903747b29214f35b791fdba3b16faaff90bf2517464fd938167f",
+          "section": "Recorded verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

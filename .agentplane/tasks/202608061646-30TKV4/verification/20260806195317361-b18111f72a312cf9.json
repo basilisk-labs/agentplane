@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts\nResult: pass\nEvidence: 2 files passed, 22 tests passed; the initially declared --project agentplane selector was also executed and correctly reported that run-cli tests belong to cli-core\nScope: natural-language task create, inferred routing, status route summary, and task-run execution preview\n\nCommand: bun run docs:cli:check\nResult: pass\nEvidence: generated CLI reference is up to date\nScope: public CLI command and option documentation\n\nCommand: bun run docs:onboarding:check\nResult: pass\nEvidence: agent onboarding scenario surfaces are aligned\nScope: onboarding guidance affected by task create workflow\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit code 0\nScope: implementation and test type contracts\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK\nScope: policy gateway routing integrity",
+  "digest": "sha256:b18111f72a312cf921c1dbf08cb5216e16267806753c0fc7f069ab0d945abf8d",
+  "implementation_sha": "a80db8cb64bef45320648702a4282d543199b8aa",
+  "kind": "task_verification_record",
+  "note": "Verified user-first task creation, deterministic route inference, default status guidance, and dry-run execution preview. Focused cli-core 22/22, generated docs, onboarding, typecheck, and policy routing all pass.",
+  "recorded_at": "2026-08-06T19:53:17.361Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts\n- bun run docs:cli:check\n- bun run docs:onboarding:check\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:e58233889dcb73bd7cc0e412f5e5faf53d384c5723f5d7734ef114266e59f42d",
+  "task_id": "202608061646-30TKV4",
+  "verification_command": "agentplane verify 202608061646-30TKV4 --ok --by TESTER",
+  "verifier": "TESTER"
+}

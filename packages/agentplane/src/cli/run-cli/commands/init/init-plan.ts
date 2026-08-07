@@ -9,6 +9,8 @@ import { setupProfileToUserFacingProfile } from "./modes.js";
 export const GITHUB_CLI_INIT_RECOMMENDATION =
   "GitHub CLI (gh) is recommended for branch_pr PR merges. Install it yourself (macOS: `brew install gh`; Windows: `winget install --id GitHub.cli`; Linux: see `https://cli.github.com/manual/installation`), then run `gh auth login`. AgentPlane will not install it for you; explicit GH_TOKEN/GITHUB_TOKEN can be used as the API fallback.";
 
+export const FIRST_TASK_COMMAND = 'agentplane task create "Describe the outcome you want"';
+
 export async function detectGithubCliInstalled(cwd: string): Promise<boolean> {
   try {
     await runProcess({
@@ -179,8 +181,8 @@ export function buildInitPlan(opts: {
     ...(opts.answers.workflow === "branch_pr" && githubCliInstalled === false
       ? ["Install GitHub CLI yourself, then run `gh auth login`."]
       : []),
-    "agentplane quickstart",
-    'agentplane task new --title "Trace first AI-assisted change" --owner CODER --tag code',
+    FIRST_TASK_COMMAND,
+    "Run the exact task run or task advance command printed by Agentplane.",
   ];
   return {
     schemaVersion: "init-plan/v1",
@@ -216,6 +218,7 @@ export function buildInitPlan(opts: {
     effects,
     conflicts: opts.conflicts.map((conflict) => initRel(opts.paths.gitRoot, conflict)),
     warnings,
+    decisionReasons: [...opts.answers.decisionReasons],
     nextSteps,
   };
 }

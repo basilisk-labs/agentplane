@@ -7,9 +7,11 @@ import { promptAdvancedSettingsStep } from "./advanced-settings.js";
 import { promptBackendStep } from "./backend.js";
 import { promptBlueprintSelectionStep } from "./blueprint-selection.js";
 import { promptIdeStep } from "./ide.js";
+import { promptInitModeStep } from "./init-mode.js";
 import { promptPolicyGatewayStep } from "./policy-gateway.js";
 import { promptRecipeSelectionStep } from "./recipe-selection.js";
 import { promptSetupProfileStep } from "./setup-profile.js";
+import { promptToolStep } from "./tool.js";
 import { promptWorkflowStep } from "./workflow.js";
 import type { InitPromptClack } from "./contracts.js";
 
@@ -54,7 +56,8 @@ describe("init prompt steps", () => {
       .mockResolvedValueOnce("cursor")
       .mockResolvedValueOnce("branch_pr")
       .mockResolvedValueOnce("cloud")
-      .mockResolvedValueOnce("aggressive");
+      .mockResolvedValueOnce("aggressive")
+      .mockResolvedValueOnce("standard");
     mocks.confirmMock
       .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(true)
@@ -111,10 +114,37 @@ describe("init prompt steps", () => {
       feedbackGithubIssues: true,
       feedbackAnonymousCloud: false,
       executionProfile: "aggressive",
+      evaluatorSkepticism: "standard",
       strictUnsafeConfirm: false,
     });
     expect(recipes).toEqual({ recipes: ["recipe-a", "recipe-b"] });
     expect(blueprints).toEqual({ blueprints: ["pack:enterprise-baseline"] });
+  });
+
+  it("keeps the default setup path to depth, agent surface, and workflow decisions", async () => {
+    resetPromptMocks();
+    mocks.selectMock
+      .mockResolvedValueOnce("quick")
+      .mockResolvedValueOnce("claude")
+      .mockResolvedValueOnce("branch_pr");
+    const prompt = clackMock();
+
+    await expect(promptInitModeStep({ clack: prompt, flags: {} })).resolves.toBe("quick");
+    await expect(promptToolStep({ clack: prompt, flags: {} })).resolves.toEqual({ tool: "claude" });
+    await expect(
+      promptWorkflowStep({
+        clack: prompt,
+        flags: {},
+        setupProfileMode: "compact",
+        promptWorkflow: true,
+        promptDirectCloseDirtyPolicy: false,
+      }),
+    ).resolves.toEqual({
+      workflow: "branch_pr",
+      directCloseDirtyPolicy: "allow_other_task_readmes",
+    });
+
+    expect(mocks.selectMock).toHaveBeenCalledTimes(3);
   });
 
   it("skips prompts when flags or compact profile defaults already answer a step", async () => {

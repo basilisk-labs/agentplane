@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "202608061646-30TKV4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-06T23:55:34.316Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "32d47133fd20aa05a4a47d14264eead0ddb49e95",
+  "blueprint_digest": "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62",
+  "findings": [
+    "The latest verification record does not record execution or a result for the required policy-routing check.",
+    "The frozen closure evidence contains no final tracked/untracked workspace-status check."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608061646-30TKV4/README.md",
+    ".agentplane/tasks/202608061646-30TKV4/verification/20260806235416823-b6355c5c52208ecf.json",
+    ".agentplane/policy/dod.code.md",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [
+    "Record a passing execution of `node .agentplane/policy/check-routing.mjs` against evaluated SHA 32d47133fd20aa05a4a47d14264eead0ddb49e95.",
+    "Record `git status --short --untracked-files=all` and review any reported paths before closure."
+  ],
+  "hidden_assumptions": [
+    "The verification state assumes the declared policy-routing check passed even though the latest verification details omit that command and its result.",
+    "The closure packet assumes the final workspace has no unintended tracked or untracked artifacts without recording the required status evidence."
+  ],
+  "residual_risks": [
+    "Re-run and record the omitted policy-routing check for the evaluated SHA, capture and review the required final tracked/untracked git status, then regenerate deterministic verification evidence before reevaluation."
+  ]
+}

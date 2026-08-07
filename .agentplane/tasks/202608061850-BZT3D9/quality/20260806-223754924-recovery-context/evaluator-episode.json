@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202608061850-BZT3D9-4f42244ceb7859bbd873bc06",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061850-BZT3D9-land-post-merge-workflow-routing-qualification-f",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061850-BZT3D9-land-post-merge-workflow-routing-qualification-f/.agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-08-06T22:37:55.598Z",
+  "ended_at": "2026-08-06T22:38:34.426Z",
+  "stdout_bytes": 49349,
+  "stderr_bytes": 1206,
+  "provider_usage": {
+    "input_tokens": 82078,
+    "output_tokens": 1490,
+    "total_tokens": 83568,
+    "visible_output_tokens": 1331,
+    "reasoning_tokens": 159
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:c3da31e0feb83bd4a8fa77b898426fa1d3480f7ec78e1aae68ff4f49fe6666ba"
+}
