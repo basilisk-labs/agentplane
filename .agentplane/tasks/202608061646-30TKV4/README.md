@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 49
+revision: 50
 origin:
   system: "manual"
 depends_on:
@@ -34,9 +34,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T00:54:09.275Z"
+  updated_at: "2026-08-07T00:58:55.623Z"
   updated_by: "TESTER"
-  note: "All seven declared verification steps pass on dca066f829e3 with machine-readable evidence."
+  note: "All seven declared checks pass on a743a9c42ca4; onboarding content and conservative ambiguous-intent coverage are now explicit."
   attempts: 0
 quality_review:
   state: "rework"
@@ -284,8 +284,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "All seven declared verification steps pass on dca066f829e3 with machine-readable evidence."
+  -
+    type: "verify"
+    at: "2026-08-07T00:58:55.623Z"
+    author: "TESTER"
+    state: "ok"
+    note: "All seven declared checks pass on a743a9c42ca4; onboarding content and conservative ambiguous-intent coverage are now explicit."
 doc_version: 3
-doc_updated_at: "2026-08-07T00:55:53.806Z"
+doc_updated_at: "2026-08-07T00:58:56.897Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
@@ -1197,6 +1203,71 @@ sections:
     Result: pass
     Evidence: Agent onboarding scenario surfaces are aligned.
     Scope: User and agent onboarding.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build completed successfully.
+    Scope: Changed TypeScript implementation and tests.
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: Policy routing OK.
+    Scope: Repository policy gateway.
+
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: Runtime oversized threshold and oversized test baseline pass.
+    Scope: Maintainability guard.
+
+    Command: bun run bench:compatibility:check
+    Result: pass
+    Evidence: Approved v0.7 cumulative compatibility candidate matches 260 commands, 180 args, and 836 options.
+    Scope: CLI compatibility contract.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-30TKV4-add-user-first-task-intake-and-execution-preview/.agentplane/tasks/202608061646-30TKV4/blueprint/resolved-snapshot.json
+    - old_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+    - current_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-30TKV4
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T00:58:55.623Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: All seven declared checks pass on a743a9c42ca4; onboarding content and conservative ambiguous-intent coverage are now explicit.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T00:55:53.806Z, excerpt_hash=sha256:2299aaf79934b79b80cd30a0b3f1bf2e4aa95fc87a5488d835780da7768d7769
+
+    Details:
+
+    Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+    Result: pass
+    Evidence: Vitest reported 4 passed files and 37 passed tests.
+    Scope: User-first task intake, conservative ambiguous intent, duplicate serialization, execution preview, and compact supervisor handoff.
+
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: Generated CLI reference is up to date.
+    Scope: Public CLI documentation.
+
+    Command: bun run docs:onboarding:check
+    Result: pass
+    Evidence: Agent onboarding scenario includes task create, dry-run execution_preview, managed run, and external advance.
+    Scope: Executable user-first onboarding.
 
     Command: bun run typecheck
     Result: pass
@@ -2170,6 +2241,71 @@ Command: bun run docs:onboarding:check
 Result: pass
 Evidence: Agent onboarding scenario surfaces are aligned.
 Scope: User and agent onboarding.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build completed successfully.
+Scope: Changed TypeScript implementation and tests.
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: Policy routing OK.
+Scope: Repository policy gateway.
+
+Command: bun run hotspots:check
+Result: pass
+Evidence: Runtime oversized threshold and oversized test baseline pass.
+Scope: Maintainability guard.
+
+Command: bun run bench:compatibility:check
+Result: pass
+Evidence: Approved v0.7 cumulative compatibility candidate matches 260 commands, 180 args, and 836 options.
+Scope: CLI compatibility contract.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-30TKV4-add-user-first-task-intake-and-execution-preview/.agentplane/tasks/202608061646-30TKV4/blueprint/resolved-snapshot.json
+- old_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+- current_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-30TKV4
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T00:58:55.623Z — VERIFY — ok
+
+By: TESTER
+
+Note: All seven declared checks pass on a743a9c42ca4; onboarding content and conservative ambiguous-intent coverage are now explicit.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T00:55:53.806Z, excerpt_hash=sha256:2299aaf79934b79b80cd30a0b3f1bf2e4aa95fc87a5488d835780da7768d7769
+
+Details:
+
+Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+Result: pass
+Evidence: Vitest reported 4 passed files and 37 passed tests.
+Scope: User-first task intake, conservative ambiguous intent, duplicate serialization, execution preview, and compact supervisor handoff.
+
+Command: bun run docs:cli:check
+Result: pass
+Evidence: Generated CLI reference is up to date.
+Scope: Public CLI documentation.
+
+Command: bun run docs:onboarding:check
+Result: pass
+Evidence: Agent onboarding scenario includes task create, dry-run execution_preview, managed run, and external advance.
+Scope: Executable user-first onboarding.
 
 Command: bun run typecheck
 Result: pass

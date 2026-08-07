@@ -16,7 +16,12 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 ## Verification
 
 - State: ok
-- Note: All seven declared verification steps pass on dca066f829e3 with machine-readable evidence.
+- Note:
+
+```text
+All seven declared checks pass on a743a9c42ca4; onboarding content and conservative ambiguous-intent
+coverage are now explicit.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
