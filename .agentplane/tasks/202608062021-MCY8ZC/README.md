@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -63,19 +63,19 @@ quality_review:
   findings:
     - "The implementation, focused integration coverage, and deterministic verification evidence satisfy the declared external-supervisor protocol, operator-boundary, guidance, provenance, and branch-worktree requirements."
 token_usage:
-  agent_runs: 5
-  input_tokens: 1444211
-  journal_digest: "sha256:4c9c712c34f09ab2d158e1430a2122169af49a1a621fc0e598c22d65d8bb44b5"
-  observed_agent_runs: 5
+  agent_runs: 7
+  input_tokens: 1941964
+  journal_digest: "sha256:243ba6b364c96e9e10edc7dc6ae1937f8f0b64302428bb28213e34f750a95cbc"
+  observed_agent_runs: 7
   observed_by: "agentplane"
-  output_tokens: 13818
-  reasoning_tokens: 3279
+  output_tokens: 19257
+  reasoning_tokens: 4905
   schema_version: 1
   source: "supervisor_journal"
   state: "observed"
-  total_tokens: 1461308
+  total_tokens: 1966126
   unavailable_reason: null
-  updated_at: "2026-08-07T23:12:02.033Z"
+  updated_at: "2026-08-07T23:31:33.795Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -85,8 +85,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "651fd8abaf33bdc25879e88ac4f77efda9527e12"
-  message: "✅ MCY8ZC supervisor: record final evaluator pass"
+  hash: "de6ff428d9432e51c7e91bf7c1e378bfc8008c03"
+  message: "✅ MCY8ZC supervisor: record hosted CI evaluator pass"
 comments:
   -
     author: "CODER"
@@ -97,6 +97,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -183,8 +186,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Final MCY8ZC implementation head 032a2b8ab passes every declared command plus the split branch-worktree e2e and complete CI contract."
+  -
+    type: "status"
+    at: "2026-08-07T23:31:33.795Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T23:30:45.811Z"
+doc_updated_at: "2026-08-07T23:31:33.822Z"
 doc_updated_by: "CODER"
 description: "Return an exact result_path and structured resume_argv from task advance, expose a typed operator action at approval boundaries, make quickstart and role command guides supervisor-first, show the canonical new/active/advance/run/brief subset in compact task help, attribute explicit begin plans to a human source, and add an end-to-end branch_pr test that advances once from the base checkout and receives a worktree-bound WorkOrder without caller cwd changes."
 sections:
@@ -729,8 +739,8 @@ sections:
       Resolution: Merge 202608061850-BZT3D9, rebase this branch, rerun targeted, docs, typecheck, and critical suites, then replace this rework record with verified evidence.
 extensions:
   implementation_commit:
-    hash: "ad1088693203b396693c99a4ef64397ef176c461"
-    message: "🐛 MCY8ZC supervisor: accept bounded verification result detail"
+    hash: "032a2b8ab4180f16251f367b36ee462d2b108b92"
+    message: "🧹 MCY8ZC supervisor: satisfy protocol test lint"
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
     version: 1
@@ -1293,12 +1303,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `observed`
-- Completeness: `5/5` agent runs
-- Input tokens: `1444211`
-- Output tokens: `13818`
-- Reasoning tokens: `3279`
-- Total tokens: `1461308`
+- Completeness: `7/7` agent runs
+- Input tokens: `1941964`
+- Output tokens: `19257`
+- Reasoning tokens: `4905`
+- Total tokens: `1966126`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:4c9c712c34f09ab2d158e1430a2122169af49a1a621fc0e598c22d65d8bb44b5`
+- Journal digest: `sha256:243ba6b364c96e9e10edc7dc6ae1937f8f0b64302428bb28213e34f750a95cbc`
 - Unavailable reason: `none`
-- Updated at: `2026-08-07T23:12:02.033Z`
+- Updated at: `2026-08-07T23:31:33.795Z`
