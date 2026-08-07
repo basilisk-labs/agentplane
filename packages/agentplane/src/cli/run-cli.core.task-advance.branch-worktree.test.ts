@@ -156,12 +156,14 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
       ),
     ) as AgentWorkOrderV2;
     const taskWorktree = workOrder.state_fingerprint.worktree;
-    const branch = (
-      await execFileAsync("git", ["branch", "--show-current"], { cwd: taskWorktree })
-    ).stdout.trim();
-    const head = (
-      await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: taskWorktree })
-    ).stdout.trim();
+    const branchResult = await execFileAsync("git", ["branch", "--show-current"], {
+      cwd: taskWorktree,
+    });
+    const headResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: taskWorktree,
+    });
+    const branch = branchResult.stdout.trim();
+    const head = headResult.stdout.trim();
     const readmePath = path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md");
     const journalPath = await resolveSupervisorExecutionEpisodePath({
       git_root: root,
