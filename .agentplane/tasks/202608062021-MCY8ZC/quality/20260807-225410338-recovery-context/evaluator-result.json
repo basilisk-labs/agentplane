@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "No acceptance-criteria or policy violations were found in the frozen implementation and verification evidence.",
+      "broken_invariant": "None; the implementation and recorded checks cover the declared positive, negative, concurrency-sensitive, and final-cleanliness requirements.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/README.md",
+          "sha256": "sha256:b5882a35d656707136fc447879210918e8683b4c036e8984a6e2dbaba265f19d",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/61c4eb65278a3bcd1fecd47aec938112f8258c9f5f64fae5e404b0038c633f22.patch",
+          "sha256": "sha256:61c4eb65278a3bcd1fecd47aec938112f8258c9f5f64fae5e404b0038c633f22",
+          "section": "run-cli.core.task-advance.test.ts"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
