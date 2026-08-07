@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608062021-MCY8ZC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T23:11:11.184Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "ad1088693203b396693c99a4ef64397ef176c461",
+  "blueprint_digest": "98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5",
+  "findings": [
+    "The frozen implementation and deterministic verification evidence satisfy the declared external supervisor protocol, operator-boundary, help-surface, provenance, and branch-worktree requirements."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/ff533282bf80b0143380ab1d5abaa31ae0582b1d7dfbb0748baffe757545c3fa.patch",
+    ".agentplane/tasks/202608062021-MCY8ZC/verification/20260807230915786-6b651866acfadd5b.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Provider-hosted merge approval remains intentionally non-local: its typed operator action has null argv and relies on the provider lane identified by the route summary and authority reference."
+  ],
+  "residual_risks": []
+}

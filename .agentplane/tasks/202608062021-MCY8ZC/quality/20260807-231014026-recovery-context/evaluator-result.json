@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The frozen implementation and deterministic verification evidence satisfy the declared external supervisor protocol, operator-boundary, help-surface, provenance, and branch-worktree requirements.",
+      "broken_invariant": "No invariant is broken; positive, negative, and worktree-sensitive paths are covered at the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/ff533282bf80b0143380ab1d5abaa31ae0582b1d7dfbb0748baffe757545c3fa.patch",
+          "sha256": "sha256:ff533282bf80b0143380ab1d5abaa31ae0582b1d7dfbb0748baffe757545c3fa"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/verification/20260807230915786-6b651866acfadd5b.json",
+          "sha256": "sha256:4ecc7ed552abe53ec8465bf1f01436e5da5b746a118f916ee56881fbcbc768f8"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Provider-hosted merge approval remains intentionally non-local: its typed operator action has null argv and relies on the provider lane identified by the route summary and authority reference."
+  ]
+}
