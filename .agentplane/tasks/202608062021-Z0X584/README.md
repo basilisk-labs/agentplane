@@ -2,10 +2,10 @@
 id: "202608062021-Z0X584"
 title: "Converge generated agent guidance on the supervisor-first protocol"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 39
+revision: 40
 origin:
   system: "manual"
 depends_on: []
@@ -63,19 +63,19 @@ quality_review:
   findings:
     - "No contract divergence or unresolved recovery drift was found at the evaluated SHA; the only post-review implementation change corrects the onboarding order helper's lint violation without changing behavior, and the frozen verification record covers all declared checks plus full lint and the executable supervisor boundary contract."
 token_usage:
-  agent_runs: 6
-  input_tokens: 1174647
-  journal_digest: "sha256:9fa3f86f0710107f20b003e59c8b9586c2847e46271a26b16e749673817f8ac4"
-  observed_agent_runs: 6
+  agent_runs: 7
+  input_tokens: 1308554
+  journal_digest: "sha256:9c903fdc1fdb6b6b868591098316983ad91965d775bf31e9790ae7401ba9f331"
+  observed_agent_runs: 7
   observed_by: "agentplane"
-  output_tokens: 13263
-  reasoning_tokens: 2938
+  output_tokens: 15059
+  reasoning_tokens: 3199
   schema_version: 1
   source: "supervisor_journal"
   state: "observed"
-  total_tokens: 1190848
+  total_tokens: 1326812
   unavailable_reason: null
-  updated_at: "2026-08-07T04:01:49.667Z"
+  updated_at: "2026-08-07T04:11:18.794Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -84,7 +84,9 @@ execution_route:
   requested_mode: "auto"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "afba6bd86876ea1812e33fbe6c618e4e6e682d75"
+  message: "🚧 Z0X584 prompts: record hosted lint recovery"
 comments:
   -
     author: "DOCS"
@@ -92,6 +94,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation recorded: supervisor-first prompts, generated guidance, docs contracts, and safe task reclassification are committed; focused verification passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -225,8 +230,15 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Hosted lint defect fixed; all declared prompt/onboarding checks, full lint, and executable supervisor product contract pass at the current implementation head."
+  -
+    type: "status"
+    at: "2026-08-07T04:11:18.794Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T04:10:43.578Z"
+doc_updated_at: "2026-08-07T04:11:18.824Z"
 doc_updated_by: "CODER"
 description: "Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr policy modules, Codex skill, README, and workflow docs with task active, task advance, and task run as the only normal agent paths; provide one copy-paste executable first workflow and retain manual commands only as explicit operator or recovery interfaces."
 sections:
@@ -863,8 +875,8 @@ sections:
       Resolution: The helper now uses === -1 and the same full lint command passes locally.
 extensions:
   implementation_commit:
-    hash: "047e9077deac3afcc100824875a601f8098625ba"
-    message: "🚧 Z0X584 prompts: make first task flow executable"
+    hash: "5af3fdf4d7de3abc61b671922ebcc5097c66e1d9"
+    message: "🚧 Z0X584 prompts: satisfy onboarding lint contract"
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
     version: 1
@@ -1519,12 +1531,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `observed`
-- Completeness: `6/6` agent runs
-- Input tokens: `1174647`
-- Output tokens: `13263`
-- Reasoning tokens: `2938`
-- Total tokens: `1190848`
+- Completeness: `7/7` agent runs
+- Input tokens: `1308554`
+- Output tokens: `15059`
+- Reasoning tokens: `3199`
+- Total tokens: `1326812`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:9fa3f86f0710107f20b003e59c8b9586c2847e46271a26b16e749673817f8ac4`
+- Journal digest: `sha256:9c903fdc1fdb6b6b868591098316983ad91965d775bf31e9790ae7401ba9f331`
 - Unavailable reason: `none`
-- Updated at: `2026-08-07T04:01:49.667Z`
+- Updated at: `2026-08-07T04:11:18.794Z`
