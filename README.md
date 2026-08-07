@@ -110,25 +110,28 @@ Read [Local context](docs/user/local-context.mdx).
 
 ## First local workflow
 
-The managed path is executable from task creation to a terminal result without asking the model to
-drive lifecycle commands:
+A new task stops at a semantic planning boundary. Start that boundary through the external-agent
+protocol:
 
 ```bash
 TASK_ID=$(agentplane task new --title "Inspect Agentplane artifacts" --description "Review the generated task record and summarize what Agentplane created" --owner DOCS --tag docs)
-agentplane task run "$TASK_ID"
+agentplane task advance "$TASK_ID" --agent-json
 ```
 
-The first run resolves the semantic planning episode and stops at the human approval boundary. Run
-the exact approval action printed by Agentplane, then continue with:
+Give the returned packet to Claude Code, Codex, Cursor, Aider, or another external agent. The agent
+performs only the packet's semantic objective, writes the typed result to
+`exchange.directory/exchange.result_ref`, and resumes with:
 
 ```bash
-agentplane task run "$TASK_ID"
+agentplane task advance "$TASK_ID" --result <exchange-directory>/result.json --agent-json
 ```
 
-For Claude Code, Codex, Cursor, Aider, or another external agent, replace `task run` with
-`task advance "$TASK_ID" --agent-json`. Perform only the returned semantic episode, write its typed
-result to the packet's result path, and resume with the packet's exact argv. Agentplane owns plan
-persistence, worktree/PR operations, verification persistence, integration, and closure.
+Agentplane persists the returned plan and emits the exact human approval action when approval is
+required. After that action, continue with `task advance` for an external agent, or use
+`agentplane task run "$TASK_ID"` for semantic episodes supported by the configured managed runner.
+Repeat only the action Agentplane returns until it reports a human, hosted/external, recovery, or
+terminal boundary. Agentplane owns plan persistence, worktree/PR operations, verification
+persistence, integration, and closure.
 
 When the task reaches `DONE`, Agentplane records the supervisor-observed input, visible output,
 reasoning, and total token aggregate in the task README and ACR. If provider telemetry was not

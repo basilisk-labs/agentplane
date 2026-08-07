@@ -6,14 +6,14 @@ Created: 2026-08-06T20:27:51.883Z
 
 - Task: `202608062021-Z0X584`
 - Title: Converge generated agent guidance on the supervisor-first protocol
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608062021-Z0X584/converge-generated-agent-guidance-on-the-supervi`
 - Canonical task record: `.agentplane/tasks/202608062021-Z0X584/README.md`
 
 ## Verification
 
-- State: ok
-- Note: All five declared supervisor-first acceptance commands pass at the current implementation SHA.
+- State: needs_rework
+- Note: PR review found an incorrect managed-run planning claim in the first workflow; documentation must use the external task advance planning boundary.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -35,9 +35,9 @@ Created: 2026-08-06T20:27:51.883Z
  .agentplane/policy/workflow.branch_pr.md           |  95 +--
  .agentplane/policy/workflow.direct.md              |  55 +-
  .agentplane/policy/workflow.release.md             |  37 +-
- README.md                                          |  26 +-
+ README.md                                          |  29 +-
  docs/user/agent-bootstrap.generated.mdx            |  48 +-
- docs/user/task-lifecycle.mdx                       | 416 ++++---------
+ docs/user/task-lifecycle.mdx                       | 422 ++++---------
  docs/user/workflow.mdx                             | 216 ++-----
  docs/workflow-guides/branch-pr.mdx                 |  91 +--
  docs/workflow-guides/hermes-kanban.mdx             |  40 +-
@@ -60,7 +60,7 @@ Created: 2026-08-06T20:27:51.883Z
  scripts/checks/check-agent-bootstrap-fresh.mjs     |  55 +-
  scripts/checks/check-agent-onboarding-scenario.mjs |  58 +-
  website/static/llms-full.txt                       | 687 ++++++---------------
- 31 files changed, 909 insertions(+), 1647 deletions(-)
+ 31 files changed, 918 insertions(+), 1647 deletions(-)
 ```
 
 </details>

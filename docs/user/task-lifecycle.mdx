@@ -55,37 +55,43 @@ agentplane task run <task-id>
 ```
 
 `task run` uses the same route decision, state fingerprint, WorkOrder, authority, result contract,
-verification boundary, and execution journal as `task advance`. The difference is only who resolves
-the semantic episode: an external caller or the configured runner adapter.
+verification boundary, and execution journal as `task advance`. Before a task-specific plan exists,
+`task run` returns `semantic_input_required`; obtain and return the initial PLANNER result through
+`task advance`. After planning and approval, eligible semantic episodes may be resolved by either an
+external caller or the configured runner adapter.
 
 The managed runner also stops at human approval, hosted/external, stale-state, effect-in-doubt, and
 terminal boundaries. Rerun `task run` only after the returned boundary has been resolved.
 
 ## First complete workflow
 
-Create a task and let the managed supervisor resolve its planning episode:
+Create a task and request its bounded planning episode:
 
 ```bash
 TASK_ID=$(agentplane task new --title "Inspect Agentplane artifacts" --description "Review the generated task record and summarize what Agentplane created" --owner DOCS --tag docs)
-agentplane task run "$TASK_ID"
+agentplane task advance "$TASK_ID" --agent-json
 ```
 
-The first run stops at the human approval boundary after a task-specific semantic plan exists. Run
-the exact approval action printed by Agentplane, then continue:
+Give the returned packet to an external agent. It reads `exchange.work_order_ref`, performs only the
+PLANNER objective, writes a typed result matching `exchange.result_schema_ref` to
+`exchange.directory/exchange.result_ref`, and returns it with:
 
 ```bash
-agentplane task run "$TASK_ID"
+agentplane task advance "$TASK_ID" --result <exchange-directory>/result.json --agent-json
 ```
 
-For an external agent, use `task advance "$TASK_ID" --agent-json` instead and follow the typed
-result exchange described above. No manual lifecycle choreography is required from the agent.
+Agentplane persists the semantic plan and emits the exact operator action if human approval is
+required. Execute that operator action, then request the next packet with `task advance` or use
+`task run` for an eligible configured managed-runner episode. Repeat only the returned action until
+Agentplane reports a human, hosted/external, recovery, or terminal boundary. No manual lifecycle
+choreography is required from the agent.
 
 ## Planning and approval
 
 A newly created task contains a non-approvable placeholder, not synthetic semantic evidence.
-`task advance` returns a read-only PLANNER episode; `task run` resolves the same planning episode
-through the configured adapter. Agentplane persists the returned plan and then stops for human
-approval when policy requires it.
+`task advance` returns a read-only PLANNER episode; `task run` returns
+`semantic_input_required` until that result has been supplied through the external protocol.
+Agentplane persists the returned plan and then stops for human approval when policy requires it.
 
 Only a human/operator may satisfy an approval boundary. An agent must not approve its own plan or
 infer approval from earlier prose.

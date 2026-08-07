@@ -2,10 +2,10 @@
 id: "202608062021-Z0X584"
 title: "Converge generated agent guidance on the supervisor-first protocol"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -31,11 +31,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-07T03:35:28.341Z"
-  updated_by: "TESTER"
-  note: "All five declared supervisor-first acceptance commands pass at the current implementation SHA."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-07T03:47:49.580Z"
+  updated_by: "CODER"
+  note: "PR review found an incorrect managed-run planning claim in the first workflow; documentation must use the external task advance planning boundary."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -84,9 +84,7 @@ execution_route:
   requested_mode: "auto"
   schema_version: 1
   selected_mode: "branch_pr"
-commit:
-  hash: "aef1cc4f6feffa7dcd8cc13a86e430355d092de2"
-  message: "🧪 Z0X584 prompts: record final supervisor route evidence"
+commit: null
 comments:
   -
     author: "DOCS"
@@ -187,8 +185,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-07T03:47:49.580Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "PR review found an incorrect managed-run planning claim in the first workflow; documentation must use the external task advance planning boundary."
 doc_version: 3
-doc_updated_at: "2026-08-07T03:37:01.015Z"
+doc_updated_at: "2026-08-07T03:47:50.874Z"
 doc_updated_by: "CODER"
 description: "Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr policy modules, Codex skill, README, and workflow docs with task active, task advance, and task run as the only normal agent paths; provide one copy-paste executable first workflow and retain manual commands only as explicit operator or recovery interfaces."
 sections:
@@ -538,6 +542,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-07T03:47:49.580Z — VERIFY — needs_rework
+
+    By: CODER
+
+    Note: PR review found an incorrect managed-run planning claim in the first workflow; documentation must use the external task advance planning boundary.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T03:37:01.015Z, excerpt_hash=sha256:e9653577267767950996748213a2f0aa3639b45685585200ddac7e270aea9d00
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-Z0X584-converge-generated-agent-guidance-on-the-supervi/.agentplane/tasks/202608062021-Z0X584/blueprint/resolved-snapshot.json
+    - old_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+    - current_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-Z0X584
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -558,6 +592,10 @@ sections:
     - Observation: PR #4788 run 31144101576 failed test-windows and verify-unit because tests still required workflow.mode/manual lifecycle markers removed by the new generated guidance.
       Impact: The correct prompts could not pass the release-wide Linux/Windows suite.
       Resolution: Update init assertions and the lifecycle parity contract to require task active -> task advance -> task run; preserve low-level lifecycle only as internal/operator implementation metadata.
+
+    - Observation: README and task-lifecycle docs claim task run resolves the initial PLANNER placeholder.
+      Impact: Users receive a non-executable first workflow because runtime intentionally returns semantic_input_required.
+      Resolution: Replace the first workflow with the external task advance exchange and state the managed-run boundary accurately.
 extensions:
   implementation_commit:
     hash: "59df72b1e7a566d618624d4b5145783dd735ca4a"
@@ -923,6 +961,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-07T03:47:49.580Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: PR review found an incorrect managed-run planning claim in the first workflow; documentation must use the external task advance planning boundary.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T03:37:01.015Z, excerpt_hash=sha256:e9653577267767950996748213a2f0aa3639b45685585200ddac7e270aea9d00
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-Z0X584-converge-generated-agent-guidance-on-the-supervi/.agentplane/tasks/202608062021-Z0X584/blueprint/resolved-snapshot.json
+- old_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+- current_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-Z0X584
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -947,6 +1015,10 @@ DecisionContextRef:
 - Observation: PR #4788 run 31144101576 failed test-windows and verify-unit because tests still required workflow.mode/manual lifecycle markers removed by the new generated guidance.
   Impact: The correct prompts could not pass the release-wide Linux/Windows suite.
   Resolution: Update init assertions and the lifecycle parity contract to require task active -> task advance -> task run; preserve low-level lifecycle only as internal/operator implementation metadata.
+
+- Observation: README and task-lifecycle docs claim task run resolves the initial PLANNER placeholder.
+  Impact: Users receive a non-executable first workflow because runtime intentionally returns semantic_input_required.
+  Resolution: Replace the first workflow with the external task advance exchange and state the managed-run boundary accurately.
 
 ## Token Usage
 

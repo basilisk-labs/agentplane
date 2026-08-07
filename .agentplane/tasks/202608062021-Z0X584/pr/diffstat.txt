@@ -4,9 +4,9 @@
  .agentplane/policy/workflow.branch_pr.md           |  95 +--
  .agentplane/policy/workflow.direct.md              |  55 +-
  .agentplane/policy/workflow.release.md             |  37 +-
- README.md                                          |  26 +-
+ README.md                                          |  29 +-
  docs/user/agent-bootstrap.generated.mdx            |  48 +-
- docs/user/task-lifecycle.mdx                       | 416 ++++---------
+ docs/user/task-lifecycle.mdx                       | 422 ++++---------
  docs/user/workflow.mdx                             | 216 ++-----
  docs/workflow-guides/branch-pr.mdx                 |  91 +--
  docs/workflow-guides/hermes-kanban.mdx             |  40 +-
@@ -29,4 +29,4 @@
  scripts/checks/check-agent-bootstrap-fresh.mjs     |  55 +-
  scripts/checks/check-agent-onboarding-scenario.mjs |  58 +-
  website/static/llms-full.txt                       | 687 ++++++---------------
- 31 files changed, 909 insertions(+), 1647 deletions(-)
+ 31 files changed, 918 insertions(+), 1647 deletions(-)
