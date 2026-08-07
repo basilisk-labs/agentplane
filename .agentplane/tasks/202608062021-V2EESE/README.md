@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -38,32 +38,31 @@ verification:
   note: "Current implementation head has frozen command-level verification for semantic security projection and choreography exclusion."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T09:59:43.157Z"
+  updated_at: "2026-08-07T10:02:23.447Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "4ed5bbb5b3e4042db0f5841e6477f9c62c9bcd56"
   blueprint_digest: "ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26"
   evidence_refs:
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-095811356-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-095811356-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/95cb9178d406ad4adfcec1c48b0cd3e49d29e65236d6b18e238b4609c458f0f3.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-095811356-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-095811356-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-095811356-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-095811356-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-100132239-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-100132239-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/252391ed4ba036bc75c5584a3ff645e7278273f5e045fd31f51633176cc73524.md"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-100132239-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-100132239-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-100132239-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608062021-V2EESE/README.md"
     - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/e80c79ea465c47c132263113cbf88097ef7ca5e2f16cf8512b34ce608fc6c386.patch"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/c169c22a6714054011b23923699eeeb3d5542ffa8635328de98175f048fd7d45.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/abbbb1701f20ccffd204d58c23ab85190cb6df8852883e3a7b2acedcbcda2e07.json"
+    - ".agentplane/tasks/202608062021-V2EESE/verification/20260807100106835-82212009c3bd1ce5.json"
     - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/95733d97fca351adc4547b7181a057ce60fc567aeb7afbf37c59f69aa9b36417.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen observed-checks artifact contains no verification records or runtime evidence for the evaluated SHA; the latest task verification entries assert success without command-level details."
-  recovery_reason: "deterministic_evidence_gap"
+    - "The frozen implementation and command-level verification evidence cover the declared semantic prompt projection, forbidden choreography rejection, all three semantic roles, security constraint preservation, bounded repair authority, type contracts, critical contracts, and policy routing."
 token_usage:
   agent_runs: 5
   input_tokens: 792013
@@ -204,7 +203,7 @@ events:
     state: "ok"
     note: "Current implementation head has frozen command-level verification for semantic security projection and choreography exclusion."
 doc_version: 3
-doc_updated_at: "2026-08-07T10:01:07.982Z"
+doc_updated_at: "2026-08-07T10:02:23.471Z"
 doc_updated_by: "CODER"
 description: "Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt."
 sections:
