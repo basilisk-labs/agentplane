@@ -4,7 +4,7 @@ title: "Restore the release lint baseline"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -48,6 +48,33 @@ verification:
     Evidence: repository TypeScript build completed with exit code 0
     Scope: TypeScript contracts
   attempts: 0
+quality_review:
+  state: "blocked"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-07T02:40:02.236Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "17dc364080b8c5763eb478ea5b0a328168ba2518"
+  blueprint_digest: "e6918be9c187948088eeee72c070745720938b0e5e20a11ccdb3664f8e226b94"
+  evidence_refs:
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-023915888-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-023915888-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/07eb1f7cb432ff0c44fdb01456cb771e8e74741e456f38a52965ca5dd0db09c3.md"
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-023915888-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-023915888-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-023915888-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-023915888-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608070235-JPPAMT/README.md"
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/5960a8fbcb44bc1d723d3ce9c45afa821070d8411ad1e7ee82aab1fd542dc71b.patch"
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/29f2d60b41048616c55464c7a5c83e24caf60cc8d37140b663f363a29e11a826.json"
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/6550cb314bb3505b1c1debd688f03f5a0264a0f87a8c8a1bc32551a713a9d955.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The frozen packet records asserted pass summaries but contains no deterministic check results, runner history, runtime evidence, original failure reproduction, or hosted full-gate evidence."
+  recovery_reason: "deterministic_evidence_gap"
 execution_route:
   frozen: true
   reason_codes:

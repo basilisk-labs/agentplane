@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608070235-JPPAMT-0fd5777f3689a4f316b440eb",
+  "prepared_at": "2026-08-07T02:39:15.888Z",
+  "task": {
+    "id": "202608070235-JPPAMT",
+    "revision": 8,
+    "objective": "Restore the release lint baseline\n\nReplace the obsolete global-regex String.replace call in the social image generator so the current main branch and every 0.7.5 PR pass the repository lint gate.",
+    "acceptance_criteria": [
+      "- In scope: Replace the obsolete global-regex String.replace call in the social image generator so the current main branch and every 0.7.5 PR pass the repository lint gate.\n- Out of scope: unrelated refactors not required for \"Restore the release lint baseline\".",
+      "1. Confirm the lint failure on current main and identify the minimal behavior-preserving API change.\n2. Replace the global-regex String.replace call with String.replaceAll in the social-image title normalization.\n3. Run targeted website lint, full repository lint, the social-image generator check, formatting, and typecheck.\n4. Publish and merge the focused branch before refreshing dependent 0.7.5 PRs.",
+      "1. Run `bunx eslint website/scripts/generate-social-images.mjs`. Expected: the current lint violation is gone.\n2. Run `bun run lint`. Expected: core and website lint both pass.\n3. Run `bun run docs:social:check` and `bun run format:check`. Expected: generated social assets remain current and formatting is unchanged.\n4. Run `bun run typecheck`. Expected: repository TypeScript contracts remain valid."
+    ]
+  },
+  "evaluated_sha": "17dc364080b8c5763eb478ea5b0a328168ba2518",
+  "diff_base_sha": "6cfac13ebadf25ac28ce0485e3b86712d147b736",
+  "blueprint_digest": "e6918be9c187948088eeee72c070745720938b0e5e20a11ccdb3664f8e226b94",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-023915888-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:af60edd52e7fa25489d2e683e80625c2a4a1320b75ba9014dbf63b65aaad93eb",
+    "prompt_path": ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/07eb1f7cb432ff0c44fdb01456cb771e8e74741e456f38a52965ca5dd0db09c3.md",
+    "result_schema_path": ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608070235-JPPAMT/README.md",
+      "sha256": "sha256:2fdcb942fbda3c17ba1383ac6a5075302f3f7b41f35af05db054ed8f2054dae8",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/5960a8fbcb44bc1d723d3ce9c45afa821070d8411ad1e7ee82aab1fd542dc71b.patch",
+      "sha256": "sha256:5960a8fbcb44bc1d723d3ce9c45afa821070d8411ad1e7ee82aab1fd542dc71b",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/29f2d60b41048616c55464c7a5c83e24caf60cc8d37140b663f363a29e11a826.json",
+      "sha256": "sha256:29f2d60b41048616c55464c7a5c83e24caf60cc8d37140b663f363a29e11a826",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/6550cb314bb3505b1c1debd688f03f5a0264a0f87a8c8a1bc32551a713a9d955.json",
+      "sha256": "sha256:6550cb314bb3505b1c1debd688f03f5a0264a0f87a8c8a1bc32551a713a9d955",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
