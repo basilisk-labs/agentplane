@@ -15,8 +15,13 @@ Return an exact result_path and structured resume_argv from task advance, expose
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Rebased onto current main; protocol, compact help, generated docs, type safety, and all critical
+compatibility gates pass.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +32,7 @@ Return an exact result_path and structured resume_argv from task advance, expose
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/user/cli-reference.generated.mdx              |   1 +
+ docs/user/cli-reference.generated.mdx              |  49 +++++
  .../run-cli.core.help-snap.test.ts.snap            |  12 +-
  .../src/cli/run-cli.core.help-contract.test.ts     |   8 +-
  .../src/cli/run-cli.core.task-advance.test.ts      | 211 ++++++++++++++++-----
@@ -44,8 +49,8 @@ Return an exact result_path and structured resume_argv from task advance, expose
  .../src/commands/task/agent-action-packet.test.ts  |  78 +++++++-
  .../src/commands/task/agent-action-packet.ts       |  71 ++++++-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
- .../agentplane/src/commands/task/task.command.ts   |  59 ++----
- 18 files changed, 495 insertions(+), 144 deletions(-)
+ .../agentplane/src/commands/task/task.command.ts   |  62 ++----
+ 18 files changed, 545 insertions(+), 145 deletions(-)
 ```
 
 </details>
