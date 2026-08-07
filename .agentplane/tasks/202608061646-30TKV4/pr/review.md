@@ -13,7 +13,7 @@ Created: 2026-08-06T19:12:24.484Z
 ## Verification
 
 - State: ok
-- Note: All seven declared checks pass on a743a9c42ca4; onboarding content and conservative ambiguous-intent coverage are now explicit.
+- Note: All eight declared checks pass on 0369e3c72d1d, including repository-wide formatting.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
