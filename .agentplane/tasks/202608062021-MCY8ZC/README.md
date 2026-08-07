@@ -1,10 +1,11 @@
 ---
 id: "202608062021-MCY8ZC"
 title: "Polish the external supervisor protocol and canonical task help"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -60,6 +61,20 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "No acceptance-criteria or policy violations were found in the frozen implementation and verification evidence."
+token_usage:
+  agent_runs: 3
+  input_tokens: 912556
+  journal_digest: "sha256:19e90c6e404fcfe2f231b11df66e8cef314b62bcb0297829a45805ae07734df4"
+  observed_agent_runs: 3
+  observed_by: "agentplane"
+  output_tokens: 8881
+  reasoning_tokens: 2046
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "observed"
+  total_tokens: 923483
+  unavailable_reason: null
+  updated_at: "2026-08-07T22:55:52.857Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -68,7 +83,9 @@ execution_route:
   requested_mode: "auto"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "a5e9f26e025d4c7bc538213f67bafc4d8eb201f8"
+  message: "✅ MCY8ZC supervisor: record evaluator pass"
 comments:
   -
     author: "CODER"
@@ -76,6 +93,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: exact external resume protocol, typed operator boundaries, dependency-safe routing, canonical task help, human plan provenance, and one-call branch worktree preparation."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -121,8 +141,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "All evaluator rework and declared checks pass on clean implementation SHA ada518fb9."
+  -
+    type: "status"
+    at: "2026-08-07T22:55:52.857Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T22:53:47.353Z"
+doc_updated_at: "2026-08-07T22:55:52.867Z"
 doc_updated_by: "CODER"
 description: "Return an exact result_path and structured resume_argv from task advance, expose a typed operator action at approval boundaries, make quickstart and role command guides supervisor-first, show the canonical new/active/advance/run/brief subset in compact task help, attribute explicit begin plans to a human source, and add an end-to-end branch_pr test that advances once from the base checkout and receives a worktree-bound WorkOrder without caller cwd changes."
 sections:
@@ -411,6 +438,9 @@ sections:
       Impact: The task cannot receive a passing verification record or publish its PR head until the foundational compatibility baseline is merged.
       Resolution: Merge 202608061850-BZT3D9, rebase this branch, rerun targeted, docs, typecheck, and critical suites, then replace this rework record with verified evidence.
 extensions:
+  implementation_commit:
+    hash: "ada518fb982b82bf7cb63c2576fb16b0bc56e47b"
+    message: "🧪 MCY8ZC supervisor: prove worktree source binding"
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
     version: 1
@@ -714,3 +744,16 @@ DecisionContextRef:
 - Observation: bun run test:critical stops at run-cli.critical.agent-efficiency-baseline.test.ts because the immutable v0.7.4 compatibility candidate no longer matches current shared CLI and prompt surfaces.
   Impact: The task cannot receive a passing verification record or publish its PR head until the foundational compatibility baseline is merged.
   Resolution: Merge 202608061850-BZT3D9, rebase this branch, rerun targeted, docs, typecheck, and critical suites, then replace this rework record with verified evidence.
+
+## Token Usage
+
+- State: `observed`
+- Completeness: `3/3` agent runs
+- Input tokens: `912556`
+- Output tokens: `8881`
+- Reasoning tokens: `2046`
+- Total tokens: `923483`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:19e90c6e404fcfe2f231b11df66e8cef314b62bcb0297829a45805ae07734df4`
+- Unavailable reason: `none`
+- Updated at: `2026-08-07T22:55:52.857Z`
