@@ -13,7 +13,7 @@ Created: 2026-08-06T19:12:24.484Z
 ## Verification
 
 - State: ok
-- Note: Structured deterministic verification covers the authoritative compatibility follow-up commit.
+- Note: User-first intake, execution preview, generated CLI docs, onboarding, type safety, policy routing, hotspot and compatibility contracts pass after CI-driven responsibility split.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

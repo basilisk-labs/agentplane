@@ -16,7 +16,12 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 ## Verification
 
 - State: ok
-- Note: Structured deterministic verification covers the authoritative compatibility follow-up commit.
+- Note:
+
+```text
+User-first intake, execution preview, generated CLI docs, onboarding, type safety, policy routing,
+hotspot and compatibility contracts pass after CI-driven responsibility split.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
