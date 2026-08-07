@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608061646-30TKV4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T01:00:19.375Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "a743a9c42ca4a35915c6781157e1081db6c122ce",
+  "blueprint_digest": "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62",
+  "findings": [
+    "No acceptance-criteria or policy violations were identified in the frozen implementation and verification evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/a9d8e99889f1c01445095cccbc0543bea7ccc223931e30dfeac023cde5d1560a.patch",
+    ".agentplane/tasks/202608061646-30TKV4/verification/20260807005855623-14f7546d507b8ff6.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

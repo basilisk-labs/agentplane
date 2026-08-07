@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "empty",
+      "severity": "low",
+      "summary": "No findings.",
+      "broken_invariant": "None.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/10da21d3dee9e373ba52d43aaf8e7662593dd31a6302ae4ad8add25fcf455349.json",
+          "sha256": "sha256:10da21d3dee9e373ba52d43aaf8e7662593dd31a6302ae4ad8add25fcf455349",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

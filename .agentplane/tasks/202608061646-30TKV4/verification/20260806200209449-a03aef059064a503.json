@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\nResult: pass\nEvidence: 3 files passed, 37 tests passed; includes empty and invalid intake, explicit route overrides, simultaneous exact duplicates, persisted route consistency, and task advance --agent-json compatibility\nScope: complete user-first task intake, preview, duplicate coordination, and compact agent handoff contract\n\nCommand: bun run docs:cli:check\nResult: pass\nEvidence: generated CLI reference is up to date\nScope: public CLI command and option documentation\n\nCommand: bun run docs:onboarding:check\nResult: pass\nEvidence: agent onboarding scenario surfaces are aligned\nScope: onboarding guidance affected by the task create workflow\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit code 0\nScope: implementation, lock coordination, and test type contracts\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK\nScope: policy gateway routing integrity",
+  "digest": "sha256:a03aef059064a50391d691e28f7ad2fce2e3bbec0ef9d4656c9f1267de883015",
+  "implementation_sha": "dbb7a18e2f1a190d27cf5a10944d4add569d2795",
+  "kind": "task_verification_record",
+  "note": "Verified the re-approved user-first task contract: cli-core 37/37 covers route inference and overrides, invalid inputs, simultaneous duplicate creation, persisted route consistency, dry-run preview, and task advance --agent-json compatibility; docs, onboarding, types, and routing also pass.",
+  "recorded_at": "2026-08-06T20:02:09.449Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\n- bun run docs:cli:check\n- bun run docs:onboarding:check\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:1e3e36afade323c09657b8fd8b642e24388663392d4ee528edb44f7db34b8c89",
+  "task_id": "202608061646-30TKV4",
+  "verification_command": "agentplane verify 202608061646-30TKV4 --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -69,17 +69,25 @@ export function makeRunTaskStatusHandler(session: {
       taskId: parsed.taskId,
     });
     const operatorGuidance = deriveRouteOperatorGuidance(decision);
+    const selectedRoute = decision.task.execution_route?.selected_mode ?? decision.workflowMode;
+    const nextStep = decision.oracle.nextCommand ?? decision.oracle.summary;
     const output = createCliEmitter();
     if (parsed.json) {
       if (parsed.route) {
         const { sourceConfidence, ...routeDecision } = decision;
         output.json({
           ...routeDecision,
+          selected_route: selectedRoute,
+          next_step: nextStep,
           operator_guidance: operatorGuidance,
           source_confidence: sourceConfidence,
         });
       } else {
-        output.json(decision.task);
+        output.json({
+          ...decision.task,
+          selected_route: selectedRoute,
+          next_step: nextStep,
+        });
       }
       return 0;
     }
@@ -98,6 +106,8 @@ export function makeRunTaskStatusHandler(session: {
       { label: "plan", value: decision.task.planApproval ?? "pending" },
       { label: "verification", value: decision.task.verification ?? "pending" },
       { label: "workflow", value: decision.workflowMode },
+      { label: "route", value: selectedRoute },
+      { label: "next", value: nextStep },
     ];
     if (parsed.route) {
       entries.push(
@@ -113,7 +123,6 @@ export function makeRunTaskStatusHandler(session: {
         { label: "checkout_role", value: decision.workspace.checkoutRole },
         { label: "pr_branch", value: decision.workspace.prBranch ?? "missing" },
         { label: "next_code", value: decision.nextAction.code },
-        { label: "next", value: decision.oracle.nextCommand ?? decision.oracle.summary },
         { label: "action_kind", value: decision.executionPacket.actionKind },
         { label: "operator_action", value: operatorGuidance.operatorAction },
         { label: "can_execute_now", value: String(operatorGuidance.canExecuteNow) },

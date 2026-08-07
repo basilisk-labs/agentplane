@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The frozen packet contains no deterministic verification records for the evaluated SHA.",
+      "broken_invariant": "Pass requires evidence that all declared checks, negative paths, concurrency-sensitive routing paths, and hosted PR checks passed for the evaluated SHA; observed checks contain empty verification_records, runner_history, and runtime_evidence arrays, with no direct supervision evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/8967159f715c70dc39a845fbfb50cc55d258dc53097ef7703366fb083650420d.json",
+          "sha256": "sha256:8967159f715c70dc39a845fbfb50cc55d258dc53097ef7703366fb083650420d",
+          "section": "verification_records, runner_history, runtime_evidence, direct_supervision"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Deterministic result records for every command in the task Verify Steps, bound to evaluated SHA 2c35aa1d9848ccdc44d1c13b722dc0253f4f4f9d.",
+    "Hosted-check evidence proving the PR head equals the evaluated SHA and all required checks completed successfully and remained stable.",
+    "Recorded evidence for the concurrency-sensitive integration lane and ancestry check required before obsolete branch cleanup."
+  ],
+  "hidden_assumptions": [
+    "Narrative verification notes accurately represent commands executed against the evaluated SHA despite the absence of deterministic runner records.",
+    "The CI recovery refresh did not change semantics or invalidate earlier verification.",
+    "Hosted checks and serialized integration conditions were satisfied even though no corresponding evidence is frozen."
+  ],
+  "recovery_context": "Provide frozen deterministic verification and hosted-check evidence bound to evaluated SHA 2c35aa1d9848ccdc44d1c13b722dc0253f4f4f9d, including the declared local checks, routing and supervisor regressions, integration-lane state, and branch-cleanup ancestry proof.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

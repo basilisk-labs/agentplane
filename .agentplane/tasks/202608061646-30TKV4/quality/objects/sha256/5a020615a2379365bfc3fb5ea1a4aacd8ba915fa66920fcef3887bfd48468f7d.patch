@@ -1,0 +1,2389 @@
+diff --git a/docs/start/quickstart.mdx b/docs/start/quickstart.mdx
+index 3119c9b1b..299ef306a 100644
+--- a/docs/start/quickstart.mdx
++++ b/docs/start/quickstart.mdx
+@@ -41,19 +41,38 @@ agentplane init
+ This creates the repo-local policy and workflow surface that agents can inspect before mutating
+ files.
+ 
+-## Hand work to an agent
++## Create the first task
+ 
+-Give your coding agent the repository and the task. The agent should read the policy gateway,
+-operate the Agentplane lifecycle, run the relevant checks, and leave Git-visible evidence.
++Describe the outcome in ordinary language. Agentplane records structured intent, chooses a safe
++initial route, and stops at the first semantic boundary:
+ 
+-Use this prompt shape:
++```bash
++agentplane task create "Fix the parser edge case" --json
++```
+ 
+-```text
+-Use Agentplane as the harness. Read AGENTS.md, create or continue the task, keep the diff inside the
+-approved scope, run the verification contract, and record the result before asking for review.
++Copy the returned `task_id`. Before starting a configured runner, inspect the exact route, bounded
++context, approvals, checks, and available budgets without invoking the provider:
++
++```bash
++agentplane task run <task-id> --dry-run --json
++```
++
++The JSON response includes `execution_preview`. Use the managed supervisor for execution:
++
++```bash
++agentplane task run <task-id>
+ ```
+ 
+-If you want to inspect the installed route yourself before handoff:
++For an external coding agent, request one bounded semantic action instead:
++
++```bash
++agentplane task advance <task-id> --agent-json
++```
++
++The external agent performs only the returned semantic objective and returns its typed result;
++Agentplane retains ownership of task state, routing, verification, and closeout.
++
++To inspect the installed route yourself before handoff:
+ 
+ ```bash
+ agentplane quickstart
+diff --git a/docs/user/cli-reference.generated.mdx b/docs/user/cli-reference.generated.mdx
+index 0d2a90418..750e02c77 100644
+--- a/docs/user/cli-reference.generated.mdx
++++ b/docs/user/cli-reference.generated.mdx
+@@ -68,10 +68,10 @@ Field names and casing are exact. Optional fields are omitted when no value is a
+   - [task ask](#task-ask)
+   - [task brief](#task-brief)
+   - [task comment](#task-comment)
++  - [task create](#task-create)
+   - [task doc set](#task-doc-set)
+   - [task doc show](#task-doc-show)
+   - [task list](#task-list)
+-  - [task new](#task-new)
+   - [task next](#task-next)
+   - [task plan approve](#task-plan-approve)
+   - [task plan set](#task-plan-set)
+@@ -599,6 +599,42 @@ agentplane task comment 202602030608-F1Q8AB --author CODER --body "Investigated
+ 
+ - Add a comment and bump doc metadata.
+ 
++### task create
++
++Create a task from a natural-language outcome and explain its execution route.
++
++Infers conservative structured intent, stores an explainable automatic route, and stops at the semantic planning boundary.
++
++Usage:
++
++```text
++agentplane task create <outcome> [options]
++```
++
++Options:
++
++- `--description <text>`: Additional task context. Defaults to the requested outcome.
++- `--owner <id>`: Task owner id. (default=CODER)
++- `--priority <low|normal|med|high>`: Task priority. (choices=low|normal|med|high, default=med)
++- `--route <auto|direct|branch_pr>`: Execution-route request. auto is conservative and explainable. (choices=auto|direct|branch_pr, default=auto)
++- `--verify <command>`: Repeatable. Seed an explicit verification command. (repeatable)
++- `--allow-duplicate`: Allow an exact duplicate of an open task. (default=false)
++- `--json`: Emit JSON. (default=false)
++
++Examples:
++
++```sh
++agentplane task create "Fix the parser edge case"
++```
++
++- Create a bounded task with automatic route selection.
++
++```sh
++agentplane task create "Publish the next patch release" --json
++```
++
++- Create a high-risk task and return its branch_pr decision as JSON.
++
+ ### task doc set
+ 
+ Update a task README section.
+@@ -707,55 +743,6 @@ agentplane task list --status TODO --owner CODER
+ 
+ - List filtered tasks.
+ 
+-### task new
+-
+-Create a new task (prints the generated task id).
+-
+-Creates a TODO task with doc_version=3, seeds the README v3 section layout, and writes it via the configured task backend.
+-
+-Usage:
+-
+-```text
+-agentplane task new --title <text> --description <text> --owner <id> [options]
+-```
+-
+-Options:
+-
+-- `--title <text>`: Task title. (required)
+-- `--description <text>`: Task description. (required)
+-- `--owner <id>`: Owner id (e.g. CODER). (required)
+-- `--priority <low|normal|med|high>`: Task priority (default: med). (choices=low|normal|med|high, default=med)
+-- `--tag <tag>`: Repeatable. Adds a tag (must provide at least one). (repeatable)
+-- `--task-kind <analysis|content|docs|code|release|ops|context>`: Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops|context)
+-- `--mutation-scope <none|docs|code|release|ops|context|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
+-- `--risk <risk>`: Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
+-- `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|context.maximum_assimilation|post_run.improvement_review|release.strict|ops.approval)
+-- `--route <repository|auto|direct|branch_pr>`: Task execution route. repository preserves legacy behavior; auto may escalate a direct repository to branch_pr when isolation risk requires it. (choices=repository|auto|direct|branch_pr, default=repository)
+-- `--depends-on <task-id>`: Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
+-- `--verify <command>`: Repeatable. Verification commands/checks to run for this task. (repeatable)
+-- `--show-blueprint`: Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
+-- `--allow-duplicate`: Allow creating a task even when an open task with a highly similar title already exists. (default=false)
+-
+-Notes:
+-
+-- Task creation defaults to doc_version=3 and seeds the README v3 section contract automatically.
+-- For verify-required primary tags, this command seeds a default ## Verify Steps acceptance contract in README.
+-- \`--show-blueprint\` writes route preview details to stderr; stdout remains only the generated task id.
+-
+-Examples:
+-
+-```sh
+-agentplane task new --title "Refactor CLI" --description "Improve CLI output" --owner CODER --tag cli
+-```
+-
+-- Create a new task with one tag.
+-
+-```sh
+-agentplane task new --title "Market analysis note" --description "Analyze market context" --owner ANALYST --tag analysis --task-kind analysis --mutation-scope none --show-blueprint
+-```
+-
+-- Create a task and preview the resolved route without changing the task-id stdout contract.
+-
+ ### task next
+ 
+ List ready tasks (default status=TODO) with optional filters.
+diff --git a/packages/agentplane/src/cli/command-invocations.ts b/packages/agentplane/src/cli/command-invocations.ts
+index 742e9e3ee..5f61b05ef 100644
+--- a/packages/agentplane/src/cli/command-invocations.ts
++++ b/packages/agentplane/src/cli/command-invocations.ts
+@@ -22,6 +22,7 @@ const COMMAND_INVOCATIONS = new Map<string, string>([
+   ["task brief", "agentplane task brief <task-id>"],
+   ["task advance", "agentplane task advance <task-id> --agent-json"],
+   ["task run", "agentplane task run <task-id>"],
++  ["task create", 'agentplane task create "<outcome>"'],
+   ["task begin", 'agentplane task begin "..." --tag <tag> --verify "<check>"'],
+   ["task complete", 'agentplane task complete <task-id> --result "..." --commit <git-rev>'],
+   [
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+index 24dc04980..3c85d89b8 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+@@ -113,6 +113,14 @@ describe("runCli route decision commands", () => {
+       statusIo.restore();
+     }
+ 
++    const [simpleStatusCode, simpleStatus] = await runJson<{
++      selected_route: string;
++      next_step: string;
++    }>(["task", "status", taskId, "--json", "--root", root]);
++    expect(simpleStatusCode).toBe(0);
++    expect(simpleStatus.selected_route).toBe("branch_pr");
++    expect(simpleStatus.next_step).toContain(`work start ${taskId}`);
++
+     const nextIo = captureStdIO();
+     try {
+       const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-run.test.ts b/packages/agentplane/src/cli/run-cli.core.task-run.test.ts
+index c017cf35b..eb196e331 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-run.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-run.test.ts
+@@ -19,7 +19,14 @@ import {
+ } from "../runner/artifacts.js";
+ import { resolveTaskRunnerPaths } from "../runner/task-run-paths.js";
+ import * as taskRunUsecases from "../runner/usecases/task-run.js";
+-import { makeRunTaskRunHandler } from "../commands/task/run.command.js";
++import {
++  projectExecutedTaskRunnerLifecycleResult,
++  taskRunnerLifecycleExitCode,
++} from "../runner/usecases/task-run-lifecycle-result.js";
++import {
++  renderTaskRunnerLifecyclePayload,
++  reportExecutedTaskRun,
++} from "../commands/task/run-render.js";
+ import { loadCommandContext } from "../commands/shared/task-backend.js";
+ import { persistRunnerOutcomeToTask } from "../runner/task-state.js";
+ import { staleClaim, writeActiveClaim } from "../runner/usecases/task-run-active-claim.testkit.js";
+@@ -114,7 +121,7 @@ async function createStartedRunnerTask(root: string, title: string): Promise<str
+ }
+ 
+ describe("runCli task run", () => {
+-  it("reports degraded claim cleanup in JSON and human output with a nonzero exit", async () => {
++  it("reports degraded claim cleanup in JSON and human output with a nonzero exit", () => {
+     const cleanup = {
+       status: "cleanup_failed" as const,
+       code: "E_RUNTIME",
+@@ -143,60 +150,22 @@ describe("runCli task run", () => {
+       bundle: {},
+       active_claim_cleanup: cleanup,
+     } as unknown as Awaited<ReturnType<typeof taskRunUsecases.executeTaskRunnerExecution>>;
+-    const executeSpy = vi
+-      .spyOn(taskRunUsecases, "executeTaskRunnerExecution")
+-      .mockResolvedValue(executed);
+-    const getPreparationContext = vi.fn(async () => {
+-      await Promise.resolve();
+-      return {} as never;
+-    });
+-    const getExecutionContext = vi.fn(async () => {
+-      await Promise.resolve();
+-      return {} as never;
++    const lifecycle = projectExecutedTaskRunnerLifecycleResult({
++      task_id: "202607241200-DEGRADED",
++      execution: executed,
+     });
+-    const handler = makeRunTaskRunHandler({
+-      getPreparationContext,
+-      getExecutionContext,
+-    });
+-    const commandContext = { cwd: "/repo", rootOverride: null } as never;
+-    const parsed = {
+-      taskId: "202607241200-DEGRADED",
+-      dryRun: false,
+-      remote: false,
+-      allowDangerFullAccess: false,
+-      json: true,
+-    };
++    const payload = renderTaskRunnerLifecyclePayload(lifecycle);
++    expect(payload.lifecycle_status).toBe("degraded");
++    expect(payload.active_claim_cleanup).toEqual(cleanup);
++    expect(taskRunnerLifecycleExitCode(lifecycle)).toBe(1);
++
++    const io = captureStdIO();
+     try {
+-      {
+-        const io = captureStdIO();
+-        try {
+-          await expect(handler(commandContext, parsed)).resolves.toBe(1);
+-          const payload = JSON.parse(io.stdout) as {
+-            lifecycle_status: string;
+-            active_claim_cleanup: typeof cleanup;
+-          };
+-          expect(payload.lifecycle_status).toBe("degraded");
+-          expect(payload.active_claim_cleanup).toEqual(cleanup);
+-          expect(getPreparationContext).not.toHaveBeenCalled();
+-          expect(getExecutionContext).toHaveBeenCalledWith("task run", {
+-            includeRemote: false,
+-          });
+-        } finally {
+-          io.restore();
+-        }
+-      }
+-      {
+-        const io = captureStdIO();
+-        try {
+-          await expect(handler(commandContext, { ...parsed, json: false })).resolves.toBe(1);
+-          expect(io.stdout).toContain("degraded");
+-          expect(io.stdout).toContain(cleanup.message);
+-        } finally {
+-          io.restore();
+-        }
+-      }
++      reportExecutedTaskRun(payload, "202607241200-DEGRADED");
++      expect(io.stdout).toContain("degraded");
++      expect(io.stdout).toContain(cleanup.message);
+     } finally {
+-      executeSpy.mockRestore();
++      io.restore();
+     }
+   });
+ 
+@@ -240,11 +209,48 @@ describe("runCli task run", () => {
+         run_id: string;
+         bootstrap_path: string;
+         result_path: string;
++        execution_preview: {
++          route: { requested_mode: string; selected_mode: string; reason_codes: string[] };
++          context: {
++            blueprint_id: string | null;
++            task_sections: number;
++            task_context_bytes: number;
++            prompt_blocks: number;
++            policy_modules: number;
++          };
++          approvals: { plan: boolean; verify: boolean; network: boolean; force: boolean };
++          checks: string[];
++          budgets: {
++            token: { state: string; reason: string };
++            context: { max_policy_modules: number; max_prompt_blocks: number | null } | null;
++          };
++        };
+       };
+       expect(payload.task_id).toBe(taskId);
+       expect(payload.mode).toBe("dry_run");
+       expect(payload.adapter_id).toBe("codex");
+       expect(payload.result_path).toContain(`/runs/`);
++      expect(payload.execution_preview.route).toEqual({
++        requested_mode: "repository",
++        selected_mode: "direct",
++        reason_codes: ["repository_mode_selected"],
++      });
++      expect(payload.execution_preview.context.blueprint_id).toBe("code.direct");
++      expect(Number.isFinite(payload.execution_preview.context.task_sections)).toBe(true);
++      expect(Number.isFinite(payload.execution_preview.context.task_context_bytes)).toBe(true);
++      expect(Number.isFinite(payload.execution_preview.context.prompt_blocks)).toBe(true);
++      expect(Number.isFinite(payload.execution_preview.context.policy_modules)).toBe(true);
++      expect(payload.execution_preview.approvals).toEqual({
++        plan: true,
++        verify: true,
++        network: true,
++        force: false,
++      });
++      expect(payload.execution_preview.checks).toContain("bun run test:critical");
++      expect(payload.execution_preview.budgets.token.state).toBe("unavailable");
++      expect(Number.isFinite(payload.execution_preview.budgets.context?.max_policy_modules)).toBe(
++        true,
++      );
+ 
+       const bootstrap = await readFile(payload.bootstrap_path, "utf8");
+       expect(bootstrap.split("\n")[0]).toBe(
+diff --git a/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts b/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts
+index 2eb177298..e4ee50947 100644
+--- a/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts
+@@ -1,19 +1,8 @@
+ /* eslint-disable @typescript-eslint/no-unused-vars */
+-import { execFile } from "node:child_process";
+ import { readFileSync } from "node:fs";
+-import {
+-  chmod,
+-  mkdir,
+-  mkdtemp,
+-  readdir,
+-  readFile,
+-  realpath,
+-  rm,
+-  writeFile,
+-} from "node:fs/promises";
++import { chmod, mkdir, mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
+ import os from "node:os";
+ import path from "node:path";
+-import { promisify } from "node:util";
+ import { describe, expect, it, vi } from "vitest";
+ import { defaultConfig, extractTaskSuffix, type ResolvedProject } from "./core-imports.js";
+ import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
+@@ -28,7 +17,6 @@ import {
+ import * as taskBackend from "../backends/task-backend.js";
+ import {
+   captureStdIO,
+-  cleanGitEnv,
+   commitAll,
+   configureGitUser,
+   createUpgradeBundle,
+@@ -50,7 +38,6 @@ import * as prompts from "./prompts.js";
+ 
+ installRunCliIntegrationHarness();
+ const TASKS_CLI_TIMEOUT_MS = 300_000;
+-
+ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
+   it("task new creates a task README and prints the id", async () => {
+     const root = await mkGitRepoRoot();
+diff --git a/packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts b/packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts
+new file mode 100644
+index 000000000..a67315c9e
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts
+@@ -0,0 +1,304 @@
++import { execFile } from "node:child_process";
++import { readdir } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++import { describe, expect, it } from "vitest";
++import { readTask } from "@agentplaneorg/core/tasks";
++import {
++  captureStdIO,
++  cleanGitEnv,
++  installRunCliIntegrationHarness,
++  mkGitRepoRoot,
++} from "@agentplane/testkit";
++import { runCli } from "./run-cli.js";
++
++installRunCliIntegrationHarness();
++const TASKS_CLI_TIMEOUT_MS = 300_000;
++const execFileAsync = promisify(execFile);
++
++type CliProcessResult = {
++  code: number;
++  stdout: string;
++  stderr: string;
++};
++
++const SYNCHRONIZED_CLI_LAUNCHER = String.raw`
++const { spawnSync } = require("node:child_process");
++const startAt = Number(process.argv[1]);
++const cliPath = process.argv[2];
++const cliArgs = process.argv.slice(3);
++const waitSignal = new Int32Array(new SharedArrayBuffer(4));
++while (Date.now() < startAt) {
++  Atomics.wait(waitSignal, 0, 0, Math.min(10, startAt - Date.now()));
++}
++const result = spawnSync(process.execPath, [cliPath, ...cliArgs], {
++  cwd: process.cwd(),
++  env: process.env,
++  encoding: "utf8",
++});
++process.stdout.write(result.stdout ?? "");
++process.stderr.write(result.stderr ?? "");
++if (result.error) throw result.error;
++process.exit(result.status ?? 1);
++`;
++
++async function runSynchronizedCliProcess(opts: {
++  args: string[];
++  startAt: number;
++}): Promise<CliProcessResult> {
++  const cliPath = path.resolve("packages/agentplane/bin/agentplane.js");
++  try {
++    const { stdout, stderr } = await execFileAsync(
++      process.execPath,
++      ["-e", SYNCHRONIZED_CLI_LAUNCHER, String(opts.startAt), cliPath, ...opts.args],
++      {
++        cwd: process.cwd(),
++        env: cleanGitEnv(),
++        maxBuffer: 4 * 1024 * 1024,
++      },
++    );
++    return { code: 0, stdout, stderr };
++  } catch (error) {
++    const failure = error as Error & {
++      code?: number | string;
++      stdout?: string;
++      stderr?: string;
++    };
++    return {
++      code: typeof failure.code === "number" ? failure.code : 1,
++      stdout: failure.stdout ?? "",
++      stderr: failure.stderr ?? failure.message,
++    };
++  }
++}
++
++describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
++  it("infers bounded code intent and returns one semantic next step", async () => {
++    const root = await mkGitRepoRoot();
++    const io = captureStdIO();
++    try {
++      const code = await runCli([
++        "task",
++        "create",
++        "Fix the parser edge case",
++        "--json",
++        "--root",
++        root,
++      ]);
++      expect(code).toBe(0);
++      const payload = JSON.parse(io.stdout) as {
++        task_id: string;
++        status: string;
++        inferred_intent: {
++          code: string;
++          task_kind: string;
++          mutation_scope: string;
++          blueprint_request: string;
++        };
++        execution_route: { requested_mode: string; selected_mode: string; reason_codes: string[] };
++        required_role: string;
++        next_command: string;
++      };
++      expect(payload.status).toBe("semantic_input_required");
++      expect(payload.inferred_intent).toMatchObject({
++        code: "bounded_code_change",
++        task_kind: "code",
++        mutation_scope: "code",
++        blueprint_request: "code.direct",
++      });
++      expect(payload.execution_route).toMatchObject({
++        requested_mode: "auto",
++        selected_mode: "direct",
++        reason_codes: ["automatic_safe_direct"],
++      });
++      expect(payload.required_role).toBe("PLANNER");
++      expect(payload.next_command).toBe(`agentplane task advance ${payload.task_id} --agent-json`);
++
++      const task = await readTask({ cwd: root, rootOverride: root, taskId: payload.task_id });
++      expect(task.frontmatter.execution_route).toEqual(
++        expect.objectContaining({
++          requested_mode: "auto",
++          selected_mode: "direct",
++          frozen: true,
++        }),
++      );
++      expect(task.frontmatter.blueprint_request).toBe("code.direct");
++    } finally {
++      io.restore();
++    }
++  });
++
++  it("conservatively isolates complex and release outcomes", async () => {
++    const root = await mkGitRepoRoot();
++    const outcomes = [
++      ["Refactor the task framework", "complex_code_change", "code.branch_pr"],
++      ["Выпусти следующий патч-релиз", "release_intent", "release.strict"],
++      ["Do not publish; only fix the parser", "release_intent", "release.strict"],
++      ["Document the release checklist", "release_intent", "release.strict"],
++    ] as const;
++
++    for (const [outcome, inferenceCode, blueprint] of outcomes) {
++      const io = captureStdIO();
++      try {
++        const code = await runCli(["task", "create", outcome, "--json", "--root", root]);
++        expect(code).toBe(0);
++        const payload = JSON.parse(io.stdout) as {
++          inferred_intent: { code: string; blueprint_request: string };
++          execution_route: { selected_mode: string; reason_codes: string[] };
++        };
++        expect(payload.inferred_intent).toMatchObject({
++          code: inferenceCode,
++          blueprint_request: blueprint,
++        });
++        expect(payload.execution_route.selected_mode).toBe("branch_pr");
++        expect(payload.execution_route.reason_codes.length).toBeGreaterThan(0);
++      } finally {
++        io.restore();
++      }
++    }
++  });
++
++  it("rejects invalid intake and persists safe explicit route overrides", async () => {
++    const root = await mkGitRepoRoot();
++
++    for (const args of [
++      ["task", "create", "   ", "--root", root],
++      ["task", "create", "Fix the parser", "--route", "sideways", "--root", root],
++    ]) {
++      const io = captureStdIO();
++      try {
++        const code = await runCli(args);
++        expect(code).toBe(2);
++        expect(io.stderr).toMatch(/outcome|--route/u);
++      } finally {
++        io.restore();
++      }
++    }
++
++    const cases = [
++      ["Fix the direct parser path", "direct", "direct", "explicit_direct"],
++      ["Fix the isolated parser path", "branch_pr", "branch_pr", "explicit_branch_pr"],
++      ["Publish the next patch release", "direct", "branch_pr", "direct_request_overridden"],
++    ] as const;
++    for (const [outcome, requestedRoute, selectedRoute, reason] of cases) {
++      const io = captureStdIO();
++      try {
++        const code = await runCli([
++          "task",
++          "create",
++          outcome,
++          "--route",
++          requestedRoute,
++          "--json",
++          "--root",
++          root,
++        ]);
++        expect(code).toBe(0);
++        const payload = JSON.parse(io.stdout) as {
++          task_id: string;
++          execution_route: {
++            requested_mode: string;
++            selected_mode: string;
++            reason_codes: string[];
++          };
++        };
++        expect(payload.execution_route).toMatchObject({
++          requested_mode: requestedRoute,
++          selected_mode: selectedRoute,
++        });
++        expect(payload.execution_route.reason_codes).toContain(reason);
++
++        const task = await readTask({ cwd: root, rootOverride: root, taskId: payload.task_id });
++        expect(task.frontmatter.execution_route).toEqual(
++          expect.objectContaining({
++            requested_mode: requestedRoute,
++            selected_mode: selectedRoute,
++            frozen: true,
++          }),
++        );
++      } finally {
++        io.restore();
++      }
++    }
++  });
++
++  it("keeps the compact task advance agent-json handoff compatible", async () => {
++    const root = await mkGitRepoRoot();
++    let taskId = "";
++    const createIo = captureStdIO();
++    try {
++      const code = await runCli([
++        "task",
++        "create",
++        "Fix the compact handoff",
++        "--json",
++        "--root",
++        root,
++      ]);
++      expect(code).toBe(0);
++      taskId = (JSON.parse(createIo.stdout) as { task_id: string }).task_id;
++    } finally {
++      createIo.restore();
++    }
++
++    const advanceIo = captureStdIO();
++    try {
++      const code = await runCli(["task", "advance", taskId, "--agent-json", "--root", root]);
++      expect(code).toBe(0);
++      const packet = JSON.parse(advanceIo.stdout) as {
++        schema_version: number;
++        task_id: string;
++        action: { kind: string };
++        stop: { reason: string; resume: string };
++      };
++      expect(packet).toMatchObject({
++        schema_version: 1,
++        task_id: taskId,
++        action: { kind: "agent_episode" },
++        stop: { reason: "semantic_boundary", resume: "request_fresh_packet" },
++      });
++    } finally {
++      advanceIo.restore();
++    }
++  });
++
++  it("serializes cross-process exact duplicates and preserves the selected route", async () => {
++    const root = await mkGitRepoRoot();
++    const args = ["task", "create", "Fix the concurrent parser path", "--json", "--root", root];
++    const startAt = Date.now() + 1000;
++    const results = await Promise.all([
++      runSynchronizedCliProcess({ args, startAt }),
++      runSynchronizedCliProcess({ args, startAt }),
++    ]);
++
++    expect(results.map((result) => result.code).toSorted(), JSON.stringify(results)).toEqual([
++      0, 4,
++    ]);
++    const successfulResult = results.find((result) => result.code === 0);
++    const duplicateResult = results.find((result) => result.code === 4);
++    expect(successfulResult).toBeDefined();
++    expect(duplicateResult?.stderr).toContain("exact duplicate open task detected");
++    const created = JSON.parse(successfulResult?.stdout ?? "") as {
++      task_id: string;
++      execution_route: { selected_mode: string; frozen: boolean };
++    };
++    expect(created.execution_route).toMatchObject({ selected_mode: "direct", frozen: true });
++
++    const taskEntries = await readdir(path.join(root, ".agentplane", "tasks"), {
++      withFileTypes: true,
++    });
++    const taskIds = taskEntries
++      .filter((entry) => entry.isDirectory() && /^\d{12}-[A-Z0-9]{6}$/u.test(entry.name))
++      .map((entry) => entry.name);
++    expect(taskIds).toEqual([created.task_id]);
++    const task = await readTask({ cwd: root, rootOverride: root, taskId: taskIds[0] ?? "" });
++    expect(task.frontmatter.execution_route).toEqual(
++      expect.objectContaining({
++        requested_mode: "auto",
++        selected_mode: "direct",
++        reason_codes: ["automatic_safe_direct"],
++        frozen: true,
++      }),
++    );
++  });
++});
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index ea4ea6da3..ef275e42f 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       const efficiency = await runNode([EFFICIENCY_CHECK]);
+ 
+       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
+-      expect(compatibility.stdout).toContain("259commands/179args/829options");
++      expect(compatibility.stdout).toContain("260commands/180args/836options");
+       expect(compatibility.stdout).toContain(
+         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
+       );
+@@ -194,13 +194,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202608022324-9VCYWG",
+           "202608021535-CNQKXP",
+           "202608061646-WCARQG",
++          "202608061646-30TKV4",
+         ],
+         candidate: {
+-          surface_sha256: "c710ccaa31b43988b633441c168651a1e57aa47d17fd97f18e0acafd14776848",
++          surface_sha256: "d0f057e72f5a3ae2bbd15f737469195d1ca9b4fb5b3e76cc336063c1e5e76c56",
+           section_digests: {
+             agent_facing_context_contracts:
+               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+-            cli_topology: "c15bff5ccf748801205499a8e483524162422c4659a06fc201ad13d9d7c1f8cc",
++            cli_topology: "8d1f0c009fb24cfd4d897e63085f8077357eddd0d6d556c1f0f11a0f2c4ada21",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+             package_manifests: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+@@ -230,7 +231,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           section: "package_manifests",
+           from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+           to_sha256: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+-          surface_sha256: "f1f7ba365b8912771323910df3e34843708feeccc291944d50a1ab2f7874ca01",
++          surface_sha256: "cd30e3bf54b3c211f2d174939e1b8f402075fa2efc745598d98386082da1fe3a",
+           allowed_json_paths: [
+             "$.package_manifests[0].dependencies.@agentplaneorg/core",
+             "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -350,6 +351,34 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           },
+         },
+       });
++      const cliDelta = compatibilityCandidate.deltas.find(
++        (delta) => (delta as { section?: string }).section === "cli_topology",
++      ) as
++        | {
++            source_tasks: string[];
++            evidence: {
++              added_commands: string[];
++              addition_sources: Array<{
++                kind: string;
++                command: string;
++                source_task: string;
++              }>;
++            };
++          }
++        | undefined;
++      expect(cliDelta).toMatchObject({
++        source_tasks: expect.arrayContaining(["202608061646-30TKV4"]),
++        evidence: {
++          added_commands: expect.arrayContaining(["task create"]),
++          addition_sources: expect.arrayContaining([
++            {
++              kind: "command",
++              command: "task create",
++              source_task: "202608061646-30TKV4",
++            },
++          ]),
++        },
++      });
+       expect(compatibilityCandidate.deltas).toContainEqual({
+         section: "agent_facing_context_contracts",
+         source_tasks: [
+@@ -569,7 +598,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
+       expect(JSON.parse(result.stdout)).toEqual({
+         packageManifestDigest: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+-        surfaceDigest: "f1f7ba365b8912771323910df3e34843708feeccc291944d50a1ab2f7874ca01",
++        surfaceDigest: "cd30e3bf54b3c211f2d174939e1b8f402075fa2efc745598d98386082da1fe3a",
+         changedPaths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+index aa842a608..d3ffab8f7 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+@@ -31,6 +31,7 @@ import { taskListSpec } from "../../../commands/task/list.spec.js";
+ import { taskMigrateDocSpec } from "../../../commands/task/migrate-doc.command.js";
+ import { taskMigrateSpec } from "../../../commands/task/migrate.command.js";
+ import { taskNewSpec } from "../../../commands/task/new.spec.js";
++import { taskCreateSpec } from "../../../commands/task/create.command.js";
+ import { taskBeginSpec } from "../../../commands/task/begin.command.js";
+ import { taskBriefSpec } from "../../../commands/task/brief.command.js";
+ import { taskCompleteSpec } from "../../../commands/task/complete.command.js";
+@@ -126,6 +127,7 @@ import {
+   loadTaskNextActionSpec,
+   loadTaskAdvanceSpec,
+   loadTaskNewSpec,
++  loadTaskCreateSpec,
+   loadTaskBeginSpec,
+   loadTaskBriefSpec,
+   loadTaskRunInspectSpec,
+@@ -262,6 +264,13 @@ export const TASK_COMMANDS = [
+     load: loadTaskNewSpec,
+     requirements: TASK_WRITE_REQUIREMENTS,
+     invocation: requireCanonicalCommandInvocation(["task", "new"]),
++    surface: "advanced",
++    helpGroup: "Advanced",
++  }),
++  declareSessionCommand(taskCreateSpec, {
++    load: loadTaskCreateSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
++    invocation: requireCanonicalCommandInvocation(["task", "create"]),
+     canonicalHelp: true,
+   }),
+   declareSessionCommand(taskBeginSpec, {
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+index 1782bca71..98db1b6b3 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+@@ -159,6 +159,10 @@ export const loadTaskNewSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/new.command.js").then((m) =>
+     m.makeRunTaskNewHandler(getSessionContext(session, "task.write")),
+   );
++export const loadTaskCreateSpec = (session: TaskWriteSession) =>
++  import("../../../commands/task/create.command.js").then((m) =>
++    m.makeRunTaskCreateHandler(getSessionContext(session, "task.write")),
++  );
+ export const loadTaskBeginSpec = (session: TaskLifecycleSession) =>
+   import("../../../commands/task/begin.command.js").then((m) =>
+     m.makeRunTaskBeginHandler(getSessionContext(session, "git.mutate")),
+diff --git a/packages/agentplane/src/commands/task/create.command.ts b/packages/agentplane/src/commands/task/create.command.ts
+new file mode 100644
+index 000000000..b016d4e69
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/create.command.ts
+@@ -0,0 +1,409 @@
++import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
++import { usageError } from "../../cli/spec/errors.js";
++import { createCliEmitter } from "../../cli/output.js";
++import { makeExecutionContext } from "../../runtime/execution-context.js";
++import { resolveTaskExecutionRoute } from "../../runtime/task-routing/index.js";
++import { throwIfPolicyDecisionDenied } from "../shared/policy-deny.js";
++import type { CommandContext } from "../shared/task-backend.js";
++
++import { runTaskNewParsed, type TaskNewParsed } from "./new.js";
++
++const output = createCliEmitter();
++
++type UserTaskRoute = Exclude<NonNullable<TaskNewParsed["route"]>, "repository">;
++
++export type TaskCreateParsed = {
++  outcome: string;
++  description?: string;
++  owner: string;
++  priority: TaskNewParsed["priority"];
++  route: UserTaskRoute;
++  verify: string[];
++  allowDuplicate: boolean;
++  json: boolean;
++};
++
++export type InferredTaskIntent = Pick<
++  TaskNewParsed,
++  "taskKind" | "mutationScope" | "riskFlags" | "blueprintRequest" | "tags"
++> & {
++  inference_code: string;
++};
++
++const RELEASE_TERMS = ["release", "publish", "version bump", "npm", "релиз", "опубликов", "верси"];
++const OPS_TERMS = [
++  "deploy",
++  "production",
++  "infrastructure",
++  "server",
++  "kubernetes",
++  "docker",
++  "деплой",
++  "продакш",
++  "инфраструктур",
++  "сервер",
++];
++const SECURITY_TERMS = [
++  "security",
++  "credential",
++  "secret",
++  "authentication",
++  "authorization",
++  "безопасност",
++  "секрет",
++  "аутентификац",
++  "авторизац",
++];
++const CONTEXT_TERMS = [
++  "context layer",
++  "context pack",
++  "knowledge base",
++  "контекст",
++  "база знаний",
++];
++const DOCS_TERMS = [
++  "documentation",
++  "readme",
++  "docs",
++  "guide",
++  "документац",
++  "руководств",
++  "инструкц",
++];
++const PERFORMANCE_TERMS = [
++  "performance",
++  "benchmark",
++  "latency",
++  "optimize",
++  "производительн",
++  "бенчмарк",
++  "задержк",
++  "оптимиз",
++];
++const QUALITY_TERMS = [
++  "regression",
++  "test coverage",
++  "quality gate",
++  "регрес",
++  "покрытие тест",
++  "качество",
++];
++const ANALYSIS_TERMS = [
++  "analyze",
++  "analysis",
++  "audit",
++  "review",
++  "research",
++  "сравни",
++  "анализ",
++  "аудит",
++  "ревью",
++  "исслед",
++];
++const COMPLEX_CHANGE_TERMS = [
++  "refactor",
++  "migration",
++  "architecture",
++  "redesign",
++  "breaking",
++  "across packages",
++  "multi-module",
++  "framework",
++  "рефактор",
++  "миграц",
++  "архитект",
++  "переработ",
++  "нескольк",
++  "фреймворк",
++];
++
++function containsAny(value: string, terms: readonly string[]): boolean {
++  return terms.some((term) => value.includes(term));
++}
++
++export function inferUserTaskIntent(outcome: string, description?: string): InferredTaskIntent {
++  const text = `${outcome}\n${description ?? ""}`.toLocaleLowerCase();
++
++  if (containsAny(text, RELEASE_TERMS)) {
++    return {
++      taskKind: "release",
++      mutationScope: "release",
++      riskFlags: ["publish"],
++      blueprintRequest: "release.strict",
++      tags: ["release"],
++      inference_code: "release_intent",
++    };
++  }
++  if (containsAny(text, OPS_TERMS)) {
++    return {
++      taskKind: "ops",
++      mutationScope: "ops",
++      riskFlags: ["deploy", "external_system"],
++      blueprintRequest: "ops.approval",
++      tags: ["ops"],
++      inference_code: "operations_intent",
++    };
++  }
++  if (containsAny(text, SECURITY_TERMS)) {
++    return {
++      taskKind: "code",
++      mutationScope: "code",
++      riskFlags: ["security"],
++      blueprintRequest: "code.branch_pr",
++      tags: ["code", "security"],
++      inference_code: "security_sensitive_change",
++    };
++  }
++  if (containsAny(text, CONTEXT_TERMS)) {
++    return {
++      taskKind: "context",
++      mutationScope: "context",
++      riskFlags: [],
++      blueprintRequest: "context.assimilation",
++      tags: ["context"],
++      inference_code: "context_intent",
++    };
++  }
++  if (containsAny(text, DOCS_TERMS)) {
++    return {
++      taskKind: "docs",
++      mutationScope: "docs",
++      riskFlags: [],
++      blueprintRequest: "docs.change",
++      tags: ["docs"],
++      inference_code: "documentation_change",
++    };
++  }
++  if (containsAny(text, PERFORMANCE_TERMS)) {
++    return {
++      taskKind: "code",
++      mutationScope: "code",
++      riskFlags: [],
++      blueprintRequest: "performance.benchmark",
++      tags: ["code", "performance"],
++      inference_code: "performance_change",
++    };
++  }
++  if (containsAny(text, QUALITY_TERMS)) {
++    return {
++      taskKind: "code",
++      mutationScope: "code",
++      riskFlags: [],
++      blueprintRequest: "quality.regression",
++      tags: ["code", "test"],
++      inference_code: "quality_change",
++    };
++  }
++  if (containsAny(text, ANALYSIS_TERMS)) {
++    return {
++      taskKind: "analysis",
++      mutationScope: "none",
++      riskFlags: [],
++      blueprintRequest: "analysis.light",
++      tags: ["analysis"],
++      inference_code: "analysis_only",
++    };
++  }
++  if (containsAny(text, COMPLEX_CHANGE_TERMS)) {
++    return {
++      taskKind: "code",
++      mutationScope: "code",
++      riskFlags: [],
++      blueprintRequest: "code.branch_pr",
++      tags: ["code"],
++      inference_code: "complex_code_change",
++    };
++  }
++  return {
++    taskKind: "code",
++    mutationScope: "code",
++    riskFlags: [],
++    blueprintRequest: "code.direct",
++    tags: ["code"],
++    inference_code: "bounded_code_change",
++  };
++}
++
++export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
++  id: ["task", "create"],
++  group: "Task",
++  summary: "Create a task from a natural-language outcome and explain its execution route.",
++  description:
++    "Infers conservative structured intent, stores an explainable automatic route, and stops at the semantic planning boundary.",
++  args: [{ name: "outcome", required: true, valueHint: "<outcome>" }],
++  options: [
++    {
++      kind: "string",
++      name: "description",
++      valueHint: "<text>",
++      description: "Additional task context. Defaults to the requested outcome.",
++    },
++    {
++      kind: "string",
++      name: "owner",
++      valueHint: "<id>",
++      default: "CODER",
++      description: "Task owner id.",
++    },
++    {
++      kind: "string",
++      name: "priority",
++      valueHint: "<low|normal|med|high>",
++      choices: ["low", "normal", "med", "high"],
++      default: "med",
++      description: "Task priority.",
++    },
++    {
++      kind: "string",
++      name: "route",
++      valueHint: "<auto|direct|branch_pr>",
++      choices: ["auto", "direct", "branch_pr"],
++      default: "auto",
++      description: "Execution-route request. auto is conservative and explainable.",
++    },
++    {
++      kind: "string",
++      name: "verify",
++      valueHint: "<command>",
++      repeatable: true,
++      description: "Repeatable. Seed an explicit verification command.",
++    },
++    {
++      kind: "boolean",
++      name: "allow-duplicate",
++      default: false,
++      description: "Allow an exact duplicate of an open task.",
++    },
++    { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
++  ],
++  examples: [
++    {
++      cmd: 'agentplane task create "Fix the parser edge case"',
++      why: "Create a bounded task with automatic route selection.",
++    },
++    {
++      cmd: 'agentplane task create "Publish the next patch release" --json',
++      why: "Create a high-risk task and return its branch_pr decision as JSON.",
++    },
++  ],
++  validateRaw: (raw) => {
++    const outcome = typeof raw.args.outcome === "string" ? raw.args.outcome.trim() : "";
++    if (!outcome) {
++      throw usageError({ spec: taskCreateSpec, message: "Invalid value for outcome: empty." });
++    }
++    const owner = typeof raw.opts.owner === "string" ? raw.opts.owner.trim() : "CODER";
++    if (!owner) {
++      throw usageError({ spec: taskCreateSpec, message: "Invalid value for --owner: empty." });
++    }
++  },
++  parse: (raw) => ({
++    outcome: String(raw.args.outcome),
++    description:
++      typeof raw.opts.description === "string" ? String(raw.opts.description) : undefined,
++    owner: typeof raw.opts.owner === "string" ? String(raw.opts.owner) : "CODER",
++    priority: (raw.opts.priority ?? "med") as TaskCreateParsed["priority"],
++    route: (raw.opts.route ?? "auto") as UserTaskRoute,
++    verify: Array.isArray(raw.opts.verify) ? (raw.opts.verify as string[]) : [],
++    allowDuplicate: raw.opts["allow-duplicate"] === true,
++    json: raw.opts.json === true,
++  }),
++};
++
++export function makeRunTaskCreateHandler(
++  getCtx: (commandForErrorContext: string) => Promise<CommandContext>,
++): CommandHandler<TaskCreateParsed> {
++  return async (ctx: CommandCtx, parsed: TaskCreateParsed): Promise<number> => {
++    const command = await getCtx("task create");
++    const execution = await makeExecutionContext(command);
++    throwIfPolicyDecisionDenied(
++      execution.policy.evaluate({
++        action: "task_new",
++        phase: "plan",
++        config: execution.config,
++        taskId: "",
++        git: { stagedPaths: [] },
++      }),
++    );
++
++    const outcome = parsed.outcome.trim();
++    const descriptionOverride = parsed.description?.trim();
++    const description = descriptionOverride?.length ? descriptionOverride : outcome;
++    const intent = inferUserTaskIntent(outcome, description);
++    const route = resolveTaskExecutionRoute({
++      config: execution.config,
++      requestedMode: parsed.route,
++      task: {
++        task_kind: intent.taskKind,
++        mutation_scope: intent.mutationScope,
++        risk_flags: intent.riskFlags,
++        blueprint_request: intent.blueprintRequest,
++      },
++    });
++    const created = await runTaskNewParsed({
++      ctx: execution.command,
++      cwd: ctx.cwd,
++      rootOverride: ctx.rootOverride,
++      printTaskId: false,
++      parsed: {
++        title: outcome,
++        description,
++        owner: parsed.owner,
++        priority: parsed.priority,
++        tags: intent.tags,
++        taskKind: intent.taskKind,
++        mutationScope: intent.mutationScope,
++        riskFlags: intent.riskFlags,
++        blueprintRequest: intent.blueprintRequest,
++        route: parsed.route,
++        dependsOn: [],
++        verify: parsed.verify,
++        showBlueprint: false,
++        allowDuplicate: parsed.allowDuplicate,
++      },
++    });
++    const nextCommand = `agentplane task advance ${created.task_id} --agent-json`;
++    const payload = {
++      task_id: created.task_id,
++      status: "semantic_input_required" as const,
++      inferred_intent: {
++        code: intent.inference_code,
++        task_kind: intent.taskKind,
++        mutation_scope: intent.mutationScope,
++        risk_flags: intent.riskFlags,
++        blueprint_request: intent.blueprintRequest,
++        tags: intent.tags,
++      },
++      execution_route: route,
++      required_role: "PLANNER" as const,
++      next_command: nextCommand,
++    };
++
++    if (parsed.json) {
++      output.json(payload);
++    } else {
++      output.report(
++        [
++          { label: "task", value: created.task_id },
++          { label: "status", value: payload.status },
++          {
++            label: "intent",
++            value:
++              `${intent.inference_code} kind=${intent.taskKind} ` +
++              `mutation=${intent.mutationScope}`,
++          },
++          {
++            label: "route",
++            value:
++              `requested=${route.requested_mode} selected=${route.selected_mode} ` +
++              `repository=${route.repository_mode}`,
++          },
++          { label: "route_reasons", value: route.reason_codes.join(", ") },
++          { label: "required_role", value: payload.required_role },
++          { label: "next", value: nextCommand },
++        ],
++        { header: "task create" },
++      );
++    }
++    return 0;
++  };
++}
+diff --git a/packages/agentplane/src/commands/task/new.ts b/packages/agentplane/src/commands/task/new.ts
+index 825fc8668..a0299137b 100644
+--- a/packages/agentplane/src/commands/task/new.ts
++++ b/packages/agentplane/src/commands/task/new.ts
+@@ -1,4 +1,5 @@
+-import { setMarkdownSection } from "@agentplaneorg/core/tasks";
++import path from "node:path";
++import { setMarkdownSection, withTaskReadmeTransaction } from "@agentplaneorg/core/tasks";
+ import type { TaskExecutionRouteRequest } from "@agentplaneorg/core/tasks";
+ 
+ import { mapBackendError } from "../../cli/error-map.js";
+@@ -176,175 +177,183 @@ export async function runTaskNewParsed(opts: {
+     const ctx =
+       opts.ctx ??
+       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+-    await ctx.taskBackend.assertLocalMutationReady?.();
+-    const duplicateTasks = listOpenTaskDuplicates(await ctx.taskBackend.listTasks(), p.title);
+-    const exactDuplicateTasks = duplicateTasks.filter((match) => match.severity === "exact");
+-    if (exactDuplicateTasks.length > 0 && !p.allowDuplicate) {
+-      throw new CliError({
+-        exitCode: 3,
+-        code: "E_VALIDATION",
+-        message: formatDuplicateTaskMessage(exactDuplicateTasks, false, "blocked"),
+-      });
+-    }
+-    if (duplicateTasks.length > 0) {
+-      process.stderr.write(
+-        `${warnMessage(formatDuplicateTaskMessage(duplicateTasks, p.allowDuplicate, "warning"))}\n`,
+-      );
+-    }
+-    const suffixLength = ctx.config.tasks.id_suffix_length_default;
+-    if (!ctx.taskBackend.generateTaskId) {
+-      throw new CliError({
+-        exitCode: 3,
+-        code: "E_VALIDATION",
+-        message: backendNotSupportedMessage("generateTaskId()"),
+-      });
+-    }
+-    const taskId = await ctx.taskBackend.generateTaskId({ length: suffixLength, attempts: 1000 });
+-    const executionContext = await makeReadOnlyExecutionContext(ctx);
+-    const createdAt = nowIso();
+-    let taskDoc = defaultTaskDocV3({ title: p.title, description: p.description });
+-    for (const [section, text] of Object.entries(p.taskDocSections ?? {})) {
+-      if (typeof text === "string" && text.trim()) {
+-        taskDoc = setMarkdownSection(taskDoc, section, text.trim());
++    const creationLockPath = path.join(
++      ctx.resolvedProject.gitRoot,
++      ctx.config.paths.workflow_dir,
++      ".task-create",
++      "README.md",
++    );
++    return await withTaskReadmeTransaction(creationLockPath, async () => {
++      await ctx.taskBackend.assertLocalMutationReady?.();
++      const duplicateTasks = listOpenTaskDuplicates(await ctx.taskBackend.listTasks(), p.title);
++      const exactDuplicateTasks = duplicateTasks.filter((match) => match.severity === "exact");
++      if (exactDuplicateTasks.length > 0 && !p.allowDuplicate) {
++        throw new CliError({
++          exitCode: 3,
++          code: "E_VALIDATION",
++          message: formatDuplicateTaskMessage(exactDuplicateTasks, false, "blocked"),
++        });
++      }
++      if (duplicateTasks.length > 0) {
++        process.stderr.write(
++          `${warnMessage(formatDuplicateTaskMessage(duplicateTasks, p.allowDuplicate, "warning"))}\n`,
++        );
++      }
++      const suffixLength = ctx.config.tasks.id_suffix_length_default;
++      if (!ctx.taskBackend.generateTaskId) {
++        throw new CliError({
++          exitCode: 3,
++          code: "E_VALIDATION",
++          message: backendNotSupportedMessage("generateTaskId()"),
++        });
++      }
++      const taskId = await ctx.taskBackend.generateTaskId({ length: suffixLength, attempts: 1000 });
++      const executionContext = await makeReadOnlyExecutionContext(ctx);
++      const createdAt = nowIso();
++      let taskDoc = defaultTaskDocV3({ title: p.title, description: p.description });
++      for (const [section, text] of Object.entries(p.taskDocSections ?? {})) {
++        if (typeof text === "string" && text.trim()) {
++          taskDoc = setMarkdownSection(taskDoc, section, text.trim());
++        }
+       }
+-    }
+ 
+-    const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
+-    const primary = resolvePrimaryTag(p.tags, ctx);
+-    if (primary.usedFallback) {
+-      process.stderr.write(
+-        `${warnMessage(
+-          `primary tag not found in task tags; using fallback primary=${primary.primary}`,
+-        )}\n`,
+-      );
+-    }
+-    const requiresVerifySteps = requiresVerifyStepsByPrimary(p.tags, ctx.config);
+-    await warnIfUnknownOwner(ctx, p.owner);
+-    await ensureTaskDependsOnGraphIsAcyclic({
+-      backend: ctx.taskBackend,
+-      taskId,
+-      dependsOn: p.dependsOn,
+-    });
+-    if (requiresVerifySteps && !p.taskDocSections?.["Verify Steps"]?.trim()) {
+-      taskDoc = setMarkdownSection(
+-        taskDoc,
+-        "Verify Steps",
+-        buildDefaultVerifyStepsSection({
+-          primary: primary.primary,
+-          verifyCommands: p.verify,
+-        }),
+-      );
+-      process.stderr.write(
+-        `${warnMessage(
+-          "task requires Verify Steps by primary tag; seeded a PLANNER fallback ## Verify Steps scaffold in README (replace with task-specific acceptance coverage when available)",
+-        )}\n`,
+-      );
+-    }
+-    const hasSpike = p.tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
+-    const hasImplementationTags = requiresVerifyStepsByPrimary(p.tags, ctx.config);
+-    if (hasSpike && hasImplementationTags) {
+-      process.stderr.write(
+-        `${warnMessage(
+-          "spike is combined with a primary tag that requires verify steps; consider splitting spike vs implementation tasks",
+-        )}\n`,
+-      );
+-    }
++      const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
++      const primary = resolvePrimaryTag(p.tags, ctx);
++      if (primary.usedFallback) {
++        process.stderr.write(
++          `${warnMessage(
++            `primary tag not found in task tags; using fallback primary=${primary.primary}`,
++          )}\n`,
++        );
++      }
++      const requiresVerifySteps = requiresVerifyStepsByPrimary(p.tags, ctx.config);
++      await warnIfUnknownOwner(ctx, p.owner);
++      await ensureTaskDependsOnGraphIsAcyclic({
++        backend: ctx.taskBackend,
++        taskId,
++        dependsOn: p.dependsOn,
++      });
++      if (requiresVerifySteps && !p.taskDocSections?.["Verify Steps"]?.trim()) {
++        taskDoc = setMarkdownSection(
++          taskDoc,
++          "Verify Steps",
++          buildDefaultVerifyStepsSection({
++            primary: primary.primary,
++            verifyCommands: p.verify,
++          }),
++        );
++        process.stderr.write(
++          `${warnMessage(
++            "task requires Verify Steps by primary tag; seeded a PLANNER fallback ## Verify Steps scaffold in README (replace with task-specific acceptance coverage when available)",
++          )}\n`,
++        );
++      }
++      const hasSpike = p.tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
++      const hasImplementationTags = requiresVerifyStepsByPrimary(p.tags, ctx.config);
++      if (hasSpike && hasImplementationTags) {
++        process.stderr.write(
++          `${warnMessage(
++            "spike is combined with a primary tag that requires verify steps; consider splitting spike vs implementation tasks",
++          )}\n`,
++        );
++      }
+ 
+-    const intakeContext = createTaskIntakeContext({
+-      runtime: executionContext.taskIntake,
+-      source: {
+-        id: "task_new",
+-        detail: "task new",
+-      },
+-      requested_outcome: p.title,
+-      requested_owner: p.owner,
+-      requested_tags: p.tags,
+-      requested_verify: p.verify,
+-      requested_dependencies: p.dependsOn,
+-      inputs: [
+-        {
+-          kind: "text",
+-          label: "description",
+-          value: p.description,
+-          required: true,
++      const intakeContext = createTaskIntakeContext({
++        runtime: executionContext.taskIntake,
++        source: {
++          id: "task_new",
++          detail: "task new",
+         },
+-      ],
+-    });
+-    const clarification = createClarificationContract({
+-      context: intakeContext,
+-    });
+-    const draft = createTaskGraphDraft({
+-      context: intakeContext,
+-      clarification,
+-      summary: p.title,
+-      tasks: [
+-        {
+-          draft_id: "task_1",
+-          title: p.title,
+-          description: p.description,
+-          owner: p.owner,
+-          priority: p.priority,
+-          origin: { system: "manual" },
+-          tags: p.tags,
+-          ...(p.taskKind ? { task_kind: p.taskKind } : {}),
+-          ...(p.mutationScope ? { mutation_scope: p.mutationScope } : {}),
+-          ...(p.riskFlags && p.riskFlags.length > 0 ? { risk_flags: p.riskFlags } : {}),
+-          ...(p.blueprintRequest ? { blueprint_request: p.blueprintRequest } : {}),
+-          execution_route: resolveTaskExecutionRoute({
+-            config: ctx.config,
+-            requestedMode: p.route,
+-            task: {
+-              task_kind: p.taskKind,
+-              mutation_scope: p.mutationScope,
+-              risk_flags: p.riskFlags,
+-              blueprint_request: p.blueprintRequest,
+-            },
+-          }),
+-          ...(p.extensions ? { extensions: p.extensions } : {}),
+-          depends_on: p.dependsOn,
+-          verify: p.verify,
+-          doc: taskDoc,
+-          doc_version: TASK_DOC_VERSION_V3,
+-          id_source: "generated",
++        requested_outcome: p.title,
++        requested_owner: p.owner,
++        requested_tags: p.tags,
++        requested_verify: p.verify,
++        requested_dependencies: p.dependsOn,
++        inputs: [
++          {
++            kind: "text",
++            label: "description",
++            value: p.description,
++            required: true,
++          },
++        ],
++      });
++      const clarification = createClarificationContract({
++        context: intakeContext,
++      });
++      const draft = createTaskGraphDraft({
++        context: intakeContext,
++        clarification,
++        summary: p.title,
++        tasks: [
++          {
++            draft_id: "task_1",
++            title: p.title,
++            description: p.description,
++            owner: p.owner,
++            priority: p.priority,
++            origin: { system: "manual" },
++            tags: p.tags,
++            ...(p.taskKind ? { task_kind: p.taskKind } : {}),
++            ...(p.mutationScope ? { mutation_scope: p.mutationScope } : {}),
++            ...(p.riskFlags && p.riskFlags.length > 0 ? { risk_flags: p.riskFlags } : {}),
++            ...(p.blueprintRequest ? { blueprint_request: p.blueprintRequest } : {}),
++            execution_route: resolveTaskExecutionRoute({
++              config: ctx.config,
++              requestedMode: p.route,
++              task: {
++                task_kind: p.taskKind,
++                mutation_scope: p.mutationScope,
++                risk_flags: p.riskFlags,
++                blueprint_request: p.blueprintRequest,
++              },
++            }),
++            ...(p.extensions ? { extensions: p.extensions } : {}),
++            depends_on: p.dependsOn,
++            verify: p.verify,
++            doc: taskDoc,
++            doc_version: TASK_DOC_VERSION_V3,
++            id_source: "generated",
++          },
++        ],
++      });
++      const materialization = await materializeTaskGraphDraft({
++        draft,
++        task_ids: {
++          task_1: taskId,
+         },
+-      ],
+-    });
+-    const materialization = await materializeTaskGraphDraft({
+-      draft,
+-      task_ids: {
+-        task_1: taskId,
+-      },
+-      created_at: createdAt,
+-    });
+-    const task = materialization.tasks[0]?.task;
+-    if (!task) {
+-      throw new CliError({
+-        exitCode: 3,
+-        code: "E_VALIDATION",
+-        message: "Task intake materialization unexpectedly produced no tasks.",
++        created_at: createdAt,
+       });
+-    }
++      const task = materialization.tasks[0]?.task;
++      if (!task) {
++        throw new CliError({
++          exitCode: 3,
++          code: "E_VALIDATION",
++          message: "Task intake materialization unexpectedly produced no tasks.",
++        });
++      }
+ 
+-    const created = await writeTaskMutation({
+-      ctx,
+-      task,
+-      writeOptions: { expectedRevision: 0 },
+-    });
+-    if (opts.printTaskId !== false) process.stdout.write(`${created.task_id}\n`);
+-    if (p.showBlueprint) {
+-      const summary = await resolveTaskBlueprintLifecycleSummary({
+-        task: created.task,
+-        config: ctx.config,
+-        projectRoot: ctx.resolvedProject.gitRoot,
++      const created = await writeTaskMutation({
++        ctx,
++        task,
++        writeOptions: { expectedRevision: 0 },
+       });
+-      process.stderr.write(formatTaskBlueprintCreationPreview(summary));
+-    }
+-    return {
+-      task_id: created.task_id,
+-      revision: created.revision,
+-      backend_id: created.backend_id,
+-      artifact_paths: created.artifact_paths,
+-    };
++      if (opts.printTaskId !== false) process.stdout.write(`${created.task_id}\n`);
++      if (p.showBlueprint) {
++        const summary = await resolveTaskBlueprintLifecycleSummary({
++          task: created.task,
++          config: ctx.config,
++          projectRoot: ctx.resolvedProject.gitRoot,
++        });
++        process.stderr.write(formatTaskBlueprintCreationPreview(summary));
++      }
++      return {
++        task_id: created.task_id,
++        revision: created.revision,
++        backend_id: created.backend_id,
++        artifact_paths: created.artifact_paths,
++      };
++    });
+   } catch (err) {
+     throw mapBackendError(err, { command: "task new", root: opts.rootOverride ?? null });
+   }
+diff --git a/packages/agentplane/src/commands/task/run-execution-preview.ts b/packages/agentplane/src/commands/task/run-execution-preview.ts
+new file mode 100644
+index 000000000..91ec1627d
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/run-execution-preview.ts
+@@ -0,0 +1,83 @@
++import type { RunnerContextBundle } from "../../runner/types.js";
++
++export type TaskRunExecutionPreview = {
++  route: {
++    requested_mode: string;
++    selected_mode: string;
++    reason_codes: string[];
++  };
++  context: {
++    blueprint_id: string | null;
++    task_sections: number;
++    task_context_bytes: number;
++    duplicate_bytes_removed: number;
++    prompt_blocks: number;
++    policy_modules: number;
++    knowledge_refs: number;
++  };
++  approvals: {
++    plan: boolean;
++    verify: boolean;
++    network: boolean;
++    force: boolean;
++  };
++  checks: string[];
++  budgets: {
++    token: {
++      state: "unavailable";
++      reason: string;
++    };
++    context: {
++      max_policy_modules: number;
++      max_prompt_blocks: number | null;
++    } | null;
++    tools: Record<string, { limit: number; remaining: number }>;
++  };
++};
++
++export function buildTaskRunExecutionPreview(bundle: RunnerContextBundle): TaskRunExecutionPreview {
++  const persistedRoute = bundle.route_decision?.task.execution_route;
++  const fallbackRoute = bundle.blueprint?.workflowMode ?? "direct";
++  const toolBudget = Object.fromEntries(
++    Object.entries(bundle.execution.profile_runtime?.budget ?? {}).map(([phase, budget]) => [
++      phase,
++      { limit: budget.limit, remaining: budget.remaining },
++    ]),
++  );
++  return {
++    route: {
++      requested_mode: persistedRoute?.requested_mode ?? "repository",
++      selected_mode: persistedRoute?.selected_mode ?? fallbackRoute,
++      reason_codes: [...(persistedRoute?.reason_codes ?? ["repository_mode_selected"])],
++    },
++    context: {
++      blueprint_id: bundle.blueprint?.blueprintId ?? null,
++      task_sections: bundle.task?.narrative.sections.length ?? 0,
++      task_context_bytes: bundle.task?.compaction.serialized.emitted_bytes ?? 0,
++      duplicate_bytes_removed: bundle.task?.compaction.serialized.duplicate_bytes_removed ?? 0,
++      prompt_blocks: bundle.base_prompts.length,
++      policy_modules: bundle.blueprint?.policyModules.length ?? 0,
++      knowledge_refs: bundle.knowledge_refs?.length ?? 0,
++    },
++    approvals: {
++      plan: bundle.execution.approvals?.require_plan === true,
++      verify: bundle.execution.approvals?.require_verify === true,
++      network: bundle.execution.approvals?.require_network === true,
++      force: bundle.execution.approvals?.require_force === true,
++    },
++    checks: [...(bundle.task?.verification.commands ?? [])],
++    budgets: {
++      token: {
++        state: "unavailable",
++        reason: "provider token budget is assigned by the semantic supervisor at execution time",
++      },
++      context: bundle.blueprint
++        ? {
++            max_policy_modules: bundle.blueprint.contextBudget.maxPolicyModules,
++            max_prompt_blocks: bundle.blueprint.contextBudget.maxPromptBlocks ?? null,
++          }
++        : null,
++      tools: toolBudget,
++    },
++  };
++}
+diff --git a/packages/agentplane/src/commands/task/run-render.ts b/packages/agentplane/src/commands/task/run-render.ts
+index f027a2cd2..0c24a27fb 100644
+--- a/packages/agentplane/src/commands/task/run-render.ts
++++ b/packages/agentplane/src/commands/task/run-render.ts
+@@ -12,6 +12,7 @@ import {
+   readObservedProcessIdentity,
+ } from "../../runner/process-supervision/signals.js";
+ import type { TaskRunLogsParsed } from "./run-parse.js";
++import type { TaskRunExecutionPreview } from "./run-execution-preview.js";
+ 
+ export function renderTaskRunPayload(opts: {
+   taskId: string;
+@@ -57,7 +58,10 @@ export function renderTaskRunPayload(opts: {
+  * existing top-level fields stay stable while the additive lifecycle object
+  * exposes durable effect and authority evidence without stdout parsing.
+  */
+-export function renderTaskRunnerLifecyclePayload(result: TaskRunnerLifecycleResult) {
++export function renderTaskRunnerLifecyclePayload(
++  result: TaskRunnerLifecycleResult,
++  executionPreview?: TaskRunExecutionPreview,
++) {
+   return {
+     ...renderTaskRunPayload({
+       taskId: result.task_id,
+@@ -77,6 +81,7 @@ export function renderTaskRunnerLifecyclePayload(result: TaskRunnerLifecycleResu
+     }),
+     work_order_id: result.invocation.work_order_id,
+     lifecycle_result: result,
++    ...(executionPreview ? { execution_preview: executionPreview } : {}),
+   };
+ }
+ 
+@@ -450,9 +455,41 @@ function taskRunIdentityRows(
+ }
+ 
+ export function reportPreparedTaskRun(payload: TaskRunRendererPayload, taskId: string): void {
++  const preview = "execution_preview" in payload ? payload.execution_preview : null;
+   createCliEmitter().report(
+     [
+       ...taskRunIdentityRows(payload, { includeEffectResolution: false }),
++      ...(preview
++        ? [
++            {
++              label: "route",
++              value:
++                `requested=${preview.route.requested_mode} ` +
++                `selected=${preview.route.selected_mode}`,
++            },
++            { label: "route_reasons", value: preview.route.reason_codes.join(", ") },
++            { label: "blueprint", value: preview.context.blueprint_id },
++            {
++              label: "context",
++              value:
++                `task_bytes=${preview.context.task_context_bytes} ` +
++                `sections=${preview.context.task_sections} ` +
++                `prompt_blocks=${preview.context.prompt_blocks} ` +
++                `policy_modules=${preview.context.policy_modules} ` +
++                `knowledge_refs=${preview.context.knowledge_refs}`,
++            },
++            {
++              label: "approvals",
++              value:
++                `plan=${String(preview.approvals.plan)} ` +
++                `verify=${String(preview.approvals.verify)} ` +
++                `network=${String(preview.approvals.network)} ` +
++                `force=${String(preview.approvals.force)}`,
++            },
++            { label: "checks", value: preview.checks.join("; ") || "none" },
++            { label: "token_budget", value: preview.budgets.token.state },
++          ]
++        : []),
+       { label: "bundle", value: payload.bundle_path },
+       { label: "bootstrap", value: payload.bootstrap_path },
+       { label: "result", value: payload.result_path },
+diff --git a/packages/agentplane/src/commands/task/run.command.ts b/packages/agentplane/src/commands/task/run.command.ts
+index b5366ebea..3172e10e0 100644
+--- a/packages/agentplane/src/commands/task/run.command.ts
++++ b/packages/agentplane/src/commands/task/run.command.ts
+@@ -34,6 +34,7 @@ import {
+   reportPreparedTaskRun,
+   tailText,
+ } from "./run-render.js";
++import { buildTaskRunExecutionPreview } from "./run-execution-preview.js";
+ import { followRunnerLogs } from "./run-logs-follow.js";
+ import { superviseBranchTaskRun } from "./branch-task-supervisor.js";
+ import { superviseDirectTaskRun } from "./direct-task-supervisor.js";
+@@ -124,7 +125,10 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
+         task_id: parsed.taskId,
+         execution: prepared,
+       });
+-      const payload = renderTaskRunnerLifecyclePayload(lifecycle);
++      const payload = renderTaskRunnerLifecyclePayload(
++        lifecycle,
++        buildTaskRunExecutionPreview(prepared.bundle),
++      );
+       if (parsed.json) {
+         output.json(payload);
+       } else {
+diff --git a/packages/agentplane/src/commands/task/status.command.ts b/packages/agentplane/src/commands/task/status.command.ts
+index 52806d91a..647d1f7e5 100644
+--- a/packages/agentplane/src/commands/task/status.command.ts
++++ b/packages/agentplane/src/commands/task/status.command.ts
+@@ -69,17 +69,25 @@ export function makeRunTaskStatusHandler(session: {
+       taskId: parsed.taskId,
+     });
+     const operatorGuidance = deriveRouteOperatorGuidance(decision);
++    const selectedRoute = decision.task.execution_route?.selected_mode ?? decision.workflowMode;
++    const nextStep = decision.oracle.nextCommand ?? decision.oracle.summary;
+     const output = createCliEmitter();
+     if (parsed.json) {
+       if (parsed.route) {
+         const { sourceConfidence, ...routeDecision } = decision;
+         output.json({
+           ...routeDecision,
++          selected_route: selectedRoute,
++          next_step: nextStep,
+           operator_guidance: operatorGuidance,
+           source_confidence: sourceConfidence,
+         });
+       } else {
+-        output.json(decision.task);
++        output.json({
++          ...decision.task,
++          selected_route: selectedRoute,
++          next_step: nextStep,
++        });
+       }
+       return 0;
+     }
+@@ -98,6 +106,8 @@ export function makeRunTaskStatusHandler(session: {
+       { label: "plan", value: decision.task.planApproval ?? "pending" },
+       { label: "verification", value: decision.task.verification ?? "pending" },
+       { label: "workflow", value: decision.workflowMode },
++      { label: "route", value: selectedRoute },
++      { label: "next", value: nextStep },
+     ];
+     if (parsed.route) {
+       entries.push(
+@@ -113,7 +123,6 @@ export function makeRunTaskStatusHandler(session: {
+         { label: "checkout_role", value: decision.workspace.checkoutRole },
+         { label: "pr_branch", value: decision.workspace.prBranch ?? "missing" },
+         { label: "next_code", value: decision.nextAction.code },
+-        { label: "next", value: decision.oracle.nextCommand ?? decision.oracle.summary },
+         { label: "action_kind", value: decision.executionPacket.actionKind },
+         { label: "operator_action", value: operatorGuidance.operatorAction },
+         { label: "can_execute_now", value: String(operatorGuidance.canExecuteNow) },
+diff --git a/packages/agentplane/src/commands/task/task.command.ts b/packages/agentplane/src/commands/task/task.command.ts
+index ea469bce2..859990d66 100644
+--- a/packages/agentplane/src/commands/task/task.command.ts
++++ b/packages/agentplane/src/commands/task/task.command.ts
+@@ -14,18 +14,18 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
+   synopsis: ["agentplane task <subcommand> [args] [options]"],
+   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<subcommand>" }],
+   notes: [
+-    "Default external-agent path: task new -> task advance --agent-json. The packet exposes one bounded action while Agentplane retains lifecycle authority.",
++    'Default user path: task create "<outcome>" -> task advance --agent-json. Agentplane infers structured intent and an explainable execution route, then the packet exposes one bounded semantic action.',
+     "Default managed-agent path: create the task, record and approve the semantic plan, then use task run to supervise the typed lifecycle.",
+     "The generated Plan is an explicit placeholder: task plan approve fails until PLANNER or a human records a task-specific plan.",
+-    "Direct task route: task new -> task plan set -> task plan approve -> task start-ready -> task verify-show -> verify -> finish.",
++    "Advanced direct task route: task new -> task plan set -> task plan approve -> task start-ready -> task verify-show -> verify -> finish.",
+     "Use `agentplane task next-action <task-id> --explain` only for full route diagnostics.",
+     "Use `agentplane help task plan`, `agentplane help task doc`, and `agentplane help task verify` to inspect task sub-areas.",
+     "Verification recording and closure stay top-level lifecycle commands: `agentplane verify ...` and `agentplane finish ...`.",
+   ],
+   examples: [
+     {
+-      cmd: 'agentplane task new --title "Fix parser edge case" --description "Handle the rejected input" --owner CODER --tag code',
+-      why: "Create a task without synthesizing or approving semantic work.",
++      cmd: 'agentplane task create "Fix the parser edge case"',
++      why: "Create a task from the desired outcome and show its inferred execution route.",
+     },
+     {
+       cmd: "agentplane task advance <task-id> --agent-json",
+@@ -37,7 +37,7 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
+     },
+     {
+       cmd: 'agentplane task new --title "..." --description "..." --owner CODER --tag code',
+-      why: "Create a task with the explicit primitive command.",
++      why: "Create a task with the advanced explicit primitive command.",
+     },
+     {
+       cmd: 'agentplane task plan set <task-id> --text "..." --updated-by ORCHESTRATOR',
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 6bb1facb3..d1de27c2b 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -30,7 +30,8 @@
+     "202608021534-YN84E1",
+     "202608022324-9VCYWG",
+     "202608021535-CNQKXP",
+-    "202608061646-WCARQG"
++    "202608061646-WCARQG",
++    "202608061646-30TKV4"
+   ],
+   "base": {
+     "baseline_id": "agentplane.compatibility.v0.6.24",
+@@ -39,9 +40,9 @@
+     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
+   },
+   "candidate": {
+-    "surface_sha256": "c710ccaa31b43988b633441c168651a1e57aa47d17fd97f18e0acafd14776848",
++    "surface_sha256": "d0f057e72f5a3ae2bbd15f737469195d1ca9b4fb5b3e76cc336063c1e5e76c56",
+     "section_digests": {
+-      "cli_topology": "c15bff5ccf748801205499a8e483524162422c4659a06fc201ad13d9d7c1f8cc",
++      "cli_topology": "8d1f0c009fb24cfd4d897e63085f8077357eddd0d6d556c1f0f11a0f2c4ada21",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
+@@ -84,7 +85,7 @@
+     "section": "package_manifests",
+     "from_sha256": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+     "to_sha256": "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+-    "surface_sha256": "f1f7ba365b8912771323910df3e34843708feeccc291944d50a1ab2f7874ca01",
++    "surface_sha256": "cd30e3bf54b3c211f2d174939e1b8f402075fa2efc745598d98386082da1fe3a",
+     "allowed_json_paths": [
+       "$.package_manifests[0].dependencies.@agentplaneorg/core",
+       "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -431,16 +432,17 @@
+         "202608021534-YN84E1",
+         "202608022324-9VCYWG",
+         "202608021535-CNQKXP",
+-        "202608061646-WCARQG"
++        "202608061646-WCARQG",
++        "202608061646-30TKV4"
+       ],
+       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+-      "to_sha256": "c15bff5ccf748801205499a8e483524162422c4659a06fc201ad13d9d7c1f8cc",
++      "to_sha256": "8d1f0c009fb24cfd4d897e63085f8077357eddd0d6d556c1f0f11a0f2c4ada21",
+       "classification": "additive_with_visibility_simplification",
+-      "summary": "Adds the compact external task advance packet, explainable per-task workflow routing, and compatibility retirement diagnostics; promotes the managed task runner; and moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces without removing commands or options.",
++      "summary": "Adds the compact external task advance packet, user-first task creation with an execution preview, explainable per-task workflow routing, and compatibility retirement diagnostics; promotes the managed task runner; and moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces without removing commands or options.",
+       "evidence": {
+-        "command_count": { "from": 243, "to": 259 },
+-        "positional_count": { "from": 165, "to": 179 },
+-        "option_count": { "from": 767, "to": 829 },
++        "command_count": { "from": 243, "to": 260 },
++        "positional_count": { "from": 165, "to": 180 },
++        "option_count": { "from": 767, "to": 836 },
+         "added_commands": [
+           "context supervise-task",
+           "doctor legacy",
+@@ -453,6 +455,7 @@
+           "repair adopt-legacy-conflict",
+           "task advance",
+           "task authority grant",
++          "task create",
+           "task run reconcile",
+           "task run resolve-effect",
+           "task run resume-effect",
+@@ -780,6 +783,64 @@
+               }
+             ]
+           },
++          {
++            "id": ["task", "create"],
++            "visibility": "user",
++            "group": "Task",
++            "args": [
++              {
++                "name": "outcome",
++                "required": true,
++                "variadic": false,
++                "valueHint": "<outcome>"
++              }
++            ],
++            "options": [
++              {
++                "name": "description",
++                "kind": "string",
++                "valueHint": "<text>"
++              },
++              {
++                "name": "owner",
++                "kind": "string",
++                "valueHint": "<id>",
++                "default": "CODER"
++              },
++              {
++                "name": "priority",
++                "kind": "string",
++                "valueHint": "<low|normal|med|high>",
++                "default": "med",
++                "choices": ["low", "normal", "med", "high"]
++              },
++              {
++                "name": "route",
++                "kind": "string",
++                "valueHint": "<auto|direct|branch_pr>",
++                "default": "auto",
++                "choices": ["auto", "direct", "branch_pr"]
++              },
++              {
++                "name": "verify",
++                "kind": "string",
++                "valueHint": "<command>",
++                "repeatable": true
++              },
++              {
++                "name": "allow-duplicate",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              },
++              {
++                "name": "json",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              }
++            ]
++          },
+           {
+             "id": ["task", "run", "reconcile"],
+             "visibility": "internal",
+@@ -1021,6 +1082,21 @@
+               ]
+             }
+           },
++          {
++            "identity": "task new",
++            "before": {
++              "id": ["task", "new"],
++              "visibility": "user",
++              "group": "Task",
++              "args": []
++            },
++            "after": {
++              "id": ["task", "new"],
++              "visibility": "advanced",
++              "group": "Task",
++              "args": []
++            }
++          },
+           {
+             "identity": "task next-action",
+             "before": {
+@@ -1343,6 +1419,56 @@
+             "valueHint": null,
+             "default": false
+           },
++          {
++            "command": "task create",
++            "name": "allow-duplicate",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
++          {
++            "command": "task create",
++            "name": "description",
++            "kind": "string",
++            "valueHint": "<text>"
++          },
++          {
++            "command": "task create",
++            "name": "json",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
++          {
++            "command": "task create",
++            "name": "owner",
++            "kind": "string",
++            "valueHint": "<id>",
++            "default": "CODER"
++          },
++          {
++            "command": "task create",
++            "name": "priority",
++            "kind": "string",
++            "valueHint": "<low|normal|med|high>",
++            "default": "med",
++            "choices": ["low", "normal", "med", "high"]
++          },
++          {
++            "command": "task create",
++            "name": "route",
++            "kind": "string",
++            "valueHint": "<auto|direct|branch_pr>",
++            "default": "auto",
++            "choices": ["auto", "direct", "branch_pr"]
++          },
++          {
++            "command": "task create",
++            "name": "verify",
++            "kind": "string",
++            "valueHint": "<command>",
++            "repeatable": true
++          },
+           {
+             "command": "task new",
+             "name": "route",
+@@ -1583,6 +1709,11 @@
+             "command": "task authority grant",
+             "source_task": "202607221849-NWVCAG"
+           },
++          {
++            "kind": "command",
++            "command": "task create",
++            "source_task": "202608061646-30TKV4"
++          },
+           {
+             "kind": "command",
+             "command": "task run reconcile",
+@@ -1842,6 +1973,48 @@
+             "name": "accept-unobserved",
+             "source_task": "202608021534-YN84E1"
+           },
++          {
++            "kind": "option",
++            "command": "task create",
++            "name": "allow-duplicate",
++            "source_task": "202608061646-30TKV4"
++          },
++          {
++            "kind": "option",
++            "command": "task create",
++            "name": "description",
++            "source_task": "202608061646-30TKV4"
++          },
++          {
++            "kind": "option",
++            "command": "task create",
++            "name": "json",
++            "source_task": "202608061646-30TKV4"
++          },
++          {
++            "kind": "option",
++            "command": "task create",
++            "name": "owner",
++            "source_task": "202608061646-30TKV4"
++          },
++          {
++            "kind": "option",
++            "command": "task create",
++            "name": "priority",
++            "source_task": "202608061646-30TKV4"
++          },
++          {
++            "kind": "option",
++            "command": "task create",
++            "name": "route",
++            "source_task": "202608061646-30TKV4"
++          },
++          {
++            "kind": "option",
++            "command": "task create",
++            "name": "verify",
++            "source_task": "202608061646-30TKV4"
++          },
+           {
+             "kind": "option",
+             "command": "task new",
+diff --git a/scripts/checks/check-agent-onboarding-scenario.mjs b/scripts/checks/check-agent-onboarding-scenario.mjs
+index 051438e8f..352e0e66b 100644
+--- a/scripts/checks/check-agent-onboarding-scenario.mjs
++++ b/scripts/checks/check-agent-onboarding-scenario.mjs
+@@ -6,6 +6,7 @@ const ROOT = process.cwd();
+ 
+ const files = {
+   docsIndex: path.join(ROOT, "docs", "index.mdx"),
++  quickstart: path.join(ROOT, "docs", "start", "quickstart.mdx"),
+   bootstrap: path.join(ROOT, "docs", "user", "agent-bootstrap.generated.mdx"),
+   commands: path.join(ROOT, "docs", "user", "commands.mdx"),
+   setup: path.join(ROOT, "docs", "user", "setup.mdx"),
+@@ -37,6 +38,16 @@ function assertScenarioText(fileContents, fileKey, needle, scenario) {
+ }
+ 
+ const onboardingScenarios = [
++  {
++    name: "user-first supervised task",
++    checks: [
++      ["quickstart", "## Create the first task"],
++      ["quickstart", 'agentplane task create "Fix the parser edge case" --json'],
++      ["quickstart", "agentplane task run <task-id> --dry-run --json"],
++      ["quickstart", "The JSON response includes `execution_preview`."],
++      ["quickstart", "agentplane task advance <task-id> --agent-json"],
++    ],
++  },
+   {
+     name: "legacy upgrade recovery",
+     checks: [
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index d40cb4d9f..b10f1d5b2 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -340,6 +340,7 @@ function validateReviewedCandidate({
+     "202608022324-9VCYWG",
+     "202608021535-CNQKXP",
+     "202608061646-WCARQG",
++    "202608061646-30TKV4",
+   ];
+   const expectedSourceTasks = [
+     "202607221846-4VB97J",
+@@ -371,6 +372,7 @@ function validateReviewedCandidate({
+     "202608022324-9VCYWG",
+     "202608021535-CNQKXP",
+     "202608061646-WCARQG",
++    "202608061646-30TKV4",
+   ];
+   assert(
+     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
+@@ -502,7 +504,7 @@ function validateReviewedCandidate({
+         section: "package_manifests",
+         from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+         to_sha256: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+-        surface_sha256: "f1f7ba365b8912771323910df3e34843708feeccc291944d50a1ab2f7874ca01",
++        surface_sha256: "cd30e3bf54b3c211f2d174939e1b8f402075fa2efc745598d98386082da1fe3a",
+         allowed_json_paths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -1369,6 +1371,33 @@ function validateReviewedCandidate({
+         { name: "remote", kind: "boolean", valueHint: null, default: false },
+       ],
+     },
++    {
++      id: ["task", "create"],
++      visibility: "user",
++      group: "Task",
++      args: [{ name: "outcome", required: true, variadic: false, valueHint: "<outcome>" }],
++      options: [
++        { name: "description", kind: "string", valueHint: "<text>" },
++        { name: "owner", kind: "string", valueHint: "<id>", default: "CODER" },
++        {
++          name: "priority",
++          kind: "string",
++          valueHint: "<low|normal|med|high>",
++          default: "med",
++          choices: ["low", "normal", "med", "high"],
++        },
++        {
++          name: "route",
++          kind: "string",
++          valueHint: "<auto|direct|branch_pr>",
++          default: "auto",
++          choices: ["auto", "direct", "branch_pr"],
++        },
++        { name: "verify", kind: "string", valueHint: "<command>", repeatable: true },
++        { name: "allow-duplicate", kind: "boolean", valueHint: null, default: false },
++        { name: "json", kind: "boolean", valueHint: null, default: false },
++      ],
++    },
+     {
+       id: ["task", "run", "reconcile"],
+       visibility: "internal",
+@@ -1660,6 +1689,51 @@ function validateReviewedCandidate({
+       valueHint: null,
+       default: false,
+     },
++    {
++      command: "task create",
++      name: "allow-duplicate",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
++    { command: "task create", name: "description", kind: "string", valueHint: "<text>" },
++    {
++      command: "task create",
++      name: "json",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
++    {
++      command: "task create",
++      name: "owner",
++      kind: "string",
++      valueHint: "<id>",
++      default: "CODER",
++    },
++    {
++      command: "task create",
++      name: "priority",
++      kind: "string",
++      valueHint: "<low|normal|med|high>",
++      default: "med",
++      choices: ["low", "normal", "med", "high"],
++    },
++    {
++      command: "task create",
++      name: "route",
++      kind: "string",
++      valueHint: "<auto|direct|branch_pr>",
++      default: "auto",
++      choices: ["auto", "direct", "branch_pr"],
++    },
++    {
++      command: "task create",
++      name: "verify",
++      kind: "string",
++      valueHint: "<command>",
++      repeatable: true,
++    },
+     {
+       command: "task new",
+       name: "route",
+@@ -1743,6 +1817,11 @@ function validateReviewedCandidate({
+       command: "task authority grant",
+       source_task: "202607221849-NWVCAG",
+     },
++    {
++      kind: "command",
++      command: "task create",
++      source_task: "202608061646-30TKV4",
++    },
+     {
+       kind: "command",
+       command: "task run reconcile",
+@@ -1989,6 +2068,48 @@ function validateReviewedCandidate({
+       name: "accept-unobserved",
+       source_task: "202608021534-YN84E1",
+     },
++    {
++      kind: "option",
++      command: "task create",
++      name: "allow-duplicate",
++      source_task: "202608061646-30TKV4",
++    },
++    {
++      kind: "option",
++      command: "task create",
++      name: "description",
++      source_task: "202608061646-30TKV4",
++    },
++    {
++      kind: "option",
++      command: "task create",
++      name: "json",
++      source_task: "202608061646-30TKV4",
++    },
++    {
++      kind: "option",
++      command: "task create",
++      name: "owner",
++      source_task: "202608061646-30TKV4",
++    },
++    {
++      kind: "option",
++      command: "task create",
++      name: "priority",
++      source_task: "202608061646-30TKV4",
++    },
++    {
++      kind: "option",
++      command: "task create",
++      name: "route",
++      source_task: "202608061646-30TKV4",
++    },
++    {
++      kind: "option",
++      command: "task create",
++      name: "verify",
++      source_task: "202608061646-30TKV4",
++    },
+     {
+       kind: "option",
+       command: "task new",
+@@ -2036,6 +2157,7 @@ function validateReviewedCandidate({
+   const expectedVisibilityMutations = [
+     ["task begin", "user", "advanced", "title", "<title>"],
+     ["task complete", "user", "advanced", "task-id", "<task-id>"],
++    ["task new", "user", "advanced", undefined, undefined],
+     ["task next-action", "user", "advanced", "task-id", "<task-id>"],
+     ["task run", "internal", "user", "task-id", "<task-id>"],
+   ].map(([identity, beforeVisibility, afterVisibility, argName, valueHint]) => ({
+@@ -2044,13 +2166,19 @@ function validateReviewedCandidate({
+       id: identity.split(" "),
+       visibility: beforeVisibility,
+       group: "Task",
+-      args: [{ name: argName, required: true, variadic: false, valueHint }],
++      args:
++        argName === undefined
++          ? []
++          : [{ name: argName, required: true, variadic: false, valueHint }],
+     },
+     after: {
+       id: identity.split(" "),
+       visibility: afterVisibility,
+       group: "Task",
+-      args: [{ name: argName, required: true, variadic: false, valueHint }],
++      args:
++        argName === undefined
++          ? []
++          : [{ name: argName, required: true, variadic: false, valueHint }],
+     },
+   }));
+   assert(
+@@ -2098,6 +2226,7 @@ function validateReviewedCandidate({
+         "repair adopt-legacy-conflict",
+         "task advance",
+         "task authority grant",
++        "task create",
+         "task run reconcile",
+         "task run resolve-effect",
+         "task run resume-effect",

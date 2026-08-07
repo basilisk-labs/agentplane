@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608061850-BZT3D9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-06T18:59:57.244Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "2c35aa1d9848ccdc44d1c13b722dc0253f4f4f9d",
+  "blueprint_digest": "440d169b378295a6d69c4666cf3c8ed8ff4c86eec65ae304cf306267eda88e65",
+  "findings": [
+    "Hosted PR checks and merge-head equality remain intentionally deferred until after this pre-publication evaluator gate."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608061850-BZT3D9/README.md",
+    ".agentplane/tasks/202608061850-BZT3D9/verification/20260806185820398-e69d19c8c3ce3d85.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The evaluated SHA will remain unchanged through PR publication and hosted verification; any semantic-head change requires fresh local verification and evaluator review.",
+    "The obsolete WCARQG branch will be removed only after ancestry against merged main is proven."
+  ],
+  "residual_risks": []
+}

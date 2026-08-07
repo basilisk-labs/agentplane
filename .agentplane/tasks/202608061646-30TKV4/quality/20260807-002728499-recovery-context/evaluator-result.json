@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen packet contains no deterministic execution evidence for any declared verification check: verification_records, runner_history, and runtime_evidence are empty despite verification being marked ok.",
+      "broken_invariant": "Pass requires deterministic evidence that all declared checks executed successfully at the evaluated SHA and covered the relevant positive, negative, compatibility, and concurrency-sensitive paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/22c68fa399c3283c1bf0c1c6bc325277a80d0613f2a76fa845ffc7ab33f25740.json",
+          "sha256": "sha256:22c68fa399c3283c1bf0c1c6bc325277a80d0613f2a76fa845ffc7ab33f25740",
+          "section": "verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The TESTER verification note is assumed to represent successful command execution at evaluated SHA cd8beb68ac1d516a1d1d64419dc609ac703def70, but the frozen evidence does not substantiate that assumption."
+  ],
+  "recovery_context": "Freeze deterministic command-level results for every declared Verify Step at evaluated SHA cd8beb68ac1d516a1d1d64419dc609ac703def70, including exit status and coverage of the concurrent duplicate-creation and compatibility paths, then rerun this evaluator.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

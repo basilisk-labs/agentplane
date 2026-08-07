@@ -1,0 +1,24 @@
+{
+  "base": "main",
+  "branch": "task/202608061742-G2ZA4T/redesign-init-around-safe-defaults-and-progressi",
+  "created_at": "2026-08-06T23:23:35.080Z",
+  "diffstat_sha256": "sha256:ead7ac45b57946a97b5e3675cc6770b6a1b1a57e0ca9f865ff6fa2496ee11e38",
+  "last_verified_at": "2026-08-07T01:56:04.899Z",
+  "last_verified_diffstat_sha256": "sha256:ead7ac45b57946a97b5e3675cc6770b6a1b1a57e0ca9f865ff6fa2496ee11e38",
+  "pr_number": 4794,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4794",
+  "pre_merge_closure": {
+    "basis_commit": "2c8495534dc776386a769dbfa37a0abe7221be70",
+    "branch": "task/202608061742-G2ZA4T/redesign-init-around-safe-defaults-and-progressi",
+    "pr_number": 4794,
+    "recorded_at": "2026-08-07T02:01:16.494Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608061742-G2ZA4T",
+  "updated_at": "2026-08-06T23:24:02.615Z",
+  "verify": {
+    "status": "pass"
+  }
+}

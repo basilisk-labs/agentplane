@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608061850-BZT3D9-bc6f14f2a85475b9e9f28f8a",
+  "prepared_at": "2026-08-06T22:36:22.317Z",
+  "task": {
+    "id": "202608061850-BZT3D9",
+    "revision": 10,
+    "objective": "Land post-merge workflow routing qualification fixes\n\nPublish the already verified post-merge fixes discovered after PR #4784 auto-merged: generated schema formatting, CLI reference and llms corpus refresh, isolated routing E2E coverage, lint-safe route resolution, repaired supervisor test fixture, and reviewed compatibility candidate evidence. No new product behavior beyond task 202608061646-WCARQG.",
+    "acceptance_criteria": [
+      "bun run format:check",
+      "bun run test:critical",
+      "bun run typecheck",
+      "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+      "node scripts/checks/check-compatibility-contract-baseline.mjs",
+      "- In scope: Publish the already verified post-merge fixes discovered after PR #4784 auto-merged: generated schema formatting, CLI reference and llms corpus refresh, isolated routing E2E coverage, lint-safe route resolution, repaired supervisor test fixture, and reviewed compatibility candidate evidence. No new product behavior beyond task 202608061646-WCARQG.\n- Out of scope: unrelated refactors not required for \"Land post-merge workflow routing qualification fixes\".",
+      "1. Prove the exact content delta between merged main and the verified WCARQG post-merge head, and exclude already merged implementation changes. 2. Create a dedicated post-merge task worktree from current main and apply only the unmerged qualification, compatibility, documentation, and regression-test commits. 3. Rebuild generated runtime artifacts if required and run task-specific checks plus the critical CLI, docs, workflow, platform, and significant-coverage gates. 4. Record TESTER verification and evaluator review against the final semantic head. 5. Publish a dedicated follow-up PR, wait for hosted checks, integrate through the protected main lane, and clean the superseded WCARQG branch only after its head is contained by main.",
+      "1. Run `git diff origin/main...HEAD --stat` and inspect the patch. Expected: only the verified post-merge qualification fixes from WCARQG are present; no duplicate implementation or unrelated task artifacts are introduced.\n2. Run `bun run typecheck`, `bun run format:check`, `bun run schemas:check`, `bun run docs:cli:check`, and `node .agentplane/policy/check-routing.mjs`. Expected: all generated contracts, types, formatting, and routing policy checks pass.\n3. Run `node scripts/checks/check-compatibility-contract-baseline.mjs` and `bun run test:critical`. Expected: the reviewed cumulative compatibility candidate is exact and all critical CLI chunks pass.\n4. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runtime/task-routing packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts` and `bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-routing.test.ts`. Expected: per-task route selection and branch supervisor regression coverage pass.\n5. Run `bun run docs:site:check`, `bun run workflows:lint`, `bun run test:platform-critical`, and the significant guard coverage suite. Expected: docs, workflow, platform, and coverage release gates pass.\n6. Confirm the hosted PR head equals the verified local head and all required GitHub checks pass before integration. Expected: protected main contains the follow-up head and the obsolete WCARQG branch is removed only after ancestry is proven."
+    ]
+  },
+  "evaluated_sha": "2c35aa1d9848ccdc44d1c13b722dc0253f4f4f9d",
+  "diff_base_sha": "0e1d30346d74b782d736e480700919077e532c5f",
+  "blueprint_digest": "440d169b378295a6d69c4666cf3c8ed8ff4c86eec65ae304cf306267eda88e65",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223622317-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:9ab50bcfeef10ddaba98d503993f34fda33ae19be5dfdd21e1dffc00b30e6462",
+    "prompt_path": ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/c46cd8a705ddca7eaaf670a61ba0b084ce5be7eb82cc708158ae3e6364468a94.md",
+    "result_schema_path": ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608061850-BZT3D9/README.md",
+      "sha256": "sha256:e09a2ffd52a10095c0bf77363566419ddf64abd29886db7ae13f125517b8038c",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/e704e1f7b5b4b6e00e8798bc3aae836076195dfada0e5c1895b5f9bc8a9b53eb.patch",
+      "sha256": "sha256:e704e1f7b5b4b6e00e8798bc3aae836076195dfada0e5c1895b5f9bc8a9b53eb",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/8967159f715c70dc39a845fbfb50cc55d258dc53097ef7703366fb083650420d.json",
+      "sha256": "sha256:8967159f715c70dc39a845fbfb50cc55d258dc53097ef7703366fb083650420d",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/da1da062628bd7d3d47bb26c5ca0ec5ec0fc7cac80f1c69ecab4b123086b462d.json",
+      "sha256": "sha256:da1da062628bd7d3d47bb26c5ca0ec5ec0fc7cac80f1c69ecab4b123086b462d",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli/commands/init\nResult: pass\nEvidence: 6 files and 27 tests passed\nScope: init orchestration, interactive flow, repository-derived defaults, and prompt-step coverage\n\nCommand: bun run docs:onboarding:check\nResult: pass\nEvidence: onboarding scenario surfaces are aligned\nScope: first-run onboarding and generated init guidance\n\nCommand: bun run docs:cli:check\nResult: pass\nEvidence: generated CLI reference is current\nScope: CLI documentation freshness\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed\nScope: all TypeScript workspaces\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK\nScope: policy routing and size budgets\n\nCommand: bun run format:check\nResult: pass\nEvidence: all matched files use Prettier style\nScope: repository formatting\n\nCommand: bun run lint:core\nResult: pass\nEvidence: ESLint completed without findings\nScope: strict repository lint\n\nCommand: bun run knip:check\nResult: pass\nEvidence: CLI findings remain 0/0; total baseline 21/21\nScope: dead-code package budgets\n\nCommand: bun run bench:compatibility:check\nResult: pass\nEvidence: approved 260 command compatibility contract passed\nScope: reviewed CLI compatibility surface",
+  "digest": "sha256:1390c0d1a47296d4f37d90fb78d427f6934a590bb7645748917dd20ba2361419",
+  "implementation_sha": "f743f09a82022e5a15dadb00814f8d8b0f9cb068",
+  "kind": "task_verification_record",
+  "note": "All nine declared init, documentation, policy, type, format, lint, Knip, and compatibility checks pass on f743f09a8.",
+  "recorded_at": "2026-08-07T01:56:04.899Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli/commands/init\n- bun run docs:onboarding:check\n- bun run docs:cli:check\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs\n- bun run format:check\n- bun run lint:core\n- bun run knip:check\n- bun run bench:compatibility:check",
+  "scope_digest": "sha256:4b07c4ac5e9ef9f30bf832fe37afc5eafcb3ca282759d24a9df050afef1d3c04",
+  "task_id": "202608061742-G2ZA4T",
+  "verification_command": "agentplane verify 202608061742-G2ZA4T --ok --by TESTER",
+  "verifier": "TESTER"
+}

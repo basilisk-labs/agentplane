@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608061646-30TKV4-2332be5d8f3c42d22e2f8d82",
+  "task_id": "202608061646-30TKV4",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Correct the focused Vitest selector in the task verification contract, obtain the required re-approval for that material change, rerun every declared check, and record explicit compatibility, negative-path, and concurrency-sensitive evidence before reevaluation.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The declared focused-test command failed to select the target suites and was replaced with a different command without recorded re-approval.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/README.md",
+          "sha256": "sha256:86341b00ac1c0c821fb1359736aea6dc5ebafcc5aaa1643655449f65ba7202a4",
+          "section": "Verify Steps and Findings"
+        },
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/verification/20260806195317361-b18111f72a312cf9.json",
+          "sha256": "sha256:0360b5d2aca8f7f0d2f2298698d16060a87c6792776b162eb3336d78f4e89778",
+          "section": "details and scope"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks and Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608061646-30TKV4/quality/20260806-195331943-recovery-context/evaluator-result.json"
+}

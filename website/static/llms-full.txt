@@ -321,8 +321,6 @@ Requirements:
 ```bash
 npm i -g agentplane
 agentplane init
-agentplane context init
-agentplane quickstart
 ```
 
 Prefer no global install:
@@ -356,6 +354,22 @@ agentplane init
 - `.agentplane/tasks/` for task records, verification evidence, PR artifacts, and ACR.
 
 If `.git` does not exist in that folder, `init` creates a new Git repository there.
+
+The default dialog is intentionally short:
+
+1. Choose `Quick` or `Advanced` setup. `Quick` is recommended.
+2. Choose the primary agent surface so Agentplane can derive the gateway, IDE, and runner defaults.
+3. Choose `direct` or `branch_pr` workflow.
+4. Review the complete configuration, the reason for every default, and the exact first-task
+   command before Agentplane writes files.
+
+Quick setup keeps task storage local, uses the `normal` guardrail profile, installs hooks, requires
+plan/network/verification approvals, and leaves optional recipes and blueprints disabled. Use the
+detailed route when those values need individual review:
+
+```bash
+agentplane init --advanced
+```
 
 To inspect the setup without writes, use dry-run:
 
@@ -400,19 +414,26 @@ agentplane config set feedback.github_issues.enabled false
 
 ## Hand off to an agent
 
-After initialization, the normal next step is to give the repository to a coding agent. The agent
-should read the repository policy gateway and run the Agentplane lifecycle around its own work.
+After initialization, create the first task from the natural-language outcome printed by init:
+
+```bash
+agentplane task create "Describe the outcome you want"
+```
+
+Then use the exact supervisor action returned by Agentplane. A configured managed runner uses
+`task run`; Codex, Claude Code, Cursor, or another external agent uses the bounded `task advance`
+exchange. The agent performs semantic work only; Agentplane owns formal lifecycle transitions.
 
 ```text
 Use Agentplane for this repository.
 
-Start with:
-agentplane quickstart
-agentplane role ORCHESTRATOR
+Start with the task Agentplane selected and request one bounded action:
+agentplane task advance <task-id> --agent-json
 
-Follow AGENTS.md and the workflow mode in .agentplane/WORKFLOW.md.
-Create or reuse an Agentplane task before mutating repository files.
-Record the plan, start-ready state, verification evidence, and finish state through Agentplane.
+Perform only the returned semantic objective inside its authority and writable roots.
+Write the typed result to the supplied result path and resume with the supplied argv.
+Do not run manual lifecycle, Git, PR, verification, integration, or cleanup commands during a
+normal semantic episode.
 ```
 
 Expected files:
@@ -464,7 +485,8 @@ subtopic of manual CLI usage.
 
 ## Setup profiles
 
-Choose profiles after you understand the first artifact:
+Quick setup uses `Normal`. Advanced setup can select a different preset before reviewing its
+individual controls:
 
 - `Light`: solo experiments with minimal enforcement.
 - `Normal`: default team-safe workflow.
@@ -515,13 +537,9 @@ Recovery routing starts from three repository states:
 ## Verify setup
 
 ```bash
-agentplane config show
-agentplane quickstart
-agentplane task list
 agentplane doctor
+agentplane task active
 ```
-
-Then use `agentplane role <ROLE>` for role-specific guidance.
 
 Use [Commands](commands) and the [generated CLI reference](cli-reference.generated) when you need
 manual inspection, recovery, or operator-level control. They are not the default day-to-day usage
@@ -529,8 +547,7 @@ path.
 
 ## Optional recipes
 
-Recipes are extensions, not the first step. Add them after the task -> plan -> verify -> ACR flow is
-clear.
+Recipes are extensions, not the first step. Add them after the task supervisor flow is clear.
 
 ```bash
 agentplane recipes list-remote --refresh --yes

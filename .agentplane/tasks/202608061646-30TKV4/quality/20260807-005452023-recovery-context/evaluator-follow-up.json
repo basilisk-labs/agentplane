@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608061646-30TKV4-8e9f3845efe6ac333f5f965c",
+  "task_id": "202608061646-30TKV4",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Update the intended onboarding documentation with the new user-first task creation and execution-preview flow, add a content-level regression assertion, then rerun all seven declared verification steps at the new evaluated SHA.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The change updates the generated CLI reference but does not update any onboarding document, despite onboarding documentation being an explicit acceptance requirement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/README.md",
+          "sha256": "sha256:76001bcb0e6242f89c95a59b4541e04df7693e286167a8b82d026365e68d5fcf",
+          "section": "acceptance_criteria"
+        },
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/f03764541cec0c8b9bd0a51b34d58117711a052ef4284deec69d525a1b5ecf96.patch",
+          "sha256": "sha256:f03764541cec0c8b9bd0a51b34d58117711a052ef4284deec69d525a1b5ecf96",
+          "section": "changed paths"
+        },
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/verification/20260807005409275-8701b3f2f8e9fcc4.json",
+          "sha256": "sha256:d61f9ebb4d3cb3ea2427c459cf7e5d712ecd07aa663f94aff5669aa67d05d547",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005452023-recovery-context/evaluator-result.json"
+}

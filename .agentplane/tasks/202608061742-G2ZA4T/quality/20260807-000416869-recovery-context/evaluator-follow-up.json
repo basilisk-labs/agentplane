@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608061742-G2ZA4T-816bbac32d0c53724ed9dd67",
+  "task_id": "202608061742-G2ZA4T",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Implement and verify repository-fact detection that materially informs the quick-path defaults and explanation, while preserving the existing non-interactive compatibility contract and keeping unrelated dependency changes out of this task's semantic scope.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The redesigned quick init applies fixed defaults but does not detect repository facts and derive repository-specific defaults as required.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/45794ad12594733c1b535de72430b46e6f8293748020a80518042a8e7ea536c0.patch",
+          "sha256": "sha256:45794ad12594733c1b535de72430b46e6f8293748020a80518042a8e7ea536c0",
+          "section": "Changes to init/answers.ts, init/modes.ts, and init prompt tests"
+        },
+        {
+          "path": ".agentplane/tasks/202608061742-G2ZA4T/README.md",
+          "sha256": "sha256:f5943a40a6decd0c3f2edbe2632f95ae32a6992f3928cc519b31313c28b2a1e6",
+          "section": "Plan, criterion 1"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-000416869-recovery-context/evaluator-result.json"
+}

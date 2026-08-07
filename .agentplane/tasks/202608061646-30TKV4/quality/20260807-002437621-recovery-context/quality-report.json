@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202608061646-30TKV4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T00:25:22.700Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "cd8beb68ac1d516a1d1d64419dc609ac703def70",
+  "blueprint_digest": "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62",
+  "findings": [
+    "The frozen packet contains no deterministic execution evidence for any declared verification check: verification_records, runner_history, and runtime_evidence are all empty. The TESTER note alone cannot establish that positive, negative, compatibility, and cross-process concurrency paths passed at the evaluated SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/96513d828c41ba999cabcc27a3cb9071e18edc2193999a02dd8091c3eaaa0960.json",
+    ".agentplane/policy/dod.code.md",
+    ".agentplane/tasks/202608061646-30TKV4/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The packet assumes the TESTER verification note proves the declared checks ran successfully at evaluated_sha, despite containing no command-level or runtime verification records."
+  ],
+  "residual_risks": [
+    "Regenerate the frozen evaluator packet with deterministic command-level results for every declared Verify Step at cd8beb68ac1d516a1d1d64419dc609ac703def70, including evidence that the negative, compatibility, persisted-route, and synchronized cross-process duplicate cases executed and passed."
+  ]
+}

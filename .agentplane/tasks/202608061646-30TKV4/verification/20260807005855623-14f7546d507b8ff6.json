@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\nResult: pass\nEvidence: Vitest reported 4 passed files and 37 passed tests.\nScope: User-first task intake, conservative ambiguous intent, duplicate serialization, execution preview, and compact supervisor handoff.\n\nCommand: bun run docs:cli:check\nResult: pass\nEvidence: Generated CLI reference is up to date.\nScope: Public CLI documentation.\n\nCommand: bun run docs:onboarding:check\nResult: pass\nEvidence: Agent onboarding scenario includes task create, dry-run execution_preview, managed run, and external advance.\nScope: Executable user-first onboarding.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed successfully.\nScope: Changed TypeScript implementation and tests.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: Policy routing OK.\nScope: Repository policy gateway.\n\nCommand: bun run hotspots:check\nResult: pass\nEvidence: Runtime oversized threshold and oversized test baseline pass.\nScope: Maintainability guard.\n\nCommand: bun run bench:compatibility:check\nResult: pass\nEvidence: Approved v0.7 cumulative compatibility candidate matches 260 commands, 180 args, and 836 options.\nScope: CLI compatibility contract.",
+  "digest": "sha256:14f7546d507b8ff6c3811ba4e9eb1ed1c88d9a2ee4af0ed492f8e327b09be9fb",
+  "implementation_sha": "a743a9c42ca4a35915c6781157e1081db6c122ce",
+  "kind": "task_verification_record",
+  "note": "All seven declared checks pass on a743a9c42ca4; onboarding content and conservative ambiguous-intent coverage are now explicit.",
+  "recorded_at": "2026-08-07T00:58:55.623Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\n- bun run docs:cli:check\n- bun run docs:onboarding:check\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs\n- bun run hotspots:check\n- bun run bench:compatibility:check",
+  "scope_digest": "sha256:2299aaf79934b79b80cd30a0b3f1bf2e4aa95fc87a5488d835780da7768d7769",
+  "task_id": "202608061646-30TKV4",
+  "verification_command": "agentplane verify 202608061646-30TKV4 --ok --by TESTER",
+  "verifier": "TESTER"
+}

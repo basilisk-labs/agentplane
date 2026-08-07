@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\nResult: pass\nEvidence: 4 files and 37 tests passed\nScope: focused user-first task creation, execution preview, task run, and task advance coverage\n\nCommand: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts\nResult: pass\nEvidence: 9 tests passed\nScope: critical compatibility and agent-efficiency baseline\n\nCommand: bun run docs:cli:check\nResult: pass\nEvidence: generated reference is current\nScope: generated CLI reference freshness\n\nCommand: bun run docs:onboarding:check\nResult: pass\nEvidence: onboarding surfaces are aligned\nScope: onboarding scenario alignment\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed\nScope: all TypeScript workspaces\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK\nScope: policy routing and size budgets\n\nCommand: bun run hotspots:check\nResult: pass\nEvidence: hotspot threshold and oversized-test baseline passed\nScope: runtime and test hotspot budgets\n\nCommand: bun run bench:compatibility:check\nResult: pass\nEvidence: approved 260 command compatibility contract passed\nScope: approved CLI compatibility surface\n\nCommand: bun run format:check\nResult: pass\nEvidence: all matched files use Prettier style\nScope: repository formatting\n\nCommand: bun run lint:core\nResult: pass\nEvidence: ESLint completed without findings\nScope: strict repository lint\n\nCommand: bun run knip:check\nResult: pass\nEvidence: CLI findings remain 0/0; total baseline 21/21\nScope: dead-code package budgets",
+  "digest": "sha256:e537d781698331149e7017b1c1f7ef122e9663795b8eaac8af885055d8fb4cca",
+  "implementation_sha": "60c5d0c9abbfc828c25bce0266916922de7309d6",
+  "kind": "task_verification_record",
+  "note": "All eleven declared checks pass on 60c5d0c9a with machine-parseable command evidence.",
+  "recorded_at": "2026-08-07T01:37:59.188Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\n- bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts\n- bun run docs:cli:check\n- bun run docs:onboarding:check\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs\n- bun run hotspots:check\n- bun run bench:compatibility:check\n- bun run format:check\n- bun run lint:core\n- bun run knip:check",
+  "scope_digest": "sha256:052b9225fab1447a460c10aa435470026aedc04d19b3e72ca506f07d3493080c",
+  "task_id": "202608061646-30TKV4",
+  "verification_command": "agentplane verify 202608061646-30TKV4 --ok --by TESTER",
+  "verifier": "TESTER"
+}
