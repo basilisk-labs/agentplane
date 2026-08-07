@@ -50,6 +50,63 @@ import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 const TASKS_CLI_TIMEOUT_MS = 300_000;
+const execFileAsync = promisify(execFile);
+
+type CliProcessResult = {
+  code: number;
+  stdout: string;
+  stderr: string;
+};
+
+const SYNCHRONIZED_CLI_LAUNCHER = String.raw`
+const { spawnSync } = require("node:child_process");
+const startAt = Number(process.argv[1]);
+const cliPath = process.argv[2];
+const cliArgs = process.argv.slice(3);
+const waitSignal = new Int32Array(new SharedArrayBuffer(4));
+while (Date.now() < startAt) {
+  Atomics.wait(waitSignal, 0, 0, Math.min(10, startAt - Date.now()));
+}
+const result = spawnSync(process.execPath, [cliPath, ...cliArgs], {
+  cwd: process.cwd(),
+  env: process.env,
+  encoding: "utf8",
+});
+process.stdout.write(result.stdout ?? "");
+process.stderr.write(result.stderr ?? "");
+if (result.error) throw result.error;
+process.exit(result.status ?? 1);
+`;
+
+async function runSynchronizedCliProcess(opts: {
+  args: string[];
+  startAt: number;
+}): Promise<CliProcessResult> {
+  const cliPath = path.resolve("packages/agentplane/bin/agentplane.js");
+  try {
+    const { stdout, stderr } = await execFileAsync(
+      process.execPath,
+      ["-e", SYNCHRONIZED_CLI_LAUNCHER, String(opts.startAt), cliPath, ...opts.args],
+      {
+        cwd: process.cwd(),
+        env: cleanGitEnv(),
+        maxBuffer: 4 * 1024 * 1024,
+      },
+    );
+    return { code: 0, stdout, stderr };
+  } catch (error) {
+    const failure = error as Error & {
+      code?: number | string;
+      stdout?: string;
+      stderr?: string;
+    };
+    return {
+      code: typeof failure.code === "number" ? failure.code : 1,
+      stdout: failure.stdout ?? "",
+      stderr: failure.stderr ?? failure.message,
+    };
+  }
+}
 
 describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
   it("task new creates a task README and prints the id", async () => {
@@ -502,25 +559,33 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     }
   });
 
-  it("task create serializes concurrent exact duplicates and preserves the selected route", async () => {
+  it("task create serializes cross-process exact duplicates and preserves the selected route", async () => {
     const root = await mkGitRepoRoot();
     const args = ["task", "create", "Fix the concurrent parser path", "--json", "--root", root];
-    const io = captureStdIO();
-    let codes: number[] = [];
-    try {
-      codes = await Promise.all([runCli(args), runCli(args)]);
-    } finally {
-      io.restore();
-    }
+    const startAt = Date.now() + 1_000;
+    const results = await Promise.all([
+      runSynchronizedCliProcess({ args, startAt }),
+      runSynchronizedCliProcess({ args, startAt }),
+    ]);
 
-    expect(codes.toSorted()).toEqual([0, 4]);
+    expect(results.map((result) => result.code).toSorted()).toEqual([0, 4]);
+    const successfulResult = results.find((result) => result.code === 0);
+    const duplicateResult = results.find((result) => result.code === 4);
+    expect(successfulResult).toBeDefined();
+    expect(duplicateResult?.stderr).toContain("exact duplicate open task detected");
+    const created = JSON.parse(successfulResult?.stdout ?? "") as {
+      task_id: string;
+      execution_route: { selected_mode: string; frozen: boolean };
+    };
+    expect(created.execution_route).toMatchObject({ selected_mode: "direct", frozen: true });
+
     const taskEntries = await readdir(path.join(root, ".agentplane", "tasks"), {
       withFileTypes: true,
     });
     const taskIds = taskEntries
       .filter((entry) => entry.isDirectory() && /^\d{12}-[A-Z0-9]{6}$/u.test(entry.name))
       .map((entry) => entry.name);
-    expect(taskIds).toHaveLength(1);
+    expect(taskIds).toEqual([created.task_id]);
     const task = await readTask({ cwd: root, rootOverride: root, taskId: taskIds[0] ?? "" });
     expect(task.frontmatter.execution_route).toEqual(
       expect.objectContaining({

@@ -339,6 +339,7 @@ function validateReviewedCandidate({
     "202608021534-YN84E1",
     "202608022324-9VCYWG",
     "202608021535-CNQKXP",
+    "202608061646-WCARQG",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -369,6 +370,7 @@ function validateReviewedCandidate({
     "202608021534-YN84E1",
     "202608022324-9VCYWG",
     "202608021535-CNQKXP",
+    "202608061646-WCARQG",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -500,7 +502,7 @@ function validateReviewedCandidate({
         section: "package_manifests",
         from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
         to_sha256: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
-        surface_sha256: "e268ab12ae45c6c5620e2b92c671828ea25fbcc79fd4f21b6e9da806de08eabb",
+        surface_sha256: "f1f7ba365b8912771323910df3e34843708feeccc291944d50a1ab2f7874ca01",
         allowed_json_paths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -1659,6 +1661,14 @@ function validateReviewedCandidate({
       default: false,
     },
     {
+      command: "task new",
+      name: "route",
+      kind: "string",
+      valueHint: "<repository|auto|direct|branch_pr>",
+      default: "repository",
+      choices: ["repository", "auto", "direct", "branch_pr"],
+    },
+    {
       command: "task run",
       name: "allow-danger-full-access",
       kind: "boolean",
@@ -1978,6 +1988,12 @@ function validateReviewedCandidate({
       command: "task complete",
       name: "accept-unobserved",
       source_task: "202608021534-YN84E1",
+    },
+    {
+      kind: "option",
+      command: "task new",
+      name: "route",
+      source_task: "202608061646-WCARQG",
     },
     {
       kind: "option",

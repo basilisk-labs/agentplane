@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608061646-30TKV4-cf3e60398ae9199a7272f761",
+  "task_id": "202608061646-30TKV4",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Add deterministic cross-process duplicate-creation coverage for the filesystem transaction, then rerun the declared verification contract and record the result against the same implementation behavior.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The duplicate-creation regression test exercises two concurrent runCli calls in one process, so it does not prove the intended cross-process CLI serialization behavior.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/3a49c50099238097e8b103032d050c22a335492decec015c807fb273c428f729.patch",
+          "sha256": "sha256:3a49c50099238097e8b103032d050c22a335492decec015c807fb273c428f729",
+          "section": "run-cli.core.tasks.create.test.ts concurrent duplicate test and new.ts creation transaction"
+        },
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/README.md",
+          "sha256": "sha256:3ec5baed6b8195631eb1f933b410ba7af7678d81b1b8113009fdbae56744ed00",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608061646-30TKV4/quality/20260806-235624838-recovery-context/evaluator-result.json"
+}

@@ -13,7 +13,7 @@ Created: 2026-08-06T19:12:24.484Z
 ## Verification
 
 - State: ok
-- Note: Verified the re-approved user-first task contract: cli-core 37/37 covers route inference and overrides, invalid inputs, simultaneous duplicate creation, persisted route consistency, dry-run preview, and task advance --agent-json compatibility; docs, onboarding, types, and routing also pass.
+- Note: The current-main UX branch and its filesystem transaction are verified across two synchronized independent CLI processes with complete deterministic evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,11 +29,11 @@ Created: 2026-08-06T19:12:24.484Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/user/cli-reference.generated.mdx              |  86 ++---
+ docs/user/cli-reference.generated.mdx              |  87 ++---
  packages/agentplane/src/cli/command-invocations.ts |   1 +
  .../src/cli/run-cli.core.route-decision.test.ts    |   8 +
  .../src/cli/run-cli.core.task-run.test.ts          | 112 +++---
- .../src/cli/run-cli.core.tasks.create.test.ts      | 217 +++++++++++
+ .../src/cli/run-cli.core.tasks.create.test.ts      | 282 ++++++++++++++
  .../src/cli/run-cli/command-catalog/task.ts        |   9 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
  .../agentplane/src/commands/task/create.command.ts | 409 +++++++++++++++++++++
@@ -42,7 +42,7 @@ Created: 2026-08-06T19:12:24.484Z
  .../agentplane/src/commands/task/run.command.ts    |   6 +-
  .../agentplane/src/commands/task/status.command.ts |  13 +-
  .../agentplane/src/commands/task/task.command.ts   |  10 +-
- 13 files changed, 1056 insertions(+), 274 deletions(-)
+ 13 files changed, 1121 insertions(+), 275 deletions(-)
 ```
 
 </details>

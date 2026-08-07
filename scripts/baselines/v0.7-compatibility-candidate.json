@@ -29,7 +29,8 @@
     "202608021231-SHYJGK",
     "202608021534-YN84E1",
     "202608022324-9VCYWG",
-    "202608021535-CNQKXP"
+    "202608021535-CNQKXP",
+    "202608061646-WCARQG"
   ],
   "base": {
     "baseline_id": "agentplane.compatibility.v0.6.24",
@@ -38,9 +39,9 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "5fe979c4175ec9d8059079384632c52cce90340697675f8eba66f8fbc808ea27",
+    "surface_sha256": "c710ccaa31b43988b633441c168651a1e57aa47d17fd97f18e0acafd14776848",
     "section_digests": {
-      "cli_topology": "013285a7eb1fce7e1b0138cec6da0c94c4c1c3647937f6b0d49f872b57abed0b",
+      "cli_topology": "c15bff5ccf748801205499a8e483524162422c4659a06fc201ad13d9d7c1f8cc",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
@@ -83,7 +84,7 @@
     "section": "package_manifests",
     "from_sha256": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
     "to_sha256": "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
-    "surface_sha256": "e268ab12ae45c6c5620e2b92c671828ea25fbcc79fd4f21b6e9da806de08eabb",
+    "surface_sha256": "f1f7ba365b8912771323910df3e34843708feeccc291944d50a1ab2f7874ca01",
     "allowed_json_paths": [
       "$.package_manifests[0].dependencies.@agentplaneorg/core",
       "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -429,16 +430,17 @@
         "202608021231-PZGG3V",
         "202608021534-YN84E1",
         "202608022324-9VCYWG",
-        "202608021535-CNQKXP"
+        "202608021535-CNQKXP",
+        "202608061646-WCARQG"
       ],
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "013285a7eb1fce7e1b0138cec6da0c94c4c1c3647937f6b0d49f872b57abed0b",
+      "to_sha256": "c15bff5ccf748801205499a8e483524162422c4659a06fc201ad13d9d7c1f8cc",
       "classification": "additive_with_visibility_simplification",
-      "summary": "Adds the compact external task advance packet and compatibility retirement diagnostics, promotes the managed task runner, and moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces without removing commands or options.",
+      "summary": "Adds the compact external task advance packet, explainable per-task workflow routing, and compatibility retirement diagnostics; promotes the managed task runner; and moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces without removing commands or options.",
       "evidence": {
         "command_count": { "from": 243, "to": 259 },
         "positional_count": { "from": 165, "to": 179 },
-        "option_count": { "from": 767, "to": 828 },
+        "option_count": { "from": 767, "to": 829 },
         "added_commands": [
           "context supervise-task",
           "doctor legacy",
@@ -1342,6 +1344,14 @@
             "default": false
           },
           {
+            "command": "task new",
+            "name": "route",
+            "kind": "string",
+            "valueHint": "<repository|auto|direct|branch_pr>",
+            "default": "repository",
+            "choices": ["repository", "auto", "direct", "branch_pr"]
+          },
+          {
             "command": "task run",
             "name": "allow-danger-full-access",
             "kind": "boolean",
@@ -1831,6 +1841,12 @@
             "command": "task complete",
             "name": "accept-unobserved",
             "source_task": "202608021534-YN84E1"
+          },
+          {
+            "kind": "option",
+            "command": "task new",
+            "name": "route",
+            "source_task": "202608061646-WCARQG"
           },
           {
             "kind": "option",

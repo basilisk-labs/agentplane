@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608061850-BZT3D9-4f42244ceb7859bbd873bc06",
+  "task_id": "202608061850-BZT3D9",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Provide frozen deterministic verification and hosted-check evidence bound to evaluated SHA 2c35aa1d9848ccdc44d1c13b722dc0253f4f4f9d, including the declared local checks, routing and supervisor regressions, integration-lane state, and branch-cleanup ancestry proof.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The frozen packet contains no deterministic verification records for the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061850-BZT3D9/quality/objects/sha256/8967159f715c70dc39a845fbfb50cc55d258dc53097ef7703366fb083650420d.json",
+          "sha256": "sha256:8967159f715c70dc39a845fbfb50cc55d258dc53097ef7703366fb083650420d",
+          "section": "verification_records, runner_history, runtime_evidence, direct_supervision"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608061850-BZT3D9/quality/20260806-223754924-recovery-context/evaluator-result.json"
+}
