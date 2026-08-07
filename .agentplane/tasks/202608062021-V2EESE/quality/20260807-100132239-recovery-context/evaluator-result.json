@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "verification-complete",
+      "severity": "low",
+      "summary": "The frozen implementation and command-level verification evidence cover the declared semantic prompt projection, forbidden choreography rejection, all three semantic roles, security constraint preservation, bounded repair authority, type contracts, critical contracts, and policy routing.",
+      "broken_invariant": "No broken invariant identified; the declared acceptance and verification contract is satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/e80c79ea465c47c132263113cbf88097ef7ca5e2f16cf8512b34ce608fc6c386.patch",
+          "sha256": "sha256:e80c79ea465c47c132263113cbf88097ef7ca5e2f16cf8512b34ce608fc6c386"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/verification/20260807100106835-82212009c3bd1ce5.json",
+          "sha256": "sha256:3d54e63fefb553ff950c002e8cc17fd93f8cccbda9f77f2a07e391b329b1daea"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/abbbb1701f20ccffd204d58c23ab85190cb6df8852883e3a7b2acedcbcda2e07.json",
+          "sha256": "sha256:abbbb1701f20ccffd204d58c23ab85190cb6df8852883e3a7b2acedcbcda2e07"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The command-level verification record is treated as authoritative frozen evidence for the evaluated implementation SHA.",
+    "The explicit process-mechanism-repair tag combined with matching task intent is the approved boundary for permitting otherwise forbidden choreography in repair episodes."
+  ]
+}
