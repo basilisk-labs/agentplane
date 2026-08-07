@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:f39cd10604669ab2e292de56aea2c58affe1a918a3f88bbfa4ac19b67deca519",
   "pr_number": 4788,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4788",
+  "pre_merge_closure": {
+    "basis_commit": "aef1cc4f6feffa7dcd8cc13a86e430355d092de2",
+    "branch": "task/202608062021-Z0X584/converge-generated-agent-guidance-on-the-supervi",
+    "pr_number": 4788,
+    "recorded_at": "2026-08-07T03:37:01.053Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608062021-Z0X584",

@@ -2,10 +2,10 @@
 id: "202608062021-Z0X584"
 title: "Converge generated agent guidance on the supervisor-first protocol"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -63,19 +63,19 @@ quality_review:
   findings:
     - "The frozen diff consistently makes task active, task advance, and task run the normal agent-facing paths while placing diagnostics and low-level lifecycle operations behind explicit operator or recovery boundaries."
 token_usage:
-  agent_runs: 2
-  input_tokens: 466465
-  journal_digest: "sha256:0a58e9191f0f73618d5ef4e2bfe7ca3640819630232014e037b759f99cd32aee"
-  observed_agent_runs: 2
+  agent_runs: 4
+  input_tokens: 773221
+  journal_digest: "sha256:327394e7565a81b3744d5f90af1d3a1cf15238e54f6f5095f1022e6268a4bd14"
+  observed_agent_runs: 4
   observed_by: "agentplane"
-  output_tokens: 4615
-  reasoning_tokens: 947
+  output_tokens: 8787
+  reasoning_tokens: 1968
   schema_version: 1
   source: "supervisor_journal"
   state: "observed"
-  total_tokens: 472027
+  total_tokens: 783976
   unavailable_reason: null
-  updated_at: "2026-08-07T03:20:34.803Z"
+  updated_at: "2026-08-07T03:37:00.993Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -84,7 +84,9 @@ execution_route:
   requested_mode: "auto"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "aef1cc4f6feffa7dcd8cc13a86e430355d092de2"
+  message: "🧪 Z0X584 prompts: record final supervisor route evidence"
 comments:
   -
     author: "DOCS"
@@ -92,6 +94,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation recorded: supervisor-first prompts, generated guidance, docs contracts, and safe task reclassification are committed; focused verification passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -175,8 +180,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "All five declared supervisor-first acceptance commands pass at the current implementation SHA."
+  -
+    type: "status"
+    at: "2026-08-07T03:37:00.993Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T03:36:26.123Z"
+doc_updated_at: "2026-08-07T03:37:01.015Z"
 doc_updated_by: "CODER"
 description: "Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr policy modules, Codex skill, README, and workflow docs with task active, task advance, and task run as the only normal agent paths; provide one copy-paste executable first workflow and retain manual commands only as explicit operator or recovery interfaces."
 sections:
@@ -548,8 +560,8 @@ sections:
       Resolution: Update init assertions and the lifecycle parity contract to require task active -> task advance -> task run; preserve low-level lifecycle only as internal/operator implementation metadata.
 extensions:
   implementation_commit:
-    hash: "a9a36dd31e4ca64f6c798617de6ba96c0aa48df7"
-    message: "🧩 Z0X584 task: merge current main into supervisor guidance"
+    hash: "59df72b1e7a566d618624d4b5145783dd735ca4a"
+    message: "🧪 Z0X584 prompts: converge lifecycle contracts on supervisor route"
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
     version: 1
@@ -939,12 +951,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `observed`
-- Completeness: `2/2` agent runs
-- Input tokens: `466465`
-- Output tokens: `4615`
-- Reasoning tokens: `947`
-- Total tokens: `472027`
+- Completeness: `4/4` agent runs
+- Input tokens: `773221`
+- Output tokens: `8787`
+- Reasoning tokens: `1968`
+- Total tokens: `783976`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:0a58e9191f0f73618d5ef4e2bfe7ca3640819630232014e037b759f99cd32aee`
+- Journal digest: `sha256:327394e7565a81b3744d5f90af1d3a1cf15238e54f6f5095f1022e6268a4bd14`
 - Unavailable reason: `none`
-- Updated at: `2026-08-07T03:20:34.803Z`
+- Updated at: `2026-08-07T03:37:00.993Z`
