@@ -37,7 +37,7 @@ independent CLI processes with complete deterministic evidence.
  .../src/cli/run-cli.core.route-decision.test.ts    |   8 +
  .../src/cli/run-cli.core.task-run.test.ts          | 112 +++---
  .../src/cli/run-cli.core.tasks.create.test.ts      | 282 ++++++++++++++
- ...-cli.critical.agent-efficiency-baseline.test.ts |   4 +-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
  .../src/cli/run-cli/command-catalog/task.ts        |   9 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
  .../agentplane/src/commands/task/create.command.ts | 409 +++++++++++++++++++++
@@ -48,7 +48,7 @@ independent CLI processes with complete deterministic evidence.
  .../agentplane/src/commands/task/task.command.ts   |  10 +-
  .../baselines/v0.7-compatibility-candidate.json    | 193 +++++++++-
  .../check-compatibility-contract-baseline.mjs      | 135 ++++++-
- 16 files changed, 1438 insertions(+), 290 deletions(-)
+ 16 files changed, 1442 insertions(+), 293 deletions(-)
 ```
 
 </details>
