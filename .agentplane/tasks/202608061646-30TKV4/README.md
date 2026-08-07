@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on:
@@ -37,31 +37,32 @@ verification:
   note: "Hosted CI compatibility follow-up and complete task intake surface pass."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T00:01:23.458Z"
+  updated_at: "2026-08-07T00:25:22.700Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "d5856d4e9f7df6d42b3ca43f1221866148fdc54c"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "cd8beb68ac1d516a1d1d64419dc609ac703def70"
   blueprint_digest: "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62"
   evidence_refs:
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-000029069-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-000029069-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/304e7eccb76496ac9480e9cf6a04d6d108a140fb15dc1a773a2e5c309bd591e6.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-000029069-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-000029069-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-000029069-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-002437621-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-002437621-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/7151fe6855b546d01f33fb40aa551450ebfb7dadd5324368a1859eb5f5ae0610.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-002437621-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-002437621-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-002437621-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-002437621-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608061646-30TKV4/README.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/2337bf8a3670b3ab32353448cb8cbc402d18fb41a738304a7cbae8616f732ad1.patch"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/617cf64620622924d2dea5cb30da75e6ea60ae230404761417cab8340a07000d.json"
-    - ".agentplane/tasks/202608061646-30TKV4/verification/20260807000019724-a1dd7242eb62686b.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/bde099018c90721ea15dd4db41c7736dc6cb41d21b6c002b738eaf5f689a6b67.patch"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/96513d828c41ba999cabcc27a3cb9071e18edc2193999a02dd8091c3eaaa0960.json"
     - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/425dc49ad99db2ca9f60810ac83290977a16fdf6a35d74fe3f0c781f5388ee6d.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The implementation satisfies the user-first intake, route preview, status, dry-run preview, compatibility, and concurrency requirements, with deterministic verification at the evaluated SHA."
+    - "The frozen packet contains no deterministic execution evidence for any declared verification check: verification_records, runner_history, and runtime_evidence are all empty. The TESTER note alone cannot establish that positive, negative, compatibility, and cross-process concurrency paths passed at the evaluated SHA."
+  recovery_reason: "deterministic_evidence_gap"
 token_usage:
   agent_runs: 6
   input_tokens: 1065531
@@ -214,7 +215,7 @@ events:
     state: "ok"
     note: "Hosted CI compatibility follow-up and complete task intake surface pass."
 doc_version: 3
-doc_updated_at: "2026-08-07T00:24:12.845Z"
+doc_updated_at: "2026-08-07T00:25:22.720Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
