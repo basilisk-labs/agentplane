@@ -8,10 +8,10 @@
   "pr_number": 4786,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4786",
   "pre_merge_closure": {
-    "basis_commit": "42de275d5de74771b725ef8347fd956afa150524",
+    "basis_commit": "c8f743676680e54b0d4868c465d9be63d6d0f8e0",
     "branch": "task/202608061925-KANFC0/preserve-exact-windows-task-readme-file-identiti",
     "pr_number": 4786,
-    "recorded_at": "2026-08-07T02:18:08.019Z",
+    "recorded_at": "2026-08-07T03:01:13.451Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

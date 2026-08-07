@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -64,19 +64,19 @@ quality_review:
   findings:
     - "Hosted Windows CI evidence is not included in this pre-merge quality packet and remains deferred to the required hosted-check gate on the exact PR head."
 token_usage:
-  agent_runs: 2
-  input_tokens: 163979
-  journal_digest: "sha256:7754bd8ea66d3816af10c306afe36a416d424e5260861fe4f4d91f9833bb2042"
-  observed_agent_runs: 2
+  agent_runs: 3
+  input_tokens: 249760
+  journal_digest: "sha256:1706725a4dad5788e39b4b24d91ed316d0a912c3bcb50304ae0aa9151ddb9ec0"
+  observed_agent_runs: 3
   observed_by: "agentplane"
-  output_tokens: 3061
-  reasoning_tokens: 604
+  output_tokens: 4630
+  reasoning_tokens: 918
   schema_version: 1
   source: "supervisor_journal"
   state: "observed"
-  total_tokens: 167644
+  total_tokens: 255308
   unavailable_reason: null
-  updated_at: "2026-08-07T02:18:07.959Z"
+  updated_at: "2026-08-07T03:01:13.392Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -86,8 +86,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "42de275d5de74771b725ef8347fd956afa150524"
-  message: "🧪 KANFC0 task: record Windows evaluator pass"
+  hash: "c8f743676680e54b0d4868c465d9be63d6d0f8e0"
+  message: "🧪 KANFC0 task: record post-rework evaluator pass"
 comments:
   -
     author: "CODER"
@@ -101,6 +101,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -160,8 +163,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Exact NTFS identity handling and all local release gates pass on current main; hosted Windows is the remaining PR gate."
+  -
+    type: "status"
+    at: "2026-08-07T03:01:13.392Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T03:00:24.417Z"
+doc_updated_at: "2026-08-07T03:01:13.415Z"
 doc_updated_by: "CODER"
 description: "Fix local task scans so NTFS file IDs above Number.MAX_SAFE_INTEGER remain exact across pre-scan and stable-read identity checks, preventing false unreadable_readme failures in verify and finish."
 sections:
@@ -468,8 +478,8 @@ sections:
       Resolution: Keep verification in rework; rebase on repaired main, rerun backend, typecheck, platform-critical, and full critical suites, then request fresh evaluation and Windows hosted proof.
 extensions:
   implementation_commit:
-    hash: "0d19a7479fbad6327a015231bd553a7d50e6624c"
-    message: "🧩 KANFC0 task: merge current main before Windows verification"
+    hash: "7918002b6bb9873c63b88bd3499b12cfbbf9c387"
+    message: "🔀 KANFC0 code: merge current main"
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
     version: 1
@@ -794,12 +804,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `observed`
-- Completeness: `2/2` agent runs
-- Input tokens: `163979`
-- Output tokens: `3061`
-- Reasoning tokens: `604`
-- Total tokens: `167644`
+- Completeness: `3/3` agent runs
+- Input tokens: `249760`
+- Output tokens: `4630`
+- Reasoning tokens: `918`
+- Total tokens: `255308`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:7754bd8ea66d3816af10c306afe36a416d424e5260861fe4f4d91f9833bb2042`
+- Journal digest: `sha256:1706725a4dad5788e39b4b24d91ed316d0a912c3bcb50304ae0aa9151ddb9ec0`
 - Unavailable reason: `none`
-- Updated at: `2026-08-07T02:18:07.959Z`
+- Updated at: `2026-08-07T03:01:13.392Z`
