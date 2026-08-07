@@ -226,6 +226,8 @@ describe("context task runner integration", () => {
   it.each([
     "git clean -fd",
     "git reset --hard",
+    "Commit changes with git commit -m implementation.",
+    "After editing, git push origin task/TASK/fix.",
     "gh release create v0.7.5",
     "npm version patch",
     "agentplane task run tool arbitrary",

@@ -127,6 +127,8 @@ describe("collectRunnerBasePrompts", () => {
     "git tag v0.7.5",
     "git cherry-pick deadbeef",
     "Run `git clean -fd` before continuing.",
+    "Commit changes with git commit -m implementation.",
+    "After editing, git push origin task/TASK/fix.",
     "agentplane pr update TASK",
     "gh pr create --fill",
     "gh release create v0.7.5",
@@ -147,6 +149,11 @@ describe("collectRunnerBasePrompts", () => {
   });
 
   it("allows the exact supervisor-issued phase-tool transport", () => {
+    expect(() =>
+      assertSemanticProviderPromptHasNoProcessChoreography({
+        prompt: "Review the Git repository and run git diff --check.",
+      }),
+    ).not.toThrow();
     expect(() =>
       assertSemanticProviderPromptHasNoProcessChoreography({
         prompt: "agentplane task run tool report_result",

@@ -29,11 +29,11 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
 ```text
  .../src/cli/run-cli.core.task-run.test.ts          |   3 +-
  .../src/runner/context/base-prompt-sources.ts      |  17 +-
- .../src/runner/context/base-prompts.test.ts        | 172 ++++++++++++++
+ .../src/runner/context/base-prompts.test.ts        | 179 ++++++++++++
  .../agentplane/src/runner/context/base-prompts.ts  |   5 +
  .../src/runner/context/prompt-block-shared.ts      |   5 +
  .../src/runner/context/prompt-module-bridge.ts     |   4 +
- .../runner/context/semantic-prompt-projection.ts   | 251 +++++++++++++++++++++
+ .../runner/context/semantic-prompt-projection.ts   | 299 +++++++++++++++++++++
  .../src/runner/state-fingerprint-observation.ts    |   3 +-
  .../agentplane/src/runner/state-fingerprint.ts     |   3 +-
  packages/agentplane/src/runner/types/prompts.ts    |   3 +
@@ -41,10 +41,10 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
  .../src/runner/usecases/agent-work-order.ts        |  12 +
  .../src/runner/usecases/task-run-blueprint.test.ts |  35 +--
  .../task-run-bootstrap.result-examples.test.ts     |   2 +-
- .../src/runner/usecases/task-run-bootstrap.ts      | 139 ++++++++----
- .../usecases/task-run-context.integration.test.ts  |  93 +++++++-
- .../agentplane/src/runner/usecases/task-run.ts     |  40 +++-
- 17 files changed, 715 insertions(+), 77 deletions(-)
+ .../src/runner/usecases/task-run-bootstrap.ts      | 139 +++++++---
+ .../usecases/task-run-context.integration.test.ts  |  95 ++++++-
+ .../agentplane/src/runner/usecases/task-run.ts     |  40 ++-
+ 17 files changed, 772 insertions(+), 77 deletions(-)
 ```
 
 </details>
