@@ -133,6 +133,8 @@ describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, () 
     const outcomes = [
       ["Refactor the task framework", "complex_code_change", "code.branch_pr"],
       ["Выпусти следующий патч-релиз", "release_intent", "release.strict"],
+      ["Do not publish; only fix the parser", "release_intent", "release.strict"],
+      ["Document the release checklist", "release_intent", "release.strict"],
     ] as const;
 
     for (const [outcome, inferenceCode, blueprint] of outcomes) {

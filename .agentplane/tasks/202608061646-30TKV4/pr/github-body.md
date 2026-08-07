@@ -27,12 +27,13 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/start/quickstart.mdx                          |  35 +-
  docs/user/cli-reference.generated.mdx              |  87 ++---
  packages/agentplane/src/cli/command-invocations.ts |   1 +
  .../src/cli/run-cli.core.route-decision.test.ts    |   8 +
  .../src/cli/run-cli.core.task-run.test.ts          | 112 +++---
  .../src/cli/run-cli.core.tasks.create.test.ts      |   5 -
- .../src/cli/run-cli.core.tasks.user-create.test.ts | 302 +++++++++++++++
+ .../src/cli/run-cli.core.tasks.user-create.test.ts | 304 +++++++++++++++
  ...-cli.critical.agent-efficiency-baseline.test.ts |  39 +-
  .../src/cli/run-cli/command-catalog/task.ts        |   9 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
@@ -44,8 +45,9 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
  .../agentplane/src/commands/task/status.command.ts |  13 +-
  .../agentplane/src/commands/task/task.command.ts   |  10 +-
  .../baselines/v0.7-compatibility-candidate.json    | 193 +++++++++-
+ scripts/checks/check-agent-onboarding-scenario.mjs |  11 +
  .../check-compatibility-contract-baseline.mjs      | 135 ++++++-
- 18 files changed, 1491 insertions(+), 297 deletions(-)
+ 20 files changed, 1531 insertions(+), 305 deletions(-)
 ```
 
 </details>

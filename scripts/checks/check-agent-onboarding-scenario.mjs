@@ -6,6 +6,7 @@ const ROOT = process.cwd();
 
 const files = {
   docsIndex: path.join(ROOT, "docs", "index.mdx"),
+  quickstart: path.join(ROOT, "docs", "start", "quickstart.mdx"),
   bootstrap: path.join(ROOT, "docs", "user", "agent-bootstrap.generated.mdx"),
   commands: path.join(ROOT, "docs", "user", "commands.mdx"),
   setup: path.join(ROOT, "docs", "user", "setup.mdx"),
@@ -37,6 +38,16 @@ function assertScenarioText(fileContents, fileKey, needle, scenario) {
 }
 
 const onboardingScenarios = [
+  {
+    name: "user-first supervised task",
+    checks: [
+      ["quickstart", "## Create the first task"],
+      ["quickstart", 'agentplane task create "Fix the parser edge case" --json'],
+      ["quickstart", "agentplane task run <task-id> --dry-run --json"],
+      ["quickstart", "The JSON response includes `execution_preview`."],
+      ["quickstart", "agentplane task advance <task-id> --agent-json"],
+    ],
+  },
   {
     name: "legacy upgrade recovery",
     checks: [

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 48
+revision: 49
 origin:
   system: "manual"
 depends_on:
@@ -39,31 +39,32 @@ verification:
   note: "All seven declared verification steps pass on dca066f829e3 with machine-readable evidence."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T00:37:16.169Z"
+  updated_at: "2026-08-07T00:55:53.782Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "4d7ebde5495ce91ebab19921192cb5327e8738b1"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "dca066f829e381ad3d6e74293b4d552443f56c30"
   blueprint_digest: "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62"
   evidence_refs:
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-003624033-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-003624033-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/622152c6d395d253fef2f1bb61cb4bdde0ff137eeb5b9820d1834d3e954220f9.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-003624033-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-003624033-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-003624033-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005452023-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005452023-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/fcaaed172c87e7f0220c28d1158afc14c77532b685358e8faffaf0ca14ea5ac7.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005452023-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005452023-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005452023-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-005452023-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608061646-30TKV4/README.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/f5dc855d4bc3434ed0776f4474b69836de790d36d9c9a0652b7dd663135991ee.patch"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/9abc6d3760869eb072be0a45dacde3610c66ec0707eebb7961e465e2e8e2e787.json"
-    - ".agentplane/tasks/202608061646-30TKV4/verification/20260807003333660-0d78460785113004.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/f03764541cec0c8b9bd0a51b34d58117711a052ef4284deec69d525a1b5ecf96.patch"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/2e347fb61d1b1b23de9fea4176de597b3cabbd9873ea3939e53d855ea50d9875.json"
+    - ".agentplane/tasks/202608061646-30TKV4/verification/20260807005409275-8701b3f2f8e9fcc4.json"
     - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/425dc49ad99db2ca9f60810ac83290977a16fdf6a35d74fe3f0c781f5388ee6d.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Natural-language intent inference depends on ordered substring matching, so ambiguous or negated wording can conservatively select a higher-risk task category and route."
+    - "The change updates the generated CLI reference but does not update any onboarding document, despite onboarding documentation being an explicit acceptance requirement."
 token_usage:
   agent_runs: 11
   input_tokens: 1634333
@@ -284,7 +285,7 @@ events:
     state: "ok"
     note: "All seven declared verification steps pass on dca066f829e3 with machine-readable evidence."
 doc_version: 3
-doc_updated_at: "2026-08-07T00:54:10.755Z"
+doc_updated_at: "2026-08-07T00:55:53.806Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
