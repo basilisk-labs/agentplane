@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202608061925-KANFC0-9743eeb2610c5c846ec7b7ee",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061925-KANFC0-preserve-exact-windows-task-readme-file-identiti",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061925-KANFC0-preserve-exact-windows-task-readme-file-identiti/.agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-08-07T02:16:41.849Z",
+  "ended_at": "2026-08-07T02:17:27.046Z",
+  "stdout_bytes": 58325,
+  "stderr_bytes": 1072,
+  "provider_usage": {
+    "input_tokens": 84761,
+    "output_tokens": 1736,
+    "total_tokens": 86497,
+    "visible_output_tokens": 1437,
+    "reasoning_tokens": 299
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:9d3d26267719bfc94fab892193563e9f3ff863da81ad533f502ff202d7e110aa"
+}
