@@ -13,7 +13,7 @@ Created: 2026-08-06T21:10:34.048Z
 ## Verification
 
 - State: ok
-- Note: Canonical gateway allowlisting removes lifecycle and persistence prose while preserving semantic safety constraints.
+- Note: Applicable security.must constraints are projected into exact PLANNER, EXECUTOR, and EVALUATOR provider prompts while workflow choreography remains excluded.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

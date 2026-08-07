@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608062021-V2EESE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T09:44:05.808Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "ef6f3b728827fc2948d8ca7f475dc63310deaf7b",
+  "blueprint_digest": "ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26",
+  "findings": [
+    "The semantic projection omits loaded security policy modules from provider input."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/c93b091fe243e4afbbce445ca2caf17ae75d02284d5c1b665de9f26bdc216a39.patch",
+    ".agentplane/policy/security.must.md",
+    ".agentplane/tasks/202608062021-V2EESE/README.md"
+  ],
+  "missing_tests": [
+    "For PLANNER, EXECUTOR, and EVALUATOR, assert that the exact compiled provider prompt preserves every applicable constraint from the loaded security.must policy module while still excluding lifecycle choreography."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes the gateway scope-boundary fragment and serialized authority fully subsume the separately loaded security policy module; the frozen diff and tests do not establish that equivalence."
+  ],
+  "residual_risks": [
+    "Project applicable loaded security-policy constraints into each semantic provider prompt without reintroducing lifecycle choreography, then qualify the exact PLANNER, EXECUTOR, and EVALUATOR prompts against both security-presence and lifecycle-absence assertions."
+  ]
+}

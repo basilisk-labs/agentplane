@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608062021-V2EESE-f52ab103c4413863640df9dd",
+  "task_id": "202608062021-V2EESE",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Project applicable loaded security-policy constraints into each semantic provider prompt without reintroducing lifecycle choreography, then qualify the exact PLANNER, EXECUTOR, and EVALUATOR prompts against both security-presence and lifecycle-absence assertions.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The semantic projection omits loaded security policy modules from provider input.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/c93b091fe243e4afbbce445ca2caf17ae75d02284d5c1b665de9f26bdc216a39.patch",
+          "sha256": "sha256:c93b091fe243e4afbbce445ca2caf17ae75d02284d5c1b665de9f26bdc216a39",
+          "section": "semantic-prompt-projection.ts and task-run-bootstrap.ts"
+        },
+        {
+          "path": ".agentplane/policy/security.must.md",
+          "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+          "section": "Security MUST Rules"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/README.md",
+          "sha256": "sha256:5afeae3c0ca33fe1f68ec7007bcbee3e9f6af5dbac1e212b4c51c07b0b1cac99",
+          "section": "Plan"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608062021-V2EESE/quality/20260807-094302845-recovery-context/evaluator-result.json"
+}

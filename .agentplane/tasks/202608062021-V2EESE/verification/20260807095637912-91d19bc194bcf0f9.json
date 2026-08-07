@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:91d19bc194bcf0f95181965631892a982427ecaaafa1269248e4de0f4ba0a4b9",
+  "implementation_sha": "ef6f3b728827fc2948d8ca7f475dc63310deaf7b",
+  "kind": "task_verification_record",
+  "note": "Applicable security.must constraints are projected into exact PLANNER, EXECUTOR, and EVALUATOR provider prompts while workflow choreography remains excluded.",
+  "recorded_at": "2026-08-07T09:56:37.912Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\n- bun run test:critical\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98",
+  "task_id": "202608062021-V2EESE",
+  "verification_command": "agentplane verify 202608062021-V2EESE --ok --by TESTER",
+  "verifier": "TESTER"
+}

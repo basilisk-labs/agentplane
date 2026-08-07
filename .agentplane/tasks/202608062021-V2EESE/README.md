@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -33,37 +33,37 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T09:41:29.426Z"
+  updated_at: "2026-08-07T09:56:37.912Z"
   updated_by: "TESTER"
-  note: "Canonical gateway allowlisting removes lifecycle and persistence prose while preserving semantic safety constraints."
+  note: "Applicable security.must constraints are projected into exact PLANNER, EXECUTOR, and EVALUATOR provider prompts while workflow choreography remains excluded."
   attempts: 0
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T09:31:17.774Z"
+  updated_at: "2026-08-07T09:44:05.808Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "712ce1727f10f5ad75291b80433863546be725c6"
+  evaluated_sha: "ef6f3b728827fc2948d8ca7f475dc63310deaf7b"
   blueprint_digest: "ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26"
   evidence_refs:
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-092944726-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-092944726-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/0b478ce008d13da24e8ca9da10bad24d6e54a0de91c26688bc89d90939b4bde8.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-092944726-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-092944726-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-092944726-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-092944726-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-094302845-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-094302845-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/079c8d629f960f9821e6d602faa07ad6c6fbf6a40ff4cef48a43860d77e56761.md"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-094302845-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-094302845-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-094302845-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/20260807-094302845-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608062021-V2EESE/README.md"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/664313f67f436b594b6967f22f2b442433c92bdb4cbaa86d9c11fef3c6bdfaa5.patch"
-    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/4e34e04ead2b876c9bf6bdfbb3ec8da68e252fe00617cfb279c8791120fc8a26.json"
-    - ".agentplane/tasks/202608062021-V2EESE/verification/20260807092906801-241aceac2503c87d.json"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/c93b091fe243e4afbbce445ca2caf17ae75d02284d5c1b665de9f26bdc216a39.patch"
+    - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/852e54a3f0f5a691b1d6514041ea1ca3ea6e8e4cfd593c66d1a63c2addba5256.json"
+    - ".agentplane/tasks/202608062021-V2EESE/verification/20260807094129426-a13411414bd3e042.json"
     - ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/95733d97fca351adc4547b7181a057ce60fc567aeb7afbf37c59f69aa9b36417.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The structured gateway projection still admits lifecycle and persistence instructions written without command syntax or underscore-form artifact names, including instructions to return output to a “result path,” request a fresh packet, and defer formal transitions."
+    - "The semantic projection omits loaded security policy modules from provider input."
 token_usage:
   agent_runs: 5
   input_tokens: 792013
@@ -185,8 +185,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Canonical gateway allowlisting removes lifecycle and persistence prose while preserving semantic safety constraints."
+  -
+    type: "verify"
+    at: "2026-08-07T09:56:37.912Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Applicable security.must constraints are projected into exact PLANNER, EXECUTOR, and EVALUATOR provider prompts while workflow choreography remains excluded."
 doc_version: 3
-doc_updated_at: "2026-08-07T09:41:30.926Z"
+doc_updated_at: "2026-08-07T09:56:39.233Z"
 doc_updated_by: "CODER"
 description: "Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt."
 sections:
@@ -769,6 +775,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608062021-V2EESE
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T09:56:37.912Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Applicable security.must constraints are projected into exact PLANNER, EXECUTOR, and EVALUATOR provider prompts while workflow choreography remains excluded.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T09:44:05.829Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+    - old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1385,6 +1421,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608062021-V2EESE
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T09:56:37.912Z — VERIFY — ok
+
+By: TESTER
+
+Note: Applicable security.must constraints are projected into exact PLANNER, EXECUTOR, and EVALUATOR provider prompts while workflow choreography remains excluded.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T09:44:05.829Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+- old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

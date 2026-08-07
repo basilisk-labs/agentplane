@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "The semantic projection omits loaded security policy modules from provider input.",
+      "broken_invariant": "Acceptance criterion 2 requires semantic provider calls to include security boundaries. The implementation filters policy_module inputs out of the semantic work-order projection and only allowlists two gateway fragments; the loaded Security MUST rules covering secrets, network approval, and security-critical paths are therefore not projected or otherwise rendered into the provider prompt.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/c93b091fe243e4afbbce445ca2caf17ae75d02284d5c1b665de9f26bdc216a39.patch",
+          "sha256": "sha256:c93b091fe243e4afbbce445ca2caf17ae75d02284d5c1b665de9f26bdc216a39",
+          "section": "semantic-prompt-projection.ts and task-run-bootstrap.ts"
+        },
+        {
+          "path": ".agentplane/policy/security.must.md",
+          "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+          "section": "Security MUST Rules"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-V2EESE/README.md",
+          "sha256": "sha256:5afeae3c0ca33fe1f68ec7007bcbee3e9f6af5dbac1e212b4c51c07b0b1cac99",
+          "section": "Plan"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "For PLANNER, EXECUTOR, and EVALUATOR, assert that the exact compiled provider prompt preserves every applicable constraint from the loaded security.must policy module while still excluding lifecycle choreography."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes the gateway scope-boundary fragment and serialized authority fully subsume the separately loaded security policy module; the frozen diff and tests do not establish that equivalence."
+  ],
+  "recovery_context": "Project applicable loaded security-policy constraints into each semantic provider prompt without reintroducing lifecycle choreography, then qualify the exact PLANNER, EXECUTOR, and EVALUATOR prompts against both security-presence and lifecycle-absence assertions."
+}

@@ -19,8 +19,8 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
 - Note:
 
 ```text
-Canonical gateway allowlisting removes lifecycle and persistence prose while preserving semantic
-safety constraints.
+Applicable security.must constraints are projected into exact PLANNER, EXECUTOR, and EVALUATOR
+provider prompts while workflow choreography remains excluded.
 ```
 - Canonical workflow state lives in the task README.
 
