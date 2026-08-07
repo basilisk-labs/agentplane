@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on:
@@ -78,8 +78,8 @@ token_usage:
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
   updated_at: "2026-08-07T00:02:02.354Z"
 commit:
-  hash: "cd8beb68ac1d516a1d1d64419dc609ac703def70"
-  message: "🧪 30TKV4 cli: align critical compatibility expectations"
+  hash: "dfaeaa1267f3506a3cfadbc406ce5e8810772a54"
+  message: "🧪 30TKV4 task: record deterministic evidence gap"
 comments:
   -
     author: "CODER"
@@ -108,6 +108,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: align the reviewed compatibility candidate and critical expectations with the user-first task create surface after hosted CI."
+  -
+    author: "CODER"
+    body: "Retry: freeze deterministic verification records at the evaluated follow-up SHA."
 events:
   -
     type: "status"
@@ -214,8 +217,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Hosted CI compatibility follow-up and complete task intake surface pass."
+  -
+    type: "status"
+    at: "2026-08-07T00:27:00.393Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Retry: freeze deterministic verification records at the evaluated follow-up SHA."
 doc_version: 3
-doc_updated_at: "2026-08-07T00:25:22.720Z"
+doc_updated_at: "2026-08-07T00:27:00.453Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
