@@ -2,10 +2,10 @@
 id: "202608061742-G2ZA4T"
 title: "Redesign init around safe defaults and progressive disclosure"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -87,6 +87,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: refresh progressive init onto the fully qualified user-first intake branch before hosted integration."
 events:
   -
     type: "status"
@@ -121,8 +124,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-08-07T00:02:38.704Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Rework: refresh progressive init onto the fully qualified user-first intake branch before hosted integration."
 doc_version: 3
-doc_updated_at: "2026-08-06T23:47:46.428Z"
+doc_updated_at: "2026-08-07T00:02:38.730Z"
 doc_updated_by: "CODER"
 description: "Replace the long upfront questionnaire with a short user-first init path that detects repository defaults, asks only decisions that materially change policy or workflow, provides an advanced configuration path, and prints a first-task next step."
 sections:
