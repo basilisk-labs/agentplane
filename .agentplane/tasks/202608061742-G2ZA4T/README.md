@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -75,8 +75,8 @@ token_usage:
   unavailable_reason: null
   updated_at: "2026-08-06T23:47:46.418Z"
 commit:
-  hash: "f0e43ed985485ea4f71e2c7307d50b749d47540c"
-  message: "🧪 G2ZA4T task: record evaluator pass"
+  hash: "66d9c65fad5062fbf5a4b35f0fa05ceb6ddb3cfd"
+  message: "🔀 G2ZA4T integrate: refresh init onto qualified UX"
 comments:
   -
     author: "CODER"
@@ -90,6 +90,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: refresh progressive init onto the fully qualified user-first intake branch before hosted integration."
+  -
+    author: "CODER"
+    body: "Implementation refreshed: progressive init now sits on the independently qualified user-first intake and cross-process task-creation base."
 events:
   -
     type: "status"
@@ -131,8 +134,15 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Rework: refresh progressive init onto the fully qualified user-first intake branch before hosted integration."
+  -
+    type: "status"
+    at: "2026-08-07T00:03:46.212Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation refreshed: progressive init now sits on the independently qualified user-first intake and cross-process task-creation base."
 doc_version: 3
-doc_updated_at: "2026-08-07T00:02:38.730Z"
+doc_updated_at: "2026-08-07T00:03:46.279Z"
 doc_updated_by: "CODER"
 description: "Replace the long upfront questionnaire with a short user-first init path that detects repository defaults, asks only decisions that materially change policy or workflow, provides an advanced configuration path, and prints a first-task next step."
 sections:
