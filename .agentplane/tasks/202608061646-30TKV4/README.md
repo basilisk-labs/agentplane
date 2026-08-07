@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 60
+revision: 61
 origin:
   system: "manual"
 depends_on:
@@ -44,22 +44,22 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T01:08:05.449Z"
+  updated_at: "2026-08-07T01:20:22.230Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "0369e3c72d1d7f08695a360a0e3384fd56803347"
+  evaluated_sha: "856bf44a5f9975126f59286f96f5e1c11d6c7493"
   blueprint_digest: "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62"
   evidence_refs:
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-010643772-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-010643772-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/64fc9e4bcf14cfcb4202489f21bf44f570a65bbfc101427e6afd9aa761b97fc7.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-010643772-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-010643772-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-010643772-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-011904144-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-011904144-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/48a1b35437943c6e27e62c10b8943e5b040eae84e4cf7b1728aaa42edf59f835.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-011904144-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-011904144-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-011904144-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608061646-30TKV4/README.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/5a020615a2379365bfc3fb5ea1a4aacd8ba915fa66920fcef3887bfd48468f7d.patch"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/0777b177c47048b91c1b37e66c508150ea0d9ce9e891878119e5260dd2f2912b.json"
-    - ".agentplane/tasks/202608061646-30TKV4/verification/20260807010626351-86844d8a26edd3bb.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/6c227b9aecfa513f571e57954c45087cd7856d402d838f24b6d9d21de41e1b81.patch"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/b9cbf4996dfeba2a08cb3cb6c3b2893ccf0d61a9140f81224ded975f3ac7ff42.json"
+    - ".agentplane/tasks/202608061646-30TKV4/verification/20260807011733745-a74316940d30cf6b.json"
     - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/425dc49ad99db2ca9f60810ac83290977a16fdf6a35d74fe3f0c781f5388ee6d.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
@@ -325,7 +325,7 @@ events:
     state: "ok"
     note: "All ten declared checks pass on 856bf44a5f99, including strict lint and critical compatibility coverage."
 doc_version: 3
-doc_updated_at: "2026-08-07T01:17:34.961Z"
+doc_updated_at: "2026-08-07T01:20:22.269Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
