@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Result: pass. Evidence: 3 files, 37 tests including invalid input, persisted route, duplicate serialization, and synchronized cross-process duplicate creation. Command: bun run test:critical. Result: pass. Evidence: 12 files, 84 tests; the final focused compatibility provenance assertion also passed 9 of 9. Command: bun run bench:compatibility:check. Result: pass. Evidence: approved surface cd30e3bf, 260 commands, 180 args, 836 options, immutable 0.6.24 baseline verified. Command: bun run docs:cli:check; bun run docs:onboarding:check; bun run typecheck; node .agentplane/policy/check-routing.mjs; bun run lint:core; git diff --check. Result: pass.",
+  "digest": "sha256:e786752713357ed95a4801317697d8e91515dbe8bef8bc3fb8773fa0ac288d7b",
+  "implementation_sha": "4d7ebde5495ce91ebab19921192cb5327e8738b1",
+  "kind": "task_verification_record",
+  "note": "The authoritative compatibility follow-up commit has complete deterministic verification evidence.",
+  "recorded_at": "2026-08-07T00:31:21.167Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\n- bun run docs:cli:check\n- bun run docs:onboarding:check\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:1e3e36afade323c09657b8fd8b642e24388663392d4ee528edb44f7db34b8c89",
+  "task_id": "202608061646-30TKV4",
+  "verification_command": "agentplane verify 202608061646-30TKV4 --ok --by TESTER",
+  "verifier": "TESTER"
+}

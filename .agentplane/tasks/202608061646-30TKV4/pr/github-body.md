@@ -16,7 +16,7 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 ## Verification
 
 - State: ok
-- Note: Deterministic command-level verification is frozen for the evaluator follow-up SHA.
+- Note: Structured deterministic verification covers the authoritative compatibility follow-up commit.
 - Canonical workflow state lives in the task README.
 
 <details>

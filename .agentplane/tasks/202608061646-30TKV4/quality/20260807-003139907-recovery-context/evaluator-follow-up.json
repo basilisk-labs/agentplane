@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608061646-30TKV4-90cfa06c503ec4c8ea5a0018",
+  "task_id": "202608061646-30TKV4",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Freeze command-level deterministic verification records for every declared Verify Step at evaluated SHA 4d7ebde5495ce91ebab19921192cb5327e8738b1, including outputs that demonstrate the required negative and concurrency-sensitive cases, then regenerate the evaluator packet.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The frozen packet still contains no deterministic execution evidence for any declared verification check: verification_records, runner_history, and runtime_evidence are empty although verification is marked ok.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/2e3a84b5ab094867f57ec8d4779a803d696e24ce036c5ae5a518b34fbc313f6c.json",
+          "sha256": "sha256:2e3a84b5ab094867f57ec8d4779a803d696e24ce036c5ae5a518b34fbc313f6c",
+          "section": "verification_records, runner_history, and runtime_evidence"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks and Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608061646-30TKV4/quality/20260807-003139907-recovery-context/evaluator-result.json"
+}

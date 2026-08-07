@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 39
 origin:
   system: "manual"
 depends_on:
@@ -32,37 +32,36 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T00:27:15.146Z"
+  updated_at: "2026-08-07T00:33:33.660Z"
   updated_by: "TESTER"
-  note: "Deterministic command-level verification is frozen for the evaluator follow-up SHA."
+  note: "Structured deterministic verification covers the authoritative compatibility follow-up commit."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T00:28:06.441Z"
+  updated_at: "2026-08-07T00:37:16.169Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
-  evaluated_sha: "cd8beb68ac1d516a1d1d64419dc609ac703def70"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "4d7ebde5495ce91ebab19921192cb5327e8738b1"
   blueprint_digest: "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62"
   evidence_refs:
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-002728499-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-002728499-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/31ecf939fcfa959d2dcf08e288f1bb318a880effd12206d415410bd7f3b33659.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-002728499-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-002728499-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-002728499-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-002728499-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-003624033-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-003624033-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/622152c6d395d253fef2f1bb61cb4bdde0ff137eeb5b9820d1834d3e954220f9.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-003624033-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-003624033-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-003624033-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608061646-30TKV4/README.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/bde099018c90721ea15dd4db41c7736dc6cb41d21b6c002b738eaf5f689a6b67.patch"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/22c68fa399c3283c1bf0c1c6bc325277a80d0613f2a76fa845ffc7ab33f25740.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/f5dc855d4bc3434ed0776f4474b69836de790d36d9c9a0652b7dd663135991ee.patch"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/9abc6d3760869eb072be0a45dacde3610c66ec0707eebb7961e465e2e8e2e787.json"
+    - ".agentplane/tasks/202608061646-30TKV4/verification/20260807003333660-0d78460785113004.json"
     - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/425dc49ad99db2ca9f60810ac83290977a16fdf6a35d74fe3f0c781f5388ee6d.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen packet contains no deterministic execution evidence for any declared verification check: verification_records, runner_history, and runtime_evidence are empty despite verification being marked ok."
-  recovery_reason: "deterministic_evidence_gap"
+    - "Natural-language intent inference depends on ordered substring matching, so ambiguous or negated wording can conservatively select a higher-risk task category and route."
 token_usage:
   agent_runs: 6
   input_tokens: 1065531
@@ -230,8 +229,20 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Deterministic command-level verification is frozen for the evaluator follow-up SHA."
+  -
+    type: "verify"
+    at: "2026-08-07T00:31:21.167Z"
+    author: "TESTER"
+    state: "ok"
+    note: "The authoritative compatibility follow-up commit has complete deterministic verification evidence."
+  -
+    type: "verify"
+    at: "2026-08-07T00:33:33.660Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Structured deterministic verification covers the authoritative compatibility follow-up commit."
 doc_version: 3
-doc_updated_at: "2026-08-07T00:28:06.465Z"
+doc_updated_at: "2026-08-07T00:37:16.191Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
@@ -622,6 +633,108 @@ sections:
     Details:
 
     Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Result: pass. Evidence: 3 files, 37 tests including invalid input, persisted route, duplicate serialization, and cross-process synchronized duplicate creation. Command: bun run test:critical. Result: pass. Evidence: 12 files, 84 tests. Command: bun run bench:compatibility:check. Result: pass. Evidence: approved surface cd30e3bf, 260 commands, 180 args, 836 options, immutable 0.6.24 baseline verified. Command: bun run docs:cli:check; bun run docs:onboarding:check; bun run typecheck; node .agentplane/policy/check-routing.mjs; bun run lint:core; git diff --check. Result: pass.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-30TKV4-add-user-first-task-intake-and-execution-preview/.agentplane/tasks/202608061646-30TKV4/blueprint/resolved-snapshot.json
+    - old_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+    - current_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-30TKV4
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608061646-30TKV4
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T00:31:21.167Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: The authoritative compatibility follow-up commit has complete deterministic verification evidence.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T00:28:06.465Z, excerpt_hash=sha256:1e3e36afade323c09657b8fd8b642e24388663392d4ee528edb44f7db34b8c89
+
+    Details:
+
+    Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Result: pass. Evidence: 3 files, 37 tests including invalid input, persisted route, duplicate serialization, and synchronized cross-process duplicate creation. Command: bun run test:critical. Result: pass. Evidence: 12 files, 84 tests; the final focused compatibility provenance assertion also passed 9 of 9. Command: bun run bench:compatibility:check. Result: pass. Evidence: approved surface cd30e3bf, 260 commands, 180 args, 836 options, immutable 0.6.24 baseline verified. Command: bun run docs:cli:check; bun run docs:onboarding:check; bun run typecheck; node .agentplane/policy/check-routing.mjs; bun run lint:core; git diff --check. Result: pass.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-30TKV4-add-user-first-task-intake-and-execution-preview/.agentplane/tasks/202608061646-30TKV4/blueprint/resolved-snapshot.json
+    - old_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+    - current_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-30TKV4
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608061646-30TKV4
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T00:33:33.660Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Structured deterministic verification covers the authoritative compatibility follow-up commit.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T00:32:12.839Z, excerpt_hash=sha256:1e3e36afade323c09657b8fd8b642e24388663392d4ee528edb44f7db34b8c89
+
+    Details:
+
+    Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+    Result: pass
+    Evidence: 3 files and 37 tests passed, including empty and invalid intake, explicit route overrides, persisted route consistency, dry-run preview, task advance agent-json compatibility, and synchronized cross-process duplicate creation.
+    Scope: user-first task intake, route selection, duplicate serialization, supervisor preview, and external protocol compatibility.
+
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: generated CLI reference is current for task create and its seven options.
+    Scope: public CLI reference.
+
+    Command: bun run docs:onboarding:check
+    Result: pass
+    Evidence: agent onboarding scenario surfaces are aligned.
+    Scope: user-first onboarding.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build completed with exit code 0.
+    Scope: implementation and test type contracts.
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK.
+    Scope: policy gateway routing integrity.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: 12 files and 84 tests passed; the focused compatibility baseline file passed 9 of 9 after adding explicit task create provenance coverage.
+    Scope: critical CLI, compatibility, trust-boundary, exit-code, and replay contracts.
+
+    Command: bun run bench:compatibility:check
+    Result: pass
+    Evidence: approved surface cd30e3bf with 260 commands, 180 arguments, 836 options; immutable v0.6.24 baseline verified.
+    Scope: reviewed cumulative compatibility surface.
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: ESLint completed with exit code 0.
+    Scope: packages, scripts, and repository lint contract.
 
     BlueprintSnapshotRef:
     - state: current
@@ -1054,6 +1167,108 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T00:27:00.453Z, excerpt_
 Details:
 
 Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Result: pass. Evidence: 3 files, 37 tests including invalid input, persisted route, duplicate serialization, and cross-process synchronized duplicate creation. Command: bun run test:critical. Result: pass. Evidence: 12 files, 84 tests. Command: bun run bench:compatibility:check. Result: pass. Evidence: approved surface cd30e3bf, 260 commands, 180 args, 836 options, immutable 0.6.24 baseline verified. Command: bun run docs:cli:check; bun run docs:onboarding:check; bun run typecheck; node .agentplane/policy/check-routing.mjs; bun run lint:core; git diff --check. Result: pass.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-30TKV4-add-user-first-task-intake-and-execution-preview/.agentplane/tasks/202608061646-30TKV4/blueprint/resolved-snapshot.json
+- old_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+- current_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-30TKV4
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608061646-30TKV4
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T00:31:21.167Z — VERIFY — ok
+
+By: TESTER
+
+Note: The authoritative compatibility follow-up commit has complete deterministic verification evidence.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T00:28:06.465Z, excerpt_hash=sha256:1e3e36afade323c09657b8fd8b642e24388663392d4ee528edb44f7db34b8c89
+
+Details:
+
+Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Result: pass. Evidence: 3 files, 37 tests including invalid input, persisted route, duplicate serialization, and synchronized cross-process duplicate creation. Command: bun run test:critical. Result: pass. Evidence: 12 files, 84 tests; the final focused compatibility provenance assertion also passed 9 of 9. Command: bun run bench:compatibility:check. Result: pass. Evidence: approved surface cd30e3bf, 260 commands, 180 args, 836 options, immutable 0.6.24 baseline verified. Command: bun run docs:cli:check; bun run docs:onboarding:check; bun run typecheck; node .agentplane/policy/check-routing.mjs; bun run lint:core; git diff --check. Result: pass.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-30TKV4-add-user-first-task-intake-and-execution-preview/.agentplane/tasks/202608061646-30TKV4/blueprint/resolved-snapshot.json
+- old_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+- current_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-30TKV4
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608061646-30TKV4
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T00:33:33.660Z — VERIFY — ok
+
+By: TESTER
+
+Note: Structured deterministic verification covers the authoritative compatibility follow-up commit.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T00:32:12.839Z, excerpt_hash=sha256:1e3e36afade323c09657b8fd8b642e24388663392d4ee528edb44f7db34b8c89
+
+Details:
+
+Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+Result: pass
+Evidence: 3 files and 37 tests passed, including empty and invalid intake, explicit route overrides, persisted route consistency, dry-run preview, task advance agent-json compatibility, and synchronized cross-process duplicate creation.
+Scope: user-first task intake, route selection, duplicate serialization, supervisor preview, and external protocol compatibility.
+
+Command: bun run docs:cli:check
+Result: pass
+Evidence: generated CLI reference is current for task create and its seven options.
+Scope: public CLI reference.
+
+Command: bun run docs:onboarding:check
+Result: pass
+Evidence: agent onboarding scenario surfaces are aligned.
+Scope: user-first onboarding.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build completed with exit code 0.
+Scope: implementation and test type contracts.
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK.
+Scope: policy gateway routing integrity.
+
+Command: bun run test:critical
+Result: pass
+Evidence: 12 files and 84 tests passed; the focused compatibility baseline file passed 9 of 9 after adding explicit task create provenance coverage.
+Scope: critical CLI, compatibility, trust-boundary, exit-code, and replay contracts.
+
+Command: bun run bench:compatibility:check
+Result: pass
+Evidence: approved surface cd30e3bf with 260 commands, 180 arguments, 836 options; immutable v0.6.24 baseline verified.
+Scope: reviewed cumulative compatibility surface.
+
+Command: bun run lint:core
+Result: pass
+Evidence: ESLint completed with exit code 0.
+Scope: packages, scripts, and repository lint contract.
 
 BlueprintSnapshotRef:
 - state: current
