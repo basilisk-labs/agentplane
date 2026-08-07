@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608062021-Z0X584-11822322b3869ccaf1853fe3",
+  "prepared_at": "2026-08-07T03:18:56.321Z",
+  "task": {
+    "id": "202608062021-Z0X584",
+    "revision": 22,
+    "objective": "Converge generated agent guidance on the supervisor-first protocol\n\nReplace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr policies, role and quickstart guides, Codex skill, README, and workflow docs with task active, task advance, and task run as the only normal agent paths; provide one copy-paste executable first workflow and retain manual commands only as explicit operator or recovery interfaces.",
+    "acceptance_criteria": [
+      "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts",
+      "bun run docs:onboarding:check",
+      "bun run docs:cli:check",
+      "node .agentplane/policy/check-routing.mjs",
+      "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/command-guide.test.ts",
+      "- In scope: Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr policies, role and quickstart guides, Codex skill, README, and workflow docs with task active, task advance, and task run as the only normal agent paths; provide one copy-paste executable first workflow and retain manual commands only as explicit operator or recovery interfaces.\n- Out of scope: unrelated refactors not required for \"Converge generated agent guidance on the supervisor-first protocol\".",
+      "1. Inventory every bundled policy, generated gateway, skill, README, and workflow-document surface that addresses an external or managed agent. 2. Define one normal supervisor-first route: task active, task advance with typed semantic results, or task run for a configured managed runner; move work start, start-ready, verify, finish, integrate, cleanup, Git, and PR choreography to explicitly operator/recovery-only sections. 3. Rewrite the bundled Markdown assets and public docs, including complete managed and external first workflows without hidden manual transitions. 4. Add asset/generation contract tests so installed gateways and skills cannot regress to manual lifecycle cognition. 5. Regenerate docs and validate gateway policy budgets.",
+      "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts\n- bun run docs:onboarding:check\n- bun run docs:cli:check\n- node .agentplane/policy/check-routing.mjs\n- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/command-guide.test.ts"
+    ]
+  },
+  "evaluated_sha": "a9a36dd31e4ca64f6c798617de6ba96c0aa48df7",
+  "diff_base_sha": "0f7fb22c8cd4006656b2244eeced67827af8c7f5",
+  "blueprint_digest": "5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608062021-Z0X584/quality/20260807-031856321-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:e7ad6af962dc88cda417f684e265bf54a5bad4ac17cbb6cd0b674338de18e4e1",
+    "prompt_path": ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/0461d1b0283f451e68cf367afacef12a956927ebcab3f3b643d096c63caa6a93.md",
+    "result_schema_path": ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608062021-Z0X584/README.md",
+      "sha256": "sha256:1ddb1fc8e60a79615f4659cbecd4f5669be9d23b4b3e8801c7f45ed23ab283b1",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/c562692d1c693236a5e54f5fb8b4b852f4be4a045ed0ee2ab0d4c57a075456ab.patch",
+      "sha256": "sha256:c562692d1c693236a5e54f5fb8b4b852f4be4a045ed0ee2ab0d4c57a075456ab",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/d005cc17539b79137413ad65bb36d5ab750b127d95b05384eca9e05edb898043.json",
+      "sha256": "sha256:d005cc17539b79137413ad65bb36d5ab750b127d95b05384eca9e05edb898043",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608062021-Z0X584/verification/20260807031834055-8aa29ad571399268.json",
+      "sha256": "sha256:6100932e58d8b2fdf2e3d5cf6d9723450422a0511c47e4654f1200b4be0ab3ef",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/cb9bc25b71317d1d5c961b48d4eeed93cebd2712ab163ae470e33bb52e17d0ab.json",
+      "sha256": "sha256:cb9bc25b71317d1d5c961b48d4eeed93cebd2712ab163ae470e33bb52e17d0ab",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:3f76f4fa59568e0b2866d69789e49707ac6271d4ecf761baacce13596851f988",
+      "required": true
+    }
+  ]
+}

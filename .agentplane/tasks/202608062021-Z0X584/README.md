@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -31,37 +31,37 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-07T03:16:18.364Z"
+  state: "ok"
+  updated_at: "2026-08-07T03:18:34.055Z"
   updated_by: "TESTER"
-  note: "Rework: refresh the supervisor-first surfaces onto current main after merged Windows and lint fixes, then rerun all declared checks and evaluator."
-  attempts: 1
+  note: "Supervisor-first generated guidance is aligned with current main and all declared/static gates pass."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-06T20:57:45.991Z"
+  updated_at: "2026-08-07T03:19:49.351Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "b5faa8b3dce64578db6160645737572acbea4239"
+  evaluated_sha: "a9a36dd31e4ca64f6c798617de6ba96c0aa48df7"
   blueprint_digest: "5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100"
   evidence_refs:
-    - ".agentplane/tasks/202608062021-Z0X584/quality/20260806-205649741-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/20260806-205649741-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/27f95fde6d2c6c61b1dea187396c20cede910370d92f8dc24ba2e9eb512c9204.md"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/20260806-205649741-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/20260806-205649741-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/20260806-205649741-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-031856321-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-031856321-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/0461d1b0283f451e68cf367afacef12a956927ebcab3f3b643d096c63caa6a93.md"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-031856321-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-031856321-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/20260807-031856321-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608062021-Z0X584/README.md"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/baa8ade9826dd7b0d4391b1d9ab07232dca46746d451064353ac9e58ac17ebce.patch"
-    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/5376b7e2341c049645ce7f55b4e2993d737cd74e719127ba30d8df8172876b7c.json"
-    - ".agentplane/tasks/202608062021-Z0X584/verification/20260806205625866-6d17c65e6f6decef.json"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/c562692d1c693236a5e54f5fb8b4b852f4be4a045ed0ee2ab0d4c57a075456ab.patch"
+    - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/d005cc17539b79137413ad65bb36d5ab750b127d95b05384eca9e05edb898043.json"
+    - ".agentplane/tasks/202608062021-Z0X584/verification/20260807031834055-8aa29ad571399268.json"
     - ".agentplane/tasks/202608062021-Z0X584/quality/objects/sha256/cb9bc25b71317d1d5c961b48d4eeed93cebd2712ab163ae470e33bb52e17d0ab.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The post-commit task, verification, PR, and quality-artifact drift is attributable to active AgentPlane supervision and does not alter the frozen implementation diff."
+    - "The evaluated SHA is a merge of current main into the task branch; the resulting unrelated task artifacts and Windows/lint changes are attributable to concurrent completed work from main, while the supervisor-guidance implementation remains intact and its declared checks were rerun successfully at the merged SHA."
 token_usage:
   agent_runs: 1
   input_tokens: 228172
@@ -141,8 +141,14 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Rework: refresh the supervisor-first surfaces onto current main after merged Windows and lint fixes, then rerun all declared checks and evaluator."
+  -
+    type: "verify"
+    at: "2026-08-07T03:18:34.055Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Supervisor-first generated guidance is aligned with current main and all declared/static gates pass."
 doc_version: 3
-doc_updated_at: "2026-08-07T03:16:19.580Z"
+doc_updated_at: "2026-08-07T03:19:49.369Z"
 doc_updated_by: "CODER"
 description: "Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr policy modules, Codex skill, README, and workflow docs with task active, task advance, and task run as the only normal agent paths; provide one copy-paste executable first workflow and retain manual commands only as explicit operator or recovery interfaces."
 sections:
@@ -287,6 +293,56 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T20:58:29.023Z, excerpt_hash=sha256:e9653577267767950996748213a2f0aa3639b45685585200ddac7e270aea9d00
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-Z0X584-converge-generated-agent-guidance-on-the-supervi/.agentplane/tasks/202608062021-Z0X584/blueprint/resolved-snapshot.json
+    - old_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+    - current_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-Z0X584
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T03:18:34.055Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Supervisor-first generated guidance is aligned with current main and all declared/static gates pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T03:16:19.580Z, excerpt_hash=sha256:e9653577267767950996748213a2f0aa3639b45685585200ddac7e270aea9d00
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts
+    Result: pass
+    Evidence: 2 files and 27 tests passed; onboarding-sensitive templates and prompt compiler are green.
+    Scope: generated AGENTS template, role guidance, prompt compiler, init bootstrap
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/command-guide.test.ts
+    Result: pass
+    Evidence: 3 files and 35 tests passed.
+    Scope: CLI supervisor-first guide and workflow-facing UX
+
+    Command: bun run docs:onboarding:check && bun run docs:cli:check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: onboarding surfaces aligned, generated CLI reference fresh, policy routing OK.
+    Scope: README, docs, generated policy gateway and canonical modules
+
+    Command: bun run format:check && bun run lint && bun run typecheck && bun run knip:check && bun run bench:compatibility:check && bun run hotspots:check
+    Result: pass
+    Evidence: formatting, lint, TypeScript, 21/21 dead-code baseline, compatibility 260 commands/180 args/836 options, and hotspot thresholds all pass.
+    Scope: repository static and compatibility gates
 
     BlueprintSnapshotRef:
     - state: current
@@ -480,6 +536,56 @@ Attempts: 1
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T20:58:29.023Z, excerpt_hash=sha256:e9653577267767950996748213a2f0aa3639b45685585200ddac7e270aea9d00
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-Z0X584-converge-generated-agent-guidance-on-the-supervi/.agentplane/tasks/202608062021-Z0X584/blueprint/resolved-snapshot.json
+- old_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+- current_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-Z0X584
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T03:18:34.055Z — VERIFY — ok
+
+By: TESTER
+
+Note: Supervisor-first generated guidance is aligned with current main and all declared/static gates pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T03:16:19.580Z, excerpt_hash=sha256:e9653577267767950996748213a2f0aa3639b45685585200ddac7e270aea9d00
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts
+Result: pass
+Evidence: 2 files and 27 tests passed; onboarding-sensitive templates and prompt compiler are green.
+Scope: generated AGENTS template, role guidance, prompt compiler, init bootstrap
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/command-guide.test.ts
+Result: pass
+Evidence: 3 files and 35 tests passed.
+Scope: CLI supervisor-first guide and workflow-facing UX
+
+Command: bun run docs:onboarding:check && bun run docs:cli:check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: onboarding surfaces aligned, generated CLI reference fresh, policy routing OK.
+Scope: README, docs, generated policy gateway and canonical modules
+
+Command: bun run format:check && bun run lint && bun run typecheck && bun run knip:check && bun run bench:compatibility:check && bun run hotspots:check
+Result: pass
+Evidence: formatting, lint, TypeScript, 21/21 dead-code baseline, compatibility 260 commands/180 args/836 options, and hotspot thresholds all pass.
+Scope: repository static and compatibility gates
 
 BlueprintSnapshotRef:
 - state: current

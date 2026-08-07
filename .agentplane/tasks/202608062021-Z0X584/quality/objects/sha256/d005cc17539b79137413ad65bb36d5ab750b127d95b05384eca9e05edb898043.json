@@ -1,0 +1,30 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts",
+    "bun run docs:onboarding:check",
+    "bun run docs:cli:check",
+    "node .agentplane/policy/check-routing.mjs",
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/command-guide.test.ts"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-07T03:18:34.055Z",
+    "updated_by": "TESTER",
+    "note": "Supervisor-first generated guidance is aligned with current main and all declared/static gates pass."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608062021-Z0X584/verification/20260807031834055-8aa29ad571399268.json",
+      "sha256": "sha256:6100932e58d8b2fdf2e3d5cf6d9723450422a0511c47e4654f1200b4be0ab3ef"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

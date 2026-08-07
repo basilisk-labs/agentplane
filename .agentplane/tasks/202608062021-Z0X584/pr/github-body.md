@@ -15,13 +15,8 @@ Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework: refresh the supervisor-first surfaces onto current main after merged Windows and lint fixes,
-then rerun all declared checks and evaluator.
-```
+- State: ok
+- Note: Supervisor-first generated guidance is aligned with current main and all declared/static gates pass.
 - Canonical workflow state lives in the task README.
 
 <details>

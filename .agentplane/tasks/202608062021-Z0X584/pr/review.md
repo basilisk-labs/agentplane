@@ -12,8 +12,8 @@ Created: 2026-08-06T20:27:51.883Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: refresh the supervisor-first surfaces onto current main after merged Windows and lint fixes, then rerun all declared checks and evaluator.
+- State: ok
+- Note: Supervisor-first generated guidance is aligned with current main and all declared/static gates pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
