@@ -23,11 +23,12 @@ export function parseVerificationCheckDetails(details: unknown): VerificationChe
       }),
     );
     if (REQUIRED_FIELDS.some((field) => !fields.get(field))) return null;
-    const result = fields.get("Result");
-    if (result !== "pass" && result !== "fail") return null;
+    const resultField = fields.get("Result") ?? "";
+    const resultMatch = /^(pass|fail)(?:\.|\s*;\s*.+)?$/u.exec(resultField);
+    if (!resultMatch) return null;
     return {
       command: fields.get("Command") ?? "",
-      result,
+      result: resultMatch[1] as "pass" | "fail",
       evidence: fields.get("Evidence") ?? "",
       scope: fields.get("Scope") ?? "",
     } satisfies VerificationCheckDetail;
