@@ -19,8 +19,8 @@ Return an exact result_path and structured resume_argv from task advance, expose
 - Note:
 
 ```text
-Final hosted-CI rework head 032a2b8ab passes protocol, worktree, contract, hotspot, lint, typing,
-critical, and cleanliness checks.
+Final MCY8ZC implementation head 032a2b8ab passes every declared command plus the split
+branch-worktree e2e and complete CI contract.
 ```
 - Canonical workflow state lives in the task README.
 

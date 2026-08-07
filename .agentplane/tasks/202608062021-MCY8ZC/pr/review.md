@@ -13,7 +13,7 @@ Created: 2026-08-06T21:35:28.993Z
 ## Verification
 
 - State: ok
-- Note: Final hosted-CI rework head 032a2b8ab passes protocol, worktree, contract, hotspot, lint, typing, critical, and cleanliness checks.
+- Note: Final MCY8ZC implementation head 032a2b8ab passes every declared command plus the split branch-worktree e2e and complete CI contract.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
