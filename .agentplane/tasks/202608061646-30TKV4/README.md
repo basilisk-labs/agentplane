@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 57
+revision: 60
 origin:
   system: "manual"
 depends_on:
@@ -21,6 +21,7 @@ risk_flags:
 blueprint_request: "code.branch_pr"
 verify:
   - "bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+  - "bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
   - "bun run docs:cli:check"
   - "bun run docs:onboarding:check"
   - "bun run typecheck"
@@ -28,6 +29,7 @@ verify:
   - "bun run hotspots:check"
   - "bun run bench:compatibility:check"
   - "bun run format:check"
+  - "bun run lint:core"
 plan_approval:
   state: "approved"
   updated_at: "2026-08-06T19:56:09.823Z"
@@ -35,9 +37,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T01:06:26.351Z"
+  updated_at: "2026-08-07T01:17:33.745Z"
   updated_by: "TESTER"
-  note: "All eight declared checks pass on 0369e3c72d1d, including repository-wide formatting."
+  note: "All ten declared checks pass on 856bf44a5f99, including strict lint and critical compatibility coverage."
   attempts: 0
 quality_review:
   state: "pass"
@@ -316,8 +318,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-07T01:17:33.745Z"
+    author: "TESTER"
+    state: "ok"
+    note: "All ten declared checks pass on 856bf44a5f99, including strict lint and critical compatibility coverage."
 doc_version: 3
-doc_updated_at: "2026-08-07T01:09:10.226Z"
+doc_updated_at: "2026-08-07T01:17:34.961Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
@@ -331,6 +339,7 @@ sections:
   Plan: "1. Add a user-first natural-language task create command that infers safe defaults and preserves task new as the advanced contract. 2. Add concise human status and execution preview surfaces showing route, reasons, context, approvals, checks, and token budget where available. 3. Preserve task advance --agent-json compatibility and add explicit regression coverage. 4. Cover empty outcomes, invalid options, explicit direct/branch_pr overrides, concurrent duplicate creation, and persisted selected-route consistency. 5. Update generated CLI references and onboarding docs. Approved scope: packages/agentplane/src/commands/task/**, packages/agentplane/src/cli/**, packages/agentplane/src/runtime/task-intake/**, docs/user/**, README.md, generated CLI snapshots, and focused tests."
   Verify Steps: |-
     - bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+    - bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
     - bun run docs:cli:check
     - bun run docs:onboarding:check
     - bun run typecheck
@@ -338,6 +347,7 @@ sections:
     - bun run hotspots:check
     - bun run bench:compatibility:check
     - bun run format:check
+    - bun run lint:core
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-08-06T19:53:17.361Z — VERIFY — ok
@@ -1405,6 +1415,86 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-07T01:17:33.745Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: All ten declared checks pass on 856bf44a5f99, including strict lint and critical compatibility coverage.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T01:15:26.246Z, excerpt_hash=sha256:d8106f97eb049116c99f3c1dcfa3e8958814866bdf5f7e9a3982ea760eeb21c2
+
+    Details:
+
+    Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+    Result: pass
+    Evidence: Vitest reported 4 passed files and 37 passed tests.
+    Scope: User-first task intake, conservative ambiguous intent, duplicate serialization, execution preview, and compact supervisor handoff.
+
+    Command: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+    Result: pass
+    Evidence: Bun reported 9 passed critical compatibility and agent-efficiency tests.
+    Scope: Frozen compatibility candidate and RF-04 critical contracts.
+
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: Generated CLI reference is up to date.
+    Scope: Public CLI documentation.
+
+    Command: bun run docs:onboarding:check
+    Result: pass
+    Evidence: Agent onboarding scenario includes task create, dry-run execution_preview, managed run, and external advance.
+    Scope: Executable user-first onboarding.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build completed successfully.
+    Scope: Changed TypeScript implementation and tests.
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: Policy routing OK.
+    Scope: Repository policy gateway.
+
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: Runtime oversized threshold and oversized test baseline pass.
+    Scope: Maintainability guard.
+
+    Command: bun run bench:compatibility:check
+    Result: pass
+    Evidence: Approved v0.7 cumulative compatibility candidate matches 260 commands, 180 args, and 836 options.
+    Scope: CLI compatibility contract.
+
+    Command: bun run format:check
+    Result: pass
+    Evidence: Prettier reported all matched files use the repository style.
+    Scope: Repository formatting contract.
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: ESLint completed with zero errors.
+    Scope: Packages, scripts, and repository TypeScript lint contract.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-30TKV4-add-user-first-task-intake-and-execution-preview/.agentplane/tasks/202608061646-30TKV4/blueprint/resolved-snapshot.json
+    - old_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+    - current_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-30TKV4
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the UX feature commit. Existing task new, task run, task status, and task advance contracts remain the compatibility baseline."
   Findings: |-
@@ -1438,6 +1528,7 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 ## Verify Steps
 
 - bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+- bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
 - bun run docs:cli:check
 - bun run docs:onboarding:check
 - bun run typecheck
@@ -1445,6 +1536,7 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 - bun run hotspots:check
 - bun run bench:compatibility:check
 - bun run format:check
+- bun run lint:core
 
 ## Verification
 
@@ -2494,6 +2586,86 @@ Command: bun run format:check
 Result: pass
 Evidence: Prettier reported all matched files use the repository style.
 Scope: Repository formatting contract.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-30TKV4-add-user-first-task-intake-and-execution-preview/.agentplane/tasks/202608061646-30TKV4/blueprint/resolved-snapshot.json
+- old_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+- current_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-30TKV4
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T01:17:33.745Z — VERIFY — ok
+
+By: TESTER
+
+Note: All ten declared checks pass on 856bf44a5f99, including strict lint and critical compatibility coverage.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T01:15:26.246Z, excerpt_hash=sha256:d8106f97eb049116c99f3c1dcfa3e8958814866bdf5f7e9a3982ea760eeb21c2
+
+Details:
+
+Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+Result: pass
+Evidence: Vitest reported 4 passed files and 37 passed tests.
+Scope: User-first task intake, conservative ambiguous intent, duplicate serialization, execution preview, and compact supervisor handoff.
+
+Command: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+Result: pass
+Evidence: Bun reported 9 passed critical compatibility and agent-efficiency tests.
+Scope: Frozen compatibility candidate and RF-04 critical contracts.
+
+Command: bun run docs:cli:check
+Result: pass
+Evidence: Generated CLI reference is up to date.
+Scope: Public CLI documentation.
+
+Command: bun run docs:onboarding:check
+Result: pass
+Evidence: Agent onboarding scenario includes task create, dry-run execution_preview, managed run, and external advance.
+Scope: Executable user-first onboarding.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build completed successfully.
+Scope: Changed TypeScript implementation and tests.
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: Policy routing OK.
+Scope: Repository policy gateway.
+
+Command: bun run hotspots:check
+Result: pass
+Evidence: Runtime oversized threshold and oversized test baseline pass.
+Scope: Maintainability guard.
+
+Command: bun run bench:compatibility:check
+Result: pass
+Evidence: Approved v0.7 cumulative compatibility candidate matches 260 commands, 180 args, and 836 options.
+Scope: CLI compatibility contract.
+
+Command: bun run format:check
+Result: pass
+Evidence: Prettier reported all matched files use the repository style.
+Scope: Repository formatting contract.
+
+Command: bun run lint:core
+Result: pass
+Evidence: ESLint completed with zero errors.
+Scope: Packages, scripts, and repository TypeScript lint contract.
 
 BlueprintSnapshotRef:
 - state: current

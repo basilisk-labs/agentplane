@@ -16,7 +16,7 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 ## Verification
 
 - State: ok
-- Note: All eight declared checks pass on 0369e3c72d1d, including repository-wide formatting.
+- Note: All ten declared checks pass on 856bf44a5f99, including strict lint and critical compatibility coverage.
 - Canonical workflow state lives in the task README.
 
 <details>
