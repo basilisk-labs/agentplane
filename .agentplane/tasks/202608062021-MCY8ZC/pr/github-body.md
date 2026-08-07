@@ -19,8 +19,8 @@ Return an exact result_path and structured resume_argv from task advance, expose
 - Note:
 
 ```text
-Implementation head 75263193a aligns the canonical branch_pr WorkOrder contract and passes the
-complete hosted-equivalent unit suite plus every declared verification and repository contract.
+Implementation commit 75263193a passes the complete hosted-equivalent unit suite plus every declared
+verification and repository contract.
 ```
 - Canonical workflow state lives in the task README.
 

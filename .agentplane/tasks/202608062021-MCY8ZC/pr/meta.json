@@ -3,7 +3,7 @@
   "branch": "task/202608062021-MCY8ZC/polish-the-external-supervisor-protocol-and-cano",
   "created_at": "2026-08-06T21:35:28.993Z",
   "diffstat_sha256": "sha256:e0a31e896a72eca96e4f05133fd26cc87cd48c9a81416277155c87d046e88e31",
-  "last_verified_at": "2026-08-07T23:49:15.334Z",
+  "last_verified_at": "2026-08-07T23:52:03.405Z",
   "last_verified_diffstat_sha256": "sha256:e0a31e896a72eca96e4f05133fd26cc87cd48c9a81416277155c87d046e88e31",
   "pr_number": 4790,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4790",

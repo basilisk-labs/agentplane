@@ -13,7 +13,7 @@ Created: 2026-08-06T21:35:28.993Z
 ## Verification
 
 - State: ok
-- Note: Implementation head 75263193a aligns the canonical branch_pr WorkOrder contract and passes the complete hosted-equivalent unit suite plus every declared verification and repository contract.
+- Note: Implementation commit 75263193a passes the complete hosted-equivalent unit suite plus every declared verification and repository contract.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
