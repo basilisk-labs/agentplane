@@ -15,13 +15,8 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Hosted contract CI rejected the prompt guard integration because task-run.ts exceeded the 600-line
-runtime hotspot limit.
-```
+- State: ok
+- Note: Prompt guard extraction passes declared verification and the hosted hotspot contract locally.
 - Canonical workflow state lives in the task README.
 
 <details>

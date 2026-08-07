@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -32,11 +32,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-07T05:10:09.901Z"
-  updated_by: "REVIEWER"
-  note: "Hosted contract CI rejected the prompt guard integration because task-run.ts exceeded the 600-line runtime hotspot limit."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-07T05:16:15.831Z"
+  updated_by: "CODER"
+  note: "Prompt guard extraction passes declared verification and the hosted hotspot contract locally."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -160,8 +160,14 @@ events:
     author: "REVIEWER"
     state: "needs_rework"
     note: "Hosted contract CI rejected the prompt guard integration because task-run.ts exceeded the 600-line runtime hotspot limit."
+  -
+    type: "verify"
+    at: "2026-08-07T05:16:15.831Z"
+    author: "CODER"
+    state: "ok"
+    note: "Prompt guard extraction passes declared verification and the hosted hotspot contract locally."
 doc_version: 3
-doc_updated_at: "2026-08-07T05:10:11.326Z"
+doc_updated_at: "2026-08-07T05:16:16.700Z"
 doc_updated_by: "CODER"
 description: "Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt."
 sections:
@@ -495,6 +501,61 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T05:04:53.500Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+    - old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T05:16:15.831Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Prompt guard extraction passes declared verification and the hosted hotspot contract locally.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T05:10:11.326Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts
+    Result: pass
+    Evidence: 3 files and 77 tests passed after extracting the prompt guard.
+    Scope: exact compiled-provider prompt projection and agent packet contracts.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical CLI chunks passed.
+    Scope: critical trust-boundary and efficiency regressions.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build completed with exit 0.
+    Scope: repository type safety.
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK.
+    Scope: generated policy routing.
+
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: task-run.ts is within the 600-line hard threshold and no runtime module exceeds it.
+    Scope: hosted verify-contract failure remediation.
 
     BlueprintSnapshotRef:
     - state: current
@@ -876,6 +937,61 @@ Attempts: 1
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T05:04:53.500Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+- old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T05:16:15.831Z — VERIFY — ok
+
+By: CODER
+
+Note: Prompt guard extraction passes declared verification and the hosted hotspot contract locally.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T05:10:11.326Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts
+Result: pass
+Evidence: 3 files and 77 tests passed after extracting the prompt guard.
+Scope: exact compiled-provider prompt projection and agent packet contracts.
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical CLI chunks passed.
+Scope: critical trust-boundary and efficiency regressions.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build completed with exit 0.
+Scope: repository type safety.
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK.
+Scope: generated policy routing.
+
+Command: bun run hotspots:check
+Result: pass
+Evidence: task-run.ts is within the 600-line hard threshold and no runtime module exceeds it.
+Scope: hosted verify-contract failure remediation.
 
 BlueprintSnapshotRef:
 - state: current
