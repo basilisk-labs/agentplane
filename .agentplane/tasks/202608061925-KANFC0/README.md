@@ -4,7 +4,7 @@ title: "Preserve exact Windows task README file identities"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -29,33 +29,31 @@ verification:
   note: "Exact NTFS identity handling and every local release gate now pass on the current main baseline; hosted Windows remains the pre-integration PR gate."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-06T19:39:48.313Z"
+  updated_at: "2026-08-07T02:17:27.394Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "d2e5d894b25e3e4ea5438b0867b3e489e304cf60"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "0d19a7479fbad6327a015231bd553a7d50e6624c"
   blueprint_digest: "addd84cbd305a906371cd8cbf627e52cc1a6a49f14daa3cf478383c3d09bd0e2"
   evidence_refs:
-    - ".agentplane/tasks/202608061925-KANFC0/quality/20260806-193910936-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608061925-KANFC0/quality/20260806-193910936-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/f4b5e97483e7d32849ed95b65e70554651ed56ef2c56ae0245f13be432ef4e53.md"
-    - ".agentplane/tasks/202608061925-KANFC0/quality/20260806-193910936-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608061925-KANFC0/quality/20260806-193910936-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608061925-KANFC0/quality/20260806-193910936-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608061925-KANFC0/quality/20260806-193910936-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061925-KANFC0/quality/20260807-021641392-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061925-KANFC0/quality/20260807-021641392-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/b638a49bc78ed0ce6c7260cd5bba05b1fee3e536b1c80da23a98a2993967b9cf.md"
+    - ".agentplane/tasks/202608061925-KANFC0/quality/20260807-021641392-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061925-KANFC0/quality/20260807-021641392-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061925-KANFC0/quality/20260807-021641392-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608061925-KANFC0/README.md"
-    - ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/e218134b64056582669dde7fa6d3338f14482f8dfac424e526490d92683601e1.patch"
-    - ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/cb6bf28be763a1acbea7a33e00cc5a0449c0d585277c90af875bb336d3f46576.json"
-    - ".agentplane/tasks/202608061925-KANFC0/verification/20260806193854648-823522e735c4b3a1.json"
+    - ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/8bdb0d1b4dd81040c226af0b46563a46c4d22e383e5364efad904cbf3473df34.patch"
+    - ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/6eb70de4e617362f8b5e4e6580cac5a459c0802d9116be4d624c5608294a40cf.json"
+    - ".agentplane/tasks/202608061925-KANFC0/verification/20260807021620516-41245418ac3a8430.json"
     - ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/bf5780f48a58ae1343c240359cca134d113d3d93bbd40c7beab88a82a18a5dad.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The regression test validates only the extracted stat-entry helper, not the required scan-to-stable-reader path where the precision bug occurred."
-    - "Mandatory verification is incomplete: bun run test:critical was not executed and the recorded skip has no owner approval."
+    - "Hosted Windows CI evidence is intentionally deferred to the post-quality PR gate and is not present in this evaluator packet."
 execution_route:
   frozen: true
   reason_codes:
