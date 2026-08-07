@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202608062021-V2EESE-41f287bb948de7a6d1f5327f",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-08-07T04:52:22.514Z",
+  "ended_at": "2026-08-07T04:53:14.543Z",
+  "stdout_bytes": 82461,
+  "stderr_bytes": 1072,
+  "provider_usage": {
+    "input_tokens": 160003,
+    "output_tokens": 2809,
+    "total_tokens": 162812,
+    "visible_output_tokens": 2227,
+    "reasoning_tokens": 582
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:08f18e3a95ce935a9ffc9a40aded7e721dee7a4d05190414208d246c77a9d120"
+}
