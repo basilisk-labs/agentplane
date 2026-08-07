@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts",
+    "bun run test:critical",
+    "bun run typecheck",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-07T10:48:35.093Z",
+    "updated_by": "REVIEWER",
+    "note": "Hosted regressions repaired; semantic prompt projection preserves policy source identity and degrades safely for historical worktrees."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
