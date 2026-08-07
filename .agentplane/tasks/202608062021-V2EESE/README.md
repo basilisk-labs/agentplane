@@ -2,10 +2,10 @@
 id: "202608062021-V2EESE"
 title: "Project semantic-only provider prompts and reject process choreography"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -64,19 +64,19 @@ quality_review:
   findings:
     - "The frozen implementation and command-level verification evidence cover the declared semantic prompt projection, forbidden choreography rejection, all three semantic roles, security constraint preservation, bounded repair authority, type contracts, critical contracts, and policy routing."
 token_usage:
-  agent_runs: 5
-  input_tokens: 792013
-  journal_digest: "sha256:0664d4904902a0f3abab975af5b43cbe54d2204ec90aabaac0dc47d37a993323"
-  observed_agent_runs: 4
+  agent_runs: 13
+  input_tokens: 1997869
+  journal_digest: "sha256:a4568c0201e25fedd6245f396a9e437c6821a82ae6cc57f4b26c2222473ca9f7"
+  observed_agent_runs: 9
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
   state: "partial"
-  total_tokens: 806015
+  total_tokens: 2027024
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
-  updated_at: "2026-08-07T05:04:53.488Z"
+  updated_at: "2026-08-07T10:03:15.681Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -85,7 +85,9 @@ execution_route:
   requested_mode: "auto"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "212aeeda9b95e0be34e68df60630553e17c5fcd8"
+  message: "🧪 V2EESE quality: record semantic security pass"
 comments:
   -
     author: "CODER"
@@ -93,6 +95,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: semantic-only provider prompt projection and exact process-choreography gate."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -202,8 +207,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Current implementation head has frozen command-level verification for semantic security projection and choreography exclusion."
+  -
+    type: "status"
+    at: "2026-08-07T10:03:15.681Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T10:02:23.471Z"
+doc_updated_at: "2026-08-07T10:03:15.709Z"
 doc_updated_by: "CODER"
 description: "Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt."
 sections:
@@ -921,8 +933,8 @@ sections:
       Resolution: Extract semantic prompt preparation and validation from task-run.ts, then rerun local and hosted contract verification.
 extensions:
   implementation_commit:
-    hash: "60c6416fb08858e79d2b22c227363cb068d25ce8"
-    message: "🛡️ V2EESE prompts: detect embedded Git control commands"
+    hash: "4ed5bbb5b3e4042db0f5841e6477f9c62c9bcd56"
+    message: "🛡️ V2EESE prompts: project semantic security constraints"
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
     version: 1
@@ -1658,12 +1670,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `partial`
-- Completeness: `4/5` agent runs
-- Input tokens: `792013`
+- Completeness: `9/13` agent runs
+- Input tokens: `1997869`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
-- Total tokens: `806015`
+- Total tokens: `2027024`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:0664d4904902a0f3abab975af5b43cbe54d2204ec90aabaac0dc47d37a993323`
+- Journal digest: `sha256:a4568c0201e25fedd6245f396a9e437c6821a82ae6cc57f4b26c2222473ca9f7`
 - Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
-- Updated at: `2026-08-07T05:04:53.488Z`
+- Updated at: `2026-08-07T10:03:15.681Z`
