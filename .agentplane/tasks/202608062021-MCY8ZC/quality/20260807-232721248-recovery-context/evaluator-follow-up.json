@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608062021-MCY8ZC-7a712272a54e0faa8b16f419",
+  "task_id": "202608062021-MCY8ZC",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Provide a fresh deterministic verification record showing the exact declared CLI project command and its passing result at evaluated SHA 032a2b8ab4180f16251f367b36ee462d2b108b92.",
+  "findings": [
+    {
+      "id": "verification-command-evidence-gap",
+      "summary": "The frozen verification receipt does not show execution of the full required CLI project command: it records a narrower task-advance command and separate focused tests, while task-run, task-routing, and command-guide coverage is not explicitly evidenced.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/verification/20260807232657791-e8b4d7e88544220c.json",
+          "sha256": "sha256:6c16c6a076272a710aa0d54b191c517fa68e0d34ce81abd310dff4bbd67455ad",
+          "section": "details and scope"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/b87d4eaf0695a1635716aa7c684c63d4a9587703f658437a61718ef41752e384.json",
+          "sha256": "sha256:b87d4eaf0695a1635716aa7c684c63d4a9587703f658437a61718ef41752e384",
+          "section": "declared_checks and verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-232721248-recovery-context/evaluator-result.json"
+}

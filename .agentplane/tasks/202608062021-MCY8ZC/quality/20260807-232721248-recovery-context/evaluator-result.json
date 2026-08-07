@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "verification-command-evidence-gap",
+      "severity": "high",
+      "summary": "The frozen verification receipt does not show execution of the full required CLI project command: it records a narrower task-advance command and separate focused tests, while task-run, task-routing, and command-guide coverage is not explicitly evidenced.",
+      "broken_invariant": "Every declared acceptance check must have deterministic recorded evidence with the observed exact command, result, evidence, and scope before the task can pass quality review.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/verification/20260807232657791-e8b4d7e88544220c.json",
+          "sha256": "sha256:6c16c6a076272a710aa0d54b191c517fa68e0d34ce81abd310dff4bbd67455ad",
+          "section": "details and scope"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/b87d4eaf0695a1635716aa7c684c63d4a9587703f658437a61718ef41752e384.json",
+          "sha256": "sha256:b87d4eaf0695a1635716aa7c684c63d4a9587703f658437a61718ef41752e384",
+          "section": "declared_checks and verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Record deterministic evidence for the exact required command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts"
+  ],
+  "hidden_assumptions": [
+    "The verification receipt assumes that the narrower focused runs or bun run ci:contract cover every file named by the declared CLI acceptance command, but the frozen evidence does not establish that mapping."
+  ],
+  "recovery_context": "Provide a fresh deterministic verification record showing the exact declared CLI project command and its passing result at evaluated SHA 032a2b8ab4180f16251f367b36ee462d2b108b92.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

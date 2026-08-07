@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202608062021-MCY8ZC-7a712272a54e0faa8b16f419",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-MCY8ZC-polish-the-external-supervisor-protocol-and-cano",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-MCY8ZC-polish-the-external-supervisor-protocol-and-cano/.agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-08-07T23:27:21.666Z",
+  "ended_at": "2026-08-07T23:28:25.759Z",
+  "stdout_bytes": 109946,
+  "stderr_bytes": 1206,
+  "provider_usage": {
+    "input_tokens": 244273,
+    "output_tokens": 3735,
+    "total_tokens": 248008,
+    "visible_output_tokens": 2841,
+    "reasoning_tokens": 894
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:8eefbe487fcb6770d29381fed2de7acaec069f23150d417b4ca9f78bd1a53973"
+}

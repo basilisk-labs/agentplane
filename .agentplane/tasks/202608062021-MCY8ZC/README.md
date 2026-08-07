@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -37,31 +37,33 @@ verification:
   note: "Final hosted-CI rework head 032a2b8ab passes protocol, worktree, contract, hotspot, lint, typing, critical, and cleanliness checks."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T23:11:11.184Z"
+  updated_at: "2026-08-07T23:28:26.107Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "ad1088693203b396693c99a4ef64397ef176c461"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "032a2b8ab4180f16251f367b36ee462d2b108b92"
   blueprint_digest: "98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5"
   evidence_refs:
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-231014026-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-231014026-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/d9e3ed7c3f952c1dbe1bef0dbdb0cc0c5485762b515c33963e4181bb019212c5.md"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-231014026-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-231014026-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-231014026-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-232721248-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-232721248-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/61385472354a9a5b09fa8e47a6f465f93f047de57a7dcdbda353bfa3e3e6878b.md"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-232721248-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-232721248-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-232721248-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-232721248-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608062021-MCY8ZC/README.md"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/ff533282bf80b0143380ab1d5abaa31ae0582b1d7dfbb0748baffe757545c3fa.patch"
-    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/972257cbe2390e990685353b042b60edd1209850b73fbbe3b2c3a6aa677633dd.json"
-    - ".agentplane/tasks/202608062021-MCY8ZC/verification/20260807230915786-6b651866acfadd5b.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/694efa032cf1b600e02fb97fc9f2d68cc7cf0c5a5dcdd072f152e522e0a98342.patch"
+    - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/b87d4eaf0695a1635716aa7c684c63d4a9587703f658437a61718ef41752e384.json"
+    - ".agentplane/tasks/202608062021-MCY8ZC/verification/20260807232657791-e8b4d7e88544220c.json"
     - ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/b9ec9d466ef8872c88b80f76b9ceb07256be22c1879b47a8a56de950a4cc9057.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen implementation and deterministic verification evidence satisfy the declared external supervisor protocol, operator-boundary, help-surface, provenance, and branch-worktree requirements."
+    - "The frozen verification receipt does not show execution of the full required CLI project command: it records a narrower task-advance command and separate focused tests, while task-run, task-routing, and command-guide coverage is not explicitly evidenced."
+  recovery_reason: "deterministic_evidence_gap"
 token_usage:
   agent_runs: 5
   input_tokens: 1444211
@@ -178,7 +180,7 @@ events:
     state: "ok"
     note: "Final hosted-CI rework head 032a2b8ab passes protocol, worktree, contract, hotspot, lint, typing, critical, and cleanliness checks."
 doc_version: 3
-doc_updated_at: "2026-08-07T23:26:59.210Z"
+doc_updated_at: "2026-08-07T23:28:26.130Z"
 doc_updated_by: "CODER"
 description: "Return an exact result_path and structured resume_argv from task advance, expose a typed operator action at approval boundaries, make quickstart and role command guides supervisor-first, show the canonical new/active/advance/run/brief subset in compact task help, attribute explicit begin plans to a human source, and add an end-to-end branch_pr test that advances once from the base checkout and receives a worktree-bound WorkOrder without caller cwd changes."
 sections:
