@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -34,9 +34,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T00:04:07.415Z"
+  updated_at: "2026-08-07T01:56:04.899Z"
   updated_by: "TESTER"
-  note: "Progressive init is verified on the qualified user-first intake base with complete deterministic evidence and a clean worktree."
+  note: "All nine declared init, documentation, policy, type, format, lint, Knip, and compatibility checks pass on f743f09a8."
   attempts: 0
 quality_review:
   state: "rework"
@@ -162,8 +162,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework committed: quick init now derives workflow and agent-surface defaults from local Git, remote, CI, and policy-surface facts while preserving non-interactive behavior."
+  -
+    type: "verify"
+    at: "2026-08-07T01:56:04.899Z"
+    author: "TESTER"
+    state: "ok"
+    note: "All nine declared init, documentation, policy, type, format, lint, Knip, and compatibility checks pass on f743f09a8."
 doc_version: 3
-doc_updated_at: "2026-08-07T01:54:57.473Z"
+doc_updated_at: "2026-08-07T01:56:06.143Z"
 doc_updated_by: "CODER"
 description: "Replace the long upfront questionnaire with a short user-first init path that detects repository defaults, asks only decisions that materially change policy or workflow, provides an advanced configuration path, and prints a first-task next step."
 sections:
@@ -317,6 +323,81 @@ sections:
     Result: pass
     Evidence: command produced no output after the implementation receipt was committed
     Scope: final tracked and untracked workspace cleanliness
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061742-G2ZA4T-redesign-init-around-safe-defaults-and-progressi/.agentplane/tasks/202608061742-G2ZA4T/blueprint/resolved-snapshot.json
+    - old_digest: 8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb
+    - current_digest: 8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061742-G2ZA4T
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608061742-G2ZA4T
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T01:56:04.899Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: All nine declared init, documentation, policy, type, format, lint, Knip, and compatibility checks pass on f743f09a8.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T01:54:57.473Z, excerpt_hash=sha256:4b07c4ac5e9ef9f30bf832fe37afc5eafcb3ca282759d24a9df050afef1d3c04
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli/commands/init
+    Result: pass
+    Evidence: 6 files and 27 tests passed
+    Scope: init orchestration, interactive flow, repository-derived defaults, and prompt-step coverage
+
+    Command: bun run docs:onboarding:check
+    Result: pass
+    Evidence: onboarding scenario surfaces are aligned
+    Scope: first-run onboarding and generated init guidance
+
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: generated CLI reference is current
+    Scope: CLI documentation freshness
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build completed
+    Scope: all TypeScript workspaces
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK
+    Scope: policy routing and size budgets
+
+    Command: bun run format:check
+    Result: pass
+    Evidence: all matched files use Prettier style
+    Scope: repository formatting
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: ESLint completed without findings
+    Scope: strict repository lint
+
+    Command: bun run knip:check
+    Result: pass
+    Evidence: CLI findings remain 0/0; total baseline 21/21
+    Scope: dead-code package budgets
+
+    Command: bun run bench:compatibility:check
+    Result: pass
+    Evidence: approved 260 command compatibility contract passed
+    Scope: reviewed CLI compatibility surface
 
     BlueprintSnapshotRef:
     - state: current
@@ -509,6 +590,81 @@ Command: git status --short --untracked-files=all
 Result: pass
 Evidence: command produced no output after the implementation receipt was committed
 Scope: final tracked and untracked workspace cleanliness
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061742-G2ZA4T-redesign-init-around-safe-defaults-and-progressi/.agentplane/tasks/202608061742-G2ZA4T/blueprint/resolved-snapshot.json
+- old_digest: 8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb
+- current_digest: 8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061742-G2ZA4T
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608061742-G2ZA4T
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T01:56:04.899Z — VERIFY — ok
+
+By: TESTER
+
+Note: All nine declared init, documentation, policy, type, format, lint, Knip, and compatibility checks pass on f743f09a8.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T01:54:57.473Z, excerpt_hash=sha256:4b07c4ac5e9ef9f30bf832fe37afc5eafcb3ca282759d24a9df050afef1d3c04
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli/commands/init
+Result: pass
+Evidence: 6 files and 27 tests passed
+Scope: init orchestration, interactive flow, repository-derived defaults, and prompt-step coverage
+
+Command: bun run docs:onboarding:check
+Result: pass
+Evidence: onboarding scenario surfaces are aligned
+Scope: first-run onboarding and generated init guidance
+
+Command: bun run docs:cli:check
+Result: pass
+Evidence: generated CLI reference is current
+Scope: CLI documentation freshness
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build completed
+Scope: all TypeScript workspaces
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK
+Scope: policy routing and size budgets
+
+Command: bun run format:check
+Result: pass
+Evidence: all matched files use Prettier style
+Scope: repository formatting
+
+Command: bun run lint:core
+Result: pass
+Evidence: ESLint completed without findings
+Scope: strict repository lint
+
+Command: bun run knip:check
+Result: pass
+Evidence: CLI findings remain 0/0; total baseline 21/21
+Scope: dead-code package budgets
+
+Command: bun run bench:compatibility:check
+Result: pass
+Evidence: approved 260 command compatibility contract passed
+Scope: reviewed CLI compatibility surface
 
 BlueprintSnapshotRef:
 - state: current
