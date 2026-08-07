@@ -1,10 +1,11 @@
 ---
 id: "202608070235-JPPAMT"
 title: "Restore the release lint baseline"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -55,6 +56,20 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "The focused one-line migration preserves whitespace-normalization behavior, removes the declared lint violation, and is covered by recorded focused, repository-wide, generated-asset, formatting, type, hosted, and SHA-mapping checks."
+token_usage:
+  agent_runs: 3
+  input_tokens: 304222
+  journal_digest: "sha256:e19f5f864b620f8fc15dedcc8c2b55d16957e111c9967dcb1ffa72578858be62"
+  observed_agent_runs: 3
+  observed_by: "agentplane"
+  output_tokens: 4885
+  reasoning_tokens: 947
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "observed"
+  total_tokens: 310054
+  unavailable_reason: null
+  updated_at: "2026-08-07T02:49:08.114Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -63,11 +78,16 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "fa4643b322878b68aa9ac203b562f0d17959067f"
+  message: "🧪 JPPAMT task: record evaluator pass"
 comments:
   -
     author: "CODER"
     body: "Start: restore the main lint gate with the minimal behavior-preserving social-image normalization change."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -156,8 +176,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Deterministic local and hosted evidence passes on the evaluated implementation."
+  -
+    type: "status"
+    at: "2026-08-07T02:49:08.114Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T02:47:22.830Z"
+doc_updated_at: "2026-08-07T02:49:08.126Z"
 doc_updated_by: "CODER"
 description: "Replace the obsolete global-regex String.replace call in the social image generator so the current main branch and every 0.7.5 PR pass the repository lint gate."
 sections:
@@ -376,6 +403,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "17dc364080b8c5763eb478ea5b0a328168ba2518"
+    message: "🐛 JPPAMT code: restore website lint baseline"
   workflow_route_baseline:
     start_head_sha: "6cfac13ebadf25ac28ce0485e3b86712d147b736"
     version: 1
@@ -607,3 +637,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `observed`
+- Completeness: `3/3` agent runs
+- Input tokens: `304222`
+- Output tokens: `4885`
+- Reasoning tokens: `947`
+- Total tokens: `310054`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:e19f5f864b620f8fc15dedcc8c2b55d16957e111c9967dcb1ffa72578858be62`
+- Unavailable reason: `none`
+- Updated at: `2026-08-07T02:49:08.114Z`
