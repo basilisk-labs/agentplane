@@ -6,7 +6,7 @@ Created: 2026-08-06T20:27:51.883Z
 
 - Task: `202608062021-Z0X584`
 - Title: Converge generated agent guidance on the supervisor-first protocol
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608062021-Z0X584/converge-generated-agent-guidance-on-the-supervi`
 - Canonical task record: `.agentplane/tasks/202608062021-Z0X584/README.md`
 
