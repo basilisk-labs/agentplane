@@ -109,6 +109,8 @@ describe("collectRunnerBasePrompts", () => {
   it.each([
     "agentplane config show",
     "ap quickstart",
+    "agentplane task create --title Fix",
+    "ap task brief TASK",
     "agentplane task active",
     "ap task advance TASK --agent-json",
     "agentplane task run TASK",
@@ -126,11 +128,22 @@ describe("collectRunnerBasePrompts", () => {
     "agentplane integrate TASK --branch task/TASK/fix",
     "agentplane cleanup TASK",
     "agentplane release plan --patch",
+    "ap doctor",
+    "agentplane context search query",
+    "ap flow repair TASK",
     "npm publish",
   ])("rejects forbidden provider choreography: %s", (command) => {
     expect(() =>
       assertSemanticProviderPromptHasNoProcessChoreography({ prompt: command }),
     ).toThrow(/process choreography/u);
+  });
+
+  it("allows the exact supervisor-issued phase-tool transport", () => {
+    expect(() =>
+      assertSemanticProviderPromptHasNoProcessChoreography({
+        prompt: "agentplane task run tool report_result",
+      }),
+    ).not.toThrow();
   });
 
   it("requires an explicit process-repair authority tag before allowing mechanism evidence", () => {

@@ -4,7 +4,7 @@ title: "Project semantic-only provider prompts and reject process choreography"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -14,6 +14,7 @@ tags:
   - "quality"
   - "supervisor"
   - "v0.7.5"
+  - "process-mechanism-repair"
 task_kind: "code"
 mutation_scope: "code"
 risk_flags:

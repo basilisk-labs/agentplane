@@ -9,29 +9,24 @@ type ProcessChoreographyMatch = {
 };
 
 const PROCESS_CHOREOGRAPHY_PATTERNS = [
-  { id: "config_show", pattern: /\b(?:ap|agentplane)\s+config\s+show\b/giu },
-  { id: "quickstart", pattern: /\b(?:ap|agentplane)\s+quickstart\b/giu },
-  { id: "task_list", pattern: /\b(?:ap|agentplane)\s+task\s+list\b/giu },
-  { id: "task_active", pattern: /\b(?:ap|agentplane)\s+task\s+active\b/giu },
-  { id: "task_advance", pattern: /\b(?:ap|agentplane)\s+task\s+advance\b/giu },
-  { id: "task_run", pattern: /\b(?:ap|agentplane)\s+task\s+run\b/giu },
-  { id: "task_start_ready", pattern: /\b(?:ap|agentplane)?\s*task\s+start-ready\b/giu },
-  { id: "task_next_action", pattern: /\b(?:ap|agentplane)?\s*task\s+next-action\b/giu },
-  { id: "task_plan", pattern: /\b(?:ap|agentplane)\s+task\s+plan\b/giu },
-  { id: "task_verify_show", pattern: /\b(?:ap|agentplane)\s+task\s+verify-show\b/giu },
-  { id: "task_complete", pattern: /\b(?:ap|agentplane)\s+task\s+complete\b/giu },
-  { id: "work_start", pattern: /\b(?:ap|agentplane)?\s*work\s+start\b/giu },
-  { id: "work_control", pattern: /\b(?:ap|agentplane)\s+work\s+(?:resume|cleanup)\b/giu },
-  { id: "pr_control", pattern: /\b(?:ap|agentplane)?\s*pr\s+(?:open|update|check)\b/giu },
-  { id: "verify_command", pattern: /\b(?:ap|agentplane)\s+verify\b/giu },
-  { id: "evaluator_execute", pattern: /\b(?:ap|agentplane)\s+evaluator\s+execute\b/giu },
-  { id: "finish_command", pattern: /\b(?:ap|agentplane)\s+finish\b/giu },
-  { id: "integrate_command", pattern: /\b(?:ap|agentplane)\s+integrate\b/giu },
   {
-    id: "release_or_publish",
-    pattern: /\b(?:(?:ap|agentplane)\s+(?:release|publish)|(?:npm|bun)\s+publish)\b/giu,
+    id: "task_command",
+    pattern: /\b(?:ap|agentplane)\s+task\s+(?!run\s+tool\b)[a-z][\w-]*\b/giu,
   },
-  { id: "cleanup_command", pattern: /\b(?:ap|agentplane)\s+(?:cleanup|worktree)\b/giu },
+  { id: "work_command", pattern: /\b(?:ap|agentplane)\s+work(?:\s+[a-z][\w-]*)?\b/giu },
+  { id: "pr_command", pattern: /\b(?:ap|agentplane)\s+pr(?:\s+[a-z][\w-]*)?\b/giu },
+  {
+    id: "supervisor_control",
+    pattern:
+      /\b(?:ap|agentplane)\s+(?:verify|finish|integrate|cleanup|release|publish|doctor|flow|context|branch)(?:\s+[a-z][\w-]*)?\b/giu,
+  },
+  { id: "config_command", pattern: /\b(?:ap|agentplane)\s+config(?:\s+[a-z][\w-]*)?\b/giu },
+  { id: "quickstart", pattern: /\b(?:ap|agentplane)\s+quickstart\b/giu },
+  { id: "evaluator_execute", pattern: /\b(?:ap|agentplane)\s+evaluator\s+execute\b/giu },
+  {
+    id: "package_publish",
+    pattern: /\b(?:npm|bun)\s+publish\b/giu,
+  },
   {
     id: "git_control",
     pattern:
