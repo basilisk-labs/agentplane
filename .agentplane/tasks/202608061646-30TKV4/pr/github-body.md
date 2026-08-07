@@ -16,7 +16,7 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 ## Verification
 
 - State: ok
-- Note: Hosted CI compatibility follow-up and complete task intake surface pass.
+- Note: Deterministic command-level verification is frozen for the evaluator follow-up SHA.
 - Canonical workflow state lives in the task README.
 
 <details>
