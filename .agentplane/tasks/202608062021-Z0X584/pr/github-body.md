@@ -19,8 +19,8 @@ Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr
 - Note:
 
 ```text
-Supervisor-first prompts and lifecycle documentation match the actual planning boundary; all
-declared checks pass.
+All generated agent prompts, policy guidance, onboarding docs, and exact runtime planning boundaries
+now converge on supervisor-first task create/advance/run UX.
 ```
 - Canonical workflow state lives in the task README.
 

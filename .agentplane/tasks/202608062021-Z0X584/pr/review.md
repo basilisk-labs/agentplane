@@ -13,7 +13,7 @@ Created: 2026-08-06T20:27:51.883Z
 ## Verification
 
 - State: ok
-- Note: Supervisor-first prompts and lifecycle documentation match the actual planning boundary; all declared checks pass.
+- Note: All generated agent prompts, policy guidance, onboarding docs, and exact runtime planning boundaries now converge on supervisor-first task create/advance/run UX.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
