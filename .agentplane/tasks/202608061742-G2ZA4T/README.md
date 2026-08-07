@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -39,32 +39,32 @@ verification:
   note: "All nine declared init, documentation, policy, type, format, lint, Knip, and compatibility checks pass on f743f09a8."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T00:04:58.425Z"
+  updated_at: "2026-08-07T02:00:20.878Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "66d9c65fad5062fbf5a4b35f0fa05ceb6ddb3cfd"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "f743f09a82022e5a15dadb00814f8d8b0f9cb068"
   blueprint_digest: "8bbdf779570acb8261d631105f77c1d2e753d8307f1d1e83bf7e015dfedd8cfb"
   evidence_refs:
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-000416869-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-000416869-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/99e30957230f81bb823ac13ba90d5dfdae0220256d009cc063cebad6e1322b01.md"
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-000416869-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-000416869-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-000416869-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-000416869-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-020020533-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-020020533-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/5f26ff2894a188c0855e4c845df929eeba052c6dee285621545b7c53fc3701d8.md"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-020020533-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-020020533-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/20260807-020020533-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608061742-G2ZA4T/README.md"
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/45794ad12594733c1b535de72430b46e6f8293748020a80518042a8e7ea536c0.patch"
-    - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/a509cd158ef62b22c7a0dafc81868b8400836a941b8a895f3d79b222a74a18d2.json"
-    - ".agentplane/tasks/202608061742-G2ZA4T/verification/20260807000407415-e15ac0daed8217c4.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/161593483b94843e3ff41ac27f62673e7bd91b3a2c11d3c03aa4818ab6e47749.patch"
+    - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/ef8b38a0d184e85577f7fda8d2058a80d10695da99628a3d60c620d0d0de88d5.json"
+    - ".agentplane/tasks/202608061742-G2ZA4T/verification/20260807015604899-1390c0d1a47296d4.json"
     - ".agentplane/tasks/202608061742-G2ZA4T/quality/objects/sha256/f8d50aeb6c6ba67e5bbdc1ef85fee8250df89013e0dfe3d833853945634456ca.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The redesigned quick init applies fixed defaults but does not detect repository facts and derive repository-specific defaults as required."
+    - "Repository-aware quick init now selects branch_pr when GitHub Actions is detected, retains direct for a fresh repository, and explains both decisions in the preview."
+    - "Quick and advanced paths are separated, explicit flags stay non-interactive, and the post-init next step uses the user-first task create entrypoint."
 token_usage:
   agent_runs: 1
   input_tokens: 222257
@@ -169,7 +169,7 @@ events:
     state: "ok"
     note: "All nine declared init, documentation, policy, type, format, lint, Knip, and compatibility checks pass on f743f09a8."
 doc_version: 3
-doc_updated_at: "2026-08-07T01:56:06.143Z"
+doc_updated_at: "2026-08-07T02:00:20.898Z"
 doc_updated_by: "CODER"
 description: "Replace the long upfront questionnaire with a short user-first init path that detects repository defaults, asks only decisions that materially change policy or workflow, provides an advanced configuration path, and prints a first-task next step."
 sections:

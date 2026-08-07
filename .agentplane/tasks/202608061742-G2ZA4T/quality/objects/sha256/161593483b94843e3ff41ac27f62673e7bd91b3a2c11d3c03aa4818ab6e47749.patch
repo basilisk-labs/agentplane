@@ -1,0 +1,1365 @@
+diff --git a/docs/user/cli-reference.generated.mdx b/docs/user/cli-reference.generated.mdx
+index 750e02c77..f8bb097ad 100644
+--- a/docs/user/cli-reference.generated.mdx
++++ b/docs/user/cli-reference.generated.mdx
+@@ -2147,7 +2147,7 @@ agentplane init [options]
+ 
+ Options:
+ 
+-- `--init-mode <quick|guided|advanced|ci>`: User-facing init route. TTY defaults to guided; --yes defaults to ci for automation. (choices=quick|guided|advanced|ci)
++- `--init-mode <quick|guided|advanced|ci>`: User-facing init route. TTY defaults to quick with an advanced choice; --yes defaults to ci for automation. (choices=quick|guided|advanced|ci)
+ - `--quick`: Alias for --init-mode quick. (default=false)
+ - `--advanced`: Alias for --init-mode advanced. (default=false)
+ - `--tool <codex|claude|cursor|windsurf|hermes|multiple|manual>`: AI surface that should read project instructions. Granular --policy-gateway/--ide flags override this mapping. (choices=codex|claude|cursor|windsurf|hermes|multiple|manual)
+@@ -2182,7 +2182,7 @@ Examples:
+ agentplane init
+ ```
+ 
+-- Interactive setup (prompts for missing values).
++- Short interactive setup for agent surface and workflow, followed by an explained preview.
+ 
+ ```sh
+ agentplane init --setup-profile light --yes
+diff --git a/docs/user/setup.mdx b/docs/user/setup.mdx
+index d0430f596..e67f4e1da 100644
+--- a/docs/user/setup.mdx
++++ b/docs/user/setup.mdx
+@@ -14,8 +14,6 @@ Requirements:
+ ```bash
+ npm i -g agentplane
+ agentplane init
+-agentplane context init
+-agentplane quickstart
+ ```
+ 
+ Prefer no global install:
+@@ -50,6 +48,22 @@ agentplane init
+ 
+ If `.git` does not exist in that folder, `init` creates a new Git repository there.
+ 
++The default dialog is intentionally short:
++
++1. Choose `Quick` or `Advanced` setup. `Quick` is recommended.
++2. Choose the primary agent surface so Agentplane can derive the gateway, IDE, and runner defaults.
++3. Choose `direct` or `branch_pr` workflow.
++4. Review the complete configuration, the reason for every default, and the exact first-task
++   command before Agentplane writes files.
++
++Quick setup keeps task storage local, uses the `normal` guardrail profile, installs hooks, requires
++plan/network/verification approvals, and leaves optional recipes and blueprints disabled. Use the
++detailed route when those values need individual review:
++
++```bash
++agentplane init --advanced
++```
++
+ To inspect the setup without writes, use dry-run:
+ 
+ ```bash
+@@ -93,19 +107,26 @@ agentplane config set feedback.github_issues.enabled false
+ 
+ ## Hand off to an agent
+ 
+-After initialization, the normal next step is to give the repository to a coding agent. The agent
+-should read the repository policy gateway and run the Agentplane lifecycle around its own work.
++After initialization, create the first task from the natural-language outcome printed by init:
++
++```bash
++agentplane task create "Describe the outcome you want"
++```
++
++Then use the exact supervisor action returned by Agentplane. A configured managed runner uses
++`task run`; Codex, Claude Code, Cursor, or another external agent uses the bounded `task advance`
++exchange. The agent performs semantic work only; Agentplane owns formal lifecycle transitions.
+ 
+ ```text
+ Use Agentplane for this repository.
+ 
+-Start with:
+-agentplane quickstart
+-agentplane role ORCHESTRATOR
++Start with the task Agentplane selected and request one bounded action:
++agentplane task advance <task-id> --agent-json
+ 
+-Follow AGENTS.md and the workflow mode in .agentplane/WORKFLOW.md.
+-Create or reuse an Agentplane task before mutating repository files.
+-Record the plan, start-ready state, verification evidence, and finish state through Agentplane.
++Perform only the returned semantic objective inside its authority and writable roots.
++Write the typed result to the supplied result path and resume with the supplied argv.
++Do not run manual lifecycle, Git, PR, verification, integration, or cleanup commands during a
++normal semantic episode.
+ ```
+ 
+ Expected files:
+@@ -157,7 +178,8 @@ subtopic of manual CLI usage.
+ 
+ ## Setup profiles
+ 
+-Choose profiles after you understand the first artifact:
++Quick setup uses `Normal`. Advanced setup can select a different preset before reviewing its
++individual controls:
+ 
+ - `Light`: solo experiments with minimal enforcement.
+ - `Normal`: default team-safe workflow.
+@@ -208,22 +230,17 @@ Recovery routing starts from three repository states:
+ ## Verify setup
+ 
+ ```bash
+-agentplane config show
+-agentplane quickstart
+-agentplane task list
+ agentplane doctor
++agentplane task active
+ ```
+ 
+-Then use `agentplane role <ROLE>` for role-specific guidance.
+-
+ Use [Commands](commands) and the [generated CLI reference](cli-reference.generated) when you need
+ manual inspection, recovery, or operator-level control. They are not the default day-to-day usage
+ path.
+ 
+ ## Optional recipes
+ 
+-Recipes are extensions, not the first step. Add them after the task -> plan -> verify -> ACR flow is
+-clear.
++Recipes are extensions, not the first step. Add them after the task supervisor flow is clear.
+ 
+ ```bash
+ agentplane recipes list-remote --refresh --yes
+diff --git a/packages/agentplane/src/cli/run-cli.core.init.interactive.test.ts b/packages/agentplane/src/cli/run-cli.core.init.interactive.test.ts
+index d08e2a58f..1ef73738d 100644
+--- a/packages/agentplane/src/cli/run-cli.core.init.interactive.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.init.interactive.test.ts
+@@ -187,31 +187,43 @@ describe("runCli interactive init UI", () => {
+   it("runs the preview, confirm, and apply path on the default interactive route", async () => {
+     const root = await mkTempDir();
+     mocks.selectMock
+-      .mockResolvedValueOnce("light")
++      .mockResolvedValueOnce("quick")
+       .mockResolvedValueOnce("codex")
+-      .mockResolvedValueOnce("codex")
+-      .mockResolvedValueOnce("local");
++      .mockResolvedValueOnce("direct");
+     mocks.confirmMock.mockResolvedValueOnce(true);
+ 
+     const io = captureStdIO();
+     try {
+       const code = await runCli(["init", "--root", root]);
+ 
+-      expect(code).toBe(0);
++      expect(code, io.stderr).toBe(0);
+       expect(io.stdout).toContain(".agentplane");
+     } finally {
+       io.restore();
+     }
+ 
+     expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
++    expect(mocks.selectMock).toHaveBeenCalledWith(
++      expect.objectContaining({ message: "Workflow mode", initialValue: "direct" }),
++    );
+     expect(mocks.noteMock).toHaveBeenCalledWith(expect.any(String), "Install preview");
++    expect(mocks.noteMock).toHaveBeenCalledWith(
++      expect.stringContaining("no Git remote or CI configuration was detected"),
++      "Install preview",
++    );
+     expect(mocks.confirmMock).toHaveBeenCalledWith({
+       message: "Apply this init plan?",
+       initialValue: true,
+     });
+     expect(mocks.spinnerStartMock).toHaveBeenCalledWith("Writing init config");
+     expect(mocks.spinnerStopMock).toHaveBeenCalledWith("Created install commit");
+-    expect(mocks.outroMock).toHaveBeenCalledWith(`AgentPlane initialized in ${root}.`);
++    expect(mocks.noteMock).toHaveBeenCalledWith(
++      expect.stringContaining("First task"),
++      "Install preview",
++    );
++    expect(mocks.outroMock).toHaveBeenCalledWith(
++      `AgentPlane initialized in ${root}.\nNext: agentplane task create "Describe the outcome you want"`,
++    );
+ 
+     const { config } = await loadConfig(path.join(root, ".agentplane"));
+     expect(config.workflow_mode).toBe("direct");
+@@ -223,6 +235,35 @@ describe("runCli interactive init UI", () => {
+     await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
+   });
+ 
++  it("derives the quick workflow default from repository CI facts and explains the decision", async () => {
++    const root = await mkTempDir();
++    await mkdir(path.join(root, ".github", "workflows"), { recursive: true });
++    await writeFile(path.join(root, ".github", "workflows", "ci.yml"), "name: CI\n", "utf8");
++    mocks.selectMock
++      .mockResolvedValueOnce("quick")
++      .mockResolvedValueOnce("codex")
++      .mockResolvedValueOnce("branch_pr");
++    mocks.confirmMock.mockResolvedValueOnce(true);
++
++    const io = captureStdIO();
++    try {
++      const code = await runCli(["init", "--root", root]);
++      expect(code, io.stderr).toBe(0);
++    } finally {
++      io.restore();
++    }
++
++    expect(mocks.selectMock).toHaveBeenCalledWith(
++      expect.objectContaining({ message: "Workflow mode", initialValue: "branch_pr" }),
++    );
++    expect(mocks.noteMock).toHaveBeenCalledWith(
++      expect.stringContaining("detected GitHub Actions CI"),
++      "Install preview",
++    );
++    const { config } = await loadConfig(path.join(root, ".agentplane"));
++    expect(config.workflow_mode).toBe("branch_pr");
++  });
++
+   it("respects explicit init flags on the default interactive route", async () => {
+     const root = await mkTempDir();
+     mocks.confirmMock.mockResolvedValueOnce(true);
+@@ -231,6 +272,9 @@ describe("runCli interactive init UI", () => {
+     try {
+       const code = await runCli([
+         "init",
++        "--quick",
++        "--tool",
++        "codex",
+         "--setup-profile",
+         "light",
+         "--policy-gateway",
+@@ -255,6 +299,7 @@ describe("runCli interactive init UI", () => {
+ 
+     expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
+     expect(mocks.confirmMock).toHaveBeenCalledTimes(1);
++    expect(mocks.selectMock).not.toHaveBeenCalled();
+     await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(true);
+     await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
+   });
+@@ -262,10 +307,9 @@ describe("runCli interactive init UI", () => {
+   it("uses init for the default TTY interactive route", async () => {
+     const root = await mkTempDir();
+     mocks.selectMock
+-      .mockResolvedValueOnce("light")
++      .mockResolvedValueOnce("quick")
+       .mockResolvedValueOnce("codex")
+-      .mockResolvedValueOnce("codex")
+-      .mockResolvedValueOnce("local");
++      .mockResolvedValueOnce("direct");
+     mocks.confirmMock.mockResolvedValueOnce(true);
+ 
+     const io = captureStdIO();
+@@ -291,20 +335,23 @@ describe("runCli interactive init UI", () => {
+       .mockResolvedValueOnce("full-harness")
+       .mockResolvedValueOnce("codex")
+       .mockResolvedValueOnce("codex")
++      .mockResolvedValueOnce("codex")
+       .mockResolvedValueOnce("direct")
+-      .mockResolvedValueOnce("allow_other_task_readmes")
++      .mockResolvedValueOnce("allow-other-task-readmes")
+       .mockResolvedValueOnce("local")
+       .mockResolvedValueOnce("aggressive")
+       .mockResolvedValueOnce("standard");
+     mocks.confirmMock
+       .mockResolvedValueOnce(false)
+       .mockResolvedValueOnce(false)
++      .mockResolvedValueOnce(true)
++      .mockResolvedValueOnce(false)
+       .mockResolvedValueOnce(true);
+     mocks.textMock.mockResolvedValueOnce("none");
+ 
+     const io = captureStdIO();
+     try {
+-      const code = await runCli(["init", "--root", root]);
++      const code = await runCli(["init", "--advanced", "--root", root]);
+ 
+       expect(code).toBe(0);
+       expect(io.stdout).toContain(".agentplane");
+@@ -314,8 +361,8 @@ describe("runCli interactive init UI", () => {
+ 
+     expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
+     expect(mocks.noteMock).toHaveBeenCalledWith(expect.stringContaining("agent/plane"));
+-    expect(mocks.logStepMock).toHaveBeenCalledWith("Setup");
+-    expect(mocks.selectMock).toHaveBeenCalledTimes(8);
++    expect(mocks.logStepMock).toHaveBeenCalledWith("Advanced setup");
++    expect(mocks.selectMock).toHaveBeenCalledTimes(9);
+     expect(mocks.textMock).toHaveBeenCalledWith(
+       expect.objectContaining({ message: "Materialize cached recipes" }),
+     );
+@@ -323,7 +370,9 @@ describe("runCli interactive init UI", () => {
+       message: "Apply this init plan?",
+       initialValue: true,
+     });
+-    expect(mocks.outroMock).toHaveBeenCalledWith(`AgentPlane initialized in ${root}.`);
++    expect(mocks.outroMock).toHaveBeenCalledWith(
++      `AgentPlane initialized in ${root}.\nNext: agentplane task create "Describe the outcome you want"`,
++    );
+     await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(true);
+     const migrated = JSON.parse(
+       await readFile(path.join(process.env.AGENTPLANE_HOME ?? "", "recipes.json"), "utf8"),
+@@ -341,14 +390,17 @@ describe("runCli interactive init UI", () => {
+       .mockResolvedValueOnce("full-harness")
+       .mockResolvedValueOnce("codex")
+       .mockResolvedValueOnce("codex")
++      .mockResolvedValueOnce("codex")
+       .mockResolvedValueOnce("direct")
+-      .mockResolvedValueOnce("allow_other_task_readmes")
++      .mockResolvedValueOnce("allow-other-task-readmes")
+       .mockResolvedValueOnce("local")
+       .mockResolvedValueOnce("aggressive")
+       .mockResolvedValueOnce("standard");
+     mocks.confirmMock
+       .mockResolvedValueOnce(false)
+       .mockResolvedValueOnce(false)
++      .mockResolvedValueOnce(true)
++      .mockResolvedValueOnce(false)
+       .mockResolvedValueOnce(true);
+     mocks.textMock.mockImplementationOnce(
+       (opts?: { validate?: (value: string) => string | void }) => {
+@@ -359,7 +411,7 @@ describe("runCli interactive init UI", () => {
+ 
+     const io = captureStdIO();
+     try {
+-      const code = await runCli(["init", "--root", root]);
++      const code = await runCli(["init", "--advanced", "--root", root]);
+ 
+       expect(code).toBe(0);
+       expect(io.stderr).not.toContain("Cannot read properties of undefined");
+@@ -367,7 +419,9 @@ describe("runCli interactive init UI", () => {
+       io.restore();
+     }
+ 
+-    expect(mocks.outroMock).toHaveBeenCalledWith(`AgentPlane initialized in ${root}.`);
++    expect(mocks.outroMock).toHaveBeenCalledWith(
++      `AgentPlane initialized in ${root}.\nNext: agentplane task create "Describe the outcome you want"`,
++    );
+     await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(true);
+     await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
+   });
+@@ -379,19 +433,21 @@ describe("runCli interactive init UI", () => {
+       .mockResolvedValueOnce("full-harness")
+       .mockResolvedValueOnce("codex")
+       .mockResolvedValueOnce("codex")
++      .mockResolvedValueOnce("codex")
+       .mockResolvedValueOnce("direct")
+-      .mockResolvedValueOnce("allow_other_task_readmes")
++      .mockResolvedValueOnce("allow-other-task-readmes")
+       .mockResolvedValueOnce("local")
+       .mockResolvedValueOnce("aggressive")
+       .mockResolvedValueOnce("standard");
+     mocks.confirmMock
++      .mockResolvedValueOnce(false)
+       .mockResolvedValueOnce(false)
+       .mockResolvedValueOnce(false)
+       .mockResolvedValueOnce(true);
+ 
+     const io = captureStdIO();
+     try {
+-      const code = await runCli(["init", "--root", root]);
++      const code = await runCli(["init", "--advanced", "--root", root]);
+ 
+       expect(code).toBe(0);
+       expect(io.stderr).not.toContain("Invalid field manifest: expected prompts or scenarios");
+@@ -401,7 +457,9 @@ describe("runCli interactive init UI", () => {
+ 
+     expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
+     expect(mocks.textMock).not.toHaveBeenCalled();
+-    expect(mocks.outroMock).toHaveBeenCalledWith(`AgentPlane initialized in ${root}.`);
++    expect(mocks.outroMock).toHaveBeenCalledWith(
++      `AgentPlane initialized in ${root}.\nNext: agentplane task create "Describe the outcome you want"`,
++    );
+     await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(true);
+     await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
+     const migrated = JSON.parse(
+@@ -418,17 +476,21 @@ describe("runCli interactive init UI", () => {
+       .mockResolvedValueOnce("full-harness")
+       .mockResolvedValueOnce("codex")
+       .mockResolvedValueOnce("codex")
++      .mockResolvedValueOnce("codex")
+       .mockResolvedValueOnce("direct")
+-      .mockResolvedValueOnce("allow_other_task_readmes")
++      .mockResolvedValueOnce("allow-other-task-readmes")
+       .mockResolvedValueOnce("local")
+       .mockResolvedValueOnce("aggressive")
+       .mockResolvedValueOnce("standard")
+       .mockResolvedValueOnce("cancel");
+-    mocks.confirmMock.mockResolvedValueOnce(false).mockResolvedValueOnce(false);
++    mocks.confirmMock
++      .mockResolvedValueOnce(false)
++      .mockResolvedValueOnce(false)
++      .mockResolvedValueOnce(false);
+ 
+     const io = captureStdIO();
+     try {
+-      const code = await runCli(["init", "--hooks", "yes", "--root", root]);
++      const code = await runCli(["init", "--advanced", "--hooks", "yes", "--root", root]);
+ 
+       expect(code).toBe(2);
+       expect(io.stderr).toContain("Init cancelled during conflict resolution.");
+@@ -444,6 +506,27 @@ describe("runCli interactive init UI", () => {
+     await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
+   });
+ 
++  it("cancels before writes when setup depth selection is aborted", async () => {
++    const root = await mkTempDir();
++    const cancelSymbol = Symbol("cancel");
++    mocks.selectMock.mockResolvedValueOnce(cancelSymbol);
++    mocks.isCancelMock.mockImplementation((value: unknown) => value === cancelSymbol);
++
++    const io = captureStdIO();
++    try {
++      const code = await runCli(["init", "--root", root]);
++
++      expect(code).toBe(2);
++      expect(io.stderr).toContain("Setup depth selection cancelled.");
++    } finally {
++      io.restore();
++    }
++
++    expect(mocks.cancelMock).toHaveBeenCalledWith("Setup depth selection cancelled.");
++    await expect(pathExists(path.join(root, ".git"))).resolves.toBe(false);
++    await expect(pathExists(path.join(root, ".agentplane"))).resolves.toBe(false);
++  });
++
+   it("rejects removed interactive init compatibility flags", async () => {
+     const root = await mkTempDir();
+ 
+@@ -475,6 +558,30 @@ describe("runCli interactive init UI", () => {
+     expect(mocks.confirmMock).not.toHaveBeenCalled();
+   });
+ 
++  it("treats explicit ci mode as non-interactive even in a TTY", async () => {
++    const root = await mkTempDir();
++
++    const io = captureStdIO();
++    try {
++      const code = await runCli([
++        "init",
++        "--init-mode",
++        "ci",
++        "--root",
++        root,
++        "--gitignore-agents",
++      ]);
++
++      expect(code).toBe(0);
++    } finally {
++      io.restore();
++    }
++
++    expect(mocks.introMock).not.toHaveBeenCalled();
++    expect(mocks.selectMock).not.toHaveBeenCalled();
++    expect(mocks.confirmMock).not.toHaveBeenCalled();
++  });
++
+   it("keeps unified non-interactive init when plain prompt mode is requested for non-interactive init", async () => {
+     const root = await mkTempDir();
+     process.env.AGENTPLANE_PROMPTS = "plain";
+diff --git a/packages/agentplane/src/cli/run-cli.core.init.test.ts b/packages/agentplane/src/cli/run-cli.core.init.test.ts
+index 3123c4f03..7ed5c841e 100644
+--- a/packages/agentplane/src/cli/run-cli.core.init.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.init.test.ts
+@@ -764,10 +764,19 @@ describe("runCli", () => {
+       const code = await runCli(["init", "--dry-run", "--yes", "--root", root, "--output", "json"]);
+       expect(code).toBe(0);
+       const envelope = JSON.parse(io.stdout) as {
+-        data?: { schemaVersion?: string; effects?: { kind: string }[] };
++        data?: {
++          schemaVersion?: string;
++          effects?: { kind: string }[];
++          decisionReasons?: string[];
++          nextSteps?: string[];
++        };
+       };
+       expect(envelope.data?.schemaVersion).toBe("init-plan/v1");
+       expect(envelope.data?.effects?.some((effect) => effect.kind === "git_init")).toBe(true);
++      expect(envelope.data?.decisionReasons?.length).toBeGreaterThan(0);
++      expect(envelope.data?.nextSteps?.[0]).toBe(
++        'agentplane task create "Describe the outcome you want"',
++      );
+     } finally {
+       io.restore();
+     }
+@@ -813,6 +822,38 @@ describe("runCli", () => {
+     expect(await pathExists(path.join(root, ".agentplane"))).toBe(false);
+   });
+ 
++  it.each([
++    ["claude", "claude", "none"],
++    ["multiple", "codex", "none"],
++  ] as const)(
++    "init --quick --tool %s derives a portable gateway and IDE mapping",
++    async (tool, policyGateway, ide) => {
++      const root = await mkTempDir();
++      const io = captureStdIO();
++      try {
++        const code = await runCli([
++          "init",
++          "--dry-run",
++          "--yes",
++          "--quick",
++          "--tool",
++          tool,
++          "--root",
++          root,
++          "--output",
++          "json",
++        ]);
++        expect(code).toBe(0);
++        const envelope = JSON.parse(io.stdout) as {
++          data?: { answers?: { policyGateway?: string; ide?: string } };
++        };
++        expect(envelope.data?.answers).toMatchObject({ policyGateway, ide });
++      } finally {
++        io.restore();
++      }
++    },
++  );
++
+   it("init --quick --tool hermes configures the native Hermes runner profile without IDE sync", async () => {
+     const root = await mkTempDir();
+     const io = captureStdIO();
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/answers.ts b/packages/agentplane/src/cli/run-cli/commands/init/answers.ts
+index 80fbd6d84..a06d52590 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/answers.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/answers.ts
+@@ -3,7 +3,14 @@ import type { EvaluatorSkepticismLevel, ExecutionProfile } from "@agentplaneorg/
+ import type { WorkflowMode } from "../../../../agents/agents-template.js";
+ import { InitAborted } from "./prompts.js";
+ import type { InitClackPrompts } from "./prompts.js";
+-import type { InitFlags, InitIde, InitParsed, SetupProfilePreset } from "./model.js";
++import type {
++  InitFlags,
++  InitIde,
++  InitMode,
++  InitParsed,
++  InitTool,
++  SetupProfilePreset,
++} from "./model.js";
+ import { INIT_DEFAULTS, setupProfilePresets } from "./presets.js";
+ import { listCachedBlueprintCatalogItems } from "./blueprints.js";
+ import { listCachedRecipes } from "./recipes.js";
+@@ -13,9 +20,11 @@ import {
+   promptBackendStep,
+   promptBlueprintSelectionStep,
+   promptIdeStep,
++  promptInitModeStep,
+   promptPolicyGatewayStep,
+   promptRecipeSelectionStep,
+   promptSetupProfileStep,
++  promptToolStep,
+   promptWorkflowStep,
+ } from "./steps/index.js";
+ import type { InitPromptClack } from "./steps/contracts.js";
+@@ -26,6 +35,10 @@ import {
+   resolveRunnerProfileFromFlags,
+   resolveToolDefaults,
+ } from "./modes.js";
++import {
++  detectInitRepositoryDefaults,
++  type InitRepositoryDefaults,
++} from "./repository-defaults.js";
+ 
+ export type InitAnswers = {
+   setupProfile: SetupProfilePreset;
+@@ -47,6 +60,12 @@ export type InitAnswers = {
+   strictUnsafeConfirm: boolean;
+   blueprints: string[];
+   runnerProfile: "codex" | "hermes";
++  decisionReasons: string[];
++};
++
++export type InteractiveInitAnswers = {
++  answers: InitAnswers;
++  initMode: Exclude<InitMode, "ci">;
+ };
+ 
+ export function assertConfirmed(clack: InitClackPrompts, value: boolean | symbol): boolean {
+@@ -80,61 +99,158 @@ export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
+     strictUnsafeConfirm: flags.strictUnsafeConfirm ?? preset.defaultStrictUnsafeConfirm,
+     blueprints: flags.blueprints ?? INIT_DEFAULTS.blueprints,
+     runnerProfile: resolveRunnerProfileFromFlags(flags, "codex"),
++    decisionReasons: [
++      "Automation mode: non-interactive flags and stable defaults determine every value.",
++      `Agent surface: ${flags.tool ?? "codex default"}; granular gateway and IDE flags override the mapping.`,
++      `Workflow: ${flags.workflow ?? INIT_DEFAULTS.workflow}${flags.workflow ? " selected explicitly" : " is the safe local default"}.`,
++      `Guardrails: ${setupProfilePreset} profile supplies approval and execution defaults unless overridden.`,
++      `Storage: ${flags.backend ?? INIT_DEFAULTS.backend}${flags.backend ? " selected explicitly" : " keeps task state local by default"}.`,
++    ],
+   };
+ }
+ 
+-export async function promptInteractiveAnswers(opts: {
++function quickDecisionReasons(opts: {
++  tool: InitTool;
++  workflow: WorkflowMode;
++  workflowExplicit: boolean;
++  setupProfile: SetupProfilePreset;
++  backend: NonNullable<InitFlags["backend"]>;
++  repositoryDefaults: InitRepositoryDefaults;
++}): string[] {
++  return [
++    "Setup depth: quick keeps optional controls out of the first-run path.",
++    ...opts.repositoryDefaults.decisionReasons,
++    `Agent surface: ${opts.tool}; gateway, IDE integration, and managed-runner defaults are derived from this choice.`,
++    `Workflow: ${opts.workflow}${opts.workflowExplicit ? " selected explicitly" : " selected in this dialog"}.`,
++    `Guardrails: ${opts.setupProfile} applies a coherent approval, hook, and execution profile.`,
++    `Storage: ${opts.backend}${opts.backend === "local" ? " keeps the project self-contained" : " was selected explicitly"}.`,
++    "Optional recipes and blueprints stay disabled until requested through advanced setup or explicit flags.",
++  ];
++}
++
++async function promptQuickAnswers(opts: {
+   flags: InitParsed;
+-  clack: InitClackPrompts;
++  clack: InitPromptClack & Pick<InitClackPrompts, "log" | "note">;
+   targetRoot: string;
+ }): Promise<InitAnswers> {
+-  const promptClack = opts.clack as InitPromptClack & Pick<InitClackPrompts, "note">;
+-  opts.clack.intro("AgentPlane init");
+-  introLogo(opts.clack);
+-  section(opts.clack, "Setup", "Choose the project defaults before AgentPlane writes files.");
++  section(
++    opts.clack,
++    "Quick setup",
++    "Choose the agent surface and workflow. AgentPlane will explain the safe defaults before writing files; use Advanced setup to review every control.",
++  );
++  const setupProfile = opts.flags.setupProfile ?? "normal";
++  const selectedPreset = setupProfilePresets[setupProfile];
++  const repositoryDefaults = await detectInitRepositoryDefaults(opts.targetRoot);
++  const { tool } = await promptToolStep({
++    clack: opts.clack,
++    flags: opts.flags,
++    defaultTool: repositoryDefaults.tool,
++  });
++  const toolDefaults = resolveToolDefaults(tool);
++  const workflow = await promptWorkflowStep({
++    clack: opts.clack,
++    flags: opts.flags,
++    setupProfileMode: "compact",
++    promptWorkflow: true,
++    promptDirectCloseDirtyPolicy: false,
++    defaults: {
++      workflow: repositoryDefaults.workflow,
++      directCloseDirtyPolicy: INIT_DEFAULTS.directCloseDirtyPolicy,
++    },
++  });
++  const advanced = await promptAdvancedSettingsStep({
++    clack: opts.clack,
++    flags: opts.flags,
++    setupProfilePreset: setupProfile,
++    setupProfileMode: "compact",
++  });
++  const backend = opts.flags.backend ?? INIT_DEFAULTS.backend;
++  return {
++    setupProfile,
++    setupProfileDescription: selectedPreset.description,
++    policyGateway:
++      opts.flags.policyGateway ?? toolDefaults.policyGateway ?? INIT_DEFAULTS.policyGateway,
++    ide: opts.flags.ide ?? toolDefaults.ide ?? INIT_DEFAULTS.ide,
++    workflow: workflow.workflow,
++    directCloseDirtyPolicy: workflow.directCloseDirtyPolicy,
++    backend,
++    hooks: advanced.hooks,
++    recipes: opts.flags.recipes ?? selectedPreset.defaultRecipes,
++    requirePlanApproval: advanced.requirePlanApproval,
++    requireNetworkApproval: advanced.requireNetworkApproval,
++    requireVerifyApproval: advanced.requireVerifyApproval,
++    feedbackGithubIssues: advanced.feedbackGithubIssues,
++    feedbackAnonymousCloud: advanced.feedbackAnonymousCloud,
++    executionProfile: advanced.executionProfile,
++    evaluatorSkepticism: advanced.evaluatorSkepticism,
++    strictUnsafeConfirm: advanced.strictUnsafeConfirm,
++    blueprints: opts.flags.blueprints ?? INIT_DEFAULTS.blueprints,
++    runnerProfile: toolDefaults.runnerProfile ?? "codex",
++    decisionReasons: quickDecisionReasons({
++      tool,
++      workflow: workflow.workflow,
++      workflowExplicit: opts.flags.workflow !== undefined,
++      setupProfile,
++      backend,
++      repositoryDefaults,
++    }),
++  };
++}
++
++async function promptDetailedAnswers(opts: {
++  flags: InitParsed;
++  clack: InitPromptClack & Pick<InitClackPrompts, "log" | "note">;
++  targetRoot: string;
++  initMode: "guided" | "advanced";
++}): Promise<InitAnswers> {
++  section(opts.clack, "Advanced setup", "Review project policy and integration controls.");
+   const setup = await promptSetupProfileStep({
+-    clack: promptClack,
++    clack: opts.clack,
+     flags: opts.flags,
+     defaultProfile: "normal",
+   });
+   const selectedPreset = setupProfilePresets[setup.setupProfilePreset];
+-  const toolDefaults = resolveToolDefaults(opts.flags.tool);
++  const { tool } = await promptToolStep({ clack: opts.clack, flags: opts.flags });
++  const toolDefaults = resolveToolDefaults(tool);
++  const promptMode = opts.initMode === "advanced" ? "full" : setup.setupProfileMode;
+   const policy = await promptPolicyGatewayStep({
+-    clack: promptClack,
+-    flags: {
+-      policyGateway: opts.flags.policyGateway ?? toolDefaults.policyGateway,
++    clack: opts.clack,
++    flags: { policyGateway: opts.flags.policyGateway },
++    defaults: {
++      policyGateway: toolDefaults.policyGateway ?? INIT_DEFAULTS.policyGateway,
+     },
+   });
+   const ide = await promptIdeStep({
+-    clack: promptClack,
+-    flags: { ide: opts.flags.ide ?? toolDefaults.ide },
++    clack: opts.clack,
++    flags: { ide: opts.flags.ide },
++    defaults: { ide: toolDefaults.ide ?? INIT_DEFAULTS.ide },
+   });
+   const workflow = await promptWorkflowStep({
+-    clack: promptClack,
++    clack: opts.clack,
+     flags: opts.flags,
+-    setupProfileMode: setup.setupProfileMode,
++    setupProfileMode: promptMode,
+   });
+-  const backend = await promptBackendStep({ clack: promptClack, flags: opts.flags });
++  const backend = await promptBackendStep({ clack: opts.clack, flags: opts.flags });
+   const advanced = await promptAdvancedSettingsStep({
+-    clack: promptClack,
++    clack: opts.clack,
+     flags: opts.flags,
+     setupProfilePreset: setup.setupProfilePreset,
+-    setupProfileMode: setup.setupProfileMode,
++    setupProfileMode: promptMode,
+   });
+   const cachedRecipes = await listCachedRecipes({ cwd: opts.targetRoot });
+   const recipeSelection = await promptRecipeSelectionStep({
+-    clack: promptClack,
++    clack: opts.clack,
+     flags: opts.flags,
+     setupProfilePreset: setup.setupProfilePreset,
+-    setupProfileMode: setup.setupProfileMode,
++    setupProfileMode: promptMode,
+     cachedRecipes,
+   });
+   const cachedBlueprints = await listCachedBlueprintCatalogItems({ cwd: opts.targetRoot });
+   const blueprintSelection = await promptBlueprintSelectionStep({
+-    clack: promptClack,
++    clack: opts.clack,
+     flags: opts.flags,
+     setupProfilePreset: setup.setupProfilePreset,
+-    setupProfileMode: setup.setupProfileMode,
++    setupProfileMode: promptMode,
+     cachedBlueprints,
+   });
+   return {
+@@ -157,5 +273,37 @@ export async function promptInteractiveAnswers(opts: {
+     strictUnsafeConfirm: advanced.strictUnsafeConfirm,
+     blueprints: blueprintSelection.blueprints,
+     runnerProfile: toolDefaults.runnerProfile ?? "codex",
++    decisionReasons: [
++      `Setup depth: ${opts.initMode} exposes individual policy and integration controls.`,
++      `Agent surface: ${tool}; gateway, IDE, and runner values remain individually reviewable.`,
++      `Workflow: ${workflow.workflow} was confirmed in the detailed setup path.`,
++      `Guardrails: ${setup.setupProfilePreset} supplied the starting values for approvals and execution.`,
++      `Storage: ${backend.backend} was confirmed in the detailed setup path.`,
++    ],
+   };
+ }
++
++export async function promptInteractiveAnswers(opts: {
++  flags: InitParsed;
++  clack: InitClackPrompts;
++  targetRoot: string;
++}): Promise<InteractiveInitAnswers> {
++  const promptClack = opts.clack as InitPromptClack & Pick<InitClackPrompts, "log" | "note">;
++  opts.clack.intro("AgentPlane init");
++  introLogo(opts.clack);
++  const initMode = await promptInitModeStep({ clack: promptClack, flags: opts.flags });
++  const answers =
++    initMode === "quick"
++      ? await promptQuickAnswers({
++          flags: opts.flags,
++          clack: promptClack,
++          targetRoot: opts.targetRoot,
++        })
++      : await promptDetailedAnswers({
++          flags: opts.flags,
++          clack: promptClack,
++          targetRoot: opts.targetRoot,
++          initMode,
++        });
++  return { answers, initMode };
++}
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts b/packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts
+index 8d0507f2a..d0f8c7418 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts
+@@ -23,6 +23,7 @@ const answers = {
+   recipes: [],
+   blueprints: [],
+   runnerProfile: "codex",
++  decisionReasons: ["Test fixture"],
+ } satisfies InitAnswers;
+ 
+ describe("init execution planning", () => {
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/execution.ts b/packages/agentplane/src/cli/run-cli/commands/init/execution.ts
+index 9a8223a4c..b91462cd8 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/execution.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/execution.ts
+@@ -22,6 +22,7 @@ import { ensureInitGitignore } from "./write-gitignore.js";
+ import { ensureInitWorkflow } from "./write-workflow.js";
+ import { assertConfirmed } from "./answers.js";
+ import type { ResolvedInitPaths } from "./init-paths.js";
++import { FIRST_TASK_COMMAND } from "./init-plan.js";
+ 
+ export {
+   collectInitAndHookConflicts,
+@@ -64,6 +65,8 @@ export async function maybeConfirmInteractiveApply(opts: {
+     ...(opts.plan.warnings.length > 0
+       ? [{ label: "Warnings", value: opts.plan.warnings.join(" | ") }]
+       : []),
++    { label: "Why", value: opts.plan.decisionReasons.join(" | ") },
++    { label: "First task", value: FIRST_TASK_COMMAND },
+     { label: "Install commit", value: !opts.flags.gitignoreAgents },
+   ]);
+   const confirmed = assertConfirmed(
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/init-plan.ts b/packages/agentplane/src/cli/run-cli/commands/init/init-plan.ts
+index d1548cfde..a086e0400 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/init-plan.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/init-plan.ts
+@@ -9,6 +9,8 @@ import { setupProfileToUserFacingProfile } from "./modes.js";
+ export const GITHUB_CLI_INIT_RECOMMENDATION =
+   "GitHub CLI (gh) is recommended for branch_pr PR merges. Install it yourself (macOS: `brew install gh`; Windows: `winget install --id GitHub.cli`; Linux: see `https://cli.github.com/manual/installation`), then run `gh auth login`. AgentPlane will not install it for you; explicit GH_TOKEN/GITHUB_TOKEN can be used as the API fallback.";
+ 
++export const FIRST_TASK_COMMAND = 'agentplane task create "Describe the outcome you want"';
++
+ export async function detectGithubCliInstalled(cwd: string): Promise<boolean> {
+   try {
+     await runProcess({
+@@ -179,8 +181,8 @@ export function buildInitPlan(opts: {
+     ...(opts.answers.workflow === "branch_pr" && githubCliInstalled === false
+       ? ["Install GitHub CLI yourself, then run `gh auth login`."]
+       : []),
+-    "agentplane quickstart",
+-    'agentplane task new --title "Trace first AI-assisted change" --owner CODER --tag code',
++    FIRST_TASK_COMMAND,
++    "Run the exact task run or task advance command printed by Agentplane.",
+   ];
+   return {
+     schemaVersion: "init-plan/v1",
+@@ -216,6 +218,7 @@ export function buildInitPlan(opts: {
+     effects,
+     conflicts: opts.conflicts.map((conflict) => initRel(opts.paths.gitRoot, conflict)),
+     warnings,
++    decisionReasons: [...opts.answers.decisionReasons],
+     nextSteps,
+   };
+ }
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/model.ts b/packages/agentplane/src/cli/run-cli/commands/init/model.ts
+index c2e3fc674..51d659ca9 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/model.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/model.ts
+@@ -127,5 +127,6 @@ export type InitPlan = {
+   effects: InitEffect[];
+   conflicts: string[];
+   warnings: string[];
++  decisionReasons: string[];
+   nextSteps: string[];
+ };
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/modes.ts b/packages/agentplane/src/cli/run-cli/commands/init/modes.ts
+index 7d3e639eb..f6ede75f4 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/modes.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/modes.ts
+@@ -14,7 +14,7 @@ export function resolveInitMode(opts: { flags: InitParsed; interactive: boolean
+   if (opts.flags.initMode) return opts.flags.initMode;
+   if (opts.flags.yes) return "ci";
+   if (!opts.interactive) return "ci";
+-  return "guided";
++  return "quick";
+ }
+ 
+ export function setupProfileToUserFacingProfile(profile: SetupProfilePreset): UserFacingProfile {
+@@ -28,8 +28,11 @@ export function resolveToolDefaults(tool: InitTool | undefined): {
+   ide?: InitIde;
+   runnerProfile?: InitRunnerProfile;
+ } {
+-  if (!tool || tool === "multiple" || tool === "manual") return {};
+-  if (tool === "claude") return { policyGateway: "claude", ide: "codex" };
++  if (!tool) return {};
++  if (tool === "multiple" || tool === "manual") {
++    return { policyGateway: "codex", ide: "none" };
++  }
++  if (tool === "claude") return { policyGateway: "claude", ide: "none" };
+   if (tool === "cursor") return { policyGateway: "codex", ide: "cursor" };
+   if (tool === "windsurf") return { policyGateway: "codex", ide: "windsurf" };
+   if (tool === "hermes") return { policyGateway: "codex", ide: "none", runnerProfile: "hermes" };
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/orchestrate.ts b/packages/agentplane/src/cli/run-cli/commands/init/orchestrate.ts
+index 61b7dffb2..c35ae69fe 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/orchestrate.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/orchestrate.ts
+@@ -24,9 +24,16 @@ import {
+ import { buildNonInteractiveAnswers, promptInteractiveAnswers } from "./answers.js";
+ import { outroError, outroSuccess } from "./ui.js";
+ import { resolveInitMode } from "./modes.js";
++import { FIRST_TASK_COMMAND } from "./init-plan.js";
+ 
+ function shouldRunInteractiveInit(flags: InitParsed): boolean {
+-  if (flags.yes || flags.dryRun || process.env.AGENTPLANE_PROMPTS === "plain") return false;
++  if (
++    flags.yes ||
++    flags.dryRun ||
++    flags.initMode === "ci" ||
++    process.env.AGENTPLANE_PROMPTS === "plain"
++  )
++    return false;
+   return shouldUseInitClackPrompts();
+ }
+ 
+@@ -35,7 +42,8 @@ function assertNonInteractiveInitAllowed(opts: {
+   spec: CommandSpec<InitParsed>;
+   interactive: boolean;
+ }): void {
+-  if (opts.interactive || opts.flags.yes || opts.flags.setupProfile) return;
++  if (opts.interactive || opts.flags.yes || opts.flags.initMode === "ci" || opts.flags.setupProfile)
++    return;
+   if (opts.flags.dryRun) return;
+   if (opts.flags.workflow && opts.flags.requireNetworkApproval !== undefined) return;
+   throw usageError({
+@@ -62,6 +70,8 @@ function renderDryRunPlanText(plan: ReturnType<typeof buildInitPlan>): string {
+     ...(plan.warnings.length > 0
+       ? ["Warnings:", ...plan.warnings.map((warning) => `- ${warning}`)]
+       : []),
++    "Why:",
++    ...plan.decisionReasons.map((reason) => `- ${reason}`),
+     "Effects:",
+     ...plan.effects.map((effect) => {
+       const pathSuffix = effect.path ? ` ${effect.path}` : "";
+@@ -93,15 +103,17 @@ export async function cmdInit(opts: {
+   spec: CommandSpec<InitParsed>;
+ }): Promise<number> {
+   const interactive = shouldRunInteractiveInit(opts.flags);
+-  const initMode = resolveInitMode({ flags: opts.flags, interactive });
++  const requestedInitMode = resolveInitMode({ flags: opts.flags, interactive });
+   assertNonInteractiveInitAllowed({ flags: opts.flags, spec: opts.spec, interactive });
+   const clack = interactive ? requireInitClack(await loadInitClackPrompts(), opts.spec) : null;
+   const targetRoot = path.resolve(opts.rootOverride ?? opts.cwd);
+ 
+   try {
+-    const answers = clack
++    const interactiveAnswers = clack
+       ? await promptInteractiveAnswers({ flags: opts.flags, clack, targetRoot })
+-      : buildNonInteractiveAnswers(opts.flags);
++      : null;
++    const answers = interactiveAnswers?.answers ?? buildNonInteractiveAnswers(opts.flags);
++    const initMode = interactiveAnswers?.initMode ?? requestedInitMode;
+     await validateCachedRecipesSelection(answers.recipes, { cwd: targetRoot });
+     await validateCachedBlueprintSelection(answers.blueprints, { cwd: targetRoot });
+     const paths = await resolveInitPaths({
+@@ -157,7 +169,7 @@ export async function cmdInit(opts: {
+       ensureGitRoot,
+     });
+     if (clack) {
+-      outroSuccess(clack, paths.gitRoot);
++      outroSuccess(clack, paths.gitRoot, FIRST_TASK_COMMAND);
+     }
+     process.stdout.write(`${path.relative(paths.gitRoot, paths.agentplaneDir)}\n`);
+     return 0;
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/repository-defaults.ts b/packages/agentplane/src/cli/run-cli/commands/init/repository-defaults.ts
+new file mode 100644
+index 000000000..aa02447aa
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/commands/init/repository-defaults.ts
+@@ -0,0 +1,128 @@
++import { readdir } from "node:fs/promises";
++import path from "node:path";
++
++import { gitEnv } from "@agentplaneorg/core/git";
++import { execFileAsync } from "@agentplaneorg/core/process";
++
++import type { WorkflowMode } from "../../../../agents/agents-template.js";
++import { getPathKind } from "../../../fs-utils.js";
++
++import type { InitTool } from "./model.js";
++
++export type InitRepositoryDefaults = {
++  workflow: WorkflowMode;
++  tool: InitTool;
++  facts: {
++    gitRepository: boolean;
++    remoteConfigured: boolean;
++    ciSignals: string[];
++    agentSurfaceSignals: string[];
++  };
++  decisionReasons: string[];
++};
++
++const CI_FILE_SIGNALS = [
++  [".gitlab-ci.yml", "GitLab CI"],
++  ["azure-pipelines.yml", "Azure Pipelines"],
++  [".circleci/config.yml", "CircleCI"],
++  ["Jenkinsfile", "Jenkins"],
++] as const;
++
++async function pathExists(filePath: string): Promise<boolean> {
++  return (await getPathKind(filePath)) !== null;
++}
++
++async function detectGithubActions(targetRoot: string): Promise<string[]> {
++  try {
++    const entries = await readdir(path.join(targetRoot, ".github", "workflows"), {
++      withFileTypes: true,
++    });
++    return entries.some((entry) => entry.isFile() && /\.(?:ya?ml)$/u.test(entry.name.toLowerCase()))
++      ? ["GitHub Actions"]
++      : [];
++  } catch {
++    return [];
++  }
++}
++
++async function detectCiSignals(targetRoot: string): Promise<string[]> {
++  const signals = await detectGithubActions(targetRoot);
++  for (const [relativePath, label] of CI_FILE_SIGNALS) {
++    if (await pathExists(path.join(targetRoot, relativePath))) signals.push(label);
++  }
++  return signals;
++}
++
++async function detectRemoteConfigured(
++  targetRoot: string,
++  gitRepository: boolean,
++): Promise<boolean> {
++  if (!gitRepository) return false;
++  try {
++    const { stdout } = await execFileAsync("git", ["remote"], {
++      cwd: targetRoot,
++      env: gitEnv(),
++    });
++    return stdout
++      .split("\n")
++      .map((value) => value.trim())
++      .some(Boolean);
++  } catch {
++    return false;
++  }
++}
++
++async function detectAgentSurfaceSignals(targetRoot: string): Promise<string[]> {
++  const candidates = [
++    ["CLAUDE.md", "Claude Code"],
++    [".cursor", "Cursor"],
++    [".windsurf", "Windsurf"],
++    ["AGENTS.md", "Codex"],
++  ] as const;
++  const signals: string[] = [];
++  for (const [relativePath, label] of candidates) {
++    if (await pathExists(path.join(targetRoot, relativePath))) signals.push(label);
++  }
++  return signals;
++}
++
++function suggestedTool(signals: string[]): InitTool {
++  const unique = [...new Set(signals)];
++  if (unique.length > 1) return "multiple";
++  if (unique[0] === "Claude Code") return "claude";
++  if (unique[0] === "Cursor") return "cursor";
++  if (unique[0] === "Windsurf") return "windsurf";
++  return "codex";
++}
++
++export async function detectInitRepositoryDefaults(
++  targetRoot: string,
++): Promise<InitRepositoryDefaults> {
++  const gitRepository = (await getPathKind(path.join(targetRoot, ".git"))) !== null;
++  const [ciSignals, agentSurfaceSignals, remoteConfigured] = await Promise.all([
++    detectCiSignals(targetRoot),
++    detectAgentSurfaceSignals(targetRoot),
++    detectRemoteConfigured(targetRoot, gitRepository),
++  ]);
++  const isolationSignals = [
++    ...(remoteConfigured ? ["a configured Git remote"] : []),
++    ...ciSignals.map((signal) => `${signal} CI`),
++  ];
++  const workflow: WorkflowMode = isolationSignals.length > 0 ? "branch_pr" : "direct";
++  const tool = suggestedTool(agentSurfaceSignals);
++  const workflowReason =
++    isolationSignals.length > 0
++      ? `Repository facts: detected ${isolationSignals.join(" and ")}; branch_pr is the safe default for isolated review.`
++      : "Repository facts: no Git remote or CI configuration was detected; direct is the safe first-run fallback.";
++  const toolReason =
++    agentSurfaceSignals.length > 0
++      ? `Repository facts: detected ${agentSurfaceSignals.join(" and ")} policy surfaces; ${tool} is the suggested agent default.`
++      : "Repository facts: no agent-specific policy surface was detected; codex is the portable agent default.";
++
++  return {
++    workflow,
++    tool,
++    facts: { gitRepository, remoteConfigured, ciSignals, agentSurfaceSignals },
++    decisionReasons: [workflowReason, toolReason],
++  };
++}
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/spec.ts b/packages/agentplane/src/cli/run-cli/commands/init/spec.ts
+index 2994abd59..5285545d4 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/spec.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/spec.ts
+@@ -24,7 +24,7 @@ export const initSpec: CommandSpec<InitParsed> = {
+       choices: ["quick", "guided", "advanced", "ci"],
+       coerce: (raw) => raw.trim().toLowerCase(),
+       description:
+-        "User-facing init route. TTY defaults to guided; --yes defaults to ci for automation.",
++        "User-facing init route. TTY defaults to quick with an advanced choice; --yes defaults to ci for automation.",
+     },
+     {
+       kind: "boolean",
+@@ -212,7 +212,10 @@ export const initSpec: CommandSpec<InitParsed> = {
+     },
+   ],
+   examples: [
+-    { cmd: "agentplane init", why: "Interactive setup (prompts for missing values)." },
++    {
++      cmd: "agentplane init",
++      why: "Short interactive setup for agent surface and workflow, followed by an explained preview.",
++    },
+     {
+       cmd: "agentplane init --setup-profile light --yes",
+       why: "Non-interactive setup with flexible defaults.",
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/steps/contracts.ts b/packages/agentplane/src/cli/run-cli/commands/init/steps/contracts.ts
+index e35123b34..ac7156941 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/steps/contracts.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/steps/contracts.ts
+@@ -2,7 +2,7 @@ import type { EvaluatorSkepticismLevel, ExecutionProfile } from "@agentplaneorg/
+ 
+ import type { WorkflowMode } from "../../../../../agents/agents-template.js";
+ import type { PolicyGatewayFlavor } from "../../../../../shared/policy-gateway.js";
+-import type { InitFlags, InitIde, SetupProfilePreset } from "../model.js";
++import type { InitFlags, InitIde, InitTool, SetupProfilePreset } from "../model.js";
+ import type { InitClackPrompts } from "../prompts.js";
+ 
+ export type InitSetupProfileMode = "compact" | "full";
+@@ -33,6 +33,10 @@ export type SetupProfileStepAnswers = {
+   setupProfileMode: InitSetupProfileMode;
+ };
+ 
++export type ToolStepAnswers = {
++  tool: InitTool;
++};
++
+ export type PolicyGatewayStepAnswers = {
+   policyGateway: PolicyGatewayFlavor;
+ };
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/steps/index.ts b/packages/agentplane/src/cli/run-cli/commands/init/steps/index.ts
+index 198812890..b8f94e01a 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/steps/index.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/steps/index.ts
+@@ -4,7 +4,9 @@ export { promptBackendStep } from "./backend.js";
+ export { promptBlueprintSelectionStep } from "./blueprint-selection.js";
+ export { promptConflictResolverStep } from "./conflict-resolver.js";
+ export { promptIdeStep } from "./ide.js";
++export { promptInitModeStep } from "./init-mode.js";
+ export { promptPolicyGatewayStep } from "./policy-gateway.js";
+ export { promptRecipeSelectionStep } from "./recipe-selection.js";
+ export { promptSetupProfileStep } from "./setup-profile.js";
++export { promptToolStep } from "./tool.js";
+ export { promptWorkflowStep } from "./workflow.js";
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/steps/init-mode.ts b/packages/agentplane/src/cli/run-cli/commands/init/steps/init-mode.ts
+new file mode 100644
+index 000000000..1aba4bd80
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/commands/init/steps/init-mode.ts
+@@ -0,0 +1,34 @@
++import type { InitFlags, InitMode } from "../model.js";
++
++import { selectStepValue } from "./prompt-utils.js";
++import type { InitPromptClack } from "./contracts.js";
++
++type InteractiveInitMode = Extract<InitMode, "quick" | "advanced">;
++
++const initModeOptions: { value: InteractiveInitMode; label: string; hint: string }[] = [
++  {
++    value: "quick",
++    label: "Quick (recommended)",
++    hint: "Choose the agent surface and workflow; keep safe local defaults for everything else.",
++  },
++  {
++    value: "advanced",
++    label: "Advanced",
++    hint: "Review policy, storage, approvals, execution, recipes, and blueprints individually.",
++  },
++];
++
++export async function promptInitModeStep(opts: {
++  clack: InitPromptClack;
++  flags: Pick<InitFlags, "initMode">;
++}): Promise<InteractiveInitMode | "guided"> {
++  if (opts.flags.initMode === "advanced") return "advanced";
++  if (opts.flags.initMode === "guided") return "guided";
++  if (opts.flags.initMode === "quick") return "quick";
++  return await selectStepValue(opts.clack, {
++    message: "Setup depth",
++    options: initModeOptions,
++    initialValue: "quick",
++    cancelMessage: "Setup depth selection cancelled.",
++  });
++}
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts b/packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts
+index 310d79552..bcf1abbf2 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts
+@@ -7,9 +7,11 @@ import { promptAdvancedSettingsStep } from "./advanced-settings.js";
+ import { promptBackendStep } from "./backend.js";
+ import { promptBlueprintSelectionStep } from "./blueprint-selection.js";
+ import { promptIdeStep } from "./ide.js";
++import { promptInitModeStep } from "./init-mode.js";
+ import { promptPolicyGatewayStep } from "./policy-gateway.js";
+ import { promptRecipeSelectionStep } from "./recipe-selection.js";
+ import { promptSetupProfileStep } from "./setup-profile.js";
++import { promptToolStep } from "./tool.js";
+ import { promptWorkflowStep } from "./workflow.js";
+ import type { InitPromptClack } from "./contracts.js";
+ 
+@@ -54,7 +56,8 @@ describe("init prompt steps", () => {
+       .mockResolvedValueOnce("cursor")
+       .mockResolvedValueOnce("branch_pr")
+       .mockResolvedValueOnce("cloud")
+-      .mockResolvedValueOnce("aggressive");
++      .mockResolvedValueOnce("aggressive")
++      .mockResolvedValueOnce("standard");
+     mocks.confirmMock
+       .mockResolvedValueOnce(false)
+       .mockResolvedValueOnce(true)
+@@ -111,12 +114,39 @@ describe("init prompt steps", () => {
+       feedbackGithubIssues: true,
+       feedbackAnonymousCloud: false,
+       executionProfile: "aggressive",
++      evaluatorSkepticism: "standard",
+       strictUnsafeConfirm: false,
+     });
+     expect(recipes).toEqual({ recipes: ["recipe-a", "recipe-b"] });
+     expect(blueprints).toEqual({ blueprints: ["pack:enterprise-baseline"] });
+   });
+ 
++  it("keeps the default setup path to depth, agent surface, and workflow decisions", async () => {
++    resetPromptMocks();
++    mocks.selectMock
++      .mockResolvedValueOnce("quick")
++      .mockResolvedValueOnce("claude")
++      .mockResolvedValueOnce("branch_pr");
++    const prompt = clackMock();
++
++    await expect(promptInitModeStep({ clack: prompt, flags: {} })).resolves.toBe("quick");
++    await expect(promptToolStep({ clack: prompt, flags: {} })).resolves.toEqual({ tool: "claude" });
++    await expect(
++      promptWorkflowStep({
++        clack: prompt,
++        flags: {},
++        setupProfileMode: "compact",
++        promptWorkflow: true,
++        promptDirectCloseDirtyPolicy: false,
++      }),
++    ).resolves.toEqual({
++      workflow: "branch_pr",
++      directCloseDirtyPolicy: "allow_other_task_readmes",
++    });
++
++    expect(mocks.selectMock).toHaveBeenCalledTimes(3);
++  });
++
+   it("skips prompts when flags or compact profile defaults already answer a step", async () => {
+     resetPromptMocks();
+     const prompt = clackMock();
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/steps/tool.ts b/packages/agentplane/src/cli/run-cli/commands/init/steps/tool.ts
+new file mode 100644
+index 000000000..dc7c13c5c
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/commands/init/steps/tool.ts
+@@ -0,0 +1,38 @@
++import type { InitFlags, InitTool } from "../model.js";
++
++import { selectStepValue } from "./prompt-utils.js";
++import type { InitPromptClack, ToolStepAnswers } from "./contracts.js";
++
++const toolOptions: { value: InitTool; label: string; hint: string }[] = [
++  { value: "codex", label: "Codex", hint: "Install AGENTS.md and Codex-oriented local rules." },
++  { value: "claude", label: "Claude Code", hint: "Install CLAUDE.md for Claude Code." },
++  { value: "cursor", label: "Cursor", hint: "Install AGENTS.md and sync Cursor rules." },
++  { value: "windsurf", label: "Windsurf", hint: "Install AGENTS.md and sync Windsurf rules." },
++  { value: "hermes", label: "Hermes", hint: "Use the native Hermes managed runner profile." },
++  {
++    value: "multiple",
++    label: "Multiple agents",
++    hint: "Use portable AGENTS.md defaults without one IDE-specific integration.",
++  },
++  {
++    value: "manual",
++    label: "Manual / other",
++    hint: "Use portable defaults and configure a custom runner later.",
++  },
++];
++
++export async function promptToolStep(opts: {
++  clack: InitPromptClack;
++  flags: Pick<InitFlags, "tool">;
++  defaultTool?: InitTool;
++}): Promise<ToolStepAnswers> {
++  const tool: InitTool =
++    opts.flags.tool ??
++    (await selectStepValue<InitTool>(opts.clack, {
++      message: "Primary agent surface",
++      options: toolOptions,
++      initialValue: opts.defaultTool ?? "codex",
++      cancelMessage: "Agent surface selection cancelled.",
++    }));
++  return { tool };
++}
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/steps/workflow.ts b/packages/agentplane/src/cli/run-cli/commands/init/steps/workflow.ts
+index acf34f240..e25fe52fb 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/steps/workflow.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/steps/workflow.ts
+@@ -42,11 +42,16 @@ export async function promptWorkflowStep(opts: {
+   flags: Pick<InitFlags, "workflow" | "directCloseDirtyPolicy">;
+   setupProfileMode: InitSetupProfileMode;
+   defaults?: Pick<InitDefaults, "workflow" | "directCloseDirtyPolicy">;
++  promptWorkflow?: boolean;
++  promptDirectCloseDirtyPolicy?: boolean;
+ }): Promise<WorkflowStepAnswers> {
+   const defaults = opts.defaults ?? INIT_DEFAULTS;
++  const promptWorkflow = opts.promptWorkflow ?? opts.setupProfileMode === "full";
++  const promptDirectCloseDirtyPolicy =
++    opts.promptDirectCloseDirtyPolicy ?? opts.setupProfileMode === "full";
+   const workflow =
+     opts.flags.workflow ??
+-    (opts.setupProfileMode === "full"
++    (promptWorkflow
+       ? await selectStepValue(opts.clack, {
+           message: "Workflow mode",
+           options: workflowOptions,
+@@ -64,7 +69,7 @@ export async function promptWorkflowStep(opts: {
+ 
+   const directCloseDirtyPolicy =
+     opts.flags.directCloseDirtyPolicy ??
+-    (opts.setupProfileMode === "full"
++    (promptDirectCloseDirtyPolicy
+       ? directCloseDirtyChoiceToPolicy(
+           await selectStepValue(opts.clack, {
+             message: "Direct close dirt policy",
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/ui.ts b/packages/agentplane/src/cli/run-cli/commands/init/ui.ts
+index d86c35e6e..61d295998 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/ui.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/ui.ts
+@@ -48,8 +48,13 @@ export function previewInstall(
+   clack.note(renderInitPreview(items), "Install preview");
+ }
+ 
+-export function outroSuccess(clack: Pick<InitClackPrompts, "outro">, root: string): void {
+-  clack.outro(`AgentPlane initialized in ${root}.`);
++export function outroSuccess(
++  clack: Pick<InitClackPrompts, "outro">,
++  root: string,
++  firstTaskCommand?: string,
++): void {
++  const next = firstTaskCommand ? `\nNext: ${firstTaskCommand}` : "";
++  clack.outro(`AgentPlane initialized in ${root}.${next}`);
+ }
+ 
+ export function outroError(clack: Pick<InitClackPrompts, "log" | "outro">, error: unknown): void {
