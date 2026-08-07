@@ -16,12 +16,7 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-The current-main UX branch and its filesystem transaction are verified across two synchronized
-independent CLI processes with complete deterministic evidence.
-```
+- Note: User-first task intake, duplicate serialization, route preview, and reviewed compatibility surface pass.
 - Canonical workflow state lives in the task README.
 
 <details>
