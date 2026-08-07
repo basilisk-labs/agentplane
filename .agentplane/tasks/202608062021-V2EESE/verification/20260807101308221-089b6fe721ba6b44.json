@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test:fast\nResult: fail\nEvidence: hosted Core CI run 31168537746 job 92834915138; 3 failed and 3871 passed; failures in residual Git fingerprint, Hermes supervise, and foreign worktree repair.\nScope: full fast unit and integration suite on PR #4789 head 95a76823b2d6679b2893cdd4802fa2dbb8774d76",
+  "digest": "sha256:089b6fe721ba6b44a7280f731e89f1a184c056c7c3b05d0e17708855dc238220",
+  "implementation_sha": "4ed5bbb5b3e4042db0f5841e6477f9c62c9bcd56",
+  "kind": "task_verification_record",
+  "note": "Hosted verify-unit exposed three semantic-policy projection regressions in minimal and residual-state fixtures.",
+  "recorded_at": "2026-08-07T10:13:08.221Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\n- bun run test:critical\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98",
+  "task_id": "202608062021-V2EESE",
+  "verification_command": "agentplane verify 202608062021-V2EESE --rework --by REVIEWER",
+  "verifier": "REVIEWER"
+}

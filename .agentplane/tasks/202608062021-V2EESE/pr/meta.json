@@ -2,23 +2,16 @@
   "base": "main",
   "branch": "task/202608062021-V2EESE/project-semantic-only-provider-prompts-and-rejec",
   "created_at": "2026-08-06T21:10:34.048Z",
-  "diffstat_sha256": "sha256:c9dbf3c91ecf95d2fbe886596584bf74a68f91164a82583890aa92af8bb64f34",
-  "last_verified_at": "2026-08-07T10:01:06.835Z",
+  "diffstat_sha256": "sha256:f2157fd6c1711251ff469b4604cdcec6e9a0c58ac519a327bf6c66e40bdb023c",
+  "last_verified_at": "2026-08-07T10:13:08.221Z",
   "last_verified_diffstat_sha256": "sha256:c9dbf3c91ecf95d2fbe886596584bf74a68f91164a82583890aa92af8bb64f34",
   "pr_number": 4789,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4789",
-  "pre_merge_closure": {
-    "basis_commit": "212aeeda9b95e0be34e68df60630553e17c5fcd8",
-    "branch": "task/202608062021-V2EESE/project-semantic-only-provider-prompts-and-rejec",
-    "pr_number": 4789,
-    "recorded_at": "2026-08-07T10:03:15.748Z",
-    "state": "closed_before_merge"
-  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608062021-V2EESE",
   "updated_at": "2026-08-06T21:11:14.161Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }

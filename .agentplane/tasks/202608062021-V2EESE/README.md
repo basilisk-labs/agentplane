@@ -2,10 +2,10 @@
 id: "202608062021-V2EESE"
 title: "Project semantic-only provider prompts and reject process choreography"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -32,11 +32,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-07T10:01:06.835Z"
-  updated_by: "TESTER"
-  note: "Current implementation head has frozen command-level verification for semantic security projection and choreography exclusion."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-07T10:13:08.221Z"
+  updated_by: "REVIEWER"
+  note: "Hosted verify-unit exposed three semantic-policy projection regressions in minimal and residual-state fixtures."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -85,9 +85,7 @@ execution_route:
   requested_mode: "auto"
   schema_version: 1
   selected_mode: "branch_pr"
-commit:
-  hash: "212aeeda9b95e0be34e68df60630553e17c5fcd8"
-  message: "🧪 V2EESE quality: record semantic security pass"
+commit: null
 comments:
   -
     author: "CODER"
@@ -214,8 +212,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-07T10:13:08.221Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "Hosted verify-unit exposed three semantic-policy projection regressions in minimal and residual-state fixtures."
 doc_version: 3
-doc_updated_at: "2026-08-07T10:03:15.709Z"
+doc_updated_at: "2026-08-07T10:13:10.020Z"
 doc_updated_by: "CODER"
 description: "Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt."
 sections:
@@ -913,6 +917,41 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608062021-V2EESE
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T10:13:08.221Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: Hosted verify-unit exposed three semantic-policy projection regressions in minimal and residual-state fixtures.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T10:03:15.709Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+    Details:
+
+    Command: bun run test:fast
+    Result: fail
+    Evidence: hosted Core CI run 31168537746 job 92834915138; 3 failed and 3871 passed; failures in residual Git fingerprint, Hermes supervise, and foreign worktree repair.
+    Scope: full fast unit and integration suite on PR #4789 head 95a76823b2d6679b2893cdd4802fa2dbb8774d76
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+    - old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1644,6 +1683,41 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608062021-V2EESE
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T10:13:08.221Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: Hosted verify-unit exposed three semantic-policy projection regressions in minimal and residual-state fixtures.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T10:03:15.709Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+Details:
+
+Command: bun run test:fast
+Result: fail
+Evidence: hosted Core CI run 31168537746 job 92834915138; 3 failed and 3871 passed; failures in residual Git fingerprint, Hermes supervise, and foreign worktree repair.
+Scope: full fast unit and integration suite on PR #4789 head 95a76823b2d6679b2893cdd4802fa2dbb8774d76
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+- old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
