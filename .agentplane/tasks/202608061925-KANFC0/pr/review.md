@@ -6,7 +6,7 @@ Created: 2026-08-06T19:28:55.153Z
 
 - Task: `202608061925-KANFC0`
 - Title: Preserve exact Windows task README file identities
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608061925-KANFC0/preserve-exact-windows-task-readme-file-identiti`
 - Canonical task record: `.agentplane/tasks/202608061925-KANFC0/README.md`
 
