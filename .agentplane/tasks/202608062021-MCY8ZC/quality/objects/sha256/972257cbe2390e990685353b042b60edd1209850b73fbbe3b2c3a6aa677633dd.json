@@ -1,0 +1,29 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts",
+    "bun run docs:cli:check",
+    "bun run typecheck",
+    "bun run test:critical"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-07T23:09:15.786Z",
+    "updated_by": "TESTER",
+    "note": "Final implementation head ad1088693 passes all task, policy, docs, typing, critical, parser, and cleanliness checks."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608062021-MCY8ZC/verification/20260807230915786-6b651866acfadd5b.json",
+      "sha256": "sha256:4ecc7ed552abe53ec8465bf1f01436e5da5b746a118f916ee56881fbcbc768f8"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
