@@ -13,7 +13,7 @@ Created: 2026-08-06T19:28:55.153Z
 ## Verification
 
 - State: ok
-- Note: Exact NTFS identity handling and every local release gate now pass on the current main baseline; hosted Windows remains the pre-integration PR gate.
+- Note: Exact NTFS identity handling and all local release gates pass on current main; hosted Windows is the remaining PR gate.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

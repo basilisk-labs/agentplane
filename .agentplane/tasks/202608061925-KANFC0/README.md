@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -17,7 +17,15 @@ risk_flags:
   - "security"
 blueprint_request: "code.branch_pr"
 verify:
-  - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/backends/task-backend.local.test.ts"
+  - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend.local.windows-identity.test.ts"
+  - "bun run test:platform-critical"
+  - "bun run hotspots:check"
+  - "bun run typecheck"
+  - "bun run test:critical"
+  - "bun run format:check"
+  - "bun run lint"
+  - "bun run knip:check"
+  - "bun run bench:compatibility:check"
 plan_approval:
   state: "approved"
   updated_at: "2026-08-06T19:25:23.776Z"
@@ -25,9 +33,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T02:16:20.516Z"
+  updated_at: "2026-08-07T02:59:14.407Z"
   updated_by: "TESTER"
-  note: "Exact NTFS identity handling and every local release gate now pass on the current main baseline; hosted Windows remains the pre-integration PR gate."
+  note: "Exact NTFS identity handling and all local release gates pass on current main; hosted Windows is the remaining PR gate."
   attempts: 0
 quality_review:
   state: "pass"
@@ -146,8 +154,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-07T02:59:14.407Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Exact NTFS identity handling and all local release gates pass on current main; hosted Windows is the remaining PR gate."
 doc_version: 3
-doc_updated_at: "2026-08-07T02:18:07.970Z"
+doc_updated_at: "2026-08-07T02:59:15.607Z"
 doc_updated_by: "CODER"
 description: "Fix local task scans so NTFS file IDs above Number.MAX_SAFE_INTEGER remain exact across pre-scan and stable-read identity checks, preventing false unreadable_readme failures in verify and finish."
 sections:
@@ -160,10 +174,10 @@ sections:
     - Out of scope: unrelated refactors not required for "Preserve exact Windows task README file identities".
   Plan: "1. Reproduce the precision boundary with a synthetic NTFS-style file identity above 2^53 and trace the local task scan into the stable no-follow reader. 2. Make the pre-scan use bigint filesystem metadata end-to-end, converting only safe cache fields such as README size and mtime to numbers. 3. Add focused regression coverage for exact high file IDs plus normal local task scans. 4. Run local backend, critical CLI, type, formatting, and Windows hosted gates. 5. Integrate before the 0.7.5 release task and record the external bug report as provenance."
   Verify Steps: |-
-    1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/backends/task-backend.local.test.ts`. Expected: a synthetic NTFS-style file identity above `Number.MAX_SAFE_INTEGER` remains byte-exact through the scan identity helper and ordinary local task scans still pass.
-    2. Run `bun run typecheck` and `bun run test:critical`. Expected: no type, local backend, verify, finish, or lifecycle regression.
-    3. Confirm the implementation obtains task README metadata with `lstat(..., { bigint: true })` before passing the identity to stable protected reads. Expected: no number-to-bigint conversion occurs for `dev` or `ino`.
-    4. Confirm Windows hosted CI passes before integration. Expected: required `PR verification` is green on the exact PR head.
+    1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend.local.windows-identity.test.ts`. Expected: normal local scans and a synthetic NTFS identity above Number.MAX_SAFE_INTEGER both pass.
+    2. Run `bun run test:platform-critical` and `bun run hotspots:check`. Expected: the Windows regression is part of the mandatory platform suite and no oversized-test baseline debt is added.
+    3. Run `bun run typecheck`, `bun run test:critical`, `bun run format:check`, `bun run lint`, `bun run knip:check`, and `bun run bench:compatibility:check`. Expected: no type, lifecycle, formatting, lint, dead-code, or CLI topology regression.
+    4. Confirm Windows hosted CI passes on the exact PR head before integration. Expected: the `test-windows` job executes the registered regression and the required PR verification is green.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-08-06T19:36:56.533Z — VERIFY — ok
@@ -361,6 +375,81 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-07T02:59:14.407Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Exact NTFS identity handling and all local release gates pass on current main; hosted Windows is the remaining PR gate.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T02:59:11.820Z, excerpt_hash=sha256:0251bf9a765e990c8aa29755120253392b96cedbacaea48b97983e55cf0a0560
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend.local.windows-identity.test.ts
+    Result: pass
+    Evidence: 2 files passed, 32 tests passed
+    Scope: ordinary backend behavior and exact NTFS-style README identity
+
+    Command: bun run test:platform-critical
+    Result: pass
+    Evidence: 7 files passed, 97 tests passed; Windows identity regression is registered in the suite
+    Scope: mandatory cross-platform regression surface
+
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: original local backend test reduced to 980 lines and oversized baseline remains 10 entries / 11363 lines
+    Scope: maintainability and no new oversized-test debt
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: repository TypeScript build completed with exit code 0
+    Scope: bigint filesystem metadata contracts
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical CLI chunks passed
+    Scope: lifecycle, trust-boundary, and efficiency critical paths
+
+    Command: bun run format:check
+    Result: pass
+    Evidence: all matched files use Prettier code style
+    Scope: repository formatting
+
+    Command: bun run lint
+    Result: pass
+    Evidence: core and website ESLint completed with exit code 0
+    Scope: complete repository lint surface
+
+    Command: bun run knip:check
+    Result: pass
+    Evidence: baseline 21/21 and agentplane CLI 0/0
+    Scope: unused-code baseline
+
+    Command: bun run bench:compatibility:check
+    Result: pass
+    Evidence: approved cumulative contract 260 commands / 180 args / 836 options
+    Scope: CLI topology compatibility
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061925-KANFC0-preserve-exact-windows-task-readme-file-identiti/.agentplane/tasks/202608061925-KANFC0/blueprint/resolved-snapshot.json
+    - old_digest: addd84cbd305a906371cd8cbf627e52cc1a6a49f14daa3cf478383c3d09bd0e2
+    - current_digest: addd84cbd305a906371cd8cbf627e52cc1a6a49f14daa3cf478383c3d09bd0e2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061925-KANFC0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -403,10 +492,10 @@ Fix local task scans so NTFS file IDs above Number.MAX_SAFE_INTEGER remain exact
 
 ## Verify Steps
 
-1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/backends/task-backend.local.test.ts`. Expected: a synthetic NTFS-style file identity above `Number.MAX_SAFE_INTEGER` remains byte-exact through the scan identity helper and ordinary local task scans still pass.
-2. Run `bun run typecheck` and `bun run test:critical`. Expected: no type, local backend, verify, finish, or lifecycle regression.
-3. Confirm the implementation obtains task README metadata with `lstat(..., { bigint: true })` before passing the identity to stable protected reads. Expected: no number-to-bigint conversion occurs for `dev` or `ino`.
-4. Confirm Windows hosted CI passes before integration. Expected: required `PR verification` is green on the exact PR head.
+1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend.local.windows-identity.test.ts`. Expected: normal local scans and a synthetic NTFS identity above Number.MAX_SAFE_INTEGER both pass.
+2. Run `bun run test:platform-critical` and `bun run hotspots:check`. Expected: the Windows regression is part of the mandatory platform suite and no oversized-test baseline debt is added.
+3. Run `bun run typecheck`, `bun run test:critical`, `bun run format:check`, `bun run lint`, `bun run knip:check`, and `bun run bench:compatibility:check`. Expected: no type, lifecycle, formatting, lint, dead-code, or CLI topology regression.
+4. Confirm Windows hosted CI passes on the exact PR head before integration. Expected: the `test-windows` job executes the registered regression and the required PR verification is green.
 
 ## Verification
 
@@ -586,6 +675,81 @@ Command: bun run bench:compatibility:check
 Result: pass
 Evidence: approved 260 command compatibility surface passed
 Scope: cumulative 0.7 compatibility contract
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061925-KANFC0-preserve-exact-windows-task-readme-file-identiti/.agentplane/tasks/202608061925-KANFC0/blueprint/resolved-snapshot.json
+- old_digest: addd84cbd305a906371cd8cbf627e52cc1a6a49f14daa3cf478383c3d09bd0e2
+- current_digest: addd84cbd305a906371cd8cbf627e52cc1a6a49f14daa3cf478383c3d09bd0e2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061925-KANFC0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T02:59:14.407Z — VERIFY — ok
+
+By: TESTER
+
+Note: Exact NTFS identity handling and all local release gates pass on current main; hosted Windows is the remaining PR gate.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T02:59:11.820Z, excerpt_hash=sha256:0251bf9a765e990c8aa29755120253392b96cedbacaea48b97983e55cf0a0560
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend.local.windows-identity.test.ts
+Result: pass
+Evidence: 2 files passed, 32 tests passed
+Scope: ordinary backend behavior and exact NTFS-style README identity
+
+Command: bun run test:platform-critical
+Result: pass
+Evidence: 7 files passed, 97 tests passed; Windows identity regression is registered in the suite
+Scope: mandatory cross-platform regression surface
+
+Command: bun run hotspots:check
+Result: pass
+Evidence: original local backend test reduced to 980 lines and oversized baseline remains 10 entries / 11363 lines
+Scope: maintainability and no new oversized-test debt
+
+Command: bun run typecheck
+Result: pass
+Evidence: repository TypeScript build completed with exit code 0
+Scope: bigint filesystem metadata contracts
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical CLI chunks passed
+Scope: lifecycle, trust-boundary, and efficiency critical paths
+
+Command: bun run format:check
+Result: pass
+Evidence: all matched files use Prettier code style
+Scope: repository formatting
+
+Command: bun run lint
+Result: pass
+Evidence: core and website ESLint completed with exit code 0
+Scope: complete repository lint surface
+
+Command: bun run knip:check
+Result: pass
+Evidence: baseline 21/21 and agentplane CLI 0/0
+Scope: unused-code baseline
+
+Command: bun run bench:compatibility:check
+Result: pass
+Evidence: approved cumulative contract 260 commands / 180 args / 836 options
+Scope: CLI topology compatibility
 
 BlueprintSnapshotRef:
 - state: current
