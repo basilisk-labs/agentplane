@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -76,8 +76,8 @@ token_usage:
   unavailable_reason: null
   updated_at: "2026-08-06T23:47:46.418Z"
 commit:
-  hash: "66d9c65fad5062fbf5a4b35f0fa05ceb6ddb3cfd"
-  message: "🔀 G2ZA4T integrate: refresh init onto qualified UX"
+  hash: "497550961fda7af9c53d10ffb3267e578ca13a18"
+  message: "✨ G2ZA4T ux: derive init defaults from repository facts"
 comments:
   -
     author: "CODER"
@@ -94,6 +94,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation refreshed: progressive init now sits on the independently qualified user-first intake and cross-process task-creation base."
+  -
+    author: "CODER"
+    body: "Implementation rework committed: quick init now derives workflow and agent-surface defaults from local Git, remote, CI, and policy-surface facts while preserving non-interactive behavior."
 events:
   -
     type: "status"
@@ -148,8 +151,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Progressive init is verified on the qualified user-first intake base with complete deterministic evidence and a clean worktree."
+  -
+    type: "status"
+    at: "2026-08-07T00:09:24.039Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework committed: quick init now derives workflow and agent-surface defaults from local Git, remote, CI, and policy-surface facts while preserving non-interactive behavior."
 doc_version: 3
-doc_updated_at: "2026-08-07T00:04:58.445Z"
+doc_updated_at: "2026-08-07T00:09:24.084Z"
 doc_updated_by: "CODER"
 description: "Replace the long upfront questionnaire with a short user-first init path that detects repository defaults, asks only decisions that materially change policy or workflow, provides an advanced configuration path, and prints a first-task next step."
 sections:
