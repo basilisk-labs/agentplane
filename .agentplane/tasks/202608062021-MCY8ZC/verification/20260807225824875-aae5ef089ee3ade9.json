@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts\nResult: pass; 3 test files and 18 tests passed.\nEvidence: Vitest exited 0 on final pre-merge head b652c4cc29e6cc371d4ebb679b42c5d41eb37142, including exact worktree source-manifest projection assertions.\nScope: external supervisor CLI, packet, route, and worktree binding.\n\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/cli/command-guide.test.ts\nResult: pass; 3 files and 38 tests passed.\nEvidence: packet compatibility and prompt-surface contracts exited 0.\nScope: exact protocol fields and all agent-facing guidance.\n\nCommand: bun run docs:bootstrap:check && bun run docs:cli:check\nResult: pass.\nEvidence: generated bootstrap and CLI docs are current.\nScope: generated documentation.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass.\nEvidence: policy routing OK after append-only incident promotion.\nScope: policy parity, routing, and budgets.\n\nCommand: bun run typecheck\nResult: pass.\nEvidence: TypeScript build exited 0 on b652c4cc29e6cc371d4ebb679b42c5d41eb37142.\nScope: repository TypeScript contracts.\n\nCommand: bun run test:critical\nResult: pass; all 12 chunks and 84 tests passed.\nEvidence: critical-cli exited 0 on b652c4cc29e6cc371d4ebb679b42c5d41eb37142.\nScope: compatibility and trust-boundary ratchets.\n\nCommand: git status --short --untracked-files=all\nResult: pass; stdout was empty.\nEvidence: authoritative worktree had no tracked modifications or untracked files at b652c4cc29e6cc371d4ebb679b42c5d41eb37142 before this receipt.\nScope: final repository cleanliness and unintended-drift check.",
+  "digest": "sha256:aae5ef089ee3ade9c9e09c6a154e429ac912567d3ef816cd1536d946e83cbc26",
+  "implementation_sha": "b652c4cc29e6cc371d4ebb679b42c5d41eb37142",
+  "kind": "task_verification_record",
+  "note": "Final pre-merge closure head b652c4cc2 passes all task, policy, docs, typing, critical, and cleanliness checks.",
+  "recorded_at": "2026-08-07T22:58:24.875Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts\n- bun run docs:cli:check\n- bun run typecheck\n- bun run test:critical",
+  "scope_digest": "sha256:e7b785b4af2458a5bf3ddea4bbab3158dc569e3b026d3f1b1fc95a2df69b1c31",
+  "task_id": "202608062021-MCY8ZC",
+  "verification_command": "agentplane verify 202608062021-MCY8ZC --ok --by TESTER",
+  "verifier": "TESTER"
+}

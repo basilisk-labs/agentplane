@@ -16,7 +16,7 @@ Return an exact result_path and structured resume_argv from task advance, expose
 ## Verification
 
 - State: ok
-- Note: All evaluator rework and declared checks pass on clean implementation SHA ada518fb9.
+- Note: Final pre-merge closure head b652c4cc2 passes all task, policy, docs, typing, critical, and cleanliness checks.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,6 +27,7 @@ Return an exact result_path and structured resume_argv from task advance, expose
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |   1 +
  .agentplane/policy/workflow.branch_pr.md           |   3 +-
  .agentplane/policy/workflow.direct.md              |   3 +-
  README.md                                          |   5 +-
@@ -36,6 +37,7 @@ Return an exact result_path and structured resume_argv from task advance, expose
  docs/workflow-guides/hermes-kanban.mdx             |   3 +-
  packages/agentplane/assets/AGENTS.md               |   6 +-
  .../assets/codex-plugin/skills/agentplane/SKILL.md |   5 +-
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  .../agentplane/assets/policy/workflow.branch_pr.md |   3 +-
  .../agentplane/assets/policy/workflow.direct.md    |   3 +-
  .../agentplane/src/agents/agents-template.test.ts  |  18 ++
@@ -59,7 +61,7 @@ Return an exact result_path and structured resume_argv from task advance, expose
  .../src/commands/task/agent-action-packet.ts       |  70 +++++-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
  .../agentplane/src/commands/task/task.command.ts   |  62 ++----
- 32 files changed, 588 insertions(+), 162 deletions(-)
+ 34 files changed, 590 insertions(+), 162 deletions(-)
 ```
 
 </details>
