@@ -4,7 +4,7 @@ title: "Project semantic-only provider prompts and reject process choreography"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -32,9 +32,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T04:43:34.465Z"
+  updated_at: "2026-08-07T04:51:55.634Z"
   updated_by: "TESTER"
-  note: "Evaluator rework is resolved: mixed security fragments are preserved and exact provider input rejects every supervisor command family unless explicit repair authority is present."
+  note: "Command-family hardening passes exact compiled-provider tests and the complete critical contract."
   attempts: 0
 quality_review:
   state: "rework"
@@ -112,8 +112,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Evaluator rework is resolved: mixed security fragments are preserved and exact provider input rejects every supervisor command family unless explicit repair authority is present."
+  -
+    type: "verify"
+    at: "2026-08-07T04:51:55.634Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Command-family hardening passes exact compiled-provider tests and the complete critical contract."
 doc_version: 3
-doc_updated_at: "2026-08-07T04:43:35.810Z"
+doc_updated_at: "2026-08-07T04:51:56.940Z"
 doc_updated_by: "CODER"
 description: "Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt."
 sections:
@@ -251,6 +257,66 @@ sections:
     Command: node .agentplane/policy/check-routing.mjs
     Result: pass
     Evidence: policy routing OK.
+    Scope: policy gateway graph.
+
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+    - old_digest: 1c1d94c37ff9878ab6fb6e28b8b4c63748c940cecc376d0b37495b7d1dd57fd1
+    - current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608062021-V2EESE
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T04:51:55.634Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Command-family hardening passes exact compiled-provider tests and the complete critical contract.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T04:43:35.810Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts
+    Result: pass
+    Evidence: 3 files, 73 tests passed.
+    Scope: exact compiled provider rejection, Git/release families, declared phase-tool identity.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: 12 of 12 critical-cli chunks passed at the final command-family implementation.
+    Scope: critical CLI, efficiency, replay and trust boundaries.
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: ESLint exited 0.
+    Scope: packages and scripts.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build exited 0.
+    Scope: workspace type safety.
+
+    Command: bun run format:check
+    Result: pass
+    Evidence: all matched files use Prettier code style.
+    Scope: repository formatting.
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK on the semantic-projection branch.
     Scope: policy gateway graph.
 
     BlueprintSnapshotRef:
@@ -430,6 +496,66 @@ Scope: repository formatting.
 Command: node .agentplane/policy/check-routing.mjs
 Result: pass
 Evidence: policy routing OK.
+Scope: policy gateway graph.
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+- old_digest: 1c1d94c37ff9878ab6fb6e28b8b4c63748c940cecc376d0b37495b7d1dd57fd1
+- current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608062021-V2EESE
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T04:51:55.634Z — VERIFY — ok
+
+By: TESTER
+
+Note: Command-family hardening passes exact compiled-provider tests and the complete critical contract.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T04:43:35.810Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts
+Result: pass
+Evidence: 3 files, 73 tests passed.
+Scope: exact compiled provider rejection, Git/release families, declared phase-tool identity.
+
+Command: bun run test:critical
+Result: pass
+Evidence: 12 of 12 critical-cli chunks passed at the final command-family implementation.
+Scope: critical CLI, efficiency, replay and trust boundaries.
+
+Command: bun run lint:core
+Result: pass
+Evidence: ESLint exited 0.
+Scope: packages and scripts.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build exited 0.
+Scope: workspace type safety.
+
+Command: bun run format:check
+Result: pass
+Evidence: all matched files use Prettier code style.
+Scope: repository formatting.
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK on the semantic-projection branch.
 Scope: policy gateway graph.
 
 BlueprintSnapshotRef:
