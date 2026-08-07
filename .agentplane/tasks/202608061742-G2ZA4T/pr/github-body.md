@@ -19,8 +19,8 @@ Replace the long upfront questionnaire with a short user-first init path that de
 - Note:
 
 ```text
-Progressive init is verified with concrete local evidence across behavior, onboarding, generated
-help, types, and routing.
+Progressive init is verified on the qualified user-first intake base with complete deterministic
+evidence and a clean worktree.
 ```
 - Canonical workflow state lives in the task README.
 

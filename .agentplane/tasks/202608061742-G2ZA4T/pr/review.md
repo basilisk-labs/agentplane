@@ -13,7 +13,7 @@ Created: 2026-08-06T23:23:35.080Z
 ## Verification
 
 - State: ok
-- Note: Progressive init is verified with concrete local evidence across behavior, onboarding, generated help, types, and routing.
+- Note: Progressive init is verified on the qualified user-first intake base with complete deterministic evidence and a clean worktree.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
