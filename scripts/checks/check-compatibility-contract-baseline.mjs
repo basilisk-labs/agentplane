@@ -340,6 +340,7 @@ function validateReviewedCandidate({
     "202608022324-9VCYWG",
     "202608021535-CNQKXP",
     "202608061646-WCARQG",
+    "202608061646-30TKV4",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -371,6 +372,7 @@ function validateReviewedCandidate({
     "202608022324-9VCYWG",
     "202608021535-CNQKXP",
     "202608061646-WCARQG",
+    "202608061646-30TKV4",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -502,7 +504,7 @@ function validateReviewedCandidate({
         section: "package_manifests",
         from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
         to_sha256: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
-        surface_sha256: "f1f7ba365b8912771323910df3e34843708feeccc291944d50a1ab2f7874ca01",
+        surface_sha256: "cd30e3bf54b3c211f2d174939e1b8f402075fa2efc745598d98386082da1fe3a",
         allowed_json_paths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -1370,6 +1372,33 @@ function validateReviewedCandidate({
       ],
     },
     {
+      id: ["task", "create"],
+      visibility: "user",
+      group: "Task",
+      args: [{ name: "outcome", required: true, variadic: false, valueHint: "<outcome>" }],
+      options: [
+        { name: "description", kind: "string", valueHint: "<text>" },
+        { name: "owner", kind: "string", valueHint: "<id>", default: "CODER" },
+        {
+          name: "priority",
+          kind: "string",
+          valueHint: "<low|normal|med|high>",
+          default: "med",
+          choices: ["low", "normal", "med", "high"],
+        },
+        {
+          name: "route",
+          kind: "string",
+          valueHint: "<auto|direct|branch_pr>",
+          default: "auto",
+          choices: ["auto", "direct", "branch_pr"],
+        },
+        { name: "verify", kind: "string", valueHint: "<command>", repeatable: true },
+        { name: "allow-duplicate", kind: "boolean", valueHint: null, default: false },
+        { name: "json", kind: "boolean", valueHint: null, default: false },
+      ],
+    },
+    {
       id: ["task", "run", "reconcile"],
       visibility: "internal",
       group: "Task",
@@ -1661,6 +1690,51 @@ function validateReviewedCandidate({
       default: false,
     },
     {
+      command: "task create",
+      name: "allow-duplicate",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    { command: "task create", name: "description", kind: "string", valueHint: "<text>" },
+    {
+      command: "task create",
+      name: "json",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "task create",
+      name: "owner",
+      kind: "string",
+      valueHint: "<id>",
+      default: "CODER",
+    },
+    {
+      command: "task create",
+      name: "priority",
+      kind: "string",
+      valueHint: "<low|normal|med|high>",
+      default: "med",
+      choices: ["low", "normal", "med", "high"],
+    },
+    {
+      command: "task create",
+      name: "route",
+      kind: "string",
+      valueHint: "<auto|direct|branch_pr>",
+      default: "auto",
+      choices: ["auto", "direct", "branch_pr"],
+    },
+    {
+      command: "task create",
+      name: "verify",
+      kind: "string",
+      valueHint: "<command>",
+      repeatable: true,
+    },
+    {
       command: "task new",
       name: "route",
       kind: "string",
@@ -1742,6 +1816,11 @@ function validateReviewedCandidate({
       kind: "command",
       command: "task authority grant",
       source_task: "202607221849-NWVCAG",
+    },
+    {
+      kind: "command",
+      command: "task create",
+      source_task: "202608061646-30TKV4",
     },
     {
       kind: "command",
@@ -1991,6 +2070,48 @@ function validateReviewedCandidate({
     },
     {
       kind: "option",
+      command: "task create",
+      name: "allow-duplicate",
+      source_task: "202608061646-30TKV4",
+    },
+    {
+      kind: "option",
+      command: "task create",
+      name: "description",
+      source_task: "202608061646-30TKV4",
+    },
+    {
+      kind: "option",
+      command: "task create",
+      name: "json",
+      source_task: "202608061646-30TKV4",
+    },
+    {
+      kind: "option",
+      command: "task create",
+      name: "owner",
+      source_task: "202608061646-30TKV4",
+    },
+    {
+      kind: "option",
+      command: "task create",
+      name: "priority",
+      source_task: "202608061646-30TKV4",
+    },
+    {
+      kind: "option",
+      command: "task create",
+      name: "route",
+      source_task: "202608061646-30TKV4",
+    },
+    {
+      kind: "option",
+      command: "task create",
+      name: "verify",
+      source_task: "202608061646-30TKV4",
+    },
+    {
+      kind: "option",
       command: "task new",
       name: "route",
       source_task: "202608061646-WCARQG",
@@ -2036,6 +2157,7 @@ function validateReviewedCandidate({
   const expectedVisibilityMutations = [
     ["task begin", "user", "advanced", "title", "<title>"],
     ["task complete", "user", "advanced", "task-id", "<task-id>"],
+    ["task new", "user", "advanced", undefined, undefined],
     ["task next-action", "user", "advanced", "task-id", "<task-id>"],
     ["task run", "internal", "user", "task-id", "<task-id>"],
   ].map(([identity, beforeVisibility, afterVisibility, argName, valueHint]) => ({
@@ -2044,13 +2166,19 @@ function validateReviewedCandidate({
       id: identity.split(" "),
       visibility: beforeVisibility,
       group: "Task",
-      args: [{ name: argName, required: true, variadic: false, valueHint }],
+      args:
+        argName === undefined
+          ? []
+          : [{ name: argName, required: true, variadic: false, valueHint }],
     },
     after: {
       id: identity.split(" "),
       visibility: afterVisibility,
       group: "Task",
-      args: [{ name: argName, required: true, variadic: false, valueHint }],
+      args:
+        argName === undefined
+          ? []
+          : [{ name: argName, required: true, variadic: false, valueHint }],
     },
   }));
   assert(
@@ -2098,6 +2226,7 @@ function validateReviewedCandidate({
         "repair adopt-legacy-conflict",
         "task advance",
         "task authority grant",
+        "task create",
         "task run reconcile",
         "task run resolve-effect",
         "task run resume-effect",

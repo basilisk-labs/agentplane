@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608061646-30TKV4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T00:37:16.169Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "4d7ebde5495ce91ebab19921192cb5327e8738b1",
+  "blueprint_digest": "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62",
+  "findings": [
+    "Natural-language intent inference depends on ordered substring matching, so ambiguous or negated wording can conservatively select a higher-risk task category and route."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/f5dc855d4bc3434ed0776f4474b69836de790d36d9c9a0652b7dd663135991ee.patch"
+  ],
+  "missing_tests": [
+    "Intent-inference cases containing negation or overlapping categories, such as documentation about releases or analysis that also requests a code change."
+  ],
+  "hidden_assumptions": [
+    "Conservative over-classification of ambiguous natural-language outcomes is acceptable because planning and approval remain required before execution.",
+    "The structured verification record's command, result, evidence summary, scope, and matching implementation SHA constitute sufficient deterministic evidence without separate runner-history or runtime-evidence entries."
+  ],
+  "residual_risks": []
+}

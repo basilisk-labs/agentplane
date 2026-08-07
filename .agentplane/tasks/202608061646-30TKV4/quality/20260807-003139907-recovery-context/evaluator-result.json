@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The frozen packet still contains no deterministic execution evidence for any declared verification check: verification_records, runner_history, and runtime_evidence are empty although verification is marked ok.",
+      "broken_invariant": "DoD requires every Verify Step to be executed and its result recorded; pass is unavailable without evidence covering the task's positive, negative, and concurrency-sensitive paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/2e3a84b5ab094867f57ec8d4779a803d696e24ce036c5ae5a518b34fbc313f6c.json",
+          "sha256": "sha256:2e3a84b5ab094867f57ec8d4779a803d696e24ce036c5ae5a518b34fbc313f6c",
+          "section": "verification_records, runner_history, and runtime_evidence"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks and Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Deterministic recorded results are absent for the declared focused CLI suite, including empty outcomes, invalid options, explicit route overrides, concurrent duplicate creation, persisted route consistency, dry-run preview, and task advance --agent-json compatibility.",
+    "Deterministic recorded results are absent for docs:cli:check, docs:onboarding:check, typecheck, and policy routing validation."
+  ],
+  "hidden_assumptions": [
+    "The TESTER verification note is assumed to represent successful command execution, but the frozen packet contains no command-level records or runtime evidence to prove it.",
+    "The evaluated SHA is assumed to be the exact revision on which all declared checks ran."
+  ],
+  "recovery_context": "Freeze command-level deterministic verification records for every declared Verify Step at evaluated SHA 4d7ebde5495ce91ebab19921192cb5327e8738b1, including outputs that demonstrate the required negative and concurrency-sensitive cases, then regenerate the evaluator packet.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

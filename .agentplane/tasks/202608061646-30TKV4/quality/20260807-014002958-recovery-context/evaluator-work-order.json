@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608061646-30TKV4-e70e71ef38fc903b763632f2",
+  "prepared_at": "2026-08-07T01:40:02.958Z",
+  "task": {
+    "id": "202608061646-30TKV4",
+    "revision": 67,
+    "objective": "Add user-first task intake and execution preview\n\nAdd a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts.",
+    "acceptance_criteria": [
+      "bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
+      "bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+      "bun run docs:cli:check",
+      "bun run docs:onboarding:check",
+      "bun run typecheck",
+      "node .agentplane/policy/check-routing.mjs",
+      "bun run hotspots:check",
+      "bun run bench:compatibility:check",
+      "bun run format:check",
+      "bun run lint:core",
+      "bun run knip:check",
+      "- In scope: Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts.\n- Out of scope: unrelated refactors not required for \"Add user-first task intake and execution preview\".",
+      "1. Add a user-first natural-language task create command that infers safe defaults and preserves task new as the advanced contract. 2. Add concise human status and execution preview surfaces showing route, reasons, context, approvals, checks, and token budget where available. 3. Preserve task advance --agent-json compatibility and add explicit regression coverage. 4. Cover empty outcomes, invalid options, explicit direct/branch_pr overrides, concurrent duplicate creation, and persisted selected-route consistency. 5. Update generated CLI references and onboarding docs. Approved scope: packages/agentplane/src/commands/task/**, packages/agentplane/src/cli/**, packages/agentplane/src/runtime/task-intake/**, docs/user/**, README.md, generated CLI snapshots, and focused tests.",
+      "- bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\n- bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts\n- bun run docs:cli:check\n- bun run docs:onboarding:check\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs\n- bun run hotspots:check\n- bun run bench:compatibility:check\n- bun run format:check\n- bun run lint:core\n- bun run knip:check"
+    ]
+  },
+  "evaluated_sha": "60c5d0c9abbfc828c25bce0266916922de7309d6",
+  "diff_base_sha": "cf0300db2d5e401dc439fbcc87d2e5fc0c45c3b9",
+  "blueprint_digest": "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608061646-30TKV4/quality/20260807-014002958-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:aa2d7258a22acaa9a35409eda461e1351fd324630f9daa662145b381be0bc2dd",
+    "prompt_path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/970beb6ed40429192791d5c585d639cf322c33180f65511b45f6a8811b435b92.md",
+    "result_schema_path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608061646-30TKV4/README.md",
+      "sha256": "sha256:b33f5919285835c43e54d5c3ea8c4e561fb3c7dee3a01bcbebb56d93dbb4f66d",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/322ad7a0722bdf48f38ea53122d1375a0991c1a93fad2b2697b3b6d1c1e6decb.patch",
+      "sha256": "sha256:322ad7a0722bdf48f38ea53122d1375a0991c1a93fad2b2697b3b6d1c1e6decb",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/d3c381d381d40b9dfb1940329bb98429de003ea27a3a8768eab7b01059957c0e.json",
+      "sha256": "sha256:d3c381d381d40b9dfb1940329bb98429de003ea27a3a8768eab7b01059957c0e",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608061646-30TKV4/verification/20260807013759188-e537d78169833114.json",
+      "sha256": "sha256:36770622ee48953cd62e81344af865781277b9f7c0e9f3d95cc9f9789ca54025",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/425dc49ad99db2ca9f60810ac83290977a16fdf6a35d74fe3f0c781f5388ee6d.json",
+      "sha256": "sha256:425dc49ad99db2ca9f60810ac83290977a16fdf6a35d74fe3f0c781f5388ee6d",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
