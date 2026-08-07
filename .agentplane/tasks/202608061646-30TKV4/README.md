@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 62
+revision: 64
 origin:
   system: "manual"
 depends_on:
@@ -30,6 +30,7 @@ verify:
   - "bun run bench:compatibility:check"
   - "bun run format:check"
   - "bun run lint:core"
+  - "bun run knip:check"
 plan_approval:
   state: "approved"
   updated_at: "2026-08-06T19:56:09.823Z"
@@ -335,7 +336,7 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T01:21:27.401Z"
+doc_updated_at: "2026-08-07T01:30:59.627Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
@@ -358,6 +359,7 @@ sections:
     - bun run bench:compatibility:check
     - bun run format:check
     - bun run lint:core
+    - bun run knip:check
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-08-06T19:53:17.361Z — VERIFY — ok
@@ -1547,6 +1549,7 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 - bun run bench:compatibility:check
 - bun run format:check
 - bun run lint:core
+- bun run knip:check
 
 ## Verification
 
