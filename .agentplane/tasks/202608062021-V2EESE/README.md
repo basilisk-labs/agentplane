@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -33,9 +33,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T09:29:06.801Z"
+  updated_at: "2026-08-07T09:41:29.426Z"
   updated_by: "TESTER"
-  note: "Evaluator timeout failures are classified and the configured runner wall-clock policy now governs the provider episode."
+  note: "Canonical gateway allowlisting removes lifecycle and persistence prose while preserving semantic safety constraints."
   attempts: 0
 quality_review:
   state: "rework"
@@ -179,8 +179,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Evaluator timeout failures are classified and the configured runner wall-clock policy now governs the provider episode."
+  -
+    type: "verify"
+    at: "2026-08-07T09:41:29.426Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Canonical gateway allowlisting removes lifecycle and persistence prose while preserving semantic safety constraints."
 doc_version: 3
-doc_updated_at: "2026-08-07T09:31:17.793Z"
+doc_updated_at: "2026-08-07T09:41:30.926Z"
 doc_updated_by: "CODER"
 description: "Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt."
 sections:
@@ -689,6 +695,66 @@ sections:
     Result: pass
     Evidence: policy routing passed on the semantic projection head; no policy file changed in the timeout transport fix.
     Scope: generated policy routing.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+    - old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608062021-V2EESE
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T09:41:29.426Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Canonical gateway allowlisting removes lifecycle and persistence prose while preserving semantic safety constraints.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T09:31:17.793Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts
+    Result: pass
+    Evidence: 3 files and 80 tests passed; canonical gateway fragment allowlist and exact PLANNER, EXECUTOR, and EVALUATOR prompts reject lifecycle and persistence prose.
+    Scope: declared semantic prompt qualification.
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: complete repository contract passed after allowlist projection and bootstrap minimization.
+    Scope: hosted verify-contract parity.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical CLI chunks passed.
+    Scope: critical trust-boundary and efficiency contracts.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build completed with exit 0.
+    Scope: repository type safety.
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK.
+    Scope: generated policy routing.
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
+    Result: pass
+    Evidence: bootstrap contract tests passed within the 5-file 96-test targeted run.
+    Scope: role-specific cognition, typed-result, tool, and completion-criteria projection.
 
     BlueprintSnapshotRef:
     - state: current
@@ -1245,6 +1311,66 @@ Command: node .agentplane/policy/check-routing.mjs
 Result: pass
 Evidence: policy routing passed on the semantic projection head; no policy file changed in the timeout transport fix.
 Scope: generated policy routing.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+- old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608062021-V2EESE
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T09:41:29.426Z — VERIFY — ok
+
+By: TESTER
+
+Note: Canonical gateway allowlisting removes lifecycle and persistence prose while preserving semantic safety constraints.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T09:31:17.793Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts
+Result: pass
+Evidence: 3 files and 80 tests passed; canonical gateway fragment allowlist and exact PLANNER, EXECUTOR, and EVALUATOR prompts reject lifecycle and persistence prose.
+Scope: declared semantic prompt qualification.
+
+Command: bun run ci:contract
+Result: pass
+Evidence: complete repository contract passed after allowlist projection and bootstrap minimization.
+Scope: hosted verify-contract parity.
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical CLI chunks passed.
+Scope: critical trust-boundary and efficiency contracts.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build completed with exit 0.
+Scope: repository type safety.
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK.
+Scope: generated policy routing.
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
+Result: pass
+Evidence: bootstrap contract tests passed within the 5-file 96-test targeted run.
+Scope: role-specific cognition, typed-result, tool, and completion-criteria projection.
 
 BlueprintSnapshotRef:
 - state: current

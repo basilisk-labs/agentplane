@@ -19,8 +19,8 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
 - Note:
 
 ```text
-Evaluator timeout failures are classified and the configured runner wall-clock policy now governs
-the provider episode.
+Canonical gateway allowlisting removes lifecycle and persistence prose while preserving semantic
+safety constraints.
 ```
 - Canonical workflow state lives in the task README.
 
