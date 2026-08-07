@@ -1,6 +1,12 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
 import type { AgentWorkOrderRole } from "@agentplaneorg/core/schemas";
 
-import type { PromptMarkdownFragment } from "../../runtime/prompt-fragments/index.js";
+import {
+  parsePromptMarkdownFragments,
+  type PromptMarkdownFragment,
+} from "../../runtime/prompt-fragments/index.js";
 import type { RunnerPromptBlock, RunnerTaskContext } from "../types.js";
 
 type ProcessChoreographyMatch = {
@@ -174,6 +180,57 @@ function projectSemanticFragmentText(value: string): string {
     .replaceAll(/```[^\n]*\n\s*```/gu, "")
     .trim();
   return projected;
+}
+
+function isSecurityPolicyModule(modulePath: string, fragments: PromptMarkdownFragment[]): boolean {
+  return (
+    path.posix.basename(modulePath.replaceAll("\\", "/")) === "security.must.md" ||
+    fragments.some((fragment) => fragment.id.startsWith("policy.security."))
+  );
+}
+
+export async function collectSemanticPolicyModulePrompts(opts: {
+  git_root: string;
+  policy_modules: readonly string[];
+}): Promise<RunnerPromptBlock[]> {
+  const gitRoot = path.resolve(opts.git_root);
+  const blocks: RunnerPromptBlock[] = [];
+  for (const [index, modulePath] of [...new Set(opts.policy_modules)].toSorted().entries()) {
+    const absolutePath = path.resolve(gitRoot, modulePath);
+    const relativePath = path.relative(gitRoot, absolutePath);
+    if (relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
+      throw new Error(`Semantic policy module escapes repository root: ${modulePath}`);
+    }
+    const source = await readFile(absolutePath, "utf8");
+    const parsed = parsePromptMarkdownFragments(source, {
+      source_ref: modulePath,
+      fallback_id: `policy.security.module.${index + 1}`,
+      fallback_slot: "hard_constraint",
+    });
+    if (!isSecurityPolicyModule(modulePath, parsed.fragments)) continue;
+    const constraints = parsed.fragments
+      .filter((fragment) => fragment.slot === "hard_constraint")
+      .map((fragment) => projectSemanticFragmentText(fragment.text))
+      .filter(Boolean)
+      .join("\n\n");
+    if (!constraints) continue;
+    blocks.push({
+      id: `semantic.security_policy.${index + 1}`,
+      role: "policy",
+      title: "Semantic Security Policy Projection",
+      source: `${modulePath}#phase=semantic_episode`,
+      priority: 205,
+      content: normalizeText(
+        [
+          "# Semantic security constraints",
+          "",
+          "These constraints are selected by the resolved blueprint and apply to this episode.",
+          constraints,
+        ].join("\n"),
+      ),
+    });
+  }
+  return blocks;
 }
 
 function isSemanticGatewayFragment(fragment: PromptMarkdownFragment): boolean {

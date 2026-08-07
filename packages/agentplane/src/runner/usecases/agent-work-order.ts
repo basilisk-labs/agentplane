@@ -22,6 +22,7 @@ import {
 import { CliError } from "../../shared/errors.js";
 import { measurePreparationNode } from "../../shared/preparation-trace.js";
 import {
+  collectSemanticPolicyModulePrompts,
   collectRunnerBasePrompts,
   projectRunnerPromptsForSemanticEpisode,
   RunnerPromptModuleCompilationError,
@@ -316,10 +317,16 @@ export async function prepareAgentWorkOrder(opts: {
       source_manifest: sourceManifest,
       knowledge_retrieval: knowledgeRetrieval,
     });
-    const semanticBasePrompts = projectRunnerPromptsForSemanticEpisode({
-      prompts: basePrompts,
-      role: canonicalWorkOrder.role,
-    });
+    const semanticBasePrompts = [
+      ...projectRunnerPromptsForSemanticEpisode({
+        prompts: basePrompts,
+        role: canonicalWorkOrder.role,
+      }),
+      ...(await collectSemanticPolicyModulePrompts({
+        git_root: executionContext.repo.git_root,
+        policy_modules: blueprint.policyModules,
+      })),
+    ].toSorted((left, right) => left.priority - right.priority || left.id.localeCompare(right.id));
     const preparation: AgentWorkOrderPreparationView = {
       schema_version: 2,
       kind: "agent_work_order_preparation",

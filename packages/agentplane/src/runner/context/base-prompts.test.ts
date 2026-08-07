@@ -10,6 +10,7 @@ import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/
 import type { RunnerTaskContext } from "../types.js";
 import {
   assertSemanticProviderPromptHasNoProcessChoreography,
+  collectSemanticPolicyModulePrompts,
   collectRunnerBasePrompts,
   compileRunnerPromptModuleGraph,
   hasExplicitProcessMechanismRepairAuthority,
@@ -130,6 +131,61 @@ describe("collectRunnerBasePrompts", () => {
       expect(serialized).not.toMatch(
         /result path|fresh packet|formal transition|verification persistence/iu,
       );
+    },
+  );
+
+  it.each(["PLANNER", "EXECUTOR", "EVALUATOR"] as const)(
+    "projects applicable security policy constraints without lifecycle prose for %s",
+    async (role) => {
+      const root = await makeTempRepo();
+      const policyRoot = path.join(root, ".agentplane", "policy");
+      await mkdir(policyRoot, { recursive: true });
+      await writeFile(
+        path.join(policyRoot, "security.must.md"),
+        [
+          '<!-- ap:fragment id="policy.security.must.hard_constraint.rules" slot="hard_constraint" mutability="append_only" -->',
+          "# Security rules",
+          "- Keep secrets, credentials, and private keys out of commits.",
+          "- Access outside-repository files only with explicit user approval.",
+          "- Use the network only when the required approval is granted.",
+          "- Change authentication, cryptography, or security-critical paths only within explicit scope.",
+          "- Report security-sensitive drift and stop before mutation.",
+          "<!-- /ap:fragment -->",
+        ].join("\n"),
+      );
+      await writeFile(
+        path.join(policyRoot, "workflow.direct.md"),
+        [
+          '<!-- ap:fragment id="policy.workflow.direct.hard_constraint.route" slot="hard_constraint" mutability="append_only" -->',
+          "Run agentplane verify, finish, and integrate after implementation.",
+          "<!-- /ap:fragment -->",
+        ].join("\n"),
+      );
+
+      const projected = await collectSemanticPolicyModulePrompts({
+        git_root: root,
+        policy_modules: [
+          ".agentplane/policy/security.must.md",
+          ".agentplane/policy/workflow.direct.md",
+        ],
+      });
+      const serialized = [
+        ...projectRunnerPromptsForSemanticEpisode({ prompts: [], role }),
+        ...projected,
+      ]
+        .map((prompt) => prompt.content)
+        .join("\n");
+
+      expect(projected).toHaveLength(1);
+      expect(serialized).toContain("secrets, credentials, and private keys");
+      expect(serialized).toContain("outside-repository files only with explicit user approval");
+      expect(serialized).toContain("network only when the required approval is granted");
+      expect(serialized).toContain("authentication, cryptography, or security-critical paths");
+      expect(serialized).toContain("security-sensitive drift and stop before mutation");
+      expect(serialized).not.toMatch(/agentplane verify|finish|integrate/iu);
+      expect(() =>
+        assertSemanticProviderPromptHasNoProcessChoreography({ prompt: serialized }),
+      ).not.toThrow();
     },
   );
 
