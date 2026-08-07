@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608062021-MCY8ZC-e87a6a69552b3ba53a12c11c",
+  "task_id": "202608062021-MCY8ZC",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the frozen observed-checks evidence with command-level results for every declared Verify Step at evaluated SHA b652c4cc29e6cc371d4ebb679b42c5d41eb37142, then rerun this evaluation.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "Frozen evidence does not contain deterministic results for any declared verification command; it only records an aggregate TESTER assertion.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/quality/objects/sha256/bf98ae979a61231fd4d22ee8cd268324b46c67308304bc956cd7928f1315a4eb.json",
+          "sha256": "sha256:bf98ae979a61231fd4d22ee8cd268324b46c67308304bc956cd7928f1315a4eb",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-MCY8ZC/README.md",
+          "sha256": "sha256:130b1c5e57eb0796a5b24b7af8ef22e3363fb4b819fc7e5f17cefbd3198f2096",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608062021-MCY8ZC/quality/20260807-225850306-recovery-context/evaluator-result.json"
+}
