@@ -2,10 +2,10 @@
 id: "202608062021-Z0X584"
 title: "Converge generated agent guidance on the supervisor-first protocol"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -31,11 +31,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-06T20:56:25.866Z"
+  state: "needs_rework"
+  updated_at: "2026-08-07T03:16:18.364Z"
   updated_by: "TESTER"
-  note: "All five Verify Steps passed on implementation b5faa8b3dce6 with concrete check evidence; typecheck and focused lint also passed."
-  attempts: 0
+  note: "Rework: refresh the supervisor-first surfaces onto current main after merged Windows and lint fixes, then rerun all declared checks and evaluator."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -84,9 +84,7 @@ execution_route:
   requested_mode: "auto"
   schema_version: 1
   selected_mode: "branch_pr"
-commit:
-  hash: "b5faa8b3dce64578db6160645737572acbea4239"
-  message: "✨ Z0X584 prompts: converge on supervisor-first guidance"
+commit: null
 comments:
   -
     author: "DOCS"
@@ -137,8 +135,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-07T03:16:18.364Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework: refresh the supervisor-first surfaces onto current main after merged Windows and lint fixes, then rerun all declared checks and evaluator."
 doc_version: 3
-doc_updated_at: "2026-08-06T20:58:29.023Z"
+doc_updated_at: "2026-08-07T03:16:19.580Z"
 doc_updated_by: "CODER"
 description: "Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr policy modules, Codex skill, README, and workflow docs with task active, task advance, and task run as the only normal agent paths; provide one copy-paste executable first workflow and retain manual commands only as explicit operator or recovery interfaces."
 sections:
@@ -273,6 +277,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-07T03:16:18.364Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework: refresh the supervisor-first surfaces onto current main after merged Windows and lint fixes, then rerun all declared checks and evaluator.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T20:58:29.023Z, excerpt_hash=sha256:e9653577267767950996748213a2f0aa3639b45685585200ddac7e270aea9d00
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-Z0X584-converge-generated-agent-guidance-on-the-supervi/.agentplane/tasks/202608062021-Z0X584/blueprint/resolved-snapshot.json
+    - old_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+    - current_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-Z0X584
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -285,6 +319,10 @@ sections:
     - Observation: The task verification contract now covers both supervisor-first prompt surfaces and the structured reclassification safeguard.
       Impact: Verification is bound to the complete current scope and implementation SHA.
       Resolution: Synchronized README Verify Steps with structured task metadata and recorded fresh evidence.
+
+    - Observation: The previous verification predates current main.
+      Impact: The release candidate is not yet proven against the integrated dependency graph.
+      Resolution: Merge current main, rerun the focused and repository gates, then record fresh verification and quality evidence.
 extensions:
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
@@ -432,6 +470,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-07T03:16:18.364Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework: refresh the supervisor-first surfaces onto current main after merged Windows and lint fixes, then rerun all declared checks and evaluator.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T20:58:29.023Z, excerpt_hash=sha256:e9653577267767950996748213a2f0aa3639b45685585200ddac7e270aea9d00
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-Z0X584-converge-generated-agent-guidance-on-the-supervi/.agentplane/tasks/202608062021-Z0X584/blueprint/resolved-snapshot.json
+- old_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+- current_digest: 5ddd27fad869ad51a7a3d94d10815e4b848b73f30592f279215b7c89e7ab1100
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-Z0X584
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -448,6 +516,10 @@ DecisionContextRef:
 - Observation: The task verification contract now covers both supervisor-first prompt surfaces and the structured reclassification safeguard.
   Impact: Verification is bound to the complete current scope and implementation SHA.
   Resolution: Synchronized README Verify Steps with structured task metadata and recorded fresh evidence.
+
+- Observation: The previous verification predates current main.
+  Impact: The release candidate is not yet proven against the integrated dependency graph.
+  Resolution: Merge current main, rerun the focused and repository gates, then record fresh verification and quality evidence.
 
 ## Token Usage
 

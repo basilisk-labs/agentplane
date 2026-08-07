@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202608070235-JPPAMT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T02:45:58.469Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "17dc364080b8c5763eb478ea5b0a328168ba2518",
+  "blueprint_digest": "e6918be9c187948088eeee72c070745720938b0e5e20a11ccdb3664f8e226b94",
+  "findings": [
+    "The frozen packet contains only prose assertions of successful verification; declared_checks, verification_records, runner_history, and runtime_evidence are empty, so the required original-failure, focused-check, full-gate, and hosted-check evidence cannot be deterministically evaluated."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/22972c0e44879e9a0f777c1d49a9ee3fce9ed06919b12e9bf4f990a368b3ec14.json",
+    ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/6550cb314bb3505b1c1debd688f03f5a0264a0f87a8c8a1bc32551a713a9d955.json",
+    ".agentplane/tasks/202608070235-JPPAMT/README.md"
+  ],
+  "missing_tests": [
+    "Frozen command-result evidence for the original lint failure, targeted ESLint, full repository lint, social-image check, formatting, and typecheck.",
+    "Frozen hosted-check evidence tied to the evaluated implementation SHA, or deterministic evidence mapping the reported PR head to that SHA."
+  ],
+  "hidden_assumptions": [
+    "The prose verification note accurately represents command execution despite the absence of runner or runtime records.",
+    "Hosted checks reported for PR head 8345e2aeda332dd80572b9e0f63cbb83e14e5b23 validate evaluated SHA 17dc364080b8c5763eb478ea5b0a328168ba2518 without an evidenced mapping."
+  ],
+  "residual_risks": [
+    "Regenerate the frozen evaluator packet with deterministic command outputs or runner records for every Verify Step, the original-failure reproduction, and hosted checks demonstrably tied to evaluated SHA 17dc364080b8c5763eb478ea5b0a328168ba2518."
+  ]
+}

@@ -15,12 +15,12 @@ Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-All five Verify Steps passed on implementation b5faa8b3dce6 with concrete check evidence; typecheck
-and focused lint also passed.
+Rework: refresh the supervisor-first surfaces onto current main after merged Windows and lint fixes,
+then rerun all declared checks and evaluator.
 ```
 - Canonical workflow state lives in the task README.
 

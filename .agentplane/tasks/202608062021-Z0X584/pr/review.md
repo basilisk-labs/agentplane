@@ -6,14 +6,14 @@ Created: 2026-08-06T20:27:51.883Z
 
 - Task: `202608062021-Z0X584`
 - Title: Converge generated agent guidance on the supervisor-first protocol
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608062021-Z0X584/converge-generated-agent-guidance-on-the-supervi`
 - Canonical task record: `.agentplane/tasks/202608062021-Z0X584/README.md`
 
 ## Verification
 
-- State: ok
-- Note: All five Verify Steps passed on implementation b5faa8b3dce6 with concrete check evidence; typecheck and focused lint also passed.
+- State: needs_rework
+- Note: Rework: refresh the supervisor-first surfaces onto current main after merged Windows and lint fixes, then rerun all declared checks and evaluator.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

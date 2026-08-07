@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "Hosted Windows CI evidence is intentionally deferred to the post-quality PR gate and is not present in this evaluator packet.",
+      "broken_invariant": "The task requires required PR verification to pass on the exact PR head before integration; this remains a later branch_pr gate and must not be treated as already satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608061925-KANFC0/README.md",
+          "sha256": "sha256:7bf38a9666fce069921c4d005357799e45ac2f06e51b0717e5bfff74a9a0a2ef",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608061925-KANFC0/quality/objects/sha256/bf5780f48a58ae1343c240359cca134d113d3d93bbd40c7beab88a82a18a5dad.json",
+          "sha256": "sha256:bf5780f48a58ae1343c240359cca134d113d3d93bbd40c7beab88a82a18a5dad",
+          "section": "plan.states.hosted_checks"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Required PR verification on the exact PR head must pass before integration."
+  ],
+  "hidden_assumptions": [
+    "The synthetic bigint dev/ino mock faithfully represents Node.js bigint stat behavior on NTFS.",
+    "Converting README size and timestamp cache fields to numbers is acceptable under the approved task contract."
+  ]
+}

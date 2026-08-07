@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608070235-JPPAMT-3ba716721f98f9d099a613e8",
+  "task_id": "202608070235-JPPAMT",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the frozen evaluator packet with deterministic command outputs or runner records for every Verify Step, the original-failure reproduction, and hosted checks demonstrably tied to evaluated SHA 17dc364080b8c5763eb478ea5b0a328168ba2518.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen packet contains only prose assertions of successful verification; declared_checks, verification_records, runner_history, and runtime_evidence are empty, so the required original-failure, focused-check, full-gate, and hosted-check evidence cannot be deterministically evaluated.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/22972c0e44879e9a0f777c1d49a9ee3fce9ed06919b12e9bf4f990a368b3ec14.json",
+          "sha256": "sha256:22972c0e44879e9a0f777c1d49a9ee3fce9ed06919b12e9bf4f990a368b3ec14",
+          "section": "declared_checks, verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/6550cb314bb3505b1c1debd688f03f5a0264a0f87a8c8a1bc32551a713a9d955.json",
+          "sha256": "sha256:6550cb314bb3505b1c1debd688f03f5a0264a0f87a8c8a1bc32551a713a9d955",
+          "section": "plan.requiredEvidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608070235-JPPAMT/README.md",
+          "sha256": "sha256:f99e92eb5febf3bca89558e7f202bda1b49b0540bdfa39a8bad97e4c69e5e538",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-024510736-recovery-context/evaluator-result.json"
+}

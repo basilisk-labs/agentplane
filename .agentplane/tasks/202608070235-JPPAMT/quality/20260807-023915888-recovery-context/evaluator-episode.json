@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202608070235-JPPAMT-0fd5777f3689a4f316b440eb",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608070235-JPPAMT-restore-the-release-lint-baseline",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608070235-JPPAMT-restore-the-release-lint-baseline/.agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-08-07T02:39:16.279Z",
+  "ended_at": "2026-08-07T02:40:01.901Z",
+  "stdout_bytes": 53421,
+  "stderr_bytes": 1072,
+  "provider_usage": {
+    "input_tokens": 110703,
+    "output_tokens": 1984,
+    "total_tokens": 112687,
+    "visible_output_tokens": 1662,
+    "reasoning_tokens": 322
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:7fe9993799484735e723809885d50d1363268b6e374d51d87b18f56c6f103f0c"
+}
