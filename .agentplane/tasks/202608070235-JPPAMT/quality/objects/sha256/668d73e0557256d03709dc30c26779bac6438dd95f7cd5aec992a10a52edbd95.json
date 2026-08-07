@@ -1,0 +1,32 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "git show main:website/scripts/generate-social-images.mjs | bunx eslint --stdin --stdin-filename website/scripts/generate-social-images.mjs",
+    "bunx eslint website/scripts/generate-social-images.mjs",
+    "bun run lint",
+    "bun run docs:social:check",
+    "bun run format:check",
+    "bun run typecheck",
+    "gh pr checks 4796"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-07T02:47:21.637Z",
+    "updated_by": "TESTER",
+    "note": "Deterministic local and hosted evidence passes on the evaluated implementation."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608070235-JPPAMT/verification/20260807024721637-1db1e78368a84994.json",
+      "sha256": "sha256:ff099fe1d0eda2654d8ff18e3ae4caafe62f10fd903dd040fd435f06ca5aea90"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

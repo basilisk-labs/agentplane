@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608070235-JPPAMT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-07T02:48:21.210Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "17dc364080b8c5763eb478ea5b0a328168ba2518",
+  "blueprint_digest": "e6918be9c187948088eeee72c070745720938b0e5e20a11ccdb3664f8e226b94",
+  "findings": [
+    "The focused one-line migration preserves whitespace-normalization behavior, removes the declared lint violation, and is covered by recorded focused, repository-wide, generated-asset, formatting, type, hosted, and SHA-mapping checks."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/5960a8fbcb44bc1d723d3ce9c45afa821070d8411ad1e7ee82aab1fd542dc71b.patch",
+    ".agentplane/tasks/202608070235-JPPAMT/verification/20260807024721637-1db1e78368a84994.json",
+    ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/668d73e0557256d03709dc30c26779bac6438dd95f7cd5aec992a10a52edbd95.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

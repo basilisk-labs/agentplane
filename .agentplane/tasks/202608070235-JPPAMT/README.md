@@ -4,7 +4,7 @@ title: "Restore the release lint baseline"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -30,32 +30,31 @@ verification:
   note: "Deterministic local and hosted evidence passes on the evaluated implementation."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T02:45:58.469Z"
+  updated_at: "2026-08-07T02:48:21.210Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "17dc364080b8c5763eb478ea5b0a328168ba2518"
   blueprint_digest: "e6918be9c187948088eeee72c070745720938b0e5e20a11ccdb3664f8e226b94"
   evidence_refs:
-    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-024510736-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-024510736-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/677033be5fb97874a46bf16dd278f84bde0fb9cbd17be70986f8ba5d0bef987f.md"
-    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-024510736-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-024510736-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-024510736-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-024510736-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-024743076-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-024743076-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/81e2525f5dd29e6135c87411c2bb1e0e000bc5d04c9887b0d03519da9aebf778.md"
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-024743076-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-024743076-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/20260807-024743076-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608070235-JPPAMT/README.md"
     - ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/5960a8fbcb44bc1d723d3ce9c45afa821070d8411ad1e7ee82aab1fd542dc71b.patch"
-    - ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/22972c0e44879e9a0f777c1d49a9ee3fce9ed06919b12e9bf4f990a368b3ec14.json"
+    - ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/668d73e0557256d03709dc30c26779bac6438dd95f7cd5aec992a10a52edbd95.json"
+    - ".agentplane/tasks/202608070235-JPPAMT/verification/20260807024721637-1db1e78368a84994.json"
     - ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/6550cb314bb3505b1c1debd688f03f5a0264a0f87a8c8a1bc32551a713a9d955.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen packet contains only prose assertions of successful verification; declared_checks, verification_records, runner_history, and runtime_evidence are empty, so the required original-failure, focused-check, full-gate, and hosted-check evidence cannot be deterministically evaluated."
-  recovery_reason: "deterministic_evidence_gap"
+    - "The focused one-line migration preserves whitespace-normalization behavior, removes the declared lint violation, and is covered by recorded focused, repository-wide, generated-asset, formatting, type, hosted, and SHA-mapping checks."
 execution_route:
   frozen: true
   reason_codes:
