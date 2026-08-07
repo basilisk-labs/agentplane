@@ -75,6 +75,7 @@ type AgentPacket = {
     work_order_ref: string;
     result_schema_ref: string;
     result_ref: string;
+    return_invocation: string;
     result_path: string;
     resume_argv: string[];
   };
@@ -226,6 +227,8 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
       work_order_ref: "work-order.json",
       result_schema_ref: "result-schema.json",
       result_ref: "result.json",
+      return_invocation:
+        "agentplane task advance <task_id> --result <exchange_directory>/<result_ref> --agent-json",
       result_path: path.join(first.exchange!.directory, "result.json"),
       resume_argv: [
         "agentplane",
@@ -866,6 +869,11 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
       root,
     ]);
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await cp(
+      path.join(process.cwd(), "packages", "agentplane", "assets", "policy"),
+      path.join(root, ".agentplane", "policy"),
+      { recursive: true, force: true },
+    );
     await writeFile(
       path.join(root, ".gitignore"),
       [
@@ -935,6 +943,23 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     expect(branch).toMatch(new RegExp(`^task/${taskId}/`, "u"));
     expect(workOrder.state_fingerprint.git_head).toBe(head);
     expect(workOrder.authority.writable_roots).toEqual([taskWorktree]);
+    // The full source manifest stays internal; required_inputs is its bounded WorkOrder projection.
+    const sourceManifestPaths = workOrder.required_inputs.flatMap((input) =>
+      input.kind !== "knowledge_ref" && input.path ? [input.path] : [],
+    );
+    expect(sourceManifestPaths.length).toBeGreaterThan(0);
+    for (const sourcePath of sourceManifestPaths) {
+      if (sourcePath.startsWith("bundled:") || sourcePath.startsWith("runtime:")) {
+        expect(sourcePath).toMatch(/^(?:bundled|runtime):[A-Za-z0-9_.:/-]+$/u);
+        continue;
+      }
+      expect(path.isAbsolute(sourcePath)).toBe(false);
+      const worktreeSource = path.resolve(taskWorktree, sourcePath);
+      const callerSource = path.resolve(root, sourcePath);
+      expect(worktreeSource.startsWith(`${taskWorktree}${path.sep}`)).toBe(true);
+      expect(worktreeSource).not.toBe(callerSource);
+      await expect(readFile(worktreeSource, "utf8")).resolves.toEqual(expect.any(String));
+    }
     expect(jsonPacket.exchange.result_path).toBe(
       path.join(jsonPacket.exchange.directory, "result.json"),
     );
