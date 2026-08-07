@@ -189,6 +189,31 @@ describe("collectRunnerBasePrompts", () => {
     },
   );
 
+  it("uses bundled security fallback and skips missing or unmarked non-security modules", async () => {
+    const root = await makeTempRepo();
+    const policyRoot = path.join(root, ".agentplane", "policy");
+    await mkdir(policyRoot, { recursive: true });
+    await writeFile(
+      path.join(policyRoot, "dod.core.md"),
+      "# Core DoD\n\nRun verification-persistence and task-closure commands.\n",
+      "utf8",
+    );
+
+    const projected = await collectSemanticPolicyModulePrompts({
+      git_root: root,
+      policy_modules: [
+        ".agentplane/policy/security.must.md",
+        ".agentplane/policy/dod.core.md",
+        ".agentplane/policy/dod.code.md",
+      ],
+    });
+
+    expect(projected).toHaveLength(1);
+    expect(projected[0]?.source).toBe("bundled:policy/security.must.md");
+    expect(projected[0]?.content).toContain("MUST NOT commit secrets");
+    expect(projected[0]?.content).not.toContain("verification-persistence");
+  });
+
   it.each(["PLANNER", "EXECUTOR", "EVALUATOR"] as const)(
     "rejects process choreography in an exact %s provider prompt",
     (role) => {

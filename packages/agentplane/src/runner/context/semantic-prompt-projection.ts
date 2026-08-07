@@ -7,6 +7,7 @@ import {
   parsePromptMarkdownFragments,
   type PromptMarkdownFragment,
 } from "../../runtime/prompt-fragments/index.js";
+import { resolveAgentplaneAssetUrl } from "../../shared/package-paths.js";
 import type { RunnerPromptBlock, RunnerTaskContext } from "../types.js";
 
 type ProcessChoreographyMatch = {
@@ -189,6 +190,15 @@ function isSecurityPolicyModule(modulePath: string, fragments: PromptMarkdownFra
   );
 }
 
+function isMissingFileError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: unknown }).code === "ENOENT"
+  );
+}
+
 export async function collectSemanticPolicyModulePrompts(opts: {
   git_root: string;
   policy_modules: readonly string[];
@@ -201,10 +211,21 @@ export async function collectSemanticPolicyModulePrompts(opts: {
     if (relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
       throw new Error(`Semantic policy module escapes repository root: ${modulePath}`);
     }
-    const source = await readFile(absolutePath, "utf8");
+    const canonicalSecurityModule =
+      path.posix.basename(modulePath.replaceAll("\\", "/")) === "security.must.md";
+    let source: string;
+    let sourceRef = modulePath;
+    try {
+      source = await readFile(absolutePath, "utf8");
+    } catch (error) {
+      if (!isMissingFileError(error)) throw error;
+      if (!canonicalSecurityModule) continue;
+      source = await readFile(resolveAgentplaneAssetUrl("policy", "security.must.md"), "utf8");
+      sourceRef = "bundled:policy/security.must.md";
+    }
     const parsed = parsePromptMarkdownFragments(source, {
-      source_ref: modulePath,
-      fallback_id: `policy.security.module.${index + 1}`,
+      source_ref: sourceRef,
+      fallback_id: `policy.module.${index + 1}`,
       fallback_slot: "hard_constraint",
     });
     if (!isSecurityPolicyModule(modulePath, parsed.fragments)) continue;
@@ -218,7 +239,7 @@ export async function collectSemanticPolicyModulePrompts(opts: {
       id: `semantic.security_policy.${index + 1}`,
       role: "policy",
       title: "Semantic Security Policy Projection",
-      source: `${modulePath}#phase=semantic_episode`,
+      source: sourceRef,
       priority: 205,
       content: normalizeText(
         [
@@ -249,7 +270,6 @@ function projectGatewayBlock(block: RunnerPromptBlock): RunnerPromptBlock {
   return {
     ...block,
     title: "Semantic Policy Gateway Projection",
-    source: `${block.source ?? block.id}#phase=semantic_episode`,
     content: normalizeText(
       [
         "# Semantic policy projection",
@@ -278,7 +298,6 @@ function projectOwnerProfileBlock(
   return {
     ...block,
     title: `Semantic Role Projection (${role})`,
-    source: `${block.source ?? block.id}#phase=semantic_episode`,
     content: normalizeText(
       JSON.stringify(
         {
@@ -312,7 +331,6 @@ function projectExecutionProfileBlock(block: RunnerPromptBlock): RunnerPromptBlo
   return {
     ...block,
     title: "Semantic Execution Profile Projection",
-    source: `${block.source ?? block.id}#phase=semantic_episode`,
     content: normalizeText(JSON.stringify(projected, null, 2)),
     fragments: undefined,
   };
