@@ -6,7 +6,7 @@ Created: 2026-08-07T02:35:47.801Z
 
 - Task: `202608070235-JPPAMT`
 - Title: Restore the release lint baseline
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608070235-JPPAMT/restore-the-release-lint-baseline`
 - Canonical task record: `.agentplane/tasks/202608070235-JPPAMT/README.md`
 
