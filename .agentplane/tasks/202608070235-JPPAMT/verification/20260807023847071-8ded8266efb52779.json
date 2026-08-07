@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:8ded8266efb5277972eab43a7e6ecea388cf8d09ecf223f0dedf38e913d9aae0",
+  "implementation_sha": "17dc364080b8c5763eb478ea5b0a328168ba2518",
+  "kind": "task_verification_record",
+  "note": "Release lint baseline restored with a behavior-preserving String.replaceAll migration.\n\nCommand: bunx eslint website/scripts/generate-social-images.mjs\nResult: pass\nEvidence: targeted ESLint completed with exit code 0\nScope: social image generator lint regression\n\nCommand: bun run lint\nResult: pass\nEvidence: core and website ESLint completed with exit code 0\nScope: complete repository lint surface\n\nCommand: bun run docs:social:check\nResult: pass\nEvidence: checked 226 documentation social images\nScope: generated social preview parity\n\nCommand: bun run format:check\nResult: pass\nEvidence: all matched files use Prettier code style\nScope: repository formatting\n\nCommand: bun run typecheck\nResult: pass\nEvidence: repository TypeScript build completed with exit code 0\nScope: TypeScript contracts",
+  "recorded_at": "2026-08-07T02:38:47.071Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bunx eslint website/scripts/generate-social-images.mjs`. Expected: the current lint violation is gone.\n2. Run `bun run lint`. Expected: core and website lint both pass.\n3. Run `bun run docs:social:check` and `bun run format:check`. Expected: generated social assets remain current and formatting is unchanged.\n4. Run `bun run typecheck`. Expected: repository TypeScript contracts remain valid.",
+  "scope_digest": "sha256:7f173c5cc5fd73e72050c28a776005e92d52c750e6b14d54ef63dfbdbe07e11c",
+  "task_id": "202608070235-JPPAMT",
+  "verification_command": "agentplane verify 202608070235-JPPAMT --ok --by TESTER",
+  "verifier": "TESTER"
+}

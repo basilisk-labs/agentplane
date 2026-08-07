@@ -1,0 +1,19 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-07T02:44:36.609Z",
+    "updated_by": "TESTER",
+    "note": "Fresh deterministic evidence on implementation SHA 17dc364080b8c5763eb478ea5b0a328168ba2518.\n\nCommand: git show main:website/scripts/generate-social-images.mjs | bunx eslint --stdin --stdin-filename website/scripts/generate-social-images.mjs\nResult: pass\nEvidence: original main content reproducibly exits 1 with unicorn/prefer-string-replace-all at line 207\nScope: original failure reproduction\n\nCommand: bunx eslint website/scripts/generate-social-images.mjs\nResult: pass\nEvidence: fixed file exits 0 with no findings\nScope: focused regression check\n\nCommand: bun run lint\nResult: pass\nEvidence: core and website ESLint completed with exit code 0\nScope: full local repository lint gate\n\nCommand: bun run docs:social:check\nResult: pass\nEvidence: checked 226 documentation social images\nScope: generated social preview parity\n\nCommand: bun run format:check\nResult: pass\nEvidence: all matched files use Prettier code style\nScope: repository formatting\n\nCommand: bun run typecheck\nResult: pass\nEvidence: repository TypeScript build completed with exit code 0\nScope: TypeScript contracts\n\nCommand: gh pr checks 4796\nResult: pass\nEvidence: PR verification, docs, CodeQL, Analyze actions, and Analyze javascript-typescript passed on head 8345e2aeda332dd80572b9e0f63cbb83e14e5b23\nScope: complete hosted route selected for the docs/website-only diff"
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

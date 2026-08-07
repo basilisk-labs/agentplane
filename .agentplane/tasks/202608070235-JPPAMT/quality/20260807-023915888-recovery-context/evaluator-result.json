@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen packet records asserted pass summaries but contains no deterministic check results, runner history, runtime evidence, original failure reproduction, or hosted full-gate evidence.",
+      "broken_invariant": "The quality.regression blueprint requires original failure evidence, reproduction evidence, a focused check result, and full relevant gate or hosted-check evidence; pass is not permitted without frozen verification evidence covering the task contract.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/29f2d60b41048616c55464c7a5c83e24caf60cc8d37140b663f363a29e11a826.json",
+          "sha256": "sha256:29f2d60b41048616c55464c7a5c83e24caf60cc8d37140b663f363a29e11a826",
+          "section": "declared_checks, verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608070235-JPPAMT/quality/objects/sha256/6550cb314bb3505b1c1debd688f03f5a0264a0f87a8c8a1bc32551a713a9d955.json",
+          "sha256": "sha256:6550cb314bb3505b1c1debd688f03f5a0264a0f87a8c8a1bc32551a713a9d955",
+          "section": "plan.requiredEvidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Frozen deterministic results for the original lint failure or explicit non-reproduction, targeted ESLint, full repository lint, docs:social:check, format:check, typecheck, and the full relevant hosted gate."
+  ],
+  "hidden_assumptions": [
+    "The narrative verification note accurately represents commands executed against evaluated SHA 17dc364080b8c5763eb478ea5b0a328168ba2518.",
+    "Local full lint is sufficient evidence for the blueprint's separately required hosted full-gate result."
+  ],
+  "recovery_context": "Regenerate the frozen evaluator packet with deterministic command outputs or structured check results tied to evaluated SHA 17dc364080b8c5763eb478ea5b0a328168ba2518, including original failure/reproduction, focused checks, all declared Verify Steps, and the required full relevant hosted gate.",
+  "recovery_reason": "deterministic_evidence_gap"
+}
