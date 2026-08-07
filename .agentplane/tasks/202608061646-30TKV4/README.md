@@ -2,10 +2,10 @@
 id: "202608061646-30TKV4"
 title: "Add user-first task intake and execution preview"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 39
+revision: 40
 origin:
   system: "manual"
 depends_on:
@@ -63,22 +63,22 @@ quality_review:
   findings:
     - "Natural-language intent inference depends on ordered substring matching, so ambiguous or negated wording can conservatively select a higher-risk task category and route."
 token_usage:
-  agent_runs: 6
-  input_tokens: 1065531
-  journal_digest: "sha256:1eddef1b99d3836dcd192752821fe605e9abccde77e516bd1b909cf74678442c"
-  observed_agent_runs: 5
+  agent_runs: 11
+  input_tokens: 1634333
+  journal_digest: "sha256:0a0f582e1bc2ee1e529ce79159f2116cbb86b027778c61db9f28e399b3f0ace3"
+  observed_agent_runs: 9
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
   state: "partial"
-  total_tokens: 1080717
+  total_tokens: 1658197
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
-  updated_at: "2026-08-07T00:02:02.354Z"
+  updated_at: "2026-08-07T00:37:50.499Z"
 commit:
-  hash: "dfaeaa1267f3506a3cfadbc406ce5e8810772a54"
-  message: "🧪 30TKV4 task: record deterministic evidence gap"
+  hash: "0cfd82565fd43631b7e348b163478174ad58e638"
+  message: "🧪 30TKV4 task: record compatibility evaluator pass"
 comments:
   -
     author: "CODER"
@@ -110,6 +110,9 @@ comments:
   -
     author: "CODER"
     body: "Retry: freeze deterministic verification records at the evaluated follow-up SHA."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -241,8 +244,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Structured deterministic verification covers the authoritative compatibility follow-up commit."
+  -
+    type: "status"
+    at: "2026-08-07T00:37:50.499Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T00:37:16.191Z"
+doc_updated_at: "2026-08-07T00:37:50.524Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
@@ -763,8 +773,8 @@ sections:
       Resolution: Executed the canonical repository selector bun run test:project -- cli-core against the exact two files; 22/22 tests passed, and recorded both the selector mismatch and replacement.
 extensions:
   implementation_commit:
-    hash: "d5856d4e9f7df6d42b3ca43f1221866148fdc54c"
-    message: "🧪 30TKV4 ux: test cross-process duplicate serialization"
+    hash: "4d7ebde5495ce91ebab19921192cb5327e8738b1"
+    message: "🧪 30TKV4 cli: pin task create compatibility provenance"
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
     version: 1
@@ -1304,12 +1314,12 @@ Revert the UX feature commit. Existing task new, task run, task status, and task
 ## Token Usage
 
 - State: `partial`
-- Completeness: `5/6` agent runs
-- Input tokens: `1065531`
+- Completeness: `9/11` agent runs
+- Input tokens: `1634333`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
-- Total tokens: `1080717`
+- Total tokens: `1658197`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:1eddef1b99d3836dcd192752821fe605e9abccde77e516bd1b909cf74678442c`
+- Journal digest: `sha256:0a0f582e1bc2ee1e529ce79159f2116cbb86b027778c61db9f28e399b3f0ace3`
 - Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
-- Updated at: `2026-08-07T00:02:02.354Z`
+- Updated at: `2026-08-07T00:37:50.499Z`
