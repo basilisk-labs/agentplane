@@ -6,7 +6,7 @@ Created: 2026-08-06T23:23:35.080Z
 
 - Task: `202608061742-G2ZA4T`
 - Title: Redesign init around safe defaults and progressive disclosure
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608061742-G2ZA4T/redesign-init-around-safe-defaults-and-progressi`
 - Canonical task record: `.agentplane/tasks/202608061742-G2ZA4T/README.md`
 
