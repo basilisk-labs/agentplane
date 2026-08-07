@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\nResult: pass\nEvidence: 3 files, 33 tests passed.\nScope: semantic projection, exact provider prompt rejection, task-run context.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: 12 of 12 critical-cli chunks passed.\nScope: critical CLI, efficiency, replay, trust-boundary and platform contracts.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build exited 0.\nScope: workspace type safety.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: policy gateway graph.",
+  "digest": "sha256:233d3e877ff8fa97b53cad21cd9cbf22396065e4d368ecf9725e472e32461791",
+  "implementation_sha": "056b9ca2963094d47e6887403f34ce7b78f10e87",
+  "kind": "task_verification_record",
+  "note": "Semantic-only provider prompt projection and exact-input choreography guard pass the declared contract.",
+  "recorded_at": "2026-08-07T04:29:43.950Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\n- bun run test:critical\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98",
+  "task_id": "202608062021-V2EESE",
+  "verification_command": "agentplane verify 202608062021-V2EESE --ok --by TESTER",
+  "verifier": "TESTER"
+}
