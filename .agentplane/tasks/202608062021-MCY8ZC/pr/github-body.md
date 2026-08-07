@@ -16,7 +16,12 @@ Return an exact result_path and structured resume_argv from task advance, expose
 ## Verification
 
 - State: ok
-- Note: All declared checks pass on committed implementation SHA c49bacfa4.
+- Note:
+
+```text
+Evaluator findings resolved; compatibility, exact protocol fields, all agent guidance, docs, typing,
+routing, and critical suites pass on fd1eb488b.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +32,22 @@ Return an exact result_path and structured resume_argv from task advance, expose
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/workflow.branch_pr.md           |   3 +-
+ .agentplane/policy/workflow.direct.md              |   3 +-
+ README.md                                          |   5 +-
+ docs/user/agent-bootstrap.generated.mdx            |   2 +-
+ docs/user/task-lifecycle.mdx                       |  10 +-
+ docs/workflow-guides/branch-pr.mdx                 |   5 +-
+ docs/workflow-guides/hermes-kanban.mdx             |   3 +-
+ packages/agentplane/assets/AGENTS.md               |   6 +-
+ .../assets/codex-plugin/skills/agentplane/SKILL.md |   5 +-
+ .../agentplane/assets/policy/workflow.branch_pr.md |   3 +-
+ .../agentplane/assets/policy/workflow.direct.md    |   3 +-
+ .../agentplane/src/agents/agents-template.test.ts  |  18 ++
  .../run-cli.core.help-snap.test.ts.snap            |  12 +-
+ packages/agentplane/src/cli/bootstrap-guide.ts     |   2 +-
+ packages/agentplane/src/cli/command-guide.test.ts  |   7 +-
+ packages/agentplane/src/cli/command-guide.ts       |   4 +-
  .../src/cli/run-cli.core.help-contract.test.ts     |   8 +-
  .../src/cli/run-cli.core.task-advance.test.ts      | 211 ++++++++++++++++-----
  .../src/cli/run-cli.core.task-guided.test.ts       |   2 +-
@@ -39,12 +59,12 @@ Return an exact result_path and structured resume_argv from task advance, expose
  .../src/commands/shared/workflow-step-reducer.ts   |  28 +++
  .../src/commands/shared/workflow-step.test.ts      |  42 +++-
  .../src/commands/shared/workflow-step.ts           |   4 +
- .../src/commands/task/advance.command.ts           |  66 +++++--
- .../src/commands/task/agent-action-packet.test.ts  |  78 +++++++-
- .../src/commands/task/agent-action-packet.ts       |  71 ++++++-
+ .../src/commands/task/advance.command.ts           |  62 +++++-
+ .../src/commands/task/agent-action-packet.test.ts  |  90 +++++++++
+ .../src/commands/task/agent-action-packet.ts       |  70 ++++++-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
  .../agentplane/src/commands/task/task.command.ts   |  62 ++----
- 17 files changed, 496 insertions(+), 145 deletions(-)
+ 32 files changed, 564 insertions(+), 163 deletions(-)
 ```
 
 </details>

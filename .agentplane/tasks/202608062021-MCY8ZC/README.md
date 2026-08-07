@@ -4,7 +4,7 @@ title: "Polish the external supervisor protocol and canonical task help"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -31,9 +31,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-07T22:33:16.515Z"
+  updated_at: "2026-08-07T22:43:19.068Z"
   updated_by: "TESTER"
-  note: "All declared checks pass on committed implementation SHA c49bacfa4."
+  note: "Evaluator findings resolved; compatibility, exact protocol fields, all agent guidance, docs, typing, routing, and critical suites pass on fd1eb488b."
   attempts: 0
 quality_review:
   state: "rework"
@@ -112,8 +112,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "All declared checks pass on committed implementation SHA c49bacfa4."
+  -
+    type: "verify"
+    at: "2026-08-07T22:43:19.068Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Evaluator findings resolved; compatibility, exact protocol fields, all agent guidance, docs, typing, routing, and critical suites pass on fd1eb488b."
 doc_version: 3
-doc_updated_at: "2026-08-07T22:33:17.823Z"
+doc_updated_at: "2026-08-07T22:43:20.447Z"
 doc_updated_by: "CODER"
 description: "Return an exact result_path and structured resume_argv from task advance, expose a typed operator action at approval boundaries, make quickstart and role command guides supervisor-first, show the canonical new/active/advance/run/brief subset in compact task help, attribute explicit begin plans to a human source, and add an end-to-end branch_pr test that advances once from the base checkout and receives a worktree-bound WorkOrder without caller cwd changes."
 sections:
@@ -241,6 +247,66 @@ sections:
     Command: bun run test:critical
     Result: pass; 12 of 12 chunks and 84 tests passed.
     Evidence: critical-cli exited 0 on committed head c49bacfa4.
+    Scope: compatibility, replay, protected-path, symlink, and trust-boundary ratchets.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-MCY8ZC-polish-the-external-supervisor-protocol-and-cano/.agentplane/tasks/202608062021-MCY8ZC/blueprint/resolved-snapshot.json
+    - old_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+    - current_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-MCY8ZC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608062021-MCY8ZC
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T22:43:19.068Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Evaluator findings resolved; compatibility, exact protocol fields, all agent guidance, docs, typing, routing, and critical suites pass on fd1eb488b.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T22:33:17.823Z, excerpt_hash=sha256:e7b785b4af2458a5bf3ddea4bbab3158dc569e3b026d3f1b1fc95a2df69b1c31
+
+    Details:
+
+    Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts
+    Result: pass; 3 test files and 18 tests passed.
+    Evidence: Vitest exited 0 on implementation head fd1eb488b.
+    Scope: external supervisor CLI and route contracts.
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/cli/command-guide.test.ts
+    Result: pass; 3 test files and 38 tests passed.
+    Evidence: packet compatibility and supervisor-first surface contract tests exited 0 on fd1eb488b.
+    Scope: return_invocation compatibility, exact result_path/resume_argv, bundled policies, skill, quickstart, and docs guidance.
+
+    Command: bun run docs:bootstrap:check && bun run docs:cli:check
+    Result: pass.
+    Evidence: both generated-document freshness checks exited 0.
+    Scope: bootstrap and CLI reference projections.
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass.
+    Evidence: policy routing OK.
+    Scope: repo and bundled workflow policy synchronization and budgets.
+
+    Command: bun run typecheck
+    Result: pass.
+    Evidence: TypeScript build exited 0 on fd1eb488b.
+    Scope: repository TypeScript contracts.
+
+    Command: bun run test:critical
+    Result: pass; all 12 chunks and 84 tests passed.
+    Evidence: critical-cli exited 0 on fd1eb488b.
     Scope: compatibility, replay, protected-path, symlink, and trust-boundary ratchets.
 
     BlueprintSnapshotRef:
@@ -416,6 +482,66 @@ Scope: repository TypeScript contracts.
 Command: bun run test:critical
 Result: pass; 12 of 12 chunks and 84 tests passed.
 Evidence: critical-cli exited 0 on committed head c49bacfa4.
+Scope: compatibility, replay, protected-path, symlink, and trust-boundary ratchets.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-MCY8ZC-polish-the-external-supervisor-protocol-and-cano/.agentplane/tasks/202608062021-MCY8ZC/blueprint/resolved-snapshot.json
+- old_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+- current_digest: 98d8bde50ed945a5db69126bdd4613eabfeda24055748a0c5e3462fd27b087e5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-MCY8ZC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608062021-MCY8ZC
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T22:43:19.068Z — VERIFY — ok
+
+By: TESTER
+
+Note: Evaluator findings resolved; compatibility, exact protocol fields, all agent guidance, docs, typing, routing, and critical suites pass on fd1eb488b.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T22:33:17.823Z, excerpt_hash=sha256:e7b785b4af2458a5bf3ddea4bbab3158dc569e3b026d3f1b1fc95a2df69b1c31
+
+Details:
+
+Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts
+Result: pass; 3 test files and 18 tests passed.
+Evidence: Vitest exited 0 on implementation head fd1eb488b.
+Scope: external supervisor CLI and route contracts.
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/cli/command-guide.test.ts
+Result: pass; 3 test files and 38 tests passed.
+Evidence: packet compatibility and supervisor-first surface contract tests exited 0 on fd1eb488b.
+Scope: return_invocation compatibility, exact result_path/resume_argv, bundled policies, skill, quickstart, and docs guidance.
+
+Command: bun run docs:bootstrap:check && bun run docs:cli:check
+Result: pass.
+Evidence: both generated-document freshness checks exited 0.
+Scope: bootstrap and CLI reference projections.
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass.
+Evidence: policy routing OK.
+Scope: repo and bundled workflow policy synchronization and budgets.
+
+Command: bun run typecheck
+Result: pass.
+Evidence: TypeScript build exited 0 on fd1eb488b.
+Scope: repository TypeScript contracts.
+
+Command: bun run test:critical
+Result: pass; all 12 chunks and 84 tests passed.
+Evidence: critical-cli exited 0 on fd1eb488b.
 Scope: compatibility, replay, protected-path, symlink, and trust-boundary ratchets.
 
 BlueprintSnapshotRef:
