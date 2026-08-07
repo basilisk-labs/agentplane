@@ -15,8 +15,8 @@ Replace manual lifecycle choreography in bundled AGENTS.md, direct and branch_pr
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted full-fast found stale manual-lifecycle expectations in three supervisor-first contract tests.
+- State: ok
+- Note: All five declared supervisor-first acceptance commands pass at the current implementation SHA.
 - Canonical workflow state lives in the task README.
 
 <details>

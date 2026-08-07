@@ -1,0 +1,30 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts",
+    "bun run docs:onboarding:check",
+    "bun run docs:cli:check",
+    "node .agentplane/policy/check-routing.mjs",
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/command-guide.test.ts"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-07T03:35:28.341Z",
+    "updated_by": "TESTER",
+    "note": "All five declared supervisor-first acceptance commands pass at the current implementation SHA."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608062021-Z0X584/verification/20260807033528341-1a803fcda060b505.json",
+      "sha256": "sha256:50426da5a605ab722625f474cab350a138502bef8326d4140172b8603e40b052"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

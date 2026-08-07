@@ -12,8 +12,8 @@ Created: 2026-08-06T20:27:51.883Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted full-fast found stale manual-lifecycle expectations in three supervisor-first contract tests.
+- State: ok
+- Note: All five declared supervisor-first acceptance commands pass at the current implementation SHA.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
