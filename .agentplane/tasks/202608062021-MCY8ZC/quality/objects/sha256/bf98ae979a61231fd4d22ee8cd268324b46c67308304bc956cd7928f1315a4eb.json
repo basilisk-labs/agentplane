@@ -1,0 +1,24 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts packages/agentplane/src/cli/command-guide.test.ts",
+    "bun run docs:cli:check",
+    "bun run typecheck",
+    "bun run test:critical"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-07T22:58:24.875Z",
+    "updated_by": "TESTER",
+    "note": "Final pre-merge closure head b652c4cc2 passes all task, policy, docs, typing, critical, and cleanliness checks."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
