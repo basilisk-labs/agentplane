@@ -22,6 +22,8 @@
  packages/agentplane/src/cli/run-cli.core.test.ts   |  18 +-
  .../src/commands/shared/route-decision-blockers.ts |  18 ++
  .../agentplane/src/commands/shared/route-oracle.ts |   1 +
+ .../commands/shared/verification-details.test.ts   |  54 +++++
+ .../src/commands/shared/verification-details.ts    |   7 +-
  .../src/commands/shared/workflow-step-branch.ts    |  14 +-
  .../shared/workflow-step-fingerprint.test.ts       |   4 +-
  .../src/commands/shared/workflow-step-reducer.ts   |  28 +++
@@ -32,4 +34,4 @@
  .../src/commands/task/agent-action-packet.ts       |  70 +++++-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
  .../agentplane/src/commands/task/task.command.ts   |  62 ++----
- 34 files changed, 590 insertions(+), 162 deletions(-)
+ 36 files changed, 648 insertions(+), 165 deletions(-)

@@ -16,7 +16,12 @@ Return an exact result_path and structured resume_argv from task advance, expose
 ## Verification
 
 - State: ok
-- Note: Final pre-merge closure head b652c4cc2 passes all task, policy, docs, typing, critical, and cleanliness checks.
+- Note:
+
+```text
+Final implementation head ad1088693 passes all task, policy, docs, typing, critical, parser, and
+cleanliness checks.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -51,6 +56,8 @@ Return an exact result_path and structured resume_argv from task advance, expose
  packages/agentplane/src/cli/run-cli.core.test.ts   |  18 +-
  .../src/commands/shared/route-decision-blockers.ts |  18 ++
  .../agentplane/src/commands/shared/route-oracle.ts |   1 +
+ .../commands/shared/verification-details.test.ts   |  54 +++++
+ .../src/commands/shared/verification-details.ts    |   7 +-
  .../src/commands/shared/workflow-step-branch.ts    |  14 +-
  .../shared/workflow-step-fingerprint.test.ts       |   4 +-
  .../src/commands/shared/workflow-step-reducer.ts   |  28 +++
@@ -61,7 +68,7 @@ Return an exact result_path and structured resume_argv from task advance, expose
  .../src/commands/task/agent-action-packet.ts       |  70 +++++-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
  .../agentplane/src/commands/task/task.command.ts   |  62 ++----
- 34 files changed, 590 insertions(+), 162 deletions(-)
+ 36 files changed, 648 insertions(+), 165 deletions(-)
 ```
 
 </details>
