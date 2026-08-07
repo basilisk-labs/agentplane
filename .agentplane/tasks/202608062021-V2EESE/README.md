@@ -2,10 +2,10 @@
 id: "202608062021-V2EESE"
 title: "Project semantic-only provider prompts and reject process choreography"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -32,11 +32,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-07T05:02:46.499Z"
-  updated_by: "TESTER"
-  note: "Verified: blueprint snapshot refreshed after explicit repair-authority tag; implementation and checks are unchanged."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-07T05:10:09.901Z"
+  updated_by: "REVIEWER"
+  note: "Hosted contract CI rejected the prompt guard integration because task-run.ts exceeded the 600-line runtime hotspot limit."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -85,9 +85,7 @@ execution_route:
   requested_mode: "auto"
   schema_version: 1
   selected_mode: "branch_pr"
-commit:
-  hash: "d8f3a5589cee34aee03ae555e6d9f937d4a9b5bd"
-  message: "🧩 V2EESE task: refresh blueprint closure evidence"
+commit: null
 comments:
   -
     author: "CODER"
@@ -156,8 +154,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-07T05:10:09.901Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "Hosted contract CI rejected the prompt guard integration because task-run.ts exceeded the 600-line runtime hotspot limit."
 doc_version: 3
-doc_updated_at: "2026-08-07T05:04:53.500Z"
+doc_updated_at: "2026-08-07T05:10:11.326Z"
 doc_updated_by: "CODER"
 description: "Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semantic episodes so provider input contains only purpose, scope, security, user instructions, semantic objective, authority, writable roots, required inputs, output schema, and stop rules; exclude lifecycle, Git, PR, verification persistence, integration, cleanup, and release procedures, and add qualification against the exact compiled provider prompt."
 sections:
@@ -481,6 +485,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-07T05:10:09.901Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: Hosted contract CI rejected the prompt guard integration because task-run.ts exceeded the 600-line runtime hotspot limit.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T05:04:53.500Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+    - old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -489,6 +523,10 @@ sections:
     - Observation: The compatibility baseline test reports current main candidate drift before task-specific verification can complete.
       Impact: The semantic projection implementation is locally validated, but the mandatory cumulative critical gate cannot yet be recorded as passing.
       Resolution: Integrate BZT3D9, rebase this branch, rerun all declared Verify Steps, then record a fresh verification result.
+
+    - Observation: Command: bun run hotspots:check\nResult: fail\nEvidence: packages/agentplane/src/runner/usecases/task-run.ts reached 632 lines after V2EESE changes.\nScope: hosted verify-contract parity.
+      Impact: PR #4789 cannot merge and release qualification is not green.
+      Resolution: Extract semantic prompt preparation and validation from task-run.ts, then rerun local and hosted contract verification.
 extensions:
   implementation_commit:
     hash: "60c6416fb08858e79d2b22c227363cb068d25ce8"
@@ -828,6 +866,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-07T05:10:09.901Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: Hosted contract CI rejected the prompt guard integration because task-run.ts exceeded the 600-line runtime hotspot limit.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-07T05:04:53.500Z, excerpt_hash=sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-V2EESE-project-semantic-only-provider-prompts-and-rejec/.agentplane/tasks/202608062021-V2EESE/blueprint/resolved-snapshot.json
+- old_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- current_digest: ff4c844aa3dec226dca8ceeda23e9a8300e0cf77bdeeafc0e9e8f9714994ed26
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-V2EESE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -840,6 +908,10 @@ DecisionContextRef:
 - Observation: The compatibility baseline test reports current main candidate drift before task-specific verification can complete.
   Impact: The semantic projection implementation is locally validated, but the mandatory cumulative critical gate cannot yet be recorded as passing.
   Resolution: Integrate BZT3D9, rebase this branch, rerun all declared Verify Steps, then record a fresh verification result.
+
+- Observation: Command: bun run hotspots:check\nResult: fail\nEvidence: packages/agentplane/src/runner/usecases/task-run.ts reached 632 lines after V2EESE changes.\nScope: hosted verify-contract parity.
+  Impact: PR #4789 cannot merge and release qualification is not green.
+  Resolution: Extract semantic prompt preparation and validation from task-run.ts, then rerun local and hosted contract verification.
 
 ## Token Usage
 

@@ -6,14 +6,14 @@ Created: 2026-08-06T21:10:34.048Z
 
 - Task: `202608062021-V2EESE`
 - Title: Project semantic-only provider prompts and reject process choreography
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608062021-V2EESE/project-semantic-only-provider-prompts-and-rejec`
 - Canonical task record: `.agentplane/tasks/202608062021-V2EESE/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: blueprint snapshot refreshed after explicit repair-authority tag; implementation and checks are unchanged.
+- State: needs_rework
+- Note: Hosted contract CI rejected the prompt guard integration because task-run.ts exceeded the 600-line runtime hotspot limit.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -45,8 +45,9 @@ Created: 2026-08-06T21:10:34.048Z
  .../task-run-bootstrap.result-examples.test.ts     |   2 +-
  .../src/runner/usecases/task-run-bootstrap.ts      | 139 +++++++---
  .../usecases/task-run-context.integration.test.ts  |  95 ++++++-
- .../agentplane/src/runner/usecases/task-run.ts     |  40 ++-
- 17 files changed, 772 insertions(+), 77 deletions(-)
+ .../runner/usecases/task-run-semantic-prompt.ts    |  42 +++
+ .../agentplane/src/runner/usecases/task-run.ts     |  10 +-
+ 18 files changed, 783 insertions(+), 78 deletions(-)
 ```
 
 </details>

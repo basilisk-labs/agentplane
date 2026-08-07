@@ -14,5 +14,6 @@
  .../task-run-bootstrap.result-examples.test.ts     |   2 +-
  .../src/runner/usecases/task-run-bootstrap.ts      | 139 +++++++---
  .../usecases/task-run-context.integration.test.ts  |  95 ++++++-
- .../agentplane/src/runner/usecases/task-run.ts     |  40 ++-
- 17 files changed, 772 insertions(+), 77 deletions(-)
+ .../runner/usecases/task-run-semantic-prompt.ts    |  42 +++
+ .../agentplane/src/runner/usecases/task-run.ts     |  10 +-
+ 18 files changed, 783 insertions(+), 78 deletions(-)
