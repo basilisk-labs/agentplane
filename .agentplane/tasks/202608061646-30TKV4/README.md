@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on:
@@ -32,9 +32,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-06T23:56:16.032Z"
+  updated_at: "2026-08-07T00:00:19.724Z"
   updated_by: "TESTER"
-  note: "The current-main UX branch has complete deterministic verification evidence, including policy routing and final workspace cleanliness."
+  note: "The current-main UX branch and its filesystem transaction are verified across two synchronized independent CLI processes with complete deterministic evidence."
   attempts: 0
 quality_review:
   state: "rework"
@@ -176,8 +176,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework committed: duplicate creation is now exercised by two independently spawned CLI processes released against the same start barrier."
+  -
+    type: "verify"
+    at: "2026-08-07T00:00:19.724Z"
+    author: "TESTER"
+    state: "ok"
+    note: "The current-main UX branch and its filesystem transaction are verified across two synchronized independent CLI processes with complete deterministic evidence."
 doc_version: 3
-doc_updated_at: "2026-08-06T23:59:37.433Z"
+doc_updated_at: "2026-08-07T00:00:21.272Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
@@ -421,6 +427,71 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-07T00:00:19.724Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: The current-main UX branch and its filesystem transaction are verified across two synchronized independent CLI processes with complete deterministic evidence.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T23:59:37.433Z, excerpt_hash=sha256:1e3e36afade323c09657b8fd8b642e24388663392d4ee528edb44f7db34b8c89
+
+    Details:
+
+    Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts
+    Result: pass
+    Evidence: 5 test files and 47 tests passed; task create serializes cross-process exact duplicates launches two independent Node and CLI process trees on one start barrier, observes exit codes 0 and 4, persists exactly one task, and confirms the frozen direct route
+    Scope: natural-language intake, cross-process duplicate locking, supervisor execution, advance protocol, status route, and automatic routing
+
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: generated CLI reference is up to date after conflict regeneration
+    Scope: generated CLI command documentation
+
+    Command: bun run docs:onboarding:check
+    Result: pass
+    Evidence: agent onboarding scenario surfaces are aligned
+    Scope: first-run agent onboarding
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build completed with exit code 0
+    Scope: repository type safety
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK on the evaluated implementation
+    Scope: policy gateway routing constraints
+
+    Command: git diff --check
+    Result: pass
+    Evidence: no whitespace or conflict-marker errors
+    Scope: refreshed branch patch integrity
+
+    Command: git status --short --untracked-files=all
+    Result: pass
+    Evidence: command produced no output after implementation and task artifacts were committed
+    Scope: final tracked and untracked workspace cleanliness
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-30TKV4-add-user-first-task-intake-and-execution-preview/.agentplane/tasks/202608061646-30TKV4/blueprint/resolved-snapshot.json
+    - old_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+    - current_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-30TKV4
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608061646-30TKV4
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -692,6 +763,71 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-07T00:00:19.724Z — VERIFY — ok
+
+By: TESTER
+
+Note: The current-main UX branch and its filesystem transaction are verified across two synchronized independent CLI processes with complete deterministic evidence.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T23:59:37.433Z, excerpt_hash=sha256:1e3e36afade323c09657b8fd8b642e24388663392d4ee528edb44f7db34b8c89
+
+Details:
+
+Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts
+Result: pass
+Evidence: 5 test files and 47 tests passed; task create serializes cross-process exact duplicates launches two independent Node and CLI process trees on one start barrier, observes exit codes 0 and 4, persists exactly one task, and confirms the frozen direct route
+Scope: natural-language intake, cross-process duplicate locking, supervisor execution, advance protocol, status route, and automatic routing
+
+Command: bun run docs:cli:check
+Result: pass
+Evidence: generated CLI reference is up to date after conflict regeneration
+Scope: generated CLI command documentation
+
+Command: bun run docs:onboarding:check
+Result: pass
+Evidence: agent onboarding scenario surfaces are aligned
+Scope: first-run agent onboarding
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build completed with exit code 0
+Scope: repository type safety
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK on the evaluated implementation
+Scope: policy gateway routing constraints
+
+Command: git diff --check
+Result: pass
+Evidence: no whitespace or conflict-marker errors
+Scope: refreshed branch patch integrity
+
+Command: git status --short --untracked-files=all
+Result: pass
+Evidence: command produced no output after implementation and task artifacts were committed
+Scope: final tracked and untracked workspace cleanliness
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-30TKV4-add-user-first-task-intake-and-execution-preview/.agentplane/tasks/202608061646-30TKV4/blueprint/resolved-snapshot.json
+- old_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+- current_digest: 2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-30TKV4
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608061646-30TKV4
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

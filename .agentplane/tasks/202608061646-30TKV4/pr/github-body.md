@@ -19,8 +19,8 @@ Add a natural-language task create entrypoint with deterministic defaults, expla
 - Note:
 
 ```text
-The current-main UX branch has complete deterministic verification evidence, including policy
-routing and final workspace cleanliness.
+The current-main UX branch and its filesystem transaction are verified across two synchronized
+independent CLI processes with complete deterministic evidence.
 ```
 - Canonical workflow state lives in the task README.
 

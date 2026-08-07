@@ -13,7 +13,7 @@ Created: 2026-08-06T19:12:24.484Z
 ## Verification
 
 - State: ok
-- Note: The current-main UX branch has complete deterministic verification evidence, including policy routing and final workspace cleanliness.
+- Note: The current-main UX branch and its filesystem transaction are verified across two synchronized independent CLI processes with complete deterministic evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
