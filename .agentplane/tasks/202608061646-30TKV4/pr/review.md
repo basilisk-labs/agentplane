@@ -34,7 +34,7 @@ Created: 2026-08-06T19:12:24.484Z
  packages/agentplane/src/cli/command-invocations.ts |   1 +
  .../src/cli/run-cli.core.route-decision.test.ts    |   8 +
  .../src/cli/run-cli.core.task-run.test.ts          | 112 +++---
- .../src/cli/run-cli.core.tasks.create.test.ts      |   5 -
+ .../src/cli/run-cli.core.tasks.create.test.ts      |  15 +-
  .../src/cli/run-cli.core.tasks.user-create.test.ts | 304 +++++++++++++++
  ...-cli.critical.agent-efficiency-baseline.test.ts |  39 +-
  .../src/cli/run-cli/command-catalog/task.ts        |   9 +
@@ -49,7 +49,7 @@ Created: 2026-08-06T19:12:24.484Z
  .../baselines/v0.7-compatibility-candidate.json    | 193 +++++++++-
  scripts/checks/check-agent-onboarding-scenario.mjs |  11 +
  .../check-compatibility-contract-baseline.mjs      | 135 ++++++-
- 20 files changed, 1531 insertions(+), 305 deletions(-)
+ 20 files changed, 1532 insertions(+), 314 deletions(-)
 ```
 
 </details>
