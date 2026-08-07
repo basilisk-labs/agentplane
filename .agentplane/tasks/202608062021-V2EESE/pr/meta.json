@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:e72ffa83cf6bf55e56ba50e881bc28b3eb2f61c09b90bd80228eee0bbd7c9e20",
   "pr_number": 4789,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4789",
+  "pre_merge_closure": {
+    "basis_commit": "d8f3a5589cee34aee03ae555e6d9f937d4a9b5bd",
+    "branch": "task/202608062021-V2EESE/project-semantic-only-provider-prompts-and-rejec",
+    "pr_number": 4789,
+    "recorded_at": "2026-08-07T05:04:53.554Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608062021-V2EESE",
