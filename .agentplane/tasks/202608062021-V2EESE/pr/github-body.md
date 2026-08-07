@@ -16,7 +16,12 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
 ## Verification
 
 - State: ok
-- Note: Evaluator persistence-path rework is resolved in exact compiled prompts for every semantic role.
+- Note:
+
+```text
+Evaluator timeout failures are classified and the configured runner wall-clock policy now governs
+the provider episode.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

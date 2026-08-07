@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-episode.stdin.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts\nResult: pass\nEvidence: 3 files and 25 tests passed; evaluator timeout follows invocation policy and remains process-group safe.\nScope: evaluator provider reliability.\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: complete repository contract passed after the timeout fix.\nScope: hosted verify-contract parity.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: all 12 critical CLI chunks passed after the timeout fix.\nScope: critical regression surface.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit 0.\nScope: repository type safety.\n\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\nResult: pass\nEvidence: 3 files and 77 tests passed on the semantic projection head before the isolated timeout transport fix; the transport change does not touch prompt projection.\nScope: declared prompt qualification.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing passed on the semantic projection head; no policy file changed in the timeout transport fix.\nScope: generated policy routing.",
+  "digest": "sha256:241aceac2503c87da2f17cf08a13aca2b0c73b94653ed4605fcf416ade055e67",
+  "implementation_sha": "712ce1727f10f5ad75291b80433863546be725c6",
+  "kind": "task_verification_record",
+  "note": "Evaluator timeout failures are classified and the configured runner wall-clock policy now governs the provider episode.",
+  "recorded_at": "2026-08-07T09:29:06.801Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\n- bun run test:critical\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98",
+  "task_id": "202608062021-V2EESE",
+  "verification_command": "agentplane verify 202608062021-V2EESE --ok --by TESTER",
+  "verifier": "TESTER"
+}
