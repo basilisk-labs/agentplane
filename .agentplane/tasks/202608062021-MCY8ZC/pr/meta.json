@@ -8,10 +8,10 @@
   "pr_number": 4790,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4790",
   "pre_merge_closure": {
-    "basis_commit": "de6ff428d9432e51c7e91bf7c1e378bfc8008c03",
+    "basis_commit": "f7733a513afac651df8641d52a6ef947138b5c7a",
     "branch": "task/202608062021-MCY8ZC/polish-the-external-supervisor-protocol-and-cano",
     "pr_number": 4790,
-    "recorded_at": "2026-08-07T23:31:33.860Z",
+    "recorded_at": "2026-08-07T23:59:48.745Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

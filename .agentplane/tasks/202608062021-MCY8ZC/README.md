@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 38
+revision: 39
 origin:
   system: "manual"
 depends_on: []
@@ -63,19 +63,19 @@ quality_review:
   findings:
     - "The implementation and frozen verification evidence cover the declared external exchange fields, typed approval boundaries, canonical task guidance, human plan attribution, dependency-sensitive routing, and branch_pr worktree handoff."
 token_usage:
-  agent_runs: 7
-  input_tokens: 1941964
-  journal_digest: "sha256:243ba6b364c96e9e10edc7dc6ae1937f8f0b64302428bb28213e34f750a95cbc"
-  observed_agent_runs: 7
+  agent_runs: 8
+  input_tokens: 2139084
+  journal_digest: "sha256:b9641c27eacd5c189c74908e22db0334266eb08cb837727e4a1dfe5975e68ff2"
+  observed_agent_runs: 8
   observed_by: "agentplane"
-  output_tokens: 19257
-  reasoning_tokens: 4905
+  output_tokens: 21305
+  reasoning_tokens: 5279
   schema_version: 1
   source: "supervisor_journal"
   state: "observed"
-  total_tokens: 1966126
+  total_tokens: 2165668
   unavailable_reason: null
-  updated_at: "2026-08-07T23:31:33.795Z"
+  updated_at: "2026-08-07T23:59:48.692Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -85,8 +85,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "75263193a470d21f58f842d55d2c8fab711d1bd4"
-  message: "🧪 MCY8ZC supervisor: align branch work-order contract"
+  hash: "f7733a513afac651df8641d52a6ef947138b5c7a"
+  message: "✅ MCY8ZC supervisor: record hosted unit evaluator pass"
 comments:
   -
     author: "CODER"
@@ -106,6 +106,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: align the canonical branch_pr WorkOrder integration contract with the supervisor-first implementation route discovered by the complete hosted unit suite."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -227,8 +230,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Implementation commit 75263193a passes the complete hosted-equivalent unit suite plus every declared verification and repository contract."
+  -
+    type: "status"
+    at: "2026-08-07T23:59:48.692Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-07T23:58:44.509Z"
+doc_updated_at: "2026-08-07T23:59:48.713Z"
 doc_updated_by: "CODER"
 description: "Return an exact result_path and structured resume_argv from task advance, expose a typed operator action at approval boundaries, make quickstart and role command guides supervisor-first, show the canonical new/active/advance/run/brief subset in compact task help, attribute explicit begin plans to a human source, and add an end-to-end branch_pr test that advances once from the base checkout and receives a worktree-bound WorkOrder without caller cwd changes."
 sections:
@@ -937,8 +947,8 @@ sections:
       Resolution: Updated the canonical WorkOrder integration assertion to require workspace-write in the task worktree and reran the complete qualification set.
 extensions:
   implementation_commit:
-    hash: "032a2b8ab4180f16251f367b36ee462d2b108b92"
-    message: "🧹 MCY8ZC supervisor: satisfy protocol test lint"
+    hash: "75263193a470d21f58f842d55d2c8fab711d1bd4"
+    message: "🧪 MCY8ZC supervisor: align branch work-order contract"
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
     version: 1
@@ -1665,12 +1675,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `observed`
-- Completeness: `7/7` agent runs
-- Input tokens: `1941964`
-- Output tokens: `19257`
-- Reasoning tokens: `4905`
-- Total tokens: `1966126`
+- Completeness: `8/8` agent runs
+- Input tokens: `2139084`
+- Output tokens: `21305`
+- Reasoning tokens: `5279`
+- Total tokens: `2165668`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:243ba6b364c96e9e10edc7dc6ae1937f8f0b64302428bb28213e34f750a95cbc`
+- Journal digest: `sha256:b9641c27eacd5c189c74908e22db0334266eb08cb837727e4a1dfe5975e68ff2`
 - Unavailable reason: `none`
-- Updated at: `2026-08-07T23:31:33.795Z`
+- Updated at: `2026-08-07T23:59:48.692Z`
