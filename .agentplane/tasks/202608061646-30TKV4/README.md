@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 65
+revision: 66
 origin:
   system: "manual"
 depends_on:
@@ -43,31 +43,32 @@ verification:
   note: "All eleven declared checks pass on 60c5d0c9a, including the hosted-static Knip budget."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-07T01:20:22.230Z"
+  updated_at: "2026-08-07T01:34:28.668Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "856bf44a5f9975126f59286f96f5e1c11d6c7493"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "60c5d0c9abbfc828c25bce0266916922de7309d6"
   blueprint_digest: "2f8610afcfd1abaeb32f14e5ad0a6404b7e15a397b921ba5cc867344a42e2b62"
   evidence_refs:
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-011904144-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-011904144-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/48a1b35437943c6e27e62c10b8943e5b040eae84e4cf7b1728aaa42edf59f835.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-011904144-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-011904144-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-011904144-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-013342649-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-013342649-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/64ebca7b40c26176dd5a62330279f7bb9008c4b97f9720716f173516d60177c3.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-013342649-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-013342649-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-013342649-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/20260807-013342649-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608061646-30TKV4/README.md"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/6c227b9aecfa513f571e57954c45087cd7856d402d838f24b6d9d21de41e1b81.patch"
-    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/b9cbf4996dfeba2a08cb3cb6c3b2893ccf0d61a9140f81224ded975f3ac7ff42.json"
-    - ".agentplane/tasks/202608061646-30TKV4/verification/20260807011733745-a74316940d30cf6b.json"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/322ad7a0722bdf48f38ea53122d1375a0991c1a93fad2b2697b3b6d1c1e6decb.patch"
+    - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/a56ce10e321bcf84e1252ac05738c5e993bea1ef2fc2ab8a76533694bc1a5b91.json"
     - ".agentplane/tasks/202608061646-30TKV4/quality/objects/sha256/425dc49ad99db2ca9f60810ac83290977a16fdf6a35d74fe3f0c781f5388ee6d.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No acceptance-criteria or loaded-policy violations were identified in the frozen implementation and verification evidence."
+    - "Замороженный пакет заявляет прохождение всех одиннадцати проверок, но не содержит ни одной детерминированной записи выполнения: verification_records, runner_history и runtime_evidence пусты."
+  recovery_reason: "deterministic_evidence_gap"
 token_usage:
   agent_runs: 15
   input_tokens: 2990382
@@ -342,7 +343,7 @@ events:
     state: "ok"
     note: "All eleven declared checks pass on 60c5d0c9a, including the hosted-static Knip budget."
 doc_version: 3
-doc_updated_at: "2026-08-07T01:33:26.028Z"
+doc_updated_at: "2026-08-07T01:34:28.692Z"
 doc_updated_by: "CODER"
 description: "Add a natural-language task create entrypoint with deterministic defaults, explainable workflow route preview, concise human status, and dry-run execution preview while retaining existing advanced task new and agent-json contracts."
 sections:
