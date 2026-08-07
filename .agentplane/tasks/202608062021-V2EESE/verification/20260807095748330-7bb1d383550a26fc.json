@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:7bb1d383550a26fc0ffa3e5293c9b5f927cf8b967fc5e2c86c0249b1e1c1a5ed",
+  "implementation_sha": "4ed5bbb5b3e4042db0f5841e6477f9c62c9bcd56",
+  "kind": "task_verification_record",
+  "note": "Current implementation head passes exact three-role security projection tests, typecheck, critical suite, routing, and full ci:contract.",
+  "recorded_at": "2026-08-07T09:57:48.330Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts\n- bun run test:critical\n- bun run typecheck\n- node .agentplane/policy/check-routing.mjs",
+  "scope_digest": "sha256:43c07e69b4c42fd71bc8a90bc82544ba98c2854de2a76d4b854de6190b710d98",
+  "task_id": "202608062021-V2EESE",
+  "verification_command": "agentplane verify 202608062021-V2EESE --ok --by TESTER",
+  "verifier": "TESTER"
+}

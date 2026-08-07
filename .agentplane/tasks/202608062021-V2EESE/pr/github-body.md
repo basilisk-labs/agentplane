@@ -19,8 +19,8 @@ Compile a phase-aware policy gateway for PLANNER, EXECUTOR, and EVALUATOR semant
 - Note:
 
 ```text
-Applicable security.must constraints are projected into exact PLANNER, EXECUTOR, and EVALUATOR
-provider prompts while workflow choreography remains excluded.
+Current implementation head passes exact three-role security projection tests, typecheck, critical
+suite, routing, and full ci:contract.
 ```
 - Canonical workflow state lives in the task README.
 
