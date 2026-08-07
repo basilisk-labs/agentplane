@@ -11,7 +11,7 @@ type ProcessChoreographyMatch = {
 const PROCESS_CHOREOGRAPHY_PATTERNS = [
   {
     id: "task_command",
-    pattern: /\b(?:ap|agentplane)\s+task\s+(?!run\s+tool\b)[a-z][\w-]*\b/giu,
+    pattern: /\b(?:ap|agentplane)\s+task\s+(?:run\s+tool\s+[a-z][\w-]*|[a-z][\w-]*)\b/giu,
   },
   { id: "work_command", pattern: /\b(?:ap|agentplane)\s+work(?:\s+[a-z][\w-]*)?\b/giu },
   { id: "pr_command", pattern: /\b(?:ap|agentplane)\s+pr(?:\s+[a-z][\w-]*)?\b/giu },
@@ -25,12 +25,22 @@ const PROCESS_CHOREOGRAPHY_PATTERNS = [
   { id: "evaluator_execute", pattern: /\b(?:ap|agentplane)\s+evaluator\s+execute\b/giu },
   {
     id: "package_publish",
-    pattern: /\b(?:npm|bun)\s+publish\b/giu,
+    pattern: /\b(?:npm|bun)\s+(?:publish|version)\b/giu,
   },
   {
-    id: "git_control",
+    id: "changeset_release",
+    pattern: /\b(?:npx|bunx)?\s*changeset\s+(?:publish|version)\b/giu,
+  },
+  { id: "github_release", pattern: /\bgh\s+release\b/giu },
+  {
+    id: "git_shell_control",
     pattern:
-      /\bgit\s+(?:commit|push|merge|rebase|checkout|switch|branch|worktree|status|rev-parse)\b/giu,
+      /(?:^|[\n`])\s*(?:\$\s*)?git\s+(?!(?:blame|diff|grep|log|show)\b)(?:-[\w-]+\s+)*[a-z][\w-]*\b/gmu,
+  },
+  {
+    id: "git_imperative_control",
+    pattern:
+      /\b(?:run|execute|invoke|use)\s+`?git\s+(?!(?:blame|diff|grep|log|show)\b)(?:-[\w-]+\s+)*[a-z][\w-]*\b/giu,
   },
   { id: "github_pr", pattern: /\bgh\s+pr\b/giu },
 ] as const;
@@ -217,9 +227,19 @@ export function hasExplicitProcessMechanismRepairAuthority(
 export function assertSemanticProviderPromptHasNoProcessChoreography(opts: {
   prompt: string;
   process_mechanism_repair_authorized?: boolean;
+  declared_phase_tool_invocations?: string[];
 }): void {
   if (opts.process_mechanism_repair_authorized) return;
-  const matches = processChoreographyMatches(opts.prompt);
+  const declaredPhaseTools = new Set(
+    (opts.declared_phase_tool_invocations ?? []).map((invocation) =>
+      invocation.trim().replaceAll(/\s+/gu, " ").toLowerCase(),
+    ),
+  );
+  const matches = processChoreographyMatches(opts.prompt).filter((match) => {
+    if (match.id !== "task_command") return true;
+    const normalized = match.match.trim().replaceAll(/\s+/gu, " ").toLowerCase();
+    return !declaredPhaseTools.has(normalized);
+  });
   if (matches.length === 0) return;
   const summary = matches
     .map((match) => `${match.id}:${JSON.stringify(match.match)}`)

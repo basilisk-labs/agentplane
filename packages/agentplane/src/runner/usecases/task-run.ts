@@ -284,6 +284,9 @@ export async function prepareTaskRunnerExecution(opts: {
         process_mechanism_repair_authorized: hasExplicitProcessMechanismRepairAuthority(
           bundle.task,
         ),
+        declared_phase_tool_invocations: bundle.execution.phase_tools?.tools.flatMap((tool) =>
+          tool.allowed && tool.invocation ? [tool.invocation] : [],
+        ),
       });
     } catch (error) {
       throw new CliError({
