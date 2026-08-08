@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 61bd4667715586a301e556e7be7f6fa478a66f2a..a04fb279699f15072468e2b547e78c8b0e509285",
+      "command": "git diff --check 210d58dd0ea76db3e72eeedbaf61fd6e73cd7153..e3411fc8ec75a4ce8de5357183b2843e47dd2568",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 61bd4667715586a301e556e7be7f6fa478a66f2a..a04fb279699f15072468e2b547e78c8b0e509285",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 210d58dd0ea76db3e72eeedbaf61fd6e73cd7153..e3411fc8ec75a4ce8de5357183b2843e47dd2568",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,8 @@
         "M\t.agentplane/tasks/202608061646-BYY8A1/pr/github-body.md",
         "M\t.agentplane/tasks/202608061646-BYY8A1/pr/meta.json",
         "M\t.agentplane/tasks/202608061646-BYY8A1/pr/review.md",
-        "M\twebsite/static/llms-full.txt"
+        "A\twebsite/static/img/social/docs/releases/v0.7.5.png",
+        "M\twebsite/static/img/social/manifest.json"
       ]
     },
     {
@@ -31,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "61bd4667715586a301e556e7be7f6fa478a66f2a",
-  "implementation_commit": "a04fb279699f15072468e2b547e78c8b0e509285",
+  "execution_base_commit": "210d58dd0ea76db3e72eeedbaf61fd6e73cd7153",
+  "implementation_commit": "e3411fc8ec75a4ce8de5357183b2843e47dd2568",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
