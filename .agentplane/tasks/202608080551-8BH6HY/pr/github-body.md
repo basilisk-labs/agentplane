@@ -33,13 +33,13 @@ packages/agentplane/src/commands/task/external-agent-purpose.test.ts
 
 ```text
  .../src/cli/run-cli.core.task-advance.test.ts      |  61 +++++
- ...i.core.task-advance.worktree-resolution.test.ts | 293 +++++++++++++++++++++
+ ...i.core.task-advance.worktree-resolution.test.ts | 299 +++++++++++++++++++++
  .../external-agent-implementation-authority.ts     |   3 +-
  .../commands/task/external-agent-purpose.test.ts   |  19 ++
  .../src/commands/task/external-agent-purpose.ts    |  11 +
  .../task/external-agent-supervisor-episode.ts      | 116 ++++++++
  .../src/commands/task/external-agent-supervisor.ts | 113 +-------
- 7 files changed, 509 insertions(+), 107 deletions(-)
+ 7 files changed, 515 insertions(+), 107 deletions(-)
 ```
 
 </details>
