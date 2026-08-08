@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { readdir } from "node:fs/promises";
+import { mkdir, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
@@ -10,6 +10,7 @@ import {
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
 } from "@agentplane/testkit";
+import { inferUserTaskIntent } from "../commands/task/create.command.js";
 import { runCli } from "./run-cli.js";
 
 installRunCliIntegrationHarness();
@@ -123,6 +124,96 @@ describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, () 
         }),
       );
       expect(task.frontmatter.blueprint_request).toBe("code.direct");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("requires confirmation and isolation when natural-language intent is unknown", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "create", "Make this better", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        task_id: string;
+        inferred_intent: {
+          code: string;
+          task_kind: string | null;
+          mutation_scope: string;
+          blueprint_request: string | null;
+          confirmation_required: boolean;
+        };
+        execution_route: { selected_mode: string; reason_codes: string[] };
+      };
+      expect(payload.inferred_intent).toEqual(
+        expect.objectContaining({
+          code: "unknown_intent",
+          task_kind: null,
+          mutation_scope: "unknown",
+          blueprint_request: null,
+          confirmation_required: true,
+        }),
+      );
+      expect(payload.execution_route).toMatchObject({
+        selected_mode: "branch_pr",
+        reason_codes: ["mutation_scope_unknown"],
+      });
+
+      const task = await readTask({ cwd: root, rootOverride: root, taskId: payload.task_id });
+      expect(task.frontmatter.task_kind).toBeUndefined();
+      expect(task.frontmatter.mutation_scope).toBe("unknown");
+      expect(task.frontmatter.execution_route).toEqual(
+        expect.objectContaining({
+          selected_mode: "branch_pr",
+          reason_codes: ["mutation_scope_unknown"],
+          frozen: true,
+        }),
+      );
+      expect(inferUserTaskIntent("Address ambiguous behavior")).toMatchObject({
+        inference_code: "unknown_intent",
+        mutationScope: "unknown",
+        confirmation_required: true,
+      });
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recovers an interrupted repository-wide creation lock", async () => {
+    const root = await mkGitRepoRoot();
+    const lockPath = path.join(root, ".agentplane", "tasks", "..task-create.README.md.lock");
+    await mkdir(path.dirname(lockPath), { recursive: true });
+    await writeFile(
+      lockPath,
+      `${JSON.stringify({
+        schema_version: 1,
+        generation: "crashed-task-create",
+        process_instance_id: "crashed-task-create",
+        owner_pid: 2_147_483_647,
+        owner_command: "missing",
+        owner_started_at: "2026-01-01T00:00:00.000Z",
+        acquired_at: "2026-01-01T00:00:00.000Z",
+      })}\n`,
+      "utf8",
+    );
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "create",
+        "Fix the parser after interruption",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as { task_id: string };
+      expect(payload.task_id).toMatch(/^\d{12}-[A-Z0-9]{6}$/u);
+      const taskDirectoryEntries = await readdir(path.join(root, ".agentplane", "tasks"));
+      expect(
+        taskDirectoryEntries.filter((name) => name.startsWith("..task-create.README.md.lock")),
+      ).toEqual([]);
     } finally {
       io.restore();
     }

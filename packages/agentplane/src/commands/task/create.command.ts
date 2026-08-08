@@ -28,6 +28,7 @@ export type InferredTaskIntent = Pick<
   "taskKind" | "mutationScope" | "riskFlags" | "blueprintRequest" | "tags"
 > & {
   inference_code: string;
+  confirmation_required?: boolean;
 };
 
 const RELEASE_TERMS = ["release", "publish", "version bump", "npm", "релиз", "опубликов", "верси"];
@@ -116,9 +117,54 @@ const COMPLEX_CHANGE_TERMS = [
   "нескольк",
   "фреймворк",
 ];
+const CODE_CHANGE_WORDS = new Set([
+  "fix",
+  "fixes",
+  "fixed",
+  "fixing",
+  "implement",
+  "implements",
+  "implemented",
+  "implementing",
+  "add",
+  "adds",
+  "added",
+  "adding",
+  "update",
+  "updates",
+  "updated",
+  "updating",
+  "change",
+  "changes",
+  "changed",
+  "changing",
+  "remove",
+  "removes",
+  "removed",
+  "removing",
+  "bug",
+  "bugs",
+  "build",
+  "builds",
+  "built",
+  "building",
+  "create",
+  "creates",
+  "created",
+  "creating",
+]);
+const CODE_CHANGE_STEMS = ["исправ", "почин", "добав", "реализ", "измен", "удал", "баг"];
 
 function containsAny(value: string, terms: readonly string[]): boolean {
   return terms.some((term) => value.includes(term));
+}
+
+function containsCodeChangeIntent(value: string): boolean {
+  const englishWords = value.match(/[a-z]+/gu) ?? [];
+  return (
+    englishWords.some((word) => CODE_CHANGE_WORDS.has(word)) ||
+    containsAny(value, CODE_CHANGE_STEMS)
+  );
 }
 
 export function inferUserTaskIntent(outcome: string, description?: string): InferredTaskIntent {
@@ -214,13 +260,22 @@ export function inferUserTaskIntent(outcome: string, description?: string): Infe
       inference_code: "complex_code_change",
     };
   }
+  if (containsCodeChangeIntent(text)) {
+    return {
+      taskKind: "code",
+      mutationScope: "code",
+      riskFlags: [],
+      blueprintRequest: "code.direct",
+      tags: ["code"],
+      inference_code: "bounded_code_change",
+    };
+  }
   return {
-    taskKind: "code",
-    mutationScope: "code",
+    mutationScope: "unknown",
     riskFlags: [],
-    blueprintRequest: "code.direct",
-    tags: ["code"],
-    inference_code: "bounded_code_change",
+    tags: ["intake"],
+    inference_code: "unknown_intent",
+    confirmation_required: true,
   };
 }
 
@@ -367,11 +422,12 @@ export function makeRunTaskCreateHandler(
       status: "semantic_input_required" as const,
       inferred_intent: {
         code: intent.inference_code,
-        task_kind: intent.taskKind,
+        task_kind: intent.taskKind ?? null,
         mutation_scope: intent.mutationScope,
         risk_flags: intent.riskFlags,
-        blueprint_request: intent.blueprintRequest,
+        blueprint_request: intent.blueprintRequest ?? null,
         tags: intent.tags,
+        confirmation_required: intent.confirmation_required === true,
       },
       execution_route: route,
       required_role: "PLANNER" as const,
@@ -388,8 +444,12 @@ export function makeRunTaskCreateHandler(
           {
             label: "intent",
             value:
-              `${intent.inference_code} kind=${intent.taskKind} ` +
+              `${intent.inference_code} kind=${intent.taskKind ?? "unknown"} ` +
               `mutation=${intent.mutationScope}`,
+          },
+          {
+            label: "intent_confirmation",
+            value: intent.confirmation_required === true ? "required" : "not_required",
           },
           {
             label: "route",

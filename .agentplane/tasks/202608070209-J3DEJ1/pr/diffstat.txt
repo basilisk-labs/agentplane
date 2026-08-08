@@ -1,0 +1,6 @@
+ .../src/cli/run-cli.core.tasks.user-create.test.ts |  93 +++++++++++-
+ .../agentplane/src/commands/task/create.command.ts |  76 +++++++++-
+ .../src/runtime/task-routing/resolve.test.ts       |  16 ++
+ packages/core/src/tasks/task-readme-io.test.ts     |  90 ++++++++---
+ packages/core/src/tasks/task-readme-io.ts          | 166 ++++++++++++++++++++-
+ 5 files changed, 404 insertions(+), 37 deletions(-)

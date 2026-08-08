@@ -41,6 +41,22 @@ describe("task execution route", () => {
     ).toBe("direct");
   });
 
+  it("isolates unknown mutation scope even when direct is requested", () => {
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    expect(
+      resolveTaskExecutionRoute({
+        config,
+        requestedMode: "direct",
+        task: { mutation_scope: "unknown", risk_flags: [] },
+      }),
+    ).toMatchObject({
+      requested_mode: "direct",
+      selected_mode: "branch_pr",
+      reason_codes: ["direct_request_overridden", "mutation_scope_unknown"],
+    });
+  });
+
   it("treats repository branch_pr mode as a non-downgradeable policy floor", () => {
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
