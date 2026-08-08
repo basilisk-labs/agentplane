@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608080403-N0VXJ0-b0206d2f3a35a3f51530e061",
+  "prepared_at": "2026-08-08T04:18:20.093Z",
+  "task": {
+    "id": "202608080403-N0VXJ0",
+    "revision": 9,
+    "objective": "Archive resolved supervisor route incident\n\nPreserve INC-20260807-01 with its final merged evidence in docs/developer/incident-archive.mdx, then remove it from the active repository and bundled incident registries. The dependency-readiness and supervisor protocol failure is repaired by merged task 202608062021-MCY8ZC and its focused, hosted, and evaluator evidence. Keep incident registry semantics and generated assets aligned so the release incident gate passes.",
+    "acceptance_criteria": [
+      "bun run agents:check",
+      "bun run release:incidents:check",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Preserve INC-20260807-01 with its final merged evidence in docs/developer/incident-archive.mdx, then remove it from the active repository and bundled incident registries. The dependency-readiness and supervisor protocol failure is repaired by merged task 202608062021-MCY8ZC and its focused, hosted, and evaluator evidence. Keep incident registry semantics and generated assets aligned so the release incident gate passes.\n- Out of scope: unrelated refactors not required for \"Archive resolved supervisor route incident\".",
+      "1. Confirm task 202608062021-MCY8ZC is DONE and its merged implementation, dependency-route parity tests, exact protocol tests, hosted CI, and evaluator evidence resolve INC-20260807-01. 2. Append one historical archive entry to docs/developer/incident-archive.mdx containing the incident id, original failure, final state, evidence task and commit, enforcement, and resolution. 3. Remove the incident entry from .agentplane/policy/incidents.md and packages/agentplane/assets/policy/incidents.md without changing unrelated policy. 4. Run policy routing, generated-agent asset checks, release incident gate, formatting, and diff checks. 5. Obtain evaluator pass, hosted checks, and merge before the code fix and release branches are refreshed.",
+      "PLANNER fallback scaffold for \"Archive resolved supervisor route incident\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Archive resolved supervisor route incident\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "545fcf42424bbf202f490660f3bd2f446f8b47f7",
+  "diff_base_sha": "4a2895659e677071caaa9b56cadf35df8e261e82",
+  "blueprint_digest": "9090cfbeaabacdf524924ee64dcd560636a7f61b009b35d1d3235f0ab18df533",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608080403-N0VXJ0/quality/20260808-041820093-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:2fbaadb8fa1e224bd727f6ccf9a7f14ec30c0812de18318b400ac7f38b2e42b2",
+    "prompt_path": ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/a01477e4de8643060d74f12891a65d806d7c9a931ef6cb929a1aaa9ebc51a62c.md",
+    "result_schema_path": ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608080403-N0VXJ0/README.md",
+      "sha256": "sha256:279bf34a9c18c9c7af31355ffb4586ae71b84c1186e02a14b926bd7cb63b14cd",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/4dd42e85fe95b8b553e4117112e35c40acd6b3467a9e8b0819d6bcf2a360b516.patch",
+      "sha256": "sha256:4dd42e85fe95b8b553e4117112e35c40acd6b3467a9e8b0819d6bcf2a360b516",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/d487d3051f2e71cc1dc287d8033b748fe0847fb43169d583376654225586a418.json",
+      "sha256": "sha256:d487d3051f2e71cc1dc287d8033b748fe0847fb43169d583376654225586a418",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608080403-N0VXJ0/verification/20260808041758995-1eb203077211e9b7.json",
+      "sha256": "sha256:bbaeb2bacf47bbde513c027fd6f366585d7607dec802578b2f76487c3e3c33a8",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-1",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/evaluator/n0vxj0-source-chain.md",
+      "sha256": "sha256:b83057bdf92aa600745c30ea1f149ac9a7273b354850396b7073c2529dc6ee52",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/e7f0d8937798e7a28e334c69c2a382fb72e68022016a5544cd7eb10b3267bdcb.json",
+      "sha256": "sha256:e7f0d8937798e7a28e334c69c2a382fb72e68022016a5544cd7eb10b3267bdcb",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.docs.md",
+      "sha256": "sha256:67cf60d5b18640db0c0141b9a6fea266f6cf89aecc8e7bda542e43ab7b4ef0ea",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

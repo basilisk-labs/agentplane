@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "Frozen evidence does not establish that source task 202608062021-MCY8ZC is DONE or that its cited implementation and closure commits, hosted checks, and evaluator result resolve INC-20260807-01.",
+      "broken_invariant": "Acceptance criterion 1 requires confirmation of the source task's merged implementation, dependency-route parity tests, exact protocol tests, hosted CI, and evaluator evidence before the incident can be archived; the archive text and TESTER note assert these facts without source-task evidence in the frozen packet.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608080403-N0VXJ0/README.md",
+          "sha256": "sha256:2961b5eec3e288efad8fd80a9868f8031bfba4278d7d49fa4f3fbbf99fc278db",
+          "section": "Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/4dd42e85fe95b8b553e4117112e35c40acd6b3467a9e8b0819d6bcf2a360b516.patch",
+          "sha256": "sha256:4dd42e85fe95b8b553e4117112e35c40acd6b3467a9e8b0819d6bcf2a360b516",
+          "section": "docs/developer/incident-archive.mdx"
+        },
+        {
+          "path": ".agentplane/tasks/202608080403-N0VXJ0/verification/20260808041049139-121b39462852ddfe.json",
+          "sha256": "sha256:cedd746bf1e7385eac8d5d7b43a77c9b3ec68cdc587d6361e2e19abbcbd7df28",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Frozen evidence proving source task 202608062021-MCY8ZC is DONE and its implementation commit 75263193a470d21f58f842d55d2c8fab711d1bd4 is included in merged closure commit f1d00ff90a8754e39908b4602227fb67655d414d.",
+    "Frozen hosted-CI and evaluator-pass evidence for source task 202608062021-MCY8ZC, including the dependency-route parity, exact supervisor protocol, and branch-worktree cases cited by the archive entry."
+  ],
+  "hidden_assumptions": [
+    "The commit hashes and DONE state written into the archive entry accurately identify the merged source-task evidence.",
+    "Passing the current task's routing, incident-registry, generated-asset, formatting, and cleanliness checks is sufficient to prove the archived incident's underlying behavioral repair."
+  ],
+  "recovery_context": "Provide frozen source-task evidence that verifies task 202608062021-MCY8ZC is DONE, maps the cited implementation commit to the merged closure commit, and records the focused protocol/dependency-route tests, hosted CI, and evaluator pass claimed by the archive entry."
+}

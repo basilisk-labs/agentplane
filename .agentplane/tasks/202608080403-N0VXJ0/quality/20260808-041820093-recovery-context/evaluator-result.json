@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "low",
+      "summary": "The frozen diff preserves INC-20260807-01 in the historical archive, removes the matching active entries from both synchronized registries, and the frozen source-chain evidence establishes the repaired task’s DONE state, evaluator pass, hosted checks, merge, and implementation equivalence.",
+      "broken_invariant": "None; the declared archival, registry-alignment, verification, and recovery-context invariants are satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/4dd42e85fe95b8b553e4117112e35c40acd6b3467a9e8b0819d6bcf2a360b516.patch",
+          "sha256": "sha256:4dd42e85fe95b8b553e4117112e35c40acd6b3467a9e8b0819d6bcf2a360b516"
+        },
+        {
+          "path": ".agentplane/cache/evaluator/n0vxj0-source-chain.md",
+          "sha256": "sha256:b83057bdf92aa600745c30ea1f149ac9a7273b354850396b7073c2529dc6ee52",
+          "section": "Source task state; Frozen verification and evaluator result; Pull request and merge proof; Evaluated-to-merged implementation mapping"
+        },
+        {
+          "path": ".agentplane/tasks/202608080403-N0VXJ0/verification/20260808041758995-1eb203077211e9b7.json",
+          "sha256": "sha256:bbaeb2bacf47bbde513c027fd6f366585d7607dec802578b2f76487c3e3c33a8",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/d487d3051f2e71cc1dc287d8033b748fe0847fb43169d583376654225586a418.json",
+          "sha256": "sha256:d487d3051f2e71cc1dc287d8033b748fe0847fb43169d583376654225586a418",
+          "section": "verification; runtime_evidence; direct_supervision"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

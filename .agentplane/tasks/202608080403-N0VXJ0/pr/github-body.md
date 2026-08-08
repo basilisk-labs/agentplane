@@ -16,7 +16,12 @@ Preserve INC-20260807-01 with its final merged evidence in docs/developer/incide
 ## Verification
 
 - State: ok
-- Note: Archived INC-20260807-01 is preserved with merged evidence; both active registries are empty and synchronized.
+- Note:
+
+```text
+Portable task-local evidence now covers the source task, evaluator, hosted PR, merge equivalence,
+policy routing, generated assets, and release incident gate.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
