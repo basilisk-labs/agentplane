@@ -1,0 +1,8 @@
+{
+  "checks": [],
+  "kind": "direct_task_declared_checks",
+  "reason": "Unsupported declared check: AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:full",
+  "schema_version": 1,
+  "status": "unsupported",
+  "task_id": "202608061646-BYY8A1"
+}

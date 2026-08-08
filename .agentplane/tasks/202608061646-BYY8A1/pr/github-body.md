@@ -15,14 +15,14 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Unsupported declared check: AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-08T03:44:44.414Z
+- Updated: 2026-08-08T03:52:32.565Z
 - Branch: task/202608061646-BYY8A1/qualify-and-publish-agentplane-0-7-5-supervisor
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

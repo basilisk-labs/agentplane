@@ -1,0 +1,15 @@
+{
+  "details": "",
+  "digest": "sha256:8e45f861f51a2556f61284154fb5c58635841d4a3d776b6bb07651d42c0b084a",
+  "implementation_sha": "d6dd00111035c5aff69c88d495d2f3503d597f90",
+  "kind": "task_verification_record",
+  "note": "Rework: Unsupported declared check: AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:full",
+  "recorded_at": "2026-08-08T03:54:12.731Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "- AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:full\n- bun run ci:release-extras\n- bun run e2e:v0.7.1:gate\n- bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check\n- npm view agentplane version && npm view @agentplaneorg/core version && npm view @agentplaneorg/recipes version && npm view @agentplaneorg/spec version && npm view @agentplaneorg/testkit version",
+  "scope_digest": "sha256:444e80e5e6ac40e5e4a7eb589b240afb647ac0fd12411aef4136db88c015187b",
+  "task_id": "202608061646-BYY8A1",
+  "verification_command": "agentplane verify 202608061646-BYY8A1 --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
