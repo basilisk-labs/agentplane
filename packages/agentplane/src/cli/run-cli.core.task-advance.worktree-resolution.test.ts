@@ -293,7 +293,7 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
       "utf8",
     );
-    expect(taskReadme).toMatch(/commit:\n  hash: "[0-9a-f]{40}"/u);
+    expect(taskReadme).toMatch(/commit:\n {2}hash: "[0-9a-f]{40}"/u);
     expect(taskReadme).not.toContain(`hash: "${priorImplementationHead}"`);
   });
 });

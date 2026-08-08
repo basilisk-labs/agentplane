@@ -169,6 +169,32 @@ function reworkTask(verificationUpdatedAt: string): TaskData {
   return task;
 }
 
+function verificationReworkTask(withNewImplementation: boolean): TaskData {
+  const task = reviewedTask();
+  task.status = "DOING";
+  task.verification = {
+    state: "needs_rework",
+    updated_at: "2026-07-24T00:00:00.000Z",
+    updated_by: "SUPERVISOR",
+    note: "Declared verification failed.",
+  };
+  task.quality_review = undefined;
+  if (withNewImplementation) {
+    task.commit = { hash: headSha, message: "fix: address verification rework" };
+    task.events = [
+      {
+        type: "status",
+        at: "2026-07-24T00:00:01.000Z",
+        author: "SUPERVISOR",
+        from: "DOING",
+        to: "DOING",
+        note: "Implementation committed after verification rework.",
+      },
+    ];
+  }
+  return task;
+}
+
 describe("DOING route quality rework", () => {
   it("keeps fresh evaluator rework blocking until a newer verification exists", async () => {
     const blockers = await blockersFor(
@@ -204,32 +230,6 @@ describe("DOING route quality rework", () => {
 });
 
 describe("DOING route verification rework", () => {
-  function verificationReworkTask(withNewImplementation: boolean): TaskData {
-    const task = reviewedTask();
-    task.status = "DOING";
-    task.verification = {
-      state: "needs_rework",
-      updated_at: "2026-07-24T00:00:00.000Z",
-      updated_by: "SUPERVISOR",
-      note: "Declared verification failed.",
-    };
-    task.quality_review = undefined;
-    if (withNewImplementation) {
-      task.commit = { hash: headSha, message: "fix: address verification rework" };
-      task.events = [
-        {
-          type: "status",
-          at: "2026-07-24T00:00:01.000Z",
-          author: "SUPERVISOR",
-          from: "DOING",
-          to: "DOING",
-          note: "Implementation committed after verification rework.",
-        },
-      ];
-    }
-    return task;
-  }
-
   it("keeps rework semantic while no newer implementation is recorded", async () => {
     const blockers = await blockersFor(
       headSha,
