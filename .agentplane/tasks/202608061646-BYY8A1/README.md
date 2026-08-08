@@ -1,10 +1,10 @@
 ---
 id: "202608061646-BYY8A1"
 title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "DOCS"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on:
@@ -41,13 +41,11 @@ plan_approval:
   note: null
 verification:
   state: "blocked_external"
-  updated_at: "2026-08-08T09:27:35.827Z"
+  updated_at: "2026-08-08T09:36:39.589Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 6
-commit:
-  hash: "e3411fc8ec75a4ce8de5357183b2843e47dd2568"
-  message: "🚧 BYY8A1 task: apply external agent result"
+  note: "Rework: Declared check failed: bun run ci:release-extras"
+  attempts: 7
+commit: null
 comments:
   -
     author: "DOCS"
@@ -180,8 +178,14 @@ events:
     to: "DOING"
     note: "Implementation committed: e3411fc8ec75. CLI accepted one state-bound external-agent semantic result."
     commit: "e3411fc8ec75a4ce8de5357183b2843e47dd2568"
+  -
+    type: "verify"
+    at: "2026-08-08T09:36:39.589Z"
+    author: "SUPERVISOR"
+    state: "blocked_external"
+    note: "Rework: Declared check failed: bun run ci:release-extras"
 doc_version: 3
-doc_updated_at: "2026-08-08T09:29:14.706Z"
+doc_updated_at: "2026-08-08T09:36:40.586Z"
 doc_updated_by: "SUPERVISOR"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
@@ -376,6 +380,46 @@ sections:
     Command: bun run ci:local:full
     Result: fail
     Evidence: .agentplane/tasks/202608061646-BYY8A1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608061646-BYY8A1 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+    - old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608061646-BYY8A1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T09:36:39.589Z — VERIFY — blocked_external
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:release-extras
+    Attempts: 7
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T09:29:14.706Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608061646-BYY8A1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608061646-BYY8A1 declared verification
+
+    Command: bun run ci:release-extras
+    Result: fail
+    Evidence: .agentplane/tasks/202608061646-BYY8A1/supervision/declared-checks.json#check-2
     Scope: branch_pr task 202608061646-BYY8A1 declared verification
 
     BlueprintSnapshotRef:
@@ -607,6 +651,46 @@ Details:
 Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202608061646-BYY8A1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608061646-BYY8A1 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+- old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608061646-BYY8A1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T09:36:39.589Z — VERIFY — blocked_external
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:release-extras
+Attempts: 7
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T09:29:14.706Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
+
+Details:
+
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608061646-BYY8A1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608061646-BYY8A1 declared verification
+
+Command: bun run ci:release-extras
+Result: fail
+Evidence: .agentplane/tasks/202608061646-BYY8A1/supervision/declared-checks.json#check-2
 Scope: branch_pr task 202608061646-BYY8A1 declared verification
 
 BlueprintSnapshotRef:
