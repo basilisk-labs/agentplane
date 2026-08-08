@@ -41,7 +41,7 @@ Created: 2026-08-08T03:44:44.414Z
  ...li.core.route-decision.pr-open-metadata.test.ts |  17 ++
  .../src/cli/run-cli.core.task-advance.test.ts      |  57 ++++++
  .../cli/run-cli.core.task-next-action-json.test.ts |  22 ++
- ...cli.critical.agent-efficiency-candidate.test.ts |  34 ++++
+ ...cli.critical.agent-efficiency-candidate.test.ts |  88 +++++---
  ...critical.agent-efficiency-replay-driver.test.ts |  59 +++++-
  .../shared/supervisor-execution-episode.test.ts    |  43 ++++
  .../shared/supervisor-execution-episode.ts         |  59 +-----
@@ -59,7 +59,7 @@ Created: 2026-08-08T03:44:44.414Z
  .../src/runner/usecases/task-run-bootstrap.ts      |  14 +-
  packages/agentplane/src/shared/stable-file.test.ts |  23 +++
  scripts/README.md                                  |   2 +-
- .../bench/capture-agent-efficiency-candidate.mjs   | 139 +++++++------
+ .../bench/capture-agent-efficiency-candidate.mjs   | 145 ++++++++------
  .../agent-efficiency-anchor-supervisor.mjs         |   7 +-
  .../internal/agent-efficiency-codex-runtime.mjs    |  38 +++-
  .../bench/run-agent-efficiency-codex-replay.mjs    |   2 +
@@ -69,7 +69,7 @@ Created: 2026-08-08T03:44:44.414Z
  website/static/img/social/docs/releases/v0.7.5.png | Bin 0 -> 53016 bytes
  website/static/img/social/manifest.json            |   8 +
  website/static/llms-full.txt                       |  52 ++++-
- 40 files changed, 1137 insertions(+), 290 deletions(-)
+ 40 files changed, 1172 insertions(+), 315 deletions(-)
 ```
 
 </details>
