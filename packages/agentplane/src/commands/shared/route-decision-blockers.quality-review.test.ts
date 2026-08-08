@@ -186,6 +186,7 @@ function verificationReworkTask(withNewImplementation: boolean): TaskData {
         type: "status",
         at: "2026-07-24T00:00:01.000Z",
         author: "SUPERVISOR",
+        commit: headSha,
         from: "DOING",
         to: "DOING",
         note: "Implementation committed after verification rework.",
@@ -237,6 +238,27 @@ describe("DOING route verification rework", () => {
       openPrFlow(),
       verificationReworkTask(false),
     );
+
+    expect(blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+    );
+  });
+
+  it("ignores an unrelated later DOING event for the failed implementation commit", async () => {
+    const task = verificationReworkTask(false);
+    task.commit = { hash: headSha, message: "fix: failed implementation" };
+    task.events = [
+      {
+        type: "status",
+        at: "2026-07-24T00:00:01.000Z",
+        author: "SUPERVISOR",
+        from: "DOING",
+        to: "DOING",
+        note: "Unrelated task-state refresh.",
+      },
+    ];
+
+    const blockers = await blockersFor(headSha, undefined, openPrFlow(), task);
 
     expect(blockers).toEqual(
       expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),

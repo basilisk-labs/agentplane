@@ -213,6 +213,7 @@ describe("tasks-export", () => {
         '  - type: "status"',
         '    at: "2026-02-07T10:00:00.000Z"',
         '    author: "CODER"',
+        `    commit: "${"a".repeat(40)}"`,
         '    from: "TODO"',
         '    to: "DOING"',
         "doc_version: 3",
@@ -229,6 +230,7 @@ describe("tasks-export", () => {
     const exported = snapshot.tasks.find((t) => t.id === taskId);
     expect(exported?.events?.length).toBe(1);
     expect(exported?.events?.[0]?.type).toBe("status");
+    expect(exported?.events?.[0]?.commit).toBe("a".repeat(40));
   });
 
   it("preserves doc_version=3 in exported snapshots", async () => {
