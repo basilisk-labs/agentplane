@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608062023-V3WHE9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-08T01:26:22.796Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "9ecb9fa40f42d2dc934c91da8d5cb814a7f122c8",
+  "blueprint_digest": "a3242977958400cf037cf84a545367555fb4ee1e5e843f158d09e81746ab2f18",
+  "findings": [
+    "GC can delete an object that becomes reachable after inventory construction because apply mode rechecks only the object's file identity and hash, not reachability or pin state, immediately before unlinking."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/2e0fbb8166689441f3fcd937bc2fc7750e54aa92dcb7289ec4f12de9eb99a13a.patch",
+    ".agentplane/tasks/202608062023-V3WHE9/README.md"
+  ],
+  "missing_tests": [
+    "A GC apply concurrency test in which a manifest referencing an unchanged collectible object is atomically published after inventory construction but before unlink; GC must preserve the object or abort.",
+    "A GC apply concurrency test in which task state changes to active, failing, or release-pinned after inventory construction but before unlink; GC must preserve the object or abort."
+  ],
+  "hidden_assumptions": [
+    "No manifest or task-retention state can change between the initial inventory scan and each unlink.",
+    "Hash and file-metadata stability alone are sufficient proof that an object remains unreferenced and unpinned."
+  ],
+  "residual_risks": [
+    "Rework GC apply so each candidate's reachability, task pin/failure/release state, expiry, and hash are revalidated at the deletion boundary under a concurrency-safe protocol; add manifest-publication and task-state race tests before reevaluation."
+  ]
+}

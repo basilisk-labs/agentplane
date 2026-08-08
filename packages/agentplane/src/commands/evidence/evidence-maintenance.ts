@@ -51,6 +51,33 @@ async function assertCleanRepository(root: string): Promise<void> {
   }
 }
 
+async function assertOnlyExpectedGcChanges(
+  root: string,
+  deletedPaths: ReadonlySet<string>,
+): Promise<void> {
+  const { stdout } = await execFileAsync(
+    "git",
+    ["status", "--porcelain=v1", "-z", "--untracked-files=all"],
+    { cwd: root, encoding: "buffer", maxBuffer: 16 * 1024 * 1024 },
+  );
+  const unexpected = stdout
+    .toString("utf8")
+    .split("\0")
+    .filter(Boolean)
+    .filter((entry) => entry.startsWith(" D ") && deletedPaths.has(entry.slice(3)) === false);
+  const nonDeletionChanges = stdout
+    .toString("utf8")
+    .split("\0")
+    .filter(Boolean)
+    .filter((entry) => !entry.startsWith(" D "));
+  if (unexpected.length > 0 || nonDeletionChanges.length > 0) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Evidence maintenance stopped because repository state changed during GC.",
+    });
+  }
+}
+
 function assertApplyConfirmed(apply: boolean, yes: boolean): void {
   if (apply && !yes) {
     throw new CliError({
@@ -62,9 +89,11 @@ function assertApplyConfirmed(apply: boolean, yes: boolean): void {
 
 async function assertObjectUnchanged(object: EvidenceObjectRecord): Promise<void> {
   const entry = await lstat(object.absolute_path, { bigint: true }).catch(() => null);
+  const inodeKey = entry ? `${entry.dev}:${entry.ino}` : null;
   if (
     !entry?.isFile() ||
     entry.isSymbolicLink() ||
+    inodeKey !== object.inode_key ||
     Number(entry.size) !== object.size_bytes ||
     Number(entry.mtimeNs / 1_000_000n) !== object.mtime_ms ||
     (object.digest !== null && (await sha256EvidenceFile(object.absolute_path)) !== object.digest)
@@ -74,6 +103,33 @@ async function assertObjectUnchanged(object: EvidenceObjectRecord): Promise<void
       message: `Evidence object changed during maintenance: ${object.path}`,
     });
   }
+}
+
+async function revalidateCollectibleObject(opts: {
+  root: string;
+  workflowDir: string;
+  object: EvidenceObjectRecord;
+  deletedPaths: ReadonlySet<string>;
+  now?: Date;
+}): Promise<EvidenceObjectRecord> {
+  await assertObjectUnchanged(opts.object);
+  await assertOnlyExpectedGcChanges(opts.root, opts.deletedPaths);
+  const inventory = await buildEvidenceInventory(opts);
+  assertSafeInventory(inventory);
+  const current = inventory.objects.find((candidate) => candidate.path === opts.object.path);
+  if (
+    !current?.collectible ||
+    current.digest !== opts.object.digest ||
+    current.inode_key !== opts.object.inode_key
+  ) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Evidence object is no longer collectible: ${opts.object.path}`,
+    });
+  }
+  await assertObjectUnchanged(current);
+  await assertOnlyExpectedGcChanges(opts.root, opts.deletedPaths);
+  return current;
 }
 
 function compactCandidates(inventory: EvidenceInventory): {
@@ -185,10 +241,18 @@ export async function garbageCollectEvidenceObjects(opts: {
   const collectible = inventory.objects.filter((object) => object.collectible);
   if (opts.apply) {
     await assertCleanRepository(opts.root);
+    const deletedPaths = new Set<string>();
     for (const object of collectible) {
       await opts.beforeUnlink?.(object);
-      await assertObjectUnchanged(object);
-      await unlink(object.absolute_path);
+      const current = await revalidateCollectibleObject({
+        root: opts.root,
+        workflowDir: opts.workflowDir,
+        object,
+        deletedPaths,
+        now: opts.now,
+      });
+      await unlink(current.absolute_path);
+      deletedPaths.add(current.path);
     }
   }
   return {

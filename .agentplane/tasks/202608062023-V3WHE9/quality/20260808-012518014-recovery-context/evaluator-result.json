@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "GC can delete an object that becomes reachable after inventory construction because apply mode rechecks only the object's file identity and hash, not reachability or pin state, immediately before unlinking.",
+      "broken_invariant": "Apply mode may delete only objects proven unreferenced or expired at the deletion boundary and must protect concurrent writers. A concurrent evaluator can publish a manifest referencing an unchanged candidate between the initial inventory scan and unlink, leaving the new manifest with a missing object.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/2e0fbb8166689441f3fcd937bc2fc7750e54aa92dcb7289ec4f12de9eb99a13a.patch",
+          "sha256": "sha256:2e0fbb8166689441f3fcd937bc2fc7750e54aa92dcb7289ec4f12de9eb99a13a",
+          "section": "evidence-maintenance.ts garbageCollectEvidenceObjects and evidence-maintenance.test.ts concurrent-writer coverage"
+        },
+        {
+          "path": ".agentplane/tasks/202608062023-V3WHE9/README.md",
+          "sha256": "sha256:6486bbca3666ee95ef64c56ea56231d2fc5300d9bf5ff1756f8e8bbf2298829b",
+          "section": "Plan acceptance criteria 4 and 5"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A GC apply concurrency test in which a manifest referencing an unchanged collectible object is atomically published after inventory construction but before unlink; GC must preserve the object or abort.",
+    "A GC apply concurrency test in which task state changes to active, failing, or release-pinned after inventory construction but before unlink; GC must preserve the object or abort."
+  ],
+  "hidden_assumptions": [
+    "No manifest or task-retention state can change between the initial inventory scan and each unlink.",
+    "Hash and file-metadata stability alone are sufficient proof that an object remains unreferenced and unpinned."
+  ],
+  "recovery_context": "Rework GC apply so each candidate's reachability, task pin/failure/release state, expiry, and hash are revalidated at the deletion boundary under a concurrency-safe protocol; add manifest-publication and task-state race tests before reevaluation."
+}

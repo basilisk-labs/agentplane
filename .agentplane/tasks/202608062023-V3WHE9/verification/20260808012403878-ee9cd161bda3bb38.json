@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:ee9cd161bda3bb3826ebf401c3c9fa0a88571ce3a2665ba271395f080c92f8ac",
+  "implementation_sha": "9ecb9fa40f42d2dc934c91da8d5cb814a7f122c8",
+  "kind": "task_verification_record",
+  "note": "Result: pass; evidence suites passed 11/11, critical suite passed 84/84, typecheck and CLI docs checks passed, and the full ci:contract passed including compatibility 263commands/180args/843options, architecture, clone, Knip, and coverage. No retention apply was performed against repository evidence.",
+  "recorded_at": "2026-08-08T01:24:03.878Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evidence packages/agentplane/src/cli/run-cli.core.evidence.test.ts\n- bun run test:critical\n- bun run typecheck\n- bun run docs:cli:check",
+  "scope_digest": "sha256:e03b6b8572c687ad65e25d32e0460d9ce86132acfcae68bbe78b35a8b1e469b2",
+  "task_id": "202608062023-V3WHE9",
+  "verification_command": "agentplane verify 202608062023-V3WHE9 --ok --by TESTER",
+  "verifier": "TESTER"
+}

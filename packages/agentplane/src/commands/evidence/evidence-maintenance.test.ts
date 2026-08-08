@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
-import { link, lstat, mkdir, mkdtemp, readFile, utimes, writeFile } from "node:fs/promises";
+import { link, lstat, mkdir, mkdtemp, readFile, rename, utimes, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -117,6 +117,38 @@ async function addManifest(root: string, taskId: string, objectPath: string): Pr
     `${JSON.stringify({ artifacts: [{ path: path.relative(root, objectPath).replaceAll(path.sep, "/") }] })}\n`,
     "utf8",
   );
+}
+
+async function publishManifestAtomically(
+  root: string,
+  taskId: string,
+  objectPath: string,
+): Promise<void> {
+  const manifestPath = path.join(
+    root,
+    WORKFLOW_DIR,
+    taskId,
+    "quality/review/evaluator-evidence-manifest.json",
+  );
+  const stagingPath = `${manifestPath}.tmp`;
+  await mkdir(path.dirname(manifestPath), { recursive: true });
+  await writeFile(
+    stagingPath,
+    `${JSON.stringify({ artifacts: [{ path: path.relative(root, objectPath).replaceAll(path.sep, "/") }] })}\n`,
+    "utf8",
+  );
+  await rename(stagingPath, manifestPath);
+}
+
+async function replaceTaskReadmeAtomically(
+  root: string,
+  taskId: string,
+  opts: Omit<Parameters<typeof readme>[0], "taskId">,
+): Promise<void> {
+  const readmePath = path.join(root, WORKFLOW_DIR, taskId, "README.md");
+  const stagingPath = `${readmePath}.tmp`;
+  await writeFile(stagingPath, readme({ ...opts, taskId }), "utf8");
+  await rename(stagingPath, readmePath);
 }
 
 async function commitFixture(root: string): Promise<void> {
@@ -335,6 +367,56 @@ describe("evidence object retention", () => {
       }),
     ).rejects.toThrow(/changed during maintenance/u);
     await expect(readFile(collectible, "utf8")).resolves.toBe('{"writer":"won"}\n');
+  });
+
+  it("aborts GC when a manifest atomically makes a candidate reachable", async () => {
+    const root = await fixture();
+    const taskId = "202608060011-KKKKKK";
+    await addTask(root, taskId);
+    const collectible = await addObject(root, taskId, '{"collectible":true}\n');
+    await commitFixture(root);
+
+    await expect(
+      garbageCollectEvidenceObjects({
+        root,
+        workflowDir: WORKFLOW_DIR,
+        apply: true,
+        yes: true,
+        now: NOW,
+        beforeUnlink: async () => {
+          await publishManifestAtomically(root, taskId, collectible);
+          await commitFixture(root);
+        },
+      }),
+    ).rejects.toThrow(/no longer collectible/u);
+    await expect(readFile(collectible, "utf8")).resolves.toBe('{"collectible":true}\n');
+  });
+
+  it.each([
+    ["active", { status: "DOING" as const }],
+    ["failing", { status: "BLOCKED" as const, verification: "needs_rework" as const }],
+    ["release-pinned", { tags: ["release"] }],
+  ])("aborts GC when task state becomes %s", async (_label, nextState) => {
+    const root = await fixture();
+    const taskId = "202608060012-LLLLLL";
+    await addTask(root, taskId);
+    const collectible = await addObject(root, taskId, '{"collectible":true}\n');
+    await commitFixture(root);
+
+    await expect(
+      garbageCollectEvidenceObjects({
+        root,
+        workflowDir: WORKFLOW_DIR,
+        apply: true,
+        yes: true,
+        now: NOW,
+        beforeUnlink: async () => {
+          await replaceTaskReadmeAtomically(root, taskId, nextState);
+          await commitFixture(root);
+        },
+      }),
+    ).rejects.toThrow(/no longer collectible/u);
+    await expect(readFile(collectible, "utf8")).resolves.toBe('{"collectible":true}\n');
   });
 
   it("rejects retention policies that keep failures for less time than successes", async () => {
