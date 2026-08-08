@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 46
+revision: 47
 origin:
   system: "manual"
 depends_on: []
@@ -60,19 +60,19 @@ quality_review:
   findings:
     - "The implementation and frozen verification cover bounded concurrency, dependency and exclusive barriers, deterministic failure selection, queued-work cancellation, isolated provider jobs, exact-candidate attribution, and unchanged declared checks; the full 50-run/55-episode provider matrix remains a subsequent exact-integrated-SHA release-gate obligation."
 token_usage:
-  agent_runs: 18
-  input_tokens: 1161005
-  journal_digest: "sha256:57468bc0104ae59767bbabdad610f16252bf0e80e0f2e9d63c7b2f7b1c0810ba"
-  observed_agent_runs: 5
+  agent_runs: 19
+  input_tokens: 1396922
+  journal_digest: "sha256:7d9612127f1d813a883f008531b36733522cf22fa54c437c40b42691db16ab02"
+  observed_agent_runs: 6
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
   state: "partial"
-  total_tokens: 1178113
+  total_tokens: 1416964
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
-  updated_at: "2026-08-08T15:25:53.159Z"
+  updated_at: "2026-08-08T15:28:59.590Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -82,8 +82,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "65d3937a6a440d84ab0a1b87b72a8534941782b2"
-  message: "✅ YAN7DW task: record passing quality review"
+  hash: "8a46782adacec4cddf4eab270f9d9f8e833aa49f"
+  message: "✅ YAN7DW task: record exact-SHA quality review"
 comments:
   -
     author: "CODER"
@@ -124,6 +124,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -317,8 +320,16 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "65d3937a6a440d84ab0a1b87b72a8534941782b2"
+  -
+    type: "status"
+    at: "2026-08-08T15:28:59.590Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "8a46782adacec4cddf4eab270f9d9f8e833aa49f"
 doc_version: 3
-doc_updated_at: "2026-08-08T15:27:36.277Z"
+doc_updated_at: "2026-08-08T15:28:59.621Z"
 doc_updated_by: "CODER"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
@@ -1710,12 +1721,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `partial`
-- Completeness: `5/18` agent runs
-- Input tokens: `1161005`
+- Completeness: `6/19` agent runs
+- Input tokens: `1396922`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
-- Total tokens: `1178113`
+- Total tokens: `1416964`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:57468bc0104ae59767bbabdad610f16252bf0e80e0f2e9d63c7b2f7b1c0810ba`
+- Journal digest: `sha256:7d9612127f1d813a883f008531b36733522cf22fa54c437c40b42691db16ab02`
 - Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
-- Updated at: `2026-08-08T15:25:53.159Z`
+- Updated at: `2026-08-08T15:28:59.590Z`
