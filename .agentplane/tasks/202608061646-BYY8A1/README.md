@@ -1,10 +1,10 @@
 ---
 id: "202608061646-BYY8A1"
 title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 63
+revision: 64
 origin:
   system: "manual"
 depends_on:
@@ -45,7 +45,9 @@ verification:
   updated_by: "TESTER"
   note: "Release qualification requires rework: product-contract validation rejects the legitimate permanent_historical_reader retirement policy, Knip reports the extracted SupervisorExecutionLease as an unused export, and the provider qualification was invalidated by concurrent task-only HEAD drift before any provider episode completed."
   attempts: 22
-commit: null
+commit:
+  hash: "c2ff771d3ff6223a5b9d997fb4bd9ba9a560edbc"
+  message: "🐛 BYY8A1 task: align release qualification contracts"
 comments:
   -
     author: "DOCS"
@@ -458,8 +460,15 @@ events:
     author: "TESTER"
     state: "blocked_external"
     note: "Release qualification requires rework: product-contract validation rejects the legitimate permanent_historical_reader retirement policy, Knip reports the extracted SupervisorExecutionLease as an unused export, and the provider qualification was invalidated by concurrent task-only HEAD drift before any provider episode completed."
+  -
+    type: "status"
+    at: "2026-08-08T18:29:24.851Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    commit: "c2ff771d3ff6223a5b9d997fb4bd9ba9a560edbc"
 doc_version: 3
-doc_updated_at: "2026-08-08T18:22:58.059Z"
+doc_updated_at: "2026-08-08T18:29:24.851Z"
 doc_updated_by: "CODER"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
