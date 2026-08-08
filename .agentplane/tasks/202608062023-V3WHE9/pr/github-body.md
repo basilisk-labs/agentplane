@@ -15,8 +15,15 @@ Add OSS evidence stats, compact, and gc surfaces with a dry-run-first retention 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Evidence unit/maintenance suites pass (8 tests), CLI contract passes (3 tests),
+typecheck/lint/docs/build pass, and live dry runs report 17,457 tracked evidence files / 145,406,551
+bytes, 189 valid reachable objects, 19 safe compact candidates, and 0 GC candidates. Critical suite
+remains blocked by the shared compatibility ratchet owned by 202608061850-BZT3D9.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
