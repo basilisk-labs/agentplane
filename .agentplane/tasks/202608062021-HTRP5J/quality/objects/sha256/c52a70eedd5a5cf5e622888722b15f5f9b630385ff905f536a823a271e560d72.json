@@ -1,0 +1,29 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/doctor/legacy-probes.test.ts packages/agentplane/src/commands/doctor-legacy.spec.ts",
+    "bun run test:critical",
+    "bun run typecheck",
+    "bun run docs:cli:check"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-08T00:26:02.140Z",
+    "updated_by": "TESTER",
+    "note": "Bounded compatibility-retirement policy, doctor reporting, generated docs, type safety, critical behavior, and repository contracts pass on current main."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608062021-HTRP5J/verification/20260808002602140-bbe462ed4b2055a8.json",
+      "sha256": "sha256:8b6814e82b5566c9df1aca3803b974ce7635bdabf433b92b09ad92284630c7f0"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

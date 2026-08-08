@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608062021-HTRP5J",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-08T00:27:03.771Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "f21c4469b93522cd9c953667a9918cd15749a09f",
+  "blueprint_digest": "e17243ad8f8d431cb3e61b5bb0497de50b17e1626e2cb2fe4f7299e20fd4c7cc",
+  "findings": [
+    "The doctor legacy text report no longer exposes each adapter's remaining removal blocker. For adapters without remove_in, it prints a derived policy label such as after_2_zero_usage_releases or after_archive_conversion, while removal_blocker is omitted. The JSON report retains the field, so JSON and text do not both satisfy the explicit reporting contract."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608062021-HTRP5J/README.md",
+    ".agentplane/tasks/202608062021-HTRP5J/quality/objects/sha256/7bd3c2f2006db736ba0bc87db10dacb3e7bfcd93841d1db219ce672c63579650.patch"
+  ],
+  "missing_tests": [
+    "Add a doctor legacy text-output assertion proving that a classified adapter with a non-null removal_blocker prints that blocker alongside its retirement policy and scope."
+  ],
+  "hidden_assumptions": [
+    "A derived retirement label is assumed to be an adequate substitute for the manifest's explanatory removal_blocker, despite the acceptance criterion naming the blocker separately."
+  ],
+  "residual_risks": [
+    "Update the doctor legacy human-readable output to include non-null removal_blocker values alongside policy classification, then add a negative-path assertion and rerun the declared verification steps."
+  ]
+}
