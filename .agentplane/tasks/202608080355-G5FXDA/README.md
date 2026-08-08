@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -58,19 +58,19 @@ quality_review:
   findings:
     - "The implementation satisfies the plan-target relation contract: missing, stale, current, malformed, incomplete, or inconsistent metadata requests a fresh patch plan, while only a canonical, internally consistent future target permits candidate preparation."
 token_usage:
-  agent_runs: 3
-  input_tokens: 199429
-  journal_digest: "sha256:c1544bce9ec658841d5a21c41be239bfe676243a8c6f3898985397a12646e1d1"
-  observed_agent_runs: 2
+  agent_runs: 4
+  input_tokens: 322930
+  journal_digest: "sha256:1a5747708942ec97bb6fdde6a751af451488a335fb119c9cdec664e1950e5653"
+  observed_agent_runs: 3
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
   state: "partial"
-  total_tokens: 203359
+  total_tokens: 329045
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
-  updated_at: "2026-08-08T05:23:18.888Z"
+  updated_at: "2026-08-08T05:34:53.467Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -80,8 +80,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "5d06f55f940c0f7da5b163d59011f0d59d48e8ec"
-  message: "✅ G5FXDA task: record final evaluator pass"
+  hash: "4a7fddcfb3ed0d93e9d61abce2ff4fe3b10033c8"
+  message: "✅ G5FXDA task: record review-complete evaluator pass"
 comments:
   -
     author: "CODER"
@@ -92,6 +92,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -138,8 +141,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PR review feedback is resolved: release plans require canonical X.Y.Z and vX.Y.Z metadata, active incidents are cleared on current main, and 17 focused scenarios plus the full contract gate pass."
+  -
+    type: "status"
+    at: "2026-08-08T05:34:53.467Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-08T05:33:46.687Z"
+doc_updated_at: "2026-08-08T05:34:53.497Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issue #4783: compare the latest plan target with the currently published version so a missing, current, or older plan requests a fresh patch plan and only a future plan permits candidate preparation. Add fixtures for missing, stale, current, and future targets. Mark INC-20260807-01 resolved in the repository and bundled incident registries because its dependency-readiness and supervisor protocol repairs are merged and verified. Close issue #4783 only after hosted checks pass and the fix merges."
 sections:
@@ -413,8 +423,8 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "514ddf590f40272e1828df7fdd049f36133823ec"
-    message: "🐛 G5FXDA code: enforce complete precision-safe plan targets"
+    hash: "d0020e56ce863b4466e9e415c7e01e23de8fdb9f"
+    message: "🐛 G5FXDA code: require canonical version plan metadata"
   workflow_route_baseline:
     start_head_sha: "4a2895659e677071caaa9b56cadf35df8e261e82"
     version: 1
@@ -705,12 +715,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `partial`
-- Completeness: `2/3` agent runs
-- Input tokens: `199429`
+- Completeness: `3/4` agent runs
+- Input tokens: `322930`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
-- Total tokens: `203359`
+- Total tokens: `329045`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:c1544bce9ec658841d5a21c41be239bfe676243a8c6f3898985397a12646e1d1`
+- Journal digest: `sha256:1a5747708942ec97bb6fdde6a751af451488a335fb119c9cdec664e1950e5653`
 - Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
-- Updated at: `2026-08-08T05:23:18.888Z`
+- Updated at: `2026-08-08T05:34:53.467Z`

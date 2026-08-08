@@ -8,10 +8,10 @@
   "pr_number": 4799,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4799",
   "pre_merge_closure": {
-    "basis_commit": "5d06f55f940c0f7da5b163d59011f0d59d48e8ec",
+    "basis_commit": "4a7fddcfb3ed0d93e9d61abce2ff4fe3b10033c8",
     "branch": "task/202608080355-G5FXDA/correct-stale-plan-comparison-in-next-action-dia",
     "pr_number": 4799,
-    "recorded_at": "2026-08-08T05:23:18.961Z",
+    "recorded_at": "2026-08-08T05:34:53.535Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
