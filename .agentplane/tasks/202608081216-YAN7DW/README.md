@@ -2,10 +2,10 @@
 id: "202608081216-YAN7DW"
 title: "Parallelize release qualification without weakening gates"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -119,6 +119,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Start: continue evaluator rework after recording measured benchmark evidence, fail-closed scheduler coverage, and qualification resource semantics."
 events:
   -
     type: "status"
@@ -267,8 +270,15 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-08T14:26:25.894Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Start: continue evaluator rework after recording measured benchmark evidence, fail-closed scheduler coverage, and qualification resource semantics."
 doc_version: 3
-doc_updated_at: "2026-08-08T13:49:21.131Z"
+doc_updated_at: "2026-08-08T14:26:25.932Z"
 doc_updated_by: "CODER"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
