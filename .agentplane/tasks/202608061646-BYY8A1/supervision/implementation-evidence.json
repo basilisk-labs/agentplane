@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check b763880a81a98963ee7f8c6ebc6365cb2e1467b7..32e72498b096493825649f27f6e811126dccf14e",
+      "command": "git diff --check 0b400f152a133632c571c517ff219fa020d1dff7..b304eec5a21cc60eee4f68d30ca21d86cc9ea999",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB b763880a81a98963ee7f8c6ebc6365cb2e1467b7..32e72498b096493825649f27f6e811126dccf14e",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 0b400f152a133632c571c517ff219fa020d1dff7..b304eec5a21cc60eee4f68d30ca21d86cc9ea999",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,7 @@
         "M\t.agentplane/tasks/202608061646-BYY8A1/pr/github-body.md",
         "M\t.agentplane/tasks/202608061646-BYY8A1/pr/meta.json",
         "M\t.agentplane/tasks/202608061646-BYY8A1/pr/review.md",
-        "M\tdocs/releases/v0.7.5.md"
+        "M\tpackages/agentplane/src/cli/measure-cli-cold-path-script.test.ts"
       ]
     },
     {
@@ -31,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "b763880a81a98963ee7f8c6ebc6365cb2e1467b7",
-  "implementation_commit": "32e72498b096493825649f27f6e811126dccf14e",
+  "execution_base_commit": "0b400f152a133632c571c517ff219fa020d1dff7",
+  "implementation_commit": "b304eec5a21cc60eee4f68d30ca21d86cc9ea999",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
