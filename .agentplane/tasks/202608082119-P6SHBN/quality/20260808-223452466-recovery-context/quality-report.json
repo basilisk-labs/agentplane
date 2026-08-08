@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608082119-P6SHBN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-08T22:34:52.765Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Semantic release review passes: all public manifests, dependency pins, runtime version, workflow expectation, generated headers, release notes, and the reviewed compatibility delta consistently target 0.7.5; the independent reconstruction defect reported on PR #4806 is corrected.",
+  "evaluated_sha": "7761346d3f0f698e984e4893640d64c4959d5836",
+  "blueprint_digest": "cf333249043ca09e55b4bd4bc27d7faf8612397b9947d6cac6d9e62786b5f977",
+  "findings": [
+    "Version surfaces are internally consistent at 0.7.5, with no unintended command or option topology changes in the compatibility candidate.",
+    "The independent compatibility reconstruction now computes the 0.7.5 digests rather than reasserting the former 0.7.4 values."
+  ],
+  "evidence_refs": [
+    "git diff origin/main...7761346d3f0f698e984e4893640d64c4959d5836 -- package manifests, recipes runtime, workflow expectations, compatibility baseline and test",
+    "docs/releases/v0.7.5.md and canonical release plan 2026-08-08T21-21-39-462Z",
+    "PR #4806 review thread https://github.com/basilisk-labs/agentplane/pull/4806#discussion_r3741820149"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "PR head must still pass hosted checks after lifecycle artifacts are committed.",
+    "The final merged main SHA must produce a release-ready artifact before publication.",
+    "Public npm registry and GitHub Release state must be verified after publish."
+  ]
+}
