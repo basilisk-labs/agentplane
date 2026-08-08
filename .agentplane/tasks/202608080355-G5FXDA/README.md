@@ -1,10 +1,11 @@
 ---
 id: "202608080355-G5FXDA"
 title: "Correct stale plan comparison in next-action diagnostics"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -56,6 +57,20 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "The implementation now rejects missing, stale, current, invalid, inconsistent, and incomplete plan targets, permits candidate preparation only for a complete consistent future target, and compares arbitrarily large stable-version components without precision loss."
+token_usage:
+  agent_runs: 3
+  input_tokens: 199429
+  journal_digest: "sha256:c1544bce9ec658841d5a21c41be239bfe676243a8c6f3898985397a12646e1d1"
+  observed_agent_runs: 2
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "partial"
+  total_tokens: 203359
+  unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
+  updated_at: "2026-08-08T05:23:18.888Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -65,8 +80,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "21a5bad500af96450ff8c101d50f78c27a89affa"
-  message: "🚧 G5FXDA task: apply external agent result"
+  hash: "5d06f55f940c0f7da5b163d59011f0d59d48e8ec"
+  message: "✅ G5FXDA task: record final evaluator pass"
 comments:
   -
     author: "CODER"
@@ -74,6 +89,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 21a5bad500af. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -107,9 +125,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Final committed implementation requires complete consistent plan metadata, compares arbitrarily large stable-version components without precision loss, and passes 15 focused scenarios plus the full contract gate."
+  -
+    type: "status"
+    at: "2026-08-08T05:23:18.888Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-08T05:21:46.395Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-08T05:23:18.900Z"
+doc_updated_by: "CODER"
 description: "Fix GitHub issue #4783: compare the latest plan target with the currently published version so a missing, current, or older plan requests a fresh patch plan and only a future plan permits candidate preparation. Add fixtures for missing, stale, current, and future targets. Mark INC-20260807-01 resolved in the repository and bundled incident registries because its dependency-readiness and supervisor protocol repairs are merged and verified. Close issue #4783 only after hosted checks pass and the fix merges."
 sections:
   Summary: |-
@@ -321,6 +346,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "514ddf590f40272e1828df7fdd049f36133823ec"
+    message: "🐛 G5FXDA code: enforce complete precision-safe plan targets"
   workflow_route_baseline:
     start_head_sha: "4a2895659e677071caaa9b56cadf35df8e261e82"
     version: 1
@@ -547,3 +575,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `partial`
+- Completeness: `2/3` agent runs
+- Input tokens: `199429`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `203359`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:c1544bce9ec658841d5a21c41be239bfe676243a8c6f3898985397a12646e1d1`
+- Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
+- Updated at: `2026-08-08T05:23:18.888Z`
