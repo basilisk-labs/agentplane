@@ -31,14 +31,14 @@ Created: 2026-08-08T12:17:23.101Z
 ```text
  package.json                                       |   3 +-
  packages/agentplane/src/cli/critical/harness.ts    |   7 +-
- ...cli.critical.agent-efficiency-candidate.test.ts |  73 ++++++++++-
- .../src/cli/run-cli.critical.exit-codes.test.ts    |  37 ++++--
+ ...cli.critical.agent-efficiency-candidate.test.ts |  73 +++++++++-
+ .../src/cli/run-cli.critical.exit-codes.test.ts    |  37 +++--
  scripts/README.md                                  |   4 +-
- .../bench/capture-agent-efficiency-candidate.mjs   | 142 +++++++++++++++-----
- .../qualification/release-qualification.test.mjs   | 136 +++++++++++++++++++
- .../run-v0.7.1-release-qualification.mjs           | 145 ++++++++++++++++++++-
+ .../bench/capture-agent-efficiency-candidate.mjs   | 142 +++++++++++++-----
+ .../qualification/release-qualification.test.mjs   | 138 ++++++++++++++++++
+ .../run-v0.7.1-release-qualification.mjs           | 162 ++++++++++++++++++++-
  .../v0.7.1-release-qualification.json              |   2 +
- 9 files changed, 492 insertions(+), 57 deletions(-)
+ 9 files changed, 511 insertions(+), 57 deletions(-)
 ```
 
 </details>
