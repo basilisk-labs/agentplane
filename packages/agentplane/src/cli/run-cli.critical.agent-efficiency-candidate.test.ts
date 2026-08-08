@@ -160,6 +160,31 @@ describeCritical("critical: RF-04 candidate measurement", () => {
     expect(activeSettled).toBe(true);
   });
 
+  it("selects the lowest declared failing provider job regardless of completion order", async () => {
+    const fixture = await loadCandidateFixture();
+
+    for (const delays of [
+      new Map([
+        ["first", 10],
+        ["second", 1],
+      ]),
+      new Map([
+        ["first", 1],
+        ["second", 10],
+      ]),
+    ]) {
+      const started: string[] = [];
+      await expect(
+        fixture.candidate.runCandidateCaptureJobs(["first", "second", "queued"], 2, async (job) => {
+          started.push(job);
+          await new Promise((resolve) => setTimeout(resolve, delays.get(job) ?? 0));
+          throw new Error(`${job} provider failed`);
+        }),
+      ).rejects.toThrow("first provider failed");
+      expect(started).toEqual(["first", "second"]);
+    }
+  });
+
   it("force-kills a provider driver that ignores SIGTERM at its fixed timeout", async () => {
     const fixture = await loadCandidateFixture();
     const startedAt = Date.now();
