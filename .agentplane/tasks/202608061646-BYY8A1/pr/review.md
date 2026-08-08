@@ -40,18 +40,19 @@ Created: 2026-08-08T03:44:44.414Z
  .../src/cli/run-cli.core.pr-flow.test.ts           |  28 ++-
  ...li.core.route-decision.pr-open-metadata.test.ts |  17 ++
  .../src/cli/run-cli.core.task-advance.test.ts      |  57 ++++++
- .../cli/run-cli.core.task-next-action-json.test.ts |  22 +++
- ...critical.agent-efficiency-replay-driver.test.ts |  52 +++++-
- .../shared/supervisor-execution-episode.test.ts    |  43 +++++
- .../shared/supervisor-execution-episode.ts         |  62 ++++++-
- ...direct-task-supervisor-formal-operation.test.ts |  34 +++-
- .../direct-task-supervisor-formal-operation.ts     | 196 +++++++++++----------
- .../commands/task/direct-task-verification.test.ts |  32 +++-
+ .../cli/run-cli.core.task-next-action-json.test.ts |  22 ++
+ ...critical.agent-efficiency-replay-driver.test.ts |  52 ++++-
+ .../shared/supervisor-execution-episode.test.ts    |  43 ++++
+ .../shared/supervisor-execution-episode.ts         |  62 +-----
+ .../commands/shared/supervisor-execution-lease.ts  | 112 +++++++++++
+ ...direct-task-supervisor-formal-operation.test.ts |  91 ++++++++-
+ .../direct-task-supervisor-formal-operation.ts     | 222 ++++++++++++---------
+ .../commands/task/direct-task-verification.test.ts |  32 ++-
  .../src/commands/task/direct-task-verification.ts  |  15 +-
  .../src/commands/task/external-agent-exchange.ts   |   2 +-
  .../src/commands/task/external-agent-supervisor.ts |  27 ++-
  .../runner/context/semantic-prompt-projection.ts   |   2 +-
- .../src/runner/phase-tools/broker.test.ts          |  81 ++++++---
+ .../src/runner/phase-tools/broker.test.ts          |  81 +++++---
  .../agentplane/src/runner/phase-tools/broker.ts    |  11 +-
  .../task-run-bootstrap.result-examples.test.ts     |  38 ++++
  .../src/runner/usecases/task-run-bootstrap.ts      |  14 +-
@@ -64,8 +65,8 @@ Created: 2026-08-08T03:44:44.414Z
  .../run-v0.7.1-release-qualification.mjs           |   2 +
  website/static/img/social/docs/releases/v0.7.5.png | Bin 0 -> 53016 bytes
  website/static/img/social/manifest.json            |   8 +
- website/static/llms-full.txt                       |  52 +++++-
- 36 files changed, 820 insertions(+), 172 deletions(-)
+ website/static/llms-full.txt                       |  52 ++++-
+ 37 files changed, 963 insertions(+), 224 deletions(-)
 ```
 
 </details>

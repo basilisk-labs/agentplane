@@ -1,6 +1,7 @@
 import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
+  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   startSupervisorExecutionEpisode,
   type SupervisorExecutionEpisodeJournal,
@@ -43,6 +44,31 @@ export async function recordDirectTaskFormalOperation(opts: {
   }
   try {
     let journal = opened.journal;
+    const interruptedOperation = journal.operations.at(-1);
+    if (
+      opts.id === "task_verify" &&
+      journal.status === "running" &&
+      journal.cursor.phase === "intent_recorded" &&
+      interruptedOperation?.status === "intent" &&
+      interruptedOperation.effect_ref === opts.id &&
+      interruptedOperation.operation_key === journal.cursor.operation_key &&
+      journal.state_fingerprint_digest !== before.workflowStep.preconditionFingerprint.digest
+    ) {
+      const failed = completeSupervisorExecutionEpisode({
+        journal,
+        operation_key: interruptedOperation.operation_key,
+        result: {
+          direct_task_operation: opts.id,
+          error: "interrupted_verification_owner",
+        },
+        failed: true,
+      });
+      journal = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+        journal: failed,
+        state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
+      });
+      await opened.store.write(journal);
+    }
     if (journal.status === "stopped") {
       throw new CliError({
         code: "E_RUNTIME",
