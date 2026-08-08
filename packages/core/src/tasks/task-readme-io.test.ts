@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -24,6 +24,18 @@ description: "x"
 
 ## Summary
 `;
+
+function crashedLockRecord(generation: string): string {
+  return `${JSON.stringify({
+    schema_version: 1,
+    generation,
+    process_instance_id: "crashed-owner",
+    owner_pid: 2_147_483_647,
+    owner_command: "missing",
+    owner_started_at: "2026-01-01T00:00:00.000Z",
+    acquired_at: "2026-01-01T00:00:00.000Z",
+  })}\n`;
+}
 
 describe("updateTaskReadmeAtomic", () => {
   it("updates frontmatter+body and preserves trailing newline", async () => {
@@ -67,33 +79,69 @@ describe("updateTaskReadmeAtomic", () => {
     expect(parseTaskReadme(next).frontmatter.revision).toBe(3);
   });
 
-  it("retains a crashed-owner lock fail-closed instead of risking split-brain recovery", async () => {
+  it("recovers a lock whose exact owning process is no longer alive", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-core-lock-"));
     const taskDir = path.join(root, "202601010101-ABCDE");
     const readmePath = path.join(taskDir, "README.md");
     const lockPath = path.join(root, ".202601010101-ABCDE.README.md.lock");
-    await writeFile(
-      lockPath,
-      `${JSON.stringify({
-        schema_version: 1,
-        generation: "crashed-owner",
-        process_instance_id: "crashed-owner",
-        owner_pid: 2_147_483_647,
-        owner_command: "missing",
-        owner_started_at: "2026-01-01T00:00:00.000Z",
-        acquired_at: "2026-01-01T00:00:00.000Z",
-      })}\n`,
-      "utf8",
-    );
+    await writeFile(lockPath, crashedLockRecord("crashed-owner"), "utf8");
+
+    try {
+      let called = false;
+      await withTaskReadmeTransaction(
+        readmePath,
+        () => {
+          called = true;
+        },
+        { timeoutMs: 20, retryMs: 1 },
+      );
+      expect(called).toBe(true);
+      await expect(readFile(lockPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+      const entries = await readdir(root);
+      expect(entries.filter((name) => name.includes(".recovery."))).toEqual([]);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("retains an unverifiable lock fail-closed", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-core-lock-"));
+    const readmePath = path.join(root, "202601010101-ABCDE", "README.md");
+    const lockPath = path.join(root, ".202601010101-ABCDE.README.md.lock");
+    await writeFile(lockPath, "not a lock record\n", "utf8");
 
     try {
       await expect(
-        withTaskReadmeTransaction(readmePath, () => null, {
-          timeoutMs: 20,
-          retryMs: 1,
-        }),
-      ).rejects.toThrow(/owner_status=(?:stale|unverified); stale locks are retained fail-closed/u);
-      expect(await readFile(lockPath, "utf8")).toContain('"generation":"crashed-owner"');
+        withTaskReadmeTransaction(readmePath, () => null, { timeoutMs: 20, retryMs: 1 }),
+      ).rejects.toThrow(/owner_status=unverified; unverifiable locks are retained fail-closed/u);
+      expect(await readFile(lockPath, "utf8")).toBe("not a lock record\n");
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("serializes concurrent recoverers without overlapping transactions", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-core-lock-"));
+    const readmePath = path.join(root, "202601010101-ABCDE", "README.md");
+    const lockPath = path.join(root, ".202601010101-ABCDE.README.md.lock");
+    await writeFile(lockPath, crashedLockRecord("crashed-owner"), "utf8");
+    let active = 0;
+    let maximumActive = 0;
+    const operation = async (): Promise<void> => {
+      active += 1;
+      maximumActive = Math.max(maximumActive, active);
+      await new Promise((resolve) => setTimeout(resolve, 40));
+      active -= 1;
+    };
+
+    try {
+      await Promise.all([
+        withTaskReadmeTransaction(readmePath, operation, { timeoutMs: 250, retryMs: 1 }),
+        withTaskReadmeTransaction(readmePath, operation, { timeoutMs: 250, retryMs: 1 }),
+      ]);
+      expect(maximumActive).toBe(1);
+      const entries = await readdir(root);
+      expect(entries.filter((name) => name.includes(".lock"))).toEqual([]);
     } finally {
       await rm(root, { recursive: true, force: true });
     }

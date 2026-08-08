@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608070209-J3DEJ1/harden-automatic-task-intake-against-unknown-int",
+  "created_at": "2026-08-08T02:08:29.892Z",
+  "diffstat_sha256": "sha256:5678e20982cb6c7184ee257e176ba3f630866db5b0b0bee52e311ddba1aabe73",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608070209-J3DEJ1",
+  "updated_at": "2026-08-08T02:08:29.892Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

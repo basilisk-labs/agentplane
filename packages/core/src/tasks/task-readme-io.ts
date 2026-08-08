@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { constants, type BigIntStats } from "node:fs";
-import { link, lstat, mkdir, open, readFile, unlink } from "node:fs/promises";
+import { link, lstat, mkdir, open, readFile, readdir, unlink } from "node:fs/promises";
 import path from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
 
@@ -12,6 +12,7 @@ import { parseTaskReadme, renderTaskReadme, type ParsedTaskReadme } from "./task
 const TASK_README_LOCK_TIMEOUT_MS = 5000;
 const TASK_README_LOCK_RETRY_MS = 25;
 const TASK_README_LOCK_MAX_BYTES = 16 * 1024;
+const TASK_README_LOCK_RECOVERY_ATTEMPTS = 3;
 const CURRENT_PROCESS_INSTANCE_ID = randomUUID();
 
 type FileIdentity = {
@@ -67,6 +68,18 @@ function candidatePathFor(lockPath: string, generation: string): string {
   return `${lockPath}.candidate.${generation}`;
 }
 
+function recoveryMarkerPathFor(lockPath: string, generation: string): string {
+  return `${lockPath}.recovery.${generation}.json`;
+}
+
+function recoveryTargetPathFor(lockPath: string, generation: string): string {
+  return `${lockPath}.recovery.${generation}.target`;
+}
+
+function recoveryMarkerPrefixFor(lockPath: string): string {
+  return `${path.basename(lockPath)}.recovery.`;
+}
+
 function isProcessAlive(pid: number): boolean {
   try {
     process.kill(pid, 0);
@@ -75,7 +88,7 @@ function isProcessAlive(pid: number): boolean {
     const code = (error as NodeJS.ErrnoException | null)?.code;
     if (code === "ESRCH" || code === "EINVAL") return false;
     if (code === "EPERM") return true;
-    return false;
+    return true;
   }
 }
 
@@ -105,6 +118,7 @@ async function observeProcessIdentity(
           : null,
     };
   } catch (error) {
+    if (!isProcessAlive(pid)) return null;
     const errno = (error as NodeJS.ErrnoException | null)?.code;
     const exitCode = (error as { code?: number } | null)?.code;
     if (errno === "ESRCH" || exitCode === 1) return null;
@@ -218,6 +232,110 @@ async function writeLockCandidate(
   }
 }
 
+async function unlinkRegularFile(filePath: string): Promise<boolean> {
+  try {
+    const stats = await lstat(filePath, { bigint: true });
+    if (!stats.isFile() || stats.isSymbolicLink()) return false;
+    await unlink(filePath);
+    return true;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return false;
+    throw error;
+  }
+}
+
+async function listRecoveryMarkerPaths(lockPath: string): Promise<string[]> {
+  const directory = path.dirname(lockPath);
+  const prefix = recoveryMarkerPrefixFor(lockPath);
+  const names = await readdir(directory);
+  return names
+    .filter((name) => name.startsWith(prefix) && name.endsWith(".json"))
+    .toSorted()
+    .map((name) => path.join(directory, name));
+}
+
+function recoveryGenerationFromMarker(lockPath: string, markerPath: string): string | null {
+  const name = path.basename(markerPath);
+  const prefix = recoveryMarkerPrefixFor(lockPath);
+  if (!name.startsWith(prefix) || !name.endsWith(".json")) return null;
+  const generation = name.slice(prefix.length, -".json".length);
+  return generation.length > 0 ? generation : null;
+}
+
+async function cleanupRecoveryClaim(
+  lockPath: string,
+  markerPath: string,
+  targetPath: string,
+): Promise<void> {
+  const targetChanged = await unlinkRegularFile(targetPath);
+  const markerChanged = await unlinkRegularFile(markerPath);
+  if (targetChanged || markerChanged) await syncDirectory(path.dirname(lockPath));
+}
+
+async function removeAbandonedRecoveryClaims(lockPath: string): Promise<void> {
+  for (const markerPath of await listRecoveryMarkerPaths(lockPath)) {
+    const generation = recoveryGenerationFromMarker(lockPath, markerPath);
+    if (!generation) continue;
+    const marker = await readObservedLock(markerPath);
+    if ((await lockOwnerStatus(marker)) !== "stale") continue;
+    await cleanupRecoveryClaim(lockPath, markerPath, recoveryTargetPathFor(lockPath, generation));
+  }
+}
+
+async function waitForRecoveryClaimsToClear(
+  lockPath: string,
+  timeoutMs: number,
+  retryMs: number,
+): Promise<boolean> {
+  const deadline = Date.now() + timeoutMs;
+  for (;;) {
+    await removeAbandonedRecoveryClaims(lockPath);
+    const markers = await listRecoveryMarkerPaths(lockPath);
+    if (markers.length === 0) return true;
+    if (Date.now() >= deadline) return false;
+    await sleep(retryMs);
+  }
+}
+
+async function tryRecoverStaleLock(
+  lockPath: string,
+  owner: Omit<TaskReadmeLockRecord, "generation" | "acquired_at">,
+): Promise<boolean> {
+  const generation = randomUUID();
+  const markerPath = recoveryMarkerPathFor(lockPath, generation);
+  const targetPath = recoveryTargetPathFor(lockPath, generation);
+  await writeLockCandidate(markerPath, {
+    ...owner,
+    generation,
+    acquired_at: new Date().toISOString(),
+  });
+  try {
+    await removeAbandonedRecoveryClaims(lockPath);
+    const markers = await listRecoveryMarkerPaths(lockPath);
+    if (markers[0] !== markerPath) return false;
+    try {
+      await link(lockPath, targetPath);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return true;
+      throw error;
+    }
+    const target = await readObservedLock(targetPath);
+    if ((await lockOwnerStatus(target)) !== "stale") return false;
+    const current = await readObservedLock(lockPath);
+    if (!target || !current || !sameIdentity(target.identity, current.identity)) return true;
+    if ((await lockOwnerStatus(await readObservedLock(targetPath))) !== "stale") return false;
+    try {
+      await unlink(lockPath);
+      await syncDirectory(path.dirname(lockPath));
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException | null)?.code !== "ENOENT") throw error;
+    }
+    return true;
+  } finally {
+    await cleanupRecoveryClaim(lockPath, markerPath, targetPath);
+  }
+}
+
 async function acquireTaskReadmeLock(
   readmePath: string,
   options: TaskReadmeTransactionOptions,
@@ -239,15 +357,35 @@ async function acquireTaskReadmeLock(
   await writeLockCandidate(candidatePath, record);
   const timeoutMs = options.timeoutMs ?? TASK_README_LOCK_TIMEOUT_MS;
   const retryMs = options.retryMs ?? TASK_README_LOCK_RETRY_MS;
-  const deadline = Date.now() + timeoutMs;
+  let deadline = Date.now() + timeoutMs;
+  let recoveryAttempts = 0;
 
   try {
+    await removeAbandonedRecoveryClaims(lockPath);
     for (;;) {
       try {
         await link(candidatePath, lockPath);
         await syncDirectory(path.dirname(lockPath));
+        if (!(await waitForRecoveryClaimsToClear(lockPath, timeoutMs, retryMs))) {
+          const published = await readObservedLock(lockPath);
+          if (published?.record.generation === generation) {
+            await unlink(lockPath);
+            await syncDirectory(path.dirname(lockPath));
+          }
+          throw new Error(`Timed out waiting for task README lock recovery: ${lockPath}`);
+        }
         const observed = await readObservedLock(lockPath);
-        if (observed?.record.generation !== generation) {
+        if (!observed) {
+          deadline = Date.now() + timeoutMs;
+          continue;
+        }
+        if (observed.record.generation !== generation) {
+          deadline = Date.now() + timeoutMs;
+          continue;
+        }
+        if (
+          !sameIdentity(observed.identity, identity(await lstat(candidatePath, { bigint: true })))
+        ) {
           throw new Error(`Task README lock publication could not be verified: ${lockPath}`);
         }
         return { ...observed, lockPath };
@@ -255,12 +393,26 @@ async function acquireTaskReadmeLock(
         if ((error as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw error;
       }
 
+      const observed = await readObservedLock(lockPath);
+      const ownerStatus = await lockOwnerStatus(observed);
+      if (ownerStatus === "stale" && recoveryAttempts < TASK_README_LOCK_RECOVERY_ATTEMPTS) {
+        recoveryAttempts += 1;
+        const recovered = await tryRecoverStaleLock(lockPath, {
+          schema_version: 1,
+          process_instance_id: CURRENT_PROCESS_INSTANCE_ID,
+          owner_pid: process.pid,
+          owner_command: owner.command,
+          owner_started_at: owner.started_at,
+        });
+        if (recovered || (await waitForRecoveryClaimsToClear(lockPath, timeoutMs, retryMs))) {
+          deadline = Date.now() + timeoutMs;
+          continue;
+        }
+      }
       if (Date.now() >= deadline) {
-        const observed = await readObservedLock(lockPath);
-        const ownerStatus = await lockOwnerStatus(observed);
         throw new Error(
           `Timed out waiting for task README lock: ${lockPath} ` +
-            `(owner_status=${ownerStatus}; stale locks are retained fail-closed)`,
+            `(owner_status=${ownerStatus}; unverifiable locks are retained fail-closed)`,
         );
       }
       await sleep(retryMs);
