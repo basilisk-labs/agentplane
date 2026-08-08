@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -75,7 +75,9 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "bd07cac6d7b50201f5f2de53c8adeb0074bd3922"
+  message: "🚧 8BH6HY task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -107,6 +109,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 9fd5418acbe3. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: bd07cac6d7b5. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -226,8 +231,15 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:contract"
+  -
+    type: "status"
+    at: "2026-08-08T07:25:44.639Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: bd07cac6d7b5. CLI accepted one state-bound external-agent semantic result."
 doc_version: 3
-doc_updated_at: "2026-08-08T07:22:14.988Z"
+doc_updated_at: "2026-08-08T07:25:44.673Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix task advance so a state-bound task_worktree_resolution episode can return a completed result after the CODER commits intended changes, without being rejected as an unsupported or stale read-only purpose; add focused regression coverage."
 sections:
