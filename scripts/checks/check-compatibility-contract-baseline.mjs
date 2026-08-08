@@ -342,6 +342,7 @@ function validateReviewedCandidate({
     "202608061646-WCARQG",
     "202608061646-30TKV4",
     "202608062023-V3WHE9",
+    "202608080805-KPWPAV",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -375,6 +376,7 @@ function validateReviewedCandidate({
     "202608061646-WCARQG",
     "202608061646-30TKV4",
     "202608062023-V3WHE9",
+    "202608080805-KPWPAV",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -506,7 +508,7 @@ function validateReviewedCandidate({
         section: "package_manifests",
         from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
         to_sha256: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
-        surface_sha256: "226a337ec9c72e8da6d2191039f78f85d4db97e16101162540b4d948cfe70af4",
+        surface_sha256: "a3ac789c855404318930013a613489a3a6da5c2fc4e355fa99358eb005007f1a",
         allowed_json_paths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -1378,6 +1380,7 @@ function validateReviewedCandidate({
         { name: "agent-json", kind: "boolean", valueHint: null, default: false },
         { name: "remote", kind: "boolean", valueHint: null, default: false },
         { name: "result", kind: "string", valueHint: "<path>" },
+        { name: "replacement", kind: "boolean", valueHint: null, default: false },
       ],
     },
     {
@@ -1704,6 +1707,13 @@ function validateReviewedCandidate({
     {
       command: "task advance",
       name: "remote",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "task advance",
+      name: "replacement",
       kind: "boolean",
       valueHint: null,
       default: false,
@@ -2138,6 +2148,12 @@ function validateReviewedCandidate({
       command: "task advance",
       name: "remote",
       source_task: "202608021231-PZGG3V",
+    },
+    {
+      kind: "option",
+      command: "task advance",
+      name: "replacement",
+      source_task: "202608080805-KPWPAV",
     },
     {
       kind: "option",

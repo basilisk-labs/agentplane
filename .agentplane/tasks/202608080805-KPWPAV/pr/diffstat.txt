@@ -1,0 +1,9 @@
+ ...n-cli.core.task-advance-effect-recovery.test.ts | 107 +++++++++++++++++++++
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  11 ++-
+ .../src/commands/task/advance.command.ts           |   7 ++
+ .../agentplane/src/commands/task/advance.spec.ts   |  10 ++
+ .../task/external-agent-supervisor-episode.ts      |  35 +++++++
+ .../src/commands/task/external-agent-supervisor.ts |   3 +
+ .../baselines/v0.7-compatibility-candidate.json    |  37 +++++--
+ .../check-compatibility-contract-baseline.mjs      |  18 +++-
+ 8 files changed, 214 insertions(+), 14 deletions(-)

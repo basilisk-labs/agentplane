@@ -1,5 +1,6 @@
 import {
   advanceSupervisorExecutionEpisodeState,
+  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   startSupervisorExecutionEpisode,
   type AgentWorkOrderV2,
@@ -19,6 +20,7 @@ export async function recordIssuedExternalAgentEpisode(opts: {
   work_order_ref: string;
   purpose: ExternalAgentExchange["purpose"];
   issue_digest: string;
+  replace_failed_operation: boolean;
 }): Promise<void> {
   const effectRef = `external-agent-issue:${opts.issue_digest}`;
   const fingerprint = opts.decision.workflowStep.preconditionFingerprint.digest;
@@ -32,6 +34,23 @@ export async function recordIssuedExternalAgentEpisode(opts: {
       recover_intent: false,
     });
     let journal = opened.journal;
+    let replacementAuthorized = false;
+    if (journal.status === "stopped" && journal.stop?.reason === "operation_failed") {
+      if (!opts.replace_failed_operation) {
+        throw new CliError({
+          code: "E_RUNTIME",
+          message:
+            "External-agent supervisor is stopped (operation_failed); inspect the failed operation, then rerun task advance with --replacement to start a distinct exact-key successor.",
+        });
+      }
+      const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+        journal,
+        state_fingerprint_digest: fingerprint,
+      });
+      if (!(await opened.store.compareAndSwap(journal.digest, replacement))) continue;
+      journal = replacement;
+      replacementAuthorized = true;
+    }
     if (journal.status === "stopped" && journal.stop?.reason === "stale_state") {
       const reopened = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
         journal,
@@ -45,6 +64,19 @@ export async function recordIssuedExternalAgentEpisode(opts: {
         code: "E_RUNTIME",
         message: `External-agent supervisor is stopped (${journal.stop?.reason ?? "unknown"}).`,
       });
+    }
+    if (opts.replace_failed_operation && !replacementAuthorized) {
+      const latest = journal.operations.at(-1);
+      const isIdempotentReplacement =
+        journal.cursor.phase === "intent_recorded" &&
+        latest?.status === "intent" &&
+        typeof latest.replacement_of_operation_key === "string";
+      if (!isIdempotentReplacement) {
+        throw new CliError({
+          code: "E_USAGE",
+          message: "task advance --replacement requires a terminal failed operation.",
+        });
+      }
     }
     if (journal.cursor.phase === "completed") {
       const advanced = advanceSupervisorExecutionEpisodeState({
@@ -91,6 +123,9 @@ export async function recordIssuedExternalAgentEpisode(opts: {
       authority_digest: fingerprint,
       work_order_ref: opts.work_order_ref,
       effect_ref: effectRef,
+      ...(journal.cursor.replacement_of_operation_key
+        ? { replacement_of_operation_key: journal.cursor.replacement_of_operation_key }
+        : {}),
     });
     if (started.status === "stopped" && started.stop.reason === "stale_state") {
       const reopened = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
