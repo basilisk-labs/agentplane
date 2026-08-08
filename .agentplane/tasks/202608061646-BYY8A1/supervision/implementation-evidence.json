@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 00e7f6155354f650d7d5b0d5564b73bccdd5dff9..86111a72be11f3aeb11762132c2307e84acc7adf",
+      "command": "git diff --check 8a0ee3d59b7dc1c1a63e0655987bcb5841e53ef0..8d34ba8014523b6be8751c73adeccc5438c8f8df",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,11 +13,15 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 00e7f6155354f650d7d5b0d5564b73bccdd5dff9..86111a72be11f3aeb11762132c2307e84acc7adf",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8a0ee3d59b7dc1c1a63e0655987bcb5841e53ef0..8d34ba8014523b6be8751c73adeccc5438c8f8df",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\tdocs/releases/v0.7.5.md"
+        "M\t.agentplane/tasks/202608061646-BYY8A1/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608061646-BYY8A1/pr/github-body.md",
+        "M\t.agentplane/tasks/202608061646-BYY8A1/pr/meta.json",
+        "M\t.agentplane/tasks/202608061646-BYY8A1/pr/review.md",
+        "M\tscripts/bench/capture-agent-efficiency-candidate.mjs"
       ]
     },
     {
@@ -27,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "00e7f6155354f650d7d5b0d5564b73bccdd5dff9",
-  "implementation_commit": "86111a72be11f3aeb11762132c2307e84acc7adf",
+  "execution_base_commit": "8a0ee3d59b7dc1c1a63e0655987bcb5841e53ef0",
+  "implementation_commit": "8d34ba8014523b6be8751c73adeccc5438c8f8df",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],

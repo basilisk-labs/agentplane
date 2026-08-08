@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 79
+revision: 80
 origin:
   system: "manual"
 depends_on:
@@ -95,7 +95,9 @@ token_usage:
   total_tokens: 353797
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
   updated_at: "2026-08-08T20:38:57.417Z"
-commit: null
+commit:
+  hash: "8d34ba8014523b6be8751c73adeccc5438c8f8df"
+  message: "🚧 BYY8A1 task: apply external agent result"
 comments:
   -
     author: "DOCS"
@@ -178,6 +180,9 @@ comments:
   -
     author: "DOCS"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 8d34ba801452. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -601,9 +606,17 @@ events:
     author: "REVIEWER"
     state: "needs_rework"
     note: "Hosted verify-cli-critical exposed a non-hermetic RF-04 cleanup test."
+  -
+    type: "status"
+    at: "2026-08-08T20:51:02.734Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 8d34ba801452. CLI accepted one state-bound external-agent semantic result."
+    commit: "8d34ba8014523b6be8751c73adeccc5438c8f8df"
 doc_version: 3
-doc_updated_at: "2026-08-08T20:48:42.211Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-08-08T20:51:02.792Z"
+doc_updated_by: "SUPERVISOR"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
   Summary: |-
