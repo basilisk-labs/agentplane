@@ -13,7 +13,7 @@ Created: 2026-08-08T03:44:44.414Z
 ## Verification
 
 - State: blocked_external
-- Note: Rework: Declared check failed: bun run ci:local:full
+- Note: Rework: Declared check failed: bun run ci:release-extras
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
