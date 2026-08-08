@@ -164,10 +164,17 @@ describe("measure-cli-cold-path script", () => {
       ]);
 
       const commandMap = new Map((payload.commands ?? []).map((command) => [command.id, command]));
-      expect(commandMap.get("quickstart")?.exit_code).toBe(0);
-      expect(commandMap.get("task_list")?.exit_code).toBe(0);
-      expect(commandMap.get("task_search")?.exit_code).toBe(0);
-      expect(commandMap.get("preflight_quick")?.exit_code).toBe(0);
+      const expectCommandSucceeded = (commandId: string) => {
+        const command = commandMap.get(commandId);
+        expect(
+          command?.exit_code,
+          `Cold-path command ${commandId} failed:\n${JSON.stringify(command, null, 2)}`,
+        ).toBe(0);
+      };
+      expectCommandSucceeded("quickstart");
+      expectCommandSucceeded("task_list");
+      expectCommandSucceeded("task_search");
+      expectCommandSucceeded("preflight_quick");
       expect([0, 1]).toContain(commandMap.get("task_next")?.exit_code);
       expect(result.exitCode).toBe(commandMap.get("task_next")?.exit_code === 0 ? 0 : 1);
 

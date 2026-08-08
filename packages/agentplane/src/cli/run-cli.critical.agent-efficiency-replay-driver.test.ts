@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, realpath, rm, symlink, writeFile } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -35,6 +36,7 @@ type DriverModule = {
   anchorTaskOwner(role: string): string;
   CODEX_REPLAY_BINARY: string;
   CODEX_REPLAY_BINARY_ENV: string;
+  CODEX_REPLAY_ARCHIVE_CACHE_DIR: string;
   CODEX_REPLAY_ARCHIVE_SHA256: Readonly<Record<string, string>>;
   CODEX_REPLAY_CLI_VERSION: string;
   CODEX_REPLAY_CLI_VERSION_ENV: string;
@@ -99,6 +101,8 @@ type DriverModule = {
     harness_setup_latency_ms: number;
   };
   resolveCodexReplayCliVersion(source: Record<string, string>): string;
+  resolveCodexReplayArchiveCachePath(version: string, repoRoot?: string): string;
+  resolveCodexReplayBinary(source: Record<string, string>, repoRoot?: string): string;
 };
 
 type CaptureModule = {
@@ -171,6 +175,52 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
       retrieval_hits: null,
       retrieval_recall_proxy: null,
     });
+  });
+
+  it("discovers a versioned repo-local reviewed archive before the app binary", async () => {
+    const replayDriver = await driver();
+    const root = await realpath(await mkdtemp(path.join(os.tmpdir(), "agentplane-rf04-archive-")));
+    try {
+      const archivePath = replayDriver.resolveCodexReplayArchiveCachePath(
+        "0.146.0-alpha.3.1",
+        root,
+      );
+      expect(path.relative(root, archivePath)).toBe(
+        path.join(replayDriver.CODEX_REPLAY_ARCHIVE_CACHE_DIR, "0.146.0-alpha.3.1", "codex"),
+      );
+      await mkdir(path.dirname(archivePath), { recursive: true });
+      await writeFile(archivePath, "not the reviewed archive", "utf8");
+      expect(() =>
+        replayDriver.resolveCodexReplayBinary(
+          { [replayDriver.CODEX_REPLAY_CLI_VERSION_ENV]: "0.146.0-alpha.3.1" },
+          root,
+        ),
+      ).toThrow("CODEX_BINARY_ARCHIVE_DIGEST");
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("canonicalizes a regular Codex binary beneath a symlinked parent before digesting it", async () => {
+    const replayDriver = await driver();
+    const physicalRoot = await realpath(
+      await mkdtemp(path.join(os.tmpdir(), "agentplane-rf04-realpath-")),
+    );
+    const linkedRoot = `${physicalRoot}-link`;
+    try {
+      await symlink(physicalRoot, linkedRoot, "dir");
+      const binaryPath = path.join(physicalRoot, "codex");
+      await writeFile(binaryPath, "not the reviewed archive", "utf8");
+      expect(() =>
+        replayDriver.resolveCodexReplayBinary({
+          [replayDriver.CODEX_REPLAY_BINARY_ENV]: path.join(linkedRoot, "codex"),
+          [replayDriver.CODEX_REPLAY_CLI_VERSION_ENV]: "0.146.0-alpha.3.1",
+        }),
+      ).toThrow("CODEX_BINARY_ARCHIVE_DIGEST");
+    } finally {
+      await rm(linkedRoot, { force: true });
+      await rm(physicalRoot, { recursive: true, force: true });
+    }
   });
 
   it("passes no user home, Codex home, or temporary-directory inheritance", async () => {
@@ -257,6 +307,8 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
       second: repeated,
     })}\n`;
     const bootstrap = "Use bundle.json as the complete runner input.\n";
+    const semanticProjectionBootstrap =
+      "The content below is the complete provider-facing projection for this episode.\n";
 
     expect(
       replayDriver.measurePreparedContext(bundle, bootstrap, {
@@ -272,6 +324,11 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
       prompt_boilerplate_source: "anchor_run_state.prepared_metadata.prompt_boilerplate_bytes",
     });
     expect(replayDriver.measurePreparedContext(bundle, bootstrap)).toMatchObject({
+      prompt_boilerplate_bytes: Buffer.byteLength(basePrompt),
+      prompt_boilerplate_definition: "bundle_base_prompt_content_utf8_v1",
+      prompt_boilerplate_source: "anchor_bundle.base_prompts.content",
+    });
+    expect(replayDriver.measurePreparedContext(bundle, semanticProjectionBootstrap)).toMatchObject({
       prompt_boilerplate_bytes: Buffer.byteLength(basePrompt),
       prompt_boilerplate_definition: "bundle_base_prompt_content_utf8_v1",
       prompt_boilerplate_source: "anchor_bundle.base_prompts.content",

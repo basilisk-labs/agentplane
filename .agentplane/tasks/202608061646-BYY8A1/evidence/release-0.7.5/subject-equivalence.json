@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "kind": "release_qualification_subject_equivalence",
+  "evaluated_implementation_sha": "68c3884984a8a57e6b96f56593e25a746836cd56",
+  "qualified_subject_sha": "aaef3c8be167784f26f7c994fb44db2915a9c160",
+  "qualified_subject_is_descendant": true,
+  "changed_paths_between_subjects": [
+    ".agentplane/tasks/202608061646-BYY8A1/README.md"
+  ],
+  "non_task_content_diff": false,
+  "proof": [
+    {
+      "command": "git merge-base --is-ancestor 68c3884984a8a57e6b96f56593e25a746836cd56 aaef3c8be167784f26f7c994fb44db2915a9c160",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --name-status 68c3884984a8a57e6b96f56593e25a746836cd56 aaef3c8be167784f26f7c994fb44db2915a9c160",
+      "exit_code": 0,
+      "stdout": "M\t.agentplane/tasks/202608061646-BYY8A1/README.md"
+    },
+    {
+      "command": "git diff --quiet 68c3884984a8a57e6b96f56593e25a746836cd56 aaef3c8be167784f26f7c994fb44db2915a9c160 -- . ':(exclude).agentplane/**'",
+      "exit_code": 0
+    }
+  ],
+  "conclusion": "The qualification subject is a descendant of the evaluated implementation and differs only in the active task README; all implementation, tests, scripts, package manifests, and release behavior are identical."
+}

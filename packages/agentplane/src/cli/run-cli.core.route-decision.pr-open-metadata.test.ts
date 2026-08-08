@@ -191,6 +191,23 @@ describe("runCli route decision open PR metadata", () => {
     await execFileAsync("git", ["commit", "-m", "feat: resolve existing worktree changes"], {
       cwd: worktreePath,
     });
+    const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: worktreePath,
+    });
+    await runCliSilent([
+      "task",
+      "set-status",
+      taskId,
+      "DOING",
+      "--commit",
+      implementationHead.trim(),
+      "--root",
+      worktreePath,
+    ]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: worktreePath });
+    await execFileAsync("git", ["commit", "-m", "test: record implementation commit"], {
+      cwd: worktreePath,
+    });
 
     const openPrRouteIo = captureStdIO();
     try {

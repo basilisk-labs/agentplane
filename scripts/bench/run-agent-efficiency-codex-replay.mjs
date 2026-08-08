@@ -46,6 +46,7 @@ export { buildAnchorProcessEnvironment } from "./internal/agent-efficiency-ancho
 export {
   CODEX_REPLAY_BINARY,
   CODEX_REPLAY_BINARY_ENV,
+  CODEX_REPLAY_ARCHIVE_CACHE_DIR,
   CODEX_REPLAY_ARCHIVE_SHA256,
   CODEX_REPLAY_CLI_VERSION,
   CODEX_REPLAY_CLI_VERSION_ENV,
@@ -56,6 +57,7 @@ export {
   buildCodexReplayEnvironment,
   createCodexJsonlCollector,
   finalizeCodexJsonlCollector,
+  resolveCodexReplayArchiveCachePath,
   resolveCodexReplayBinary,
   resolveCodexReplayCliVersion,
 } from "./internal/agent-efficiency-codex-runtime.mjs";

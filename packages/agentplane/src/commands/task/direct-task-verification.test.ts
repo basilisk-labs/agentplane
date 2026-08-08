@@ -35,8 +35,12 @@ afterEach(async () => {
 describe("direct task verification", () => {
   it("accepts only a structured bun script invocation", () => {
     expect(parseDirectTaskCheck(" bun run test:critical ")).toEqual({ script: "test:critical" });
+    expect(parseDirectTaskCheck("bun run e2e:v0.7.1:gate")).toEqual({
+      script: "e2e:v0.7.1:gate",
+    });
     expect(parseDirectTaskCheck("bun run test:critical -- --watch")).toBeNull();
     expect(parseDirectTaskCheck("bun run test:critical; rm -rf /tmp/x")).toBeNull();
+    expect(parseDirectTaskCheck("bun run ../test:critical")).toBeNull();
     expect(parseDirectTaskCheck("npm test")).toBeNull();
   });
 
@@ -56,7 +60,12 @@ describe("direct task verification", () => {
     expect(result).toMatchObject({ status: "passed", reason: null });
     expect(mocks.runProcess).toHaveBeenNthCalledWith(
       1,
-      expect.objectContaining({ command: "bun", args: ["run", "test:critical"], cwd }),
+      expect.objectContaining({
+        command: "bun",
+        args: ["run", "test:critical"],
+        cwd,
+        timeoutMs: 30 * 60_000,
+      }),
     );
     expect(mocks.runProcess).toHaveBeenNthCalledWith(
       2,
@@ -74,6 +83,27 @@ describe("direct task verification", () => {
         { command: "bun run lifecycle:invariants", exit_code: 0 },
       ],
     });
+  });
+
+  it("gives the canonical provider qualification its bounded release window", async () => {
+    const cwd = await root();
+    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "provider gate ok", stderr: "" });
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: { verify: ["bun run e2e:v0.7.1:gate"] },
+      task_id: TASK_ID,
+      cwd,
+    });
+
+    expect(result).toMatchObject({ status: "passed" });
+    expect(mocks.runProcess).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: "bun",
+        args: ["run", "e2e:v0.7.1:gate"],
+        timeoutMs: 150 * 60_000,
+      }),
+    );
   });
 
   it("adds the fixed docs policy checks to a docs task without trusting agent claims", async () => {

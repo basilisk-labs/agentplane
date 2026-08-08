@@ -7,9 +7,12 @@ import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
-const CHECK_TIMEOUT_MS = 10 * 60_000;
+const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
+const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
+  "e2e:v0.7.1:gate": 150 * 60_000,
+});
 const CHECK_OUTPUT_LIMIT = 4000;
-const SAFE_BUN_SCRIPT = /^[A-Za-z0-9][A-Za-z0-9:_-]*$/u;
+const SAFE_BUN_SCRIPT = /^[A-Za-z0-9][A-Za-z0-9:._-]*$/u;
 const AGENTPLANE_BIN = resolveAgentplaneBinPath();
 
 type DirectTaskCheck = {
@@ -43,6 +46,12 @@ export function parseDirectTaskCheck(command: string): { script: string } | null
   if (tokens.length !== 3 || tokens[0] !== "bun" || tokens[1] !== "run") return null;
   const script = tokens[2] ?? "";
   return SAFE_BUN_SCRIPT.test(script) ? { script } : null;
+}
+
+function directTaskCheckTimeoutMs(script: string | null): number {
+  return script === null
+    ? DEFAULT_CHECK_TIMEOUT_MS
+    : (CHECK_TIMEOUT_MS_BY_SCRIPT[script] ?? DEFAULT_CHECK_TIMEOUT_MS);
 }
 
 function parseTrustedDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
@@ -135,7 +144,7 @@ export async function runDirectTaskVerification(opts: {
         command: parsed.executable,
         args: parsed.args,
         cwd: opts.cwd,
-        timeoutMs: CHECK_TIMEOUT_MS,
+        timeoutMs: directTaskCheckTimeoutMs(parsed.script),
         maxBuffer: 1024 * 1024,
         reject: false,
       });

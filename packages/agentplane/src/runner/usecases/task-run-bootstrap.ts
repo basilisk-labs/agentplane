@@ -3,6 +3,7 @@ import {
   buildAgentSemanticResultV2ValidFixtures,
 } from "@agentplaneorg/core/schemas";
 
+import { semanticTextHasProcessChoreography } from "../context/semantic-prompt-projection.js";
 import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
 
 type EvaluatorSkepticismLevel = NonNullable<
@@ -115,6 +116,12 @@ function renderSemanticPromptProjectionLines(bundle: RunnerContextBundle): strin
 function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string, unknown> | null {
   const workOrder = bundle.work_order;
   if (!workOrder) return null;
+  const semanticAcceptanceCriteria = workOrder.task.acceptance_criteria.filter(
+    (criterion) => !semanticTextHasProcessChoreography(criterion.description),
+  );
+  const semanticVerificationRequirements = workOrder.verification_intent.requirements.filter(
+    (requirement) => !semanticTextHasProcessChoreography(requirement.description),
+  );
   const requiredInputs = workOrder.required_inputs.filter((input) => {
     if (input.kind === "task_document" || input.kind === "policy_module") return false;
     if (input.kind !== "source_artifact") return true;
@@ -137,7 +144,10 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
   return {
     work_order_id: workOrder.work_order_id,
     role: workOrder.role,
-    task: workOrder.task,
+    task: {
+      ...workOrder.task,
+      acceptance_criteria: semanticAcceptanceCriteria,
+    },
     authority: {
       ...workOrder.authority,
       writable_roots: effectiveWritableRoots,
@@ -153,7 +163,7 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
     prepared_evidence: workOrder.prepared_evidence,
     required_inputs: requiredInputs,
     required_outputs: workOrder.required_outputs,
-    semantic_checks: workOrder.verification_intent.requirements.map((requirement) => ({
+    semantic_checks: semanticVerificationRequirements.map((requirement) => ({
       id: requirement.id,
       description: requirement.description,
       required: requirement.required,

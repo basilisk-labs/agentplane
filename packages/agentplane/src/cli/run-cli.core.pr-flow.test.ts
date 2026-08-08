@@ -173,13 +173,37 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
+    let taskId = "";
+    const taskIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Missing worktree validation",
+        "--description",
+        "Validate branch_pr work start before creating a worktree.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--root",
+        root,
+      ]);
+      expect(code, taskIo.stderr).toBe(0);
+      taskId = taskIo.stdout.trim();
+    } finally {
+      taskIo.restore();
+    }
 
     const io = captureStdIO();
     try {
       const code = await runCli([
         "work",
         "start",
-        "202601010101-ABCDEF",
+        taskId,
         "--agent",
         "CODER",
         "--slug",
@@ -187,7 +211,7 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
         "--root",
         root,
       ]);
-      expect(code).toBe(2);
+      expect(code, io.stderr).toBe(2);
       expect(io.stderr).toContain("agentplane work start");
     } finally {
       io.restore();

@@ -676,8 +676,8 @@ When `action.kind=agent_episode`:
 
 1. Read the supplied objective, role, authority, context references, required output, and stop rules.
 2. Perform only that semantic objective in the supplied checkout and writable roots.
-3. Write a typed semantic result to the result location supplied by the packet.
-4. Resume with the return invocation supplied by Agentplane.
+3. Write a typed semantic result to the exact `exchange.result_path` supplied by the packet.
+4. Resume with the exact `exchange.resume_argv`; `exchange.return_invocation` is compatibility-only.
 5. Request a fresh packet after every state change.
 
 Do not reconstruct the state machine from prose. Do not switch checkout, create branches, publish
@@ -717,9 +717,9 @@ agentplane task create "Inspect Agentplane artifacts and summarize what was crea
 ```
 
 Run the exact `task advance` command in the response and give its packet to an external agent. It
-reads `exchange.work_order_ref`, performs only the
-PLANNER objective, writes a typed result matching `exchange.result_schema_ref` to
-`exchange.directory/exchange.result_ref`, and returns it with:
+reads `exchange.work_order_ref`, performs only the PLANNER objective, writes a typed result matching
+`exchange.result_schema_ref` to `exchange.result_path`, and resumes with the exact
+`exchange.resume_argv`. Its equivalent shell form is:
 
 ```bash
 agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
@@ -935,7 +935,8 @@ agentplane doctor legacy --json
 
 `doctor legacy` is read-only. It returns the packaged compatibility retirement manifest plus
 workspace probes classified as `used`, `unused`, `unknown`, or `blocked`. Each adapter names its
-introduction and deprecation versions, retirement target or blocker, and migration command.
+introduction and deprecation versions, bounded retirement policy, compatibility scope, retirement
+target or blocker, and migration command.
 
 Exceptional legacy protected-conflict recovery lives outside the normal lifecycle surface:
 
@@ -944,6 +945,45 @@ agentplane repair adopt-legacy-conflict <task-id> --expect-adoption-token <sha25
 ```
 
 Run it only with the exact token emitted by `task next-action` or `pr conflict-rework`.
+
+## Evidence retention
+
+Evidence maintenance is local-only and dry-run-first:
+
+```bash
+agentplane evidence stats --json
+agentplane evidence compact --json
+agentplane evidence compact --apply --yes
+agentplane evidence gc --json
+agentplane evidence gc --apply --yes
+```
+
+`stats` reports tracked evidence, logical and allocated object bytes, duplicates, reachability,
+pins, expiry, corruption, missing references, and collectible objects. `compact` hard-links verified
+duplicate content-addressed objects without changing manifests or file contents. `gc` deletes only
+hash-verified objects that are expired, unreferenced, and unpinned. Apply mode requires a clean
+repository and refuses corrupt objects or missing references.
+
+Optional local retention policy:
+
+```json
+{
+  "schema_version": 1,
+  "objects": {
+    "keep_success_days": 30,
+    "keep_failure_days": 180,
+    "deduplicate": true,
+    "pin_release_evidence": true
+  }
+}
+```
+
+Save it as `evidence-retention.json` in the `.agentplane` control directory. Active tasks, current failures, and tasks tagged
+`release` remain pinned. Reachable objects are never collectible, even after the retention age.
+If apply is interrupted, rerun the same command: compaction replaces one verified object at a time,
+and garbage collection rechecks each candidate immediately before unlinking it. Recovery is the
+normal Git restore flow for the resulting deleted object paths; manifests and task summaries are
+never rewritten by these commands.
 
 ## Config
 

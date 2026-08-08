@@ -1,0 +1,47 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 8a0ee3d59b7dc1c1a63e0655987bcb5841e53ef0..8d34ba8014523b6be8751c73adeccc5438c8f8df",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8a0ee3d59b7dc1c1a63e0655987bcb5841e53ef0..8d34ba8014523b6be8751c73adeccc5438c8f8df",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608061646-BYY8A1/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608061646-BYY8A1/pr/github-body.md",
+        "M\t.agentplane/tasks/202608061646-BYY8A1/pr/meta.json",
+        "M\t.agentplane/tasks/202608061646-BYY8A1/pr/review.md",
+        "M\tscripts/bench/capture-agent-efficiency-candidate.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "8a0ee3d59b7dc1c1a63e0655987bcb5841e53ef0",
+  "implementation_commit": "8d34ba8014523b6be8751c73adeccc5438c8f8df",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608061646-BYY8A1"
+}

@@ -20,7 +20,10 @@ import {
   validateQualificationReport,
 } from "./release-qualification.mjs";
 import { evaluateEfficiencyMeasurement } from "./check-v0.7.1-efficiency-evidence.mjs";
-import { assertCompactAgentPacket } from "./check-v0.7.1-product-contract.mjs";
+import {
+  assertCompactAgentPacket,
+  assertLegacyAdapterRetirementContract,
+} from "./check-v0.7.1-product-contract.mjs";
 import { blockingCandidateFailureIds } from "../bench/capture-agent-efficiency-candidate.mjs";
 import {
   collapseMatchedLatencyReplicates,
@@ -35,6 +38,7 @@ import {
 } from "./measure-v0.7.1-supervisor-latency.mjs";
 import {
   preflightQualificationProviderRuntime,
+  QUALIFICATION_CODEX_CLI_VERSION,
   readQualificationRunSubjectIdentity,
   runQualificationScenarios,
 } from "./run-v0.7.1-release-qualification.mjs";
@@ -146,6 +150,14 @@ function supervisorLatencySurfaces(count) {
 }
 
 describe("v0.7.1 release qualification contract", () => {
+  it("pins the canonical provider gate to the reviewed Codex runtime", () => {
+    const packageJson = JSON.parse(readFileSync(path.join(repoRoot, "package.json"), "utf8"));
+    assert.equal(
+      packageJson.scripts["e2e:v0.7.1:gate"],
+      `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version ${QUALIFICATION_CODEX_CLI_VERSION}`,
+    );
+  });
+
   it("runs independent scenarios concurrently while preserving dependency barriers and report order", async () => {
     const scenarios = [
       { id: "slow", tier: "core" },
@@ -247,6 +259,34 @@ describe("v0.7.1 release qualification contract", () => {
     assert.ok(events.indexOf("finish:before-b:2") < events.indexOf("start:critical-cli:1"));
     assert.ok(events.indexOf("finish:critical-cli:1") < events.indexOf("start:after-a:1"));
     assert.ok(events.indexOf("finish:critical-cli:1") < events.indexOf("start:after-b:2"));
+  });
+
+  it("does not overlap packaged candidate builds with CLI readers", async () => {
+    const scenarios = [
+      { id: "reader-before", tier: "core", depends_on: [] },
+      { id: "packaged-candidate-flow", tier: "full", depends_on: [] },
+      { id: "reader-after", tier: "core", depends_on: [] },
+    ];
+    const events = [];
+    let active = 0;
+    await runQualificationScenarios(scenarios, {}, "/unused", {
+      concurrency: 2,
+      async scenarioRunner(scenario) {
+        active += 1;
+        events.push(`start:${scenario.id}:${active}`);
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        events.push(`finish:${scenario.id}:${active}`);
+        active -= 1;
+        return scenario.id;
+      },
+    });
+
+    assert.ok(
+      events.indexOf("finish:reader-before:1") < events.indexOf("start:packaged-candidate-flow:1"),
+    );
+    assert.ok(
+      events.indexOf("finish:packaged-candidate-flow:1") < events.indexOf("start:reader-after:1"),
+    );
   });
 
   it("stops queued work after failure and settles active work without starting dependents", async () => {
@@ -776,6 +816,23 @@ describe("v0.7.1 release qualification contract", () => {
       stop: { reason: "semantic_boundary", resume: "request_fresh_packet" },
     });
     assert.throws(() => assertCompactAgentPacket(oversizedPacket), /maximum is 2048/u);
+  });
+
+  it("accepts permanent historical readers without a removal deadline or blocker", () => {
+    assert.doesNotThrow(() =>
+      assertLegacyAdapterRetirementContract({
+        remove_in: null,
+        removal_blocker: null,
+        retirement_policy: { kind: "permanent_historical_reader" },
+      }),
+    );
+    assert.throws(() =>
+      assertLegacyAdapterRetirementContract({
+        remove_in: null,
+        removal_blocker: null,
+        retirement_policy: { kind: "support_window" },
+      }),
+    );
   });
 
   it("requires distinct frozen cold and warm sample sets with at least 20 pairs", () => {

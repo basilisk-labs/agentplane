@@ -43,8 +43,11 @@ const EXCLUSIVE_QUALIFICATION_SCENARIO_IDS = new Set([
   "critical-cli",
   "full-contract",
   "matched-cli-latency",
+  "packaged-candidate-flow",
   "supervisor-latency",
 ]);
+
+export const QUALIFICATION_CODEX_CLI_VERSION = "0.146.0-alpha.3.1";
 
 function helpText() {
   return [

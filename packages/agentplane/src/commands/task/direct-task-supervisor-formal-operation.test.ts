@@ -8,10 +8,15 @@ import {
 } from "@agentplaneorg/core/schemas";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mocks = vi.hoisted(() => ({ open: vi.fn() }));
+const mocks = vi.hoisted(() => ({
+  open: vi.fn(),
+  acquire: vi.fn(),
+  release: vi.fn(),
+}));
 
 vi.mock("../shared/supervisor-execution-episode.js", () => ({
   openSupervisorExecutionEpisode: mocks.open,
+  tryAcquireSupervisorExecutionLease: mocks.acquire,
 }));
 
 import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal-operation.js";
@@ -66,7 +71,32 @@ function completedRunnerJournal() {
 }
 
 describe("direct task supervisor formal operation", () => {
-  beforeEach(() => vi.resetAllMocks());
+  beforeEach(() => {
+    vi.resetAllMocks();
+    mocks.acquire.mockResolvedValue({ release: mocks.release });
+  });
+
+  it("refuses a duplicate formal operation while another supervisor owns the lease", async () => {
+    const run = vi.fn();
+    mocks.open.mockResolvedValue({
+      journal: completedRunnerJournal(),
+      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+      store: { write: vi.fn() },
+    });
+    mocks.acquire.mockResolvedValue(null);
+
+    await expect(
+      recordDirectTaskFormalOperation({
+        git_root: "/repo",
+        task_id: TASK_ID,
+        id: "task_verify",
+        decision: vi.fn().mockResolvedValue(decision(FIRST_FINGERPRINT)),
+        run,
+      }),
+    ).rejects.toThrow("no duplicate operation was started");
+
+    expect(run).not.toHaveBeenCalled();
+  });
 
   it("retries a stale formal operation only after a completed runner outcome", async () => {
     const write = vi.fn().mockResolvedValue(undefined);
@@ -204,6 +234,63 @@ describe("direct task supervisor formal operation", () => {
       status: "running",
       state_fingerprint_digest: NEXT_FINGERPRINT,
       cursor: { phase: "ready", operation_key: null },
+    });
+  });
+
+  it("replaces an interrupted verification intent after the task fingerprint advances", async () => {
+    const initial = createSupervisorExecutionEpisodeJournal({
+      task_id: TASK_ID,
+      task_revision: null,
+      state_fingerprint_digest: FIRST_FINGERPRINT,
+      budget: {
+        max_episodes: 50,
+        max_agent_runs: 50,
+        max_input_tokens: 3_000_000,
+        max_output_tokens: 1_000_000,
+        max_total_tokens: 4_000_000,
+        max_wall_time_ms: 14_400_000,
+        max_changed_files: 2000,
+        max_diff_lines: null,
+        max_no_progress_episodes: 3,
+      },
+    });
+    const started = startSupervisorExecutionEpisode({
+      journal: initial,
+      role: "EXECUTOR",
+      kind: "cli_operation",
+      operation_identity: { direct_task_operation: "task_verify" },
+      precondition_fingerprint_digest: FIRST_FINGERPRINT,
+      authority_ref: "direct-task-supervisor:task_verify",
+      authority_digest: FIRST_FINGERPRINT,
+      effect_ref: "task_verify",
+    });
+    if (started.status !== "started") throw new Error("expected interrupted operation fixture");
+    const write = vi.fn().mockResolvedValue(undefined);
+    mocks.open.mockResolvedValue({
+      journal: started.journal,
+      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+      store: { write },
+    });
+    const run = vi.fn().mockResolvedValue({ verification: "ok" });
+
+    const result = await recordDirectTaskFormalOperation({
+      git_root: "/repo",
+      task_id: TASK_ID,
+      id: "task_verify",
+      decision: vi.fn().mockResolvedValue(decision(NEXT_FINGERPRINT)),
+      run,
+    });
+
+    expect(run).toHaveBeenCalledOnce();
+    expect(result.journal.operations).toHaveLength(2);
+    expect(result.journal.operations[0]).toMatchObject({
+      operation_key: started.operation_key,
+      status: "failed",
+    });
+    expect(result.journal.operations[0]?.result_digest).toMatch(/^sha256:/u);
+    expect(result.journal.operations[1]).toMatchObject({
+      status: "completed",
+      replacement_of_operation_key: started.operation_key,
     });
   });
 
