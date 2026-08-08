@@ -13,7 +13,7 @@ Created: 2026-08-08T12:17:23.101Z
 ## Verification
 
 - State: needs_rework
-- Note: Rework: Unsupported declared check: bunx vitest run scripts/bench/capture-agent-efficiency-candidate.test.mjs
+- Note: Rework: Unsupported declared check: node --test scripts/qualification/release-qualification.test.mjs
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

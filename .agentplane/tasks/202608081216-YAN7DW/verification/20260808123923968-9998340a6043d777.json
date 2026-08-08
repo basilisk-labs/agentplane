@@ -1,0 +1,15 @@
+{
+  "details": "",
+  "digest": "sha256:9998340a6043d7777bedf92f4b7b008bc640734a73b1f7a0466cd69d8ce5afd2",
+  "implementation_sha": "e98b2f655c04712c51f1b482106d1a045a51a55b",
+  "kind": "task_verification_record",
+  "note": "Rework: Unsupported declared check: node --test scripts/qualification/release-qualification.test.mjs",
+  "recorded_at": "2026-08-08T12:39:23.968Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run `node --test scripts/qualification/release-qualification.test.mjs`. Expected: all qualification contract tests pass, including bounded concurrency, deterministic result ordering, dependency barriers, and the provider barrier.\n2. Run `bunx vitest run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts --pool=forks --maxWorkers=2`. Expected: candidate capture concurrency, stop-on-first-failure, evidence cleanup, and existing RF-04 contracts pass.\n3. Run `bun run format:check`. Expected: formatting passes.\n4. Run `bun run ci:contract`. Expected: repository contracts, lint, architecture, clone, knip, and coverage thresholds pass.\n5. The subsequent v0.7.5 release gate must execute the full 50-run/55-episode provider matrix on the exact integrated candidate SHA; no provider evidence from the pre-change SHA may be reused.",
+  "scope_digest": "sha256:d4c1e7abe40d89ceafcb23b71203a483a6f3ce14597ea1726ebd22a853e65cad",
+  "task_id": "202608081216-YAN7DW",
+  "verification_command": "agentplane verify 202608081216-YAN7DW --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
