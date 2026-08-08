@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:d7072fac762d61b91b2613b5db146cc74a3cdb34a8540acb492e48befc19c8ee",
+  "implementation_sha": "1f452c38f24122aa1ce00e9ba7c38afc388ff8a6",
+  "kind": "task_verification_record",
+  "note": "PR review identified two concurrency safety gaps",
+  "recorded_at": "2026-08-08T02:50:49.891Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run the focused core lock, route resolver, and user-first CLI suites. Expected: unknown outcomes require confirmation and branch isolation; explicit code outcomes retain the direct route; stale same-host process locks recover; malformed or unverifiable locks remain fail-closed; concurrent creators produce one task.\n2. Run `bun run typecheck`. Expected: all workspace packages typecheck.\n3. Run `bun run ci:contract`. Expected: formatting, schemas, compatibility, architecture, clone, Knip, and coverage contract gates pass.\n4. Run hosted Windows, unit, static, critical, contract, coverage, docs, and CodeQL checks on the exact PR head. Expected: all required checks pass.",
+  "scope_digest": "sha256:6c65d3895482f8de2d6e290107cf68ece00194ea75dd5dcdcaf0d012970b04ca",
+  "task_id": "202608070209-J3DEJ1",
+  "verification_command": "agentplane task verify rework 202608070209-J3DEJ1 --rework --by EVALUATOR",
+  "verifier": "EVALUATOR"
+}

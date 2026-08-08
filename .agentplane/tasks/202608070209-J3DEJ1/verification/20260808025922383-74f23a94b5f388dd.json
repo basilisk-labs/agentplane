@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest run packages/core/src/tasks/task-readme-io.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts; bun run typecheck; bun run ci:core; bun run test:critical; bun run ci:contract\nResult: PASS; focused 19/19, core 395/395, all 12 critical CLI chunks, typecheck, and complete contract gate succeeded.\nEvidence: implementation commit 2b8ee19e1; lock record v2 binds reclaim to host/PID namespace; recovery claim is linked only from a fully written and synced candidate.\nScope: task intake classification, repository-wide task creation lock recovery, and task README transaction concurrency only.",
+  "digest": "sha256:74f23a94b5f388ddca079d29e9eedb282af2ae531d09de861de4f20bddb6ed0d",
+  "implementation_sha": "2b8ee19e18f936d418cdd2736a2b393114da6a1d",
+  "kind": "task_verification_record",
+  "note": "Rework closes both PR concurrency findings",
+  "recorded_at": "2026-08-08T02:59:22.383Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused core lock, route resolver, and user-first CLI suites. Expected: unknown outcomes require confirmation and branch isolation; explicit code outcomes retain the direct route; stale same-host process locks recover; malformed or unverifiable locks remain fail-closed; concurrent creators produce one task.\n2. Run `bun run typecheck`. Expected: all workspace packages typecheck.\n3. Run `bun run ci:contract`. Expected: formatting, schemas, compatibility, architecture, clone, Knip, and coverage contract gates pass.\n4. Run hosted Windows, unit, static, critical, contract, coverage, docs, and CodeQL checks on the exact PR head. Expected: all required checks pass.",
+  "scope_digest": "sha256:6c65d3895482f8de2d6e290107cf68ece00194ea75dd5dcdcaf0d012970b04ca",
+  "task_id": "202608070209-J3DEJ1",
+  "verification_command": "agentplane task verify ok 202608070209-J3DEJ1 --ok --by CODER",
+  "verifier": "CODER"
+}

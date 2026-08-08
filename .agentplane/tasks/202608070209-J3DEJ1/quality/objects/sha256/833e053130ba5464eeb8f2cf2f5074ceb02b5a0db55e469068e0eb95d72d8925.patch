@@ -1,0 +1,825 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts b/packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts
+index a67315c9e..19daf110f 100644
+--- a/packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts
+@@ -1,5 +1,6 @@
+ import { execFile } from "node:child_process";
+-import { readdir } from "node:fs/promises";
++import { mkdir, readdir, readlink, writeFile } from "node:fs/promises";
++import os from "node:os";
+ import path from "node:path";
+ import { promisify } from "node:util";
+ import { describe, expect, it } from "vitest";
+@@ -10,12 +11,26 @@ import {
+   installRunCliIntegrationHarness,
+   mkGitRepoRoot,
+ } from "@agentplane/testkit";
++import { inferUserTaskIntent } from "../commands/task/create.command.js";
+ import { runCli } from "./run-cli.js";
+ 
+ installRunCliIntegrationHarness();
+ const TASKS_CLI_TIMEOUT_MS = 300_000;
+ const execFileAsync = promisify(execFile);
+ 
++async function currentProcessDomainId(): Promise<string | null> {
++  const currentHostname = os.hostname().trim();
++  if (!currentHostname) return null;
++  if (process.platform !== "linux") return `${process.platform}:${currentHostname}`;
++  try {
++    const pidNamespaceLink = await readlink("/proc/self/ns/pid");
++    const pidNamespace = pidNamespaceLink.trim();
++    return pidNamespace ? `${process.platform}:${currentHostname}:${pidNamespace}` : null;
++  } catch {
++    return null;
++  }
++}
++
+ type CliProcessResult = {
+   code: number;
+   stdout: string;
+@@ -128,6 +143,97 @@ describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, ()
+     }
+   });
+ 
++  it("requires confirmation and isolation when natural-language intent is unknown", async () => {
++    const root = await mkGitRepoRoot();
++    const io = captureStdIO();
++    try {
++      const code = await runCli(["task", "create", "Make this better", "--json", "--root", root]);
++      expect(code).toBe(0);
++      const payload = JSON.parse(io.stdout) as {
++        task_id: string;
++        inferred_intent: {
++          code: string;
++          task_kind: string | null;
++          mutation_scope: string;
++          blueprint_request: string | null;
++          confirmation_required: boolean;
++        };
++        execution_route: { selected_mode: string; reason_codes: string[] };
++      };
++      expect(payload.inferred_intent).toEqual(
++        expect.objectContaining({
++          code: "unknown_intent",
++          task_kind: null,
++          mutation_scope: "unknown",
++          blueprint_request: null,
++          confirmation_required: true,
++        }),
++      );
++      expect(payload.execution_route).toMatchObject({
++        selected_mode: "branch_pr",
++        reason_codes: ["mutation_scope_unknown"],
++      });
++
++      const task = await readTask({ cwd: root, rootOverride: root, taskId: payload.task_id });
++      expect(task.frontmatter.task_kind).toBeUndefined();
++      expect(task.frontmatter.mutation_scope).toBe("unknown");
++      expect(task.frontmatter.execution_route).toEqual(
++        expect.objectContaining({
++          selected_mode: "branch_pr",
++          reason_codes: ["mutation_scope_unknown"],
++          frozen: true,
++        }),
++      );
++      expect(inferUserTaskIntent("Address ambiguous behavior")).toMatchObject({
++        inference_code: "unknown_intent",
++        mutationScope: "unknown",
++        confirmation_required: true,
++      });
++    } finally {
++      io.restore();
++    }
++  });
++
++  it("recovers an interrupted repository-wide creation lock", async () => {
++    const root = await mkGitRepoRoot();
++    const lockPath = path.join(root, ".agentplane", "tasks", "..task-create.README.md.lock");
++    await mkdir(path.dirname(lockPath), { recursive: true });
++    await writeFile(
++      lockPath,
++      `${JSON.stringify({
++        schema_version: 2,
++        generation: "crashed-task-create",
++        process_instance_id: "crashed-task-create",
++        owner_process_domain_id: await currentProcessDomainId(),
++        owner_pid: 2_147_483_647,
++        owner_command: "missing",
++        owner_started_at: "2026-01-01T00:00:00.000Z",
++        acquired_at: "2026-01-01T00:00:00.000Z",
++      })}\n`,
++      "utf8",
++    );
++    const io = captureStdIO();
++    try {
++      const code = await runCli([
++        "task",
++        "create",
++        "Fix the parser after interruption",
++        "--json",
++        "--root",
++        root,
++      ]);
++      expect(code).toBe(0);
++      const payload = JSON.parse(io.stdout) as { task_id: string };
++      expect(payload.task_id).toMatch(/^\d{12}-[A-Z0-9]{6}$/u);
++      const taskDirectoryEntries = await readdir(path.join(root, ".agentplane", "tasks"));
++      expect(
++        taskDirectoryEntries.filter((name) => name.startsWith("..task-create.README.md.lock")),
++      ).toEqual([]);
++    } finally {
++      io.restore();
++    }
++  });
++
+   it("conservatively isolates complex and release outcomes", async () => {
+     const root = await mkGitRepoRoot();
+     const outcomes = [
+diff --git a/packages/agentplane/src/commands/task/create.command.ts b/packages/agentplane/src/commands/task/create.command.ts
+index b016d4e69..c79f7839b 100644
+--- a/packages/agentplane/src/commands/task/create.command.ts
++++ b/packages/agentplane/src/commands/task/create.command.ts
+@@ -28,6 +28,7 @@ export type InferredTaskIntent = Pick<
+   "taskKind" | "mutationScope" | "riskFlags" | "blueprintRequest" | "tags"
+ > & {
+   inference_code: string;
++  confirmation_required?: boolean;
+ };
+ 
+ const RELEASE_TERMS = ["release", "publish", "version bump", "npm", "релиз", "опубликов", "верси"];
+@@ -116,11 +117,56 @@ const COMPLEX_CHANGE_TERMS = [
+   "нескольк",
+   "фреймворк",
+ ];
++const CODE_CHANGE_WORDS = new Set([
++  "fix",
++  "fixes",
++  "fixed",
++  "fixing",
++  "implement",
++  "implements",
++  "implemented",
++  "implementing",
++  "add",
++  "adds",
++  "added",
++  "adding",
++  "update",
++  "updates",
++  "updated",
++  "updating",
++  "change",
++  "changes",
++  "changed",
++  "changing",
++  "remove",
++  "removes",
++  "removed",
++  "removing",
++  "bug",
++  "bugs",
++  "build",
++  "builds",
++  "built",
++  "building",
++  "create",
++  "creates",
++  "created",
++  "creating",
++]);
++const CODE_CHANGE_STEMS = ["исправ", "почин", "добав", "реализ", "измен", "удал", "баг"];
+ 
+ function containsAny(value: string, terms: readonly string[]): boolean {
+   return terms.some((term) => value.includes(term));
+ }
+ 
++function containsCodeChangeIntent(value: string): boolean {
++  const englishWords = value.match(/[a-z]+/gu) ?? [];
++  return (
++    englishWords.some((word) => CODE_CHANGE_WORDS.has(word)) ||
++    containsAny(value, CODE_CHANGE_STEMS)
++  );
++}
++
+ export function inferUserTaskIntent(outcome: string, description?: string): InferredTaskIntent {
+   const text = `${outcome}\n${description ?? ""}`.toLocaleLowerCase();
+ 
+@@ -214,13 +260,22 @@ export function inferUserTaskIntent(outcome: string, description?: string): Infe
+       inference_code: "complex_code_change",
+     };
+   }
++  if (containsCodeChangeIntent(text)) {
++    return {
++      taskKind: "code",
++      mutationScope: "code",
++      riskFlags: [],
++      blueprintRequest: "code.direct",
++      tags: ["code"],
++      inference_code: "bounded_code_change",
++    };
++  }
+   return {
+-    taskKind: "code",
+-    mutationScope: "code",
++    mutationScope: "unknown",
+     riskFlags: [],
+-    blueprintRequest: "code.direct",
+-    tags: ["code"],
+-    inference_code: "bounded_code_change",
++    tags: ["intake"],
++    inference_code: "unknown_intent",
++    confirmation_required: true,
+   };
+ }
+ 
+@@ -367,11 +422,12 @@ export function makeRunTaskCreateHandler(
+       status: "semantic_input_required" as const,
+       inferred_intent: {
+         code: intent.inference_code,
+-        task_kind: intent.taskKind,
++        task_kind: intent.taskKind ?? null,
+         mutation_scope: intent.mutationScope,
+         risk_flags: intent.riskFlags,
+-        blueprint_request: intent.blueprintRequest,
++        blueprint_request: intent.blueprintRequest ?? null,
+         tags: intent.tags,
++        confirmation_required: intent.confirmation_required === true,
+       },
+       execution_route: route,
+       required_role: "PLANNER" as const,
+@@ -388,9 +444,13 @@ export function makeRunTaskCreateHandler(
+           {
+             label: "intent",
+             value:
+-              `${intent.inference_code} kind=${intent.taskKind} ` +
++              `${intent.inference_code} kind=${intent.taskKind ?? "unknown"} ` +
+               `mutation=${intent.mutationScope}`,
+           },
++          {
++            label: "intent_confirmation",
++            value: intent.confirmation_required === true ? "required" : "not_required",
++          },
+           {
+             label: "route",
+             value:
+diff --git a/packages/agentplane/src/runtime/task-routing/resolve.test.ts b/packages/agentplane/src/runtime/task-routing/resolve.test.ts
+index fe1cdf4a3..826d3c09b 100644
+--- a/packages/agentplane/src/runtime/task-routing/resolve.test.ts
++++ b/packages/agentplane/src/runtime/task-routing/resolve.test.ts
+@@ -41,6 +41,22 @@ describe("task execution route", () => {
+     ).toBe("direct");
+   });
+ 
++  it("isolates unknown mutation scope even when direct is requested", () => {
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    expect(
++      resolveTaskExecutionRoute({
++        config,
++        requestedMode: "direct",
++        task: { mutation_scope: "unknown", risk_flags: [] },
++      }),
++    ).toMatchObject({
++      requested_mode: "direct",
++      selected_mode: "branch_pr",
++      reason_codes: ["direct_request_overridden", "mutation_scope_unknown"],
++    });
++  });
++
+   it("treats repository branch_pr mode as a non-downgradeable policy floor", () => {
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+diff --git a/packages/core/src/tasks/task-readme-io.test.ts b/packages/core/src/tasks/task-readme-io.test.ts
+index 8d992dadc..4981c8dab 100644
+--- a/packages/core/src/tasks/task-readme-io.test.ts
++++ b/packages/core/src/tasks/task-readme-io.test.ts
+@@ -1,4 +1,4 @@
+-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
++import { mkdtemp, readFile, readdir, readlink, rm, writeFile } from "node:fs/promises";
+ import os from "node:os";
+ import path from "node:path";
+ 
+@@ -25,6 +25,37 @@ description: "x"
+ ## Summary
+ `;
+ 
++async function currentProcessDomainId(): Promise<string | null> {
++  const currentHostname = os.hostname().trim();
++  if (!currentHostname) return null;
++  if (process.platform !== "linux") return `${process.platform}:${currentHostname}`;
++  try {
++    const pidNamespaceLink = await readlink("/proc/self/ns/pid");
++    const pidNamespace = pidNamespaceLink.trim();
++    return pidNamespace ? `${process.platform}:${currentHostname}:${pidNamespace}` : null;
++  } catch {
++    return null;
++  }
++}
++
++async function crashedLockRecord(
++  generation: string,
++  ownerProcessDomainId?: string | null,
++): Promise<string> {
++  const resolvedProcessDomainId =
++    ownerProcessDomainId === undefined ? await currentProcessDomainId() : ownerProcessDomainId;
++  return `${JSON.stringify({
++    schema_version: 2,
++    generation,
++    process_instance_id: "crashed-owner",
++    owner_process_domain_id: resolvedProcessDomainId,
++    owner_pid: 2_147_483_647,
++    owner_command: "missing",
++    owner_started_at: "2026-01-01T00:00:00.000Z",
++    acquired_at: "2026-01-01T00:00:00.000Z",
++  })}\n`;
++}
++
+ describe("updateTaskReadmeAtomic", () => {
+   it("updates frontmatter+body and preserves trailing newline", async () => {
+     const dir = await mkdtemp(path.join(os.tmpdir(), "agentplane-core-"));
+@@ -67,33 +98,89 @@ describe("updateTaskReadmeAtomic", () => {
+     expect(parseTaskReadme(next).frontmatter.revision).toBe(3);
+   });
+ 
+-  it("retains a crashed-owner lock fail-closed instead of risking split-brain recovery", async () => {
++  it("recovers a lock whose exact owning process is no longer alive", async () => {
+     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-core-lock-"));
+     const taskDir = path.join(root, "202601010101-ABCDE");
+     const readmePath = path.join(taskDir, "README.md");
+     const lockPath = path.join(root, ".202601010101-ABCDE.README.md.lock");
+-    await writeFile(
+-      lockPath,
+-      `${JSON.stringify({
+-        schema_version: 1,
+-        generation: "crashed-owner",
+-        process_instance_id: "crashed-owner",
+-        owner_pid: 2_147_483_647,
+-        owner_command: "missing",
+-        owner_started_at: "2026-01-01T00:00:00.000Z",
+-        acquired_at: "2026-01-01T00:00:00.000Z",
+-      })}\n`,
+-      "utf8",
++    await writeFile(lockPath, await crashedLockRecord("crashed-owner"), "utf8");
++
++    try {
++      let called = false;
++      await withTaskReadmeTransaction(
++        readmePath,
++        () => {
++          called = true;
++        },
++        { timeoutMs: 20, retryMs: 1 },
++      );
++      expect(called).toBe(true);
++      await expect(readFile(lockPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
++      const entries = await readdir(root);
++      expect(entries.filter((name) => name.includes(".recovery"))).toEqual([]);
++    } finally {
++      await rm(root, { recursive: true, force: true });
++    }
++  });
++
++  it("retains an unverifiable lock fail-closed", async () => {
++    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-core-lock-"));
++    const readmePath = path.join(root, "202601010101-ABCDE", "README.md");
++    const lockPath = path.join(root, ".202601010101-ABCDE.README.md.lock");
++    await writeFile(lockPath, "not a lock record\n", "utf8");
++
++    try {
++      await expect(
++        withTaskReadmeTransaction(readmePath, () => null, { timeoutMs: 20, retryMs: 1 }),
++      ).rejects.toThrow(/owner_status=unverified; unverifiable locks are retained fail-closed/u);
++      expect(await readFile(lockPath, "utf8")).toBe("not a lock record\n");
++    } finally {
++      await rm(root, { recursive: true, force: true });
++    }
++  });
++
++  it("does not reclaim a stale-looking lock from another process domain", async () => {
++    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-core-lock-"));
++    const readmePath = path.join(root, "202601010101-ABCDE", "README.md");
++    const lockPath = path.join(root, ".202601010101-ABCDE.README.md.lock");
++    const lockRecord = await crashedLockRecord(
++      "foreign-owner",
++      `${process.platform}:another-host:another-pid-namespace`,
+     );
++    await writeFile(lockPath, lockRecord, "utf8");
+ 
+     try {
+       await expect(
+-        withTaskReadmeTransaction(readmePath, () => null, {
+-          timeoutMs: 20,
+-          retryMs: 1,
+-        }),
+-      ).rejects.toThrow(/owner_status=(?:stale|unverified); stale locks are retained fail-closed/u);
+-      expect(await readFile(lockPath, "utf8")).toContain('"generation":"crashed-owner"');
++        withTaskReadmeTransaction(readmePath, () => null, { timeoutMs: 20, retryMs: 1 }),
++      ).rejects.toThrow(/owner_status=unverified; unverifiable locks are retained fail-closed/u);
++      expect(await readFile(lockPath, "utf8")).toBe(lockRecord);
++    } finally {
++      await rm(root, { recursive: true, force: true });
++    }
++  });
++
++  it("serializes concurrent recoverers without overlapping transactions", async () => {
++    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-core-lock-"));
++    const readmePath = path.join(root, "202601010101-ABCDE", "README.md");
++    const lockPath = path.join(root, ".202601010101-ABCDE.README.md.lock");
++    await writeFile(lockPath, await crashedLockRecord("crashed-owner"), "utf8");
++    let active = 0;
++    let maximumActive = 0;
++    const operation = async (): Promise<void> => {
++      active += 1;
++      maximumActive = Math.max(maximumActive, active);
++      await new Promise((resolve) => setTimeout(resolve, 40));
++      active -= 1;
++    };
++
++    try {
++      await Promise.all([
++        withTaskReadmeTransaction(readmePath, operation, { timeoutMs: 250, retryMs: 1 }),
++        withTaskReadmeTransaction(readmePath, operation, { timeoutMs: 250, retryMs: 1 }),
++      ]);
++      expect(maximumActive).toBe(1);
++      const entries = await readdir(root);
++      expect(entries.filter((name) => name.includes(".lock"))).toEqual([]);
+     } finally {
+       await rm(root, { recursive: true, force: true });
+     }
+diff --git a/packages/core/src/tasks/task-readme-io.ts b/packages/core/src/tasks/task-readme-io.ts
+index 1e8af5d5a..678348124 100644
+--- a/packages/core/src/tasks/task-readme-io.ts
++++ b/packages/core/src/tasks/task-readme-io.ts
+@@ -1,6 +1,7 @@
+ import { randomUUID } from "node:crypto";
+ import { constants, type BigIntStats } from "node:fs";
+-import { link, lstat, mkdir, open, readFile, unlink } from "node:fs/promises";
++import { link, lstat, mkdir, open, readFile, readdir, readlink, unlink } from "node:fs/promises";
++import { hostname } from "node:os";
+ import path from "node:path";
+ import { setTimeout as sleep } from "node:timers/promises";
+ 
+@@ -12,6 +13,7 @@ import { parseTaskReadme, renderTaskReadme, type ParsedTaskReadme } from "./task
+ const TASK_README_LOCK_TIMEOUT_MS = 5000;
+ const TASK_README_LOCK_RETRY_MS = 25;
+ const TASK_README_LOCK_MAX_BYTES = 16 * 1024;
++const TASK_README_LOCK_RECOVERY_ATTEMPTS = 3;
+ const CURRENT_PROCESS_INSTANCE_ID = randomUUID();
+ 
+ type FileIdentity = {
+@@ -20,9 +22,10 @@ type FileIdentity = {
+ };
+ 
+ type TaskReadmeLockRecord = {
+-  schema_version: 1;
++  schema_version: 2;
+   generation: string;
+   process_instance_id: string;
++  owner_process_domain_id: string | null;
+   owner_pid: number;
+   owner_command: string | null;
+   owner_started_at: string | null;
+@@ -44,7 +47,11 @@ export type TaskReadmeTransactionOptions = {
+ };
+ 
+ let currentProcessIdentity:
+-  | Promise<{ command: string | null; started_at: string | null }>
++  | Promise<{
++      command: string | null;
++      process_domain_id: string | null;
++      started_at: string | null;
++    }>
+   | undefined;
+ 
+ function identity(stat: BigIntStats): FileIdentity {
+@@ -67,6 +74,22 @@ function candidatePathFor(lockPath: string, generation: string): string {
+   return `${lockPath}.candidate.${generation}`;
+ }
+ 
++function recoveryMarkerPathFor(lockPath: string, generation: string): string {
++  return `${lockPath}.recovery.${generation}.json`;
++}
++
++function recoveryCandidatePathFor(lockPath: string, generation: string): string {
++  return `${lockPath}.recovery-candidate.${generation}`;
++}
++
++function recoveryTargetPathFor(lockPath: string, generation: string): string {
++  return `${lockPath}.recovery.${generation}.target`;
++}
++
++function recoveryMarkerPrefixFor(lockPath: string): string {
++  return `${path.basename(lockPath)}.recovery.`;
++}
++
+ function isProcessAlive(pid: number): boolean {
+   try {
+     process.kill(pid, 0);
+@@ -75,7 +98,7 @@ function isProcessAlive(pid: number): boolean {
+     const code = (error as NodeJS.ErrnoException | null)?.code;
+     if (code === "ESRCH" || code === "EINVAL") return false;
+     if (code === "EPERM") return true;
+-    return false;
++    return true;
+   }
+ }
+ 
+@@ -105,6 +128,7 @@ async function observeProcessIdentity(
+           : null,
+     };
+   } catch (error) {
++    if (!isProcessAlive(pid)) return null;
+     const errno = (error as NodeJS.ErrnoException | null)?.code;
+     const exitCode = (error as { code?: number } | null)?.code;
+     if (errno === "ESRCH" || exitCode === 1) return null;
+@@ -112,14 +136,37 @@ async function observeProcessIdentity(
+   }
+ }
+ 
++async function resolveCurrentProcessDomainId(): Promise<string | null> {
++  let currentHostname: string;
++  try {
++    currentHostname = hostname().trim();
++  } catch {
++    return null;
++  }
++  if (!currentHostname) return null;
++  if (process.platform !== "linux") return `${process.platform}:${currentHostname}`;
++  try {
++    const pidNamespaceLink = await readlink("/proc/self/ns/pid");
++    const pidNamespace = pidNamespaceLink.trim();
++    return pidNamespace ? `${process.platform}:${currentHostname}:${pidNamespace}` : null;
++  } catch {
++    return null;
++  }
++}
++
+ async function resolveCurrentProcessIdentity(): Promise<{
+   command: string | null;
++  process_domain_id: string | null;
+   started_at: string | null;
+ }> {
+-  currentProcessIdentity ??= observeProcessIdentity(process.pid).then(
+-    (observed) => observed ?? { command: null, started_at: null },
+-    () => ({ command: null, started_at: null }),
+-  );
++  currentProcessIdentity ??= Promise.all([
++    observeProcessIdentity(process.pid).catch(() => null),
++    resolveCurrentProcessDomainId(),
++  ]).then(([observed, processDomainId]) => ({
++    command: observed?.command ?? null,
++    process_domain_id: processDomainId,
++    started_at: observed?.started_at ?? null,
++  }));
+   return await currentProcessIdentity;
+ }
+ 
+@@ -131,11 +178,14 @@ function parseLockRecord(raw: string): TaskReadmeLockRecord | null {
+     return null;
+   }
+   if (
+-    parsed.schema_version !== 1 ||
++    parsed.schema_version !== 2 ||
+     typeof parsed.generation !== "string" ||
+     parsed.generation.length === 0 ||
+     typeof parsed.process_instance_id !== "string" ||
+     parsed.process_instance_id.length === 0 ||
++    (parsed.owner_process_domain_id !== null &&
++      (typeof parsed.owner_process_domain_id !== "string" ||
++        parsed.owner_process_domain_id.length === 0)) ||
+     typeof parsed.owner_pid !== "number" ||
+     !Number.isInteger(parsed.owner_pid) ||
+     parsed.owner_pid <= 0 ||
+@@ -186,6 +236,15 @@ async function lockOwnerStatus(
+   ) {
+     return "active";
+   }
++  const currentIdentity = await resolveCurrentProcessIdentity();
++  const currentProcessDomainId = currentIdentity.process_domain_id;
++  if (
++    !currentProcessDomainId ||
++    !lock.record.owner_process_domain_id ||
++    lock.record.owner_process_domain_id !== currentProcessDomainId
++  ) {
++    return "unverified";
++  }
+   let observed: Awaited<ReturnType<typeof observeProcessIdentity>>;
+   try {
+     observed = await observeProcessIdentity(lock.record.owner_pid);
+@@ -210,11 +269,135 @@ async function writeLockCandidate(
+     constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0),
+     0o600,
+   );
++  let complete = false;
+   try {
+     await handle.writeFile(`${JSON.stringify(record)}\n`, "utf8");
+     await handle.sync();
++    complete = true;
+   } finally {
+     await handle.close();
++    if (!complete) await unlink(candidatePath).catch(() => null);
++  }
++}
++
++async function publishRecoveryClaim(
++  lockPath: string,
++  generation: string,
++  record: TaskReadmeLockRecord,
++): Promise<string> {
++  const candidatePath = recoveryCandidatePathFor(lockPath, generation);
++  const markerPath = recoveryMarkerPathFor(lockPath, generation);
++  await writeLockCandidate(candidatePath, record);
++  try {
++    await link(candidatePath, markerPath);
++    await syncDirectory(path.dirname(lockPath));
++  } finally {
++    await unlinkRegularFile(candidatePath);
++    await syncDirectory(path.dirname(lockPath));
++  }
++  return markerPath;
++}
++
++async function unlinkRegularFile(filePath: string): Promise<boolean> {
++  try {
++    const stats = await lstat(filePath, { bigint: true });
++    if (!stats.isFile() || stats.isSymbolicLink()) return false;
++    await unlink(filePath);
++    return true;
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return false;
++    throw error;
++  }
++}
++
++async function listRecoveryMarkerPaths(lockPath: string): Promise<string[]> {
++  const directory = path.dirname(lockPath);
++  const prefix = recoveryMarkerPrefixFor(lockPath);
++  const names = await readdir(directory);
++  return names
++    .filter((name) => name.startsWith(prefix) && name.endsWith(".json"))
++    .toSorted()
++    .map((name) => path.join(directory, name));
++}
++
++function recoveryGenerationFromMarker(lockPath: string, markerPath: string): string | null {
++  const name = path.basename(markerPath);
++  const prefix = recoveryMarkerPrefixFor(lockPath);
++  if (!name.startsWith(prefix) || !name.endsWith(".json")) return null;
++  const generation = name.slice(prefix.length, -".json".length);
++  return generation.length > 0 ? generation : null;
++}
++
++async function cleanupRecoveryClaim(
++  lockPath: string,
++  markerPath: string,
++  targetPath: string,
++): Promise<void> {
++  const targetChanged = await unlinkRegularFile(targetPath);
++  const markerChanged = await unlinkRegularFile(markerPath);
++  if (targetChanged || markerChanged) await syncDirectory(path.dirname(lockPath));
++}
++
++async function removeAbandonedRecoveryClaims(lockPath: string): Promise<void> {
++  for (const markerPath of await listRecoveryMarkerPaths(lockPath)) {
++    const generation = recoveryGenerationFromMarker(lockPath, markerPath);
++    if (!generation) continue;
++    const marker = await readObservedLock(markerPath);
++    if ((await lockOwnerStatus(marker)) !== "stale") continue;
++    await cleanupRecoveryClaim(lockPath, markerPath, recoveryTargetPathFor(lockPath, generation));
++  }
++}
++
++async function waitForRecoveryClaimsToClear(
++  lockPath: string,
++  timeoutMs: number,
++  retryMs: number,
++): Promise<boolean> {
++  const deadline = Date.now() + timeoutMs;
++  for (;;) {
++    await removeAbandonedRecoveryClaims(lockPath);
++    const markers = await listRecoveryMarkerPaths(lockPath);
++    if (markers.length === 0) return true;
++    if (Date.now() >= deadline) return false;
++    await sleep(retryMs);
++  }
++}
++
++async function tryRecoverStaleLock(
++  lockPath: string,
++  owner: Omit<TaskReadmeLockRecord, "generation" | "acquired_at">,
++): Promise<boolean> {
++  const generation = randomUUID();
++  const targetPath = recoveryTargetPathFor(lockPath, generation);
++  const markerPath = await publishRecoveryClaim(lockPath, generation, {
++    ...owner,
++    generation,
++    acquired_at: new Date().toISOString(),
++  });
++  try {
++    await removeAbandonedRecoveryClaims(lockPath);
++    const markers = await listRecoveryMarkerPaths(lockPath);
++    if (markers[0] !== markerPath) return false;
++    try {
++      await link(lockPath, targetPath);
++    } catch (error) {
++      if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return true;
++      throw error;
++    }
++    const target = await readObservedLock(targetPath);
++    if ((await lockOwnerStatus(target)) !== "stale") return false;
++    const current = await readObservedLock(lockPath);
++    if (!target || !current || !sameIdentity(target.identity, current.identity)) return true;
++    if ((await lockOwnerStatus(await readObservedLock(targetPath))) !== "stale") return false;
++    try {
++      await unlink(lockPath);
++      await syncDirectory(path.dirname(lockPath));
++    } catch (error) {
++      if ((error as NodeJS.ErrnoException | null)?.code !== "ENOENT") throw error;
++    }
++    return true;
++  } finally {
++    await cleanupRecoveryClaim(lockPath, markerPath, targetPath);
+   }
+ }
+ 
+@@ -227,9 +410,10 @@ async function acquireTaskReadmeLock(
+   const generation = randomUUID();
+   const owner = await resolveCurrentProcessIdentity();
+   const record: TaskReadmeLockRecord = {
+-    schema_version: 1,
++    schema_version: 2,
+     generation,
+     process_instance_id: CURRENT_PROCESS_INSTANCE_ID,
++    owner_process_domain_id: owner.process_domain_id,
+     owner_pid: process.pid,
+     owner_command: owner.command,
+     owner_started_at: owner.started_at,
+@@ -239,15 +423,35 @@ async function acquireTaskReadmeLock(
+   await writeLockCandidate(candidatePath, record);
+   const timeoutMs = options.timeoutMs ?? TASK_README_LOCK_TIMEOUT_MS;
+   const retryMs = options.retryMs ?? TASK_README_LOCK_RETRY_MS;
+-  const deadline = Date.now() + timeoutMs;
++  let deadline = Date.now() + timeoutMs;
++  let recoveryAttempts = 0;
+ 
+   try {
++    await removeAbandonedRecoveryClaims(lockPath);
+     for (;;) {
+       try {
+         await link(candidatePath, lockPath);
+         await syncDirectory(path.dirname(lockPath));
++        if (!(await waitForRecoveryClaimsToClear(lockPath, timeoutMs, retryMs))) {
++          const published = await readObservedLock(lockPath);
++          if (published?.record.generation === generation) {
++            await unlink(lockPath);
++            await syncDirectory(path.dirname(lockPath));
++          }
++          throw new Error(`Timed out waiting for task README lock recovery: ${lockPath}`);
++        }
+         const observed = await readObservedLock(lockPath);
+-        if (observed?.record.generation !== generation) {
++        if (!observed) {
++          deadline = Date.now() + timeoutMs;
++          continue;
++        }
++        if (observed.record.generation !== generation) {
++          deadline = Date.now() + timeoutMs;
++          continue;
++        }
++        if (
++          !sameIdentity(observed.identity, identity(await lstat(candidatePath, { bigint: true })))
++        ) {
+           throw new Error(`Task README lock publication could not be verified: ${lockPath}`);
+         }
+         return { ...observed, lockPath };
+@@ -255,12 +459,27 @@ async function acquireTaskReadmeLock(
+         if ((error as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw error;
+       }
+ 
++      const observed = await readObservedLock(lockPath);
++      const ownerStatus = await lockOwnerStatus(observed);
++      if (ownerStatus === "stale" && recoveryAttempts < TASK_README_LOCK_RECOVERY_ATTEMPTS) {
++        recoveryAttempts += 1;
++        const recovered = await tryRecoverStaleLock(lockPath, {
++          schema_version: 2,
++          process_instance_id: CURRENT_PROCESS_INSTANCE_ID,
++          owner_process_domain_id: owner.process_domain_id,
++          owner_pid: process.pid,
++          owner_command: owner.command,
++          owner_started_at: owner.started_at,
++        });
++        if (recovered || (await waitForRecoveryClaimsToClear(lockPath, timeoutMs, retryMs))) {
++          deadline = Date.now() + timeoutMs;
++          continue;
++        }
++      }
+       if (Date.now() >= deadline) {
+-        const observed = await readObservedLock(lockPath);
+-        const ownerStatus = await lockOwnerStatus(observed);
+         throw new Error(
+           `Timed out waiting for task README lock: ${lockPath} ` +
+-            `(owner_status=${ownerStatus}; stale locks are retained fail-closed)`,
++            `(owner_status=${ownerStatus}; unverifiable locks are retained fail-closed)`,
+         );
+       }
+       await sleep(retryMs);
