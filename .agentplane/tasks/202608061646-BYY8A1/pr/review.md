@@ -6,14 +6,14 @@ Created: 2026-08-08T03:44:44.414Z
 
 - Task: `202608061646-BYY8A1`
 - Title: Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch
-- Status: BLOCKED
+- Status: DOING
 - Branch: `task/202608061646-BYY8A1/qualify-and-publish-agentplane-0-7-5-supervisor`
 - Canonical task record: `.agentplane/tasks/202608061646-BYY8A1/README.md`
 
 ## Verification
 
-- State: blocked_external
-- Note: RF-04 capture retains every completed isolated checkout until the full 50-run generation ends, exhausting disk after six completed runs.
+- State: ok
+- Note: PASS: implementation 68c3884984a8a57e6b96f56593e25a746836cd56 verified. ci:local:full and ci:release-extras passed; full provider qualification report .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/report.json is ready with release_ready=true, matched CLI and supervisor latency pass, provider matrix and efficiency evidence pass. Absolute CLI latency diagnostic remains advisory and is cleared by the matched comparison.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -15,12 +15,15 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
 
 ## Verification
 
-- State: blocked_external
+- State: ok
 - Note:
 
 ```text
-RF-04 capture retains every completed isolated checkout until the full 50-run generation ends,
-exhausting disk after six completed runs.
+PASS: implementation 68c3884984a8a57e6b96f56593e25a746836cd56 verified. ci:local:full and
+ci:release-extras passed; full provider qualification report
+.agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/report.json is ready with
+release_ready=true, matched CLI and supervisor latency pass, provider matrix and efficiency evidence
+pass. Absolute CLI latency diagnostic remains advisory and is cleared by the matched comparison.
 ```
 - Canonical workflow state lives in the task README.
 

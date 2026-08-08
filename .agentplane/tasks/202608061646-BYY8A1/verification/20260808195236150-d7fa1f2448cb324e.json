@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:d7fa1f2448cb324e032cf49a997dd9b0e85d6aa046d29cf87c406fef4aaddd8b",
+  "implementation_sha": "68c3884984a8a57e6b96f56593e25a746836cd56",
+  "kind": "task_verification_record",
+  "note": "Exact-subject qualification passed on aaef3c8be167784f26f7c994fb44db2915a9c160: verdict ready, 18/19 scenarios passed, zero blocking defects, provider matrix 50 runs/55 episodes passed, efficiency evidence passed with 58.59% total-token reduction, matched and supervisor latency passed; absolute latency remains advisory only.",
+  "recorded_at": "2026-08-08T19:52:36.150Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bun run ci:local:full\n- bun run ci:release-extras\n- bun run e2e:v0.7.1:gate\n- bun run bench:compatibility:check\n- bun run bench:agent-efficiency:check\n- bun run bench:agent-efficiency:replay:check",
+  "scope_digest": "sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a",
+  "task_id": "202608061646-BYY8A1",
+  "verification_command": "agentplane verify 202608061646-BYY8A1 --ok --by TESTER",
+  "verifier": "TESTER"
+}

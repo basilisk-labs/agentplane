@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:edf41f249fc5785f3a03fa8b3f01599a1000932dd4e5138eb2a06244686b03b5",
+  "implementation_sha": "68c3884984a8a57e6b96f56593e25a746836cd56",
+  "kind": "task_verification_record",
+  "note": "PASS: implementation 68c3884984a8a57e6b96f56593e25a746836cd56 verified. ci:local:full and ci:release-extras passed; full provider qualification report .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/report.json is ready with release_ready=true, matched CLI and supervisor latency pass, provider matrix and efficiency evidence pass. Absolute CLI latency diagnostic remains advisory and is cleared by the matched comparison.",
+  "recorded_at": "2026-08-08T19:52:59.027Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bun run ci:local:full\n- bun run ci:release-extras\n- bun run e2e:v0.7.1:gate\n- bun run bench:compatibility:check\n- bun run bench:agent-efficiency:check\n- bun run bench:agent-efficiency:replay:check",
+  "scope_digest": "sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a",
+  "task_id": "202608061646-BYY8A1",
+  "verification_command": "agentplane verify 202608061646-BYY8A1 --ok --by TESTER",
+  "verifier": "TESTER"
+}

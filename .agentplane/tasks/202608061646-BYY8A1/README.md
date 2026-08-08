@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 70
+revision: 72
 origin:
   system: "manual"
 depends_on:
@@ -40,11 +40,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "blocked_external"
-  updated_at: "2026-08-08T19:22:38.697Z"
+  state: "ok"
+  updated_at: "2026-08-08T19:52:59.027Z"
   updated_by: "TESTER"
-  note: "RF-04 capture retains every completed isolated checkout until the full 50-run generation ends, exhausting disk after six completed runs."
-  attempts: 25
+  note: "PASS: implementation 68c3884984a8a57e6b96f56593e25a746836cd56 verified. ci:local:full and ci:release-extras passed; full provider qualification report .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/report.json is ready with release_ready=true, matched CLI and supervisor latency pass, provider matrix and efficiency evidence pass. Absolute CLI latency diagnostic remains advisory and is cleared by the matched comparison."
+  attempts: 0
 commit:
   hash: "68c3884984a8a57e6b96f56593e25a746836cd56"
   message: "🐛 BYY8A1 task: release RF-04 checkouts per run"
@@ -506,8 +506,20 @@ events:
     from: "BLOCKED"
     to: "DOING"
     commit: "68c3884984a8a57e6b96f56593e25a746836cd56"
+  -
+    type: "verify"
+    at: "2026-08-08T19:52:36.150Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Exact-subject qualification passed on aaef3c8be167784f26f7c994fb44db2915a9c160: verdict ready, 18/19 scenarios passed, zero blocking defects, provider matrix 50 runs/55 episodes passed, efficiency evidence passed with 58.59% total-token reduction, matched and supervisor latency passed; absolute latency remains advisory only."
+  -
+    type: "verify"
+    at: "2026-08-08T19:52:59.027Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS: implementation 68c3884984a8a57e6b96f56593e25a746836cd56 verified. ci:local:full and ci:release-extras passed; full provider qualification report .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/report.json is ready with release_ready=true, matched CLI and supervisor latency pass, provider matrix and efficiency evidence pass. Absolute CLI latency diagnostic remains advisory and is cleared by the matched comparison."
 doc_version: 3
-doc_updated_at: "2026-08-08T19:25:02.361Z"
+doc_updated_at: "2026-08-08T19:53:00.354Z"
 doc_updated_by: "CODER"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
@@ -1403,6 +1415,66 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-08T19:52:36.150Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Exact-subject qualification passed on aaef3c8be167784f26f7c994fb44db2915a9c160: verdict ready, 18/19 scenarios passed, zero blocking defects, provider matrix 50 runs/55 episodes passed, efficiency evidence passed with 58.59% total-token reduction, matched and supervisor latency passed; absolute latency remains advisory only.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T19:25:02.361Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+    - old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608061646-BYY8A1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T19:52:59.027Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS: implementation 68c3884984a8a57e6b96f56593e25a746836cd56 verified. ci:local:full and ci:release-extras passed; full provider qualification report .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/report.json is ready with release_ready=true, matched CLI and supervisor latency pass, provider matrix and efficiency evidence pass. Absolute CLI latency diagnostic remains advisory and is cleared by the matched comparison.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T19:52:37.173Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+    - old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608061646-BYY8A1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Do not publish unless all gates pass. Before publication, abandon the candidate branch. After publication, fix forward in a new patch; npm versions and Git tags are immutable."
   Findings: |-
@@ -1425,6 +1497,14 @@ sections:
     - Observation: failed-capture records six completed runs and anchor checkout ENOSPC; staging cleanup after failure restored space, proving accumulated disposable subjects caused the growth.
       Impact: Provider qualification cannot complete on a normal constrained workstation even though provider episodes themselves pass.
       Resolution: Delete each isolated subject checkout in a per-job finally block after envelope/evidence extraction, preserve concurrency and immutable evidence, add cleanup regression coverage, then create a new candidate generation.
+
+    - Observation: RF-04 disposable checkout storage remained bounded at three active subjects throughout the successful provider matrix and returned to baseline after completion.
+      Impact: The release candidate has complete local and provider evidence on a clean exact SHA; no blocking qualification defects remain.
+      Resolution: Accept the candidate for hosted PR verification and protected-main integration.
+
+    - Observation: Full local release qualification completed on head aaef3c8be167784f26f7c994fb44db2915a9c160 with 18/19 scenarios passing and zero blocking failures.
+      Impact: Release candidate satisfies the declared local, provider, compatibility, recovery, workflow, and efficiency gates.
+      Resolution: Proceed to publish PR head, hosted verification, integration, and release publication.
 extensions:
   workflow_route_baseline:
     start_head_sha: "4a2895659e677071caaa9b56cadf35df8e261e82"
@@ -2333,6 +2413,66 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-08T19:52:36.150Z — VERIFY — ok
+
+By: TESTER
+
+Note: Exact-subject qualification passed on aaef3c8be167784f26f7c994fb44db2915a9c160: verdict ready, 18/19 scenarios passed, zero blocking defects, provider matrix 50 runs/55 episodes passed, efficiency evidence passed with 58.59% total-token reduction, matched and supervisor latency passed; absolute latency remains advisory only.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T19:25:02.361Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+- old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608061646-BYY8A1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T19:52:59.027Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS: implementation 68c3884984a8a57e6b96f56593e25a746836cd56 verified. ci:local:full and ci:release-extras passed; full provider qualification report .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/report.json is ready with release_ready=true, matched CLI and supervisor latency pass, provider matrix and efficiency evidence pass. Absolute CLI latency diagnostic remains advisory and is cleared by the matched comparison.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T19:52:37.173Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+- old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608061646-BYY8A1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -2360,3 +2500,11 @@ Do not publish unless all gates pass. Before publication, abandon the candidate 
 - Observation: failed-capture records six completed runs and anchor checkout ENOSPC; staging cleanup after failure restored space, proving accumulated disposable subjects caused the growth.
   Impact: Provider qualification cannot complete on a normal constrained workstation even though provider episodes themselves pass.
   Resolution: Delete each isolated subject checkout in a per-job finally block after envelope/evidence extraction, preserve concurrency and immutable evidence, add cleanup regression coverage, then create a new candidate generation.
+
+- Observation: RF-04 disposable checkout storage remained bounded at three active subjects throughout the successful provider matrix and returned to baseline after completion.
+  Impact: The release candidate has complete local and provider evidence on a clean exact SHA; no blocking qualification defects remain.
+  Resolution: Accept the candidate for hosted PR verification and protected-main integration.
+
+- Observation: Full local release qualification completed on head aaef3c8be167784f26f7c994fb44db2915a9c160 with 18/19 scenarios passing and zero blocking failures.
+  Impact: Release candidate satisfies the declared local, provider, compatibility, recovery, workflow, and efficiency gates.
+  Resolution: Proceed to publish PR head, hosted verification, integration, and release publication.
