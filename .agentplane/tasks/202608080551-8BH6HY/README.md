@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -77,7 +77,7 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "bd07cac6d7b50201f5f2de53c8adeb0074bd3922"
+  hash: "5458ff29b48110d6d97b3d97d68b620aa8e61fe9"
   message: "🚧 8BH6HY task: apply external agent result"
 comments:
   -
@@ -116,6 +116,9 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Scope re-approved under the user's standing authorization for post-release defect fixes discovered by dogfooding and review; these recovery dependencies are required to make external worktree result acceptance usable end to end."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 5458ff29b481. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -253,9 +256,17 @@ events:
     at: "2026-08-08T07:31:13.097Z"
     author: "ORCHESTRATOR"
     body: "Scope re-approved under the user's standing authorization for post-release defect fixes discovered by dogfooding and review; these recovery dependencies are required to make external worktree result acceptance usable end to end."
+  -
+    type: "status"
+    at: "2026-08-08T07:46:01.777Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 5458ff29b481. CLI accepted one state-bound external-agent semantic result."
+    commit: "5458ff29b48110d6d97b3d97d68b620aa8e61fe9"
 doc_version: 3
-doc_updated_at: "2026-08-08T07:34:16.800Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-08-08T07:46:01.817Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix task advance so a state-bound task_worktree_resolution episode can return a completed result after the CODER commits intended changes, without being rejected as an unsupported or stale read-only purpose; add focused regression coverage."
 sections:
   Summary: |-
