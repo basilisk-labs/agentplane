@@ -15,8 +15,8 @@ Reduce patch-release elapsed time by adding bounded concurrency to independent q
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run test:critical
+- State: blocked_external
+- Note: Rework: Declared check failed: bun run ci:contract
 - Canonical workflow state lives in the task README.
 
 <details>

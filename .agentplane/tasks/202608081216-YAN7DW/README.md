@@ -1,10 +1,10 @@
 ---
 id: "202608081216-YAN7DW"
 title: "Parallelize release qualification without weakening gates"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +26,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "User explicitly approved pausing the active v0.7.5 verification and implementing no-quality-loss release acceleration before restarting the release."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-08T13:02:38.422Z"
+  state: "blocked_external"
+  updated_at: "2026-08-08T13:07:17.845Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run test:critical"
-  attempts: 3
+  note: "Rework: Declared check failed: bun run ci:contract"
+  attempts: 4
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
@@ -69,9 +69,7 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit:
-  hash: "247d12585284eeaf9722922a20a90ea626a9f281"
-  message: "🚧 YAN7DW task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -214,8 +212,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 247d12585284. CLI accepted one state-bound external-agent semantic result."
     commit: "247d12585284eeaf9722922a20a90ea626a9f281"
+  -
+    type: "verify"
+    at: "2026-08-08T13:07:17.845Z"
+    author: "SUPERVISOR"
+    state: "blocked_external"
+    note: "Rework: Declared check failed: bun run ci:contract"
 doc_version: 3
-doc_updated_at: "2026-08-08T13:05:00.181Z"
+doc_updated_at: "2026-08-08T13:07:18.983Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
@@ -491,6 +495,56 @@ sections:
     Command: bun run test:critical
     Result: fail
     Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608081216-YAN7DW-parallelize-release-qualification/.agentplane/tasks/202608081216-YAN7DW/blueprint/resolved-snapshot.json
+    - old_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+    - current_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608081216-YAN7DW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608081216-YAN7DW
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T13:07:17.845Z — VERIFY — blocked_external
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:contract
+    Attempts: 4
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T13:05:00.181Z, excerpt_hash=sha256:1cae1f99dc9a9a5efbce86fcedd6b0b11fc7737d54646d4fdec13617a8ab9fd5
+
+    Details:
+
+    Command: bun run qualification:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+    Command: bun run ci:contract
+    Result: fail
+    Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-4
     Scope: branch_pr task 202608081216-YAN7DW declared verification
 
     BlueprintSnapshotRef:
@@ -804,6 +858,56 @@ Scope: branch_pr task 202608081216-YAN7DW declared verification
 Command: bun run test:critical
 Result: fail
 Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608081216-YAN7DW-parallelize-release-qualification/.agentplane/tasks/202608081216-YAN7DW/blueprint/resolved-snapshot.json
+- old_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+- current_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608081216-YAN7DW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608081216-YAN7DW
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T13:07:17.845Z — VERIFY — blocked_external
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:contract
+Attempts: 4
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T13:05:00.181Z, excerpt_hash=sha256:1cae1f99dc9a9a5efbce86fcedd6b0b11fc7737d54646d4fdec13617a8ab9fd5
+
+Details:
+
+Command: bun run qualification:check
+Result: pass
+Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+Command: bun run ci:contract
+Result: fail
+Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-4
 Scope: branch_pr task 202608081216-YAN7DW declared verification
 
 BlueprintSnapshotRef:
