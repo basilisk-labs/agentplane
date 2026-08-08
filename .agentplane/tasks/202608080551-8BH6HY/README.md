@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -30,19 +30,19 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-08T07:30:09.485Z"
+  updated_at: "2026-08-08T07:34:16.776Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 1 typed finding(s)."
   evaluated_sha: "bd07cac6d7b50201f5f2de53c8adeb0074bd3922"
   blueprint_digest: "f838ddb45c74406d87ad39a2b037d6fe7c88d657a5b7b4059642578ee7641be4"
   evidence_refs:
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-072925107-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-072925107-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/de616200891a50d94c7b7e3fb7bc21596a226f3a9282ee3ae99c247bf350d1d6.md"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-072925107-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-072925107-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-072925107-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-072925107-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-073309472-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-073309472-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/c5c2af1dccaacb650982e6eeb98bf3f985f20375dbd8b5d0edafc7d73de53c99.md"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-073309472-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-073309472-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-073309472-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-073309472-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608080551-8BH6HY/README.md"
     - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/0d8205290b2e749c44fb2689ec51d656d3c4557641356fe8aca7013418a18a52.patch"
     - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/7089f56fb4789624407ddf604ba21228712fa3dfa113b4add507a7f6df6de400.json"
@@ -53,7 +53,7 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The evaluated patch includes unrelated verification-routing, quality-review, and formal-operation recovery changes beyond the approved task-worktree result-acceptance fix."
+    - "Verification rework is considered addressed after any later DOING status event, even when that event did not record a new implementation commit."
 token_usage:
   agent_runs: 9
   input_tokens: 273067
@@ -254,7 +254,7 @@ events:
     author: "ORCHESTRATOR"
     body: "Scope re-approved under the user's standing authorization for post-release defect fixes discovered by dogfooding and review; these recovery dependencies are required to make external worktree result acceptance usable end to end."
 doc_version: 3
-doc_updated_at: "2026-08-08T07:31:13.124Z"
+doc_updated_at: "2026-08-08T07:34:16.800Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Fix task advance so a state-bound task_worktree_resolution episode can return a completed result after the CODER commits intended changes, without being rejected as an unsupported or stale read-only purpose; add focused regression coverage."
 sections:

@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608080551-8BH6HY-b667987994e7e3c33904996e",
+  "prepared_at": "2026-08-08T07:33:09.472Z",
+  "task": {
+    "id": "202608080551-8BH6HY",
+    "revision": 31,
+    "objective": "Accept external task-worktree resolution results\n\nFix task advance so a state-bound task_worktree_resolution episode can return a completed result after the CODER commits intended changes, without being rejected as an unsupported or stale read-only purpose; add focused regression coverage.",
+    "acceptance_criteria": [
+      "bun run test:critical",
+      "bun run typecheck",
+      "bun run ci:contract",
+      "- In scope: Fix task advance so a state-bound task_worktree_resolution episode can return a completed result after the CODER commits intended changes, without being rejected as an unsupported or stale read-only purpose; add focused regression coverage.\n- Out of scope: unrelated refactors not required for \"Accept external task-worktree resolution results\".",
+      "1. Accept state-bound task_worktree_resolution and implementation_rework results with purpose-correct commit recovery. 2. Treat remaining pre-existing dirty paths as the semantic subject of writable worktree resolution while keeping read-only episodes freshness-checked and observation-only. 3. Recover completed stale external episodes, retry ready-but-stale routing within one bounded call, and resume an exact interrupted formal verification intent without replaying an unknown effect. 4. Route a newly recorded implementation after needs_rework back to deterministic verification instead of another rework loop. 5. Cover baseline keep, read-only observation, stale journal, process-loss, rework convergence, and prior-commit replacement; pass critical, type, contract, evaluator, hosted, and integration gates.",
+      "PLANNER fallback scaffold for \"Accept external task-worktree resolution results\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Accept external task-worktree resolution results\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "bd07cac6d7b50201f5f2de53c8adeb0074bd3922",
+  "diff_base_sha": "26da24fb37b41e318ad175676ed13a5b125293da",
+  "blueprint_digest": "f838ddb45c74406d87ad39a2b037d6fe7c88d657a5b7b4059642578ee7641be4",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-073309472-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:99d2e32273885bcb52f9252352cb1e7a3fdcd065aa2ac2f64e9548f3f6e9f56c",
+    "prompt_path": ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/c5c2af1dccaacb650982e6eeb98bf3f985f20375dbd8b5d0edafc7d73de53c99.md",
+    "result_schema_path": ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608080551-8BH6HY/README.md",
+      "sha256": "sha256:bf3f1ddbe051c4f18ae224d0ca776e108f98115e2cbc7c5cc19fc5adcf7cf3d3",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/0d8205290b2e749c44fb2689ec51d656d3c4557641356fe8aca7013418a18a52.patch",
+      "sha256": "sha256:0d8205290b2e749c44fb2689ec51d656d3c4557641356fe8aca7013418a18a52",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/7089f56fb4789624407ddf604ba21228712fa3dfa113b4add507a7f6df6de400.json",
+      "sha256": "sha256:7089f56fb4789624407ddf604ba21228712fa3dfa113b4add507a7f6df6de400",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608080551-8BH6HY/verification/20260808072836680-9f8fb1bc7c53a7bf.json",
+      "sha256": "sha256:9f3a7c399539e366c5bc3b57c57016fb5eba6ae1825fc2415f934b9c32f80753",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/9bdf501920399d2009207ee356cca9d401dd0ad0bfd8caf494e54982108db83a.json",
+      "sha256": "sha256:9bdf501920399d2009207ee356cca9d401dd0ad0bfd8caf494e54982108db83a",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

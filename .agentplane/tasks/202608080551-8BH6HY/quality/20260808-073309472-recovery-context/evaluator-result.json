@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "medium",
+      "summary": "Verification rework is considered addressed after any later DOING status event, even when that event did not record a new implementation commit.",
+      "broken_invariant": "Acceptance criterion 4 requires routing back to deterministic verification only after a newly recorded implementation. verificationReworkHasNewImplementation checks for a non-empty current commit and any later status event targeting DOING, but does not establish that the commit changed or was recorded by that event. An unrelated DOING-to-DOING transition can therefore bypass implementation_rework_required for the same failed implementation.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/0d8205290b2e749c44fb2689ec51d656d3c4557641356fe8aca7013418a18a52.patch",
+          "sha256": "sha256:0d8205290b2e749c44fb2689ec51d656d3c4557641356fe8aca7013418a18a52",
+          "line": 590,
+          "section": "route-decision-verification.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608080551-8BH6HY/README.md",
+          "sha256": "sha256:bf3f1ddbe051c4f18ae224d0ca776e108f98115e2cbc7c5cc19fc5adcf7cf3d3",
+          "section": "Plan"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add a negative routing test where verification is needs_rework, the existing failed commit remains unchanged, and an unrelated later DOING-to-DOING status event occurs; implementation_rework_required must remain present.",
+    "Add a positive test proving convergence is tied to durable recording of a different implementation commit, rather than only event time and status."
+  ],
+  "hidden_assumptions": [
+    "Every DOING-targeting status event after failed verification is assumed to represent a newly recorded implementation, although the event schema and predicate do not bind that event to task.commit."
+  ],
+  "recovery_context": "Bind rework convergence to evidence that a new implementation commit was durably recorded after the failed verification, and cover an unrelated later DOING event as a negative case."
+}
