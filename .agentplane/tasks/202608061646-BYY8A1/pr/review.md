@@ -29,9 +29,11 @@ Created: 2026-08-08T03:44:44.414Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/releases/v0.7.5.md      | 60 ++++++++++++++++++++++++++++++++++++++++++++
- website/static/llms-full.txt | 52 +++++++++++++++++++++++++++++++++-----
- 2 files changed, 106 insertions(+), 6 deletions(-)
+ docs/releases/v0.7.5.md                            |  60 +++++++++++++++++++++
+ website/static/img/social/docs/releases/v0.7.5.png | Bin 0 -> 53016 bytes
+ website/static/img/social/manifest.json            |   8 +++
+ website/static/llms-full.txt                       |  52 +++++++++++++++---
+ 4 files changed, 114 insertions(+), 6 deletions(-)
 ```
 
 </details>
