@@ -1,0 +1,2928 @@
+diff --git a/docs/releases/v0.7.5.md b/docs/releases/v0.7.5.md
+new file mode 100644
+index 000000000..5be2bb926
+--- /dev/null
++++ b/docs/releases/v0.7.5.md
+@@ -0,0 +1,68 @@
++# Release Notes - v0.7.5
++
++## Summary
++
++- AgentPlane 0.7.5 makes the supervisor route the single normal task workflow: the CLI owns lifecycle, authority, Git, verification, evidence, and recovery while agents receive bounded semantic episodes.
++- New-task and initialization UX now starts from user intent, explains the selected execution route, and applies repository-derived safe defaults without requiring users or agents to reconstruct the process.
++- This cumulative patch also hardens Windows task discovery, concurrent task creation, compatibility retirement, and local evidence retention before the next feature family is introduced.
++
++## Added
++
++- Added an external-agent protocol through `agentplane task advance <task-id> --agent-json`, with an exact `result_path`, structured `resume_argv`, state fingerprint, scoped authority, and typed result contract.
++- Added managed supervision through `agentplane task run <task-id>` on the same route and execution journal used by external agents.
++- Added explainable automatic task routing that selects `direct` or `branch_pr` from the requested work, repository policy, and risk signals while keeping explicit user choices authoritative.
++- Added a user-first task intake flow and execution preview so a natural-language request can be inspected before AgentPlane creates or starts durable work.
++- Added repository-derived `init` defaults and progressive setup prompts that keep the common path short while retaining advanced policy and runner configuration.
++- Added semantic policy projection for PLANNER, EXECUTOR, and EVALUATOR episodes, including project purpose, scope, security constraints, required inputs, writable roots, output schema, and stop rules without control-plane choreography.
++- Added `agentplane evidence stats`, `agentplane evidence compact`, and `agentplane evidence gc` with content-addressed retention, deduplication, pinning, writer serialization, and race-safe revalidation.
++- Added bounded compatibility classifications and retirement blockers so current runtime adapters, lazy historical readers, and planned 0.8 removals are distinguishable through `agentplane doctor legacy`.
++- Added observed token accounting to completed task output, sourced from the persisted supervisor journal rather than agent estimates.
++
++## Improved
++
++- Reworked bundled `AGENTS.md`, direct and branch-PR policy modules, role guidance, the Codex skill, quickstart text, and lifecycle documentation around `task active`, `task advance`, and `task run` as the canonical happy path.
++- Reduced the default task help surface to the canonical `new`, `active`, `advance`, `run`, and `brief` operations while preserving diagnostics and compatibility commands behind the full help surface.
++- Improved approval boundaries with typed operator actions and corrected explicit plan provenance so human-supplied planning is not attributed to an agent.
++- Improved branch-PR supervision so one advance from the base checkout prepares the worktree and returns a WorkOrder whose repository revision, writable roots, source manifest, and exchange all target that worktree.
++- Improved verification parsing and execution receipts so claimed semantic outcomes cannot substitute for AgentPlane-observed checks or independent evaluator review.
++- Improved prompt qualification to inspect the exact compiled provider input and reject embedded lifecycle, Git, PR, verification, integration, cleanup, and release choreography.
++- Improved task creation serialization with process-domain-aware lock ownership and fail-closed recovery when a stale owner cannot be verified safely.
++- Improved concurrent supervisor replay by bounding effect-retirement observation to two seconds, preventing intermittent false duplicate-effect failures without slowing normal completion.
++- Improved external worktree-result handling so a result prepared against the task worktree can be accepted from the base checkout when the task revision and implementation baseline still match, while read-only observations do not create false stale-state failures.
++- Improved verification rework convergence so the supervisor binds a repaired result to the exact implementation commit and records a new observed receipt instead of reusing evidence from the rejected revision.
++- Improved recovery across process loss, stale journals, and failed formal operations with exact operation identities, persisted successor links, and fail-closed effect handling.
++- Improved RF-04 reproducibility with a versioned repo-local reviewed-archive cache used when `AGENTPLANE_RF04_REPLAY_CODEX_BINARY` is unset; explicit binary overrides remain authoritative and every cached binary must match the pinned SHA-256 allowlist.
++
++## Fixed
++
++- Fixed Windows task scans comparing rounded numeric inode values with exact `BigInt` file identities, which could mark readable README files as unreadable on NTFS.
++- Fixed stale task-creation locks being recoverable across unrelated hosts or process domains without enough evidence that the recorded owner was gone.
++- Fixed recovery marker publication so interrupted writers cannot expose partial marker contents as committed evidence.
++- Fixed ambiguous or unknown automatic intent being silently promoted into executable work; AgentPlane now returns a confirmation boundary instead.
++- Fixed generated agent instructions and managed provider prompts that still taught agents to call `start-ready`, `work start`, `verify`, `finish`, `integrate`, Git, or PR lifecycle commands during normal semantic work.
++- Fixed external protocol responses that required agents to interpolate placeholder paths or rebuild the resume shell command.
++- Fixed evidence garbage collection races that could remove newly referenced or concurrently written objects.
++- Fixed release diagnostics treating incomplete, malformed, current, stale, or non-canonical patch-plan targets as reusable; fresh planning is now required unless both `next_version` and `next_tag` form a valid future `X.Y.Z` / `vX.Y.Z` pair.
++- Fixed terminal `operation_failed` journals having no supported continuation path. `task advance --replacement` now starts one explicit exact-key successor without retrying or silently replaying the failed effect.
++- Fixed empty code-task verification contracts being treated as successful by vacuous evaluation; supervised verification now stops as unsupported until task-specific checks exist.
++- Fixed long release qualification checks being terminated by the supervisor's former 10-minute per-check timeout; normal declared checks remain bounded at 30 minutes and the canonical 50-run provider gate has an explicit 150-minute bound.
++- Fixed safe Bun script names containing dots, such as `e2e:v0.7.1:gate`, being rejected by supervised declared verification while preserving the structured no-shell command boundary.
++- Fixed the canonical provider gate omitting its required reviewed Codex CLI version; the package script now pins `0.146.0-alpha.3.1`, matching the frozen comparison baseline and verified archive digest.
++- Fixed phase-tool broker clients treating a transient stable-read identity collision during atomic response publication as a terminal runtime failure; only recognized collisions and missing files are retried within the existing deadline.
++- Fixed competing `task advance` calls publishing an executable exchange before journal ownership succeeded. New exchanges remain inert in `prepared` state until their exact operation intent is persisted, including crash-safe promotion on recovery.
++- Fixed competing `task advance` calls replaying the same long-running formal verification. Formal checks now hold the task execution lease, PID-backed lease ownership distinguishes a live long run from a crashed owner without relying on an 11-minute age cutoff, and an interrupted local verification receives an exact-key replacement when the task fingerprint has advanced.
++
++## Upgrade Notes
++
++- No migration is required. Upgrade with `npm install --global agentplane@0.7.5`.
++- Existing 0.6.x and 0.7.x repositories remain supported by the compatibility and upgrade fixtures. `agentplane doctor legacy` identifies adapters that should be migrated before their declared retirement release.
++- Manual lifecycle commands remain available as operator, recovery, and compatibility interfaces, but generated agent guidance now treats supervisor-driven `task advance` or `task run` as the normal route.
++
++## Verification
++
++- The release candidate is gated on the full local CI and release-extra suites, package installation and migration matrices, critical CLI, Windows, documentation, CodeQL, static analysis, unit, workflow, and compatibility checks on the exact release SHA.
++- The bounded semantic qualification executes 50 replay runs and 55 provider episodes across direct and branch-PR workflows, managed and external frontends, stale state, interruption, effect uncertainty, evaluator rework, hosted waits, and cleanup races without retrying failed semantic episodes.
++- Preflight failures and host-process interruptions that execute zero provider episodes are recorded separately; they do not consume, replace, or supply evidence for the single no-retry 50-run provider qualification.
++- Qualification compares provider tokens, verified success, scope violations, golden mismatches, rework, harness setup, first scoped mutation, and time to verified result against the frozen 0.7 baseline. The historical RF-04 first-mutation sample-count delta remains diagnostic-only; all blocking latency and quality gates must pass before publication.
++- npm registry versions and the GitHub release/tag/main identity are checked only after the protected publish workflow succeeds; they are release proof, not prepublish candidate gates.
++- Qualification evidence is accepted only from a candidate containing the current protected `main` baseline; later base drift requires a fresh observed verification pass.
+diff --git a/package.json b/package.json
+index bf4ccadb1..b9df98558 100644
+--- a/package.json
++++ b/package.json
+@@ -74,7 +74,7 @@
+     "e2e:v0.7.1:check": "bun run qualification:check",
+     "e2e:v0.7.1:core-audit": "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile core",
+     "e2e:v0.7.1:audit": "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full",
+-    "e2e:v0.7.1:gate": "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider",
++    "e2e:v0.7.1:gate": "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1",
+     "release:smoke:published": "node scripts/release/check-published-packages.mjs",
+     "release:postpublish:audit": "node scripts/release/audit-platform-publication.mjs",
+     "release:distribution:generate": "node scripts/generate/generate-release-distribution.mjs",
+diff --git a/packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap b/packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap
+index 941bb6a6a..0d756d57b 100644
+--- a/packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap
++++ b/packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap
+@@ -13,7 +13,7 @@ Commands:
+     task active  Select active agent work with next actions, blockers, dependency readiness, and freshness.
+     task advance  Return one compact external-agent action from the shared task supervisor state.
+     task brief  Print an agent-ready task brief without remote lookups by default.
+-    task new  Create a new task (prints the generated task id).
++    task create  Create a task from a natural-language outcome and explain its execution route.
+     task run  Supervise a direct or branch_pr task through its typed lifecycle.
+   Setup:
+     init  Initialize agentplane project files under .agentplane/.
+@@ -59,6 +59,7 @@ exports[`runCli help snapshots (cli2) > help task --compact snapshot 1`] = `
+ "task - Supervisor-first task commands.
+ 
+ Usage:
++  agentplane task create "<desired outcome>" [options]
+   agentplane task new --title <text> --description <text> --owner <id> [options]
+   agentplane task active [options]
+   agentplane task advance <task-id> --agent-json [options]
+diff --git a/packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts b/packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts
+index 4fcc695f3..be49ff4a6 100644
+--- a/packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts
++++ b/packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts
+@@ -164,10 +164,17 @@ describe("measure-cli-cold-path script", () => {
+       ]);
+ 
+       const commandMap = new Map((payload.commands ?? []).map((command) => [command.id, command]));
+-      expect(commandMap.get("quickstart")?.exit_code).toBe(0);
+-      expect(commandMap.get("task_list")?.exit_code).toBe(0);
+-      expect(commandMap.get("task_search")?.exit_code).toBe(0);
+-      expect(commandMap.get("preflight_quick")?.exit_code).toBe(0);
++      const expectCommandSucceeded = (commandId: string) => {
++        const command = commandMap.get(commandId);
++        expect(
++          command?.exit_code,
++          `Cold-path command ${commandId} failed:\n${JSON.stringify(command, null, 2)}`,
++        ).toBe(0);
++      };
++      expectCommandSucceeded("quickstart");
++      expectCommandSucceeded("task_list");
++      expectCommandSucceeded("task_search");
++      expectCommandSucceeded("preflight_quick");
+       expect([0, 1]).toContain(commandMap.get("task_next")?.exit_code);
+       expect(result.exitCode).toBe(commandMap.get("task_next")?.exit_code === 0 ? 0 : 1);
+ 
+diff --git a/packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts b/packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts
+index 5d537f00c..b82b9d4b8 100644
+--- a/packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts
+@@ -250,9 +250,11 @@ describe("runCli", () => {
+       expect(io.stdout).toContain("agentplane quickstart");
+       expect(io.stdout).toContain("agentplane init");
+       expect(io.stdout).toContain("Workflow route notes:");
+-      expect(io.stdout).toContain("`direct`: task setup is");
++      expect(io.stdout).toContain(
++        "`direct`: the supervisor keeps work in the current checkout and owns start, verification persistence, and closeout",
++      );
+       expect(io.stdout).not.toContain(
+-        "`branch_pr`: use `agentplane task next-action <task-id> --explain`",
++        "`branch_pr`: the supervisor prepares or selects the task worktree",
+       );
+     } finally {
+       io.restore();
+@@ -271,9 +273,11 @@ describe("runCli", () => {
+       expect(code).toBe(0);
+       expect(io.stdout).toContain("Workflow route notes:");
+       expect(io.stdout).toContain(
+-        "`branch_pr`: use `agentplane task next-action <task-id> --explain`",
++        "`branch_pr`: the supervisor prepares or selects the task worktree, publishes the PR, waits for hosted checks, integrates, and closes the task",
++      );
++      expect(io.stdout).not.toContain(
++        "`direct`: the supervisor keeps work in the current checkout",
+       );
+-      expect(io.stdout).not.toContain("`direct`: task setup is");
+     } finally {
+       io.restore();
+     }
+diff --git a/packages/agentplane/src/cli/run-cli.core.branch-meta.workflow-profile.test.ts b/packages/agentplane/src/cli/run-cli.core.branch-meta.workflow-profile.test.ts
+index 5da13cd2b..6d6bef567 100644
+--- a/packages/agentplane/src/cli/run-cli.core.branch-meta.workflow-profile.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.branch-meta.workflow-profile.test.ts
+@@ -187,7 +187,8 @@ describe("runCli", () => {
+       const code = await runCli(["role", "CODER", "--root", root]);
+       expect(code).toBe(0);
+       expect(io.stdout).toContain("### CODER");
+-      expect(io.stdout).toContain("agentplane task start-ready");
++      expect(io.stdout).toContain("agentplane task advance <task-id> --agent-json");
++      expect(io.stdout).not.toContain("agentplane task start-ready");
+     } finally {
+       io.restore();
+     }
+@@ -204,8 +205,13 @@ describe("runCli", () => {
+       expect(payload.role).toBe("CODER");
+       expect(Array.isArray(payload.builtin_guide)).toBe(true);
+       expect(
+-        (payload.builtin_guide ?? []).some((line) => line.includes("agentplane task start-ready")),
++        (payload.builtin_guide ?? []).some((line) =>
++          line.includes("agentplane task advance <task-id> --agent-json"),
++        ),
+       ).toBe(true);
++      expect(
++        (payload.builtin_guide ?? []).some((line) => line.includes("agentplane task start-ready")),
++      ).toBe(false);
+     } finally {
+       io.restore();
+     }
+diff --git a/packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts b/packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts
+index 645db9f32..bbbf195bb 100644
+--- a/packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts
+@@ -54,7 +54,7 @@ describe("runCli docs cli", () => {
+       expect(text).toContain("`E_RUNTIME` → exit `8`");
+       expect(text).toContain("`E_HANDOFF` → exit `9`");
+       expect(text).toContain("## Task");
+-      expect(text).toContain("### task new");
++      expect(text).toContain("### task create");
+       expect(text).toContain("### task advance");
+       expect(text).toContain("### task run");
+       expect(text).not.toContain("### task begin");
+diff --git a/packages/agentplane/src/cli/run-cli.core.help-contract.test.ts b/packages/agentplane/src/cli/run-cli.core.help-contract.test.ts
+index b4e193c1e..152c137ab 100644
+--- a/packages/agentplane/src/cli/run-cli.core.help-contract.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.help-contract.test.ts
+@@ -134,7 +134,7 @@ describe("cli help contract", () => {
+         "task",
+         "task active",
+         "task advance",
+-        "task new",
++        "task create",
+         "task brief",
+         "task run",
+         "context search",
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
+index a874d742c..3ac5818a9 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
+@@ -173,13 +173,37 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
++    let taskId = "";
++    const taskIo = captureStdIO();
++    try {
++      const code = await runCli([
++        "task",
++        "new",
++        "--title",
++        "Missing worktree validation",
++        "--description",
++        "Validate branch_pr work start before creating a worktree.",
++        "--priority",
++        "med",
++        "--owner",
++        "CODER",
++        "--tag",
++        "code",
++        "--root",
++        root,
++      ]);
++      expect(code, taskIo.stderr).toBe(0);
++      taskId = taskIo.stdout.trim();
++    } finally {
++      taskIo.restore();
++    }
+ 
+     const io = captureStdIO();
+     try {
+       const code = await runCli([
+         "work",
+         "start",
+-        "202601010101-ABCDEF",
++        taskId,
+         "--agent",
+         "CODER",
+         "--slug",
+@@ -187,7 +211,7 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
+         "--root",
+         root,
+       ]);
+-      expect(code).toBe(2);
++      expect(code, io.stderr).toBe(2);
+       expect(io.stderr).toContain("agentplane work start");
+     } finally {
+       io.restore();
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts
+index e351714fa..77a0a106a 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts
+@@ -191,6 +191,23 @@ describe("runCli route decision open PR metadata", () => {
+     await execFileAsync("git", ["commit", "-m", "feat: resolve existing worktree changes"], {
+       cwd: worktreePath,
+     });
++    const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: worktreePath,
++    });
++    await runCliSilent([
++      "task",
++      "set-status",
++      taskId,
++      "DOING",
++      "--commit",
++      implementationHead.trim(),
++      "--root",
++      worktreePath,
++    ]);
++    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: worktreePath });
++    await execFileAsync("git", ["commit", "-m", "test: record implementation commit"], {
++      cwd: worktreePath,
++    });
+ 
+     const openPrRouteIo = captureStdIO();
+     try {
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+index ee7101383..b535028d4 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+@@ -242,6 +242,63 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
+     expect(taskAfter).toBe(taskBefore);
+   });
+ 
++  it("keeps a concurrently rejected exchange inert until its journal intent is owned", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    const taskId = await createTask(root, "Concurrent exchange publication");
++    const issued = await readAgentPacket(root, taskId);
++    if (!issued.exchange) throw new Error("expected an external-agent exchange");
++
++    await writeFile(
++      path.join(root, "concurrent-change.txt"),
++      "changes the route fingerprint\n",
++      "utf8",
++    );
++    await execFileAsync("git", ["add", "concurrent-change.txt"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "change concurrent route fingerprint"], {
++      cwd: root,
++    });
++    await runCliSilent([
++      "task",
++      "comment",
++      taskId,
++      "--author",
++      "TESTER",
++      "--body",
++      "Concurrent route observation.",
++      "--root",
++      root,
++    ]);
++    const fingerprint = await readRouteFingerprint(root, taskId);
++    expect(fingerprint).not.toBe(issued.state_fingerprint);
++
++    const io = captureStdIO();
++    try {
++      const code = await runCli(["task", "advance", taskId, "--agent-json", "--root", root]);
++      expect(code).not.toBe(0);
++      expect(io.stderr).toContain(
++        "Another unresolved external-agent episode already owns this task",
++      );
++    } finally {
++      io.restore();
++    }
++
++    const rejectedExchangePath = path.join(
++      path.dirname(issued.exchange.directory),
++      fingerprint.slice("sha256:".length),
++      "exchange.json",
++    );
++    const rejectedExchange = JSON.parse(
++      await readFile(rejectedExchangePath, "utf8"),
++    ) as ExternalAgentExchange;
++    expect(rejectedExchange.status).toBe("prepared");
++    expect(await readFile(path.join(issued.exchange.directory, "exchange.json"), "utf8")).toContain(
++      '"status": "issued"',
++    );
++  });
++
+   it("accepts one bound planning result, advances to approval, and refuses replay", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts b/packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts
+index bce6ad26c..ec93bd27c 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts
+@@ -135,6 +135,11 @@ describe("task next-action JSON", () => {
+       "--root",
+       root,
+     ]);
++    await writeFile(
++      path.join(root, "authority-implementation.txt"),
++      "semantic implementation\n",
++      "utf8",
++    );
+     await execFileAsync("git", ["add", "-A"], { cwd: root });
+     await execFileAsync(
+       "git",
+@@ -145,6 +150,23 @@ describe("task next-action JSON", () => {
+       ],
+       { cwd: root },
+     );
++    const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    await runCliSilent([
++      "task",
++      "set-status",
++      taskId,
++      "DOING",
++      "--commit",
++      implementationHead.trim(),
++      "--root",
++      root,
++    ]);
++    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: record implementation metadata"], {
++      cwd: root,
++    });
+     const { stdout: setupStatus } = await execFileAsync("git", ["status", "--porcelain"], {
+       cwd: root,
+     });
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts
+index 01a5dcb0e..50e659a7f 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts
+@@ -56,6 +56,10 @@ async function loadCandidateFixture() {
+       concurrency: number,
+       worker: (job: T, index: number) => Promise<R>,
+     ): Promise<R[]>;
++    withDisposableCandidateRepository<T>(
++      repositoryPath: string,
++      work: () => Promise<T>,
++    ): Promise<T>;
+     validateCandidatePilotCapture(input: Json): Json;
+   };
+   const replay = (await import(REPLAY_URL)) as {
+@@ -160,6 +164,36 @@ describeCritical("critical: RF-04 candidate measurement", () => {
+     expect(activeSettled).toBe(true);
+   });
+ 
++  it("removes each disposable candidate checkout after success or failure", async () => {
++    const fixture = await loadCandidateFixture();
++    const root = path.join(
++      REPO_ROOT,
++      ".agentplane/cache",
++      `rf04-disposable-test-${process.pid}-${Date.now()}`,
++    );
++    const successful = path.join(root, "successful");
++    const failed = path.join(root, "failed");
++    try {
++      await expect(
++        fixture.candidate.withDisposableCandidateRepository(successful, () => {
++          writeFileSync(path.join(successful, "checkout.txt"), "temporary\n");
++          return Promise.resolve("done");
++        }),
++      ).resolves.toBe("done");
++      expect(existsSync(successful)).toBe(false);
++
++      await expect(
++        fixture.candidate.withDisposableCandidateRepository(failed, () => {
++          writeFileSync(path.join(failed, "checkout.txt"), "temporary\n");
++          return Promise.reject(new Error("provider failed"));
++        }),
++      ).rejects.toThrow("provider failed");
++      expect(existsSync(failed)).toBe(false);
++    } finally {
++      rmSync(root, { force: true, recursive: true });
++    }
++  });
++
+   it("selects the lowest declared failing provider job regardless of completion order", async () => {
+     const fixture = await loadCandidateFixture();
+ 
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts
+index 4f68b4072..de5220e83 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts
+@@ -1,5 +1,6 @@
+ import { createHash } from "node:crypto";
+-import { readFile } from "node:fs/promises";
++import { mkdir, mkdtemp, readFile, realpath, rm, symlink, writeFile } from "node:fs/promises";
++import os from "node:os";
+ import path from "node:path";
+ import { pathToFileURL } from "node:url";
+ 
+@@ -35,6 +36,7 @@ type DriverModule = {
+   anchorTaskOwner(role: string): string;
+   CODEX_REPLAY_BINARY: string;
+   CODEX_REPLAY_BINARY_ENV: string;
++  CODEX_REPLAY_ARCHIVE_CACHE_DIR: string;
+   CODEX_REPLAY_ARCHIVE_SHA256: Readonly<Record<string, string>>;
+   CODEX_REPLAY_CLI_VERSION: string;
+   CODEX_REPLAY_CLI_VERSION_ENV: string;
+@@ -99,6 +101,8 @@ type DriverModule = {
+     harness_setup_latency_ms: number;
+   };
+   resolveCodexReplayCliVersion(source: Record<string, string>): string;
++  resolveCodexReplayArchiveCachePath(version: string, repoRoot?: string): string;
++  resolveCodexReplayBinary(source: Record<string, string>, repoRoot?: string): string;
+ };
+ 
+ type CaptureModule = {
+@@ -173,6 +177,52 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
+     });
+   });
+ 
++  it("discovers a versioned repo-local reviewed archive before the app binary", async () => {
++    const replayDriver = await driver();
++    const root = await realpath(await mkdtemp(path.join(os.tmpdir(), "agentplane-rf04-archive-")));
++    try {
++      const archivePath = replayDriver.resolveCodexReplayArchiveCachePath(
++        "0.146.0-alpha.3.1",
++        root,
++      );
++      expect(path.relative(root, archivePath)).toBe(
++        path.join(replayDriver.CODEX_REPLAY_ARCHIVE_CACHE_DIR, "0.146.0-alpha.3.1", "codex"),
++      );
++      await mkdir(path.dirname(archivePath), { recursive: true });
++      await writeFile(archivePath, "not the reviewed archive", "utf8");
++      expect(() =>
++        replayDriver.resolveCodexReplayBinary(
++          { [replayDriver.CODEX_REPLAY_CLI_VERSION_ENV]: "0.146.0-alpha.3.1" },
++          root,
++        ),
++      ).toThrow("CODEX_BINARY_ARCHIVE_DIGEST");
++    } finally {
++      await rm(root, { recursive: true, force: true });
++    }
++  });
++
++  it("canonicalizes a regular Codex binary beneath a symlinked parent before digesting it", async () => {
++    const replayDriver = await driver();
++    const physicalRoot = await realpath(
++      await mkdtemp(path.join(os.tmpdir(), "agentplane-rf04-realpath-")),
++    );
++    const linkedRoot = `${physicalRoot}-link`;
++    try {
++      await symlink(physicalRoot, linkedRoot, "dir");
++      const binaryPath = path.join(physicalRoot, "codex");
++      await writeFile(binaryPath, "not the reviewed archive", "utf8");
++      expect(() =>
++        replayDriver.resolveCodexReplayBinary({
++          [replayDriver.CODEX_REPLAY_BINARY_ENV]: path.join(linkedRoot, "codex"),
++          [replayDriver.CODEX_REPLAY_CLI_VERSION_ENV]: "0.146.0-alpha.3.1",
++        }),
++      ).toThrow("CODEX_BINARY_ARCHIVE_DIGEST");
++    } finally {
++      await rm(linkedRoot, { force: true });
++      await rm(physicalRoot, { recursive: true, force: true });
++    }
++  });
++
+   it("passes no user home, Codex home, or temporary-directory inheritance", async () => {
+     const replayDriver = await driver();
+ 
+@@ -257,6 +307,8 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
+       second: repeated,
+     })}\n`;
+     const bootstrap = "Use bundle.json as the complete runner input.\n";
++    const semanticProjectionBootstrap =
++      "The content below is the complete provider-facing projection for this episode.\n";
+ 
+     expect(
+       replayDriver.measurePreparedContext(bundle, bootstrap, {
+@@ -276,6 +328,11 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
+       prompt_boilerplate_definition: "bundle_base_prompt_content_utf8_v1",
+       prompt_boilerplate_source: "anchor_bundle.base_prompts.content",
+     });
++    expect(replayDriver.measurePreparedContext(bundle, semanticProjectionBootstrap)).toMatchObject({
++      prompt_boilerplate_bytes: Buffer.byteLength(basePrompt),
++      prompt_boilerplate_definition: "bundle_base_prompt_content_utf8_v1",
++      prompt_boilerplate_source: "anchor_bundle.base_prompts.content",
++    });
+     expect(() =>
+       replayDriver.measurePreparedContext(bundle, "bootstrap without reference\n"),
+     ).toThrow("ANCHOR_BOOTSTRAP_BUNDLE_REFERENCE");
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts
+index 7bd43eb71..48e4a12b9 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts
+@@ -1,3 +1,6 @@
++import { mkdir, utimes, writeFile } from "node:fs/promises";
++import path from "node:path";
++
+ import { describe, expect, it } from "vitest";
+ 
+ import {
+@@ -20,6 +23,7 @@ import {
+   createSupervisorEpisodeStore,
+   resolveSupervisorExecutionEpisodePath,
+   supervisePersistedWorkflowEpisode,
++  tryAcquireSupervisorExecutionLease,
+ } from "./supervisor-execution-episode.js";
+ 
+ const taskId = "202607280001-EPISODE";
+@@ -153,6 +157,45 @@ function successfulOperationResult() {
+ }
+ 
+ describe("persisted supervisor execution episodes", () => {
++  it("does not steal an old lease from a live long-running supervisor", async () => {
++    const root = await mkGitRepoRoot();
++    const journalPath = await resolveSupervisorExecutionEpisodePath({
++      git_root: root,
++      task_id: taskId,
++    });
++    const lease = await tryAcquireSupervisorExecutionLease({ journal_path: journalPath });
++    expect(lease).not.toBeNull();
++    const leasePath = `${journalPath}.execution`;
++    const old = new Date(Date.now() - 12 * 60 * 1000);
++    await utimes(leasePath, old, old);
++
++    expect(await tryAcquireSupervisorExecutionLease({ journal_path: journalPath })).toBeNull();
++
++    await lease?.release();
++    const replacement = await tryAcquireSupervisorExecutionLease({ journal_path: journalPath });
++    expect(replacement).not.toBeNull();
++    await replacement?.release();
++  });
++
++  it("recovers a fresh lease immediately when its recorded process is gone", async () => {
++    const root = await mkGitRepoRoot();
++    const journalPath = await resolveSupervisorExecutionEpisodePath({
++      git_root: root,
++      task_id: taskId,
++    });
++    const leasePath = `${journalPath}.execution`;
++    await mkdir(leasePath, { recursive: true });
++    await writeFile(
++      path.join(leasePath, "owner"),
++      `${JSON.stringify({ owner: "dead-owner", pid: 2_147_483_647, started_at: new Date().toISOString() })}\n`,
++      "utf8",
++    );
++
++    const replacement = await tryAcquireSupervisorExecutionLease({ journal_path: journalPath });
++    expect(replacement).not.toBeNull();
++    await replacement?.release();
++  });
++
+   it("uses a preobserved common Git directory without another Git lookup", async () => {
+     const root = await mkGitRepoRoot();
+     const commonGitDir = `${root}/.git`;
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+index 329a4bc4c..11a042404 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+@@ -1,5 +1,4 @@
+-import { randomUUID } from "node:crypto";
+-import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
++import { mkdir, readFile, rm, stat } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import {
+@@ -27,6 +26,8 @@ import {
+   type WorkflowSupervisorExecutor,
+ } from "./workflow-supervisor.js";
+ 
++export { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease.js";
++
+ const SUPERVISOR_EPISODE_ARTIFACT_DIRECTORY = "agentplane/supervisor/episodes";
+ 
+ /**
+@@ -66,10 +67,6 @@ export type SupervisorEpisodeStore = {
+ const JOURNAL_LOCK_STALE_AFTER_MS = 60_000;
+ const JOURNAL_LOCK_RETRY_DELAY_MS = 10;
+ const JOURNAL_LOCK_WAIT_MS = 5000;
+-// Provider execution has its own ten-minute hard timeout. A crashed owner is
+-// therefore recoverable without allowing a second live provider to overlap it.
+-const EXECUTION_LEASE_STALE_AFTER_MS = 11 * 60 * 1000;
+-const EXECUTION_LEASE_OWNER_FILE = "owner";
+ 
+ function persistedJournalDigest(
+   value: unknown,
+@@ -113,56 +110,6 @@ async function withJournalLock<T>(filePath: string, work: () => Promise<T>): Pro
+   }
+ }
+ 
+-export type SupervisorExecutionLease = {
+-  release: () => Promise<void>;
+-};
+-
+-/**
+- * Claim the full prepare -> provider -> persist window for one task episode.
+- *
+- * The journal CAS admits only one provider intent, but evaluator preparation
+- * itself writes frozen task artifacts. Without this lease, a losing process
+- * can create those artifacts while the winner is attesting its read-only
+- * provider workspace and make the winner look like it changed the repository.
+- */
+-export async function tryAcquireSupervisorExecutionLease(opts: {
+-  journal_path: string;
+-}): Promise<SupervisorExecutionLease | null> {
+-  const leasePath = `${opts.journal_path}.execution`;
+-  await mkdir(path.dirname(opts.journal_path), { recursive: true, mode: 0o700 });
+-  for (let attempt = 0; attempt < 2; attempt += 1) {
+-    try {
+-      await mkdir(leasePath, { mode: 0o700 });
+-      const owner = randomUUID();
+-      try {
+-        await writeFile(path.join(leasePath, EXECUTION_LEASE_OWNER_FILE), `${owner}\n`, "utf8");
+-      } catch (error) {
+-        await rm(leasePath, { recursive: true, force: true });
+-        throw error;
+-      }
+-      return {
+-        release: async () => {
+-          const observed = await readFile(
+-            path.join(leasePath, EXECUTION_LEASE_OWNER_FILE),
+-            "utf8",
+-          ).catch(() => null);
+-          if (observed?.trim() === owner) {
+-            await rm(leasePath, { recursive: true, force: true });
+-          }
+-        },
+-      };
+-    } catch (error) {
+-      if ((error as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw error;
+-      const age = await stat(leasePath)
+-        .then((entry) => Date.now() - entry.mtimeMs)
+-        .catch(() => 0);
+-      if (age <= EXECUTION_LEASE_STALE_AFTER_MS) return null;
+-      await rm(leasePath, { recursive: true, force: true });
+-    }
+-  }
+-  return null;
+-}
+-
+ function safeTaskPathSegment(taskId: string): string {
+   const normalized = taskId.trim();
+   if (
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-lease.ts b/packages/agentplane/src/commands/shared/supervisor-execution-lease.ts
+new file mode 100644
+index 000000000..cdbc8a1e5
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-lease.ts
+@@ -0,0 +1,112 @@
++import { randomUUID } from "node:crypto";
++import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
++import path from "node:path";
++
++// Legacy owner records have no process identity, so they retain a conservative
++// stale timeout. Current records name a PID: a live long-running owner keeps
++// authority regardless of age, while a dead owner is recoverable immediately.
++const EXECUTION_LEASE_STALE_AFTER_MS = 11 * 60 * 1000;
++const EXECUTION_LEASE_OWNER_FILE = "owner";
++
++type SupervisorExecutionLease = {
++  release: () => Promise<void>;
++};
++
++type SupervisorExecutionLeaseOwner = {
++  owner: string;
++  pid: number;
++  started_at: string;
++};
++
++function parseSupervisorExecutionLeaseOwner(
++  value: string | null,
++): SupervisorExecutionLeaseOwner | null {
++  if (!value) return null;
++  try {
++    const parsed = JSON.parse(value) as Partial<SupervisorExecutionLeaseOwner>;
++    if (
++      typeof parsed.owner !== "string" ||
++      !Number.isSafeInteger(parsed.pid) ||
++      (parsed.pid ?? 0) <= 0 ||
++      typeof parsed.started_at !== "string"
++    ) {
++      return null;
++    }
++    return parsed as SupervisorExecutionLeaseOwner;
++  } catch {
++    return null;
++  }
++}
++
++function processOwnsSupervisorExecutionLease(pid: number): boolean {
++  try {
++    process.kill(pid, 0);
++    return true;
++  } catch (error) {
++    return (error as NodeJS.ErrnoException | null)?.code === "EPERM";
++  }
++}
++
++/**
++ * Claim the full prepare -> provider -> persist window for one task episode.
++ *
++ * The journal CAS admits only one provider intent, but evaluator preparation
++ * itself writes frozen task artifacts. Without this lease, a losing process
++ * can create those artifacts while the winner is attesting its read-only
++ * provider workspace and make the winner look like it changed the repository.
++ */
++export async function tryAcquireSupervisorExecutionLease(opts: {
++  journal_path: string;
++}): Promise<SupervisorExecutionLease | null> {
++  const leasePath = `${opts.journal_path}.execution`;
++  await mkdir(path.dirname(opts.journal_path), { recursive: true, mode: 0o700 });
++  for (let attempt = 0; attempt < 2; attempt += 1) {
++    try {
++      await mkdir(leasePath, { mode: 0o700 });
++      const owner = randomUUID();
++      try {
++        const ownerRecord: SupervisorExecutionLeaseOwner = {
++          owner,
++          pid: process.pid,
++          started_at: new Date().toISOString(),
++        };
++        await writeFile(
++          path.join(leasePath, EXECUTION_LEASE_OWNER_FILE),
++          `${JSON.stringify(ownerRecord)}\n`,
++          "utf8",
++        );
++      } catch (error) {
++        await rm(leasePath, { recursive: true, force: true });
++        throw error;
++      }
++      return {
++        release: async () => {
++          const observed = await readFile(
++            path.join(leasePath, EXECUTION_LEASE_OWNER_FILE),
++            "utf8",
++          ).catch(() => null);
++          const observedOwner = parseSupervisorExecutionLeaseOwner(observed);
++          if (observedOwner?.owner === owner || observed?.trim() === owner) {
++            await rm(leasePath, { recursive: true, force: true });
++          }
++        },
++      };
++    } catch (error) {
++      if ((error as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw error;
++      const observedOwner = parseSupervisorExecutionLeaseOwner(
++        await readFile(path.join(leasePath, EXECUTION_LEASE_OWNER_FILE), "utf8").catch(() => null),
++      );
++      if (observedOwner) {
++        if (processOwnsSupervisorExecutionLease(observedOwner.pid)) return null;
++        await rm(leasePath, { recursive: true, force: true });
++        continue;
++      }
++      const age = await stat(leasePath)
++        .then((entry) => Date.now() - entry.mtimeMs)
++        .catch(() => 0);
++      if (age <= EXECUTION_LEASE_STALE_AFTER_MS) return null;
++      await rm(leasePath, { recursive: true, force: true });
++    }
++  }
++  return null;
++}
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts
+index 52928042c..f07f66119 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts
+@@ -8,10 +8,15 @@ import {
+ } from "@agentplaneorg/core/schemas";
+ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+-const mocks = vi.hoisted(() => ({ open: vi.fn() }));
++const mocks = vi.hoisted(() => ({
++  open: vi.fn(),
++  acquire: vi.fn(),
++  release: vi.fn(),
++}));
+ 
+ vi.mock("../shared/supervisor-execution-episode.js", () => ({
+   openSupervisorExecutionEpisode: mocks.open,
++  tryAcquireSupervisorExecutionLease: mocks.acquire,
+ }));
+ 
+ import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal-operation.js";
+@@ -66,7 +71,32 @@ function completedRunnerJournal() {
+ }
+ 
+ describe("direct task supervisor formal operation", () => {
+-  beforeEach(() => vi.resetAllMocks());
++  beforeEach(() => {
++    vi.resetAllMocks();
++    mocks.acquire.mockResolvedValue({ release: mocks.release });
++  });
++
++  it("refuses a duplicate formal operation while another supervisor owns the lease", async () => {
++    const run = vi.fn();
++    mocks.open.mockResolvedValue({
++      journal: completedRunnerJournal(),
++      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
++      store: { write: vi.fn() },
++    });
++    mocks.acquire.mockResolvedValue(null);
++
++    await expect(
++      recordDirectTaskFormalOperation({
++        git_root: "/repo",
++        task_id: TASK_ID,
++        id: "task_verify",
++        decision: vi.fn().mockResolvedValue(decision(FIRST_FINGERPRINT)),
++        run,
++      }),
++    ).rejects.toThrow("no duplicate operation was started");
++
++    expect(run).not.toHaveBeenCalled();
++  });
+ 
+   it("retries a stale formal operation only after a completed runner outcome", async () => {
+     const write = vi.fn().mockResolvedValue(undefined);
+@@ -207,6 +237,63 @@ describe("direct task supervisor formal operation", () => {
+     });
+   });
+ 
++  it("replaces an interrupted verification intent after the task fingerprint advances", async () => {
++    const initial = createSupervisorExecutionEpisodeJournal({
++      task_id: TASK_ID,
++      task_revision: null,
++      state_fingerprint_digest: FIRST_FINGERPRINT,
++      budget: {
++        max_episodes: 50,
++        max_agent_runs: 50,
++        max_input_tokens: 3_000_000,
++        max_output_tokens: 1_000_000,
++        max_total_tokens: 4_000_000,
++        max_wall_time_ms: 14_400_000,
++        max_changed_files: 2000,
++        max_diff_lines: null,
++        max_no_progress_episodes: 3,
++      },
++    });
++    const started = startSupervisorExecutionEpisode({
++      journal: initial,
++      role: "EXECUTOR",
++      kind: "cli_operation",
++      operation_identity: { direct_task_operation: "task_verify" },
++      precondition_fingerprint_digest: FIRST_FINGERPRINT,
++      authority_ref: "direct-task-supervisor:task_verify",
++      authority_digest: FIRST_FINGERPRINT,
++      effect_ref: "task_verify",
++    });
++    if (started.status !== "started") throw new Error("expected interrupted operation fixture");
++    const write = vi.fn().mockResolvedValue(undefined);
++    mocks.open.mockResolvedValue({
++      journal: started.journal,
++      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
++      store: { write },
++    });
++    const run = vi.fn().mockResolvedValue({ verification: "ok" });
++
++    const result = await recordDirectTaskFormalOperation({
++      git_root: "/repo",
++      task_id: TASK_ID,
++      id: "task_verify",
++      decision: vi.fn().mockResolvedValue(decision(NEXT_FINGERPRINT)),
++      run,
++    });
++
++    expect(run).toHaveBeenCalledOnce();
++    expect(result.journal.operations).toHaveLength(2);
++    expect(result.journal.operations[0]).toMatchObject({
++      operation_key: started.operation_key,
++      status: "failed",
++    });
++    expect(result.journal.operations[0]?.result_digest).toMatch(/^sha256:/u);
++    expect(result.journal.operations[1]).toMatchObject({
++      status: "completed",
++      replacement_of_operation_key: started.operation_key,
++    });
++  });
++
+   it("starts an exact-key successor after an explicit failed-operation replacement", async () => {
+     const initial = createSupervisorExecutionEpisodeJournal({
+       task_id: TASK_ID,
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
+index adc2663f5..cc5ae5e3c 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
+@@ -1,13 +1,17 @@
+ import {
+   advanceSupervisorExecutionEpisodeState,
+   completeSupervisorExecutionEpisode,
++  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
+   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
+   startSupervisorExecutionEpisode,
+   type SupervisorExecutionEpisodeJournal,
+ } from "@agentplaneorg/core/schemas";
+ 
+ import { CliError } from "../../shared/errors.js";
+-import { openSupervisorExecutionEpisode } from "../shared/supervisor-execution-episode.js";
++import {
++  openSupervisorExecutionEpisode,
++  tryAcquireSupervisorExecutionLease,
++} from "../shared/supervisor-execution-episode.js";
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+ 
+ export async function recordDirectTaskFormalOperation(opts: {
+@@ -29,103 +33,141 @@ export async function recordDirectTaskFormalOperation(opts: {
+     state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
+     recover_intent: false,
+   });
+-  let journal = opened.journal;
+-  if (journal.status === "stopped") {
++  const lease = await tryAcquireSupervisorExecutionLease({ journal_path: opened.journal_path });
++  if (!lease) {
+     throw new CliError({
+-      code: "E_RUNTIME",
+-      message: `Direct task supervisor journal is stopped (${journal.stop?.reason ?? "unknown"}).`,
+-    });
+-  }
+-  if (journal.cursor.phase === "completed") {
+-    journal = advanceSupervisorExecutionEpisodeState({
+-      journal,
+-      state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
+-      route_observation: { direct_task_operation: opts.id, resumed: true },
+-    });
+-    await opened.store.write(journal);
+-  }
+-  const pendingOperation = journal.operations.at(-1);
+-  const resumedOperationKey =
+-    journal.cursor.phase === "intent_recorded" &&
+-    journal.state_fingerprint_digest === before.workflowStep.preconditionFingerprint.digest &&
+-    pendingOperation?.status === "intent" &&
+-    pendingOperation.effect_ref === opts.id &&
+-    pendingOperation.operation_key === journal.cursor.operation_key
+-      ? pendingOperation.operation_key
+-      : null;
+-  if (journal.cursor.phase !== "ready" && resumedOperationKey === null) {
+-    throw new CliError({
+-      code: "E_RUNTIME",
++      exitCode: 2,
++      code: "E_USAGE",
+       message:
+-        "Direct task supervisor has an unresolved operation intent; resolve it before continuing.",
++        "Another supervisor owns this task's formal verification or closeout window; no duplicate operation was started.",
+     });
+   }
+-  const start = () =>
+-    startSupervisorExecutionEpisode({
+-      journal,
+-      role: "EXECUTOR",
+-      kind: "cli_operation",
+-      operation_identity: { direct_task_operation: opts.id },
+-      precondition_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
+-      authority_ref: `direct-task-supervisor:${opts.id}`,
+-      authority_digest: before.workflowStep.preconditionFingerprint.digest,
+-      effect_ref: opts.id,
+-      ...(journal.cursor.replacement_of_operation_key
+-        ? { replacement_of_operation_key: journal.cursor.replacement_of_operation_key }
+-        : {}),
+-    });
+-  let started =
+-    resumedOperationKey === null
+-      ? start()
+-      : ({ status: "started", journal, operation_key: resumedOperationKey } as const);
+-  // A completed runner episode is allowed to advance to the route observed
+-  // after its own durable outcome. This is distinct from retrying an unknown
+-  // effect: the helper only reopens a stale journal with a completed latest
+-  // operation, while interrupted or failed intents remain terminal.
+-  if (started.status === "stopped" && started.stop.reason === "stale_state") {
+-    journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+-      journal: started.journal,
+-      state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
+-    });
+-    await opened.store.write(journal);
+-    started = start();
+-  }
+-  if (started.status !== "started") {
+-    await opened.store.write(started.journal);
+-    throw new CliError({
+-      code: "E_RUNTIME",
+-      message: `Direct task supervisor cannot start ${opts.id}: ${started.status}.`,
+-    });
+-  }
+-  journal = started.journal;
+-  await opened.store.write(journal);
+   try {
+-    const result = await opts.run();
+-    journal = completeSupervisorExecutionEpisode({
+-      journal,
+-      operation_key: started.operation_key,
+-      result: { direct_task_operation: opts.id, result },
+-    });
++    let journal = opened.journal;
++    const interruptedOperation = journal.operations.at(-1);
++    if (
++      opts.id === "task_verify" &&
++      journal.status === "running" &&
++      journal.cursor.phase === "intent_recorded" &&
++      interruptedOperation?.status === "intent" &&
++      interruptedOperation.effect_ref === opts.id &&
++      interruptedOperation.operation_key === journal.cursor.operation_key &&
++      journal.state_fingerprint_digest !== before.workflowStep.preconditionFingerprint.digest
++    ) {
++      const failed = completeSupervisorExecutionEpisode({
++        journal,
++        operation_key: interruptedOperation.operation_key,
++        result: {
++          direct_task_operation: opts.id,
++          error: "interrupted_verification_owner",
++        },
++        failed: true,
++      });
++      journal = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
++        journal: failed,
++        state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
++      });
++      await opened.store.write(journal);
++    }
++    if (journal.status === "stopped") {
++      throw new CliError({
++        code: "E_RUNTIME",
++        message: `Direct task supervisor journal is stopped (${journal.stop?.reason ?? "unknown"}).`,
++      });
++    }
++    if (journal.cursor.phase === "completed") {
++      journal = advanceSupervisorExecutionEpisodeState({
++        journal,
++        state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
++        route_observation: { direct_task_operation: opts.id, resumed: true },
++      });
++      await opened.store.write(journal);
++    }
++    const pendingOperation = journal.operations.at(-1);
++    const resumedOperationKey =
++      journal.cursor.phase === "intent_recorded" &&
++      journal.state_fingerprint_digest === before.workflowStep.preconditionFingerprint.digest &&
++      pendingOperation?.status === "intent" &&
++      pendingOperation.effect_ref === opts.id &&
++      pendingOperation.operation_key === journal.cursor.operation_key
++        ? pendingOperation.operation_key
++        : null;
++    if (journal.cursor.phase !== "ready" && resumedOperationKey === null) {
++      throw new CliError({
++        code: "E_RUNTIME",
++        message:
++          "Direct task supervisor has an unresolved operation intent; resolve it before continuing.",
++      });
++    }
++    const start = () =>
++      startSupervisorExecutionEpisode({
++        journal,
++        role: "EXECUTOR",
++        kind: "cli_operation",
++        operation_identity: { direct_task_operation: opts.id },
++        precondition_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
++        authority_ref: `direct-task-supervisor:${opts.id}`,
++        authority_digest: before.workflowStep.preconditionFingerprint.digest,
++        effect_ref: opts.id,
++        ...(journal.cursor.replacement_of_operation_key
++          ? { replacement_of_operation_key: journal.cursor.replacement_of_operation_key }
++          : {}),
++      });
++    let started =
++      resumedOperationKey === null
++        ? start()
++        : ({ status: "started", journal, operation_key: resumedOperationKey } as const);
++    // A completed runner episode is allowed to advance to the route observed
++    // after its own durable outcome. This is distinct from retrying an unknown
++    // effect: the helper only reopens a stale journal with a completed latest
++    // operation, while interrupted or failed intents remain terminal.
++    if (started.status === "stopped" && started.stop.reason === "stale_state") {
++      journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
++        journal: started.journal,
++        state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
++      });
++      await opened.store.write(journal);
++      started = start();
++    }
++    if (started.status !== "started") {
++      await opened.store.write(started.journal);
++      throw new CliError({
++        code: "E_RUNTIME",
++        message: `Direct task supervisor cannot start ${opts.id}: ${started.status}.`,
++      });
++    }
++    journal = started.journal;
+     await opened.store.write(journal);
+-  } catch (error) {
+-    journal = completeSupervisorExecutionEpisode({
++    try {
++      const result = await opts.run();
++      journal = completeSupervisorExecutionEpisode({
++        journal,
++        operation_key: started.operation_key,
++        result: { direct_task_operation: opts.id, result },
++      });
++      await opened.store.write(journal);
++    } catch (error) {
++      journal = completeSupervisorExecutionEpisode({
++        journal,
++        operation_key: started.operation_key,
++        result: {
++          direct_task_operation: opts.id,
++          error: error instanceof Error ? error.name : "unknown",
++        },
++        failed: true,
++      });
++      await opened.store.write(journal);
++      throw error;
++    }
++    const after = await opts.decision();
++    journal = advanceSupervisorExecutionEpisodeState({
+       journal,
+-      operation_key: started.operation_key,
+-      result: {
+-        direct_task_operation: opts.id,
+-        error: error instanceof Error ? error.name : "unknown",
+-      },
+-      failed: true,
++      state_fingerprint_digest: after.workflowStep.preconditionFingerprint.digest,
++      route_observation: { direct_task_operation: opts.id, step_id: after.workflowStep.id },
+     });
+     await opened.store.write(journal);
+-    throw error;
++    return { journal, journal_path: opened.journal_path, decision: after };
++  } finally {
++    await lease.release();
+   }
+-  const after = await opts.decision();
+-  journal = advanceSupervisorExecutionEpisodeState({
+-    journal,
+-    state_fingerprint_digest: after.workflowStep.preconditionFingerprint.digest,
+-    route_observation: { direct_task_operation: opts.id, step_id: after.workflowStep.id },
+-  });
+-  await opened.store.write(journal);
+-  return { journal, journal_path: opened.journal_path, decision: after };
+ }
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.test.ts b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+index 6246fa738..b244397de 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+@@ -35,8 +35,12 @@ afterEach(async () => {
+ describe("direct task verification", () => {
+   it("accepts only a structured bun script invocation", () => {
+     expect(parseDirectTaskCheck(" bun run test:critical ")).toEqual({ script: "test:critical" });
++    expect(parseDirectTaskCheck("bun run e2e:v0.7.1:gate")).toEqual({
++      script: "e2e:v0.7.1:gate",
++    });
+     expect(parseDirectTaskCheck("bun run test:critical -- --watch")).toBeNull();
+     expect(parseDirectTaskCheck("bun run test:critical; rm -rf /tmp/x")).toBeNull();
++    expect(parseDirectTaskCheck("bun run ../test:critical")).toBeNull();
+     expect(parseDirectTaskCheck("npm test")).toBeNull();
+   });
+ 
+@@ -56,7 +60,12 @@ describe("direct task verification", () => {
+     expect(result).toMatchObject({ status: "passed", reason: null });
+     expect(mocks.runProcess).toHaveBeenNthCalledWith(
+       1,
+-      expect.objectContaining({ command: "bun", args: ["run", "test:critical"], cwd }),
++      expect.objectContaining({
++        command: "bun",
++        args: ["run", "test:critical"],
++        cwd,
++        timeoutMs: 30 * 60_000,
++      }),
+     );
+     expect(mocks.runProcess).toHaveBeenNthCalledWith(
+       2,
+@@ -76,6 +85,27 @@ describe("direct task verification", () => {
+     });
+   });
+ 
++  it("gives the canonical provider qualification its bounded release window", async () => {
++    const cwd = await root();
++    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "provider gate ok", stderr: "" });
++
++    const result = await runDirectTaskVerification({
++      command: command(cwd),
++      task: { verify: ["bun run e2e:v0.7.1:gate"] },
++      task_id: TASK_ID,
++      cwd,
++    });
++
++    expect(result).toMatchObject({ status: "passed" });
++    expect(mocks.runProcess).toHaveBeenCalledWith(
++      expect.objectContaining({
++        command: "bun",
++        args: ["run", "e2e:v0.7.1:gate"],
++        timeoutMs: 150 * 60_000,
++      }),
++    );
++  });
++
+   it("adds the fixed docs policy checks to a docs task without trusting agent claims", async () => {
+     const cwd = await root();
+     mocks.runProcess
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.ts b/packages/agentplane/src/commands/task/direct-task-verification.ts
+index 6e4c8b77a..5d6eee532 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.ts
+@@ -7,9 +7,12 @@ import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
+ import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ 
+-const CHECK_TIMEOUT_MS = 10 * 60_000;
++const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
++const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
++  "e2e:v0.7.1:gate": 150 * 60_000,
++});
+ const CHECK_OUTPUT_LIMIT = 4000;
+-const SAFE_BUN_SCRIPT = /^[A-Za-z0-9][A-Za-z0-9:_-]*$/u;
++const SAFE_BUN_SCRIPT = /^[A-Za-z0-9][A-Za-z0-9:._-]*$/u;
+ const AGENTPLANE_BIN = resolveAgentplaneBinPath();
+ 
+ type DirectTaskCheck = {
+@@ -45,6 +48,12 @@ export function parseDirectTaskCheck(command: string): { script: string } | null
+   return SAFE_BUN_SCRIPT.test(script) ? { script } : null;
+ }
+ 
++function directTaskCheckTimeoutMs(script: string | null): number {
++  return script === null
++    ? DEFAULT_CHECK_TIMEOUT_MS
++    : (CHECK_TIMEOUT_MS_BY_SCRIPT[script] ?? DEFAULT_CHECK_TIMEOUT_MS);
++}
++
+ function parseTrustedDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
+   const bun = parseDirectTaskCheck(command);
+   if (bun) return { executable: "bun", args: ["run", bun.script], script: bun.script };
+@@ -135,7 +144,7 @@ export async function runDirectTaskVerification(opts: {
+         command: parsed.executable,
+         args: parsed.args,
+         cwd: opts.cwd,
+-        timeoutMs: CHECK_TIMEOUT_MS,
++        timeoutMs: directTaskCheckTimeoutMs(parsed.script),
+         maxBuffer: 1024 * 1024,
+         reject: false,
+       });
+diff --git a/packages/agentplane/src/commands/task/external-agent-exchange.ts b/packages/agentplane/src/commands/task/external-agent-exchange.ts
+index f0f46b495..80bda41b6 100644
+--- a/packages/agentplane/src/commands/task/external-agent-exchange.ts
++++ b/packages/agentplane/src/commands/task/external-agent-exchange.ts
+@@ -28,7 +28,7 @@ export type ExternalAgentResultEnvelope = {
+ export type ExternalAgentExchange = {
+   schema_version: 1;
+   kind: "external_agent_exchange";
+-  status: "issued" | "accepted" | "consumed";
++  status: "prepared" | "issued" | "accepted" | "consumed";
+   task_id: string;
+   transition_id: string;
+   state_fingerprint: string;
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor.ts b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+index 142757e03..c9f19037d 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+@@ -189,8 +189,15 @@ export async function issueExternalAgentExchange(opts: {
+       issue_digest: externalAgentIssueDigest({ exchange: existing, work_order: workOrder }),
+       replace_failed_operation: opts.replace_failed_operation,
+     });
++    const issuedExchange: ExternalAgentExchange =
++      existing.status === "prepared"
++        ? { ...existing, status: "issued", updated_at: new Date().toISOString() }
++        : existing;
++    if (issuedExchange !== existing) {
++      await writeExternalAgentExchange(paths.exchange, issuedExchange);
++    }
+     return {
+-      exchange: existing,
++      exchange: issuedExchange,
+       paths,
+       work_order: workOrder,
+     };
+@@ -213,10 +220,10 @@ export async function issueExternalAgentExchange(opts: {
+     readDirectRepositoryStatus(checkout),
+   ]);
+   const at = new Date().toISOString();
+-  const exchange: ExternalAgentExchange = {
++  const preparedExchange: ExternalAgentExchange = {
+     schema_version: 1,
+     kind: "external_agent_exchange",
+-    status: "issued",
++    status: "prepared",
+     task_id: opts.decision.task.id,
+     transition_id: transitionId,
+     state_fingerprint: step.preconditionFingerprint.digest,
+@@ -235,16 +242,26 @@ export async function issueExternalAgentExchange(opts: {
+     created_at: at,
+     updated_at: at,
+   };
+-  await persistExternalAgentExchangeArtifacts({ paths, work_order: workOrder, exchange });
++  await persistExternalAgentExchangeArtifacts({
++    paths,
++    work_order: workOrder,
++    exchange: preparedExchange,
++  });
+   await recordIssuedExternalAgentEpisode({
+     command: checkoutCommand,
+     decision: opts.decision,
+     work_order: workOrder,
+     work_order_ref: paths.work_order,
+     purpose,
+-    issue_digest: externalAgentIssueDigest({ exchange, work_order: workOrder }),
++    issue_digest: externalAgentIssueDigest({ exchange: preparedExchange, work_order: workOrder }),
+     replace_failed_operation: opts.replace_failed_operation,
+   });
++  const exchange: ExternalAgentExchange = {
++    ...preparedExchange,
++    status: "issued",
++    updated_at: new Date().toISOString(),
++  };
++  await writeExternalAgentExchange(paths.exchange, exchange);
+   return { exchange, paths, work_order: workOrder };
+ }
+ 
+diff --git a/packages/agentplane/src/runner/context/semantic-prompt-projection.ts b/packages/agentplane/src/runner/context/semantic-prompt-projection.ts
+index 2e49fddf2..c8d865a79 100644
+--- a/packages/agentplane/src/runner/context/semantic-prompt-projection.ts
++++ b/packages/agentplane/src/runner/context/semantic-prompt-projection.ts
+@@ -158,7 +158,7 @@ function processChoreographyMatches(value: string): ProcessChoreographyMatch[] {
+   return matches;
+ }
+ 
+-function semanticTextHasProcessChoreography(value: string): boolean {
++export function semanticTextHasProcessChoreography(value: string): boolean {
+   return (
+     processChoreographyMatches(value).length > 0 ||
+     PROCESS_POLICY_PROSE_PATTERNS.some((pattern) => pattern.test(value))
+diff --git a/packages/agentplane/src/runner/phase-tools/broker.test.ts b/packages/agentplane/src/runner/phase-tools/broker.test.ts
+index d4deccce9..51b5dcc1e 100644
+--- a/packages/agentplane/src/runner/phase-tools/broker.test.ts
++++ b/packages/agentplane/src/runner/phase-tools/broker.test.ts
+@@ -2,7 +2,30 @@ import { access, mkdtemp, rm } from "node:fs/promises";
+ import os from "node:os";
+ import path from "node:path";
+ 
+-import { afterEach, describe, expect, it } from "vitest";
++import { afterEach, describe, expect, it, vi } from "vitest";
++
++import type * as StableFileModule from "../stable-file.js";
++
++const stableFileMock = vi.hoisted(() => ({ responseReadCollisions: 0 }));
++
++vi.mock("../stable-file.js", async (importOriginal) => {
++  const actual = await importOriginal<typeof StableFileModule>();
++  return {
++    ...actual,
++    readStableRegularTextNoFollow: async (
++      ...args: Parameters<typeof actual.readStableRegularTextNoFollow>
++    ) => {
++      if (
++        stableFileMock.responseReadCollisions > 0 &&
++        args[1] === "runner phase-tool broker response"
++      ) {
++        stableFileMock.responseReadCollisions -= 1;
++        throw new Error(`${args[1]} changed while it was being read: ${args[0]}`);
++      }
++      return await actual.readStableRegularTextNoFollow(...args);
++    },
++  };
++});
+ 
+ import { buildAgentWorkOrderV2ValidFixture } from "@agentplaneorg/core/schemas";
+ import { makeRunnerContextBundle, setRunnerBundleRunDir } from "@agentplane/testkit/runner";
+@@ -20,6 +43,7 @@ import { issueRunnerPhaseToolGrant } from "./token.js";
+ const roots: string[] = [];
+ 
+ afterEach(async () => {
++  stableFileMock.responseReadCollisions = 0;
+   await Promise.all(roots.splice(0).map(async (root) => await rm(root, { recursive: true })));
+ });
+ 
+@@ -64,33 +88,38 @@ describe("runner phase-tool broker", () => {
+       directory: brokerDirectory,
+     });
+ 
+-    const response = await invokeRunnerPhaseToolThroughBroker({
+-      directory: brokerDirectory,
+-      token: grant.token,
+-      tool: "report_blocker",
+-      input: {
+-        summary: "The requested lifecycle operation is outside the delegated phase.",
+-        recommended_action: "Return control to the parent workflow.",
+-      },
+-    });
++    stableFileMock.responseReadCollisions = 1;
++    try {
++      const response = await invokeRunnerPhaseToolThroughBroker({
++        directory: brokerDirectory,
++        token: grant.token,
++        tool: "report_blocker",
++        input: {
++          summary: "The requested lifecycle operation is outside the delegated phase.",
++          recommended_action: "Return control to the parent workflow.",
++        },
++      });
+ 
+-    expect(response).toMatchObject({
+-      status: "ok",
+-      code: "accepted",
+-      tool: "report_blocker",
+-    });
+-    expect(response.audit?.digest).toMatch(/^sha256:[0-9a-f]{64}$/u);
+-    expect(
+-      await readRunnerResultManifest(bundle.execution.artifact_paths.result_path),
+-    ).toMatchObject({
+-      semantic_result: {
+-        value: {
+-          work_order_id: workOrder.work_order_id,
+-          status: "blocked",
++      expect(stableFileMock.responseReadCollisions).toBe(0);
++      expect(response).toMatchObject({
++        status: "ok",
++        code: "accepted",
++        tool: "report_blocker",
++      });
++      expect(response.audit?.digest).toMatch(/^sha256:[0-9a-f]{64}$/u);
++      expect(
++        await readRunnerResultManifest(bundle.execution.artifact_paths.result_path),
++      ).toMatchObject({
++        semantic_result: {
++          value: {
++            work_order_id: workOrder.work_order_id,
++            status: "blocked",
++          },
+         },
+-      },
+-    });
+-    await broker.stop();
++      });
++    } finally {
++      await broker.stop();
++    }
+     await expect(access(brokerDirectory)).rejects.toMatchObject({ code: "ENOENT" });
+   });
+ });
+diff --git a/packages/agentplane/src/runner/phase-tools/broker.ts b/packages/agentplane/src/runner/phase-tools/broker.ts
+index f5dcee7e0..04a95c3e5 100644
+--- a/packages/agentplane/src/runner/phase-tools/broker.ts
++++ b/packages/agentplane/src/runner/phase-tools/broker.ts
+@@ -4,6 +4,7 @@ import path from "node:path";
+ 
+ import { isRecord } from "../../shared/guards.js";
+ import {
++  isStableFileReadCollision,
+   readStableRegularTextNoFollow,
+   writeNewStableRegularFileNoFollow,
+ } from "../stable-file.js";
+@@ -18,6 +19,7 @@ const MAX_REQUEST_BYTES = 1024 * 1024;
+ const MAX_BROKER_REQUESTS = 64;
+ const CLIENT_TIMEOUT_MS = 120_000;
+ const POLL_MS = 20;
++const RESPONSE_FILE_LABEL = "runner phase-tool broker response";
+ const REQUEST_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u;
+ 
+ type RunnerPhaseToolBrokerRequest = {
+@@ -253,13 +255,18 @@ export async function invokeRunnerPhaseToolThroughBroker(opts: {
+       try {
+         return parseResponse(
+           JSON.parse(
+-            await readStableRegularTextNoFollow(responseFile, "runner phase-tool broker response", {
++            await readStableRegularTextNoFollow(responseFile, RESPONSE_FILE_LABEL, {
+               max_bytes: MAX_REQUEST_BYTES,
+             }),
+           ) as unknown,
+         );
+       } catch (error) {
+-        if ((error as NodeJS.ErrnoException | null)?.code !== "ENOENT") throw error;
++        if (
++          (error as NodeJS.ErrnoException | null)?.code !== "ENOENT" &&
++          !isStableFileReadCollision(error, RESPONSE_FILE_LABEL)
++        ) {
++          throw error;
++        }
+       }
+       await delay(POLL_MS);
+     }
+diff --git a/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts b/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
+index f610c1a9e..e698e648a 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
+@@ -186,6 +186,44 @@ describe("runner bootstrap result examples", () => {
+     expect(terminalOnlyBootstrap).not.toContain("signed transport is preconfigured");
+   });
+ 
++  it("keeps semantic requirements while excluding supervisor process commands", () => {
++    const bundle = makeRunnerContextBundle({ runId: "semantic-requirements" });
++    const workOrder = buildAgentWorkOrderV2ValidFixture();
++    workOrder.task.acceptance_criteria = [
++      {
++        id: "semantic-acceptance",
++        description: "The provider prompt contains only bounded semantic requirements.",
++        required: true,
++      },
++      {
++        id: "supervisor-acceptance",
++        description: "Run agentplane task brief TASK-1 --json.",
++        required: true,
++      },
++    ];
++    workOrder.verification_intent.requirements = [
++      {
++        id: "semantic-check",
++        description: "Confirm the semantic projection preserves the user objective.",
++        required: true,
++      },
++      {
++        id: "supervisor-check",
++        description: "Run agentplane task brief TASK-1 --json.",
++        required: true,
++      },
++    ];
++    bundle.work_order = workOrder;
++
++    const bootstrap = renderTaskRunnerBootstrap(bundle);
++
++    expect(bootstrap).toContain("bounded semantic requirements");
++    expect(bootstrap).toContain("preserves the user objective");
++    expect(bootstrap).not.toContain("agentplane task brief");
++    expect(bootstrap).not.toContain("supervisor-acceptance");
++    expect(bootstrap).not.toContain("supervisor-check");
++  });
++
+   it.each([
+     [
+       "blocked without blocker",
+diff --git a/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts b/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
+index 0ed6d3f85..d63e363ea 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
+@@ -3,6 +3,7 @@ import {
+   buildAgentSemanticResultV2ValidFixtures,
+ } from "@agentplaneorg/core/schemas";
+ 
++import { semanticTextHasProcessChoreography } from "../context/semantic-prompt-projection.js";
+ import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
+ 
+ type EvaluatorSkepticismLevel = NonNullable<
+@@ -115,6 +116,12 @@ function renderSemanticPromptProjectionLines(bundle: RunnerContextBundle): strin
+ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string, unknown> | null {
+   const workOrder = bundle.work_order;
+   if (!workOrder) return null;
++  const semanticAcceptanceCriteria = workOrder.task.acceptance_criteria.filter(
++    (criterion) => !semanticTextHasProcessChoreography(criterion.description),
++  );
++  const semanticVerificationRequirements = workOrder.verification_intent.requirements.filter(
++    (requirement) => !semanticTextHasProcessChoreography(requirement.description),
++  );
+   const requiredInputs = workOrder.required_inputs.filter((input) => {
+     if (input.kind === "task_document" || input.kind === "policy_module") return false;
+     if (input.kind !== "source_artifact") return true;
+@@ -137,7 +144,10 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
+   return {
+     work_order_id: workOrder.work_order_id,
+     role: workOrder.role,
+-    task: workOrder.task,
++    task: {
++      ...workOrder.task,
++      acceptance_criteria: semanticAcceptanceCriteria,
++    },
+     authority: {
+       ...workOrder.authority,
+       writable_roots: effectiveWritableRoots,
+@@ -153,7 +163,7 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
+     prepared_evidence: workOrder.prepared_evidence,
+     required_inputs: requiredInputs,
+     required_outputs: workOrder.required_outputs,
+-    semantic_checks: workOrder.verification_intent.requirements.map((requirement) => ({
++    semantic_checks: semanticVerificationRequirements.map((requirement) => ({
+       id: requirement.id,
+       description: requirement.description,
+       required: requirement.required,
+diff --git a/packages/agentplane/src/shared/stable-file.test.ts b/packages/agentplane/src/shared/stable-file.test.ts
+new file mode 100644
+index 000000000..4b94d9b43
+--- /dev/null
++++ b/packages/agentplane/src/shared/stable-file.test.ts
+@@ -0,0 +1,23 @@
++import { describe, expect, it } from "vitest";
++
++import { isStableFileReadCollision } from "./stable-file.js";
++
++describe("stable file read collision classification", () => {
++  it("accepts only identity-collision messages for the exact file label", () => {
++    const label = "runner phase-tool broker response";
++
++    expect(
++      isStableFileReadCollision(
++        new Error(`${label} changed while it was being read: /tmp/response.json`),
++        label,
++      ),
++    ).toBe(true);
++    expect(
++      isStableFileReadCollision(
++        new Error(`different label changed while it was being read: /tmp/response.json`),
++        label,
++      ),
++    ).toBe(false);
++    expect(isStableFileReadCollision(new Error("response JSON is invalid"), label)).toBe(false);
++  });
++});
+diff --git a/scripts/README.md b/scripts/README.md
+index 7abaf2a53..3818bae49 100644
+--- a/scripts/README.md
++++ b/scripts/README.md
+@@ -184,7 +184,7 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ | `e2e:v0.7.1:audit`                 | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full`                                                                                                                                    | Run e2e workflow: v0.7.1 audit.                           |
+ | `e2e:v0.7.1:check`                 | `bun run qualification:check`                                                                                                                                                                                                    | Run e2e workflow: v0.7.1 check.                           |
+ | `e2e:v0.7.1:core-audit`            | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile core`                                                                                                                                    | Run e2e workflow: v0.7.1 core-audit.                      |
+-| `e2e:v0.7.1:gate`                  | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider`                                                                                                                          | Run e2e workflow: v0.7.1 gate.                            |
++| `e2e:v0.7.1:gate`                  | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1`                                                                                        | Run e2e workflow: v0.7.1 gate.                            |
+ | `format`                           | `prettier . --write`                                                                                                                                                                                                             | Format repository files with Prettier.                    |
+ | `format:changed`                   | `node scripts/checks/check-changed-format.mjs`                                                                                                                                                                                   | Run format workflow: changed.                             |
+ | `format:check`                     | `prettier . --check`                                                                                                                                                                                                             | Check formatting drift with Prettier.                     |
+diff --git a/scripts/bench/capture-agent-efficiency-candidate.mjs b/scripts/bench/capture-agent-efficiency-candidate.mjs
+index 484211991..d6ddd36f8 100644
+--- a/scripts/bench/capture-agent-efficiency-candidate.mjs
++++ b/scripts/bench/capture-agent-efficiency-candidate.mjs
+@@ -58,9 +58,9 @@ import {
+   installFixtureRegistryOverlay,
+ } from "./internal/agent-efficiency-capture-runtime.mjs";
+ import {
+-  CODEX_REPLAY_BINARY,
+   CODEX_REPLAY_BINARY_ENV,
+   CODEX_REPLAY_CLI_VERSION_ENV,
++  resolveCodexReplayBinary,
+   resolveCodexReplayCliVersion,
+ } from "./internal/agent-efficiency-codex-runtime.mjs";
+ import { checkRuntimeBridge } from "./capture-agent-efficiency-runtime-bridge.mjs";
+@@ -359,6 +359,15 @@ function targetExists(target) {
+   return lstatSync(target, { throwIfNoEntry: false }) !== undefined;
+ }
+ 
++export async function withDisposableCandidateRepository(repositoryPath, work) {
++  mkdirSync(repositoryPath, { recursive: true });
++  try {
++    return await work();
++  } finally {
++    rmSync(repositoryPath, { force: true, recursive: true });
++  }
++}
++
+ function createCandidateRegistry(subject) {
+   const historical = readFixtureRegistry(DEFAULT_BASELINE_REGISTRY_PATH, {
+     historicalBaseline: true,
+@@ -1053,68 +1062,74 @@ export async function captureCandidate(options) {
+           scenario.id,
+           `run-${String(runIndex).padStart(2, "0")}`,
+         );
+-        mkdirSync(isolatedRepository, { recursive: true });
+-        initializeAnchorCheckout(repoRoot, isolatedRepository, subject);
+-        const registryOverlay = installFixtureRegistryOverlay(
+-          isolatedRepository,
+-          registry,
+-          fixtureRegistrySha256(registry),
+-        );
+-        const scenarioDirectory = path.join(stagingEnvelopes, scenario.id);
+-        const evidenceScenarioDirectory = path.join(stagingEvidence, scenario.id);
+-        mkdirSync(scenarioDirectory, { recursive: true });
+-        mkdirSync(evidenceScenarioDirectory, { recursive: true });
+-        const fileName = `run-${String(runIndex).padStart(2, "0")}.json`;
+-        const outputPath = path.join(scenarioDirectory, fileName);
+-        const evidenceOutputPath = path.join(evidenceScenarioDirectory, fileName);
+-        const contractEnvironment = createReplayDriverContractEnvironment({
+-          anchor: subject,
+-          codexBinary: process.env[CODEX_REPLAY_BINARY_ENV] ?? CODEX_REPLAY_BINARY,
+-          codexCliVersion,
+-          dependencyClaim,
+-          driverIdentity,
+-          evidenceOutputPath,
+-          evidencePath: path.posix.join(evidenceLogicalRoot, scenario.id, fileName),
+-          expectedRolesJson: stableJson(expectedRoles(scenario)),
+-          fixtureRegistryPath: registryOverlay,
+-          fixtureRegistrySha256: fixtureRegistrySha256(registry),
+-          harnessSha256: harnessManifest.sha256,
+-          outputPath,
+-          runId,
+-        });
+-        await runCandidateDriverProcess(
+-          process.execPath,
+-          [
+-            options.driverPath,
+-            "--scenario",
+-            scenario.id,
+-            "--run-index",
+-            String(runIndex),
+-            "--output",
+-            outputPath,
+-            "--evidence-output",
++        await withDisposableCandidateRepository(isolatedRepository, async () => {
++          initializeAnchorCheckout(repoRoot, isolatedRepository, subject);
++          const registryOverlay = installFixtureRegistryOverlay(
++            isolatedRepository,
++            registry,
++            fixtureRegistrySha256(registry),
++          );
++          const scenarioDirectory = path.join(stagingEnvelopes, scenario.id);
++          const evidenceScenarioDirectory = path.join(stagingEvidence, scenario.id);
++          mkdirSync(scenarioDirectory, { recursive: true });
++          mkdirSync(evidenceScenarioDirectory, { recursive: true });
++          const fileName = `run-${String(runIndex).padStart(2, "0")}.json`;
++          const outputPath = path.join(scenarioDirectory, fileName);
++          const evidenceOutputPath = path.join(evidenceScenarioDirectory, fileName);
++          const contractEnvironment = createReplayDriverContractEnvironment({
++            anchor: subject,
++            codexBinary: resolveCodexReplayBinary({
++              [CODEX_REPLAY_CLI_VERSION_ENV]: codexCliVersion,
++              ...(process.env[CODEX_REPLAY_BINARY_ENV]
++                ? { [CODEX_REPLAY_BINARY_ENV]: process.env[CODEX_REPLAY_BINARY_ENV] }
++                : {}),
++            }),
++            codexCliVersion,
++            dependencyClaim,
++            driverIdentity,
+             evidenceOutputPath,
+-          ],
+-          {
+-            cwd: isolatedRepository,
+-            env: buildReplayDriverEnvironment(process.env, contractEnvironment),
+-            timeout: replayDriverTimeoutMs(scenario),
+-          },
+-          `${runId} candidate driver`,
+-        );
+-        if (!existsSync(outputPath) || !existsSync(evidenceOutputPath)) {
+-          throw new Error(`${runId} driver did not write its complete candidate evidence`);
+-        }
+-        const envelope = JSON.parse(readFileSync(outputPath, "utf8"));
+-        const evidence = JSON.parse(readFileSync(evidenceOutputPath, "utf8"));
+-        if (
+-          readFileSync(outputPath, "utf8") !== canonicalBytes(envelope) ||
+-          readFileSync(evidenceOutputPath, "utf8") !== canonicalBytes(evidence)
+-        ) {
+-          throw new Error(`${runId} candidate driver output must be canonical stable JSON`);
+-        }
+-        completedRuns.add(runId);
+-        assertCandidateInputsUnchanged(expectedInputs, activeRegistryPath, options.driverPath);
++            evidencePath: path.posix.join(evidenceLogicalRoot, scenario.id, fileName),
++            expectedRolesJson: stableJson(expectedRoles(scenario)),
++            fixtureRegistryPath: registryOverlay,
++            fixtureRegistrySha256: fixtureRegistrySha256(registry),
++            harnessSha256: harnessManifest.sha256,
++            outputPath,
++            runId,
++          });
++          await runCandidateDriverProcess(
++            process.execPath,
++            [
++              options.driverPath,
++              "--scenario",
++              scenario.id,
++              "--run-index",
++              String(runIndex),
++              "--output",
++              outputPath,
++              "--evidence-output",
++              evidenceOutputPath,
++            ],
++            {
++              cwd: isolatedRepository,
++              env: buildReplayDriverEnvironment(process.env, contractEnvironment),
++              timeout: replayDriverTimeoutMs(scenario),
++            },
++            `${runId} candidate driver`,
++          );
++          if (!existsSync(outputPath) || !existsSync(evidenceOutputPath)) {
++            throw new Error(`${runId} driver did not write its complete candidate evidence`);
++          }
++          const envelope = JSON.parse(readFileSync(outputPath, "utf8"));
++          const evidence = JSON.parse(readFileSync(evidenceOutputPath, "utf8"));
++          if (
++            readFileSync(outputPath, "utf8") !== canonicalBytes(envelope) ||
++            readFileSync(evidenceOutputPath, "utf8") !== canonicalBytes(evidence)
++          ) {
++            throw new Error(`${runId} candidate driver output must be canonical stable JSON`);
++          }
++          completedRuns.add(runId);
++          assertCandidateInputsUnchanged(expectedInputs, activeRegistryPath, options.driverPath);
++        });
+       },
+     );
+     const envelopes = readReplayEnvelopeRecords(repoRoot, stagingEnvelopes, {
+diff --git a/scripts/bench/internal/agent-efficiency-anchor-supervisor.mjs b/scripts/bench/internal/agent-efficiency-anchor-supervisor.mjs
+index c22edcd84..7249a8b53 100644
+--- a/scripts/bench/internal/agent-efficiency-anchor-supervisor.mjs
++++ b/scripts/bench/internal/agent-efficiency-anchor-supervisor.mjs
+@@ -268,7 +268,12 @@ export function measurePreparedContext(bundleBytes, bootstrapBytes, runState = n
+   } catch {
+     fail("ANCHOR_BUNDLE_JSON");
+   }
+-  if (!bootstrapBytes.includes("Use bundle.json as the complete runner input.")) {
++  const projectsCompleteProviderInput =
++    bootstrapBytes.includes("Use bundle.json as the complete runner input.") ||
++    bootstrapBytes.includes(
++      "The content below is the complete provider-facing projection for this episode.",
++    );
++  if (!projectsCompleteProviderInput) {
+     fail("ANCHOR_BOOTSTRAP_BUNDLE_REFERENCE");
+   }
+   if (!Array.isArray(bundle.base_prompts) || bundle.base_prompts.length === 0) {
+diff --git a/scripts/bench/internal/agent-efficiency-codex-runtime.mjs b/scripts/bench/internal/agent-efficiency-codex-runtime.mjs
+index 614565778..9c9f5ca3c 100644
+--- a/scripts/bench/internal/agent-efficiency-codex-runtime.mjs
++++ b/scripts/bench/internal/agent-efficiency-codex-runtime.mjs
+@@ -5,6 +5,11 @@ import path from "node:path";
+ 
+ export const CODEX_REPLAY_BINARY = "/Applications/ChatGPT.app/Contents/Resources/codex";
+ export const CODEX_REPLAY_BINARY_ENV = "AGENTPLANE_RF04_REPLAY_CODEX_BINARY";
++export const CODEX_REPLAY_ARCHIVE_CACHE_DIR = path.join(
++  ".agentplane",
++  "cache",
++  "rf04-codex-archive",
++);
+ export const CODEX_REPLAY_CLI_VERSION = "0.145.0-alpha.18";
+ export const CODEX_REPLAY_CLI_VERSION_ENV = "AGENTPLANE_RF04_REPLAY_CODEX_CLI_VERSION";
+ export const CODEX_REPLAY_MODEL = "gpt-5.6-terra";
+@@ -87,28 +92,43 @@ export function resolveCodexReplayCliVersion(source = process.env) {
+   return version;
+ }
+ 
+-export function resolveCodexReplayBinary(source = process.env) {
+-  const candidate = source[CODEX_REPLAY_BINARY_ENV] ?? CODEX_REPLAY_BINARY;
++export function resolveCodexReplayArchiveCachePath(version, repoRoot = process.cwd()) {
++  const exactVersion = resolveCodexReplayCliVersion({ [CODEX_REPLAY_CLI_VERSION_ENV]: version });
++  return path.resolve(repoRoot, CODEX_REPLAY_ARCHIVE_CACHE_DIR, exactVersion, "codex");
++}
++
++function resolveCachedCodexReplayBinary(source, repoRoot) {
++  const candidate = resolveCodexReplayArchiveCachePath(
++    resolveCodexReplayCliVersion(source),
++    repoRoot,
++  );
++  const stats = lstatSync(candidate, { throwIfNoEntry: false });
++  return stats?.isFile() && !stats.isSymbolicLink() ? candidate : null;
++}
++
++export function resolveCodexReplayBinary(source = process.env, repoRoot = process.cwd()) {
++  const candidate =
++    source[CODEX_REPLAY_BINARY_ENV] ??
++    resolveCachedCodexReplayBinary(source, repoRoot) ??
++    CODEX_REPLAY_BINARY;
+   if (typeof candidate !== "string" || !path.isAbsolute(candidate)) {
+     fail("CODEX_BINARY_PATH");
+   }
+   const stats = lstatSync(candidate, { throwIfNoEntry: false });
+   if (!stats?.isFile() || stats.isSymbolicLink()) fail("CODEX_BINARY");
+-  if (path.resolve(realpathSync(candidate)) !== path.resolve(candidate)) {
+-    fail("CODEX_BINARY_REALPATH");
+-  }
++  const canonicalCandidate = path.resolve(realpathSync(candidate));
+   if (candidate !== CODEX_REPLAY_BINARY) {
+     const version = resolveCodexReplayCliVersion(source);
+     const expectedDigest = CODEX_REPLAY_ARCHIVE_SHA256[version];
+     if (!expectedDigest) fail("CODEX_BINARY_ARCHIVE_UNPINNED");
+-    const actualDigest = `sha256:${createHash("sha256").update(readFileSync(candidate)).digest("hex")}`;
++    const actualDigest = `sha256:${createHash("sha256").update(readFileSync(canonicalCandidate)).digest("hex")}`;
+     if (actualDigest !== expectedDigest) fail("CODEX_BINARY_ARCHIVE_DIGEST");
+   }
+-  return candidate;
++  return canonicalCandidate;
+ }
+ 
+-export function assertCodexBinary(source = process.env) {
+-  const binary = resolveCodexReplayBinary(source);
++export function assertCodexBinary(source = process.env, repoRoot = process.cwd()) {
++  const binary = resolveCodexReplayBinary(source, repoRoot);
+   const version = runSanitizedCommand(binary, ["--version"], {
+     code: "CODEX_VERSION_COMMAND",
+   }).trim();
+diff --git a/scripts/bench/run-agent-efficiency-codex-replay.mjs b/scripts/bench/run-agent-efficiency-codex-replay.mjs
+index 947b87788..e1e252477 100644
+--- a/scripts/bench/run-agent-efficiency-codex-replay.mjs
++++ b/scripts/bench/run-agent-efficiency-codex-replay.mjs
+@@ -46,6 +46,7 @@ export { buildAnchorProcessEnvironment } from "./internal/agent-efficiency-ancho
+ export {
+   CODEX_REPLAY_BINARY,
+   CODEX_REPLAY_BINARY_ENV,
++  CODEX_REPLAY_ARCHIVE_CACHE_DIR,
+   CODEX_REPLAY_ARCHIVE_SHA256,
+   CODEX_REPLAY_CLI_VERSION,
+   CODEX_REPLAY_CLI_VERSION_ENV,
+@@ -56,6 +57,7 @@ export {
+   buildCodexReplayEnvironment,
+   createCodexJsonlCollector,
+   finalizeCodexJsonlCollector,
++  resolveCodexReplayArchiveCachePath,
+   resolveCodexReplayBinary,
+   resolveCodexReplayCliVersion,
+ } from "./internal/agent-efficiency-codex-runtime.mjs";
+diff --git a/scripts/qualification/check-v0.7.1-product-contract.mjs b/scripts/qualification/check-v0.7.1-product-contract.mjs
+index 56529c6e8..1ee434eca 100644
+--- a/scripts/qualification/check-v0.7.1-product-contract.mjs
++++ b/scripts/qualification/check-v0.7.1-product-contract.mjs
+@@ -51,6 +51,15 @@ function read(relativePath) {
+   return readFileSync(path.join(repoRoot, relativePath), "utf8");
+ }
+ 
++export function assertLegacyAdapterRetirementContract(adapter) {
++  assert.ok(
++    typeof adapter.remove_in === "string" ||
++      (adapter.remove_in === null &&
++        (typeof adapter.removal_blocker === "string" ||
++          adapter.retirement_policy?.kind === "permanent_historical_reader")),
++  );
++}
++
+ function checkOnboarding(failures) {
+   const readme = read("README.md");
+   const taskCommand = read("packages/agentplane/src/commands/task/task.command.ts");
+@@ -298,10 +307,7 @@ function checkMaintenanceContract(failures) {
+       for (const adapter of report.adapters) {
+         assert.equal(typeof adapter.introduced_in, "string");
+         assert.ok(adapter.deprecated_in === null || typeof adapter.deprecated_in === "string");
+-        assert.ok(
+-          typeof adapter.remove_in === "string" ||
+-            (adapter.remove_in === null && typeof adapter.removal_blocker === "string"),
+-        );
++        assertLegacyAdapterRetirementContract(adapter);
+         assert.equal(typeof adapter.migration_command, "string");
+         assert.equal(typeof adapter.usage_probe?.kind, "string");
+       }
+diff --git a/scripts/qualification/release-qualification.test.mjs b/scripts/qualification/release-qualification.test.mjs
+index 71acd0155..66946aa42 100644
+--- a/scripts/qualification/release-qualification.test.mjs
++++ b/scripts/qualification/release-qualification.test.mjs
+@@ -20,7 +20,10 @@ import {
+   validateQualificationReport,
+ } from "./release-qualification.mjs";
+ import { evaluateEfficiencyMeasurement } from "./check-v0.7.1-efficiency-evidence.mjs";
+-import { assertCompactAgentPacket } from "./check-v0.7.1-product-contract.mjs";
++import {
++  assertCompactAgentPacket,
++  assertLegacyAdapterRetirementContract,
++} from "./check-v0.7.1-product-contract.mjs";
+ import { blockingCandidateFailureIds } from "../bench/capture-agent-efficiency-candidate.mjs";
+ import {
+   collapseMatchedLatencyReplicates,
+@@ -35,6 +38,7 @@ import {
+ } from "./measure-v0.7.1-supervisor-latency.mjs";
+ import {
+   preflightQualificationProviderRuntime,
++  QUALIFICATION_CODEX_CLI_VERSION,
+   readQualificationRunSubjectIdentity,
+   runQualificationScenarios,
+ } from "./run-v0.7.1-release-qualification.mjs";
+@@ -146,6 +150,14 @@ function supervisorLatencySurfaces(count) {
+ }
+ 
+ describe("v0.7.1 release qualification contract", () => {
++  it("pins the canonical provider gate to the reviewed Codex runtime", () => {
++    const packageJson = JSON.parse(readFileSync(path.join(repoRoot, "package.json"), "utf8"));
++    assert.equal(
++      packageJson.scripts["e2e:v0.7.1:gate"],
++      `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version ${QUALIFICATION_CODEX_CLI_VERSION}`,
++    );
++  });
++
+   it("runs independent scenarios concurrently while preserving dependency barriers and report order", async () => {
+     const scenarios = [
+       { id: "slow", tier: "core" },
+@@ -249,6 +261,34 @@ describe("v0.7.1 release qualification contract", () => {
+     assert.ok(events.indexOf("finish:critical-cli:1") < events.indexOf("start:after-b:2"));
+   });
+ 
++  it("does not overlap packaged candidate builds with CLI readers", async () => {
++    const scenarios = [
++      { id: "reader-before", tier: "core", depends_on: [] },
++      { id: "packaged-candidate-flow", tier: "full", depends_on: [] },
++      { id: "reader-after", tier: "core", depends_on: [] },
++    ];
++    const events = [];
++    let active = 0;
++    await runQualificationScenarios(scenarios, {}, "/unused", {
++      concurrency: 2,
++      async scenarioRunner(scenario) {
++        active += 1;
++        events.push(`start:${scenario.id}:${active}`);
++        await new Promise((resolve) => setTimeout(resolve, 5));
++        events.push(`finish:${scenario.id}:${active}`);
++        active -= 1;
++        return scenario.id;
++      },
++    });
++
++    assert.ok(
++      events.indexOf("finish:reader-before:1") < events.indexOf("start:packaged-candidate-flow:1"),
++    );
++    assert.ok(
++      events.indexOf("finish:packaged-candidate-flow:1") < events.indexOf("start:reader-after:1"),
++    );
++  });
++
+   it("stops queued work after failure and settles active work without starting dependents", async () => {
+     const scenarios = [
+       { id: "prerequisite", tier: "core", depends_on: [] },
+@@ -778,6 +818,23 @@ describe("v0.7.1 release qualification contract", () => {
+     assert.throws(() => assertCompactAgentPacket(oversizedPacket), /maximum is 2048/u);
+   });
+ 
++  it("accepts permanent historical readers without a removal deadline or blocker", () => {
++    assert.doesNotThrow(() =>
++      assertLegacyAdapterRetirementContract({
++        remove_in: null,
++        removal_blocker: null,
++        retirement_policy: { kind: "permanent_historical_reader" },
++      }),
++    );
++    assert.throws(() =>
++      assertLegacyAdapterRetirementContract({
++        remove_in: null,
++        removal_blocker: null,
++        retirement_policy: { kind: "support_window" },
++      }),
++    );
++  });
++
+   it("requires distinct frozen cold and warm sample sets with at least 20 pairs", () => {
+     const report = {
+       schema_version: 2,
+diff --git a/scripts/qualification/run-v0.7.1-release-qualification.mjs b/scripts/qualification/run-v0.7.1-release-qualification.mjs
+index e000e9c06..dbb4d77fa 100644
+--- a/scripts/qualification/run-v0.7.1-release-qualification.mjs
++++ b/scripts/qualification/run-v0.7.1-release-qualification.mjs
+@@ -43,9 +43,12 @@ const EXCLUSIVE_QUALIFICATION_SCENARIO_IDS = new Set([
+   "critical-cli",
+   "full-contract",
+   "matched-cli-latency",
++  "packaged-candidate-flow",
+   "supervisor-latency",
+ ]);
+ 
++export const QUALIFICATION_CODEX_CLI_VERSION = "0.146.0-alpha.3.1";
++
+ function helpText() {
+   return [
+     "Usage: node scripts/qualification/run-v0.7.1-release-qualification.mjs [options]",
+diff --git a/website/static/img/social/docs/releases/v0.7.5.png b/website/static/img/social/docs/releases/v0.7.5.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..d61b8daf665efa9936948e9655e389fba690afc7
+GIT binary patch
+literal 53016
+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
+
+literal 0
+HcmV?d00001
+
+diff --git a/website/static/img/social/manifest.json b/website/static/img/social/manifest.json
+index b97388158..81eef3fe8 100644
+--- a/website/static/img/social/manifest.json
++++ b/website/static/img/social/manifest.json
+@@ -1564,6 +1564,14 @@
+       "title": "V0.7.4",
+       "svgSha256": "62b337fdd25d3ade49e043690012f9c7142b40402a4cf52ad95ea56e867dc579"
+     },
++    {
++      "route": "/docs/releases/v0.7.5",
++      "output": "static/img/social/docs/releases/v0.7.5.png",
++      "section": "Releases",
++      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
++      "title": "V0.7.5",
++      "svgSha256": "ac2d5e8860d9292657d170c6feda20344c28c7cc354746eeaf370a047562377a"
++    },
+     {
+       "route": "/docs/showcase",
+       "output": "static/img/social/docs/showcase.png",
+diff --git a/website/static/llms-full.txt b/website/static/llms-full.txt
+index 93064208b..c1d92223b 100644
+--- a/website/static/llms-full.txt
++++ b/website/static/llms-full.txt
+@@ -676,8 +676,8 @@ When `action.kind=agent_episode`:
+ 
+ 1. Read the supplied objective, role, authority, context references, required output, and stop rules.
+ 2. Perform only that semantic objective in the supplied checkout and writable roots.
+-3. Write a typed semantic result to the result location supplied by the packet.
+-4. Resume with the return invocation supplied by Agentplane.
++3. Write a typed semantic result to the exact `exchange.result_path` supplied by the packet.
++4. Resume with the exact `exchange.resume_argv`; `exchange.return_invocation` is compatibility-only.
+ 5. Request a fresh packet after every state change.
+ 
+ Do not reconstruct the state machine from prose. Do not switch checkout, create branches, publish
+@@ -717,9 +717,9 @@ agentplane task create "Inspect Agentplane artifacts and summarize what was crea
+ ```
+ 
+ Run the exact `task advance` command in the response and give its packet to an external agent. It
+-reads `exchange.work_order_ref`, performs only the
+-PLANNER objective, writes a typed result matching `exchange.result_schema_ref` to
+-`exchange.directory/exchange.result_ref`, and returns it with:
++reads `exchange.work_order_ref`, performs only the PLANNER objective, writes a typed result matching
++`exchange.result_schema_ref` to `exchange.result_path`, and resumes with the exact
++`exchange.resume_argv`. Its equivalent shell form is:
+ 
+ ```bash
+ agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
+@@ -935,7 +935,8 @@ agentplane doctor legacy --json
+ 
+ `doctor legacy` is read-only. It returns the packaged compatibility retirement manifest plus
+ workspace probes classified as `used`, `unused`, `unknown`, or `blocked`. Each adapter names its
+-introduction and deprecation versions, retirement target or blocker, and migration command.
++introduction and deprecation versions, bounded retirement policy, compatibility scope, retirement
++target or blocker, and migration command.
+ 
+ Exceptional legacy protected-conflict recovery lives outside the normal lifecycle surface:
+ 
+@@ -945,6 +946,45 @@ agentplane repair adopt-legacy-conflict <task-id> --expect-adoption-token <sha25
+ 
+ Run it only with the exact token emitted by `task next-action` or `pr conflict-rework`.
+ 
++## Evidence retention
++
++Evidence maintenance is local-only and dry-run-first:
++
++```bash
++agentplane evidence stats --json
++agentplane evidence compact --json
++agentplane evidence compact --apply --yes
++agentplane evidence gc --json
++agentplane evidence gc --apply --yes
++```
++
++`stats` reports tracked evidence, logical and allocated object bytes, duplicates, reachability,
++pins, expiry, corruption, missing references, and collectible objects. `compact` hard-links verified
++duplicate content-addressed objects without changing manifests or file contents. `gc` deletes only
++hash-verified objects that are expired, unreferenced, and unpinned. Apply mode requires a clean
++repository and refuses corrupt objects or missing references.
++
++Optional local retention policy:
++
++```json
++{
++  "schema_version": 1,
++  "objects": {
++    "keep_success_days": 30,
++    "keep_failure_days": 180,
++    "deduplicate": true,
++    "pin_release_evidence": true
++  }
++}
++```
++
++Save it as `evidence-retention.json` in the `.agentplane` control directory. Active tasks, current failures, and tasks tagged
++`release` remain pinned. Reachable objects are never collectible, even after the retention age.
++If apply is interrupted, rerun the same command: compaction replaces one verified object at a time,
++and garbage collection rechecks each candidate immediately before unlinking it. Recovery is the
++normal Git restore flow for the resulting deleted object paths; manifests and task summaries are
++never rewritten by these commands.
++
+ ## Config
+ 
+ ```bash

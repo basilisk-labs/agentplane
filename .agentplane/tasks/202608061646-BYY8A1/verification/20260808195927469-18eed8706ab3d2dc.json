@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run ci:local:full\nResult: pass\nEvidence: task README verification history and launchd exit=0 on the qualified implementation lineage\nScope: complete local CI contract\n\nCommand: bun run ci:release-extras\nResult: pass\nEvidence: task README verification history; 102 release-ci-base chunks plus workflow, significant, and release-critical coverage passed\nScope: release extras and coverage\n\nCommand: bun run e2e:v0.7.1:gate\nResult: pass\nEvidence: .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/report.json\nScope: exact-subject full local and provider qualification\n\nCommand: bun run bench:compatibility:check\nResult: pass\nEvidence: .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/logs/full-contract.log\nScope: compatibility baseline\n\nCommand: bun run bench:agent-efficiency:check\nResult: pass\nEvidence: .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/efficiency-evidence.json\nScope: provider efficiency and quality evidence\n\nCommand: bun run bench:agent-efficiency:replay:check\nResult: pass\nEvidence: .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/logs/full-contract.log\nScope: frozen RF-04 replay contract",
+  "digest": "sha256:18eed8706ab3d2dcd57c02db85a565694e4521e9ecbf847beca6893f1d7d7958",
+  "implementation_sha": "68c3884984a8a57e6b96f56593e25a746836cd56",
+  "kind": "task_verification_record",
+  "note": "Exact-subject qualification passed on aaef3c8be167784f26f7c994fb44db2915a9c160: verdict ready, 18/19 scenarios passed, zero blocking defects, provider matrix 50 runs/55 episodes passed, efficiency evidence passed with 58.59% total-token reduction, matched and supervisor latency passed; absolute latency remains advisory only.",
+  "recorded_at": "2026-08-08T19:59:27.469Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bun run ci:local:full\n- bun run ci:release-extras\n- bun run e2e:v0.7.1:gate\n- bun run bench:compatibility:check\n- bun run bench:agent-efficiency:check\n- bun run bench:agent-efficiency:replay:check",
+  "scope_digest": "sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a",
+  "task_id": "202608061646-BYY8A1",
+  "verification_command": "agentplane verify 202608061646-BYY8A1 --ok --by TESTER",
+  "verifier": "TESTER"
+}

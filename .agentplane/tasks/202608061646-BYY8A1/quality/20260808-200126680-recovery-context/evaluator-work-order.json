@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608061646-BYY8A1-c4a2dec10863d69bdc649d63",
+  "prepared_at": "2026-08-08T20:01:26.680Z",
+  "task": {
+    "id": "202608061646-BYY8A1",
+    "revision": 74,
+    "objective": "Qualify and publish AgentPlane 0.7.5 UX routing patch\n\nDocument the explainable auto-routing and simplified task UX, run focused and full release qualification including compatibility and efficiency checks, publish v0.7.5 through the protected branch_pr release route, and verify npm plus GitHub release truth.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bun run ci:release-extras",
+      "bun run e2e:v0.7.1:gate",
+      "bun run bench:compatibility:check",
+      "bun run bench:agent-efficiency:check",
+      "bun run bench:agent-efficiency:replay:check",
+      "- In scope: Document the explainable auto-routing and simplified task UX, run focused and full release qualification including compatibility and efficiency checks, publish v0.7.5 through the protected branch_pr release route, and verify npm plus GitHub release truth.\n- Out of scope: unrelated refactors not required for \"Qualify and publish AgentPlane 0.7.5 UX routing patch\".",
+      "1. Integrate every 0.7.5 dependency in serialized protected-main order and update the cumulative compatibility candidate only after the final code surface is stable. 2. Version all packages and write release notes covering automatic task routing, user-first task/init UX, exact Windows README identities, supervisor-first agent guidance, semantic-only provider prompts, protocol polish, legacy classification, evidence retention, and the RF-04 advisory sample-count caveat. 3. On one clean release SHA run full local CI, release extras, package/install/migration checks, Windows coverage, direct and branch_pr, managed and external protocols, stale state, interruption, effect-in-doubt, evaluator rework, hosted waits, cleanup races, exact compiled-prompt choreography gates, and init/new-user copy-paste flows. 4. Run the bounded 50 replay runs and 55 provider episodes once for the cumulative candidate, compare tokens, verified success, scope violations, golden mismatches, rework, setup, first mutation, and time-to-verified, and repair every blocking defect before release rather than publishing successive patches. 5. Obtain evaluator pass, merge through protected main, publish v0.7.5, and prove the GitHub release, tag, main SHA, and all npm package versions from hosted surfaces. 6. Delete temporary recovery and obsolete merged branches only after publication proof.",
+      "- bun run ci:local:full\n- bun run ci:release-extras\n- bun run e2e:v0.7.1:gate\n- bun run bench:compatibility:check\n- bun run bench:agent-efficiency:check\n- bun run bench:agent-efficiency:replay:check"
+    ]
+  },
+  "evaluated_sha": "68c3884984a8a57e6b96f56593e25a746836cd56",
+  "diff_base_sha": "76b5e372a87348e390350a9b8cfcd41153d04f39",
+  "blueprint_digest": "51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608061646-BYY8A1/quality/20260808-200126680-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:a51559478283b95b3df66cbcbd40ce06391785a9a111342180c6add77a6108ad",
+    "prompt_path": ".agentplane/tasks/202608061646-BYY8A1/quality/objects/sha256/8b6e5bf7a842126cc5ab71cf9e4c63e9fdbbcda9cf962d6b04b48e0d7b69f246.md",
+    "result_schema_path": ".agentplane/tasks/202608061646-BYY8A1/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608061646-BYY8A1/README.md",
+      "sha256": "sha256:7de5e2cdd2e83a9eadd2b5e5b8d0f48e4a3b38bbd2f62a96b7bc77848246b67a",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608061646-BYY8A1/quality/objects/sha256/8c499465cb33016efe147d72de5b0459214b5eef2df482f97f46705cd95ed99c.patch",
+      "sha256": "sha256:8c499465cb33016efe147d72de5b0459214b5eef2df482f97f46705cd95ed99c",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608061646-BYY8A1/quality/objects/sha256/af1478c514b71a8c7414247da1d1c9a13e532d0fa4243926fbba7a5cefb925d4.json",
+      "sha256": "sha256:af1478c514b71a8c7414247da1d1c9a13e532d0fa4243926fbba7a5cefb925d4",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608061646-BYY8A1/verification/20260808195927469-18eed8706ab3d2dc.json",
+      "sha256": "sha256:fa12807a60c808ca8ebf7ecc2c0f55ed0daef0dc165c4d896956751cebdec6b3",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608061646-BYY8A1/quality/objects/sha256/14ae37d7b4eff36f28d698fd7886355f7ded68d655a8db26ad3c6525e74b90ef.json",
+      "sha256": "sha256:14ae37d7b4eff36f28d698fd7886355f7ded68d655a8db26ad3c6525e74b90ef",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:47ab8b04f9d747491398390dac415b34aa6d3df0cf0fb61e9924fd3e4851ec48",
+      "required": true
+    }
+  ]
+}

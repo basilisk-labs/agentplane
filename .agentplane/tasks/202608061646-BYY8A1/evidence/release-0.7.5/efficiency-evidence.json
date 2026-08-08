@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.v0.7.1_efficiency_qualification",
+  "subject": "aaef3c8be167784f26f7c994fb44db2915a9c160",
+  "source_subject": "aaef3c8be167784f26f7c994fb44db2915a9c160",
+  "coverage": {
+    "replay_runs": 50,
+    "scenarios": 10
+  },
+  "provider_episodes": 55,
+  "provider_tokens": {
+    "baseline": {
+      "input_tokens": 9097432,
+      "output_tokens": 66728,
+      "reasoning_tokens": 22587,
+      "total_tokens": 9186747
+    },
+    "candidate": {
+      "input_tokens": 3764570,
+      "output_tokens": 28600,
+      "reasoning_tokens": 10825,
+      "total_tokens": 3803995
+    },
+    "total_reduction_ratio": 0.5859257907069826
+  },
+  "outcomes": {
+    "baseline": {
+      "adapter_failure": 5,
+      "approval_respected": 50,
+      "blocked": 20,
+      "context_gap": 5,
+      "rework_required": 32,
+      "scope_violation": 17,
+      "verified_success": 8
+    },
+    "candidate": {
+      "adapter_failure": 5,
+      "approval_respected": 50,
+      "blocked": 20,
+      "context_gap": 5,
+      "rework_required": 26,
+      "scope_violation": 5,
+      "verified_success": 19
+    },
+    "baseline_golden_mismatch_count": 33,
+    "candidate_golden_mismatch_count": 10
+  },
+  "latency_ms": {
+    "baseline": {
+      "harness_setup_latency_ms": {
+        "mean": 7605.46,
+        "sample_count": 50
+      },
+      "time_to_first_scoped_mutation_ms": {
+        "mean": 43642.64,
+        "sample_count": 25
+      },
+      "time_to_verified_result_ms": {
+        "mean": 56439.625,
+        "sample_count": 8
+      }
+    },
+    "candidate": {
+      "harness_setup_latency_ms": {
+        "mean": 9718.14,
+        "sample_count": 50
+      },
+      "time_to_first_scoped_mutation_ms": {
+        "mean": 17532.909090909092,
+        "sample_count": 22
+      },
+      "time_to_verified_result_ms": {
+        "mean": 44711.57894736842,
+        "sample_count": 19
+      }
+    },
+    "policy": "diagnostic_only_never_gated",
+    "diagnostics": [
+      {
+        "metric": "latency.harness_setup_latency_ms.mean",
+        "baseline": 7605.46,
+        "candidate": 9718.14,
+        "delta": 2112.6799999999994
+      },
+      {
+        "metric": "latency.time_to_first_scoped_mutation_ms.sample_count",
+        "baseline": 25,
+        "candidate": 22,
+        "delta": -3
+      }
+    ]
+  },
+  "failures": [],
+  "verdict": "pass",
+  "provider_evidence": {
+    "source_subject": "aaef3c8be167784f26f7c994fb44db2915a9c160",
+    "runtime_equivalence": {
+      "schema_version": 1,
+      "kind": "agentplane.provider_runtime_equivalence",
+      "policy": "exact_subject_v1",
+      "source_subject": "aaef3c8be167784f26f7c994fb44db2915a9c160",
+      "target_subject": "aaef3c8be167784f26f7c994fb44db2915a9c160",
+      "changed_paths": [],
+      "provider_runtime_unchanged": true
+    }
+  }
+}
