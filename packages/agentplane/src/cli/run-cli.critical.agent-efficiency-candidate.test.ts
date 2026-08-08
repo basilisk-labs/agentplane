@@ -169,7 +169,7 @@ describeCritical("critical: RF-04 candidate measurement", () => {
         "timeout fixture",
       ),
     ).rejects.toThrow("timeout fixture failed to start or exceeded its fixed timeout");
-    expect(Date.now() - startedAt).toBeLessThan(3_000);
+    expect(Date.now() - startedAt).toBeLessThan(3000);
   });
 
   it("validates one exact candidate pilot envelope and returns bounded telemetry", async () => {
