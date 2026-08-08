@@ -12,8 +12,8 @@ Created: 2026-08-08T05:52:09.195Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Focused protocol coverage, typecheck, and the full contract gate pass on the exact implementation; external task-worktree resolution now follows implementation authority.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,15 +24,16 @@ Created: 2026-08-08T05:52:09.195Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-08T05:52:09.195Z
+- Updated: 2026-08-08T05:55:06.161Z
 - Branch: task/202608080551-8BH6HY/accept-external-task-worktree-resolution-results
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/task/external-agent-purpose.test.ts  | 19 +++++++++++++++++++
- .../src/commands/task/external-agent-purpose.ts       | 11 +++++++++++
- .../src/commands/task/external-agent-supervisor.ts    | 12 +++---------
- 3 files changed, 33 insertions(+), 9 deletions(-)
+ .../src/cli/run-cli.core.task-advance.test.ts      | 220 +++++++++++++++++++++
+ .../commands/task/external-agent-purpose.test.ts   |  19 ++
+ .../src/commands/task/external-agent-purpose.ts    |  11 ++
+ .../src/commands/task/external-agent-supervisor.ts |  30 ++-
+ 4 files changed, 264 insertions(+), 16 deletions(-)
 ```
 
 </details>

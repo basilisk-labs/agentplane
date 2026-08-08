@@ -5,6 +5,7 @@ import path from "node:path";
 import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
+  reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   startSupervisorExecutionEpisode,
   validateAgentWorkOrderV2,
   type AgentWorkOrderV2,
@@ -62,18 +63,13 @@ import {
 } from "./external-agent-result-routing.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
 
-type ExternalSemanticPurpose = Extract<
-  TaskRouteDecision["workflowStep"],
-  { kind: "agent_episode" }
->["episode"]["purpose"];
-
 export type IssuedExternalAgentExchange = {
   exchange: ExternalAgentExchange;
   paths: ExternalAgentExchangePaths;
   work_order: AgentWorkOrderV2;
 };
 
-function semanticPurpose(decision: TaskRouteDecision): ExternalSemanticPurpose | null {
+function semanticPurpose(decision: TaskRouteDecision): ExternalAgentExchange["purpose"] | null {
   const step = decision.workflowStep;
   if (step.kind === "agent_episode") return step.episode.purpose;
   if (
@@ -152,7 +148,7 @@ async function recordIssuedEpisode(opts: {
   decision: TaskRouteDecision;
   work_order: AgentWorkOrderV2;
   work_order_ref: string;
-  purpose: ExternalSemanticPurpose;
+  purpose: ExternalAgentExchange["purpose"];
   issue_digest: string;
 }): Promise<void> {
   const effectRef = `external-agent-issue:${opts.issue_digest}`;
@@ -166,6 +162,14 @@ async function recordIssuedEpisode(opts: {
       recover_intent: false,
     });
     let journal = opened.journal;
+    if (journal.status === "stopped" && journal.stop?.reason === "stale_state") {
+      const reopened = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+        journal,
+        state_fingerprint_digest: opts.decision.workflowStep.preconditionFingerprint.digest,
+      });
+      if (!(await opened.store.compareAndSwap(journal.digest, reopened))) continue;
+      journal = reopened;
+    }
     if (journal.status === "stopped") {
       throw new CliError({
         code: "E_RUNTIME",
