@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608080551-8BH6HY-b667987994e7e3c33904996e",
+  "task_id": "202608080551-8BH6HY",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Bind rework convergence to evidence that a new implementation commit was durably recorded after the failed verification, and cover an unrelated later DOING event as a negative case.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "Verification rework is considered addressed after any later DOING status event, even when that event did not record a new implementation commit.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/0d8205290b2e749c44fb2689ec51d656d3c4557641356fe8aca7013418a18a52.patch",
+          "sha256": "sha256:0d8205290b2e749c44fb2689ec51d656d3c4557641356fe8aca7013418a18a52",
+          "line": 590,
+          "section": "route-decision-verification.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608080551-8BH6HY/README.md",
+          "sha256": "sha256:bf3f1ddbe051c4f18ae224d0ca776e108f98115e2cbc7c5cc19fc5adcf7cf3d3",
+          "section": "Plan"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-073309472-recovery-context/evaluator-result.json"
+}
