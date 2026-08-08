@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run qualification:check\nResult: pass\nEvidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608081216-YAN7DW declared verification\n\nCommand: bun run test:critical\nResult: fail\nEvidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608081216-YAN7DW declared verification",
+  "digest": "sha256:8625ba00bb2fb2a0fb315e75621d87ed0ca3214dd3fe07093c41957f9cf7da13",
+  "implementation_sha": "739dd55244063b55449e1a4c672671a4aaea4983",
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run test:critical",
+  "recorded_at": "2026-08-08T12:53:35.568Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run `bun run qualification:check`. Expected: qualification contract tests pass and the full gate command resolves every required variable in dry-run mode.\n2. Run `bun run test:critical`. Expected: the critical CLI suite passes, including candidate capture concurrency, stop-on-first-failure, evidence cleanup, and existing RF-04 contracts.\n3. Run `bun run format:check`. Expected: formatting passes.\n4. Run `bun run ci:contract`. Expected: repository contracts, lint, architecture, clone, knip, and coverage thresholds pass.\n5. The subsequent v0.7.5 release gate must execute the full 50-run/55-episode provider matrix on the exact integrated candidate SHA; no provider evidence from the pre-change SHA may be reused.",
+  "scope_digest": "sha256:1cae1f99dc9a9a5efbce86fcedd6b0b11fc7737d54646d4fdec13617a8ab9fd5",
+  "task_id": "202608081216-YAN7DW",
+  "verification_command": "agentplane verify 202608081216-YAN7DW --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
