@@ -1,10 +1,10 @@
 ---
 id: "202608061646-BYY8A1"
 title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "DOCS"
-revision: 68
+revision: 69
 origin:
   system: "manual"
 depends_on:
@@ -41,13 +41,11 @@ plan_approval:
   note: null
 verification:
   state: "blocked_external"
-  updated_at: "2026-08-08T19:03:34.636Z"
+  updated_at: "2026-08-08T19:22:38.697Z"
   updated_by: "TESTER"
-  note: "Provider qualification driver rejects the current semantic-projection bootstrap because it only recognizes the historical bundle.json instruction; zero provider episodes completed."
-  attempts: 24
-commit:
-  hash: "60d2b29ed7584d0e0e9a08bd0b372960923497ea"
-  message: "🐛 BYY8A1 task: align RF-04 semantic bootstrap"
+  note: "RF-04 capture retains every completed isolated checkout until the full 50-run generation ends, exhausting disk after six completed runs."
+  attempts: 25
+commit: null
 comments:
   -
     author: "DOCS"
@@ -493,8 +491,14 @@ events:
     from: "BLOCKED"
     to: "DOING"
     commit: "60d2b29ed7584d0e0e9a08bd0b372960923497ea"
+  -
+    type: "verify"
+    at: "2026-08-08T19:22:38.697Z"
+    author: "TESTER"
+    state: "blocked_external"
+    note: "RF-04 capture retains every completed isolated checkout until the full 50-run generation ends, exhausting disk after six completed runs."
 doc_version: 3
-doc_updated_at: "2026-08-08T19:04:34.574Z"
+doc_updated_at: "2026-08-08T19:22:39.865Z"
 doc_updated_by: "CODER"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
@@ -1360,6 +1364,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-08T19:22:38.697Z — VERIFY — blocked_external
+
+    By: TESTER
+
+    Note: RF-04 capture retains every completed isolated checkout until the full 50-run generation ends, exhausting disk after six completed runs.
+    Attempts: 25
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T19:04:34.574Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+    - old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608061646-BYY8A1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Do not publish unless all gates pass. Before publication, abandon the candidate branch. After publication, fix forward in a new patch; npm versions and Git tags are immutable."
   Findings: |-
@@ -1378,6 +1412,10 @@ sections:
     - Observation: The candidate bootstrap states that its embedded content is the complete provider-facing projection, while RF-04 measurePreparedContext requires only the retired Use bundle.json marker.
       Impact: A valid supervisor-first provider boundary cannot enter RF-04 capture, so release efficiency evidence is impossible despite all local gates passing.
       Resolution: Accept either the current self-contained semantic projection marker or the historical bundle marker, retain fail-closed behavior when neither is present, and rerun driver tests plus a one-run pilot before the full provider matrix.
+
+    - Observation: failed-capture records six completed runs and anchor checkout ENOSPC; staging cleanup after failure restored space, proving accumulated disposable subjects caused the growth.
+      Impact: Provider qualification cannot complete on a normal constrained workstation even though provider episodes themselves pass.
+      Resolution: Delete each isolated subject checkout in a per-job finally block after envelope/evidence extraction, preserve concurrency and immutable evidence, add cleanup regression coverage, then create a new candidate generation.
 extensions:
   workflow_route_baseline:
     start_head_sha: "4a2895659e677071caaa9b56cadf35df8e261e82"
@@ -2256,6 +2294,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-08T19:22:38.697Z — VERIFY — blocked_external
+
+By: TESTER
+
+Note: RF-04 capture retains every completed isolated checkout until the full 50-run generation ends, exhausting disk after six completed runs.
+Attempts: 25
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T19:04:34.574Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+- old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608061646-BYY8A1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -2279,3 +2347,7 @@ Do not publish unless all gates pass. Before publication, abandon the candidate 
 - Observation: The candidate bootstrap states that its embedded content is the complete provider-facing projection, while RF-04 measurePreparedContext requires only the retired Use bundle.json marker.
   Impact: A valid supervisor-first provider boundary cannot enter RF-04 capture, so release efficiency evidence is impossible despite all local gates passing.
   Resolution: Accept either the current self-contained semantic projection marker or the historical bundle marker, retain fail-closed behavior when neither is present, and rerun driver tests plus a one-run pilot before the full provider matrix.
+
+- Observation: failed-capture records six completed runs and anchor checkout ENOSPC; staging cleanup after failure restored space, proving accumulated disposable subjects caused the growth.
+  Impact: Provider qualification cannot complete on a normal constrained workstation even though provider episodes themselves pass.
+  Resolution: Delete each isolated subject checkout in a per-job finally block after envelope/evidence extraction, preserve concurrency and immutable evidence, add cleanup regression coverage, then create a new candidate generation.

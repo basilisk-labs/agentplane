@@ -56,6 +56,10 @@ async function loadCandidateFixture() {
       concurrency: number,
       worker: (job: T, index: number) => Promise<R>,
     ): Promise<R[]>;
+    withDisposableCandidateRepository<T>(
+      repositoryPath: string,
+      work: () => Promise<T>,
+    ): Promise<T>;
     validateCandidatePilotCapture(input: Json): Json;
   };
   const replay = (await import(REPLAY_URL)) as {
@@ -158,6 +162,36 @@ describeCritical("critical: RF-04 candidate measurement", () => {
     ).rejects.toThrow("provider failed");
     expect(started).toEqual(["fail", "active"]);
     expect(activeSettled).toBe(true);
+  });
+
+  it("removes each disposable candidate checkout after success or failure", async () => {
+    const fixture = await loadCandidateFixture();
+    const root = path.join(
+      REPO_ROOT,
+      ".agentplane/cache",
+      `rf04-disposable-test-${process.pid}-${Date.now()}`,
+    );
+    const successful = path.join(root, "successful");
+    const failed = path.join(root, "failed");
+    try {
+      await expect(
+        fixture.candidate.withDisposableCandidateRepository(successful, () => {
+          writeFileSync(path.join(successful, "checkout.txt"), "temporary\n");
+          return Promise.resolve("done");
+        }),
+      ).resolves.toBe("done");
+      expect(existsSync(successful)).toBe(false);
+
+      await expect(
+        fixture.candidate.withDisposableCandidateRepository(failed, () => {
+          writeFileSync(path.join(failed, "checkout.txt"), "temporary\n");
+          return Promise.reject(new Error("provider failed"));
+        }),
+      ).rejects.toThrow("provider failed");
+      expect(existsSync(failed)).toBe(false);
+    } finally {
+      rmSync(root, { force: true, recursive: true });
+    }
   });
 
   it("selects the lowest declared failing provider job regardless of completion order", async () => {

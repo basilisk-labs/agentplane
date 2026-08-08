@@ -359,6 +359,15 @@ function targetExists(target) {
   return lstatSync(target, { throwIfNoEntry: false }) !== undefined;
 }
 
+export async function withDisposableCandidateRepository(repositoryPath, work) {
+  mkdirSync(repositoryPath, { recursive: true });
+  try {
+    return await work();
+  } finally {
+    rmSync(repositoryPath, { force: true, recursive: true });
+  }
+}
+
 function createCandidateRegistry(subject) {
   const historical = readFixtureRegistry(DEFAULT_BASELINE_REGISTRY_PATH, {
     historicalBaseline: true,
@@ -1053,73 +1062,74 @@ export async function captureCandidate(options) {
           scenario.id,
           `run-${String(runIndex).padStart(2, "0")}`,
         );
-        mkdirSync(isolatedRepository, { recursive: true });
-        initializeAnchorCheckout(repoRoot, isolatedRepository, subject);
-        const registryOverlay = installFixtureRegistryOverlay(
-          isolatedRepository,
-          registry,
-          fixtureRegistrySha256(registry),
-        );
-        const scenarioDirectory = path.join(stagingEnvelopes, scenario.id);
-        const evidenceScenarioDirectory = path.join(stagingEvidence, scenario.id);
-        mkdirSync(scenarioDirectory, { recursive: true });
-        mkdirSync(evidenceScenarioDirectory, { recursive: true });
-        const fileName = `run-${String(runIndex).padStart(2, "0")}.json`;
-        const outputPath = path.join(scenarioDirectory, fileName);
-        const evidenceOutputPath = path.join(evidenceScenarioDirectory, fileName);
-        const contractEnvironment = createReplayDriverContractEnvironment({
-          anchor: subject,
-          codexBinary: resolveCodexReplayBinary({
-            [CODEX_REPLAY_CLI_VERSION_ENV]: codexCliVersion,
-            ...(process.env[CODEX_REPLAY_BINARY_ENV]
-              ? { [CODEX_REPLAY_BINARY_ENV]: process.env[CODEX_REPLAY_BINARY_ENV] }
-              : {}),
-          }),
-          codexCliVersion,
-          dependencyClaim,
-          driverIdentity,
-          evidenceOutputPath,
-          evidencePath: path.posix.join(evidenceLogicalRoot, scenario.id, fileName),
-          expectedRolesJson: stableJson(expectedRoles(scenario)),
-          fixtureRegistryPath: registryOverlay,
-          fixtureRegistrySha256: fixtureRegistrySha256(registry),
-          harnessSha256: harnessManifest.sha256,
-          outputPath,
-          runId,
-        });
-        await runCandidateDriverProcess(
-          process.execPath,
-          [
-            options.driverPath,
-            "--scenario",
-            scenario.id,
-            "--run-index",
-            String(runIndex),
-            "--output",
-            outputPath,
-            "--evidence-output",
+        await withDisposableCandidateRepository(isolatedRepository, async () => {
+          initializeAnchorCheckout(repoRoot, isolatedRepository, subject);
+          const registryOverlay = installFixtureRegistryOverlay(
+            isolatedRepository,
+            registry,
+            fixtureRegistrySha256(registry),
+          );
+          const scenarioDirectory = path.join(stagingEnvelopes, scenario.id);
+          const evidenceScenarioDirectory = path.join(stagingEvidence, scenario.id);
+          mkdirSync(scenarioDirectory, { recursive: true });
+          mkdirSync(evidenceScenarioDirectory, { recursive: true });
+          const fileName = `run-${String(runIndex).padStart(2, "0")}.json`;
+          const outputPath = path.join(scenarioDirectory, fileName);
+          const evidenceOutputPath = path.join(evidenceScenarioDirectory, fileName);
+          const contractEnvironment = createReplayDriverContractEnvironment({
+            anchor: subject,
+            codexBinary: resolveCodexReplayBinary({
+              [CODEX_REPLAY_CLI_VERSION_ENV]: codexCliVersion,
+              ...(process.env[CODEX_REPLAY_BINARY_ENV]
+                ? { [CODEX_REPLAY_BINARY_ENV]: process.env[CODEX_REPLAY_BINARY_ENV] }
+                : {}),
+            }),
+            codexCliVersion,
+            dependencyClaim,
+            driverIdentity,
             evidenceOutputPath,
-          ],
-          {
-            cwd: isolatedRepository,
-            env: buildReplayDriverEnvironment(process.env, contractEnvironment),
-            timeout: replayDriverTimeoutMs(scenario),
-          },
-          `${runId} candidate driver`,
-        );
-        if (!existsSync(outputPath) || !existsSync(evidenceOutputPath)) {
-          throw new Error(`${runId} driver did not write its complete candidate evidence`);
-        }
-        const envelope = JSON.parse(readFileSync(outputPath, "utf8"));
-        const evidence = JSON.parse(readFileSync(evidenceOutputPath, "utf8"));
-        if (
-          readFileSync(outputPath, "utf8") !== canonicalBytes(envelope) ||
-          readFileSync(evidenceOutputPath, "utf8") !== canonicalBytes(evidence)
-        ) {
-          throw new Error(`${runId} candidate driver output must be canonical stable JSON`);
-        }
-        completedRuns.add(runId);
-        assertCandidateInputsUnchanged(expectedInputs, activeRegistryPath, options.driverPath);
+            evidencePath: path.posix.join(evidenceLogicalRoot, scenario.id, fileName),
+            expectedRolesJson: stableJson(expectedRoles(scenario)),
+            fixtureRegistryPath: registryOverlay,
+            fixtureRegistrySha256: fixtureRegistrySha256(registry),
+            harnessSha256: harnessManifest.sha256,
+            outputPath,
+            runId,
+          });
+          await runCandidateDriverProcess(
+            process.execPath,
+            [
+              options.driverPath,
+              "--scenario",
+              scenario.id,
+              "--run-index",
+              String(runIndex),
+              "--output",
+              outputPath,
+              "--evidence-output",
+              evidenceOutputPath,
+            ],
+            {
+              cwd: isolatedRepository,
+              env: buildReplayDriverEnvironment(process.env, contractEnvironment),
+              timeout: replayDriverTimeoutMs(scenario),
+            },
+            `${runId} candidate driver`,
+          );
+          if (!existsSync(outputPath) || !existsSync(evidenceOutputPath)) {
+            throw new Error(`${runId} driver did not write its complete candidate evidence`);
+          }
+          const envelope = JSON.parse(readFileSync(outputPath, "utf8"));
+          const evidence = JSON.parse(readFileSync(evidenceOutputPath, "utf8"));
+          if (
+            readFileSync(outputPath, "utf8") !== canonicalBytes(envelope) ||
+            readFileSync(evidenceOutputPath, "utf8") !== canonicalBytes(evidence)
+          ) {
+            throw new Error(`${runId} candidate driver output must be canonical stable JSON`);
+          }
+          completedRuns.add(runId);
+          assertCandidateInputsUnchanged(expectedInputs, activeRegistryPath, options.driverPath);
+        });
       },
     );
     const envelopes = readReplayEnvelopeRecords(repoRoot, stagingEnvelopes, {
