@@ -3,11 +3,15 @@
   "branch": "task/202608080805-KPWPAV/allow-task-advance-replacement",
   "created_at": "2026-08-08T08:05:29.433Z",
   "diffstat_sha256": "sha256:21ea7b083221bb39872afa3e9a0970e3a07f4036be995153133d128b425a834f",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-08T08:23:14.425Z",
+  "last_verified_diffstat_sha256": "sha256:21ea7b083221bb39872afa3e9a0970e3a07f4036be995153133d128b425a834f",
+  "pr_number": 4803,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4803",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202608080805-KPWPAV",
-  "updated_at": "2026-08-08T08:05:29.433Z",
+  "updated_at": "2026-08-08T08:23:09.065Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
