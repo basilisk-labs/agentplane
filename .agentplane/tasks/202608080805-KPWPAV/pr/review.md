@@ -12,8 +12,8 @@ Created: 2026-08-08T08:05:29.433Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted CI rework: generated CLI reference is stale after adding task advance --replacement.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
