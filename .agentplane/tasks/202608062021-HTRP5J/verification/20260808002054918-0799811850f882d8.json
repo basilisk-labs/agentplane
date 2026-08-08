@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/doctor/legacy-probes.test.ts packages/agentplane/src/commands/doctor-legacy.spec.ts\nResult: PASS — 1 test file, 4 tests.\nEvidence: Vitest completed with exit code 0 and validated manifest policy classification plus doctor legacy reporting.\nScope: Targeted HTRP5J compatibility behavior.\n\nCommand: bun run test:critical\nResult: PASS — all 12 critical-cli chunks, 84 tests.\nEvidence: Every chunk completed successfully after rebasing onto the merged compatibility foundation.\nScope: Critical CLI and trust-boundary regression coverage.\n\nCommand: bun run typecheck\nResult: PASS.\nEvidence: TypeScript build completed with exit code 0.\nScope: Workspace type safety.\n\nCommand: bun run docs:cli:check\nResult: PASS.\nEvidence: Generated CLI reference is up to date.\nScope: User-facing command documentation.\n\nCommand: bun run ci:contract\nResult: PASS.\nEvidence: Formatting, schemas, policy routing, compatibility ratchet, lifecycle invariants, lint, architecture, clone, Knip, and coverage threshold guards all completed with exit code 0.\nScope: Repository-wide contract evidence.\n\nResidual risk: None identified in the approved HTRP5J scope.",
+  "digest": "sha256:0799811850f882d8d925e62c7fed6d2b03c59db30a2ef14ca6eacd3380158da7",
+  "implementation_sha": "f21c4469b93522cd9c953667a9918cd15749a09f",
+  "kind": "task_verification_record",
+  "note": "Bounded compatibility-retirement policy, doctor reporting, generated docs, type safety, critical behavior, and repository contracts pass on current main.",
+  "recorded_at": "2026-08-08T00:20:54.918Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/doctor/legacy-probes.test.ts packages/agentplane/src/commands/doctor-legacy.spec.ts\n- bun run test:critical\n- bun run typecheck\n- bun run docs:cli:check",
+  "scope_digest": "sha256:0808c51040237f79c1a808bd3980ac46b01d0d6d371abd836fbb241ce031c10f",
+  "task_id": "202608062021-HTRP5J",
+  "verification_command": "agentplane verify 202608062021-HTRP5J --ok --by TESTER",
+  "verifier": "TESTER"
+}

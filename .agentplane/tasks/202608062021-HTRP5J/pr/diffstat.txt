@@ -1,9 +1,8 @@
  docs/user/breaking-changes.mdx                     | 18 ++++
- docs/user/cli-reference.generated.mdx              |  1 +
  docs/user/commands.mdx                             |  3 +-
  .../assets/compatibility-retirement-manifest.json  | 96 ++++++++++++++++++++--
  .../agentplane/src/commands/doctor-legacy.run.ts   | 24 +++++-
  .../src/commands/doctor/legacy-manifest.ts         | 74 ++++++++++++++++-
  .../src/commands/doctor/legacy-probes.test.ts      | 43 ++++++++++
  .../src/commands/doctor/legacy-probes.ts           | 12 ++-
- 8 files changed, 259 insertions(+), 12 deletions(-)
+ 7 files changed, 258 insertions(+), 12 deletions(-)

@@ -15,14 +15,12 @@ Complete the compatibility retirement manifest so every adapter has an explicit 
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Legacy manifest schema v2, doctor report, targeted tests, typecheck, docs reference, lint, and
-runtime JSON inspection pass. Critical suite remains blocked by the shared compatibility-contract
-ratchet owned by 202608061850-BZT3D9; rebase after that foundation merges and rerun all Verify
-Steps.
+Bounded compatibility-retirement policy, doctor reporting, generated docs, type safety, critical
+behavior, and repository contracts pass on current main.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -35,14 +33,13 @@ Steps.
 
 ```text
  docs/user/breaking-changes.mdx                     | 18 ++++
- docs/user/cli-reference.generated.mdx              |  1 +
  docs/user/commands.mdx                             |  3 +-
  .../assets/compatibility-retirement-manifest.json  | 96 ++++++++++++++++++++--
  .../agentplane/src/commands/doctor-legacy.run.ts   | 24 +++++-
  .../src/commands/doctor/legacy-manifest.ts         | 74 ++++++++++++++++-
  .../src/commands/doctor/legacy-probes.test.ts      | 43 ++++++++++
  .../src/commands/doctor/legacy-probes.ts           | 12 ++-
- 8 files changed, 259 insertions(+), 12 deletions(-)
+ 7 files changed, 258 insertions(+), 12 deletions(-)
 ```
 
 </details>
