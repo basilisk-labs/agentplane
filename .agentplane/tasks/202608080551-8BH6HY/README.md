@@ -1,10 +1,11 @@
 ---
 id: "202608080551-8BH6HY"
 title: "Accept external task-worktree resolution results"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -52,6 +53,20 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "The implementation meets the approved contract: task_worktree_resolution shares implementation-authority routing, the completed result is accepted after the expected commit transition, read-only freshness remains enforced, and recorded checks pass."
+token_usage:
+  agent_runs: 9
+  input_tokens: 273067
+  journal_digest: "sha256:c6f67a411f467a8517389394adfdde68890075802148d838952eb7f8ec21566d"
+  observed_agent_runs: 2
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "partial"
+  total_tokens: 277235
+  unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
+  updated_at: "2026-08-08T07:01:58.205Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -61,8 +76,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "c421bde71fb5260237a2cfbf84dfa91c692b6457"
-  message: "🐛 8BH6HY supervisor: resume exact interrupted formal operation"
+  hash: "33abb5602bd726d13774f425537889870c29c72f"
+  message: "🧪 8BH6HY task: record evaluator pass evidence"
 comments:
   -
     author: "CODER"
@@ -85,6 +100,9 @@ comments:
   -
     author: "CODER"
     body: "Recovery: recorded the implementation head containing exact interrupted formal-operation resumption."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -165,8 +183,15 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-08T07:01:58.205Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-08T06:59:21.459Z"
+doc_updated_at: "2026-08-08T07:01:58.214Z"
 doc_updated_by: "CODER"
 description: "Fix task advance so a state-bound task_worktree_resolution episode can return a completed result after the CODER commits intended changes, without being rejected as an unsupported or stale read-only purpose; add focused regression coverage."
 sections:
@@ -402,6 +427,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "c421bde71fb5260237a2cfbf84dfa91c692b6457"
+    message: "🐛 8BH6HY supervisor: resume exact interrupted formal operation"
   workflow_route_baseline:
     start_head_sha: "26da24fb37b41e318ad175676ed13a5b125293da"
     version: 1
@@ -651,3 +679,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `partial`
+- Completeness: `2/9` agent runs
+- Input tokens: `273067`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `277235`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:c6f67a411f467a8517389394adfdde68890075802148d838952eb7f8ec21566d`
+- Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
+- Updated at: `2026-08-08T07:01:58.205Z`
