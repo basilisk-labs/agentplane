@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check e120e6aede0d66580e55acc4508d4531107b3cab..f6be98d737981514c3015c22241fd6ec91d59360",
+      "command": "git diff --check 7a3ba69493a3bfdf5e6a29da5392e116241b6ed8..34398822054d089499b01056bd2d749929d43f86",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB e120e6aede0d66580e55acc4508d4531107b3cab..f6be98d737981514c3015c22241fd6ec91d59360",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 7a3ba69493a3bfdf5e6a29da5392e116241b6ed8..34398822054d089499b01056bd2d749929d43f86",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,12 +21,7 @@
         "M\t.agentplane/tasks/202608061646-BYY8A1/pr/github-body.md",
         "M\t.agentplane/tasks/202608061646-BYY8A1/pr/meta.json",
         "M\t.agentplane/tasks/202608061646-BYY8A1/pr/review.md",
-        "M\tdocs/releases/v0.7.5.md",
-        "M\tpackage.json",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
-        "M\tscripts/qualification/release-qualification.test.mjs",
-        "M\tscripts/qualification/run-v0.7.1-release-qualification.mjs"
+        "M\tscripts/README.md"
       ]
     },
     {
@@ -36,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "e120e6aede0d66580e55acc4508d4531107b3cab",
-  "implementation_commit": "f6be98d737981514c3015c22241fd6ec91d59360",
+  "execution_base_commit": "7a3ba69493a3bfdf5e6a29da5392e116241b6ed8",
+  "implementation_commit": "34398822054d089499b01056bd2d749929d43f86",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
