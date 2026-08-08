@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -28,32 +28,33 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-08T07:34:16.776Z"
+  updated_at: "2026-08-08T07:50:26.514Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "bd07cac6d7b50201f5f2de53c8adeb0074bd3922"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "5458ff29b48110d6d97b3d97d68b620aa8e61fe9"
   blueprint_digest: "f838ddb45c74406d87ad39a2b037d6fe7c88d657a5b7b4059642578ee7641be4"
   evidence_refs:
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-073309472-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-073309472-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/c5c2af1dccaacb650982e6eeb98bf3f985f20375dbd8b5d0edafc7d73de53c99.md"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-073309472-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-073309472-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-073309472-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-073309472-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-074905926-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-074905926-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/f9700e9ba736b7b5f7f1ecf4dae254b3fa5d09725a988e873c19a07aed68c009.md"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-074905926-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-074905926-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-074905926-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608080551-8BH6HY/README.md"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/0d8205290b2e749c44fb2689ec51d656d3c4557641356fe8aca7013418a18a52.patch"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/7089f56fb4789624407ddf604ba21228712fa3dfa113b4add507a7f6df6de400.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/verification/20260808072836680-9f8fb1bc7c53a7bf.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/d1cda2c46802b82782b2d31342e574ef1c47eada8d9ed86635d3541013cfecf2.patch"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/bca8ff804f5807b962f7da9afff2abb0f622f46c78f789aa856710129b1d9586.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/verification/20260808074857446-73768d51c27e7040.json"
     - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/9bdf501920399d2009207ee356cca9d401dd0ad0bfd8caf494e54982108db83a.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Verification rework is considered addressed after any later DOING status event, even when that event did not record a new implementation commit."
+    - "The negative regression keeps needs_rework active when a later DOING event lacks the implementation commit binding."
+    - "The positive regression permits deterministic verification only when the later status event carries the current implementation SHA."
+    - "The commit binding is preserved through the canonical task schema, local backend normalization, README rendering path, and tasks export."
 token_usage:
   agent_runs: 9
   input_tokens: 273067
@@ -271,7 +272,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-08T07:48:58.921Z"
+doc_updated_at: "2026-08-08T07:50:26.542Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix task advance so a state-bound task_worktree_resolution episode can return a completed result after the CODER commits intended changes, without being rejected as an unsupported or stale read-only purpose; add focused regression coverage."
 sections:
