@@ -267,7 +267,7 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       git_root: taskWorktree,
       task_id: taskId,
     });
-    await createSupervisorEpisodeStore(journalPath).write(stale.journal);
+    await createSupervisorEpisodeStore(journalPath).write(priorReady);
 
     const packet = await readAgentPacket(taskWorktree, taskId);
     expect(packet.transition_id).toBe(agentTransitionId("agent.task_worktree_resolution"));

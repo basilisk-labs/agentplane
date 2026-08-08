@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608080551-8BH6HY/accept-external-task-worktree-resolution-results",
   "created_at": "2026-08-08T05:52:09.195Z",
-  "diffstat_sha256": "sha256:14f7b5411489690c18c6dec3f5a8c423cac8951d6f96c7ac23cf1f1013602a4c",
+  "diffstat_sha256": "sha256:72c6a81f1708e0cc5e5665d44503909416d4de70232db30b70ff917df4eb7d5e",
   "last_verified_at": "2026-08-08T06:18:57.190Z",
   "last_verified_diffstat_sha256": "sha256:4f2a3b697755cdfdf1484138fa6640bd6d8d7d9329a7dab456b9d969e576ff26",
   "pr_number": 4802,
