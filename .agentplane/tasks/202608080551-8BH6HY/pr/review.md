@@ -1,0 +1,39 @@
+# PR Review
+
+Created: 2026-08-08T05:52:09.195Z
+
+## Task
+
+- Task: `202608080551-8BH6HY`
+- Title: Accept external task-worktree resolution results
+- Status: DOING
+- Branch: `task/202608080551-8BH6HY/accept-external-task-worktree-resolution-results`
+- Canonical task record: `.agentplane/tasks/202608080551-8BH6HY/README.md`
+
+## Verification
+
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-08-08T05:52:09.195Z
+- Branch: task/202608080551-8BH6HY/accept-external-task-worktree-resolution-results
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .../src/commands/task/external-agent-purpose.test.ts  | 19 +++++++++++++++++++
+ .../src/commands/task/external-agent-purpose.ts       | 11 +++++++++++
+ .../src/commands/task/external-agent-supervisor.ts    | 12 +++---------
+ 3 files changed, 33 insertions(+), 9 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->
