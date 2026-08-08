@@ -289,5 +289,11 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8"),
     ) as ExternalAgentExchange;
     expect(exchange.baseline.head).not.toBe(priorImplementationHead);
+    const taskReadme = await readFile(
+      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(taskReadme).toMatch(/commit:\n  hash: "[0-9a-f]{40}"/u);
+    expect(taskReadme).not.toContain(`hash: "${priorImplementationHead}"`);
   });
 });
