@@ -54,7 +54,7 @@ describe("runCli docs cli", () => {
       expect(text).toContain("`E_RUNTIME` → exit `8`");
       expect(text).toContain("`E_HANDOFF` → exit `9`");
       expect(text).toContain("## Task");
-      expect(text).toContain("### task new");
+      expect(text).toContain("### task create");
       expect(text).toContain("### task advance");
       expect(text).toContain("### task run");
       expect(text).not.toContain("### task begin");

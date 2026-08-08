@@ -187,7 +187,8 @@ describe("runCli", () => {
       const code = await runCli(["role", "CODER", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("### CODER");
-      expect(io.stdout).toContain("agentplane task start-ready");
+      expect(io.stdout).toContain("agentplane task advance <task-id> --agent-json");
+      expect(io.stdout).not.toContain("agentplane task start-ready");
     } finally {
       io.restore();
     }
@@ -204,8 +205,13 @@ describe("runCli", () => {
       expect(payload.role).toBe("CODER");
       expect(Array.isArray(payload.builtin_guide)).toBe(true);
       expect(
-        (payload.builtin_guide ?? []).some((line) => line.includes("agentplane task start-ready")),
+        (payload.builtin_guide ?? []).some((line) =>
+          line.includes("agentplane task advance <task-id> --agent-json"),
+        ),
       ).toBe(true);
+      expect(
+        (payload.builtin_guide ?? []).some((line) => line.includes("agentplane task start-ready")),
+      ).toBe(false);
     } finally {
       io.restore();
     }

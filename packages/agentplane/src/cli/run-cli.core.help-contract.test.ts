@@ -134,7 +134,7 @@ describe("cli help contract", () => {
         "task",
         "task active",
         "task advance",
-        "task new",
+        "task create",
         "task brief",
         "task run",
         "context search",

@@ -135,6 +135,11 @@ describe("task next-action JSON", () => {
       "--root",
       root,
     ]);
+    await writeFile(
+      path.join(root, "authority-implementation.txt"),
+      "semantic implementation\n",
+      "utf8",
+    );
     await execFileAsync("git", ["add", "-A"], { cwd: root });
     await execFileAsync(
       "git",
@@ -145,6 +150,23 @@ describe("task next-action JSON", () => {
       ],
       { cwd: root },
     );
+    const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    await runCliSilent([
+      "task",
+      "set-status",
+      taskId,
+      "DOING",
+      "--commit",
+      implementationHead.trim(),
+      "--root",
+      root,
+    ]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: record implementation metadata"], {
+      cwd: root,
+    });
     const { stdout: setupStatus } = await execFileAsync("git", ["status", "--porcelain"], {
       cwd: root,
     });

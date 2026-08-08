@@ -250,9 +250,11 @@ describe("runCli", () => {
       expect(io.stdout).toContain("agentplane quickstart");
       expect(io.stdout).toContain("agentplane init");
       expect(io.stdout).toContain("Workflow route notes:");
-      expect(io.stdout).toContain("`direct`: task setup is");
+      expect(io.stdout).toContain(
+        "`direct`: the supervisor keeps work in the current checkout and owns start, verification persistence, and closeout",
+      );
       expect(io.stdout).not.toContain(
-        "`branch_pr`: use `agentplane task next-action <task-id> --explain`",
+        "`branch_pr`: the supervisor prepares or selects the task worktree",
       );
     } finally {
       io.restore();
@@ -271,9 +273,11 @@ describe("runCli", () => {
       expect(code).toBe(0);
       expect(io.stdout).toContain("Workflow route notes:");
       expect(io.stdout).toContain(
-        "`branch_pr`: use `agentplane task next-action <task-id> --explain`",
+        "`branch_pr`: the supervisor prepares or selects the task worktree, publishes the PR, waits for hosted checks, integrates, and closes the task",
       );
-      expect(io.stdout).not.toContain("`direct`: task setup is");
+      expect(io.stdout).not.toContain(
+        "`direct`: the supervisor keeps work in the current checkout",
+      );
     } finally {
       io.restore();
     }
