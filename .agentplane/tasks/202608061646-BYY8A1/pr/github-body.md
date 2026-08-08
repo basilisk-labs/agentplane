@@ -15,15 +15,8 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
 
 ## Verification
 
-- State: ok
-- Note:
-
-```text
-Evaluator rework resolved for implementation 68c3884984a8a57e6b96f56593e25a746836cd56: both
-monolithic release gates reran with exit 0; exact qualification, latency disposition, provider
-matrix, efficiency evidence, and deterministic subject-equivalence proof are frozen under task
-evidence and accepted through .agentplane/cache runtime refs.
-```
+- State: needs_rework
+- Note: Hosted verify-cli-critical exposed a non-hermetic RF-04 cleanup test.
 - Canonical workflow state lives in the task README.
 
 <details>

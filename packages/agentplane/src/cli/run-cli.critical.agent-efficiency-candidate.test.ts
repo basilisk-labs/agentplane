@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, rmSync, writeFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -42,7 +42,10 @@ async function loadCandidateFixture() {
     assertCandidateCaptureMode(options: Json): void;
     buildCandidateMeasurement(input: Json): Json;
     buildCandidateMeasurementFromPinnedBaseline(input: Json): Json;
-    captureCandidate(options: Json): Promise<Json>;
+    captureCandidate(
+      options: Json,
+      dependencies?: { resolveCodexBinary?: () => string },
+    ): Promise<Json>;
     createCandidateHarnessManifest(driver: Json, dependency: Json): Json;
     readPinnedQualificationBaseline(input: Json): Json;
     runCandidateDriverProcess(
@@ -330,40 +333,43 @@ describeCritical("critical: RF-04 candidate measurement", () => {
       "scripts/bench",
       `.rf04-candidate-pilot-failing-${unique}.mjs`,
     );
-    const cacheRoot = path.join(REPO_ROOT, ".agentplane/cache");
-    const stagingBefore = new Set(
-      (existsSync(cacheRoot) ? readdirSync(cacheRoot) : []).filter((name) =>
-        name.startsWith("rf04-candidate-staging-"),
-      ),
+    const driverReceiptPath = path.join(
+      REPO_ROOT,
+      ".agentplane/cache",
+      `.rf04-candidate-pilot-receipt-${unique}.txt`,
     );
     writeFileSync(
       driverPath,
-      'process.stderr.write("RF04_DRIVER_ERROR:CODEX_EXIT\\n");\nprocess.exitCode = 1;\n',
+      `import { writeFileSync } from "node:fs";\nwriteFileSync(${JSON.stringify(driverReceiptPath)}, process.cwd());\nprocess.stderr.write("RF04_DRIVER_ERROR:CODEX_EXIT\\n");\nprocess.exitCode = 1;\n`,
     );
+    let observedCaptureRoot: string | null = null;
     try {
       await expect(
-        fixture.candidate.captureCandidate({
-          check: false,
-          codexCliVersion: "0.146.0-alpha.3.1",
-          driverPath,
-          outputRoot,
-          pilot: true,
-          replace: false,
-          runs: 5,
-          runtimeBridgeVersion: null,
-          subject,
-        }),
+        fixture.candidate.captureCandidate(
+          {
+            check: false,
+            codexCliVersion: "0.146.0-alpha.3.1",
+            driverPath,
+            outputRoot,
+            pilot: true,
+            replace: false,
+            runs: 5,
+            runtimeBridgeVersion: null,
+            subject,
+          },
+          { resolveCodexBinary: () => process.execPath },
+        ),
       ).rejects.toThrow("direct/run-01 candidate driver failed with exit 1");
+      const driverCwd = await readFile(driverReceiptPath, "utf8");
+      observedCaptureRoot = path.resolve(driverCwd, "../../..");
     } finally {
       rmSync(driverPath, { force: true });
+      rmSync(driverReceiptPath, { force: true });
       rmSync(outputRoot, { force: true, recursive: true });
     }
     expect(existsSync(outputRoot)).toBe(false);
-    expect(
-      readdirSync(cacheRoot)
-        .filter((name) => name.startsWith("rf04-candidate-staging-"))
-        .filter((name) => !stagingBefore.has(name)),
-    ).toEqual([]);
+    expect(path.basename(observedCaptureRoot ?? "")).toMatch(/^rf04-candidate-staging-/);
+    expect(existsSync(observedCaptureRoot ?? "")).toBe(false);
   }, 120_000);
 
   it("compares actual candidate values to the frozen baseline for the reviewed SHA", async () => {

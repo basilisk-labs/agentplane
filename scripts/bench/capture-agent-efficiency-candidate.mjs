@@ -975,7 +975,8 @@ export function validateCandidatePilotCapture({
   };
 }
 
-export async function captureCandidate(options) {
+export async function captureCandidate(options, dependencies = {}) {
+  const resolveCodexBinary = dependencies.resolveCodexBinary ?? resolveCodexReplayBinary;
   assertCandidateCaptureMode(options);
   const subject = assertCandidateSubject(options.subject);
   const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
@@ -1078,7 +1079,7 @@ export async function captureCandidate(options) {
           const evidenceOutputPath = path.join(evidenceScenarioDirectory, fileName);
           const contractEnvironment = createReplayDriverContractEnvironment({
             anchor: subject,
-            codexBinary: resolveCodexReplayBinary({
+            codexBinary: resolveCodexBinary({
               [CODEX_REPLAY_CLI_VERSION_ENV]: codexCliVersion,
               ...(process.env[CODEX_REPLAY_BINARY_ENV]
                 ? { [CODEX_REPLAY_BINARY_ENV]: process.env[CODEX_REPLAY_BINARY_ENV] }

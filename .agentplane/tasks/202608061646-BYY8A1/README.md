@@ -2,10 +2,10 @@
 id: "202608061646-BYY8A1"
 title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 78
+revision: 79
 origin:
   system: "manual"
 depends_on:
@@ -41,11 +41,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-08T20:34:51.043Z"
-  updated_by: "TESTER"
-  note: "Evaluator rework resolved for implementation 68c3884984a8a57e6b96f56593e25a746836cd56: both monolithic release gates reran with exit 0; exact qualification, latency disposition, provider matrix, efficiency evidence, and deterministic subject-equivalence proof are frozen under task evidence and accepted through .agentplane/cache runtime refs."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-08T20:48:40.018Z"
+  updated_by: "REVIEWER"
+  note: "Hosted verify-cli-critical exposed a non-hermetic RF-04 cleanup test."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -95,9 +95,7 @@ token_usage:
   total_tokens: 353797
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
   updated_at: "2026-08-08T20:38:57.417Z"
-commit:
-  hash: "bc03ccf3c75bfffd2867451c5daad0d45a3d4ad5"
-  message: "🚧 BYY8A1 task: record evaluator pass"
+commit: null
 comments:
   -
     author: "DOCS"
@@ -597,8 +595,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "bc03ccf3c75bfffd2867451c5daad0d45a3d4ad5"
+  -
+    type: "verify"
+    at: "2026-08-08T20:48:40.018Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "Hosted verify-cli-critical exposed a non-hermetic RF-04 cleanup test."
 doc_version: 3
-doc_updated_at: "2026-08-08T20:38:57.429Z"
+doc_updated_at: "2026-08-08T20:48:42.211Z"
 doc_updated_by: "DOCS"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
@@ -1734,6 +1738,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-08T20:48:40.018Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: Hosted verify-cli-critical exposed a non-hermetic RF-04 cleanup test.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T20:38:57.429Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+    - old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Do not publish unless all gates pass. Before publication, abandon the candidate branch. After publication, fix forward in a new patch; npm versions and Git tags are immutable."
   Findings: |-
@@ -1764,6 +1798,10 @@ sections:
     - Observation: Full local release qualification completed on head aaef3c8be167784f26f7c994fb44db2915a9c160 with 18/19 scenarios passing and zero blocking failures.
       Impact: Release candidate satisfies the declared local, provider, compatibility, recovery, workflow, and efficiency gates.
       Resolution: Proceed to publish PR head, hosted verification, integration, and release publication.
+
+    - Observation: The cleanup test depended on a local pinned Codex binary and compared all global staging directories, so CI failed without the binary and concurrent runs could create false positives.
+      Impact: PR #4798 could not merge and the test could not safely coexist with parallel qualification runs.
+      Resolution: Inject the binary resolver only at the test seam and bind cleanup proof to the failing driver's own staging root.
 extensions:
   implementation_commit:
     hash: "68c3884984a8a57e6b96f56593e25a746836cd56"
@@ -2915,6 +2953,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-08T20:48:40.018Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: Hosted verify-cli-critical exposed a non-hermetic RF-04 cleanup test.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T20:38:57.429Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+- old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -2950,6 +3018,10 @@ Do not publish unless all gates pass. Before publication, abandon the candidate 
 - Observation: Full local release qualification completed on head aaef3c8be167784f26f7c994fb44db2915a9c160 with 18/19 scenarios passing and zero blocking failures.
   Impact: Release candidate satisfies the declared local, provider, compatibility, recovery, workflow, and efficiency gates.
   Resolution: Proceed to publish PR head, hosted verification, integration, and release publication.
+
+- Observation: The cleanup test depended on a local pinned Codex binary and compared all global staging directories, so CI failed without the binary and concurrent runs could create false positives.
+  Impact: PR #4798 could not merge and the test could not safely coexist with parallel qualification runs.
+  Resolution: Inject the binary resolver only at the test seam and bind cleanup proof to the failing driver's own staging root.
 
 ## Token Usage
 

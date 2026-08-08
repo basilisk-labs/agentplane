@@ -6,14 +6,14 @@ Created: 2026-08-08T03:44:44.414Z
 
 - Task: `202608061646-BYY8A1`
 - Title: Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608061646-BYY8A1/qualify-and-publish-agentplane-0-7-5-supervisor`
 - Canonical task record: `.agentplane/tasks/202608061646-BYY8A1/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Evaluator rework resolved for implementation 68c3884984a8a57e6b96f56593e25a746836cd56: both monolithic release gates reran with exit 0; exact qualification, latency disposition, provider matrix, efficiency evidence, and deterministic subject-equivalence proof are frozen under task evidence and accepted through .agentplane/cache runtime refs.
+- State: needs_rework
+- Note: Hosted verify-cli-critical exposed a non-hermetic RF-04 cleanup test.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
