@@ -4,10 +4,12 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import type * as StableFileModule from "../stable-file.js";
+
 const stableFileMock = vi.hoisted(() => ({ responseReadCollisions: 0 }));
 
 vi.mock("../stable-file.js", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../stable-file.js")>();
+  const actual = await importOriginal<typeof StableFileModule>();
   return {
     ...actual,
     readStableRegularTextNoFollow: async (
