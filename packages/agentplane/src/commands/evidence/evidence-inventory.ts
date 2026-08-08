@@ -1,6 +1,4 @@
 import { execFile } from "node:child_process";
-import { createHash } from "node:crypto";
-import { createReadStream } from "node:fs";
 import { lstat, readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -9,6 +7,7 @@ import { parseTaskReadme } from "@agentplaneorg/core/tasks";
 import { z } from "zod";
 
 import { CliError } from "../../shared/errors.js";
+import { sha256EvidenceFile } from "./evidence-sha256.js";
 
 const execFileAsync = promisify(execFile);
 const OBJECT_NAME_PATTERN = /^(?<digest>[a-f0-9]{64})(?<extension>\.[a-z0-9][a-z0-9.-]{0,15})$/u;
@@ -36,9 +35,9 @@ const RETENTION_POLICY_SCHEMA = z
     }
   });
 
-export type EvidenceRetentionPolicy = z.infer<typeof RETENTION_POLICY_SCHEMA>;
+type EvidenceRetentionPolicy = z.infer<typeof RETENTION_POLICY_SCHEMA>;
 
-export const DEFAULT_EVIDENCE_RETENTION_POLICY: EvidenceRetentionPolicy = {
+const DEFAULT_EVIDENCE_RETENTION_POLICY: EvidenceRetentionPolicy = {
   schema_version: 1,
   objects: {
     keep_success_days: 30,
@@ -99,16 +98,6 @@ type TaskRetentionState = {
 
 function toPosix(value: string): string {
   return value.replaceAll(path.sep, "/");
-}
-
-async function sha256File(filePath: string): Promise<`sha256:${string}`> {
-  const hash = createHash("sha256");
-  return await new Promise((resolve, reject) => {
-    const stream = createReadStream(filePath);
-    stream.on("data", (chunk: Buffer) => hash.update(chunk));
-    stream.on("error", reject);
-    stream.on("end", () => resolve(`sha256:${hash.digest("hex")}`));
-  });
 }
 
 async function readPolicy(root: string): Promise<{
@@ -272,7 +261,7 @@ export async function buildEvidenceInventory(opts: {
       const entry = await lstat(absolute, { bigint: true }).catch(() => null);
       const regular = Boolean(entry?.isFile() && !entry.isSymbolicLink());
       const expectedDigest = match?.groups?.digest ? `sha256:${match.groups.digest}` : null;
-      const actualDigest = regular ? await sha256File(absolute).catch(() => null) : null;
+      const actualDigest = regular ? await sha256EvidenceFile(absolute).catch(() => null) : null;
       const hashValid = expectedDigest !== null && actualDigest === expectedDigest;
       const mtimeMs = entry ? Number(entry.mtimeNs / 1_000_000n) : 0;
       const ageMs = Math.max(0, now.getTime() - mtimeMs);

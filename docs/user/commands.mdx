@@ -137,7 +137,7 @@ Optional local retention policy:
 }
 ```
 
-Save it as `.agentplane/evidence-retention.json`. Active tasks, current failures, and tasks tagged
+Save it as `evidence-retention.json` in the `.agentplane` control directory. Active tasks, current failures, and tasks tagged
 `release` remain pinned. Reachable objects are never collectible, even after the retention age.
 If apply is interrupted, rerun the same command: compaction replaces one verified object at a time,
 and garbage collection rechecks each candidate immediately before unlinking it. Recovery is the

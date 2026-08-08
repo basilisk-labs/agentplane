@@ -1,6 +1,5 @@
 import { execFile } from "node:child_process";
-import { createHash, randomUUID } from "node:crypto";
-import { createReadStream } from "node:fs";
+import { randomUUID } from "node:crypto";
 import { link, lstat, rename, unlink } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -11,6 +10,7 @@ import {
   type EvidenceInventory,
   type EvidenceObjectRecord,
 } from "./evidence-inventory.js";
+import { sha256EvidenceFile } from "./evidence-sha256.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -24,16 +24,6 @@ export type EvidenceMaintenanceResult = {
   candidates: string[];
   inventory: EvidenceInventory;
 };
-
-async function sha256File(filePath: string): Promise<`sha256:${string}`> {
-  const hash = createHash("sha256");
-  return await new Promise((resolve, reject) => {
-    const stream = createReadStream(filePath);
-    stream.on("data", (chunk: Buffer) => hash.update(chunk));
-    stream.on("error", reject);
-    stream.on("end", () => resolve(`sha256:${hash.digest("hex")}`));
-  });
-}
 
 function assertSafeInventory(inventory: EvidenceInventory): void {
   if (inventory.summary.corrupt_objects > 0 || inventory.summary.missing_references > 0) {
@@ -77,7 +67,7 @@ async function assertObjectUnchanged(object: EvidenceObjectRecord): Promise<void
     entry.isSymbolicLink() ||
     Number(entry.size) !== object.size_bytes ||
     Number(entry.mtimeNs / 1_000_000n) !== object.mtime_ms ||
-    (object.digest !== null && (await sha256File(object.absolute_path)) !== object.digest)
+    (object.digest !== null && (await sha256EvidenceFile(object.absolute_path)) !== object.digest)
   ) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -134,7 +124,7 @@ async function replaceWithHardLink(
     }
     throw error;
   }
-  if ((await sha256File(duplicate.absolute_path)) !== duplicate.digest) {
+  if ((await sha256EvidenceFile(duplicate.absolute_path)) !== duplicate.digest) {
     throw new CliError({
       code: "E_VALIDATION",
       message: `Compacted evidence object failed hash verification: ${duplicate.path}`,

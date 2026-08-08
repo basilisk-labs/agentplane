@@ -1,11 +1,11 @@
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 import { createHash } from "node:crypto";
-import { createReadStream } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { getVersion } from "../../meta/version.js";
 import { CliError } from "../../shared/errors.js";
+import { sha256EvidenceFile } from "./evidence-sha256.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 type EvidenceFileRole =
@@ -153,7 +153,7 @@ export async function verifyEvidenceManifest(opts: {
     const abs = path.join(opts.root, file.path);
     let actual: string;
     try {
-      actual = await sha256File(abs);
+      actual = await sha256EvidenceFile(abs);
     } catch {
       errors.push(`missing file: ${file.path}`);
       continue;
@@ -223,7 +223,7 @@ async function collectTaskEvidenceFiles(opts: {
     if (relativeToTask.startsWith("evidence/")) continue;
     files.push({
       path: toPosix(path.relative(opts.root, filePath)),
-      sha256: await sha256File(filePath),
+      sha256: await sha256EvidenceFile(filePath),
       size_bytes: (await fileStatSize(filePath)) ?? 0,
       role: inferEvidenceRole(relativeToTask),
     });
@@ -279,16 +279,6 @@ function isRepositoryRelativePath(value: string): boolean {
     !value.includes("\\") &&
     !value.split("/").includes("..")
   );
-}
-
-async function sha256File(filePath: string): Promise<string> {
-  const hash = createHash("sha256");
-  return await new Promise((resolve, reject) => {
-    const stream = createReadStream(filePath);
-    stream.on("data", (chunk: Buffer) => hash.update(chunk));
-    stream.on("error", (err) => reject(err));
-    stream.on("end", () => resolve(`sha256:${hash.digest("hex")}`));
-  });
 }
 
 async function fileStatSize(filePath: string): Promise<number | null> {

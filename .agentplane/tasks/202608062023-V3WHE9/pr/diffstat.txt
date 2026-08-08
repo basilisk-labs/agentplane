@@ -1,11 +1,17 @@
- docs/user/cli-reference.generated.mdx              |  98 ++++++
+ docs/user/cli-reference.generated.mdx              |  97 ++++++
  docs/user/commands.mdx                             |  39 +++
  .../src/cli/run-cli.core.evidence.test.ts          |  55 ++++
- .../src/cli/run-cli/command-catalog/project.ts     |  20 ++
- .../src/cli/run-cli/command-loaders/project.ts     |  23 ++
- .../src/commands/evidence/evidence-inventory.ts    | 354 ++++++++++++++++++++
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  15 +-
+ .../src/cli/run-cli/command-catalog/project.ts     |  28 +-
+ .../src/cli/run-cli/command-loaders/evidence.ts    |  44 +++
+ .../src/cli/run-cli/command-loaders/project.ts     |  11 -
+ .../src/commands/evidence/evidence-inventory.ts    | 343 ++++++++++++++++++++
  .../evidence/evidence-maintenance.command.ts       | 185 +++++++++++
  .../commands/evidence/evidence-maintenance.test.ts | 360 +++++++++++++++++++++
- .../src/commands/evidence/evidence-maintenance.ts  | 216 +++++++++++++
+ .../src/commands/evidence/evidence-maintenance.ts  | 206 ++++++++++++
+ .../src/commands/evidence/evidence-manifest.ts     |  16 +-
+ .../src/commands/evidence/evidence-sha256.ts       |  12 +
  .../src/commands/evidence/evidence.command.ts      |   4 +-
- 10 files changed, 1352 insertions(+), 2 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    | 195 ++++++++++-
+ .../check-compatibility-contract-baseline.mjs      | 130 +++++++-
+ 16 files changed, 1696 insertions(+), 44 deletions(-)
