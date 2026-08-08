@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202608081216-YAN7DW-5b0af0ea2dc8611a2c72832c",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608081216-YAN7DW-parallelize-release-qualification",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608081216-YAN7DW-parallelize-release-qualification/.agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-08-08T15:23:43.337Z",
+  "ended_at": "2026-08-08T15:24:51.308Z",
+  "stdout_bytes": 93286,
+  "stderr_bytes": 1474,
+  "provider_usage": {
+    "input_tokens": 250162,
+    "output_tokens": 2994,
+    "total_tokens": 253156,
+    "visible_output_tokens": 2599,
+    "reasoning_tokens": 395
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:f004c7bc66193e51d7247a4b039bc7ccec2c7f4870b2d8f6231c90fb2372bed8"
+}

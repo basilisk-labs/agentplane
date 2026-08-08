@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The full 50-run/55-episode provider matrix remains a subsequent release-gate obligation and is not demonstrated by this pre-integration evidence packet.",
+      "broken_invariant": "Final release qualification must execute the complete provider matrix on the exact integrated v0.7.5 candidate SHA without reusing pre-change provider evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/README.md",
+          "sha256": "sha256:55d5f0c2252dc765aaccfe150c63034999e498beb3907d5ebf1214238f99aa32",
+          "section": "acceptance_criteria"
+        },
+        {
+          "path": ".agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json",
+          "sha256": "sha256:0873c2610baee02391a7adbd777f966b51e1a4f0b00134cc3d34315a65ab85fc",
+          "section": "verdict.limits"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "At the subsequent v0.7.5 release gate, verify the complete 50-run/55-episode provider matrix against the exact integrated candidate SHA and reject evidence attributed to any earlier SHA."
+  ],
+  "hidden_assumptions": [
+    "The paired local Darwin benchmark is representative enough to justify the elapsed-time improvement claim for release qualification environments.",
+    "A provider concurrency limit of three remains compatible with the release provider's effective throttling limits; the implementation may require operational reduction if throttling occurs.",
+    "Deterministic provider failure selection is defined over jobs already assigned when capture stops, while queued jobs intentionally remain unexecuted after failure."
+  ]
+}
