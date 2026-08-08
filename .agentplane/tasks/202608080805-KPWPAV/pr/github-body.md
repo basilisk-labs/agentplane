@@ -15,8 +15,8 @@ Expose a guarded task advance replacement path for a terminal operation_failed s
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Hosted CI rework: generated CLI reference is stale after adding task advance --replacement.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,6 +27,7 @@ Expose a guarded task advance replacement path for a terminal operation_failed s
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/user/cli-reference.generated.mdx              |   2 +
  ...n-cli.core.task-advance-effect-recovery.test.ts | 107 +++++++++++++++++++++
  ...-cli.critical.agent-efficiency-baseline.test.ts |  11 ++-
  .../shared/supervisor-execution-episode.ts         |  44 +++++++++
@@ -40,7 +41,7 @@ Expose a guarded task advance replacement path for a terminal operation_failed s
  .../src/commands/task/external-agent-supervisor.ts |   3 +
  .../baselines/v0.7-compatibility-candidate.json    |  37 +++++--
  .../check-compatibility-contract-baseline.mjs      |  18 +++-
- 13 files changed, 378 insertions(+), 16 deletions(-)
+ 14 files changed, 380 insertions(+), 16 deletions(-)
 ```
 
 </details>

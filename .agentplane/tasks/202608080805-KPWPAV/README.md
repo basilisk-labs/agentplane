@@ -2,10 +2,10 @@
 id: "202608080805-KPWPAV"
 title: "Allow explicit replacement after failed task advance operation"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-08T08:34:45.339Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-08T08:41:25.681Z"
+  updated_by: "TESTER"
+  note: "Hosted CI rework: generated CLI reference is stale after adding task advance --replacement."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -79,9 +79,7 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit:
-  hash: "88139b67b68b137c9192318f92c2014674624039"
-  message: "🚧 KPWPAV task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -145,8 +143,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "88139b67b68b137c9192318f92c2014674624039"
+  -
+    type: "verify"
+    at: "2026-08-08T08:41:25.681Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Hosted CI rework: generated CLI reference is stale after adding task advance --replacement."
 doc_version: 3
-doc_updated_at: "2026-08-08T08:36:49.201Z"
+doc_updated_at: "2026-08-08T08:41:27.103Z"
 doc_updated_by: "CODER"
 description: "Expose a guarded task advance replacement path for a terminal operation_failed supervisor journal so a newly recomputed route can continue without retrying the failed effect."
 sections:
@@ -265,6 +269,41 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608080805-KPWPAV
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T08:41:25.681Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Hosted CI rework: generated CLI reference is stale after adding task advance --replacement.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T08:36:49.201Z, excerpt_hash=sha256:fae92571cbd16678a5608352c61596708e0d7118146fca9cb39936d01aeae5aa
+
+    Details:
+
+    Command: bun run docs:cli:check
+    Result: fail
+    Evidence: GitHub Actions run 31248814733 job 93081775869
+    Scope: generated CLI reference freshness
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608080805-KPWPAV-allow-task-advance-replacement/.agentplane/tasks/202608080805-KPWPAV/blueprint/resolved-snapshot.json
+    - old_digest: 73e526b4dc469052abfe576ce64fa57a536cec2ab2b00ef508904629d13d0ba5
+    - current_digest: 73e526b4dc469052abfe576ce64fa57a536cec2ab2b00ef508904629d13d0ba5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608080805-KPWPAV
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -410,6 +449,41 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608080805-KPWPAV
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T08:41:25.681Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Hosted CI rework: generated CLI reference is stale after adding task advance --replacement.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T08:36:49.201Z, excerpt_hash=sha256:fae92571cbd16678a5608352c61596708e0d7118146fca9cb39936d01aeae5aa
+
+Details:
+
+Command: bun run docs:cli:check
+Result: fail
+Evidence: GitHub Actions run 31248814733 job 93081775869
+Scope: generated CLI reference freshness
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608080805-KPWPAV-allow-task-advance-replacement/.agentplane/tasks/202608080805-KPWPAV/blueprint/resolved-snapshot.json
+- old_digest: 73e526b4dc469052abfe576ce64fa57a536cec2ab2b00ef508904629d13d0ba5
+- current_digest: 73e526b4dc469052abfe576ce64fa57a536cec2ab2b00ef508904629d13d0ba5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608080805-KPWPAV
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
