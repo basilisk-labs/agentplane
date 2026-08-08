@@ -19,9 +19,9 @@ Fix GitHub issue #4783: compare the latest plan target with the currently publis
 - Note:
 
 ```text
-Evaluator findings are resolved: future plans must provide mutually consistent nextVersion and
-nextTag, and version ordering now uses precision-safe BigInt components; 15 focused scenarios and
-the full contract gate pass.
+Final committed implementation requires complete consistent plan metadata, compares arbitrarily
+large stable-version components without precision loss, and passes 15 focused scenarios plus the
+full contract gate.
 ```
 - Canonical workflow state lives in the task README.
 

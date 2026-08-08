@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RECOVERY-RESOLVED-001",
+      "severity": "low",
+      "summary": "The implementation now rejects missing, stale, current, invalid, inconsistent, and incomplete plan targets, permits candidate preparation only for a complete consistent future target, and compares arbitrarily large stable-version components without precision loss.",
+      "broken_invariant": "None; the previously reported plan-metadata completeness and numeric-precision invariants are satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/f23c607a0f34249f0d36ddea5e2887bd4255432b438942fa9e0367b996158a77.patch",
+          "sha256": "sha256:f23c607a0f34249f0d36ddea5e2887bd4255432b438942fa9e0367b996158a77"
+        },
+        {
+          "path": ".agentplane/tasks/202608080355-G5FXDA/verification/20260808052145338-3ea80fbc55b57d6e.json",
+          "sha256": "sha256:8a212f7b70e8a90480461b8553ccd4f6246adca9b216bbd7479fc33ccb38a519"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The passing release incident gate is relied upon as deterministic evidence that the canonical and bundled incident registries are synchronized and contain no active INC-20260807-01 entry.",
+    "Hosted checks, merge proof, and closing GitHub issue #4783 remain post-evaluation lifecycle actions and are not claimed as completed by this implementation review."
+  ]
+}
