@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608081216-YAN7DW/parallelize-release-qualification",
+  "created_at": "2026-08-08T12:17:23.101Z",
+  "diffstat_sha256": "sha256:6377eaef92fd5659c155ab3ae9baccb2b1b14f3e7e12774476f5d7f25b337a9f",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608081216-YAN7DW",
+  "updated_at": "2026-08-08T12:17:23.101Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
