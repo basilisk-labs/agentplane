@@ -190,9 +190,10 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
     await execFileAsync("git", ["commit", "-m", "test: persist start-ready fixture"], {
       cwd: taskWorktree,
     });
-    const priorImplementationHead = (
-      await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: taskWorktree })
-    ).stdout.trim();
+    const priorImplementationHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: taskWorktree,
+    });
+    const priorImplementationHead = priorImplementationHeadResult.stdout.trim();
     await runCliSilent([
       "task",
       "set-status",
