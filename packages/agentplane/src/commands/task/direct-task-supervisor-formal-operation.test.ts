@@ -8,10 +8,15 @@ import {
 } from "@agentplaneorg/core/schemas";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mocks = vi.hoisted(() => ({ open: vi.fn() }));
+const mocks = vi.hoisted(() => ({
+  open: vi.fn(),
+  acquire: vi.fn(),
+  release: vi.fn(),
+}));
 
 vi.mock("../shared/supervisor-execution-episode.js", () => ({
   openSupervisorExecutionEpisode: mocks.open,
+  tryAcquireSupervisorExecutionLease: mocks.acquire,
 }));
 
 import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal-operation.js";
@@ -66,7 +71,32 @@ function completedRunnerJournal() {
 }
 
 describe("direct task supervisor formal operation", () => {
-  beforeEach(() => vi.resetAllMocks());
+  beforeEach(() => {
+    vi.resetAllMocks();
+    mocks.acquire.mockResolvedValue({ release: mocks.release });
+  });
+
+  it("refuses a duplicate formal operation while another supervisor owns the lease", async () => {
+    const run = vi.fn();
+    mocks.open.mockResolvedValue({
+      journal: completedRunnerJournal(),
+      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+      store: { write: vi.fn() },
+    });
+    mocks.acquire.mockResolvedValue(null);
+
+    await expect(
+      recordDirectTaskFormalOperation({
+        git_root: "/repo",
+        task_id: TASK_ID,
+        id: "task_verify",
+        decision: vi.fn().mockResolvedValue(decision(FIRST_FINGERPRINT)),
+        run,
+      }),
+    ).rejects.toThrow("no duplicate operation was started");
+
+    expect(run).not.toHaveBeenCalled();
+  });
 
   it("retries a stale formal operation only after a completed runner outcome", async () => {
     const write = vi.fn().mockResolvedValue(undefined);

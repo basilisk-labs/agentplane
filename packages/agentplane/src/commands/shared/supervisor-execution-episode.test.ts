@@ -1,3 +1,6 @@
+import { mkdir, utimes, writeFile } from "node:fs/promises";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -20,6 +23,7 @@ import {
   createSupervisorEpisodeStore,
   resolveSupervisorExecutionEpisodePath,
   supervisePersistedWorkflowEpisode,
+  tryAcquireSupervisorExecutionLease,
 } from "./supervisor-execution-episode.js";
 
 const taskId = "202607280001-EPISODE";
@@ -153,6 +157,45 @@ function successfulOperationResult() {
 }
 
 describe("persisted supervisor execution episodes", () => {
+  it("does not steal an old lease from a live long-running supervisor", async () => {
+    const root = await mkGitRepoRoot();
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const lease = await tryAcquireSupervisorExecutionLease({ journal_path: journalPath });
+    expect(lease).not.toBeNull();
+    const leasePath = `${journalPath}.execution`;
+    const old = new Date(Date.now() - 12 * 60 * 1000);
+    await utimes(leasePath, old, old);
+
+    expect(await tryAcquireSupervisorExecutionLease({ journal_path: journalPath })).toBeNull();
+
+    await lease?.release();
+    const replacement = await tryAcquireSupervisorExecutionLease({ journal_path: journalPath });
+    expect(replacement).not.toBeNull();
+    await replacement?.release();
+  });
+
+  it("recovers a fresh lease immediately when its recorded process is gone", async () => {
+    const root = await mkGitRepoRoot();
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const leasePath = `${journalPath}.execution`;
+    await mkdir(leasePath, { recursive: true });
+    await writeFile(
+      path.join(leasePath, "owner"),
+      `${JSON.stringify({ owner: "dead-owner", pid: 2_147_483_647, started_at: new Date().toISOString() })}\n`,
+      "utf8",
+    );
+
+    const replacement = await tryAcquireSupervisorExecutionLease({ journal_path: journalPath });
+    expect(replacement).not.toBeNull();
+    await replacement?.release();
+  });
+
   it("uses a preobserved common Git directory without another Git lookup", async () => {
     const root = await mkGitRepoRoot();
     const commonGitDir = `${root}/.git`;

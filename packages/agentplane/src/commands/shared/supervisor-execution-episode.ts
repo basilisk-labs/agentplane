@@ -66,8 +66,9 @@ export type SupervisorEpisodeStore = {
 const JOURNAL_LOCK_STALE_AFTER_MS = 60_000;
 const JOURNAL_LOCK_RETRY_DELAY_MS = 10;
 const JOURNAL_LOCK_WAIT_MS = 5000;
-// Provider execution has its own ten-minute hard timeout. A crashed owner is
-// therefore recoverable without allowing a second live provider to overlap it.
+// Legacy owner records have no process identity, so they retain a conservative
+// stale timeout. Current records name a PID: a live long-running owner keeps
+// authority regardless of age, while a dead owner is recoverable immediately.
 const EXECUTION_LEASE_STALE_AFTER_MS = 11 * 60 * 1000;
 const EXECUTION_LEASE_OWNER_FILE = "owner";
 
@@ -117,6 +118,41 @@ export type SupervisorExecutionLease = {
   release: () => Promise<void>;
 };
 
+type SupervisorExecutionLeaseOwner = {
+  owner: string;
+  pid: number;
+  started_at: string;
+};
+
+function parseSupervisorExecutionLeaseOwner(
+  value: string | null,
+): SupervisorExecutionLeaseOwner | null {
+  if (!value) return null;
+  try {
+    const parsed = JSON.parse(value) as Partial<SupervisorExecutionLeaseOwner>;
+    if (
+      typeof parsed.owner !== "string" ||
+      !Number.isSafeInteger(parsed.pid) ||
+      (parsed.pid ?? 0) <= 0 ||
+      typeof parsed.started_at !== "string"
+    ) {
+      return null;
+    }
+    return parsed as SupervisorExecutionLeaseOwner;
+  } catch {
+    return null;
+  }
+}
+
+function processOwnsSupervisorExecutionLease(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    return (error as NodeJS.ErrnoException | null)?.code === "EPERM";
+  }
+}
+
 /**
  * Claim the full prepare -> provider -> persist window for one task episode.
  *
@@ -135,7 +171,16 @@ export async function tryAcquireSupervisorExecutionLease(opts: {
       await mkdir(leasePath, { mode: 0o700 });
       const owner = randomUUID();
       try {
-        await writeFile(path.join(leasePath, EXECUTION_LEASE_OWNER_FILE), `${owner}\n`, "utf8");
+        const ownerRecord: SupervisorExecutionLeaseOwner = {
+          owner,
+          pid: process.pid,
+          started_at: new Date().toISOString(),
+        };
+        await writeFile(
+          path.join(leasePath, EXECUTION_LEASE_OWNER_FILE),
+          `${JSON.stringify(ownerRecord)}\n`,
+          "utf8",
+        );
       } catch (error) {
         await rm(leasePath, { recursive: true, force: true });
         throw error;
@@ -146,13 +191,22 @@ export async function tryAcquireSupervisorExecutionLease(opts: {
             path.join(leasePath, EXECUTION_LEASE_OWNER_FILE),
             "utf8",
           ).catch(() => null);
-          if (observed?.trim() === owner) {
+          const observedOwner = parseSupervisorExecutionLeaseOwner(observed);
+          if (observedOwner?.owner === owner || observed?.trim() === owner) {
             await rm(leasePath, { recursive: true, force: true });
           }
         },
       };
     } catch (error) {
       if ((error as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw error;
+      const observedOwner = parseSupervisorExecutionLeaseOwner(
+        await readFile(path.join(leasePath, EXECUTION_LEASE_OWNER_FILE), "utf8").catch(() => null),
+      );
+      if (observedOwner) {
+        if (processOwnsSupervisorExecutionLease(observedOwner.pid)) return null;
+        await rm(leasePath, { recursive: true, force: true });
+        continue;
+      }
       const age = await stat(leasePath)
         .then((entry) => Date.now() - entry.mtimeMs)
         .catch(() => 0);
