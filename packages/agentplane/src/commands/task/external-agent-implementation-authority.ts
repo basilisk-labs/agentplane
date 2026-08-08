@@ -163,7 +163,8 @@ export async function applyExternalImplementationResult(opts: {
     readDirectTaskHead(opts.exchange.checkout),
     readDirectRepositoryStatus(opts.exchange.checkout),
   ]);
-  let implementationCommit = opts.decision.task.commit;
+  let implementationCommit =
+    opts.exchange.purpose === "task_worktree_resolution" ? null : opts.decision.task.commit;
   let observedChangedPaths: string[] | null = null;
   if (implementationCommit) {
     await assertRecoverableImplementationCommit({
