@@ -29,7 +29,7 @@ Created: 2026-08-08T03:44:44.414Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/releases/v0.7.5.md                            |  68 +++++++
+ docs/releases/v0.7.5.md                            |  69 +++++++
  package.json                                       |   2 +-
  .../run-cli.core.help-snap.test.ts.snap            |   3 +-
  .../src/cli/measure-cli-cold-path-script.test.ts   |  15 +-
@@ -69,7 +69,7 @@ Created: 2026-08-08T03:44:44.414Z
  website/static/img/social/docs/releases/v0.7.5.png | Bin 0 -> 53016 bytes
  website/static/img/social/manifest.json            |   8 +
  website/static/llms-full.txt                       |  52 ++++-
- 40 files changed, 1172 insertions(+), 315 deletions(-)
+ 40 files changed, 1173 insertions(+), 315 deletions(-)
 ```
 
 </details>
