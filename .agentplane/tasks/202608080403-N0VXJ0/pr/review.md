@@ -29,8 +29,10 @@ Created: 2026-08-08T04:03:53.324Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/incident-archive.mdx | 4 ++++
- 1 file changed, 4 insertions(+)
+ .agentplane/policy/incidents.md                | 1 -
+ docs/developer/incident-archive.mdx            | 4 ++++
+ packages/agentplane/assets/policy/incidents.md | 1 -
+ 3 files changed, 4 insertions(+), 2 deletions(-)
 ```
 
 </details>
