@@ -51,6 +51,15 @@ function read(relativePath) {
   return readFileSync(path.join(repoRoot, relativePath), "utf8");
 }
 
+export function assertLegacyAdapterRetirementContract(adapter) {
+  assert.ok(
+    typeof adapter.remove_in === "string" ||
+      (adapter.remove_in === null &&
+        (typeof adapter.removal_blocker === "string" ||
+          adapter.retirement_policy?.kind === "permanent_historical_reader")),
+  );
+}
+
 function checkOnboarding(failures) {
   const readme = read("README.md");
   const taskCommand = read("packages/agentplane/src/commands/task/task.command.ts");
@@ -298,10 +307,7 @@ function checkMaintenanceContract(failures) {
       for (const adapter of report.adapters) {
         assert.equal(typeof adapter.introduced_in, "string");
         assert.ok(adapter.deprecated_in === null || typeof adapter.deprecated_in === "string");
-        assert.ok(
-          typeof adapter.remove_in === "string" ||
-            (adapter.remove_in === null && typeof adapter.removal_blocker === "string"),
-        );
+        assertLegacyAdapterRetirementContract(adapter);
         assert.equal(typeof adapter.migration_command, "string");
         assert.equal(typeof adapter.usage_probe?.kind, "string");
       }

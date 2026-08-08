@@ -1,10 +1,10 @@
 ---
 id: "202608061646-BYY8A1"
 title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "DOCS"
-revision: 62
+revision: 63
 origin:
   system: "manual"
 depends_on:
@@ -41,13 +41,11 @@ plan_approval:
   note: null
 verification:
   state: "blocked_external"
-  updated_at: "2026-08-08T18:05:09.561Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:release-extras"
-  attempts: 21
-commit:
-  hash: "409092608ca74b831f15fa780e54e95eca47d3f4"
-  message: "♻️ BYY8A1 task: split supervisor lease implementation"
+  updated_at: "2026-08-08T18:22:55.963Z"
+  updated_by: "TESTER"
+  note: "Release qualification requires rework: product-contract validation rejects the legitimate permanent_historical_reader retirement policy, Knip reports the extracted SupervisorExecutionLease as an unused export, and the provider qualification was invalidated by concurrent task-only HEAD drift before any provider episode completed."
+  attempts: 22
+commit: null
 comments:
   -
     author: "DOCS"
@@ -454,8 +452,14 @@ events:
     to: "DOING"
     note: "Re-enter verification after one non-reproducing release-ci-base failure; the isolated start-ready test passed six consecutive retries. No semantic implementation change is required."
     commit: "409092608ca74b831f15fa780e54e95eca47d3f4"
+  -
+    type: "verify"
+    at: "2026-08-08T18:22:55.963Z"
+    author: "TESTER"
+    state: "blocked_external"
+    note: "Release qualification requires rework: product-contract validation rejects the legitimate permanent_historical_reader retirement policy, Knip reports the extracted SupervisorExecutionLease as an unused export, and the provider qualification was invalidated by concurrent task-only HEAD drift before any provider episode completed."
 doc_version: 3
-doc_updated_at: "2026-08-08T18:09:10.308Z"
+doc_updated_at: "2026-08-08T18:22:58.059Z"
 doc_updated_by: "CODER"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
@@ -1231,12 +1235,46 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-08T18:22:55.963Z — VERIFY — blocked_external
+
+    By: TESTER
+
+    Note: Release qualification requires rework: product-contract validation rejects the legitimate permanent_historical_reader retirement policy, Knip reports the extracted SupervisorExecutionLease as an unused export, and the provider qualification was invalidated by concurrent task-only HEAD drift before any provider episode completed.
+    Attempts: 22
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T18:09:10.308Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+    - old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608061646-BYY8A1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Do not publish unless all gates pass. Before publication, abandon the candidate branch. After publication, fix forward in a new patch; npm versions and Git tags are immutable."
   Findings: |-
     - Observation: hotspots:check reports packages/agentplane/src/commands/shared/supervisor-execution-episode.ts at 632 lines
       Impact: Release candidate cannot pass the required full local CI gate
       Resolution: Extract the execution lease implementation into a focused internal module without changing the lease contract, then rerun all declared checks
+
+    - Observation: Local qualification blocked with zero completed provider runs; product contract and Knip each expose one narrow release-gate defect.
+      Impact: The candidate cannot be accepted or published until both deterministic local gates pass and provider evidence is rerun against a stable exact HEAD.
+      Resolution: Narrowly update the permanent historical reader assertion, remove the unused type export, add regression coverage, then rerun the failed gates and full qualification on an unchanged HEAD.
 extensions:
   workflow_route_baseline:
     start_head_sha: "4a2895659e677071caaa9b56cadf35df8e261e82"
@@ -2025,6 +2063,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-08T18:22:55.963Z — VERIFY — blocked_external
+
+By: TESTER
+
+Note: Release qualification requires rework: product-contract validation rejects the legitimate permanent_historical_reader retirement policy, Knip reports the extracted SupervisorExecutionLease as an unused export, and the provider qualification was invalidated by concurrent task-only HEAD drift before any provider episode completed.
+Attempts: 22
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T18:09:10.308Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+- old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608061646-BYY8A1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -2036,3 +2104,7 @@ Do not publish unless all gates pass. Before publication, abandon the candidate 
 - Observation: hotspots:check reports packages/agentplane/src/commands/shared/supervisor-execution-episode.ts at 632 lines
   Impact: Release candidate cannot pass the required full local CI gate
   Resolution: Extract the execution lease implementation into a focused internal module without changing the lease contract, then rerun all declared checks
+
+- Observation: Local qualification blocked with zero completed provider runs; product contract and Knip each expose one narrow release-gate defect.
+  Impact: The candidate cannot be accepted or published until both deterministic local gates pass and provider evidence is rerun against a stable exact HEAD.
+  Resolution: Narrowly update the permanent historical reader assertion, remove the unused type export, add regression coverage, then rerun the failed gates and full qualification on an unchanged HEAD.

@@ -20,7 +20,10 @@ import {
   validateQualificationReport,
 } from "./release-qualification.mjs";
 import { evaluateEfficiencyMeasurement } from "./check-v0.7.1-efficiency-evidence.mjs";
-import { assertCompactAgentPacket } from "./check-v0.7.1-product-contract.mjs";
+import {
+  assertCompactAgentPacket,
+  assertLegacyAdapterRetirementContract,
+} from "./check-v0.7.1-product-contract.mjs";
 import { blockingCandidateFailureIds } from "../bench/capture-agent-efficiency-candidate.mjs";
 import {
   collapseMatchedLatencyReplicates,
@@ -785,6 +788,23 @@ describe("v0.7.1 release qualification contract", () => {
       stop: { reason: "semantic_boundary", resume: "request_fresh_packet" },
     });
     assert.throws(() => assertCompactAgentPacket(oversizedPacket), /maximum is 2048/u);
+  });
+
+  it("accepts permanent historical readers without a removal deadline or blocker", () => {
+    assert.doesNotThrow(() =>
+      assertLegacyAdapterRetirementContract({
+        remove_in: null,
+        removal_blocker: null,
+        retirement_policy: { kind: "permanent_historical_reader" },
+      }),
+    );
+    assert.throws(() =>
+      assertLegacyAdapterRetirementContract({
+        remove_in: null,
+        removal_blocker: null,
+        retirement_policy: { kind: "support_window" },
+      }),
+    );
   });
 
   it("requires distinct frozen cold and warm sample sets with at least 20 pairs", () => {

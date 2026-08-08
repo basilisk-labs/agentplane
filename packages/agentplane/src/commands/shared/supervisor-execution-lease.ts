@@ -8,7 +8,7 @@ import path from "node:path";
 const EXECUTION_LEASE_STALE_AFTER_MS = 11 * 60 * 1000;
 const EXECUTION_LEASE_OWNER_FILE = "owner";
 
-export type SupervisorExecutionLease = {
+type SupervisorExecutionLease = {
   release: () => Promise<void>;
 };
 

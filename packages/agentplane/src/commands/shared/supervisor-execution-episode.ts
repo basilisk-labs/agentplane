@@ -26,10 +26,7 @@ import {
   type WorkflowSupervisorExecutor,
 } from "./workflow-supervisor.js";
 
-export {
-  tryAcquireSupervisorExecutionLease,
-  type SupervisorExecutionLease,
-} from "./supervisor-execution-lease.js";
+export { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease.js";
 
 const SUPERVISOR_EPISODE_ARTIFACT_DIRECTORY = "agentplane/supervisor/episodes";
 

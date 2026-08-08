@@ -16,7 +16,14 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
 ## Verification
 
 - State: blocked_external
-- Note: Rework: Declared check failed: bun run ci:release-extras
+- Note:
+
+```text
+Release qualification requires rework: product-contract validation rejects the legitimate
+permanent_historical_reader retirement policy, Knip reports the extracted SupervisorExecutionLease
+as an unused export, and the provider qualification was invalidated by concurrent task-only HEAD
+drift before any provider episode completed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -41,7 +48,7 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
  .../cli/run-cli.core.task-next-action-json.test.ts |  22 ++
  ...critical.agent-efficiency-replay-driver.test.ts |  52 ++++-
  .../shared/supervisor-execution-episode.test.ts    |  43 ++++
- .../shared/supervisor-execution-episode.ts         |  62 +-----
+ .../shared/supervisor-execution-episode.ts         |  59 +-----
  .../commands/shared/supervisor-execution-lease.ts  | 112 +++++++++++
  ...direct-task-supervisor-formal-operation.test.ts |  91 ++++++++-
  .../direct-task-supervisor-formal-operation.ts     | 222 ++++++++++++---------
@@ -59,12 +66,13 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
  .../bench/capture-agent-efficiency-candidate.mjs   |   9 +-
  .../internal/agent-efficiency-codex-runtime.mjs    |  38 +++-
  .../bench/run-agent-efficiency-codex-replay.mjs    |   2 +
- .../qualification/release-qualification.test.mjs   |   9 +
+ .../check-v0.7.1-product-contract.mjs              |  14 +-
+ .../qualification/release-qualification.test.mjs   |  31 ++-
  .../run-v0.7.1-release-qualification.mjs           |   2 +
  website/static/img/social/docs/releases/v0.7.5.png | Bin 0 -> 53016 bytes
  website/static/img/social/manifest.json            |   8 +
  website/static/llms-full.txt                       |  52 ++++-
- 37 files changed, 963 insertions(+), 224 deletions(-)
+ 38 files changed, 991 insertions(+), 229 deletions(-)
 ```
 
 </details>

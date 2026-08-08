@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:816a9e23abf270d5c431f484850bf90e24d4a54e6f3cf2fd1c2ac0f6a146aa4d",
+  "implementation_sha": "409092608ca74b831f15fa780e54e95eca47d3f4",
+  "kind": "task_verification_record",
+  "note": "Release qualification requires rework: product-contract validation rejects the legitimate permanent_historical_reader retirement policy, Knip reports the extracted SupervisorExecutionLease as an unused export, and the provider qualification was invalidated by concurrent task-only HEAD drift before any provider episode completed.",
+  "recorded_at": "2026-08-08T18:22:55.963Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "- bun run ci:local:full\n- bun run ci:release-extras\n- bun run e2e:v0.7.1:gate\n- bun run bench:compatibility:check\n- bun run bench:agent-efficiency:check\n- bun run bench:agent-efficiency:replay:check",
+  "scope_digest": "sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a",
+  "task_id": "202608061646-BYY8A1",
+  "verification_command": "agentplane verify 202608061646-BYY8A1 --rework --by TESTER",
+  "verifier": "TESTER"
+}
