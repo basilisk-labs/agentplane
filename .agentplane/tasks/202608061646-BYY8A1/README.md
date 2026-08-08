@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -44,7 +44,9 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Rework: Unsupported declared check: AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:full"
   attempts: 2
-commit: null
+commit:
+  hash: "f44f5fcaa0ad106d00dd336ac2e00c4d1213deec"
+  message: "🚧 BYY8A1 task: apply external agent result"
 comments:
   -
     author: "DOCS"
@@ -58,6 +60,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 83ec9ea90c0a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: f44f5fcaa0ad. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -98,8 +103,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Unsupported declared check: AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-08T09:04:11.921Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: f44f5fcaa0ad. CLI accepted one state-bound external-agent semantic result."
+    commit: "f44f5fcaa0ad106d00dd336ac2e00c4d1213deec"
 doc_version: 3
-doc_updated_at: "2026-08-08T08:02:06.556Z"
+doc_updated_at: "2026-08-08T09:04:11.921Z"
 doc_updated_by: "SUPERVISOR"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
