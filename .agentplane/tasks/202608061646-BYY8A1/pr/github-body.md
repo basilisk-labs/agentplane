@@ -16,12 +16,7 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
 ## Verification
 
 - State: blocked_external
-- Note:
-
-```text
-ci:local:full failed on implementation 1bf5c98ec: supervisor-execution-episode.ts is 632 lines,
-above the 600-line hotspot limit
-```
+- Note: Rework: Declared check failed: bun run ci:release-extras
 - Canonical workflow state lives in the task README.
 
 <details>

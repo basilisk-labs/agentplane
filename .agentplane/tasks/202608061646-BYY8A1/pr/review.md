@@ -13,7 +13,7 @@ Created: 2026-08-08T03:44:44.414Z
 ## Verification
 
 - State: blocked_external
-- Note: ci:local:full failed on implementation 1bf5c98ec: supervisor-execution-episode.ts is 632 lines, above the 600-line hotspot limit
+- Note: Rework: Declared check failed: bun run ci:release-extras
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
