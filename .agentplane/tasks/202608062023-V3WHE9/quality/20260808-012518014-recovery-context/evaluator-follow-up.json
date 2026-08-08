@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608062023-V3WHE9-9d70c9b5d695d9d4d0e01a85",
+  "task_id": "202608062023-V3WHE9",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Rework GC apply so each candidate's reachability, task pin/failure/release state, expiry, and hash are revalidated at the deletion boundary under a concurrency-safe protocol; add manifest-publication and task-state race tests before reevaluation.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "GC can delete an object that becomes reachable after inventory construction because apply mode rechecks only the object's file identity and hash, not reachability or pin state, immediately before unlinking.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/2e0fbb8166689441f3fcd937bc2fc7750e54aa92dcb7289ec4f12de9eb99a13a.patch",
+          "sha256": "sha256:2e0fbb8166689441f3fcd937bc2fc7750e54aa92dcb7289ec4f12de9eb99a13a",
+          "section": "evidence-maintenance.ts garbageCollectEvidenceObjects and evidence-maintenance.test.ts concurrent-writer coverage"
+        },
+        {
+          "path": ".agentplane/tasks/202608062023-V3WHE9/README.md",
+          "sha256": "sha256:6486bbca3666ee95ef64c56ea56231d2fc5300d9bf5ff1756f8e8bbf2298829b",
+          "section": "Plan acceptance criteria 4 and 5"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608062023-V3WHE9/quality/20260808-012518014-recovery-context/evaluator-result.json"
+}
