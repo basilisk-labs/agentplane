@@ -4,7 +4,7 @@ title: "Publish AgentPlane 0.7.5 from merged qualified candidate"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -32,11 +32,16 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "f2cbaf77efb7ec0b3bad24f5146fef2b2d03d5fd"
+  message: "📝 P6SHBN release: expand audited 0.7.5 notes"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: expanded the audited v0.7.5 release notes to satisfy the exact plan coverage gate."
 events:
   -
     type: "status"
@@ -45,9 +50,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-08T21:24:41.663Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: expanded the audited v0.7.5 release notes to satisfy the exact plan coverage gate."
+    commit: "f2cbaf77efb7ec0b3bad24f5146fef2b2d03d5fd"
 doc_version: 3
-doc_updated_at: "2026-08-08T21:21:22.918Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-08-08T21:24:41.663Z"
+doc_updated_by: "CODER"
 description: "Prepare the protected-main release candidate after PR #4798, run the canonical release gates, merge the release PR, dispatch GitHub-only publication for the exact release SHA, and verify GitHub Release plus all public npm packages."
 sections:
   Summary: |-
