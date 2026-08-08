@@ -1,10 +1,11 @@
 ---
 id: "202608080403-N0VXJ0"
 title: "Archive resolved supervisor route incident"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -54,6 +55,20 @@ quality_review:
     - ".agentplane/policy/security.must.md"
   findings:
     - "The frozen diff preserves INC-20260807-01 in the historical archive and removes the matching active entries from both synchronized incident registries; frozen verification records cover source-task closure, implementation equivalence, hosted checks, formatting, routing, generated assets, and the release incident gate."
+token_usage:
+  agent_runs: 4
+  input_tokens: 279584
+  journal_digest: "sha256:4e894906a89beb236a10af4a682c1681909f79602c2b785ae24e4523949ea127"
+  observed_agent_runs: 3
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "partial"
+  total_tokens: 284911
+  unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
+  updated_at: "2026-08-08T04:23:00.335Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -63,8 +78,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "4e50a776a2a8028e2b02e964cfceade18cae271f"
-  message: "🚧 N0VXJ0 task: apply external agent result"
+  hash: "fc2501733e7d12d578a406bb39885a0c2f5e3f9b"
+  message: "✅ N0VXJ0 task: record portable evaluator pass"
 comments:
   -
     author: "DOCS"
@@ -72,6 +87,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 4e50a776a2a8. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "DOCS"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -111,9 +129,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Portable task-local evidence now covers the source task, evaluator, hosted PR, merge equivalence, policy routing, generated assets, and release incident gate."
+  -
+    type: "status"
+    at: "2026-08-08T04:23:00.335Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-08T04:20:40.378Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-08T04:23:00.345Z"
+doc_updated_by: "DOCS"
 description: "Preserve INC-20260807-01 with its final merged evidence in docs/developer/incident-archive.mdx, then remove it from the active repository and bundled incident registries. The dependency-readiness and supervisor protocol failure is repaired by merged task 202608062021-MCY8ZC and its focused, hosted, and evaluator evidence. Keep incident registry semantics and generated assets aligned so the release incident gate passes."
 sections:
   Summary: |-
@@ -374,6 +399,9 @@ sections:
     - `git merge-base --is-ancestor f1d00ff90a8754e39908b4602227fb67655d414d HEAD` succeeds. Comparing evaluator-reviewed implementation `75263193a470d21f58f842d55d2c8fab711d1bd4` with merged closure `f1d00ff90a8754e39908b4602227fb67655d414d` while excluding only `.agentplane/tasks/202608062021-MCY8ZC` produces an empty diff. This proves implementation equivalence without claiming direct ancestry across the rebase.
     - No residual release blocker remains for `INC-20260807-01`; this task only archives the resolved incident and removes its active canonical and bundled registry entries.
 extensions:
+  implementation_commit:
+    hash: "545fcf42424bbf202f490660f3bd2f446f8b47f7"
+    message: "📝 N0VXJ0 policy: retire resolved supervisor route incident"
   workflow_route_baseline:
     start_head_sha: "4a2895659e677071caaa9b56cadf35df8e261e82"
     version: 1
@@ -650,3 +678,16 @@ DecisionContextRef:
 - GitHub PR `https://github.com/basilisk-labs/agentplane/pull/4790` is merged at `f1d00ff90a8754e39908b4602227fb67655d414d` (`2026-08-08T00:08:48Z`). Required hosted checks, Windows tests, package runtime checks, PR verification, CodeQL, docs, and post-merge `hosted-close` were observed successful.
 - `git merge-base --is-ancestor f1d00ff90a8754e39908b4602227fb67655d414d HEAD` succeeds. Comparing evaluator-reviewed implementation `75263193a470d21f58f842d55d2c8fab711d1bd4` with merged closure `f1d00ff90a8754e39908b4602227fb67655d414d` while excluding only `.agentplane/tasks/202608062021-MCY8ZC` produces an empty diff. This proves implementation equivalence without claiming direct ancestry across the rebase.
 - No residual release blocker remains for `INC-20260807-01`; this task only archives the resolved incident and removes its active canonical and bundled registry entries.
+
+## Token Usage
+
+- State: `partial`
+- Completeness: `3/4` agent runs
+- Input tokens: `279584`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `284911`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:4e894906a89beb236a10af4a682c1681909f79602c2b785ae24e4523949ea127`
+- Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
+- Updated at: `2026-08-08T04:23:00.335Z`
