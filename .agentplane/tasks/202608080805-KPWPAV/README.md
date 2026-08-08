@@ -2,10 +2,10 @@
 id: "202608080805-KPWPAV"
 title: "Allow explicit replacement after failed task advance operation"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -57,9 +57,9 @@ quality_review:
     - "bun run docs:cli:check passes on the regenerated reference."
     - "The critical suite, typecheck, and full contract suite passed on implementation commit 1ba645fe2."
 token_usage:
-  agent_runs: 3
+  agent_runs: 5
   input_tokens: null
-  journal_digest: "sha256:76a92ab5aae8feea2781af1ab3c5fa7ab1bd87b83949436ce069d133cdf27494"
+  journal_digest: "sha256:d78024e0a294f93ba571a0c118622bef7af70aa65afe317282ae0bec101bdc52"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -69,7 +69,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-08T08:36:49.192Z"
+  updated_at: "2026-08-08T08:46:55.558Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -79,8 +79,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "1ba645fe2dafd67f435c0fc051f6a0a399e3aa55"
-  message: "🚧 KPWPAV task: apply external agent result"
+  hash: "dab3fd9c936d8861b48465a02e05075b3b88031e"
+  message: "🚧 KPWPAV task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -97,6 +97,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 1ba645fe2daf. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -167,9 +170,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-08T08:46:55.558Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "dab3fd9c936d8861b48465a02e05075b3b88031e"
 doc_version: 3
-doc_updated_at: "2026-08-08T08:46:20.508Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-08T08:46:55.584Z"
+doc_updated_by: "CODER"
 description: "Expose a guarded task advance replacement path for a terminal operation_failed supervisor journal so a newly recomputed route can continue without retrying the failed effect."
 sections:
   Summary: |-
@@ -380,7 +391,7 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "0caa5838bb36e58165a19215f6bd16ea39673ac0"
+    hash: "1ba645fe2dafd67f435c0fc051f6a0a399e3aa55"
     message: "🚧 KPWPAV task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "f90a67a282234a4f42b5e3721e416f31e7f0be9b"
@@ -610,12 +621,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/3` agent runs
+- Completeness: `0/5` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:76a92ab5aae8feea2781af1ab3c5fa7ab1bd87b83949436ce069d133cdf27494`
+- Journal digest: `sha256:d78024e0a294f93ba571a0c118622bef7af70aa65afe317282ae0bec101bdc52`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-08T08:36:49.192Z`
+- Updated at: `2026-08-08T08:46:55.558Z`
