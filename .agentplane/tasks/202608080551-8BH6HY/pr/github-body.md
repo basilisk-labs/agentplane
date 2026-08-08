@@ -16,12 +16,7 @@ Fix task advance so a state-bound task_worktree_resolution episode can return a 
 ## Verification
 
 - State: needs_rework
-- Note:
-
-```text
-GitHub review found two uncovered task-worktree resolution cases: pre-existing dirty paths and
-read-only authority.
-```
+- Note: Rework: Declared check failed: bun run test:critical
 - Canonical workflow state lives in the task README.
 
 <details>

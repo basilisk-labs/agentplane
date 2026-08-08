@@ -13,7 +13,7 @@ Created: 2026-08-08T05:52:09.195Z
 ## Verification
 
 - State: needs_rework
-- Note: GitHub review found two uncovered task-worktree resolution cases: pre-existing dirty paths and read-only authority.
+- Note: Rework: Declared check failed: bun run test:critical
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
