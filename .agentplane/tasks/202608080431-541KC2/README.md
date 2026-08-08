@@ -1,10 +1,11 @@
 ---
 id: "202608080431-541KC2"
 title: "Bound concurrent effect-retirement observation by time"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -47,6 +48,20 @@ quality_review:
   findings:
     - "The implementation replaces the scheduler-sensitive attempt count with a monotonic two-second deadline and a small polling interval, while retaining the existing false return that drives the busy error after expiry."
     - "The regression test delays the competing resolver for 300 ms, beyond the former approximately 225 ms window, and the recorded repeated focused suite confirms convergence and retirement behavior without retries."
+token_usage:
+  agent_runs: 1
+  input_tokens: 79043
+  journal_digest: "sha256:a233a090ab6935a0912b2f6efe7ad5041feabdee3d4d09114e40c897b8cc6a70"
+  observed_agent_runs: 1
+  observed_by: "agentplane"
+  output_tokens: 1554
+  reasoning_tokens: 197
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "observed"
+  total_tokens: 80794
+  unavailable_reason: null
+  updated_at: "2026-08-08T04:48:55.677Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -55,11 +70,16 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "eab77a4f12729840ca5424a6ba8153329971b873"
+  message: "✅ 541KC2 task: record evaluator pass"
 comments:
   -
     author: "CODER"
     body: "Start: replace the fixed-attempt concurrent retirement observation with a bounded time window and prove delayed convergence."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -74,8 +94,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Concurrent effect retirement now uses a bounded monotonic observation window; delayed convergence, adjacent concurrency, full unit, typing, repository contracts, and module budgets all pass."
+  -
+    type: "status"
+    at: "2026-08-08T04:48:55.677Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-08T04:44:41.744Z"
+doc_updated_at: "2026-08-08T04:48:55.688Z"
 doc_updated_by: "CODER"
 description: "Prevent a valid concurrent runner effect resolution from failing with runner_effect_resolution_retirement_busy when claim retirement takes longer than the current scheduler-sensitive retry window. Replace the attempt-count timing assumption with a bounded elapsed-time observation, cover delayed retirement deterministically, and preserve fail-closed behavior when no matching resolution completes."
 sections:
@@ -171,6 +198,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "5e0a25db303f163218b442907b21622f89cb8589"
+    message: "🐛 541KC2 runner: keep bounded wait within module budget"
   workflow_route_baseline:
     start_head_sha: "4a2895659e677071caaa9b56cadf35df8e261e82"
     version: 1
@@ -279,3 +309,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `observed`
+- Completeness: `1/1` agent runs
+- Input tokens: `79043`
+- Output tokens: `1554`
+- Reasoning tokens: `197`
+- Total tokens: `80794`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:a233a090ab6935a0912b2f6efe7ad5041feabdee3d4d09114e40c897b8cc6a70`
+- Unavailable reason: `none`
+- Updated at: `2026-08-08T04:48:55.677Z`
