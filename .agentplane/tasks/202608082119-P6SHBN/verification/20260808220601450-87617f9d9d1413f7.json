@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run release:prepublish\nResult: pass; 102 of 102 release-ci chunks, 8 migration scenarios, tarball install, workflow 50 tests, significant 204 tests, and release-critical 16 tests passed.\nEvidence: process exited 0 in the authoritative task worktree at 173f556bcb3bdb795c74d688d065ef7ddc9537d6.\nScope: full local AgentPlane 0.7.5 release candidate gate.\n\nCommand: gh pr checks 4806 --watch=false\nResult: pass; all required and informational hosted checks completed successfully or were intentionally skipped.\nEvidence: GitHub Actions runs 31279736460, 31279737719, 31279737720, 31279737726 at PR head 173f556bcb3bdb795c74d688d065ef7ddc9537d6.\nScope: exact-SHA hosted pull request verification.",
+  "digest": "sha256:87617f9d9d1413f7f527b8cebb9a25adb1c11f93d4a6bbc17639e77b3a7d27b7",
+  "implementation_sha": "173f556bcb3bdb795c74d688d065ef7ddc9537d6",
+  "kind": "task_verification_record",
+  "note": "Release candidate verification passed at 173f556bcb3bdb795c74d688d065ef7ddc9537d6. Local canonical prepublish, parity, version, notes, compatibility, migration, install, workflow, significant, and critical gates passed. All hosted PR checks on the same SHA passed. Exact merged-main validation and public registry checks remain downstream release gates.",
+  "recorded_at": "2026-08-08T22:06:01.450Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. `bun run release:incidents:check` passes before release planning.\n2. The canonical release plan targets exactly `0.7.5`; all three public packages and both CLI dependency pins equal `0.7.5`, and `docs/releases/v0.7.5.md` satisfies release-note validation.\n3. `bun run release:parity` and `bun run release:prepublish` pass on the exact release-candidate SHA.\n4. The release PR has no unresolved review threads and all required GitHub checks pass on its exact head SHA; merged `main` contains that SHA.\n5. `Publish release` succeeds for the exact merged release SHA and emits the canonical `publish-result`; tag and GitHub Release `v0.7.5` exist.\n6. `node scripts/release/check-published-packages.mjs` confirms `agentplane`, `@agentplaneorg/core`, and `@agentplaneorg/recipes` at `0.7.5`.",
+  "scope_digest": "sha256:2cdcc3fcedc120041b7b775f20da1a8b2e378301549d87ec45e61a69337edf99",
+  "task_id": "202608082119-P6SHBN",
+  "verification_command": "agentplane verify 202608082119-P6SHBN --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:7c1d60789dec48761c8730c36eb0c2a9c8f5e2cdafb25804cdfaec12a0840c45",
+  "implementation_sha": "173f556bcb3bdb795c74d688d065ef7ddc9537d6",
+  "kind": "task_verification_record",
+  "note": "Local candidate verification passed at 173f556bcb3bdb795c74d688d065ef7ddc9537d6: release incidents clear; version and dependency parity are exactly 0.7.5; release notes validation passes with 520 bullets; release:prepublish passed 102/102 release-ci chunks, 8 migration scenarios, local tarball install, workflow 13 files/50 tests, significant 19/204, and release-critical 4/16. Hosted checks, exact merged-main validation, GitHub Release, and npm publication remain mandatory downstream gates.",
+  "recorded_at": "2026-08-08T22:04:16.876Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. `bun run release:incidents:check` passes before release planning.\n2. The canonical release plan targets exactly `0.7.5`; all three public packages and both CLI dependency pins equal `0.7.5`, and `docs/releases/v0.7.5.md` satisfies release-note validation.\n3. `bun run release:parity` and `bun run release:prepublish` pass on the exact release-candidate SHA.\n4. The release PR has no unresolved review threads and all required GitHub checks pass on its exact head SHA; merged `main` contains that SHA.\n5. `Publish release` succeeds for the exact merged release SHA and emits the canonical `publish-result`; tag and GitHub Release `v0.7.5` exist.\n6. `node scripts/release/check-published-packages.mjs` confirms `agentplane`, `@agentplaneorg/core`, and `@agentplaneorg/recipes` at `0.7.5`.",
+  "scope_digest": "sha256:2cdcc3fcedc120041b7b775f20da1a8b2e378301549d87ec45e61a69337edf99",
+  "task_id": "202608082119-P6SHBN",
+  "verification_command": "agentplane verify 202608082119-P6SHBN --ok --by TESTER",
+  "verifier": "TESTER"
+}
