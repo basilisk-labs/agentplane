@@ -45,13 +45,13 @@ function latestPlanTargetsCurrentRelease(state) {
 
 function parseStableReleaseVersion(value) {
   const match = /^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/u.exec(String(value ?? "").trim());
-  return match ? [Number(match[1]), Number(match[2]), Number(match[3])] : null;
+  return match ? [BigInt(match[1]), BigInt(match[2]), BigInt(match[3])] : null;
 }
 
 function compareStableReleaseVersions(left, right) {
   for (const [index, leftPart] of left.entries()) {
-    const delta = leftPart - right[index];
-    if (delta !== 0) return Math.sign(delta);
+    if (leftPart > right[index]) return 1;
+    if (leftPart < right[index]) return -1;
   }
   return 0;
 }
@@ -72,21 +72,13 @@ function latestPlanTargetRelation(state) {
   ) {
     return "invalid";
   }
-  if (!plan || (!plannedVersion && !plannedTagVersion)) return "missing";
-  if ((hasPlannedVersion && !plannedVersion) || (hasPlannedTag && !plannedTagVersion)) {
+  if (!plan || (!hasPlannedVersion && !hasPlannedTag)) return "missing";
+  if (!hasPlannedVersion || !hasPlannedTag || !plannedVersion || !plannedTagVersion) {
     return "invalid";
   }
-  if (
-    plannedVersion &&
-    plannedTagVersion &&
-    compareStableReleaseVersions(plannedVersion, plannedTagVersion) !== 0
-  ) {
-    return "invalid";
-  }
+  if (compareStableReleaseVersions(plannedVersion, plannedTagVersion) !== 0) return "invalid";
 
-  const target = plannedVersion ?? plannedTagVersion;
-  if (!target) return "invalid";
-  const comparison = compareStableReleaseVersions(target, currentVersion);
+  const comparison = compareStableReleaseVersions(plannedVersion, currentVersion);
   if (comparison > 0) return "future";
   if (comparison < 0) return "stale";
   return "current";
