@@ -261,10 +261,7 @@ async function applyAcceptedResult(opts: {
     return;
   }
   if (
-    usesExternalImplementationAuthority(
-      opts.exchange.purpose,
-      opts.work_order.authority.sandbox,
-    )
+    usesExternalImplementationAuthority(opts.exchange.purpose, opts.work_order.authority.sandbox)
   ) {
     await applyExternalImplementationResult(opts);
     return;
