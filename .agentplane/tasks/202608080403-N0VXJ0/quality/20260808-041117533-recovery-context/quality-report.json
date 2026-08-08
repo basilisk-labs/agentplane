@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202608080403-N0VXJ0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-08T04:12:04.966Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "545fcf42424bbf202f490660f3bd2f446f8b47f7",
+  "blueprint_digest": "9090cfbeaabacdf524924ee64dcd560636a7f61b009b35d1d3235f0ab18df533",
+  "findings": [
+    "Frozen evidence does not establish that source task 202608062021-MCY8ZC is DONE or that its cited implementation and closure commits, hosted checks, and evaluator result resolve INC-20260807-01."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608080403-N0VXJ0/README.md",
+    ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/4dd42e85fe95b8b553e4117112e35c40acd6b3467a9e8b0819d6bcf2a360b516.patch",
+    ".agentplane/tasks/202608080403-N0VXJ0/verification/20260808041049139-121b39462852ddfe.json"
+  ],
+  "missing_tests": [
+    "Frozen evidence proving source task 202608062021-MCY8ZC is DONE and its implementation commit 75263193a470d21f58f842d55d2c8fab711d1bd4 is included in merged closure commit f1d00ff90a8754e39908b4602227fb67655d414d.",
+    "Frozen hosted-CI and evaluator-pass evidence for source task 202608062021-MCY8ZC, including the dependency-route parity, exact supervisor protocol, and branch-worktree cases cited by the archive entry."
+  ],
+  "hidden_assumptions": [
+    "The commit hashes and DONE state written into the archive entry accurately identify the merged source-task evidence.",
+    "Passing the current task's routing, incident-registry, generated-asset, formatting, and cleanliness checks is sufficient to prove the archived incident's underlying behavioral repair."
+  ],
+  "residual_risks": [
+    "Provide frozen source-task evidence that verifies task 202608062021-MCY8ZC is DONE, maps the cited implementation commit to the merged closure commit, and records the focused protocol/dependency-route tests, hosted CI, and evaluator pass claimed by the archive entry."
+  ]
+}
