@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 74148ff2f95facd109ca51d1553d8395e8994bb9..fccdf746ecb553273393ac23a096fde242dc95f0",
+      "command": "git diff --check 2ea4249847569fa880f87022a9e03deec3f03c94..2ea1903428b858fa99261e86a51fd3b54202b0e6",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 74148ff2f95facd109ca51d1553d8395e8994bb9..fccdf746ecb553273393ac23a096fde242dc95f0",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2ea4249847569fa880f87022a9e03deec3f03c94..2ea1903428b858fa99261e86a51fd3b54202b0e6",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -31,15 +31,24 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "74148ff2f95facd109ca51d1553d8395e8994bb9",
-  "implementation_commit": "fccdf746ecb553273393ac23a096fde242dc95f0",
+  "execution_base_commit": "2ea4249847569fa880f87022a9e03deec3f03c94",
+  "implementation_commit": "2ea1903428b858fa99261e86a51fd3b54202b0e6",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M packages/agentplane/src/cli/critical/harness.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/critical/harness.ts"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/cli/critical/harness.ts"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
