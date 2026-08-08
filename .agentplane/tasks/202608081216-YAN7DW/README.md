@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 39
+revision: 40
 origin:
   system: "manual"
 depends_on: []
@@ -33,32 +33,33 @@ verification:
   note: "Verified fail-closed qualification scheduling and measured parallelization on 51072b303; all declared local gates passed."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-08T14:36:21.812Z"
+  updated_at: "2026-08-08T15:02:39.372Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "a59a4ba148844f27f7aaf69967fdf8914f6b0354"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "51072b303b251d9bcadee01fbdf6e5b5a745f32d"
   blueprint_digest: "bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1"
   evidence_refs:
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-143523748-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-143523748-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/7b1039a9288b3f5005560e538b83365c2a9eda5beb9bc1520b50a8e1f156adee.md"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-143523748-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-143523748-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-143523748-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-143523748-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150136861-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150136861-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/2007a0a74d54fc7df14d92a4a37dadca53c623328272518a2652b7d116b808e2.md"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150136861-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150136861-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150136861-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150136861-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608081216-YAN7DW/README.md"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/362b05ce91e3d90b0c2abf8831d2b8cfa522bf6fa643125e4981d38eb878a1a2.patch"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/75e45901d92bc6a87dfaed08b3337940782582094e13602146c209f35930d1c1.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/4aa90af7a4d2793d1ce6fdc7dfdf929b8c0620347f4eea9031c2f6bc397533d9.patch"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/864fbdf1d5a19a985b6db0511937c15dc1d23576ffd49c1f31b8aac04e2ebcb7.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/verification/20260808145956910-ddb123ecbe79bb51.json"
     - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/66fa4c234b9ab066149f87bbec5b818fe331d23c90ef191589289397e54ec486.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen evidence asserts a benchmark improvement but contains no baseline measurements, benchmark method, raw run results, serial-versus-concurrent comparison, or noise analysis supporting the claimed greater-than-10% reduction."
-    - "Qualification failure propagation does not stop already queued independent scenarios: all dependency-free scenarios are submitted to the bounded executor before any failure is observed, and the executor continues draining its queue after rejection."
+    - "The frozen packet does not contain the benchmark artifact required to verify the claimed performance improvement."
+  recovery_reason: "deterministic_evidence_gap"
 token_usage:
   agent_runs: 11
   input_tokens: null
@@ -295,7 +296,7 @@ events:
     state: "ok"
     note: "Verified fail-closed qualification scheduling and measured parallelization on 51072b303; all declared local gates passed."
 doc_version: 3
-doc_updated_at: "2026-08-08T14:59:59.465Z"
+doc_updated_at: "2026-08-08T15:02:39.411Z"
 doc_updated_by: "CODER"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
