@@ -19,9 +19,8 @@ Fix GitHub issue #4783: compare the latest plan target with the currently publis
 - Note:
 
 ```text
-Final committed implementation requires complete consistent plan metadata, compares arbitrarily
-large stable-version components without precision loss, and passes 15 focused scenarios plus the
-full contract gate.
+PR review feedback is resolved: release plans require canonical X.Y.Z and vX.Y.Z metadata, active
+incidents are cleared on current main, and 17 focused scenarios plus the full contract gate pass.
 ```
 - Canonical workflow state lives in the task README.
 

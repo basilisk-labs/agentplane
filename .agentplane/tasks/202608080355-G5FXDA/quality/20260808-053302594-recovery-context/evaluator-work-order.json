@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608080355-G5FXDA-5febddc8a6f277fe976acf92",
+  "prepared_at": "2026-08-08T05:33:02.594Z",
+  "task": {
+    "id": "202608080355-G5FXDA",
+    "revision": 12,
+    "objective": "Correct stale plan comparison in next-action diagnostics\n\nFix GitHub issue #4783: compare the latest plan target with the currently published version so a missing, current, or older plan requests a fresh patch plan and only a future plan permits candidate preparation. Add fixtures for missing, stale, current, and future targets. Mark INC-20260807-01 resolved in the repository and bundled incident registries because its dependency-readiness and supervisor protocol repairs are merged and verified. Close issue #4783 only after hosted checks pass and the fix merges.",
+    "acceptance_criteria": [
+      "bun run release:incidents:check",
+      "bun run typecheck",
+      "bunx vitest run packages/agentplane/src/commands/release/release-next-action-script.test.ts",
+      "- In scope: Fix GitHub issue #4783: compare the latest plan target with the currently published version so a missing, current, or older plan requests a fresh patch plan and only a future plan permits candidate preparation. Add fixtures for missing, stale, current, and future targets. Mark INC-20260807-01 resolved in the repository and bundled incident registries because its dependency-readiness and supervisor protocol repairs are merged and verified. Close issue #4783 only after hosted checks pass and the fix merges.\n- Out of scope: unrelated refactors not required for \"Correct stale plan comparison in next-action diagnostics\".",
+      "1. Reproduce issue #4783 with fixture states where the published current version has valid evidence and the latest plan is missing, stale, current, or future. 2. Add semver-safe plan-target ordering in scripts/release/next-action.mjs: missing, invalid, current, and older targets request ap release plan --patch; only a valid future target may proceed to candidate preparation; preserve recovery applicability and partial-publication precedence. 3. Expand release-next-action-script tests for all four target relations and invalid metadata. 4. Mark INC-20260807-01 resolved in both canonical and bundled policy registries, with the merged MCY8ZC evidence retained. 5. Run the focused suite, incident release gate, typecheck, policy routing, contract checks, evaluator review, hosted CI, and integrate through the serialized queue. 6. Close GitHub issue #4783 only after merge proof.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bunx vitest run packages/agentplane/src/commands/release/release-next-action-script.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run release:incidents:check`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "d0020e56ce863b4466e9e415c7e01e23de8fdb9f",
+  "diff_base_sha": "47b1f611794c7e5bee2c0e5250290a37fab68bd6",
+  "blueprint_digest": "1b180e9a165d9cb3562acf6522bc3586c6efcc4f7e890b83961f1821c1184d65",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608080355-G5FXDA/quality/20260808-053302594-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:3889de8e163be15e15f5937f84076f2eb2fbf60c1b0413ae7dbd501ee3c68ff2",
+    "prompt_path": ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/f299e6ded6bebf73d504748d9c2c3420a0ffc7a8fb63aed64bee2719c1b69f1b.md",
+    "result_schema_path": ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608080355-G5FXDA/README.md",
+      "sha256": "sha256:41633ff3cf2a25230665a05c57b8e3fd6b6e83e9af6284cc6ee2c68b4a01b7f1",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/2675b2b1c2e447a38402ad74a241b16852b9da2ed700fe88f3e9bd4a1c6da72d.patch",
+      "sha256": "sha256:2675b2b1c2e447a38402ad74a241b16852b9da2ed700fe88f3e9bd4a1c6da72d",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/d200608a63d3ff4e7a2da24c748ddea0e194abd23ea2d6833ce71068a7c1c357.json",
+      "sha256": "sha256:d200608a63d3ff4e7a2da24c748ddea0e194abd23ea2d6833ce71068a7c1c357",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608080355-G5FXDA/verification/20260808053251397-679c58c75e9c2b44.json",
+      "sha256": "sha256:9d532a019623711a5c881f8a3ae5f6b7d2664f41582b2961f00ff9bb47cdd4bc",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/dd75b81e3c04dd45f2956403db2fccba72da81a54555d0758705a2e618b2755b.json",
+      "sha256": "sha256:dd75b81e3c04dd45f2956403db2fccba72da81a54555d0758705a2e618b2755b",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
