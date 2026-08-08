@@ -6,14 +6,14 @@ Created: 2026-08-08T05:52:09.195Z
 
 - Task: `202608080551-8BH6HY`
 - Title: Accept external task-worktree resolution results
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608080551-8BH6HY/accept-external-task-worktree-resolution-results`
 - Canonical task record: `.agentplane/tasks/202608080551-8BH6HY/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: GitHub review found two uncovered task-worktree resolution cases: pre-existing dirty paths and read-only authority.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

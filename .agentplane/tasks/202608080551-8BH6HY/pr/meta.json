@@ -3,22 +3,15 @@
   "branch": "task/202608080551-8BH6HY/accept-external-task-worktree-resolution-results",
   "created_at": "2026-08-08T05:52:09.195Z",
   "diffstat_sha256": "sha256:dc18f226b1a032f01c54f59aa8cf2d31318825319e1f3590845399248d81a9d7",
-  "last_verified_at": "2026-08-08T06:59:19.974Z",
+  "last_verified_at": "2026-08-08T07:05:12.682Z",
   "last_verified_diffstat_sha256": "sha256:dc18f226b1a032f01c54f59aa8cf2d31318825319e1f3590845399248d81a9d7",
   "pr_number": 4802,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4802",
-  "pre_merge_closure": {
-    "basis_commit": "33abb5602bd726d13774f425537889870c29c72f",
-    "branch": "task/202608080551-8BH6HY/accept-external-task-worktree-resolution-results",
-    "pr_number": 4802,
-    "recorded_at": "2026-08-08T07:01:58.265Z",
-    "state": "closed_before_merge"
-  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608080551-8BH6HY",
   "updated_at": "2026-08-08T05:55:06.161Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }
