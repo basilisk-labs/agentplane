@@ -2,10 +2,10 @@
 id: "202608080551-8BH6HY"
 title: "Accept external task-worktree resolution results"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -56,19 +56,19 @@ quality_review:
     - "The positive regression permits deterministic verification only when the later status event carries the current implementation SHA."
     - "The commit binding is preserved through the canonical task schema, local backend normalization, README rendering path, and tasks export."
 token_usage:
-  agent_runs: 9
-  input_tokens: 273067
-  journal_digest: "sha256:c6f67a411f467a8517389394adfdde68890075802148d838952eb7f8ec21566d"
-  observed_agent_runs: 2
+  agent_runs: 17
+  input_tokens: 706977
+  journal_digest: "sha256:1236223dc07895b49e0e74b4d897e468ee19a1239f09b4062fc844cf393db86a"
+  observed_agent_runs: 4
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
   state: "partial"
-  total_tokens: 277235
+  total_tokens: 717365
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
-  updated_at: "2026-08-08T07:01:58.205Z"
+  updated_at: "2026-08-08T07:50:44.670Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -78,8 +78,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "5458ff29b48110d6d97b3d97d68b620aa8e61fe9"
-  message: "🚧 8BH6HY task: apply external agent result"
+  hash: "96d445899ddb275974ffd52483fb0e6d7cd036c2"
+  message: "🚧 8BH6HY task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -120,6 +120,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 5458ff29b481. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -271,9 +274,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-08T07:50:44.670Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "96d445899ddb275974ffd52483fb0e6d7cd036c2"
 doc_version: 3
-doc_updated_at: "2026-08-08T07:50:26.542Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-08T07:50:44.695Z"
+doc_updated_by: "CODER"
 description: "Fix task advance so a state-bound task_worktree_resolution episode can return a completed result after the CODER commits intended changes, without being rejected as an unsupported or stale read-only purpose; add focused regression coverage."
 sections:
   Summary: |-
@@ -712,8 +723,8 @@ sections:
       Resolution: Use purpose-specific baseline ownership and a read-only observation path, with integration coverage.
 extensions:
   implementation_commit:
-    hash: "c421bde71fb5260237a2cfbf84dfa91c692b6457"
-    message: "🐛 8BH6HY supervisor: resume exact interrupted formal operation"
+    hash: "5458ff29b48110d6d97b3d97d68b620aa8e61fe9"
+    message: "🚧 8BH6HY task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "26da24fb37b41e318ad175676ed13a5b125293da"
     version: 1
@@ -1171,12 +1182,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `partial`
-- Completeness: `2/9` agent runs
-- Input tokens: `273067`
+- Completeness: `4/17` agent runs
+- Input tokens: `706977`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
-- Total tokens: `277235`
+- Total tokens: `717365`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:c6f67a411f467a8517389394adfdde68890075802148d838952eb7f8ec21566d`
+- Journal digest: `sha256:1236223dc07895b49e0e74b4d897e468ee19a1239f09b4062fc844cf393db86a`
 - Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
-- Updated at: `2026-08-08T07:01:58.205Z`
+- Updated at: `2026-08-08T07:50:44.670Z`
