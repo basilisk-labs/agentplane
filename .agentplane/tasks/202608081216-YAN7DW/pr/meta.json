@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:e6158ce9f8fdb5ac366f7f4986e89fc7cf13ae16b7cb4e08350a8e890097dd01",
   "pr_number": 4804,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4804",
+  "pre_merge_closure": {
+    "basis_commit": "1d7e24fbf06d8d4f2c9392c31913e616d517589c",
+    "branch": "task/202608081216-YAN7DW/parallelize-release-qualification",
+    "pr_number": 4804,
+    "recorded_at": "2026-08-08T13:18:51.223Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608081216-YAN7DW",
