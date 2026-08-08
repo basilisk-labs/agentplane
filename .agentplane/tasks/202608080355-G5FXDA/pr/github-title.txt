@@ -1,1 +1,1 @@
-🚧 G5FXDA task: Correct stale plan comparison in next-action diagnostics [202608080355-G5FXDA]
+✅ G5FXDA task: Correct stale plan comparison in next-action diagnostics [202608080355-G5FXDA]
