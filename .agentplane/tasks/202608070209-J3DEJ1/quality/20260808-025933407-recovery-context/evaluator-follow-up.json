@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608070209-J3DEJ1-81b377711e85003a5db6b177",
+  "task_id": "202608070209-J3DEJ1",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Record deterministic focused, typecheck, ci:contract, and required hosted verification evidence on the exact evaluated post-rework head, then rerun evaluation.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "Frozen evidence contains no deterministic verification record for evaluated SHA 2b8ee19e18f936d418cdd2736a2b393114da6a1d; the hosted checks documented in the task apply to an earlier PR head, while the post-rework checks are only a CODER-authored claim.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/c6d8c8ff574695f8bcad71354c0fad5cfd97a9c52d63d714b655692af10fd204.json",
+          "sha256": "sha256:c6d8c8ff574695f8bcad71354c0fad5cfd97a9c52d63d714b655692af10fd204",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608070209-J3DEJ1/README.md",
+          "sha256": "sha256:2dc02ce2cdf0649f6206ea90511645d3d2c455ebc653a729b3e9d3e267cf7586",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-025933407-recovery-context/evaluator-result.json"
+}

@@ -16,7 +16,7 @@ Treat unmatched natural-language outcomes as unknown instead of safe direct; mak
 ## Verification
 
 - State: ok
-- Note: All local and hosted acceptance checks passed for implementation commit 1f452c38 and PR head 839d615a.
+- Note: Independent local and hosted verification passed on post-review implementation
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,12 +27,12 @@ Treat unmatched natural-language outcomes as unknown instead of safe direct; mak
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.tasks.user-create.test.ts |  93 +++++++++++-
- .../agentplane/src/commands/task/create.command.ts |  76 +++++++++-
+ .../src/cli/run-cli.core.tasks.user-create.test.ts | 108 ++++++++-
+ .../agentplane/src/commands/task/create.command.ts |  76 ++++++-
  .../src/runtime/task-routing/resolve.test.ts       |  16 ++
- packages/core/src/tasks/task-readme-io.test.ts     |  90 ++++++++---
- packages/core/src/tasks/task-readme-io.ts          | 166 ++++++++++++++++++++-
- 5 files changed, 404 insertions(+), 37 deletions(-)
+ packages/core/src/tasks/task-readme-io.test.ts     | 127 +++++++++--
+ packages/core/src/tasks/task-readme-io.ts          | 249 +++++++++++++++++++--
+ 5 files changed, 532 insertions(+), 44 deletions(-)
 ```
 
 </details>

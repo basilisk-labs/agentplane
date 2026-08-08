@@ -2,10 +2,10 @@
 id: "202608070209-J3DEJ1"
 title: "Harden automatic task intake against unknown intent and stale locks"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -23,36 +23,37 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-08T02:34:58.265Z"
+  updated_at: "2026-08-08T03:20:42.322Z"
   updated_by: "TESTER"
-  note: "All local and hosted acceptance checks passed for implementation commit 1f452c38 and PR head 839d615a."
+  note: "Independent local and hosted verification passed on post-review implementation"
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-08T02:36:04.132Z"
+  updated_at: "2026-08-08T03:21:40.372Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "1f452c38f24122aa1ce00e9ba7c38afc388ff8a6"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "2b8ee19e18f936d418cdd2736a2b393114da6a1d"
   blueprint_digest: "67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6"
   evidence_refs:
-    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-023516368-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-023516368-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/05a9711a127a89045099c6b661407a1deed83cbb60c9ff4a40a1432525c028d3.md"
-    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-023516368-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-023516368-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-023516368-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032054934-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032054934-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/dd566a9b5d203afe6696debc870f09defa484a5d3d2decf976fad1b210bcd672.md"
+    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032054934-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032054934-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032054934-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032054934-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608070209-J3DEJ1/README.md"
-    - ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/6d5ee6502327b98e935bc94e6e7ce7dbde9c0a6d4d847aaee9ff3708fdc67de3.patch"
-    - ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/eb542046354cbf2b54e32e9e69ba5e8314d6e70c9f20e266366bd02a5f731b6d.json"
-    - ".agentplane/tasks/202608070209-J3DEJ1/verification/20260808023458265-d2416214d187e60f.json"
+    - ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/833e053130ba5464eeb8f2cf2f5074ceb02b5a0db55e469068e0eb95d72d8925.patch"
+    - ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/4a6b43a525c46f747c18c8548c61584197697dc4fe038f2a972f0c50d7f40a4c.json"
     - ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/a2ba69a380e48f032b46d95590f3b233521dff6a4ddef6ed545527402c3e3d8e.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Final repository cleanliness evidence is not included in the frozen verification packet."
+    - "Frozen evidence contains no deterministic verification record for evaluated SHA 2b8ee19e18f936d418cdd2736a2b393114da6a1d."
+  recovery_reason: "deterministic_evidence_gap"
 token_usage:
   agent_runs: 1
   input_tokens: 203548
@@ -75,9 +76,7 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit:
-  hash: "839d615a8fcf35ff3bc45b562579b216adbf12e9"
-  message: "🧩 J3DEJ1 task: record implementation evidence"
+commit: null
 comments:
   -
     author: "CODER"
@@ -122,8 +121,26 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-08T02:50:49.891Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "PR review identified two concurrency safety gaps"
+  -
+    type: "verify"
+    at: "2026-08-08T02:59:22.383Z"
+    author: "CODER"
+    state: "ok"
+    note: "Rework closes both PR concurrency findings"
+  -
+    type: "verify"
+    at: "2026-08-08T03:20:42.322Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Independent local and hosted verification passed on post-review implementation"
 doc_version: 3
-doc_updated_at: "2026-08-08T02:36:40.241Z"
+doc_updated_at: "2026-08-08T03:21:40.397Z"
 doc_updated_by: "CODER"
 description: "Treat unmatched natural-language outcomes as unknown instead of safe direct; make repository-wide task creation locking safely recoverable after process interruption; add regression and recovery tests before 0.7.5."
 sections:
@@ -224,11 +241,123 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-08T02:50:49.891Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: PR review identified two concurrency safety gaps
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T02:36:40.241Z, excerpt_hash=sha256:6c65d3895482f8de2d6e290107cf68ece00194ea75dd5dcdcaf0d012970b04ca
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608070209-J3DEJ1-harden-automatic-task-intake-against-unknown-int/.agentplane/tasks/202608070209-J3DEJ1/blueprint/resolved-snapshot.json
+    - old_digest: 67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6
+    - current_digest: 67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608070209-J3DEJ1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T02:59:22.383Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Rework closes both PR concurrency findings
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T02:50:51.154Z, excerpt_hash=sha256:6c65d3895482f8de2d6e290107cf68ece00194ea75dd5dcdcaf0d012970b04ca
+
+    Details:
+
+    Command: bunx vitest run packages/core/src/tasks/task-readme-io.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts; bun run typecheck; bun run ci:core; bun run test:critical; bun run ci:contract
+    Result: PASS; focused 19/19, core 395/395, all 12 critical CLI chunks, typecheck, and complete contract gate succeeded.
+    Evidence: implementation commit 2b8ee19e1; lock record v2 binds reclaim to host/PID namespace; recovery claim is linked only from a fully written and synced candidate.
+    Scope: task intake classification, repository-wide task creation lock recovery, and task README transaction concurrency only.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608070209-J3DEJ1-harden-automatic-task-intake-against-unknown-int/.agentplane/tasks/202608070209-J3DEJ1/blueprint/resolved-snapshot.json
+    - old_digest: 67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6
+    - current_digest: 67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608070209-J3DEJ1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T03:20:42.322Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Independent local and hosted verification passed on post-review implementation
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T03:00:44.471Z, excerpt_hash=sha256:6c65d3895482f8de2d6e290107cf68ece00194ea75dd5dcdcaf0d012970b04ca
+
+    Details:
+
+    Command: bunx vitest run packages/core/src/tasks/task-readme-io.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts; bun run typecheck; bun run ci:core; bun run test:critical; bun run ci:contract; AGENTPLANE_FAST_CHANGED_FILES=<exact diff> bun run ci:local:fast
+    Result: PASS; focused 19/19, core 395/395, critical 12/12, full-fast 544 files/3900 tests, and all static/contract/type gates succeeded.
+    Evidence: evaluated implementation SHA 2b8ee19e18f936d418cdd2736a2b393114da6a1d; local command exits were 0.
+    Scope: post-review task intake and task README lock recovery changes only.
+
+    Command: gh pr checks 4797 --watch
+    Result: PASS on exact PR head 2b8ee19e18f936d418cdd2736a2b393114da6a1d.
+    Evidence: Windows, unit, static, critical CLI, contract, coverage, workflow, package runtimes, docs, both CodeQL analyses, and aggregate PR verification completed successfully.
+    Scope: hosted Linux/Windows execution, security analysis, package compatibility, and documentation gates.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608070209-J3DEJ1-harden-automatic-task-intake-against-unknown-int/.agentplane/tasks/202608070209-J3DEJ1/blueprint/resolved-snapshot.json
+    - old_digest: 67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6
+    - current_digest: 67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608070209-J3DEJ1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608070209-J3DEJ1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Recovery could classify another host or PID namespace as stale, and a torn recovery-marker write could block future transactions indefinitely.
+      Impact: A shared repository could admit overlapping task updates, while an interrupted marker publication could create a permanent local denial of service.
+      Resolution: Require same process-domain identity before stale-owner reclamation and publish recovery claims through a fully written candidate plus atomic hard-link publication; add regression tests for both cases.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
+      IncidentScope: task README lock recovery
+      IncidentTags: concurrency, recovery
 extensions:
   implementation_commit:
     hash: "1f452c38f24122aa1ce00e9ba7c38afc388ff8a6"
@@ -345,6 +474,111 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-08T02:50:49.891Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: PR review identified two concurrency safety gaps
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T02:36:40.241Z, excerpt_hash=sha256:6c65d3895482f8de2d6e290107cf68ece00194ea75dd5dcdcaf0d012970b04ca
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608070209-J3DEJ1-harden-automatic-task-intake-against-unknown-int/.agentplane/tasks/202608070209-J3DEJ1/blueprint/resolved-snapshot.json
+- old_digest: 67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6
+- current_digest: 67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608070209-J3DEJ1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T02:59:22.383Z — VERIFY — ok
+
+By: CODER
+
+Note: Rework closes both PR concurrency findings
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T02:50:51.154Z, excerpt_hash=sha256:6c65d3895482f8de2d6e290107cf68ece00194ea75dd5dcdcaf0d012970b04ca
+
+Details:
+
+Command: bunx vitest run packages/core/src/tasks/task-readme-io.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts; bun run typecheck; bun run ci:core; bun run test:critical; bun run ci:contract
+Result: PASS; focused 19/19, core 395/395, all 12 critical CLI chunks, typecheck, and complete contract gate succeeded.
+Evidence: implementation commit 2b8ee19e1; lock record v2 binds reclaim to host/PID namespace; recovery claim is linked only from a fully written and synced candidate.
+Scope: task intake classification, repository-wide task creation lock recovery, and task README transaction concurrency only.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608070209-J3DEJ1-harden-automatic-task-intake-against-unknown-int/.agentplane/tasks/202608070209-J3DEJ1/blueprint/resolved-snapshot.json
+- old_digest: 67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6
+- current_digest: 67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608070209-J3DEJ1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T03:20:42.322Z — VERIFY — ok
+
+By: TESTER
+
+Note: Independent local and hosted verification passed on post-review implementation
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T03:00:44.471Z, excerpt_hash=sha256:6c65d3895482f8de2d6e290107cf68ece00194ea75dd5dcdcaf0d012970b04ca
+
+Details:
+
+Command: bunx vitest run packages/core/src/tasks/task-readme-io.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts; bun run typecheck; bun run ci:core; bun run test:critical; bun run ci:contract; AGENTPLANE_FAST_CHANGED_FILES=<exact diff> bun run ci:local:fast
+Result: PASS; focused 19/19, core 395/395, critical 12/12, full-fast 544 files/3900 tests, and all static/contract/type gates succeeded.
+Evidence: evaluated implementation SHA 2b8ee19e18f936d418cdd2736a2b393114da6a1d; local command exits were 0.
+Scope: post-review task intake and task README lock recovery changes only.
+
+Command: gh pr checks 4797 --watch
+Result: PASS on exact PR head 2b8ee19e18f936d418cdd2736a2b393114da6a1d.
+Evidence: Windows, unit, static, critical CLI, contract, coverage, workflow, package runtimes, docs, both CodeQL analyses, and aggregate PR verification completed successfully.
+Scope: hosted Linux/Windows execution, security analysis, package compatibility, and documentation gates.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608070209-J3DEJ1-harden-automatic-task-intake-against-unknown-int/.agentplane/tasks/202608070209-J3DEJ1/blueprint/resolved-snapshot.json
+- old_digest: 67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6
+- current_digest: 67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608070209-J3DEJ1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608070209-J3DEJ1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -353,6 +587,14 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Recovery could classify another host or PID namespace as stale, and a torn recovery-marker write could block future transactions indefinitely.
+  Impact: A shared repository could admit overlapping task updates, while an interrupted marker publication could create a permanent local denial of service.
+  Resolution: Require same process-domain identity before stale-owner reclamation and publish recovery claims through a fully written candidate plus atomic hard-link publication; add regression tests for both cases.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
+  IncidentScope: task README lock recovery
+  IncidentTags: concurrency, recovery
 
 ## Token Usage
 

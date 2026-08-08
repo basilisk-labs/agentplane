@@ -1,0 +1,23 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-readme-io.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts",
+    "bun run typecheck",
+    "bun run ci:contract"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-08T02:59:22.383Z",
+    "updated_by": "CODER",
+    "note": "Rework closes both PR concurrency findings"
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

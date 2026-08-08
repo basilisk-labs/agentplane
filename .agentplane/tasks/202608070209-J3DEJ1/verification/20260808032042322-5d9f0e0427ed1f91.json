@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest run packages/core/src/tasks/task-readme-io.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts; bun run typecheck; bun run ci:core; bun run test:critical; bun run ci:contract; AGENTPLANE_FAST_CHANGED_FILES=<exact diff> bun run ci:local:fast\nResult: PASS; focused 19/19, core 395/395, critical 12/12, full-fast 544 files/3900 tests, and all static/contract/type gates succeeded.\nEvidence: evaluated implementation SHA 2b8ee19e18f936d418cdd2736a2b393114da6a1d; local command exits were 0.\nScope: post-review task intake and task README lock recovery changes only.\n\nCommand: gh pr checks 4797 --watch\nResult: PASS on exact PR head 2b8ee19e18f936d418cdd2736a2b393114da6a1d.\nEvidence: Windows, unit, static, critical CLI, contract, coverage, workflow, package runtimes, docs, both CodeQL analyses, and aggregate PR verification completed successfully.\nScope: hosted Linux/Windows execution, security analysis, package compatibility, and documentation gates.",
+  "digest": "sha256:5d9f0e0427ed1f91d9a0bc5807a6d64a268f21b5aa0a98ef5ec3ddce6adc9051",
+  "implementation_sha": "2b8ee19e18f936d418cdd2736a2b393114da6a1d",
+  "kind": "task_verification_record",
+  "note": "Independent local and hosted verification passed on post-review implementation",
+  "recorded_at": "2026-08-08T03:20:42.322Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused core lock, route resolver, and user-first CLI suites. Expected: unknown outcomes require confirmation and branch isolation; explicit code outcomes retain the direct route; stale same-host process locks recover; malformed or unverifiable locks remain fail-closed; concurrent creators produce one task.\n2. Run `bun run typecheck`. Expected: all workspace packages typecheck.\n3. Run `bun run ci:contract`. Expected: formatting, schemas, compatibility, architecture, clone, Knip, and coverage contract gates pass.\n4. Run hosted Windows, unit, static, critical, contract, coverage, docs, and CodeQL checks on the exact PR head. Expected: all required checks pass.",
+  "scope_digest": "sha256:6c65d3895482f8de2d6e290107cf68ece00194ea75dd5dcdcaf0d012970b04ca",
+  "task_id": "202608070209-J3DEJ1",
+  "verification_command": "agentplane task verify ok 202608070209-J3DEJ1 --ok --by TESTER",
+  "verifier": "TESTER"
+}

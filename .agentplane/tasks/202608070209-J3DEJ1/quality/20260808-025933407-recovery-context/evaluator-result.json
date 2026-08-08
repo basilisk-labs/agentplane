@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "Frozen evidence contains no deterministic verification record for evaluated SHA 2b8ee19e18f936d418cdd2736a2b393114da6a1d; the hosted checks documented in the task apply to an earlier PR head, while the post-rework checks are only a CODER-authored claim.",
+      "broken_invariant": "Pass requires recorded verification covering positive, negative, concurrency-sensitive, and hosted checks on the exact evaluated head; observed-checks reports empty verification_records, runner_history, and runtime_evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/c6d8c8ff574695f8bcad71354c0fad5cfd97a9c52d63d714b655692af10fd204.json",
+          "sha256": "sha256:c6d8c8ff574695f8bcad71354c0fad5cfd97a9c52d63d714b655692af10fd204",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608070209-J3DEJ1/README.md",
+          "sha256": "sha256:2dc02ce2cdf0649f6206ea90511645d3d2c455ebc653a729b3e9d3e267cf7586",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Deterministically recorded focused lock, route resolver, and CLI regression results on evaluated SHA 2b8ee19e18f936d418cdd2736a2b393114da6a1d.",
+    "Deterministically recorded typecheck and ci:contract results on evaluated SHA 2b8ee19e18f936d418cdd2736a2b393114da6a1d.",
+    "Hosted Windows, unit, static, critical, contract, coverage, docs, and CodeQL results on the exact post-rework PR head containing evaluated SHA 2b8ee19e18f936d418cdd2736a2b393114da6a1d."
+  ],
+  "hidden_assumptions": [
+    "The post-rework concurrency changes do not invalidate hosted checks that ran against the earlier PR head 839d615a8fcf35ff3bc45b562579b216adbf12e9.",
+    "The CODER-authored verification note accurately represents commands executed on the evaluated SHA despite the frozen observed-checks artifact containing no runtime evidence."
+  ],
+  "recovery_context": "Record deterministic focused, typecheck, ci:contract, and required hosted verification evidence on the exact evaluated post-rework head, then rerun evaluation.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

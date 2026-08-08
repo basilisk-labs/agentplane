@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608070209-J3DEJ1-0cb4ea4d8f8a957016ca6e92",
+  "task_id": "202608070209-J3DEJ1",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Provide frozen deterministic local and hosted verification records tied to evaluated SHA 2b8ee19e18f936d418cdd2736a2b393114da6a1d.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "Frozen evidence contains no deterministic verification record for evaluated SHA 2b8ee19e18f936d418cdd2736a2b393114da6a1d.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/4a6b43a525c46f747c18c8548c61584197697dc4fe038f2a972f0c50d7f40a4c.json",
+          "sha256": "sha256:4a6b43a525c46f747c18c8548c61584197697dc4fe038f2a972f0c50d7f40a4c",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608070209-J3DEJ1/README.md",
+          "sha256": "sha256:7de3776cf3010a21b35cc81c0687b42094cef3c4ec232b5a9684f3495936a67b",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032054934-recovery-context/evaluator-result.json"
+}
