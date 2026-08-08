@@ -261,6 +261,34 @@ describe("v0.7.1 release qualification contract", () => {
     assert.ok(events.indexOf("finish:critical-cli:1") < events.indexOf("start:after-b:2"));
   });
 
+  it("does not overlap packaged candidate builds with CLI readers", async () => {
+    const scenarios = [
+      { id: "reader-before", tier: "core", depends_on: [] },
+      { id: "packaged-candidate-flow", tier: "full", depends_on: [] },
+      { id: "reader-after", tier: "core", depends_on: [] },
+    ];
+    const events = [];
+    let active = 0;
+    await runQualificationScenarios(scenarios, {}, "/unused", {
+      concurrency: 2,
+      async scenarioRunner(scenario) {
+        active += 1;
+        events.push(`start:${scenario.id}:${active}`);
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        events.push(`finish:${scenario.id}:${active}`);
+        active -= 1;
+        return scenario.id;
+      },
+    });
+
+    assert.ok(
+      events.indexOf("finish:reader-before:1") < events.indexOf("start:packaged-candidate-flow:1"),
+    );
+    assert.ok(
+      events.indexOf("finish:packaged-candidate-flow:1") < events.indexOf("start:reader-after:1"),
+    );
+  });
+
   it("stops queued work after failure and settles active work without starting dependents", async () => {
     const scenarios = [
       { id: "prerequisite", tier: "core", depends_on: [] },

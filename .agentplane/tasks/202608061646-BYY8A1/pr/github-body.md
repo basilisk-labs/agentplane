@@ -19,10 +19,8 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
 - Note:
 
 ```text
-Release qualification requires rework: product-contract validation rejects the legitimate
-permanent_historical_reader retirement policy, Knip reports the extracted SupervisorExecutionLease
-as an unused export, and the provider qualification was invalidated by concurrent task-only HEAD
-drift before any provider episode completed.
+Qualification concurrency rework: packaged-candidate-flow mutates shared CLI build artifacts while
+supervisor-frontends reads them, causing deterministic frontend command failures under overlap.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -67,12 +65,12 @@ drift before any provider episode completed.
  .../internal/agent-efficiency-codex-runtime.mjs    |  38 +++-
  .../bench/run-agent-efficiency-codex-replay.mjs    |   2 +
  .../check-v0.7.1-product-contract.mjs              |  14 +-
- .../qualification/release-qualification.test.mjs   |  31 ++-
- .../run-v0.7.1-release-qualification.mjs           |   2 +
+ .../qualification/release-qualification.test.mjs   |  59 +++++-
+ .../run-v0.7.1-release-qualification.mjs           |   3 +
  website/static/img/social/docs/releases/v0.7.5.png | Bin 0 -> 53016 bytes
  website/static/img/social/manifest.json            |   8 +
  website/static/llms-full.txt                       |  52 ++++-
- 38 files changed, 991 insertions(+), 229 deletions(-)
+ 38 files changed, 1020 insertions(+), 229 deletions(-)
 ```
 
 </details>

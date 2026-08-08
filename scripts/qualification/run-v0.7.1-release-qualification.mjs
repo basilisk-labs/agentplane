@@ -43,6 +43,7 @@ const EXCLUSIVE_QUALIFICATION_SCENARIO_IDS = new Set([
   "critical-cli",
   "full-contract",
   "matched-cli-latency",
+  "packaged-candidate-flow",
   "supervisor-latency",
 ]);
 
