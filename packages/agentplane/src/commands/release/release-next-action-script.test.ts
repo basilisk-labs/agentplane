@@ -279,6 +279,64 @@ describe("release next-action script", () => {
     expect(payload.command).toBe("ap release plan --patch");
   });
 
+  it.each([
+    ["missing", null],
+    ["stale", { nextVersion: "0.6.7", nextTag: "v0.6.7" }],
+    ["current", { nextVersion: "0.6.8", nextTag: "v0.6.8" }],
+    ["invalid", { nextVersion: "not-semver", nextTag: "v0.6.9" }],
+    ["inconsistent", { nextVersion: "0.6.9", nextTag: "v0.7.0" }],
+  ])("requests a fresh patch plan for a %s latest plan", async (_label, latestPlan) => {
+    const closedState = structuredClone(releaseState);
+    closedState.release.evidence_exists = true;
+    closedState.release.evidence_valid = true;
+    closedState.release.latest_plan = latestPlan as typeof closedState.release.latest_plan;
+    const statePath = await writeJsonFixture("state.json", closedState);
+    const recoveryPath = await writeJsonFixture("recovery.json", recoveryReport);
+    const githubReleasePath = await writeJsonFixture("github-release.json", { state: "present" });
+
+    const result = await execFileAsync(
+      "node",
+      [SCRIPT_PATH, "--check-registry", "--check-github", "--json"],
+      {
+        env: {
+          ...process.env,
+          AGENTPLANE_TEST_RELEASE_STATE_PATH: statePath,
+          AGENTPLANE_TEST_RELEASE_RECOVERY_REPORT_PATH: recoveryPath,
+          AGENTPLANE_TEST_GITHUB_RELEASE_STATUS_PATH: githubReleasePath,
+        },
+      },
+    );
+    const payload = JSON.parse(result.stdout) as { action: string; command: string };
+
+    expect(payload.action).toBe("generate a fresh release plan for the next patch");
+    expect(payload.command).toBe("ap release plan --patch");
+  });
+
+  it("prepares a candidate only when valid evidence has a future plan", async () => {
+    const closedState = structuredClone(releaseState);
+    closedState.release.evidence_exists = true;
+    closedState.release.evidence_valid = true;
+    closedState.release.latest_plan = { nextVersion: "0.6.9", nextTag: "v0.6.9" };
+    const statePath = await writeJsonFixture("state.json", closedState);
+    const githubReleasePath = await writeJsonFixture("github-release.json", { state: "present" });
+
+    const result = await execFileAsync(
+      "node",
+      [SCRIPT_PATH, "--check-registry", "--check-github", "--json"],
+      {
+        env: {
+          ...process.env,
+          AGENTPLANE_TEST_RELEASE_STATE_PATH: statePath,
+          AGENTPLANE_TEST_GITHUB_RELEASE_STATUS_PATH: githubReleasePath,
+        },
+      },
+    );
+    const payload = JSON.parse(result.stdout) as { action: string; command: string };
+
+    expect(payload.action).toBe("run release candidate preparation");
+    expect(payload.command).toBe("bun run release:candidate:prepare -- --write");
+  });
+
   it("passes --github-repo through to GitHub release lookup", async () => {
     const statePath = await writeJsonFixture("state.json", releaseState);
     const recoveryPath = await writeJsonFixture("recovery.json", recoveryReport);
