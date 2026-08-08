@@ -181,6 +181,42 @@ describe("v0.7.1 release qualification contract", () => {
     );
   });
 
+  it("runs latency measurements exclusively without disabling other concurrency", async () => {
+    const scenarios = [
+      { id: "slow", tier: "core", depends_on: [] },
+      { id: "fast", tier: "core", depends_on: [] },
+      { id: "matched-cli-latency", tier: "full", depends_on: [] },
+      { id: "after-a", tier: "full", depends_on: [] },
+      { id: "after-b", tier: "full", depends_on: [] },
+    ];
+    const events = [];
+    let active = 0;
+    let maximumActive = 0;
+    const delays = { "after-a": 5, "after-b": 5, fast: 5, "matched-cli-latency": 5, slow: 20 };
+    const results = await runQualificationScenarios(scenarios, {}, "/unused", {
+      concurrency: 2,
+      async scenarioRunner(scenario) {
+        active += 1;
+        maximumActive = Math.max(maximumActive, active);
+        events.push(`start:${scenario.id}:${active}`);
+        await new Promise((resolve) => setTimeout(resolve, delays[scenario.id]));
+        events.push(`finish:${scenario.id}:${active}`);
+        active -= 1;
+        return scenario.id;
+      },
+    });
+
+    assert.equal(maximumActive, 2);
+    assert.deepEqual(
+      results,
+      scenarios.map((scenario) => scenario.id),
+    );
+    assert.ok(events.indexOf("finish:slow:1") < events.indexOf("start:matched-cli-latency:1"));
+    assert.ok(events.indexOf("finish:fast:2") < events.indexOf("start:matched-cli-latency:1"));
+    assert.ok(events.indexOf("finish:matched-cli-latency:1") < events.indexOf("start:after-a:1"));
+    assert.ok(events.indexOf("finish:matched-cli-latency:1") < events.indexOf("start:after-b:2"));
+  });
+
   it("excludes disposable matched-latency fixtures from host indexing", () => {
     const tempRoot = createMatchedLatencyTempRoot(tmpdir());
     try {
