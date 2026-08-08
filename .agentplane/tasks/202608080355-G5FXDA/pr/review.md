@@ -6,7 +6,7 @@ Created: 2026-08-08T03:55:51.970Z
 
 - Task: `202608080355-G5FXDA`
 - Title: Correct stale plan comparison in next-action diagnostics
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608080355-G5FXDA/correct-stale-plan-comparison-in-next-action-dia`
 - Canonical task record: `.agentplane/tasks/202608080355-G5FXDA/README.md`
 
