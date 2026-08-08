@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -26,35 +26,35 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-08T04:20:39.357Z"
+  updated_at: "2026-08-08T05:00:09.779Z"
   updated_by: "TESTER"
-  note: "Portable task-local evidence now covers the source task, evaluator, hosted PR, merge equivalence, policy routing, generated assets, and release incident gate."
+  note: "The incident archive branch rebased cleanly onto the runner-race fix; focused policy gates and the full repository contract gate pass on the current implementation head."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-08T04:21:25.473Z"
+  updated_at: "2026-08-08T05:01:08.415Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "545fcf42424bbf202f490660f3bd2f446f8b47f7"
+  evaluated_sha: "bd8e927e35fef00de49e82b1415cbb9e0496b84d"
   blueprint_digest: "9090cfbeaabacdf524924ee64dcd560636a7f61b009b35d1d3235f0ab18df533"
   evidence_refs:
-    - ".agentplane/tasks/202608080403-N0VXJ0/quality/20260808-042049442-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608080403-N0VXJ0/quality/20260808-042049442-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/3820db636efbe009a14a078661879b5ba0317e3bc88ecb7d8031088d21696e7b.md"
-    - ".agentplane/tasks/202608080403-N0VXJ0/quality/20260808-042049442-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608080403-N0VXJ0/quality/20260808-042049442-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608080403-N0VXJ0/quality/20260808-042049442-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608080403-N0VXJ0/quality/20260808-050023693-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608080403-N0VXJ0/quality/20260808-050023693-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/59be17aa1a345b110a9c72f23a2de194955a5460d1db5d04eb4f77590cbce1e0.md"
+    - ".agentplane/tasks/202608080403-N0VXJ0/quality/20260808-050023693-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608080403-N0VXJ0/quality/20260808-050023693-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608080403-N0VXJ0/quality/20260808-050023693-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608080403-N0VXJ0/README.md"
     - ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/4dd42e85fe95b8b553e4117112e35c40acd6b3467a9e8b0819d6bcf2a360b516.patch"
-    - ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/07720aff1a19710b3faa463ff32e2aa24242d8d63a4b8f95511fbf71682efee5.json"
-    - ".agentplane/tasks/202608080403-N0VXJ0/verification/20260808042039357-c97f0bdf0e27a4b6.json"
+    - ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/aa3c29c15f91e466e28fccdb936cb1d745864014b73b19a7cff74da42f85c401.json"
+    - ".agentplane/tasks/202608080403-N0VXJ0/verification/20260808050009779-c9d2a403ad43045e.json"
     - ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/e7f0d8937798e7a28e334c69c2a382fb72e68022016a5544cd7eb10b3267bdcb.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/dod.docs.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The frozen diff preserves INC-20260807-01 in the historical archive and removes the matching active entries from both synchronized incident registries; frozen verification records cover source-task closure, implementation equivalence, hosted checks, formatting, routing, generated assets, and the release incident gate."
+    - "The frozen diff archives INC-20260807-01 with final merged evidence and removes the corresponding active entry from both synchronized incident registries; current verification covers routing, registry release gating, generated asset parity, formatting, repository contracts, diff integrity, and the concurrency-sensitive rebase."
 token_usage:
   agent_runs: 4
   input_tokens: 279584
@@ -136,8 +136,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-08T05:00:09.779Z"
+    author: "TESTER"
+    state: "ok"
+    note: "The incident archive branch rebased cleanly onto the runner-race fix; focused policy gates and the full repository contract gate pass on the current implementation head."
 doc_version: 3
-doc_updated_at: "2026-08-08T04:23:00.345Z"
+doc_updated_at: "2026-08-08T05:01:08.452Z"
 doc_updated_by: "DOCS"
 description: "Preserve INC-20260807-01 with its final merged evidence in docs/developer/incident-archive.mdx, then remove it from the active repository and bundled incident registries. The dependency-readiness and supervisor protocol failure is repaired by merged task 202608062021-MCY8ZC and its focused, hosted, and evaluator evidence. Keep incident registry semantics and generated assets aligned so the release incident gate passes."
 sections:
@@ -378,6 +384,71 @@ sections:
 
     DecisionContextRef:
     - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T05:00:09.779Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: The incident archive branch rebased cleanly onto the runner-race fix; focused policy gates and the full repository contract gate pass on the current implementation head.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T04:23:00.345Z, excerpt_hash=sha256:892885f258f55ec52bd79c98a9afd725a13f450f23cae28593d0d6e9b7053180
+
+    Details:
+
+    Command: git rebase origin/main
+    Result: pass; the policy/archive branch rebased cleanly onto main at 75f1e4b2678dd8784e28279870287fd6091129a3, which includes the bounded concurrent effect-retirement fix from PR 4801.
+    Evidence: current implementation head e972bb2e3f0c819054fcdebdaa883e162cd8392a.
+    Scope: Rework required by the prior hosted runner race; no policy conflict or semantic change was introduced by the rebase.
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass; policy routing and size budgets remain valid on the rebased head.
+    Evidence: direct command output was policy routing OK.
+    Scope: Canonical policy gateway and incident module routing.
+
+    Command: bun run release:incidents:check
+    Result: pass; the active release incident registry remains empty.
+    Evidence: direct command output confirmed no active entries.
+    Scope: Release readiness after archiving INC-20260807-01.
+
+    Command: bun run agents:check
+    Result: pass; canonical and bundled policy templates remain synchronized.
+    Evidence: direct command output was agents templates OK.
+    Scope: Generated agent policy parity.
+
+    Command: bunx prettier --check docs/developer/incident-archive.mdx .agentplane/policy/incidents.md packages/agentplane/assets/policy/incidents.md
+    Result: pass; all changed policy/archive documents match repository formatting.
+    Evidence: Prettier reported all matched files use its code style.
+    Scope: Incident archive and active canonical/bundled registries.
+
+    Command: bun run ci:contract
+    Result: pass; formatting, schemas, policy, compatibility and efficiency baselines, hotspots, lifecycle invariants, TypeScript toolchain, guards, lint, architecture, clone, Knip, and coverage contracts all passed on the rebased head.
+    Evidence: command exited 0 after coverage threshold guard passed.
+    Scope: Complete repository contract gate for the rebased policy change.
+
+    Command: git diff --check
+    Result: pass; the rebased task diff has no whitespace errors.
+    Evidence: command exited 0 on current head.
+    Scope: Final rebased branch integrity before verification persistence.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608080403-N0VXJ0-archive-resolved-supervisor-route-incident/.agentplane/tasks/202608080403-N0VXJ0/blueprint/resolved-snapshot.json
+    - old_digest: 9090cfbeaabacdf524924ee64dcd560636a7f61b009b35d1d3235f0ab18df533
+    - current_digest: 9090cfbeaabacdf524924ee64dcd560636a7f61b009b35d1d3235f0ab18df533
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608080403-N0VXJ0
+
+    DecisionContextRef:
+    - operator_action: stop
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
@@ -654,6 +725,71 @@ BlueprintSnapshotRef:
 
 DecisionContextRef:
 - operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T05:00:09.779Z — VERIFY — ok
+
+By: TESTER
+
+Note: The incident archive branch rebased cleanly onto the runner-race fix; focused policy gates and the full repository contract gate pass on the current implementation head.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T04:23:00.345Z, excerpt_hash=sha256:892885f258f55ec52bd79c98a9afd725a13f450f23cae28593d0d6e9b7053180
+
+Details:
+
+Command: git rebase origin/main
+Result: pass; the policy/archive branch rebased cleanly onto main at 75f1e4b2678dd8784e28279870287fd6091129a3, which includes the bounded concurrent effect-retirement fix from PR 4801.
+Evidence: current implementation head e972bb2e3f0c819054fcdebdaa883e162cd8392a.
+Scope: Rework required by the prior hosted runner race; no policy conflict or semantic change was introduced by the rebase.
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass; policy routing and size budgets remain valid on the rebased head.
+Evidence: direct command output was policy routing OK.
+Scope: Canonical policy gateway and incident module routing.
+
+Command: bun run release:incidents:check
+Result: pass; the active release incident registry remains empty.
+Evidence: direct command output confirmed no active entries.
+Scope: Release readiness after archiving INC-20260807-01.
+
+Command: bun run agents:check
+Result: pass; canonical and bundled policy templates remain synchronized.
+Evidence: direct command output was agents templates OK.
+Scope: Generated agent policy parity.
+
+Command: bunx prettier --check docs/developer/incident-archive.mdx .agentplane/policy/incidents.md packages/agentplane/assets/policy/incidents.md
+Result: pass; all changed policy/archive documents match repository formatting.
+Evidence: Prettier reported all matched files use its code style.
+Scope: Incident archive and active canonical/bundled registries.
+
+Command: bun run ci:contract
+Result: pass; formatting, schemas, policy, compatibility and efficiency baselines, hotspots, lifecycle invariants, TypeScript toolchain, guards, lint, architecture, clone, Knip, and coverage contracts all passed on the rebased head.
+Evidence: command exited 0 after coverage threshold guard passed.
+Scope: Complete repository contract gate for the rebased policy change.
+
+Command: git diff --check
+Result: pass; the rebased task diff has no whitespace errors.
+Evidence: command exited 0 on current head.
+Scope: Final rebased branch integrity before verification persistence.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608080403-N0VXJ0-archive-resolved-supervisor-route-incident/.agentplane/tasks/202608080403-N0VXJ0/blueprint/resolved-snapshot.json
+- old_digest: 9090cfbeaabacdf524924ee64dcd560636a7f61b009b35d1d3235f0ab18df533
+- current_digest: 9090cfbeaabacdf524924ee64dcd560636a7f61b009b35d1d3235f0ab18df533
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608080403-N0VXJ0
+
+DecisionContextRef:
+- operator_action: stop
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none

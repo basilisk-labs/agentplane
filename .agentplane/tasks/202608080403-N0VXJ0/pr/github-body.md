@@ -19,8 +19,8 @@ Preserve INC-20260807-01 with its final merged evidence in docs/developer/incide
 - Note:
 
 ```text
-Portable task-local evidence now covers the source task, evaluator, hosted PR, merge equivalence,
-policy routing, generated assets, and release incident gate.
+The incident archive branch rebased cleanly onto the runner-race fix; focused policy gates and the
+full repository contract gate pass on the current implementation head.
 ```
 - Canonical workflow state lives in the task README.
 

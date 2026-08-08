@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "low",
+      "summary": "The frozen diff archives INC-20260807-01 with final merged evidence and removes the corresponding active entry from both synchronized incident registries; current verification covers routing, registry release gating, generated asset parity, formatting, repository contracts, diff integrity, and the concurrency-sensitive rebase.",
+      "broken_invariant": "No invariant is broken; the implementation and frozen evidence satisfy the approved archival, synchronization, verification, and recovery-context contract.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/4dd42e85fe95b8b553e4117112e35c40acd6b3467a9e8b0819d6bcf2a360b516.patch",
+          "sha256": "sha256:4dd42e85fe95b8b553e4117112e35c40acd6b3467a9e8b0819d6bcf2a360b516"
+        },
+        {
+          "path": ".agentplane/tasks/202608080403-N0VXJ0/verification/20260808050009779-c9d2a403ad43045e.json",
+          "sha256": "sha256:33f485a69cfe7aad8b4e66adc08ecfb4ffb10648e23776fc1aef538a4f7e3f99"
+        },
+        {
+          "path": ".agentplane/tasks/202608080403-N0VXJ0/README.md",
+          "sha256": "sha256:9f9f0fcb3e61d7bce8a59c9d9a13eae49ffa8a286147c835363ce53ef055edbb",
+          "section": "Findings"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
