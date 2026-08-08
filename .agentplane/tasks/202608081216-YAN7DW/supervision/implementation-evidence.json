@@ -1,0 +1,99 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check c603521981291f6487f926240137c3cba7cd8fc6..44a20df62970908b1d043e9c8bdd9da7ded611c3",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB c603521981291f6487f926240137c3cba7cd8fc6..44a20df62970908b1d043e9c8bdd9da7ded611c3",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202608081216-YAN7DW/README.md",
+        "A\t.agentplane/tasks/202608081216-YAN7DW/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202608081216-YAN7DW/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202608081216-YAN7DW/pr/github-body.md",
+        "A\t.agentplane/tasks/202608081216-YAN7DW/pr/github-title.txt",
+        "A\t.agentplane/tasks/202608081216-YAN7DW/pr/meta.json",
+        "A\t.agentplane/tasks/202608081216-YAN7DW/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts",
+        "M\tscripts/bench/capture-agent-efficiency-candidate.mjs",
+        "M\tscripts/qualification/release-qualification.test.mjs",
+        "M\tscripts/qualification/run-v0.7.1-release-qualification.mjs",
+        "M\tscripts/qualification/v0.7.1-release-qualification.json"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "c603521981291f6487f926240137c3cba7cd8fc6",
+  "implementation_commit": "44a20df62970908b1d043e9c8bdd9da7ded611c3",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202608081216-YAN7DW/README.md",
+      "?? .agentplane/tasks/202608081216-YAN7DW/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202608081216-YAN7DW/pr/diffstat.txt",
+      "?? .agentplane/tasks/202608081216-YAN7DW/pr/github-body.md",
+      "?? .agentplane/tasks/202608081216-YAN7DW/pr/github-title.txt",
+      "?? .agentplane/tasks/202608081216-YAN7DW/pr/meta.json",
+      "?? .agentplane/tasks/202608081216-YAN7DW/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608081216-YAN7DW/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608081216-YAN7DW/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608081216-YAN7DW/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608081216-YAN7DW/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608081216-YAN7DW/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608081216-YAN7DW/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608081216-YAN7DW/pr/review.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202608081216-YAN7DW/README.md",
+      "?? .agentplane/tasks/202608081216-YAN7DW/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202608081216-YAN7DW/pr/diffstat.txt",
+      "?? .agentplane/tasks/202608081216-YAN7DW/pr/github-body.md",
+      "?? .agentplane/tasks/202608081216-YAN7DW/pr/github-title.txt",
+      "?? .agentplane/tasks/202608081216-YAN7DW/pr/meta.json",
+      "?? .agentplane/tasks/202608081216-YAN7DW/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608081216-YAN7DW"
+}
