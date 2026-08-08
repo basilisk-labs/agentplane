@@ -29,9 +29,9 @@ Created: 2026-08-08T04:32:07.103Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../runner/usecases/task-run-effect-resolution.test.ts  |  6 +++++-
- .../src/runner/usecases/task-run-effect-resolution.ts   | 17 +++++++++++------
- 2 files changed, 16 insertions(+), 7 deletions(-)
+ .../src/runner/usecases/task-run-effect-resolution.test.ts |  6 +++++-
+ .../src/runner/usecases/task-run-effect-resolution.ts      | 14 ++++++++------
+ 2 files changed, 13 insertions(+), 7 deletions(-)
 ```
 
 </details>

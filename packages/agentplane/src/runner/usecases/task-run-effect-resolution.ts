@@ -1,5 +1,3 @@
-import { performance } from "node:perf_hooks";
-
 import {
   createRunnerEffectResolution,
   createRunnerEffectResolutionIntent,
@@ -35,8 +33,7 @@ import { retireTaskRunnerActiveClaimAfterEffectResolution } from "./task-run-eff
 const EFFECT_RESOLUTION_ARTIFACT_MAX_BYTES = 64 * 1024;
 const LEGACY_EFFECT_ACCEPTANCE_FILENAME = ".runner-effect-legacy-acceptance.json";
 const IMMUTABLE_ARTIFACT_OBSERVATION_ATTEMPTS = 5;
-const CONCURRENT_RETIREMENT_OBSERVATION_TIMEOUT_MS = 2000;
-const CONCURRENT_RETIREMENT_POLL_INTERVAL_MS = 10;
+const CONCURRENT_RETIREMENT_OBSERVATION_MS = { timeout: 2000, poll: 10 };
 
 type ResolutionArtifacts = {
   intent: RunnerEffectResolutionIntent;
@@ -117,7 +114,7 @@ async function waitForConcurrentResolutionRetirement(opts: {
   run_id: string;
   resolution: RunnerEffectResolutionRef;
 }): Promise<boolean> {
-  const deadline = performance.now() + CONCURRENT_RETIREMENT_OBSERVATION_TIMEOUT_MS;
+  const deadline = performance.now() + CONCURRENT_RETIREMENT_OBSERVATION_MS.timeout;
   for (;;) {
     const [record, activeClaim] = await Promise.all([
       opts.repository.readRequiredRecord({ task_id: opts.task_id, run_id: opts.run_id }),
@@ -137,7 +134,7 @@ async function waitForConcurrentResolutionRetirement(opts: {
     const remainingMs = deadline - performance.now();
     if (remainingMs <= 0) return false;
     await new Promise<void>((resolve) =>
-      setTimeout(resolve, Math.min(CONCURRENT_RETIREMENT_POLL_INTERVAL_MS, remainingMs)),
+      setTimeout(resolve, Math.min(CONCURRENT_RETIREMENT_OBSERVATION_MS.poll, remainingMs)),
     );
   }
 }
