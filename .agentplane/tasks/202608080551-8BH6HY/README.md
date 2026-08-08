@@ -4,7 +4,7 @@ title: "Accept external task-worktree resolution results"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -61,8 +61,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "67cad90645803330d942920235c3882f059dfa41"
-  message: "🚧 8BH6HY task: apply external agent result"
+  hash: "c421bde71fb5260237a2cfbf84dfa91c692b6457"
+  message: "🐛 8BH6HY supervisor: resume exact interrupted formal operation"
 comments:
   -
     author: "CODER"
@@ -82,6 +82,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 67cad9064580. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Recovery: recorded the implementation head containing exact interrupted formal-operation resumption."
 events:
   -
     type: "status"
@@ -149,9 +152,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-08T06:56:13.109Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Recovery: recorded the implementation head containing exact interrupted formal-operation resumption."
 doc_version: 3
-doc_updated_at: "2026-08-08T06:50:10.087Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-08T06:56:13.109Z"
+doc_updated_by: "CODER"
 description: "Fix task advance so a state-bound task_worktree_resolution episode can return a completed result after the CODER commits intended changes, without being rejected as an unsupported or stale read-only purpose; add focused regression coverage."
 sections:
   Summary: |-
