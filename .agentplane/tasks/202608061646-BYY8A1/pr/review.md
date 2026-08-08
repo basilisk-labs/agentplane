@@ -6,7 +6,7 @@ Created: 2026-08-08T03:44:44.414Z
 
 - Task: `202608061646-BYY8A1`
 - Title: Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608061646-BYY8A1/qualify-and-publish-agentplane-0-7-5-supervisor`
 - Canonical task record: `.agentplane/tasks/202608061646-BYY8A1/README.md`
 
