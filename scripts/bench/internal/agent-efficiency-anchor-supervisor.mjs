@@ -268,7 +268,12 @@ export function measurePreparedContext(bundleBytes, bootstrapBytes, runState = n
   } catch {
     fail("ANCHOR_BUNDLE_JSON");
   }
-  if (!bootstrapBytes.includes("Use bundle.json as the complete runner input.")) {
+  const projectsCompleteProviderInput =
+    bootstrapBytes.includes("Use bundle.json as the complete runner input.") ||
+    bootstrapBytes.includes(
+      "The content below is the complete provider-facing projection for this episode.",
+    );
+  if (!projectsCompleteProviderInput) {
     fail("ANCHOR_BOOTSTRAP_BUNDLE_REFERENCE");
   }
   if (!Array.isArray(bundle.base_prompts) || bundle.base_prompts.length === 0) {

@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:1c8aa2e5d3cc919cdb30550cb4dffd8279c4e0253649e8bfe0811d627c11b517",
+  "implementation_sha": "cf672117ea6b473d67006c007002f1a53c731ba9",
+  "kind": "task_verification_record",
+  "note": "Provider qualification driver rejects the current semantic-projection bootstrap because it only recognizes the historical bundle.json instruction; zero provider episodes completed.",
+  "recorded_at": "2026-08-08T19:03:34.636Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "- bun run ci:local:full\n- bun run ci:release-extras\n- bun run e2e:v0.7.1:gate\n- bun run bench:compatibility:check\n- bun run bench:agent-efficiency:check\n- bun run bench:agent-efficiency:replay:check",
+  "scope_digest": "sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a",
+  "task_id": "202608061646-BYY8A1",
+  "verification_command": "agentplane verify 202608061646-BYY8A1 --rework --by TESTER",
+  "verifier": "TESTER"
+}

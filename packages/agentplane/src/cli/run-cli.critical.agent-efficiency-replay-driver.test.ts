@@ -307,6 +307,8 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
       second: repeated,
     })}\n`;
     const bootstrap = "Use bundle.json as the complete runner input.\n";
+    const semanticProjectionBootstrap =
+      "The content below is the complete provider-facing projection for this episode.\n";
 
     expect(
       replayDriver.measurePreparedContext(bundle, bootstrap, {
@@ -322,6 +324,11 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
       prompt_boilerplate_source: "anchor_run_state.prepared_metadata.prompt_boilerplate_bytes",
     });
     expect(replayDriver.measurePreparedContext(bundle, bootstrap)).toMatchObject({
+      prompt_boilerplate_bytes: Buffer.byteLength(basePrompt),
+      prompt_boilerplate_definition: "bundle_base_prompt_content_utf8_v1",
+      prompt_boilerplate_source: "anchor_bundle.base_prompts.content",
+    });
+    expect(replayDriver.measurePreparedContext(bundle, semanticProjectionBootstrap)).toMatchObject({
       prompt_boilerplate_bytes: Buffer.byteLength(basePrompt),
       prompt_boilerplate_definition: "bundle_base_prompt_content_utf8_v1",
       prompt_boilerplate_source: "anchor_bundle.base_prompts.content",
