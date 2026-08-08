@@ -12,8 +12,8 @@ Created: 2026-08-08T05:52:09.195Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:contract
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
