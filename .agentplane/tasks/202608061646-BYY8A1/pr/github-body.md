@@ -19,11 +19,10 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
 - Note:
 
 ```text
-PASS: implementation 68c3884984a8a57e6b96f56593e25a746836cd56 verified. ci:local:full and
-ci:release-extras passed; full provider qualification report
-.agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/report.json is ready with
-release_ready=true, matched CLI and supervisor latency pass, provider matrix and efficiency evidence
-pass. Absolute CLI latency diagnostic remains advisory and is cleared by the matched comparison.
+Exact-subject qualification passed on aaef3c8be167784f26f7c994fb44db2915a9c160: verdict ready, 18/19
+scenarios passed, zero blocking defects, provider matrix 50 runs/55 episodes passed, efficiency
+evidence passed with 58.59% total-token reduction, matched and supervisor latency passed; absolute
+latency remains advisory only.
 ```
 - Canonical workflow state lives in the task README.
 

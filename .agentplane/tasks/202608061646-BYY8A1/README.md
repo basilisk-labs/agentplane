@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 72
+revision: 73
 origin:
   system: "manual"
 depends_on:
@@ -41,9 +41,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-08T19:52:59.027Z"
+  updated_at: "2026-08-08T19:55:35.973Z"
   updated_by: "TESTER"
-  note: "PASS: implementation 68c3884984a8a57e6b96f56593e25a746836cd56 verified. ci:local:full and ci:release-extras passed; full provider qualification report .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/report.json is ready with release_ready=true, matched CLI and supervisor latency pass, provider matrix and efficiency evidence pass. Absolute CLI latency diagnostic remains advisory and is cleared by the matched comparison."
+  note: "Exact-subject qualification passed on aaef3c8be167784f26f7c994fb44db2915a9c160: verdict ready, 18/19 scenarios passed, zero blocking defects, provider matrix 50 runs/55 episodes passed, efficiency evidence passed with 58.59% total-token reduction, matched and supervisor latency passed; absolute latency remains advisory only."
   attempts: 0
 commit:
   hash: "68c3884984a8a57e6b96f56593e25a746836cd56"
@@ -518,8 +518,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: implementation 68c3884984a8a57e6b96f56593e25a746836cd56 verified. ci:local:full and ci:release-extras passed; full provider qualification report .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/report.json is ready with release_ready=true, matched CLI and supervisor latency pass, provider matrix and efficiency evidence pass. Absolute CLI latency diagnostic remains advisory and is cleared by the matched comparison."
+  -
+    type: "verify"
+    at: "2026-08-08T19:55:35.973Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Exact-subject qualification passed on aaef3c8be167784f26f7c994fb44db2915a9c160: verdict ready, 18/19 scenarios passed, zero blocking defects, provider matrix 50 runs/55 episodes passed, efficiency evidence passed with 58.59% total-token reduction, matched and supervisor latency passed; absolute latency remains advisory only."
 doc_version: 3
-doc_updated_at: "2026-08-08T19:53:00.354Z"
+doc_updated_at: "2026-08-08T19:55:37.694Z"
 doc_updated_by: "CODER"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
@@ -1455,6 +1461,66 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T19:52:37.173Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+    - old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608061646-BYY8A1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T19:55:35.973Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Exact-subject qualification passed on aaef3c8be167784f26f7c994fb44db2915a9c160: verdict ready, 18/19 scenarios passed, zero blocking defects, provider matrix 50 runs/55 episodes passed, efficiency evidence passed with 58.59% total-token reduction, matched and supervisor latency passed; absolute latency remains advisory only.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T19:53:00.354Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: task README verification history and launchd exit=0 on the qualified implementation lineage
+    Scope: complete local CI contract
+
+    Command: bun run ci:release-extras
+    Result: pass
+    Evidence: task README verification history; 102 release-ci-base chunks plus workflow, significant, and release-critical coverage passed
+    Scope: release extras and coverage
+
+    Command: bun run e2e:v0.7.1:gate
+    Result: pass
+    Evidence: .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/report.json
+    Scope: exact-subject full local and provider qualification
+
+    Command: bun run bench:compatibility:check
+    Result: pass
+    Evidence: .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/logs/full-contract.log
+    Scope: compatibility baseline
+
+    Command: bun run bench:agent-efficiency:check
+    Result: pass
+    Evidence: .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/efficiency-evidence.json
+    Scope: provider efficiency and quality evidence
+
+    Command: bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/logs/full-contract.log
+    Scope: frozen RF-04 replay contract
 
     BlueprintSnapshotRef:
     - state: current
@@ -2453,6 +2519,66 @@ Attempts: 0
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T19:52:37.173Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+- old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608061646-BYY8A1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T19:55:35.973Z — VERIFY — ok
+
+By: TESTER
+
+Note: Exact-subject qualification passed on aaef3c8be167784f26f7c994fb44db2915a9c160: verdict ready, 18/19 scenarios passed, zero blocking defects, provider matrix 50 runs/55 episodes passed, efficiency evidence passed with 58.59% total-token reduction, matched and supervisor latency passed; absolute latency remains advisory only.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T19:53:00.354Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
+
+Details:
+
+Command: bun run ci:local:full
+Result: pass
+Evidence: task README verification history and launchd exit=0 on the qualified implementation lineage
+Scope: complete local CI contract
+
+Command: bun run ci:release-extras
+Result: pass
+Evidence: task README verification history; 102 release-ci-base chunks plus workflow, significant, and release-critical coverage passed
+Scope: release extras and coverage
+
+Command: bun run e2e:v0.7.1:gate
+Result: pass
+Evidence: .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/report.json
+Scope: exact-subject full local and provider qualification
+
+Command: bun run bench:compatibility:check
+Result: pass
+Evidence: .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/logs/full-contract.log
+Scope: compatibility baseline
+
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/efficiency-evidence.json
+Scope: provider efficiency and quality evidence
+
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/logs/full-contract.log
+Scope: frozen RF-04 replay contract
 
 BlueprintSnapshotRef:
 - state: current
