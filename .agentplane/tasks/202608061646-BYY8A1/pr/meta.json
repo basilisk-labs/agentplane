@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:f810003b47d290f54c59228f1b851f87688d66a58ef1dcf7afd71ca2eb31ca14",
   "pr_number": 4798,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4798",
+  "pre_merge_closure": {
+    "basis_commit": "bc03ccf3c75bfffd2867451c5daad0d45a3d4ad5",
+    "branch": "task/202608061646-BYY8A1/qualify-and-publish-agentplane-0-7-5-supervisor",
+    "pr_number": 4798,
+    "recorded_at": "2026-08-08T20:38:57.491Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608061646-BYY8A1",

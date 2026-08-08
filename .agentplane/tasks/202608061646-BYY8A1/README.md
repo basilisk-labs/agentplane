@@ -1,10 +1,11 @@
 ---
 id: "202608061646-BYY8A1"
 title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 77
+revision: 78
 origin:
   system: "manual"
 depends_on:
@@ -80,9 +81,23 @@ quality_review:
     - ".agentplane/policy/workflow.release.md"
   findings:
     - "Frozen evidence proves the evaluated implementation and qualified subject are equivalent outside task-local metadata, and the required release, negative-path, recovery, concurrency, compatibility, and efficiency checks passed under the declared gating policy."
+token_usage:
+  agent_runs: 25
+  input_tokens: 347860
+  journal_digest: "sha256:f3e45a9d74d558a4f6b75c8f8c414798e68563e91fd3643673c5d508e38a6708"
+  observed_agent_runs: 2
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "partial"
+  total_tokens: 353797
+  unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
+  updated_at: "2026-08-08T20:38:57.417Z"
 commit:
-  hash: "68c3884984a8a57e6b96f56593e25a746836cd56"
-  message: "🐛 BYY8A1 task: release RF-04 checkouts per run"
+  hash: "bc03ccf3c75bfffd2867451c5daad0d45a3d4ad5"
+  message: "🚧 BYY8A1 task: record evaluator pass"
 comments:
   -
     author: "DOCS"
@@ -162,6 +177,9 @@ comments:
   -
     author: "CODER"
     body: "Re-enter verification after one non-reproducing release-ci-base failure; the isolated start-ready test passed six consecutive retries. No semantic implementation change is required."
+  -
+    author: "DOCS"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -571,9 +589,17 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Evaluator rework resolved for implementation 68c3884984a8a57e6b96f56593e25a746836cd56: both monolithic release gates reran with exit 0; exact qualification, latency disposition, provider matrix, efficiency evidence, and deterministic subject-equivalence proof are frozen under task evidence and accepted through .agentplane/cache runtime refs."
+  -
+    type: "status"
+    at: "2026-08-08T20:38:57.417Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "bc03ccf3c75bfffd2867451c5daad0d45a3d4ad5"
 doc_version: 3
-doc_updated_at: "2026-08-08T20:34:52.709Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-08T20:38:57.429Z"
+doc_updated_by: "DOCS"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
   Summary: |-
@@ -1739,6 +1765,9 @@ sections:
       Impact: Release candidate satisfies the declared local, provider, compatibility, recovery, workflow, and efficiency gates.
       Resolution: Proceed to publish PR head, hosted verification, integration, and release publication.
 extensions:
+  implementation_commit:
+    hash: "68c3884984a8a57e6b96f56593e25a746836cd56"
+    message: "🐛 BYY8A1 task: release RF-04 checkouts per run"
   workflow_route_baseline:
     start_head_sha: "4a2895659e677071caaa9b56cadf35df8e261e82"
     version: 1
@@ -2921,3 +2950,16 @@ Do not publish unless all gates pass. Before publication, abandon the candidate 
 - Observation: Full local release qualification completed on head aaef3c8be167784f26f7c994fb44db2915a9c160 with 18/19 scenarios passing and zero blocking failures.
   Impact: Release candidate satisfies the declared local, provider, compatibility, recovery, workflow, and efficiency gates.
   Resolution: Proceed to publish PR head, hosted verification, integration, and release publication.
+
+## Token Usage
+
+- State: `partial`
+- Completeness: `2/25` agent runs
+- Input tokens: `347860`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `353797`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:f3e45a9d74d558a4f6b75c8f8c414798e68563e91fd3643673c5d508e38a6708`
+- Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
+- Updated at: `2026-08-08T20:38:57.417Z`
