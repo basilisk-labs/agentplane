@@ -4,7 +4,7 @@ title: "Accept external task-worktree resolution results"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -12,7 +12,7 @@ tags:
   - "bug"
   - "supervisor"
 verify:
-  - "bun run vitest packages/agentplane/src/commands/task/external-agent-purpose.test.ts"
+  - "bun run test:critical"
   - "bun run typecheck"
   - "bun run ci:contract"
 plan_approval:
