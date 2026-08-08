@@ -108,6 +108,27 @@ describe("direct task verification", () => {
     );
   });
 
+  it("does not treat an empty code-task check contract as successful verification", async () => {
+    const cwd = await root();
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: { verify: [], task_kind: "code", mutation_scope: "code" },
+      task_id: TASK_ID,
+      cwd,
+    });
+
+    expect(result).toMatchObject({
+      status: "unsupported",
+      checks: [],
+      reason: "No executable declared verification checks are configured for this task.",
+    });
+    expect(mocks.runProcess).not.toHaveBeenCalled();
+    expect(JSON.parse(await readFile(path.join(cwd, result.artifact_path), "utf8"))).toMatchObject({
+      status: "unsupported",
+      checks: [],
+    });
+  });
+
   it("stops at the first failed or unsupported check and still writes the evidence artifact", async () => {
     const cwd = await root();
     mocks.runProcess.mockResolvedValue({ exitCode: 7, stdout: "", stderr: "failed" });

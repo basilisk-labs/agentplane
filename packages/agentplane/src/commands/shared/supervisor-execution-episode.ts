@@ -6,6 +6,7 @@ import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
   migrateSupervisorExecutionEpisodeJournal,
+  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   startSupervisorExecutionEpisode,
@@ -272,6 +273,46 @@ export async function openSupervisorExecutionEpisode(opts: {
   );
 }
 
+export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
+  git_root: string;
+  task_id: string;
+  state_fingerprint_digest: string;
+}): Promise<"prepared" | "already_prepared" | "not_failed"> {
+  const journalPath = await resolveSupervisorExecutionEpisodePath({
+    git_root: opts.git_root,
+    task_id: opts.task_id,
+  });
+  if ((await createSupervisorEpisodeStore(journalPath).read()) === null) return "not_failed";
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const opened = await openSupervisorExecutionEpisode({
+      git_root: opts.git_root,
+      task_id: opts.task_id,
+      task_revision: null,
+      state_fingerprint_digest: opts.state_fingerprint_digest,
+      recover_intent: false,
+    });
+    const journal = opened.journal;
+    if (
+      journal.status === "running" &&
+      journal.cursor.phase === "ready" &&
+      typeof journal.cursor.replacement_of_operation_key === "string"
+    ) {
+      return "already_prepared";
+    }
+    if (journal.status !== "stopped" || journal.stop?.reason !== "operation_failed") {
+      return "not_failed";
+    }
+    const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+      journal,
+      state_fingerprint_digest: opts.state_fingerprint_digest,
+    });
+    if (await opened.store.compareAndSwap(journal.digest, replacement)) return "prepared";
+  }
+  throw new Error(
+    "Supervisor episode journal changed while failed-operation replacement was being prepared.",
+  );
+}
+
 function operationKind(decision: TaskRouteDecision): SupervisorEpisodeOperationKind {
   const operation =
     decision.workflowStep.kind === "cli_operation" ? decision.workflowStep.operation : null;
@@ -444,6 +485,9 @@ export async function supervisePersistedWorkflowEpisode(opts: {
       authority_ref: `workflow-operation:${operation.id}`,
       authority_digest: operation.preconditionFingerprint.digest,
       effect_ref: operation.idempotencyKey,
+      ...(journal.cursor.replacement_of_operation_key
+        ? { replacement_of_operation_key: journal.cursor.replacement_of_operation_key }
+        : {}),
     });
   let started = start();
   if (started.status === "stopped" && started.stop.reason === "stale_state") {
