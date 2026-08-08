@@ -4,7 +4,7 @@ title: "Parallelize release qualification without weakening gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -39,11 +39,16 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "44a20df62970908b1d043e9c8bdd9da7ded611c3"
+  message: "🚧 YAN7DW task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: implement bounded release-qualification concurrency with isolated provider fixtures and unchanged quality gates."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 44a20df62970. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -52,9 +57,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement bounded release-qualification concurrency with isolated provider fixtures and unchanged quality gates."
+  -
+    type: "status"
+    at: "2026-08-08T12:30:47.296Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 44a20df62970. CLI accepted one state-bound external-agent semantic result."
+    commit: "44a20df62970908b1d043e9c8bdd9da7ded611c3"
 doc_version: 3
-doc_updated_at: "2026-08-08T12:17:22.983Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-08T12:30:47.296Z"
+doc_updated_by: "SUPERVISOR"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
   Summary: |-
