@@ -32,6 +32,7 @@ Created: 2026-08-08T03:44:44.414Z
  docs/releases/v0.7.5.md                            |  64 +++++++++++++++++++++
  package.json                                       |   2 +-
  .../run-cli.core.help-snap.test.ts.snap            |   3 +-
+ .../src/cli/measure-cli-cold-path-script.test.ts   |  15 +++--
  .../cli/run-cli.core.branch-meta.readiness.test.ts |  12 ++--
  ...n-cli.core.branch-meta.workflow-profile.test.ts |  10 +++-
  .../src/cli/run-cli.core.docs-cli.test.ts          |   2 +-
@@ -50,7 +51,7 @@ Created: 2026-08-08T03:44:44.414Z
  website/static/img/social/docs/releases/v0.7.5.png | Bin 0 -> 53016 bytes
  website/static/img/social/manifest.json            |   8 +++
  website/static/llms-full.txt                       |  52 +++++++++++++++--
- 21 files changed, 310 insertions(+), 26 deletions(-)
+ 22 files changed, 321 insertions(+), 30 deletions(-)
 ```
 
 </details>
