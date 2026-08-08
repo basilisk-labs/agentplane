@@ -29,6 +29,12 @@ export function makeRunTaskAdvanceHandler(deps: {
   getContext: (command: string, options: { includeRemote: boolean }) => Promise<CommandContext>;
 }) {
   return async (ctx: CommandCtx, parsed: TaskAdvanceParsed): Promise<number> => {
+    if (parsed.result && parsed.replacement) {
+      throw new CliError({
+        code: "E_USAGE",
+        message: "task advance --replacement cannot be combined with --result.",
+      });
+    }
     const command = await deps.getContext("task advance", { includeRemote: parsed.remote });
     const decide = async (freshHead = false): Promise<TaskRouteDecision> => {
       const routeCommand = freshHead
@@ -224,6 +230,7 @@ export function makeRunTaskAdvanceHandler(deps: {
       command: preparationCommand,
       decision: prepared.route_decision,
       work_order: prepared.work_order,
+      replace_failed_operation: parsed.replacement,
     });
     const resumeArgv = exchange
       ? [

@@ -149,6 +149,7 @@ export async function issueExternalAgentExchange(opts: {
   command: CommandContext;
   decision: TaskRouteDecision;
   work_order: AgentWorkOrderV2;
+  replace_failed_operation: boolean;
 }): Promise<IssuedExternalAgentExchange | null> {
   const step = opts.decision.workflowStep;
   const purpose = semanticPurpose(opts.decision);
@@ -186,6 +187,7 @@ export async function issueExternalAgentExchange(opts: {
       work_order_ref: paths.work_order,
       purpose,
       issue_digest: externalAgentIssueDigest({ exchange: existing, work_order: workOrder }),
+      replace_failed_operation: opts.replace_failed_operation,
     });
     return {
       exchange: existing,
@@ -241,6 +243,7 @@ export async function issueExternalAgentExchange(opts: {
     work_order_ref: paths.work_order,
     purpose,
     issue_digest: externalAgentIssueDigest({ exchange, work_order: workOrder }),
+    replace_failed_operation: opts.replace_failed_operation,
   });
   return { exchange, paths, work_order: workOrder };
 }
