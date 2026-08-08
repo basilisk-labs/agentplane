@@ -1,0 +1,91 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run test:critical",
+    "bun run typecheck",
+    "bun run ci:contract"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-08T06:50:09.081Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608080551-8BH6HY/verification/20260808065009081-d69a81664bbf8c75.json",
+      "sha256": "sha256:5977038053df87885c8a0c7fbba81a654ea1c3b298d7950396223eb8e133a6ae"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check b106e4a573ebce9790623916311c066cdd48a068..67cad90645803330d942920235c3882f059dfa41",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB b106e4a573ebce9790623916311c066cdd48a068..67cad90645803330d942920235c3882f059dfa41",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+          "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": [
+          " M .agentplane/tasks/202608080551-8BH6HY/README.md",
+          " M .agentplane/tasks/202608080551-8BH6HY/supervision/implementation-evidence.json"
+        ]
+      }
+    ],
+    "execution_base_commit": "b106e4a573ebce9790623916311c066cdd48a068",
+    "implementation_commit": "67cad90645803330d942920235c3882f059dfa41",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [
+        {
+          "classification": "introduced_during_execution",
+          "line": " M .agentplane/tasks/202608080551-8BH6HY/README.md"
+        },
+        {
+          "classification": "introduced_during_execution",
+          "line": " M .agentplane/tasks/202608080551-8BH6HY/supervision/implementation-evidence.json"
+        }
+      ],
+      "final": [
+        " M .agentplane/tasks/202608080551-8BH6HY/README.md",
+        " M .agentplane/tasks/202608080551-8BH6HY/supervision/implementation-evidence.json"
+      ],
+      "introduced_after_execution_baseline": [
+        " M .agentplane/tasks/202608080551-8BH6HY/README.md",
+        " M .agentplane/tasks/202608080551-8BH6HY/supervision/implementation-evidence.json"
+      ],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608080551-8BH6HY",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608080551-8BH6HY/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

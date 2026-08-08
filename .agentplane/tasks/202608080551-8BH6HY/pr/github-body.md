@@ -32,12 +32,14 @@ Fix task advance so a state-bound task_worktree_resolution episode can return a 
  .../route-decision-blockers.quality-review.test.ts |  57 ++++
  .../src/commands/shared/route-decision-blockers.ts |   5 +-
  .../commands/shared/route-decision-verification.ts |  18 ++
+ ...direct-task-supervisor-formal-operation.test.ts |  61 +++++
+ .../direct-task-supervisor-formal-operation.ts     |  16 +-
  .../external-agent-implementation-authority.ts     |   5 +-
  .../commands/task/external-agent-purpose.test.ts   |  33 +++
  .../src/commands/task/external-agent-purpose.ts    |  17 ++
  .../task/external-agent-supervisor-episode.ts      | 116 ++++++++
  .../src/commands/task/external-agent-supervisor.ts | 113 +-------
- 10 files changed, 616 insertions(+), 108 deletions(-)
+ 12 files changed, 691 insertions(+), 110 deletions(-)
 ```
 
 </details>
