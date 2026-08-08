@@ -978,7 +978,7 @@ export function validateCandidatePilotCapture({
 export async function captureCandidate(options, dependencies = {}) {
   const resolveCodexBinary = dependencies.resolveCodexBinary ?? resolveCodexReplayBinary;
   if (typeof resolveCodexBinary !== "function") {
-    throw new Error("candidate Codex binary resolver must be a function");
+    throw new TypeError("candidate Codex binary resolver must be a function");
   }
   assertCandidateCaptureMode(options);
   const subject = assertCandidateSubject(options.subject);
