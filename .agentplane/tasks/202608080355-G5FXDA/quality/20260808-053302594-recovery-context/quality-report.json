@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608080355-G5FXDA",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-08T05:33:46.664Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "d0020e56ce863b4466e9e415c7e01e23de8fdb9f",
+  "blueprint_digest": "1b180e9a165d9cb3562acf6522bc3586c6efcc4f7e890b83961f1821c1184d65",
+  "findings": [
+    "The implementation satisfies the plan-target relation contract: missing, stale, current, malformed, incomplete, or inconsistent metadata requests a fresh patch plan, while only a canonical, internally consistent future target permits candidate preparation."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/2675b2b1c2e447a38402ad74a241b16852b9da2ed700fe88f3e9bd4a1c6da72d.patch",
+    ".agentplane/tasks/202608080355-G5FXDA/verification/20260808053251397-679c58c75e9c2b44.json",
+    ".agentplane/tasks/202608080355-G5FXDA/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

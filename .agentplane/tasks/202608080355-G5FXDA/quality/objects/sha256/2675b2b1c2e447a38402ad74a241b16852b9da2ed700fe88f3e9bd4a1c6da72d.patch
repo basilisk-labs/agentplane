@@ -1,0 +1,170 @@
+diff --git a/packages/agentplane/src/commands/release/release-next-action-script.test.ts b/packages/agentplane/src/commands/release/release-next-action-script.test.ts
+index b3a41cf4c..95f1ff1d9 100644
+--- a/packages/agentplane/src/commands/release/release-next-action-script.test.ts
++++ b/packages/agentplane/src/commands/release/release-next-action-script.test.ts
+@@ -279,6 +279,98 @@ describe("release next-action script", () => {
+     expect(payload.command).toBe("ap release plan --patch");
+   });
+ 
++  it.each([
++    ["missing", null],
++    ["stale", { nextVersion: "0.6.7", nextTag: "v0.6.7" }],
++    ["current", { nextVersion: "0.6.8", nextTag: "v0.6.8" }],
++    ["invalid", { nextVersion: "not-semver", nextTag: "v0.6.9" }],
++    ["inconsistent", { nextVersion: "0.6.9", nextTag: "v0.7.0" }],
++    ["version-only", { nextVersion: "0.6.9" }],
++    ["tag-only", { nextTag: "v0.6.9" }],
++    ["unprefixed-tag", { nextVersion: "0.6.9", nextTag: "0.6.9" }],
++    ["prefixed-version", { nextVersion: "v0.6.9", nextTag: "v0.6.9" }],
++  ])("requests a fresh patch plan for a %s latest plan", async (_label, latestPlan) => {
++    const closedState = structuredClone(releaseState);
++    closedState.release.evidence_exists = true;
++    closedState.release.evidence_valid = true;
++    closedState.release.latest_plan = latestPlan as typeof closedState.release.latest_plan;
++    const statePath = await writeJsonFixture("state.json", closedState);
++    const recoveryPath = await writeJsonFixture("recovery.json", recoveryReport);
++    const githubReleasePath = await writeJsonFixture("github-release.json", { state: "present" });
++
++    const result = await execFileAsync(
++      "node",
++      [SCRIPT_PATH, "--check-registry", "--check-github", "--json"],
++      {
++        env: {
++          ...process.env,
++          AGENTPLANE_TEST_RELEASE_STATE_PATH: statePath,
++          AGENTPLANE_TEST_RELEASE_RECOVERY_REPORT_PATH: recoveryPath,
++          AGENTPLANE_TEST_GITHUB_RELEASE_STATUS_PATH: githubReleasePath,
++        },
++      },
++    );
++    const payload = JSON.parse(result.stdout) as { action: string; command: string };
++
++    expect(payload.action).toBe("generate a fresh release plan for the next patch");
++    expect(payload.command).toBe("ap release plan --patch");
++  });
++
++  it("prepares a candidate only when valid evidence has a future plan", async () => {
++    const closedState = structuredClone(releaseState);
++    closedState.release.evidence_exists = true;
++    closedState.release.evidence_valid = true;
++    closedState.release.latest_plan = { nextVersion: "0.6.9", nextTag: "v0.6.9" };
++    const statePath = await writeJsonFixture("state.json", closedState);
++    const githubReleasePath = await writeJsonFixture("github-release.json", { state: "present" });
++
++    const result = await execFileAsync(
++      "node",
++      [SCRIPT_PATH, "--check-registry", "--check-github", "--json"],
++      {
++        env: {
++          ...process.env,
++          AGENTPLANE_TEST_RELEASE_STATE_PATH: statePath,
++          AGENTPLANE_TEST_GITHUB_RELEASE_STATUS_PATH: githubReleasePath,
++        },
++      },
++    );
++    const payload = JSON.parse(result.stdout) as { action: string; command: string };
++
++    expect(payload.action).toBe("run release candidate preparation");
++    expect(payload.command).toBe("bun run release:candidate:prepare -- --write");
++  });
++
++  it("orders future plan components beyond Number.MAX_SAFE_INTEGER without precision loss", async () => {
++    const closedState = structuredClone(releaseState);
++    closedState.release.version = "9007199254740992.0.0";
++    closedState.release.tag = "v9007199254740992.0.0";
++    closedState.release.evidence_exists = true;
++    closedState.release.evidence_valid = true;
++    closedState.release.latest_plan = {
++      nextVersion: "9007199254740993.0.0",
++      nextTag: "v9007199254740993.0.0",
++    };
++    const statePath = await writeJsonFixture("state.json", closedState);
++    const githubReleasePath = await writeJsonFixture("github-release.json", { state: "present" });
++
++    const result = await execFileAsync(
++      "node",
++      [SCRIPT_PATH, "--check-registry", "--check-github", "--json"],
++      {
++        env: {
++          ...process.env,
++          AGENTPLANE_TEST_RELEASE_STATE_PATH: statePath,
++          AGENTPLANE_TEST_GITHUB_RELEASE_STATUS_PATH: githubReleasePath,
++        },
++      },
++    );
++    const payload = JSON.parse(result.stdout) as { action: string; command: string };
++
++    expect(payload.action).toBe("run release candidate preparation");
++    expect(payload.command).toBe("bun run release:candidate:prepare -- --write");
++  });
++
+   it("passes --github-repo through to GitHub release lookup", async () => {
+     const statePath = await writeJsonFixture("state.json", releaseState);
+     const recoveryPath = await writeJsonFixture("recovery.json", recoveryReport);
+diff --git a/scripts/release/next-action.mjs b/scripts/release/next-action.mjs
+index abe2edcfc..651378fd1 100644
+--- a/scripts/release/next-action.mjs
++++ b/scripts/release/next-action.mjs
+@@ -43,6 +43,50 @@ function latestPlanTargetsCurrentRelease(state) {
+   return plan?.nextVersion === state.release?.version && plan?.nextTag === state.release?.tag;
+ }
+ 
++function parseStableReleaseVersion(value, { tag = false } = {}) {
++  const pattern = tag
++    ? /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/u
++    : /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/u;
++  const match = pattern.exec(String(value ?? "").trim());
++  return match ? [BigInt(match[1]), BigInt(match[2]), BigInt(match[3])] : null;
++}
++
++function compareStableReleaseVersions(left, right) {
++  for (const [index, leftPart] of left.entries()) {
++    if (leftPart > right[index]) return 1;
++    if (leftPart < right[index]) return -1;
++  }
++  return 0;
++}
++
++function latestPlanTargetRelation(state) {
++  const currentVersion = parseStableReleaseVersion(state.release?.version);
++  const currentTagVersion = parseStableReleaseVersion(state.release?.tag, { tag: true });
++  const plan = state.release?.latest_plan;
++  const hasPlannedVersion = plan && Object.hasOwn(plan, "nextVersion");
++  const hasPlannedTag = plan && Object.hasOwn(plan, "nextTag");
++  const plannedVersion = parseStableReleaseVersion(plan?.nextVersion);
++  const plannedTagVersion = parseStableReleaseVersion(plan?.nextTag, { tag: true });
++
++  if (
++    !currentVersion ||
++    !currentTagVersion ||
++    compareStableReleaseVersions(currentVersion, currentTagVersion) !== 0
++  ) {
++    return "invalid";
++  }
++  if (!plan || (!hasPlannedVersion && !hasPlannedTag)) return "missing";
++  if (!hasPlannedVersion || !hasPlannedTag || !plannedVersion || !plannedTagVersion) {
++    return "invalid";
++  }
++  if (compareStableReleaseVersions(plannedVersion, plannedTagVersion) !== 0) return "invalid";
++
++  const comparison = compareStableReleaseVersions(plannedVersion, currentVersion);
++  if (comparison > 0) return "future";
++  if (comparison < 0) return "stale";
++  return "current";
++}
++
+ function loadRecoveryReport(flags, state) {
+   const fixturePath = process.env.AGENTPLANE_TEST_RELEASE_RECOVERY_REPORT_PATH;
+   if (fixturePath) return readJsonFile(fixturePath);
+@@ -244,7 +288,10 @@ function main() {
+   ) {
+     action = "collect hosted publish evidence";
+     command = "bun run release:evidence:collect";
+-  } else if (state.release.latest_plan?.nextTag === state.release.tag) {
++  } else if (
++    state.release.evidence_valid === true &&
++    latestPlanTargetRelation(state) !== "future"
++  ) {
+     action = "generate a fresh release plan for the next patch";
+     command = "ap release plan --patch";
+   }

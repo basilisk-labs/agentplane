@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RECOVERY-001",
+      "severity": "low",
+      "summary": "The implementation satisfies the plan-target relation contract: missing, stale, current, malformed, incomplete, or inconsistent metadata requests a fresh patch plan, while only a canonical, internally consistent future target permits candidate preparation.",
+      "broken_invariant": "No invariant is broken; the accepted release diagnostic behavior is implemented and covered by focused positive and negative fixtures.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/2675b2b1c2e447a38402ad74a241b16852b9da2ed700fe88f3e9bd4a1c6da72d.patch",
+          "sha256": "sha256:2675b2b1c2e447a38402ad74a241b16852b9da2ed700fe88f3e9bd4a1c6da72d"
+        },
+        {
+          "path": ".agentplane/tasks/202608080355-G5FXDA/verification/20260808053251397-679c58c75e9c2b44.json",
+          "sha256": "sha256:9d532a019623711a5c881f8a3ae5f6b7d2664f41582b2961f00ff9bb47cdd4bc"
+        },
+        {
+          "path": ".agentplane/tasks/202608080355-G5FXDA/README.md",
+          "sha256": "sha256:41633ff3cf2a25230665a05c57b8e3fd6b6e83e9af6284cc6ee2c68b4a01b7f1",
+          "section": "Plan"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

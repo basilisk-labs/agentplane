@@ -13,7 +13,7 @@ Created: 2026-08-08T03:55:51.970Z
 ## Verification
 
 - State: ok
-- Note: Final committed implementation requires complete consistent plan metadata, compares arbitrarily large stable-version components without precision loss, and passes 15 focused scenarios plus the full contract gate.
+- Note: PR review feedback is resolved: release plans require canonical X.Y.Z and vX.Y.Z metadata, active incidents are cleared on current main, and 17 focused scenarios plus the full contract gate pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
