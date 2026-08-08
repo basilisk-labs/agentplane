@@ -6,7 +6,7 @@ Created: 2026-08-08T04:03:53.324Z
 
 - Task: `202608080403-N0VXJ0`
 - Title: Archive resolved supervisor route incident
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608080403-N0VXJ0/archive-resolved-supervisor-route-incident`
 - Canonical task record: `.agentplane/tasks/202608080403-N0VXJ0/README.md`
 
