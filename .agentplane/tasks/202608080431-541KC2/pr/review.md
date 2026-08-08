@@ -12,8 +12,8 @@ Created: 2026-08-08T04:32:07.103Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Concurrent effect retirement now uses a bounded monotonic observation window; delayed convergence, adjacent concurrency, full unit, typing, repository contracts, and module budgets all pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

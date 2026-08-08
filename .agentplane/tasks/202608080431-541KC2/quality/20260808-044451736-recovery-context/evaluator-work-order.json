@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608080431-541KC2-e2664d7423239dd285adde85",
+  "prepared_at": "2026-08-08T04:44:51.736Z",
+  "task": {
+    "id": "202608080431-541KC2",
+    "revision": 5,
+    "objective": "Bound concurrent effect-retirement observation by time\n\nPrevent a valid concurrent runner effect resolution from failing with runner_effect_resolution_retirement_busy when claim retirement takes longer than the current scheduler-sensitive retry window. Replace the attempt-count timing assumption with a bounded elapsed-time observation, cover delayed retirement deterministically, and preserve fail-closed behavior when no matching resolution completes.",
+    "acceptance_criteria": [
+      "- In scope: Prevent a valid concurrent runner effect resolution from failing with runner_effect_resolution_retirement_busy when claim retirement takes longer than the current scheduler-sensitive retry window. Replace the attempt-count timing assumption with a bounded elapsed-time observation, cover delayed retirement deterministically, and preserve fail-closed behavior when no matching resolution completes.\n- Out of scope: unrelated refactors not required for \"Bound concurrent effect-retirement observation by time\".",
+      "1. Reproduce and document the hosted failure from PR #4800 and compare it with the earlier test-only stabilization in PR #4679.\n2. Replace the scheduler-sensitive fixed-attempt observation window with a monotonic, explicitly bounded retirement timeout and small polling interval. Keep the original busy error when the matching resolution and claim retirement do not complete inside the bound.\n3. Extend `task-run-effect-resolution.test.ts` so the competing retirement deliberately starts after the former approximately 225 ms window, then prove both callers converge on the same resolution and the claim is retired exactly once.\n4. Run the focused effect-resolution test repeatedly, the related runner use-case suite, typecheck, lint/format checks, `test:fast`, and repository contract checks.\n5. Obtain evaluator pass and hosted CI, merge the fix, then refresh PR #4800 onto the corrected main and rerun its full hosted suite.",
+      "PLANNER fallback scaffold for \"Bound concurrent effect-retirement observation by time\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Bound concurrent effect-retirement observation by time\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "5e0a25db303f163218b442907b21622f89cb8589",
+  "diff_base_sha": "4a2895659e677071caaa9b56cadf35df8e261e82",
+  "blueprint_digest": "561cde59cab48755c9dee039c3fa5a0a1200566dec0bed6284ad4a6d7e94ca21",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608080431-541KC2/quality/20260808-044451736-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:ec540d7ea51099d7fef12403d697a13e24c17cc2156e6b1ae9fdf3ec5a6e23ad",
+    "prompt_path": ".agentplane/tasks/202608080431-541KC2/quality/objects/sha256/eb728212f7f1c9ebfecf8ae0d35096fe01cab9039e6129d038aa98788a812f24.md",
+    "result_schema_path": ".agentplane/tasks/202608080431-541KC2/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608080431-541KC2/README.md",
+      "sha256": "sha256:04d235cccb4bee69fb6efdd6e42a729990c41c31b173fe5440116e2a11a404e2",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608080431-541KC2/quality/objects/sha256/364a8187fdfabd0dfb9724f79c1eea1fe8b1efa49ba37ec23ebb3a32fb7fa3f0.patch",
+      "sha256": "sha256:364a8187fdfabd0dfb9724f79c1eea1fe8b1efa49ba37ec23ebb3a32fb7fa3f0",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608080431-541KC2/quality/objects/sha256/ba94665ff46ca3bfc1acd00b0596cb1b15f24403cbce134fc488fa3cd8ab6ea9.json",
+      "sha256": "sha256:ba94665ff46ca3bfc1acd00b0596cb1b15f24403cbce134fc488fa3cd8ab6ea9",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608080431-541KC2/verification/20260808044440752-16c204903f258780.json",
+      "sha256": "sha256:82bcf7e2fe75f5fd185a3e7f89ecf01aca0a54b12e510ae22b7c388009bd603d",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608080431-541KC2/quality/objects/sha256/6d1510ba14f39777252ea2464bb8ac914f383e7388d65d98d99d758fca92eb88.json",
+      "sha256": "sha256:6d1510ba14f39777252ea2464bb8ac914f383e7388d65d98d99d758fca92eb88",
+      "required": true
+    }
+  ]
+}

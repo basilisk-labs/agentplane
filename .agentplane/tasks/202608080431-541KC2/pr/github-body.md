@@ -15,8 +15,13 @@ Prevent a valid concurrent runner effect resolution from failing with runner_eff
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Concurrent effect retirement now uses a bounded monotonic observation window; delayed convergence,
+adjacent concurrency, full unit, typing, repository contracts, and module budgets all pass.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
