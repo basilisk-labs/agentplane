@@ -4,6 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 import {
+  advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
   createSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
@@ -519,6 +520,67 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     expect(readme).not.toContain("This stale plan must not be applied.");
   });
 
+  it("rejects a read-only evaluator result after a concurrent commit transition", async () => {
+    const root = await mkGitRepoRoot();
+    await cp(
+      path.join(process.cwd(), ".agentplane", "policy"),
+      path.join(root, ".agentplane", "policy"),
+      { recursive: true },
+    );
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    await writeFile(
+      path.join(root, "package.json"),
+      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"' } }, null, 2)}\n`,
+      "utf8",
+    );
+    const taskId = await createTask(root, "Commit-stale evaluator result", "bun run check");
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Create the scoped implementation before quality review.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed evaluator freshness"], { cwd: root });
+    const implementationPacket = await readAgentPacket(root, taskId);
+    await writeFile(path.join(root, "implemented.txt"), "implemented\n", "utf8");
+    const implementationResult = await writeCompletedResult(
+      implementationPacket,
+      "Created the scoped implementation.",
+    );
+    const afterImplementation = await returnAgentResult(root, taskId, implementationResult);
+    expect(afterImplementation.code, afterImplementation.stderr).toBe(0);
+    const evaluatorPacket = JSON.parse(afterImplementation.stdout) as AgentPacket;
+    const resultPath = await writeCompletedResult(
+      evaluatorPacket,
+      "This stale review must not apply.",
+      {
+        verdict: "pass",
+        missing_tests: [],
+        hidden_assumptions: [],
+        residual_risks: [],
+      },
+    );
+    await writeFile(path.join(root, "concurrent.txt"), "concurrent\n", "utf8");
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: concurrent evaluator commit"], {
+      cwd: root,
+    });
+
+    const stale = await returnAgentResult(root, taskId, resultPath);
+    expect(stale.code).not.toBe(0);
+    expect(stale.stderr).toContain("stale");
+  });
+
   it("projects the direct runner boundary as the same semantic agent episode", async () => {
     const root = await mkGitRepoRoot();
     const config = defaultConfig();
@@ -679,6 +741,164 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const evaluatorPacket = JSON.parse(recovered.stdout) as AgentPacket;
     expect(evaluatorPacket.authority.role).toBe("EVALUATOR");
     expect(evaluatorPacket.stop.reason).toBe("semantic_boundary");
+  });
+
+  it("accepts task-worktree resolution after the intended changes are committed", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const taskId = await createTask(root, "External task-worktree resolution");
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Keep and commit the intended task-worktree change.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed worktree resolution"], { cwd: root });
+
+    const slug = "external-resolution";
+    const taskWorktree = path.join(root, ".agentplane", "worktrees", `${taskId}-${slug}`);
+    await runCliSilent([
+      "work",
+      "start",
+      taskId,
+      "--agent",
+      "CODER",
+      "--slug",
+      slug,
+      "--worktree",
+      "--root",
+      root,
+    ]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: reproduce external task-worktree resolution.",
+      "--root",
+      taskWorktree,
+    ]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: taskWorktree });
+    await execFileAsync("git", ["commit", "-m", "test: persist start-ready fixture"], {
+      cwd: taskWorktree,
+    });
+    await writeFile(path.join(taskWorktree, "intended-resolution.txt"), "keep\n", "utf8");
+
+    const taskCommand = await loadCommandContext({ cwd: taskWorktree, rootOverride: taskWorktree });
+    const currentDecision = await buildTaskRouteDecision({
+      ctx: taskCommand,
+      cwd: taskWorktree,
+      rootOverride: taskWorktree,
+      taskId,
+      includeRemote: false,
+    });
+    const oldFingerprint = `sha256:${"a".repeat(64)}`;
+    const prior = createSupervisorExecutionEpisodeJournal({
+      task_id: taskId,
+      task_revision: currentDecision.workflowStep.preconditionFingerprint.task_revision,
+      state_fingerprint_digest: oldFingerprint,
+      budget: {
+        max_episodes: 4,
+        max_agent_runs: 4,
+        max_input_tokens: null,
+        max_output_tokens: null,
+        max_total_tokens: null,
+        max_wall_time_ms: null,
+        max_changed_files: null,
+        max_diff_lines: null,
+        max_no_progress_episodes: null,
+      },
+    });
+    const priorStarted = startSupervisorExecutionEpisode({
+      journal: prior,
+      role: "EVALUATOR",
+      kind: "evaluator_episode",
+      operation_identity: { test: "completed prior external episode" },
+      precondition_fingerprint_digest: oldFingerprint,
+    });
+    if (priorStarted.status !== "started") throw new Error("expected prior supervisor intent");
+    const priorCompleted = completeSupervisorExecutionEpisode({
+      journal: priorStarted.journal,
+      operation_key: priorStarted.operation_key,
+      result: { verdict: "rework" },
+    });
+    const priorReady = advanceSupervisorExecutionEpisodeState({
+      journal: priorCompleted,
+      state_fingerprint_digest: oldFingerprint,
+      route_observation: { test: "prior result persisted" },
+    });
+    const stale = startSupervisorExecutionEpisode({
+      journal: priorReady,
+      role: "EXECUTOR",
+      kind: "agent_episode",
+      operation_identity: { test: "changed route after prior result" },
+      precondition_fingerprint_digest: currentDecision.workflowStep.preconditionFingerprint.digest,
+    });
+    if (stale.status !== "stopped" || stale.stop.reason !== "stale_state") {
+      throw new Error("expected stale supervisor journal fixture");
+    }
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: taskWorktree,
+      task_id: taskId,
+    });
+    await createSupervisorEpisodeStore(journalPath).write(stale.journal);
+
+    const packet = await readAgentPacket(taskWorktree, taskId);
+    expect(packet.transition_id).toBe(agentTransitionId("agent.task_worktree_resolution"));
+    const resultPath = await writeCompletedResult(packet, "Keep the intended worktree changes.");
+    await execFileAsync("git", ["add", "intended-resolution.txt"], { cwd: taskWorktree });
+    await execFileAsync(
+      "git",
+      ["commit", "-m", `🚧 ${taskId.split("-").at(-1)} task: apply external agent result`],
+      { cwd: taskWorktree },
+    );
+    if (!packet.exchange) throw new Error("expected task-worktree resolution exchange");
+    const exchange = JSON.parse(
+      await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8"),
+    ) as ExternalAgentExchange;
+    const implementationHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: taskWorktree,
+    });
+    const implementationHead = implementationHeadResult.stdout.trim();
+    await execFileAsync(
+      "git",
+      ["diff", "--check", `${exchange.baseline.head}..${implementationHead}`],
+      { cwd: taskWorktree },
+    );
+    await execFileAsync("git", ["diff", "--cached", "--check"], { cwd: taskWorktree });
+    await execFileAsync(
+      "git",
+      [
+        "diff",
+        "--name-status",
+        "--diff-filter=ACDMRTUXB",
+        `${exchange.baseline.head}..${implementationHead}`,
+      ],
+      { cwd: taskWorktree },
+    );
+    await execFileAsync("git", ["status", "--short", "--untracked-files=all"], {
+      cwd: taskWorktree,
+    });
+
+    const accepted = await returnAgentResult(taskWorktree, taskId, resultPath);
+    expect(accepted.code, accepted.stderr).toBe(0);
+    expect(accepted.stderr).not.toMatch(/unsupported purpose|stale/iu);
+    expect(
+      JSON.parse(await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8")),
+    ).toMatchObject({ status: "consumed" });
   });
 
   it("converges branch implementation and evaluator to the protected publication boundary", async () => {

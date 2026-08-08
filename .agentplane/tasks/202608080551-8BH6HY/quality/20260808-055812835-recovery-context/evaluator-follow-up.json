@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608080551-8BH6HY-b9cb799e77dd757ac00fa39e",
+  "task_id": "202608080551-8BH6HY",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Add focused acceptance-level regression coverage for task_worktree_resolution after the expected commit transition, retain a read-only stale-return negative case, and rerun the declared checks.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "Regression coverage tests only the purpose predicate; it does not exercise acceptance of a completed task_worktree_resolution result after the expected supervisor-owned commit transition.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/159b3156259d89a0cff246ab3d120d23b41c3c76c39b7935b9bf8a7f831c2d73.patch",
+          "sha256": "sha256:159b3156259d89a0cff246ab3d120d23b41c3c76c39b7935b9bf8a7f831c2d73",
+          "line": 1,
+          "lines": "1-19",
+          "section": "external-agent-purpose.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/c64a0ad3cb0d9a182e46a9188a94d670578ae46298329b92cbe1bab5cbbacd7c.json",
+          "sha256": "sha256:c64a0ad3cb0d9a182e46a9188a94d670578ae46298329b92cbe1bab5cbbacd7c",
+          "line": 1,
+          "section": "declared_checks and verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-055812835-recovery-context/evaluator-result.json"
+}

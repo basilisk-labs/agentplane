@@ -1,0 +1,79 @@
+diff --git a/packages/agentplane/src/commands/task/external-agent-purpose.test.ts b/packages/agentplane/src/commands/task/external-agent-purpose.test.ts
+new file mode 100644
+index 000000000..7a6828e87
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-purpose.test.ts
+@@ -0,0 +1,19 @@
++import { describe, expect, it } from "vitest";
++
++import { usesExternalImplementationAuthority } from "./external-agent-purpose.js";
++
++describe("usesExternalImplementationAuthority", () => {
++  it.each(["implementation", "implementation_rework", "task_worktree_resolution"] as const)(
++    "classifies %s as implementation authority",
++    (purpose) => {
++      expect(usesExternalImplementationAuthority(purpose)).toBe(true);
++    },
++  );
++
++  it.each(["planning", "verification", "quality_review"] as const)(
++    "keeps %s on read-only result freshness",
++    (purpose) => {
++      expect(usesExternalImplementationAuthority(purpose)).toBe(false);
++    },
++  );
++});
+diff --git a/packages/agentplane/src/commands/task/external-agent-purpose.ts b/packages/agentplane/src/commands/task/external-agent-purpose.ts
+new file mode 100644
+index 000000000..e6bf5345d
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-purpose.ts
+@@ -0,0 +1,11 @@
++import type { ExternalAgentExchange } from "./external-agent-exchange.js";
++
++export function usesExternalImplementationAuthority(
++  purpose: ExternalAgentExchange["purpose"],
++): boolean {
++  return (
++    purpose === "implementation" ||
++    purpose === "implementation_rework" ||
++    purpose === "task_worktree_resolution"
++  );
++}
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor.ts b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+index fa3440df8..3803f30f1 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+@@ -51,6 +51,7 @@ import {
+   isExternalEvaluatorResultApplied,
+ } from "./external-agent-evaluator.js";
+ import { applyExternalImplementationResult } from "./external-agent-implementation-authority.js";
++import { usesExternalImplementationAuthority } from "./external-agent-purpose.js";
+ import {
+   applyExternalPlanningResult,
+   isExternalPlanningResultApplied,
+@@ -349,10 +350,7 @@ async function applyAcceptedResult(opts: {
+     });
+     return;
+   }
+-  if (
+-    opts.exchange.purpose === "implementation" ||
+-    opts.exchange.purpose === "implementation_rework"
+-  ) {
++  if (usesExternalImplementationAuthority(opts.exchange.purpose)) {
+     await applyExternalImplementationResult(opts);
+     return;
+   }
+@@ -529,11 +527,7 @@ export async function acceptExternalAgentResult(opts: {
+         decision: current,
+         envelope,
+       }));
+-    if (
+-      !alreadyApplied &&
+-      exchange.purpose !== "implementation" &&
+-      exchange.purpose !== "implementation_rework"
+-    ) {
++    if (!alreadyApplied && !usesExternalImplementationAuthority(exchange.purpose)) {
+       assertReadOnlyReturnFresh({ exchange, decision: current });
+     }
+     if (!(alreadyApplied && exchange.purpose === "planning")) {
