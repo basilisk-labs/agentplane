@@ -4,7 +4,7 @@ title: "Accept external task-worktree resolution results"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -61,7 +61,7 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "4ed5744750085850923f144349bb2aa705950c82"
+  hash: "b12f7e828635459b52f8f1552c5357382c42d65a"
   message: "🚧 8BH6HY task: apply external agent result"
 comments:
   -
@@ -70,6 +70,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 4ed574475008. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: b12f7e828635. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -91,8 +94,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Focused protocol coverage, typecheck, and the full contract gate pass on the exact implementation; external task-worktree resolution now follows implementation authority."
+  -
+    type: "status"
+    at: "2026-08-08T06:18:50.236Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: b12f7e828635. CLI accepted one state-bound external-agent semantic result."
 doc_version: 3
-doc_updated_at: "2026-08-08T05:57:58.229Z"
+doc_updated_at: "2026-08-08T06:18:50.236Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix task advance so a state-bound task_worktree_resolution episode can return a completed result after the CODER commits intended changes, without being rejected as an unsupported or stale read-only purpose; add focused regression coverage."
 sections:
