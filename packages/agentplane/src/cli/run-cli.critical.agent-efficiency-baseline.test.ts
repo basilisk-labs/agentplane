@@ -587,7 +587,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           },
         });
         const before = collectCompatibilitySurface(versionedSource("0.6.24"));
-        const after = collectCompatibilitySurface(versionedSource("0.7.4"));
+        const after = collectCompatibilitySurface(versionedSource("0.7.5"));
         const sectionDigests = surfaceSectionDigests(after);
         process.stdout.write(JSON.stringify({
           packageManifestDigest: sectionDigests.package_manifests,
@@ -598,8 +598,8 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       const result = await runNode(["--input-type=module", "--eval", source]);
       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
       expect(JSON.parse(result.stdout)).toEqual({
-        packageManifestDigest: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
-        surfaceDigest: "a3ac789c855404318930013a613489a3a6da5c2fc4e355fa99358eb005007f1a",
+        packageManifestDigest: "68d85075ead827909740cafc59eba72dc94c7e9a2e754d16bea85041ab875f53",
+        surfaceDigest: "f1379cce442003ca31438a391fab68497f2c1559645f17e655cbc8a7daef13ee",
         changedPaths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
