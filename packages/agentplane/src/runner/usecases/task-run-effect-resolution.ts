@@ -1,3 +1,5 @@
+import { performance } from "node:perf_hooks";
+
 import {
   createRunnerEffectResolution,
   createRunnerEffectResolutionIntent,
@@ -33,7 +35,8 @@ import { retireTaskRunnerActiveClaimAfterEffectResolution } from "./task-run-eff
 const EFFECT_RESOLUTION_ARTIFACT_MAX_BYTES = 64 * 1024;
 const LEGACY_EFFECT_ACCEPTANCE_FILENAME = ".runner-effect-legacy-acceptance.json";
 const IMMUTABLE_ARTIFACT_OBSERVATION_ATTEMPTS = 5;
-const CONCURRENT_RETIREMENT_OBSERVATION_ATTEMPTS = 10;
+const CONCURRENT_RETIREMENT_OBSERVATION_TIMEOUT_MS = 2000;
+const CONCURRENT_RETIREMENT_POLL_INTERVAL_MS = 10;
 
 type ResolutionArtifacts = {
   intent: RunnerEffectResolutionIntent;
@@ -114,7 +117,8 @@ async function waitForConcurrentResolutionRetirement(opts: {
   run_id: string;
   resolution: RunnerEffectResolutionRef;
 }): Promise<boolean> {
-  for (let attempt = 1; attempt <= CONCURRENT_RETIREMENT_OBSERVATION_ATTEMPTS; attempt += 1) {
+  const deadline = performance.now() + CONCURRENT_RETIREMENT_OBSERVATION_TIMEOUT_MS;
+  for (;;) {
     const [record, activeClaim] = await Promise.all([
       opts.repository.readRequiredRecord({ task_id: opts.task_id, run_id: opts.run_id }),
       readTaskRunnerActiveClaim({
@@ -130,11 +134,12 @@ async function waitForConcurrentResolutionRetirement(opts: {
     if (record.state.effect_resolution?.digest === opts.resolution.digest && activeClaim === null) {
       return true;
     }
-    if (attempt < CONCURRENT_RETIREMENT_OBSERVATION_ATTEMPTS) {
-      await new Promise<void>((resolve) => setTimeout(resolve, attempt * 5));
-    }
+    const remainingMs = deadline - performance.now();
+    if (remainingMs <= 0) return false;
+    await new Promise<void>((resolve) =>
+      setTimeout(resolve, Math.min(CONCURRENT_RETIREMENT_POLL_INTERVAL_MS, remainingMs)),
+    );
   }
-  return false;
 }
 
 async function readOptionalImmutable<T>(opts: {

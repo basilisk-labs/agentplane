@@ -221,7 +221,7 @@ describe("task runner effect resolution", () => {
     expect(existsSync(opposingFixture.adapterMarker)).toBe(false);
   });
 
-  it("waits through a concurrent active-claim retirement", async () => {
+  it("waits through a concurrent active-claim retirement beyond the legacy retry window", async () => {
     const fixture = await uncertainEffectFixture();
     const input = resolutionInput(fixture);
     const acquisition = await acquireTaskRunnerActiveClaimRecoveryLease({
@@ -258,6 +258,10 @@ describe("task runner effect resolution", () => {
         lease: acquisition.lease,
         succeeded: false,
       });
+      // The former ten-attempt backoff exhausted in roughly 225 ms. Delaying
+      // the competing resolver beyond that window makes the regression
+      // deterministic without depending on hosted-runner scheduler pressure.
+      await new Promise<void>((resolve) => setTimeout(resolve, 300));
       const [waiting, completing] = await Promise.all([
         waitingResolution,
         resolveTaskRunnerEffect(input),
