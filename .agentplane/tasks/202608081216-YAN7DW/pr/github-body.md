@@ -29,10 +29,10 @@ Reduce patch-release elapsed time by adding bounded concurrency to independent q
 ```text
  ...cli.critical.agent-efficiency-candidate.test.ts |  46 ++++++-
  .../bench/capture-agent-efficiency-candidate.mjs   | 147 ++++++++++++++++-----
- .../qualification/release-qualification.test.mjs   |  32 +++++
+ .../qualification/release-qualification.test.mjs   |  36 +++++
  .../run-v0.7.1-release-qualification.mjs           | 131 +++++++++++++++++-
  .../v0.7.1-release-qualification.json              |   2 +
- 5 files changed, 315 insertions(+), 43 deletions(-)
+ 5 files changed, 319 insertions(+), 43 deletions(-)
 ```
 
 </details>
