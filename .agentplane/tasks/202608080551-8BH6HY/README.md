@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -75,7 +75,9 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "3b98368fac7d0f8ecf33006b8412deb1bfb8982a"
+  message: "🚧 8BH6HY task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -101,6 +103,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 3b98368fac7d. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -194,9 +199,16 @@ events:
     author: "REVIEWER"
     state: "needs_rework"
     note: "GitHub review found two uncovered task-worktree resolution cases: pre-existing dirty paths and read-only authority."
+  -
+    type: "status"
+    at: "2026-08-08T07:16:53.585Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 3b98368fac7d. CLI accepted one state-bound external-agent semantic result."
 doc_version: 3
-doc_updated_at: "2026-08-08T07:05:14.335Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-08T07:16:53.624Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix task advance so a state-bound task_worktree_resolution episode can return a completed result after the CODER commits intended changes, without being rejected as an unsupported or stale read-only purpose; add focused regression coverage."
 sections:
   Summary: |-
