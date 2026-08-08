@@ -1,0 +1,774 @@
+diff --git a/docs/user/cli-reference.generated.mdx b/docs/user/cli-reference.generated.mdx
+index 2372fcca5..f5325efa7 100644
+--- a/docs/user/cli-reference.generated.mdx
++++ b/docs/user/cli-reference.generated.mdx
+@@ -470,12 +470,14 @@ Options:
+ - `--agent-json`: Emit the stable compact external-agent protocol. (default=false)
+ - `--remote`: Include hosted state while preparing the shared supervisor decision. (default=false)
+ - `--result <path>`: Accept one state-bound external-agent result and return the next action.
++- `--replacement`: Explicitly start a distinct exact-key successor after a terminal operation failure. (default=false)
+ 
+ Notes:
+ 
+ - The command prepares the same canonical work order and route decision used by the managed task runner.
+ - It executes only registered deterministic transitions, then stops before semantic work, approval, human input, external wait, or terminal attention.
+ - A result is single-use and must match the issued task, transition, role, state fingerprint, work-order id, and result_ref.
++- --replacement is valid only after a known terminal operation_failed journal; it never retries the failed effect and cannot be combined with --result.
+ - --agent-json changes only rendering; any formal transition is journaled, fingerprint-checked, and supervisor-owned.
+ 
+ Examples:
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+index a5bc2c09d..d4e007396 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+@@ -2,6 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import {
++  completeSupervisorExecutionEpisode,
+   recoverSupervisorExecutionEpisodeJournal,
+   validateSupervisorExecutionEpisodeJournal,
+ } from "@agentplaneorg/core/schemas";
+@@ -108,6 +109,112 @@ async function writePlanningResult(packet: AgentPacket, summary: string): Promis
+ }
+ 
+ describe("task advance effect recovery", () => {
++  it("rejects replacement when no terminal operation failure exists", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    const taskId = await createTask(root);
++    const io = captureStdIO();
++    try {
++      expect(
++        await runCli(["task", "advance", taskId, "--replacement", "--agent-json", "--root", root]),
++      ).toBe(2);
++      expect(io.stderr).toContain("requires a terminal failed operation");
++    } finally {
++      io.restore();
++    }
++  });
++
++  it("requires an explicit exact-key replacement after a known operation failure", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    const taskId = await createTask(root);
++    const issued = await readAgentPacket(root, taskId);
++    const journalPath = await resolveSupervisorExecutionEpisodePath({
++      git_root: root,
++      task_id: taskId,
++    });
++    const store = createSupervisorEpisodeStore(journalPath);
++    const journal = validateSupervisorExecutionEpisodeJournal(await store.read());
++    const failedOperation = journal.operations.at(-1);
++    if (!failedOperation) throw new Error("expected issued operation");
++    await store.write(
++      completeSupervisorExecutionEpisode({
++        journal,
++        operation_key: failedOperation.operation_key,
++        result: { classification: "known_pre_result_failure" },
++        failed: true,
++      }),
++    );
++
++    const rejected = captureStdIO();
++    try {
++      expect(await runCli(["task", "advance", taskId, "--agent-json", "--root", root])).toBe(8);
++      expect(rejected.stderr).toContain("rerun task advance with --replacement");
++    } finally {
++      rejected.restore();
++    }
++
++    const replaced = captureStdIO();
++    try {
++      expect(
++        await runCli(["task", "advance", taskId, "--replacement", "--agent-json", "--root", root]),
++        replaced.stderr,
++      ).toBe(0);
++      expect(JSON.parse(replaced.stdout)).toMatchObject({
++        task_id: issued.task_id,
++        action: { kind: "agent_episode" },
++      });
++    } finally {
++      replaced.restore();
++    }
++
++    const replacement = validateSupervisorExecutionEpisodeJournal(await store.read());
++    expect(replacement).toMatchObject({
++      status: "running",
++      cursor: { phase: "intent_recorded" },
++      operations: [
++        { operation_key: failedOperation.operation_key, status: "failed" },
++        {
++          status: "intent",
++          replacement_of_operation_key: failedOperation.operation_key,
++        },
++      ],
++    });
++  });
++
++  it("rejects replacement while accepting an external result", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    const taskId = await createTask(root);
++    const issued = await readAgentPacket(root, taskId);
++    const resultPath = await writePlanningResult(issued, "1. Keep the result single-use.");
++    const io = captureStdIO();
++    try {
++      expect(
++        await runCli([
++          "task",
++          "advance",
++          taskId,
++          "--result",
++          resultPath,
++          "--replacement",
++          "--agent-json",
++          "--root",
++          root,
++        ]),
++      ).toBe(2);
++      expect(io.stderr).toContain("cannot be combined with --result");
++    } finally {
++      io.restore();
++    }
++  });
++
+   it("reconciles an exact approved planning result without replaying the agent", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index 7e7fd23a6..8a97ee2ca 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       const efficiency = await runNode([EFFICIENCY_CHECK]);
+ 
+       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
+-      expect(compatibility.stdout).toContain("263commands/180args/843options");
++      expect(compatibility.stdout).toContain("263commands/180args/844options");
+       expect(compatibility.stdout).toContain(
+         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
+       );
+@@ -196,13 +196,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202608061646-WCARQG",
+           "202608061646-30TKV4",
+           "202608062023-V3WHE9",
++          "202608080805-KPWPAV",
+         ],
+         candidate: {
+-          surface_sha256: "f57ac6b3a4714ea8017d3d13aa82b97c52aad0467883202b0d011faff30d2d24",
++          surface_sha256: "c8a5d33a5456fb03103ac540ce00eb0c70a1480426a0eb5517f98881f7293e4e",
+           section_digests: {
+             agent_facing_context_contracts:
+               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+-            cli_topology: "fec6c3b1185691d9ff6f793d69afc2fbfc86e062d30733a60b5a1e5b5c41a80a",
++            cli_topology: "9487daa3fe64990ef0d69326ee154ec5975e3c6b942667735ebcf4c464ce50b2",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+             package_manifests: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+@@ -232,7 +233,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           section: "package_manifests",
+           from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+           to_sha256: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+-          surface_sha256: "226a337ec9c72e8da6d2191039f78f85d4db97e16101162540b4d948cfe70af4",
++          surface_sha256: "a3ac789c855404318930013a613489a3a6da5c2fc4e355fa99358eb005007f1a",
+           allowed_json_paths: [
+             "$.package_manifests[0].dependencies.@agentplaneorg/core",
+             "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -598,7 +599,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
+       expect(JSON.parse(result.stdout)).toEqual({
+         packageManifestDigest: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+-        surfaceDigest: "226a337ec9c72e8da6d2191039f78f85d4db97e16101162540b4d948cfe70af4",
++        surfaceDigest: "a3ac789c855404318930013a613489a3a6da5c2fc4e355fa99358eb005007f1a",
+         changedPaths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+index 90fd9c763..329a4bc4c 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+@@ -6,6 +6,7 @@ import {
+   advanceSupervisorExecutionEpisodeState,
+   completeSupervisorExecutionEpisode,
+   migrateSupervisorExecutionEpisodeJournal,
++  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
+   recoverSupervisorExecutionEpisodeJournal,
+   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
+   startSupervisorExecutionEpisode,
+@@ -272,6 +273,46 @@ export async function openSupervisorExecutionEpisode(opts: {
+   );
+ }
+ 
++export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
++  git_root: string;
++  task_id: string;
++  state_fingerprint_digest: string;
++}): Promise<"prepared" | "already_prepared" | "not_failed"> {
++  const journalPath = await resolveSupervisorExecutionEpisodePath({
++    git_root: opts.git_root,
++    task_id: opts.task_id,
++  });
++  if ((await createSupervisorEpisodeStore(journalPath).read()) === null) return "not_failed";
++  for (let attempt = 0; attempt < 3; attempt += 1) {
++    const opened = await openSupervisorExecutionEpisode({
++      git_root: opts.git_root,
++      task_id: opts.task_id,
++      task_revision: null,
++      state_fingerprint_digest: opts.state_fingerprint_digest,
++      recover_intent: false,
++    });
++    const journal = opened.journal;
++    if (
++      journal.status === "running" &&
++      journal.cursor.phase === "ready" &&
++      typeof journal.cursor.replacement_of_operation_key === "string"
++    ) {
++      return "already_prepared";
++    }
++    if (journal.status !== "stopped" || journal.stop?.reason !== "operation_failed") {
++      return "not_failed";
++    }
++    const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
++      journal,
++      state_fingerprint_digest: opts.state_fingerprint_digest,
++    });
++    if (await opened.store.compareAndSwap(journal.digest, replacement)) return "prepared";
++  }
++  throw new Error(
++    "Supervisor episode journal changed while failed-operation replacement was being prepared.",
++  );
++}
++
+ function operationKind(decision: TaskRouteDecision): SupervisorEpisodeOperationKind {
+   const operation =
+     decision.workflowStep.kind === "cli_operation" ? decision.workflowStep.operation : null;
+@@ -444,6 +485,9 @@ export async function supervisePersistedWorkflowEpisode(opts: {
+       authority_ref: `workflow-operation:${operation.id}`,
+       authority_digest: operation.preconditionFingerprint.digest,
+       effect_ref: operation.idempotencyKey,
++      ...(journal.cursor.replacement_of_operation_key
++        ? { replacement_of_operation_key: journal.cursor.replacement_of_operation_key }
++        : {}),
+     });
+   let started = start();
+   if (started.status === "stopped" && started.stop.reason === "stale_state") {
+diff --git a/packages/agentplane/src/commands/task/advance.command.ts b/packages/agentplane/src/commands/task/advance.command.ts
+index fd259c8cd..e5f3ece65 100644
+--- a/packages/agentplane/src/commands/task/advance.command.ts
++++ b/packages/agentplane/src/commands/task/advance.command.ts
+@@ -7,7 +7,10 @@ import {
+ import { CliError } from "../../shared/errors.js";
+ import { buildTaskRouteDecision } from "../shared/route-decision.js";
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+-import { supervisePersistedWorkflowEpisode } from "../shared/supervisor-execution-episode.js";
++import {
++  preparePersistedSupervisorReplacementAfterFailure,
++  supervisePersistedWorkflowEpisode,
++} from "../shared/supervisor-execution-episode.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ import { loadCommandContext } from "../shared/task-backend.js";
+ 
+@@ -29,6 +32,12 @@ export function makeRunTaskAdvanceHandler(deps: {
+   getContext: (command: string, options: { includeRemote: boolean }) => Promise<CommandContext>;
+ }) {
+   return async (ctx: CommandCtx, parsed: TaskAdvanceParsed): Promise<number> => {
++    if (parsed.result && parsed.replacement) {
++      throw new CliError({
++        code: "E_USAGE",
++        message: "task advance --replacement cannot be combined with --result.",
++      });
++    }
+     const command = await deps.getContext("task advance", { includeRemote: parsed.remote });
+     const decide = async (freshHead = false): Promise<TaskRouteDecision> => {
+       const routeCommand = freshHead
+@@ -67,6 +76,21 @@ export function makeRunTaskAdvanceHandler(deps: {
+     } else {
+       current = await decide();
+     }
++    let replacementPrepared = false;
++    if (parsed.replacement) {
++      const replacement = await preparePersistedSupervisorReplacementAfterFailure({
++        git_root: command.resolvedProject.gitRoot,
++        task_id: parsed.taskId,
++        state_fingerprint_digest: current.workflowStep.preconditionFingerprint.digest,
++      });
++      if (replacement === "not_failed") {
++        throw new CliError({
++          code: "E_USAGE",
++          message: "task advance --replacement requires a terminal failed operation.",
++        });
++      }
++      replacementPrepared = true;
++    }
+     let recovery: Parameters<typeof buildAgentActionPacket>[0]["recovery"];
+     for (let operationCount = 0; operationCount < 32; operationCount += 1) {
+       const step = current.workflowStep;
+@@ -224,6 +248,7 @@ export function makeRunTaskAdvanceHandler(deps: {
+       command: preparationCommand,
+       decision: prepared.route_decision,
+       work_order: prepared.work_order,
++      replace_failed_operation: parsed.replacement && !replacementPrepared,
+     });
+     const resumeArgv = exchange
+       ? [
+diff --git a/packages/agentplane/src/commands/task/advance.spec.ts b/packages/agentplane/src/commands/task/advance.spec.ts
+index e8392efda..56d09a908 100644
+--- a/packages/agentplane/src/commands/task/advance.spec.ts
++++ b/packages/agentplane/src/commands/task/advance.spec.ts
+@@ -4,6 +4,7 @@ export type TaskAdvanceParsed = {
+   taskId: string;
+   agentJson: boolean;
+   remote: boolean;
++  replacement: boolean;
+   result?: string;
+ };
+ 
+@@ -31,6 +32,13 @@ export const taskAdvanceSpec: CommandSpec<TaskAdvanceParsed> = {
+       valueHint: "<path>",
+       description: "Accept one state-bound external-agent result and return the next action.",
+     },
++    {
++      kind: "boolean",
++      name: "replacement",
++      default: false,
++      description:
++        "Explicitly start a distinct exact-key successor after a terminal operation failure.",
++    },
+   ],
+   examples: [
+     {
+@@ -46,12 +54,14 @@ export const taskAdvanceSpec: CommandSpec<TaskAdvanceParsed> = {
+     "The command prepares the same canonical work order and route decision used by the managed task runner.",
+     "It executes only registered deterministic transitions, then stops before semantic work, approval, human input, external wait, or terminal attention.",
+     "A result is single-use and must match the issued task, transition, role, state fingerprint, work-order id, and result_ref.",
++    "--replacement is valid only after a known terminal operation_failed journal; it never retries the failed effect and cannot be combined with --result.",
+     "--agent-json changes only rendering; any formal transition is journaled, fingerprint-checked, and supervisor-owned.",
+   ],
+   parse: (raw) => ({
+     taskId: String(raw.args["task-id"]),
+     agentJson: raw.opts["agent-json"] === true,
+     remote: raw.opts.remote === true,
++    replacement: raw.opts.replacement === true,
+     result: typeof raw.opts.result === "string" ? raw.opts.result.trim() : undefined,
+   }),
+ };
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts
+index 1b1e967e2..52928042c 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts
+@@ -2,6 +2,7 @@ import {
+   advanceSupervisorExecutionEpisodeState,
+   completeSupervisorExecutionEpisode,
+   createSupervisorExecutionEpisodeJournal,
++  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
+   recoverSupervisorExecutionEpisodeJournal,
+   startSupervisorExecutionEpisode,
+ } from "@agentplaneorg/core/schemas";
+@@ -205,4 +206,70 @@ describe("direct task supervisor formal operation", () => {
+       cursor: { phase: "ready", operation_key: null },
+     });
+   });
++
++  it("starts an exact-key successor after an explicit failed-operation replacement", async () => {
++    const initial = createSupervisorExecutionEpisodeJournal({
++      task_id: TASK_ID,
++      task_revision: null,
++      state_fingerprint_digest: FIRST_FINGERPRINT,
++      budget: {
++        max_episodes: 50,
++        max_agent_runs: 50,
++        max_input_tokens: 3_000_000,
++        max_output_tokens: 1_000_000,
++        max_total_tokens: 4_000_000,
++        max_wall_time_ms: 14_400_000,
++        max_changed_files: 2000,
++        max_diff_lines: null,
++        max_no_progress_episodes: 3,
++      },
++    });
++    const started = startSupervisorExecutionEpisode({
++      journal: initial,
++      role: "EXECUTOR",
++      kind: "cli_operation",
++      operation_identity: { direct_task_operation: "task_verify" },
++      precondition_fingerprint_digest: FIRST_FINGERPRINT,
++      authority_ref: "direct-task-supervisor:task_verify",
++      authority_digest: FIRST_FINGERPRINT,
++      effect_ref: "task_verify",
++    });
++    if (started.status !== "started") throw new Error("expected failed operation fixture");
++    const failed = completeSupervisorExecutionEpisode({
++      journal: started.journal,
++      operation_key: started.operation_key,
++      result: { error: "known_pre_result_failure" },
++      failed: true,
++    });
++    const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
++      journal: failed,
++      state_fingerprint_digest: NEXT_FINGERPRINT,
++    });
++    const write = vi.fn().mockResolvedValue(undefined);
++    mocks.open.mockResolvedValue({
++      journal: replacement,
++      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
++      store: { write },
++    });
++    const run = vi.fn().mockResolvedValue({ verification: "ok" });
++
++    const result = await recordDirectTaskFormalOperation({
++      git_root: "/repo",
++      task_id: TASK_ID,
++      id: "task_verify",
++      decision: vi.fn().mockResolvedValue(decision(NEXT_FINGERPRINT)),
++      run,
++    });
++
++    expect(run).toHaveBeenCalledOnce();
++    expect(result.journal.operations).toHaveLength(2);
++    expect(result.journal.operations[0]).toMatchObject({
++      operation_key: started.operation_key,
++      status: "failed",
++    });
++    expect(result.journal.operations[1]).toMatchObject({
++      status: "completed",
++      replacement_of_operation_key: started.operation_key,
++    });
++  });
+ });
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
+index 8c870db37..adc2663f5 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
+@@ -70,6 +70,9 @@ export async function recordDirectTaskFormalOperation(opts: {
+       authority_ref: `direct-task-supervisor:${opts.id}`,
+       authority_digest: before.workflowStep.preconditionFingerprint.digest,
+       effect_ref: opts.id,
++      ...(journal.cursor.replacement_of_operation_key
++        ? { replacement_of_operation_key: journal.cursor.replacement_of_operation_key }
++        : {}),
+     });
+   let started =
+     resumedOperationKey === null
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.test.ts b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+index 50590eadf..6246fa738 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+@@ -108,6 +108,27 @@ describe("direct task verification", () => {
+     );
+   });
+ 
++  it("does not treat an empty code-task check contract as successful verification", async () => {
++    const cwd = await root();
++    const result = await runDirectTaskVerification({
++      command: command(cwd),
++      task: { verify: [], task_kind: "code", mutation_scope: "code" },
++      task_id: TASK_ID,
++      cwd,
++    });
++
++    expect(result).toMatchObject({
++      status: "unsupported",
++      checks: [],
++      reason: "No executable declared verification checks are configured for this task.",
++    });
++    expect(mocks.runProcess).not.toHaveBeenCalled();
++    expect(JSON.parse(await readFile(path.join(cwd, result.artifact_path), "utf8"))).toMatchObject({
++      status: "unsupported",
++      checks: [],
++    });
++  });
++
+   it("stops at the first failed or unsupported check and still writes the evidence artifact", async () => {
+     const cwd = await root();
+     mocks.runProcess.mockResolvedValue({ exitCode: 7, stdout: "", stderr: "failed" });
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.ts b/packages/agentplane/src/commands/task/direct-task-verification.ts
+index ac642380c..6e4c8b77a 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.ts
+@@ -110,7 +110,16 @@ export async function runDirectTaskVerification(opts: {
+   cwd: string;
+ }): Promise<DirectTaskVerificationResult> {
+   const checks: DirectTaskCheck[] = [];
+-  for (const command of directTaskVerificationCommands(opts.task)) {
++  const commands = directTaskVerificationCommands(opts.task);
++  if (commands.length === 0) {
++    const result = {
++      status: "unsupported" as const,
++      checks,
++      reason: "No executable declared verification checks are configured for this task.",
++    };
++    return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
++  }
++  for (const command of commands) {
+     const parsed = parseTrustedDirectTaskCheck(command);
+     if (!parsed) {
+       const result = {
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts b/packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts
+index 3860b46e0..35605f7a8 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts
+@@ -1,5 +1,6 @@
+ import {
+   advanceSupervisorExecutionEpisodeState,
++  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
+   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
+   startSupervisorExecutionEpisode,
+   type AgentWorkOrderV2,
+@@ -19,6 +20,7 @@ export async function recordIssuedExternalAgentEpisode(opts: {
+   work_order_ref: string;
+   purpose: ExternalAgentExchange["purpose"];
+   issue_digest: string;
++  replace_failed_operation: boolean;
+ }): Promise<void> {
+   const effectRef = `external-agent-issue:${opts.issue_digest}`;
+   const fingerprint = opts.decision.workflowStep.preconditionFingerprint.digest;
+@@ -32,6 +34,23 @@ export async function recordIssuedExternalAgentEpisode(opts: {
+       recover_intent: false,
+     });
+     let journal = opened.journal;
++    let replacementAuthorized = false;
++    if (journal.status === "stopped" && journal.stop?.reason === "operation_failed") {
++      if (!opts.replace_failed_operation) {
++        throw new CliError({
++          code: "E_RUNTIME",
++          message:
++            "External-agent supervisor is stopped (operation_failed); inspect the failed operation, then rerun task advance with --replacement to start a distinct exact-key successor.",
++        });
++      }
++      const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
++        journal,
++        state_fingerprint_digest: fingerprint,
++      });
++      if (!(await opened.store.compareAndSwap(journal.digest, replacement))) continue;
++      journal = replacement;
++      replacementAuthorized = true;
++    }
+     if (journal.status === "stopped" && journal.stop?.reason === "stale_state") {
+       const reopened = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+         journal,
+@@ -46,6 +65,19 @@ export async function recordIssuedExternalAgentEpisode(opts: {
+         message: `External-agent supervisor is stopped (${journal.stop?.reason ?? "unknown"}).`,
+       });
+     }
++    if (opts.replace_failed_operation && !replacementAuthorized) {
++      const latest = journal.operations.at(-1);
++      const isIdempotentReplacement =
++        journal.cursor.phase === "intent_recorded" &&
++        latest?.status === "intent" &&
++        typeof latest.replacement_of_operation_key === "string";
++      if (!isIdempotentReplacement) {
++        throw new CliError({
++          code: "E_USAGE",
++          message: "task advance --replacement requires a terminal failed operation.",
++        });
++      }
++    }
+     if (journal.cursor.phase === "completed") {
+       const advanced = advanceSupervisorExecutionEpisodeState({
+         journal,
+@@ -91,6 +123,9 @@ export async function recordIssuedExternalAgentEpisode(opts: {
+       authority_digest: fingerprint,
+       work_order_ref: opts.work_order_ref,
+       effect_ref: effectRef,
++      ...(journal.cursor.replacement_of_operation_key
++        ? { replacement_of_operation_key: journal.cursor.replacement_of_operation_key }
++        : {}),
+     });
+     if (started.status === "stopped" && started.stop.reason === "stale_state") {
+       const reopened = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor.ts b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+index ce906c7dc..142757e03 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+@@ -149,6 +149,7 @@ export async function issueExternalAgentExchange(opts: {
+   command: CommandContext;
+   decision: TaskRouteDecision;
+   work_order: AgentWorkOrderV2;
++  replace_failed_operation: boolean;
+ }): Promise<IssuedExternalAgentExchange | null> {
+   const step = opts.decision.workflowStep;
+   const purpose = semanticPurpose(opts.decision);
+@@ -186,6 +187,7 @@ export async function issueExternalAgentExchange(opts: {
+       work_order_ref: paths.work_order,
+       purpose,
+       issue_digest: externalAgentIssueDigest({ exchange: existing, work_order: workOrder }),
++      replace_failed_operation: opts.replace_failed_operation,
+     });
+     return {
+       exchange: existing,
+@@ -241,6 +243,7 @@ export async function issueExternalAgentExchange(opts: {
+     work_order_ref: paths.work_order,
+     purpose,
+     issue_digest: externalAgentIssueDigest({ exchange, work_order: workOrder }),
++    replace_failed_operation: opts.replace_failed_operation,
+   });
+   return { exchange, paths, work_order: workOrder };
+ }
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 0998771d1..edf0d1cf9 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -32,7 +32,8 @@
+     "202608021535-CNQKXP",
+     "202608061646-WCARQG",
+     "202608061646-30TKV4",
+-    "202608062023-V3WHE9"
++    "202608062023-V3WHE9",
++    "202608080805-KPWPAV"
+   ],
+   "base": {
+     "baseline_id": "agentplane.compatibility.v0.6.24",
+@@ -41,9 +42,9 @@
+     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
+   },
+   "candidate": {
+-    "surface_sha256": "f57ac6b3a4714ea8017d3d13aa82b97c52aad0467883202b0d011faff30d2d24",
++    "surface_sha256": "c8a5d33a5456fb03103ac540ce00eb0c70a1480426a0eb5517f98881f7293e4e",
+     "section_digests": {
+-      "cli_topology": "fec6c3b1185691d9ff6f793d69afc2fbfc86e062d30733a60b5a1e5b5c41a80a",
++      "cli_topology": "9487daa3fe64990ef0d69326ee154ec5975e3c6b942667735ebcf4c464ce50b2",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
+@@ -86,7 +87,7 @@
+     "section": "package_manifests",
+     "from_sha256": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+     "to_sha256": "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+-    "surface_sha256": "226a337ec9c72e8da6d2191039f78f85d4db97e16101162540b4d948cfe70af4",
++    "surface_sha256": "a3ac789c855404318930013a613489a3a6da5c2fc4e355fa99358eb005007f1a",
+     "allowed_json_paths": [
+       "$.package_manifests[0].dependencies.@agentplaneorg/core",
+       "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -435,16 +436,17 @@
+         "202608021535-CNQKXP",
+         "202608061646-WCARQG",
+         "202608061646-30TKV4",
+-        "202608062023-V3WHE9"
++        "202608062023-V3WHE9",
++        "202608080805-KPWPAV"
+       ],
+       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+-      "to_sha256": "fec6c3b1185691d9ff6f793d69afc2fbfc86e062d30733a60b5a1e5b5c41a80a",
++      "to_sha256": "9487daa3fe64990ef0d69326ee154ec5975e3c6b942667735ebcf4c464ce50b2",
+       "classification": "additive_with_visibility_simplification",
+-      "summary": "Adds the compact external task advance packet, user-first task creation with an execution preview, explainable per-task workflow routing, compatibility retirement diagnostics, and safe local evidence statistics, compaction, and garbage collection; promotes the managed task runner; and moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces without removing commands or options.",
++      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with an execution preview, explainable per-task workflow routing, compatibility retirement diagnostics, and safe local evidence statistics, compaction, and garbage collection; promotes the managed task runner; and moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces without removing commands or options.",
+       "evidence": {
+         "command_count": { "from": 243, "to": 263 },
+         "positional_count": { "from": 165, "to": 180 },
+-        "option_count": { "from": 767, "to": 843 },
++        "option_count": { "from": 767, "to": 844 },
+         "added_commands": [
+           "context supervise-task",
+           "doctor legacy",
+@@ -795,6 +797,12 @@
+                 "name": "result",
+                 "kind": "string",
+                 "valueHint": "<path>"
++              },
++              {
++                "name": "replacement",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
+               }
+             ]
+           },
+@@ -1478,6 +1486,13 @@
+             "valueHint": null,
+             "default": false
+           },
++          {
++            "command": "task advance",
++            "name": "replacement",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
+           {
+             "command": "task advance",
+             "name": "result",
+@@ -2096,6 +2111,12 @@
+             "name": "remote",
+             "source_task": "202608021231-PZGG3V"
+           },
++          {
++            "kind": "option",
++            "command": "task advance",
++            "name": "replacement",
++            "source_task": "202608080805-KPWPAV"
++          },
+           {
+             "kind": "option",
+             "command": "task advance",
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index acc0ab7c0..e2c51c1ef 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -342,6 +342,7 @@ function validateReviewedCandidate({
+     "202608061646-WCARQG",
+     "202608061646-30TKV4",
+     "202608062023-V3WHE9",
++    "202608080805-KPWPAV",
+   ];
+   const expectedSourceTasks = [
+     "202607221846-4VB97J",
+@@ -375,6 +376,7 @@ function validateReviewedCandidate({
+     "202608061646-WCARQG",
+     "202608061646-30TKV4",
+     "202608062023-V3WHE9",
++    "202608080805-KPWPAV",
+   ];
+   assert(
+     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
+@@ -506,7 +508,7 @@ function validateReviewedCandidate({
+         section: "package_manifests",
+         from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+         to_sha256: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+-        surface_sha256: "226a337ec9c72e8da6d2191039f78f85d4db97e16101162540b4d948cfe70af4",
++        surface_sha256: "a3ac789c855404318930013a613489a3a6da5c2fc4e355fa99358eb005007f1a",
+         allowed_json_paths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -1378,6 +1380,7 @@ function validateReviewedCandidate({
+         { name: "agent-json", kind: "boolean", valueHint: null, default: false },
+         { name: "remote", kind: "boolean", valueHint: null, default: false },
+         { name: "result", kind: "string", valueHint: "<path>" },
++        { name: "replacement", kind: "boolean", valueHint: null, default: false },
+       ],
+     },
+     {
+@@ -1708,6 +1711,13 @@ function validateReviewedCandidate({
+       valueHint: null,
+       default: false,
+     },
++    {
++      command: "task advance",
++      name: "replacement",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
+     {
+       command: "task advance",
+       name: "result",
+@@ -2139,6 +2149,12 @@ function validateReviewedCandidate({
+       name: "remote",
+       source_task: "202608021231-PZGG3V",
+     },
++    {
++      kind: "option",
++      command: "task advance",
++      name: "replacement",
++      source_task: "202608080805-KPWPAV",
++    },
+     {
+       kind: "option",
+       command: "task advance",

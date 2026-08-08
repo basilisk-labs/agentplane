@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The rework is limited to generated CLI documentation and task lifecycle evidence.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608080805-KPWPAV/quality/objects/sha256/77ce9d8b1fbf40b2e1fddcd4915e88f470cbc61c6279c391300ce227933956b0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "bun run docs:cli:check passes on the regenerated reference.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608080805-KPWPAV/quality/objects/sha256/77ce9d8b1fbf40b2e1fddcd4915e88f470cbc61c6279c391300ce227933956b0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The critical suite, typecheck, and full contract suite passed on implementation commit 1ba645fe2.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608080805-KPWPAV/quality/objects/sha256/77ce9d8b1fbf40b2e1fddcd4915e88f470cbc61c6279c391300ce227933956b0.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

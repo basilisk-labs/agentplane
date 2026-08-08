@@ -1,0 +1,124 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run test:critical",
+    "bun run typecheck",
+    "bun run ci:contract"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-08T08:45:34.838Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608080805-KPWPAV/verification/20260808084534838-9ba14b37a9d04b68.json",
+      "sha256": "sha256:228591fbc9df5e9d60b3b658185d7bf63f67706ae589c3cb5668256291495d53"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 15863d68db15dd0592db438a575828c7700f88c6..1ba645fe2dafd67f435c0fc051f6a0a399e3aa55",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 15863d68db15dd0592db438a575828c7700f88c6..1ba645fe2dafd67f435c0fc051f6a0a399e3aa55",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608080805-KPWPAV/README.md",
+          "M\t.agentplane/tasks/202608080805-KPWPAV/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608080805-KPWPAV/pr/github-body.md",
+          "M\t.agentplane/tasks/202608080805-KPWPAV/pr/github-title.txt",
+          "M\t.agentplane/tasks/202608080805-KPWPAV/pr/meta.json",
+          "M\t.agentplane/tasks/202608080805-KPWPAV/pr/review.md",
+          "A\t.agentplane/tasks/202608080805-KPWPAV/verification/20260808084125681-65d56d973da74ad6.json",
+          "M\tdocs/user/cli-reference.generated.mdx"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "15863d68db15dd0592db438a575828c7700f88c6",
+    "implementation_commit": "1ba645fe2dafd67f435c0fc051f6a0a399e3aa55",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M .agentplane/tasks/202608080805-KPWPAV/README.md",
+        " M .agentplane/tasks/202608080805-KPWPAV/pr/github-body.md",
+        " M .agentplane/tasks/202608080805-KPWPAV/pr/github-title.txt",
+        " M .agentplane/tasks/202608080805-KPWPAV/pr/meta.json",
+        " M .agentplane/tasks/202608080805-KPWPAV/pr/review.md",
+        " M docs/user/cli-reference.generated.mdx",
+        "?? .agentplane/tasks/202608080805-KPWPAV/verification/20260808084125681-65d56d973da74ad6.json"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608080805-KPWPAV/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608080805-KPWPAV/pr/github-body.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608080805-KPWPAV/pr/github-title.txt"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608080805-KPWPAV/pr/meta.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608080805-KPWPAV/pr/review.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M docs/user/cli-reference.generated.mdx"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608080805-KPWPAV/verification/20260808084125681-65d56d973da74ad6.json"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        " M .agentplane/tasks/202608080805-KPWPAV/README.md",
+        " M .agentplane/tasks/202608080805-KPWPAV/pr/github-body.md",
+        " M .agentplane/tasks/202608080805-KPWPAV/pr/github-title.txt",
+        " M .agentplane/tasks/202608080805-KPWPAV/pr/meta.json",
+        " M .agentplane/tasks/202608080805-KPWPAV/pr/review.md",
+        " M docs/user/cli-reference.generated.mdx",
+        "?? .agentplane/tasks/202608080805-KPWPAV/verification/20260808084125681-65d56d973da74ad6.json"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608080805-KPWPAV",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608080805-KPWPAV/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
