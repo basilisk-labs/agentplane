@@ -4,7 +4,7 @@ title: "Parallelize release qualification without weakening gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +26,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "User explicitly approved pausing the active v0.7.5 verification and implementing no-quality-loss release acceleration before restarting the release."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-08T12:34:31.801Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Unsupported declared check: bunx vitest run scripts/bench/capture-agent-efficiency-candidate.test.mjs"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -39,9 +39,7 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit:
-  hash: "44a20df62970908b1d043e9c8bdd9da7ded611c3"
-  message: "🚧 YAN7DW task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -65,8 +63,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 44a20df62970. CLI accepted one state-bound external-agent semantic result."
     commit: "44a20df62970908b1d043e9c8bdd9da7ded611c3"
+  -
+    type: "verify"
+    at: "2026-08-08T12:34:31.801Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Unsupported declared check: bunx vitest run scripts/bench/capture-agent-efficiency-candidate.test.mjs"
 doc_version: 3
-doc_updated_at: "2026-08-08T12:30:47.296Z"
+doc_updated_at: "2026-08-08T12:34:32.897Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
@@ -96,6 +100,46 @@ sections:
     6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-08T12:34:31.801Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Unsupported declared check: bunx vitest run scripts/bench/capture-agent-efficiency-candidate.test.mjs
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T12:30:47.296Z, excerpt_hash=sha256:1c6dd78aa74d21c9fea2d5488d2cb1746ff3350caa20674cfc62d87e84021bb7
+
+    Details:
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608081216-YAN7DW-parallelize-release-qualification/.agentplane/tasks/202608081216-YAN7DW/blueprint/resolved-snapshot.json
+    - old_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+    - current_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608081216-YAN7DW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608081216-YAN7DW
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -142,6 +186,46 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-08T12:34:31.801Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Unsupported declared check: bunx vitest run scripts/bench/capture-agent-efficiency-candidate.test.mjs
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T12:30:47.296Z, excerpt_hash=sha256:1c6dd78aa74d21c9fea2d5488d2cb1746ff3350caa20674cfc62d87e84021bb7
+
+Details:
+
+Command: bun run ci:contract
+Result: pass
+Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608081216-YAN7DW-parallelize-release-qualification/.agentplane/tasks/202608081216-YAN7DW/blueprint/resolved-snapshot.json
+- old_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+- current_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608081216-YAN7DW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608081216-YAN7DW
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
