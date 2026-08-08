@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -283,7 +283,7 @@ events:
     state: "ok"
     note: "Verified acceleration rework on 1169b67af: qualification:check, test:critical, format:check, and ci:contract all passed; benchmark evidence exceeds the 10% threshold; provider 50-run/55-episode gate remains required on the integrated release SHA."
 doc_version: 3
-doc_updated_at: "2026-08-08T14:36:21.852Z"
+doc_updated_at: "2026-08-08T14:39:08.154Z"
 doc_updated_by: "CODER"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
@@ -764,7 +764,10 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: The reproducible benchmark is stored at .agentplane/tasks/202608081216-YAN7DW/evidence/parallelization-benchmark.v1.json: paired serial runs were 175.09s and 134.97s, concurrent runs were 92.99s and 100.05s, and the exact-candidate confirmation was 114.83s versus 69.17s.
+      Impact: The median reduction is 37.7411 percent and the exact-candidate reduction is 39.7631 percent, both above the 10 percent acceptance threshold with all retained scenario exit codes equal to zero.
+      Resolution: Freeze .agentplane/tasks/202608081216-YAN7DW/evidence/parallelization-benchmark.v1.json through the next verification record Evidence field; the artifact contains method, environment, warm/cold caveat, run order, raw timings, threshold, noise controls, comparison, verdict, limits, and commit mapping.
 extensions:
   implementation_commit:
     hash: "a458a3689d31c1fd8109711dfa2980dd9ff910fe"
@@ -1264,6 +1267,10 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: The reproducible benchmark is stored at .agentplane/tasks/202608081216-YAN7DW/evidence/parallelization-benchmark.v1.json: paired serial runs were 175.09s and 134.97s, concurrent runs were 92.99s and 100.05s, and the exact-candidate confirmation was 114.83s versus 69.17s.
+  Impact: The median reduction is 37.7411 percent and the exact-candidate reduction is 39.7631 percent, both above the 10 percent acceptance threshold with all retained scenario exit codes equal to zero.
+  Resolution: Freeze .agentplane/tasks/202608081216-YAN7DW/evidence/parallelization-benchmark.v1.json through the next verification record Evidence field; the artifact contains method, environment, warm/cold caveat, run order, raw timings, threshold, noise controls, comparison, verdict, limits, and commit mapping.
 
 ## Token Usage
 
