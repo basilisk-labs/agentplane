@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check f90a67a282234a4f42b5e3721e416f31e7f0be9b..f559a5b1fc5ad58c390645d05375caff21d21d60",
+      "command": "git diff --check c0b33f29ba1d911ce7996c063774bb9a04fe8c4e..0caa5838bb36e58165a19215f6bd16ea39673ac0",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,25 +13,22 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB f90a67a282234a4f42b5e3721e416f31e7f0be9b..f559a5b1fc5ad58c390645d05375caff21d21d60",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB c0b33f29ba1d911ce7996c063774bb9a04fe8c4e..0caa5838bb36e58165a19215f6bd16ea39673ac0",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202608080805-KPWPAV/README.md",
-        "A\t.agentplane/tasks/202608080805-KPWPAV/blueprint/resolved-snapshot.json",
-        "A\t.agentplane/tasks/202608080805-KPWPAV/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202608080805-KPWPAV/pr/github-body.md",
-        "A\t.agentplane/tasks/202608080805-KPWPAV/pr/github-title.txt",
-        "A\t.agentplane/tasks/202608080805-KPWPAV/pr/meta.json",
-        "A\t.agentplane/tasks/202608080805-KPWPAV/pr/review.md",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+        "M\t.agentplane/tasks/202608080805-KPWPAV/README.md",
+        "M\t.agentplane/tasks/202608080805-KPWPAV/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608080805-KPWPAV/pr/github-body.md",
+        "M\t.agentplane/tasks/202608080805-KPWPAV/pr/meta.json",
+        "M\t.agentplane/tasks/202608080805-KPWPAV/pr/review.md",
+        "A\t.agentplane/tasks/202608080805-KPWPAV/verification/20260808082324502-85c238495c848729.json",
+        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
         "M\tpackages/agentplane/src/commands/task/advance.command.ts",
-        "M\tpackages/agentplane/src/commands/task/advance.spec.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor-episode.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor.ts",
-        "M\tscripts/baselines/v0.7-compatibility-candidate.json",
-        "M\tscripts/checks/check-compatibility-contract-baseline.mjs"
+        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts"
       ]
     },
     {
@@ -41,59 +38,71 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "f90a67a282234a4f42b5e3721e416f31e7f0be9b",
-  "implementation_commit": "f559a5b1fc5ad58c390645d05375caff21d21d60",
+  "execution_base_commit": "c0b33f29ba1d911ce7996c063774bb9a04fe8c4e",
+  "implementation_commit": "0caa5838bb36e58165a19215f6bd16ea39673ac0",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      "?? .agentplane/tasks/202608080805-KPWPAV/README.md",
-      "?? .agentplane/tasks/202608080805-KPWPAV/blueprint/resolved-snapshot.json",
-      "?? .agentplane/tasks/202608080805-KPWPAV/pr/diffstat.txt",
-      "?? .agentplane/tasks/202608080805-KPWPAV/pr/github-body.md",
-      "?? .agentplane/tasks/202608080805-KPWPAV/pr/github-title.txt",
-      "?? .agentplane/tasks/202608080805-KPWPAV/pr/meta.json",
-      "?? .agentplane/tasks/202608080805-KPWPAV/pr/review.md"
+      " M .agentplane/tasks/202608080805-KPWPAV/README.md",
+      " M .agentplane/tasks/202608080805-KPWPAV/pr/meta.json",
+      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+      " M packages/agentplane/src/commands/task/advance.command.ts",
+      " M packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+      "?? .agentplane/tasks/202608080805-KPWPAV/verification/20260808082324502-85c238495c848729.json"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608080805-KPWPAV/README.md"
+        "line": " M .agentplane/tasks/202608080805-KPWPAV/README.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608080805-KPWPAV/blueprint/resolved-snapshot.json"
+        "line": " M .agentplane/tasks/202608080805-KPWPAV/pr/meta.json"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608080805-KPWPAV/pr/diffstat.txt"
+        "line": " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608080805-KPWPAV/pr/github-body.md"
+        "line": " M packages/agentplane/src/commands/task/advance.command.ts"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608080805-KPWPAV/pr/github-title.txt"
+        "line": " M packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608080805-KPWPAV/pr/meta.json"
+        "line": " M packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608080805-KPWPAV/pr/review.md"
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608080805-KPWPAV/verification/20260808082324502-85c238495c848729.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      "?? .agentplane/tasks/202608080805-KPWPAV/README.md",
-      "?? .agentplane/tasks/202608080805-KPWPAV/blueprint/resolved-snapshot.json",
-      "?? .agentplane/tasks/202608080805-KPWPAV/pr/diffstat.txt",
-      "?? .agentplane/tasks/202608080805-KPWPAV/pr/github-body.md",
-      "?? .agentplane/tasks/202608080805-KPWPAV/pr/github-title.txt",
-      "?? .agentplane/tasks/202608080805-KPWPAV/pr/meta.json",
-      "?? .agentplane/tasks/202608080805-KPWPAV/pr/review.md"
+      " M .agentplane/tasks/202608080805-KPWPAV/README.md",
+      " M .agentplane/tasks/202608080805-KPWPAV/pr/meta.json",
+      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+      " M packages/agentplane/src/commands/task/advance.command.ts",
+      " M packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+      "?? .agentplane/tasks/202608080805-KPWPAV/verification/20260808082324502-85c238495c848729.json"
     ],
     "unchanged_from_execution_baseline": []
   },

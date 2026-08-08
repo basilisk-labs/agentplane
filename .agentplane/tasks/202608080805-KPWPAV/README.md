@@ -4,7 +4,7 @@ title: "Allow explicit replacement after failed task advance operation"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -36,7 +36,7 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "f559a5b1fc5ad58c390645d05375caff21d21d60"
+  hash: "0caa5838bb36e58165a19215f6bd16ea39673ac0"
   message: "🚧 KPWPAV task: apply external agent result"
 comments:
   -
@@ -45,6 +45,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: f559a5b1fc5a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 0caa5838bb36. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -73,8 +76,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-08T08:31:30.277Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 0caa5838bb36. CLI accepted one state-bound external-agent semantic result."
+    commit: "0caa5838bb36e58165a19215f6bd16ea39673ac0"
 doc_version: 3
-doc_updated_at: "2026-08-08T08:23:25.543Z"
+doc_updated_at: "2026-08-08T08:31:30.277Z"
 doc_updated_by: "SUPERVISOR"
 description: "Expose a guarded task advance replacement path for a terminal operation_failed supervisor journal so a newly recomputed route can continue without retrying the failed effect."
 sections:
