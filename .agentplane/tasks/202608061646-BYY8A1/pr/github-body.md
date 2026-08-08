@@ -42,12 +42,13 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
  .../runner/context/semantic-prompt-projection.ts   |   2 +-
  .../task-run-bootstrap.result-examples.test.ts     |  38 +++++++++++++
  .../src/runner/usecases/task-run-bootstrap.ts      |  14 ++++-
+ scripts/README.md                                  |   2 +-
  .../qualification/release-qualification.test.mjs   |   9 +++
  .../run-v0.7.1-release-qualification.mjs           |   2 +
  website/static/img/social/docs/releases/v0.7.5.png | Bin 0 -> 53016 bytes
  website/static/img/social/manifest.json            |   8 +++
  website/static/llms-full.txt                       |  52 +++++++++++++++--
- 20 files changed, 308 insertions(+), 25 deletions(-)
+ 21 files changed, 309 insertions(+), 26 deletions(-)
 ```
 
 </details>
