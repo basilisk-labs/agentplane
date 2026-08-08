@@ -73,6 +73,29 @@ async function createTask(root: string): Promise<string> {
   }
 }
 
+async function writeHarnessGitignore(root: string): Promise<void> {
+  const gitignorePath = path.join(root, ".gitignore");
+  const existingGitignore = await readFile(gitignorePath, "utf8").catch(() => "");
+  await writeFile(
+    gitignorePath,
+    [
+      existingGitignore.trimEnd(),
+      ".agentplane/bin",
+      ".agentplane/cache.sqlite*",
+      "agentplane-recipes",
+      "node_modules",
+      "packages/agentplane/bin",
+      "packages/agentplane/dist",
+      "packages/agentplane/package.json",
+      "packages/core/dist",
+      "packages/core/package.json",
+      "website/node_modules",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+}
+
 async function readAgentPacket(root: string, taskId: string): Promise<AgentPacket> {
   const io = captureStdIO();
   try {
@@ -158,6 +181,7 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       root,
     ]);
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await writeHarnessGitignore(root);
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed worktree resolution"], { cwd: root });
 
@@ -186,7 +210,7 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       "--root",
       taskWorktree,
     ]);
-    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: taskWorktree });
+    await execFileAsync("git", ["add", "."], { cwd: taskWorktree });
     await execFileAsync("git", ["commit", "-m", "test: persist start-ready fixture"], {
       cwd: taskWorktree,
     });
@@ -272,22 +296,16 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
     const packet = await readAgentPacket(taskWorktree, taskId);
     expect(packet.transition_id).toBe(agentTransitionId("agent.task_worktree_resolution"));
     const resultPath = await writeCompletedResult(packet);
-    await execFileAsync("git", ["add", "intended-resolution.txt"], { cwd: taskWorktree });
-    await execFileAsync(
-      "git",
-      ["commit", "-m", `🚧 ${taskId.split("-").at(-1)} task: apply external agent result`],
-      { cwd: taskWorktree },
-    );
     if (!packet.exchange) throw new Error("expected task-worktree resolution exchange");
+    const exchange = JSON.parse(
+      await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8"),
+    ) as ExternalAgentExchange;
     const accepted = await returnAgentResult(taskWorktree, taskId, resultPath);
     expect(accepted.code, accepted.stderr).toBe(0);
     expect(accepted.stderr).not.toMatch(/unsupported purpose|stale/iu);
     expect(
       JSON.parse(await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8")),
     ).toMatchObject({ status: "consumed" });
-    const exchange = JSON.parse(
-      await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8"),
-    ) as ExternalAgentExchange;
     expect(exchange.baseline.head).not.toBe(priorImplementationHead);
     const taskReadme = await readFile(
       path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
@@ -295,5 +313,93 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
     );
     expect(taskReadme).toMatch(/commit:\n {2}hash: "[0-9a-f]{40}"/u);
     expect(taskReadme).not.toContain(`hash: "${priorImplementationHead}"`);
+    const committedContent = await execFileAsync(
+      "git",
+      ["show", "HEAD~1:intended-resolution.txt"],
+      { cwd: taskWorktree },
+    );
+    expect(committedContent.stdout).toBe("keep\n");
+  });
+
+  it("accepts a fresh read-only worktree observation without implementation authority", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const taskId = await createTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Report the closed task worktree state without mutating it.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await writeHarnessGitignore(root);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed read-only resolution"], {
+      cwd: root,
+    });
+
+    const slug = "read-only-resolution";
+    const taskWorktree = path.join(root, ".agentplane", "worktrees", `${taskId}-${slug}`);
+    await runCliSilent([
+      "work",
+      "start",
+      taskId,
+      "--agent",
+      "CODER",
+      "--slug",
+      slug,
+      "--worktree",
+      "--root",
+      root,
+    ]);
+    await runCliSilent([
+      "task",
+      "set-status",
+      taskId,
+      "DONE",
+      "--force",
+      "--yes",
+      "--root",
+      taskWorktree,
+    ]);
+    await execFileAsync("git", ["add", "."], { cwd: taskWorktree });
+    await execFileAsync("git", ["commit", "-m", "test: persist closed task fixture"], {
+      cwd: taskWorktree,
+    });
+    await writeFile(path.join(taskWorktree, "unresolved-local.txt"), "observe only\n", "utf8");
+
+    const packet = await readAgentPacket(taskWorktree, taskId);
+    expect(packet.transition_id).toBe(agentTransitionId("agent.task_worktree_resolution"));
+    if (!packet.exchange) throw new Error("expected read-only worktree exchange");
+    const workOrder = JSON.parse(
+      await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
+    ) as { authority: { sandbox: string } };
+    expect(workOrder.authority.sandbox).toBe("read-only");
+    const resultPath = await writeCompletedResult(packet);
+    const accepted = await returnAgentResult(taskWorktree, taskId, resultPath);
+
+    expect(accepted.code, accepted.stderr).toBe(0);
+    expect(
+      JSON.parse(await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8")),
+    ).toMatchObject({ status: "consumed" });
+    const unresolvedStatus = await execFileAsync(
+      "git",
+      ["status", "--short", "unresolved-local.txt"],
+      { cwd: taskWorktree },
+    );
+    expect(unresolvedStatus.stdout).toContain("unresolved-local.txt");
+    const latestSubject = await execFileAsync("git", ["log", "-1", "--format=%s"], {
+      cwd: taskWorktree,
+    });
+    expect(latestSubject.stdout).toContain("record worktree observation");
   });
 });

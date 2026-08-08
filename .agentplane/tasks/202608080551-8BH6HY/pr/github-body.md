@@ -32,19 +32,19 @@ read-only authority.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.task-advance.test.ts      |  61 +++++
- ...i.core.task-advance.worktree-resolution.test.ts | 299 +++++++++++++++++++++
- .../route-decision-blockers.quality-review.test.ts |  57 ++++
+ .../src/cli/run-cli.core.task-advance.test.ts      |  61 ++++
+ ...i.core.task-advance.worktree-resolution.test.ts | 405 +++++++++++++++++++++
+ .../route-decision-blockers.quality-review.test.ts |  57 +++
  .../src/commands/shared/route-decision-blockers.ts |   5 +-
- .../commands/shared/route-decision-verification.ts |  18 ++
- ...direct-task-supervisor-formal-operation.test.ts |  61 +++++
+ .../commands/shared/route-decision-verification.ts |  18 +
+ ...direct-task-supervisor-formal-operation.test.ts |  61 ++++
  .../direct-task-supervisor-formal-operation.ts     |  16 +-
- .../external-agent-implementation-authority.ts     |   5 +-
- .../commands/task/external-agent-purpose.test.ts   |  33 +++
- .../src/commands/task/external-agent-purpose.ts    |  17 ++
- .../task/external-agent-supervisor-episode.ts      | 116 ++++++++
- .../src/commands/task/external-agent-supervisor.ts | 113 +-------
- 12 files changed, 691 insertions(+), 110 deletions(-)
+ .../external-agent-implementation-authority.ts     |  63 +++-
+ .../commands/task/external-agent-purpose.test.ts   |  39 ++
+ .../src/commands/task/external-agent-purpose.ts    |  19 +
+ .../task/external-agent-supervisor-episode.ts      | 116 ++++++
+ .../src/commands/task/external-agent-supervisor.ts | 124 ++-----
+ 12 files changed, 872 insertions(+), 112 deletions(-)
 ```
 
 </details>

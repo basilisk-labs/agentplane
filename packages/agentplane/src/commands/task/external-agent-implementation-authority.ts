@@ -105,9 +105,13 @@ function assertExternalImplementationReturnState(opts: {
       message: "External agent changed Git history; Agentplane must own the implementation commit.",
     });
   }
+  const resolvesDirtyWorktree = opts.exchange.purpose === "task_worktree_resolution";
   const baseline = new Set(opts.exchange.baseline.changed_paths);
+  const baselinePaths = new Set(
+    opts.exchange.baseline.changed_paths.map((line) => pathFromStatusLine(line)),
+  );
   for (const line of baseline) {
-    if (!opts.current_status_lines.includes(line)) {
+    if (!resolvesDirtyWorktree && !opts.current_status_lines.includes(line)) {
       throw new CliError({
         code: "E_VALIDATION",
         message: "A pre-existing repository change moved during the external-agent episode.",
@@ -115,7 +119,7 @@ function assertExternalImplementationReturnState(opts: {
     }
   }
   const changed = opts.current_status_lines
-    .filter((line) => !baseline.has(line))
+    .filter((line) => resolvesDirtyWorktree || !baseline.has(line))
     .map((line) => pathFromStatusLine(line))
     .filter(Boolean)
     .toSorted();
@@ -123,22 +127,63 @@ function assertExternalImplementationReturnState(opts: {
     .map((entry) => authorityPath(entry, opts.exchange.checkout))
     .filter((entry): entry is string => entry !== null);
   const taskPrefix = `.agentplane/tasks/${opts.exchange.task_id}/`;
-  const forbidden = changed.filter(
-    (entry) => entry.startsWith(taskPrefix) || !pathAllowed(entry, allowed),
-  );
+  const forbidden = changed.filter((entry) => {
+    const protectedTaskArtifact =
+      entry.startsWith(taskPrefix) && !(resolvesDirtyWorktree && baselinePaths.has(entry));
+    return protectedTaskArtifact || !pathAllowed(entry, allowed);
+  });
   if (forbidden.length > 0) {
     throw new CliError({
       code: "E_VALIDATION",
       message: `External-agent changes escaped semantic authority: ${forbidden.join(", ")}.`,
     });
   }
-  if (changed.length === 0) {
+  if (changed.length === 0 && !resolvesDirtyWorktree) {
     throw new CliError({
       code: "E_VALIDATION",
       message: "Completed implementation result produced no supervisor-observed workspace change.",
     });
   }
   return changed;
+}
+
+export async function applyExternalReadOnlyWorktreeObservation(opts: {
+  command: CommandContext;
+  exchange: ExternalAgentExchange;
+  envelope: ExternalAgentResultEnvelope;
+}): Promise<void> {
+  await cmdTaskComment({
+    ctx: opts.command,
+    cwd: opts.exchange.checkout,
+    taskId: opts.exchange.task_id,
+    author: "SUPERVISOR",
+    body:
+      `Read-only worktree observation (${opts.envelope.result.status}): ` +
+      opts.envelope.result.summary,
+    quiet: true,
+  });
+  const status = await readDirectRepositoryStatus(opts.exchange.checkout);
+  if (!hasChangedTaskArtifacts(status?.lines ?? [], opts.exchange.task_id)) return;
+  const exitCode = await cmdCommit({
+    ctx: opts.command,
+    cwd: opts.exchange.checkout,
+    taskId: opts.exchange.task_id,
+    message: `🚧 ${opts.exchange.task_id.split("-").at(-1)} task: record worktree observation`,
+    close: false,
+    allow: [],
+    autoAllow: false,
+    allowTasks: true,
+    allowBase: false,
+    allowPolicy: false,
+    allowConfig: false,
+    allowHooks: false,
+    allowCI: false,
+    requireClean: false,
+    quiet: true,
+    closeUnstageOthers: false,
+    closeCheckOnly: false,
+  });
+  if (exitCode !== 0) throw new Error(`External worktree observation commit exited ${exitCode}.`);
 }
 
 export async function applyExternalImplementationResult(opts: {
@@ -191,6 +236,7 @@ export async function applyExternalImplementationResult(opts: {
       current_head: head,
       current_status_lines: status?.lines ?? [],
     });
+    if (observedChangedPaths.length === 0) return;
     const exitCode = await cmdCommit({
       ctx: opts.command,
       cwd: opts.exchange.checkout,
