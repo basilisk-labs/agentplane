@@ -19,10 +19,10 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
 - Note:
 
 ```text
-Exact-subject qualification passed on aaef3c8be167784f26f7c994fb44db2915a9c160: verdict ready, 18/19
-scenarios passed, zero blocking defects, provider matrix 50 runs/55 episodes passed, efficiency
-evidence passed with 58.59% total-token reduction, matched and supervisor latency passed; absolute
-latency remains advisory only.
+Evaluator rework resolved for implementation 68c3884984a8a57e6b96f56593e25a746836cd56: both
+monolithic release gates reran with exit 0; exact qualification, latency disposition, provider
+matrix, efficiency evidence, and deterministic subject-equivalence proof are frozen under task
+evidence and accepted through .agentplane/cache runtime refs.
 ```
 - Canonical workflow state lives in the task README.
 

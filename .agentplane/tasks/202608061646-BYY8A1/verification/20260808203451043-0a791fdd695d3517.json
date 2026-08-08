@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/cache/release-0.7.5/ci-local-full.log | .agentplane/cache/release-0.7.5/subject-equivalence.json\nScope: exact evaluated implementation content; full local CI, 3938 unit tests, critical CLI, docs, Windows, and coverage\n\nCommand: bun run ci:release-extras\nResult: pass\nEvidence: .agentplane/cache/release-0.7.5/ci-release-extras.log | .agentplane/cache/release-0.7.5/subject-equivalence.json\nScope: exact evaluated implementation content; package/install/migration, 102 release chunks, workflow/significant coverage, release-critical\n\nCommand: bun run e2e:v0.7.1:gate\nResult: pass\nEvidence: .agentplane/cache/release-0.7.5/qualification-report.json | .agentplane/cache/release-0.7.5/cli-latency.log | .agentplane/cache/release-0.7.5/matched-cli-latency.log | .agentplane/cache/release-0.7.5/subject-equivalence.json\nScope: 19 scenarios; 18 passed, zero blocking defects; the failed absolute latency diagnostic is advisory and cleared by the matched baseline\n\nCommand: bun run bench:compatibility:check\nResult: pass\nEvidence: .agentplane/cache/release-0.7.5/full-contract.log | .agentplane/cache/release-0.7.5/subject-equivalence.json\nScope: compatibility and frozen RF-04 replay contract\n\nCommand: bun run bench:agent-efficiency:check\nResult: pass\nEvidence: .agentplane/cache/release-0.7.5/efficiency-evidence.json | .agentplane/cache/release-0.7.5/provider-matrix.log | .agentplane/cache/release-0.7.5/subject-equivalence.json\nScope: 50 provider runs, 55 episodes, token and quality deltas\n\nCommand: bun run bench:agent-efficiency:replay:check\nResult: pass\nEvidence: .agentplane/cache/release-0.7.5/provider-matrix.log | .agentplane/cache/release-0.7.5/qualification-report.json | .agentplane/cache/release-0.7.5/subject-equivalence.json\nScope: frozen RF-04 replay contract, recovery and concurrency-sensitive paths",
+  "digest": "sha256:0a791fdd695d35174dcd3ea25e7671e227053ac2db4b11746e22025a5a2083bd",
+  "implementation_sha": "68c3884984a8a57e6b96f56593e25a746836cd56",
+  "kind": "task_verification_record",
+  "note": "Evaluator rework resolved for implementation 68c3884984a8a57e6b96f56593e25a746836cd56: both monolithic release gates reran with exit 0; exact qualification, latency disposition, provider matrix, efficiency evidence, and deterministic subject-equivalence proof are frozen under task evidence and accepted through .agentplane/cache runtime refs.",
+  "recorded_at": "2026-08-08T20:34:51.043Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bun run ci:local:full\n- bun run ci:release-extras\n- bun run e2e:v0.7.1:gate\n- bun run bench:compatibility:check\n- bun run bench:agent-efficiency:check\n- bun run bench:agent-efficiency:replay:check",
+  "scope_digest": "sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a",
+  "task_id": "202608061646-BYY8A1",
+  "verification_command": "agentplane verify 202608061646-BYY8A1 --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 75
+revision: 76
 origin:
   system: "manual"
 depends_on:
@@ -41,9 +41,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-08T19:59:27.469Z"
+  updated_at: "2026-08-08T20:34:51.043Z"
   updated_by: "TESTER"
-  note: "Exact-subject qualification passed on aaef3c8be167784f26f7c994fb44db2915a9c160: verdict ready, 18/19 scenarios passed, zero blocking defects, provider matrix 50 runs/55 episodes passed, efficiency evidence passed with 58.59% total-token reduction, matched and supervisor latency passed; absolute latency remains advisory only."
+  note: "Evaluator rework resolved for implementation 68c3884984a8a57e6b96f56593e25a746836cd56: both monolithic release gates reran with exit 0; exact qualification, latency disposition, provider matrix, efficiency evidence, and deterministic subject-equivalence proof are frozen under task evidence and accepted through .agentplane/cache runtime refs."
   attempts: 0
 quality_review:
   state: "rework"
@@ -558,8 +558,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Exact-subject qualification passed on aaef3c8be167784f26f7c994fb44db2915a9c160: verdict ready, 18/19 scenarios passed, zero blocking defects, provider matrix 50 runs/55 episodes passed, efficiency evidence passed with 58.59% total-token reduction, matched and supervisor latency passed; absolute latency remains advisory only."
+  -
+    type: "verify"
+    at: "2026-08-08T20:34:51.043Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Evaluator rework resolved for implementation 68c3884984a8a57e6b96f56593e25a746836cd56: both monolithic release gates reran with exit 0; exact qualification, latency disposition, provider matrix, efficiency evidence, and deterministic subject-equivalence proof are frozen under task evidence and accepted through .agentplane/cache runtime refs."
 doc_version: 3
-doc_updated_at: "2026-08-08T19:59:30.602Z"
+doc_updated_at: "2026-08-08T20:34:52.709Z"
 doc_updated_by: "CODER"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
@@ -1615,6 +1621,66 @@ sections:
     Result: pass
     Evidence: .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/logs/full-contract.log
     Scope: frozen RF-04 replay contract
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+    - old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T20:34:51.043Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Evaluator rework resolved for implementation 68c3884984a8a57e6b96f56593e25a746836cd56: both monolithic release gates reran with exit 0; exact qualification, latency disposition, provider matrix, efficiency evidence, and deterministic subject-equivalence proof are frozen under task evidence and accepted through .agentplane/cache runtime refs.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T19:59:30.602Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/cache/release-0.7.5/ci-local-full.log | .agentplane/cache/release-0.7.5/subject-equivalence.json
+    Scope: exact evaluated implementation content; full local CI, 3938 unit tests, critical CLI, docs, Windows, and coverage
+
+    Command: bun run ci:release-extras
+    Result: pass
+    Evidence: .agentplane/cache/release-0.7.5/ci-release-extras.log | .agentplane/cache/release-0.7.5/subject-equivalence.json
+    Scope: exact evaluated implementation content; package/install/migration, 102 release chunks, workflow/significant coverage, release-critical
+
+    Command: bun run e2e:v0.7.1:gate
+    Result: pass
+    Evidence: .agentplane/cache/release-0.7.5/qualification-report.json | .agentplane/cache/release-0.7.5/cli-latency.log | .agentplane/cache/release-0.7.5/matched-cli-latency.log | .agentplane/cache/release-0.7.5/subject-equivalence.json
+    Scope: 19 scenarios; 18 passed, zero blocking defects; the failed absolute latency diagnostic is advisory and cleared by the matched baseline
+
+    Command: bun run bench:compatibility:check
+    Result: pass
+    Evidence: .agentplane/cache/release-0.7.5/full-contract.log | .agentplane/cache/release-0.7.5/subject-equivalence.json
+    Scope: compatibility and frozen RF-04 replay contract
+
+    Command: bun run bench:agent-efficiency:check
+    Result: pass
+    Evidence: .agentplane/cache/release-0.7.5/efficiency-evidence.json | .agentplane/cache/release-0.7.5/provider-matrix.log | .agentplane/cache/release-0.7.5/subject-equivalence.json
+    Scope: 50 provider runs, 55 episodes, token and quality deltas
+
+    Command: bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: .agentplane/cache/release-0.7.5/provider-matrix.log | .agentplane/cache/release-0.7.5/qualification-report.json | .agentplane/cache/release-0.7.5/subject-equivalence.json
+    Scope: frozen RF-04 replay contract, recovery and concurrency-sensitive paths
 
     BlueprintSnapshotRef:
     - state: current
@@ -2733,6 +2799,66 @@ Command: bun run bench:agent-efficiency:replay:check
 Result: pass
 Evidence: .agentplane/reports/v0.7.1-qualification/2026-08-08T19-26-24-766Z/logs/full-contract.log
 Scope: frozen RF-04 replay contract
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+- old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T20:34:51.043Z — VERIFY — ok
+
+By: TESTER
+
+Note: Evaluator rework resolved for implementation 68c3884984a8a57e6b96f56593e25a746836cd56: both monolithic release gates reran with exit 0; exact qualification, latency disposition, provider matrix, efficiency evidence, and deterministic subject-equivalence proof are frozen under task evidence and accepted through .agentplane/cache runtime refs.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T19:59:30.602Z, excerpt_hash=sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a
+
+Details:
+
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/cache/release-0.7.5/ci-local-full.log | .agentplane/cache/release-0.7.5/subject-equivalence.json
+Scope: exact evaluated implementation content; full local CI, 3938 unit tests, critical CLI, docs, Windows, and coverage
+
+Command: bun run ci:release-extras
+Result: pass
+Evidence: .agentplane/cache/release-0.7.5/ci-release-extras.log | .agentplane/cache/release-0.7.5/subject-equivalence.json
+Scope: exact evaluated implementation content; package/install/migration, 102 release chunks, workflow/significant coverage, release-critical
+
+Command: bun run e2e:v0.7.1:gate
+Result: pass
+Evidence: .agentplane/cache/release-0.7.5/qualification-report.json | .agentplane/cache/release-0.7.5/cli-latency.log | .agentplane/cache/release-0.7.5/matched-cli-latency.log | .agentplane/cache/release-0.7.5/subject-equivalence.json
+Scope: 19 scenarios; 18 passed, zero blocking defects; the failed absolute latency diagnostic is advisory and cleared by the matched baseline
+
+Command: bun run bench:compatibility:check
+Result: pass
+Evidence: .agentplane/cache/release-0.7.5/full-contract.log | .agentplane/cache/release-0.7.5/subject-equivalence.json
+Scope: compatibility and frozen RF-04 replay contract
+
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: .agentplane/cache/release-0.7.5/efficiency-evidence.json | .agentplane/cache/release-0.7.5/provider-matrix.log | .agentplane/cache/release-0.7.5/subject-equivalence.json
+Scope: 50 provider runs, 55 episodes, token and quality deltas
+
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: .agentplane/cache/release-0.7.5/provider-matrix.log | .agentplane/cache/release-0.7.5/qualification-report.json | .agentplane/cache/release-0.7.5/subject-equivalence.json
+Scope: frozen RF-04 replay contract, recovery and concurrency-sensitive paths
 
 BlueprintSnapshotRef:
 - state: current
