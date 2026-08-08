@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run qualification:check\nResult: pass\nEvidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608081216-YAN7DW declared verification\n\nCommand: bun run test:critical\nResult: pass\nEvidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608081216-YAN7DW declared verification\n\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-3\nScope: branch_pr task 202608081216-YAN7DW declared verification\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-4\nScope: branch_pr task 202608081216-YAN7DW declared verification",
+  "digest": "sha256:bcb71e73b33daeb758bf2df17556f4bf4002f45f238bece8a4d551ce572b0e33",
+  "implementation_sha": "d76c54b377fff1a660ab4a25bcfd7a2360c68e43",
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-08-08T12:46:48.445Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bun run qualification:check`. Expected: qualification contract tests pass and the full gate command resolves every required variable in dry-run mode.\n2. Run `bun run test:critical`. Expected: the critical CLI suite passes, including candidate capture concurrency, stop-on-first-failure, evidence cleanup, and existing RF-04 contracts.\n3. Run `bun run format:check`. Expected: formatting passes.\n4. Run `bun run ci:contract`. Expected: repository contracts, lint, architecture, clone, knip, and coverage thresholds pass.\n5. The subsequent v0.7.5 release gate must execute the full 50-run/55-episode provider matrix on the exact integrated candidate SHA; no provider evidence from the pre-change SHA may be reused.",
+  "scope_digest": "sha256:1cae1f99dc9a9a5efbce86fcedd6b0b11fc7737d54646d4fdec13617a8ab9fd5",
+  "task_id": "202608081216-YAN7DW",
+  "verification_command": "agentplane verify 202608081216-YAN7DW --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

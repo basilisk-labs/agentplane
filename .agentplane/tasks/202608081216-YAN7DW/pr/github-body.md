@@ -15,8 +15,8 @@ Reduce patch-release elapsed time by adding bounded concurrency to independent q
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Unsupported declared check: bun run e2e:v0.7.1:check
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
