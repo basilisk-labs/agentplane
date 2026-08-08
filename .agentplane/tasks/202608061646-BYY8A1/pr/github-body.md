@@ -28,10 +28,13 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
 
 ```text
  docs/releases/v0.7.5.md                            |  60 +++++++++++++++++++++
+ .../runner/context/semantic-prompt-projection.ts   |   2 +-
+ .../task-run-bootstrap.result-examples.test.ts     |  38 +++++++++++++
+ .../src/runner/usecases/task-run-bootstrap.ts      |  14 ++++-
  website/static/img/social/docs/releases/v0.7.5.png | Bin 0 -> 53016 bytes
  website/static/img/social/manifest.json            |   8 +++
  website/static/llms-full.txt                       |  52 +++++++++++++++---
- 4 files changed, 114 insertions(+), 6 deletions(-)
+ 7 files changed, 165 insertions(+), 9 deletions(-)
 ```
 
 </details>

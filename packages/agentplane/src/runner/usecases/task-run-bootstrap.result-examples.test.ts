@@ -186,6 +186,44 @@ describe("runner bootstrap result examples", () => {
     expect(terminalOnlyBootstrap).not.toContain("signed transport is preconfigured");
   });
 
+  it("keeps semantic requirements while excluding supervisor process commands", () => {
+    const bundle = makeRunnerContextBundle({ runId: "semantic-requirements" });
+    const workOrder = buildAgentWorkOrderV2ValidFixture();
+    workOrder.task.acceptance_criteria = [
+      {
+        id: "semantic-acceptance",
+        description: "The provider prompt contains only bounded semantic requirements.",
+        required: true,
+      },
+      {
+        id: "supervisor-acceptance",
+        description: "Run agentplane task brief TASK-1 --json.",
+        required: true,
+      },
+    ];
+    workOrder.verification_intent.requirements = [
+      {
+        id: "semantic-check",
+        description: "Confirm the semantic projection preserves the user objective.",
+        required: true,
+      },
+      {
+        id: "supervisor-check",
+        description: "Run agentplane task brief TASK-1 --json.",
+        required: true,
+      },
+    ];
+    bundle.work_order = workOrder;
+
+    const bootstrap = renderTaskRunnerBootstrap(bundle);
+
+    expect(bootstrap).toContain("bounded semantic requirements");
+    expect(bootstrap).toContain("preserves the user objective");
+    expect(bootstrap).not.toContain("agentplane task brief");
+    expect(bootstrap).not.toContain("supervisor-acceptance");
+    expect(bootstrap).not.toContain("supervisor-check");
+  });
+
   it.each([
     [
       "blocked without blocker",

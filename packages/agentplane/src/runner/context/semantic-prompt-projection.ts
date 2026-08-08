@@ -158,7 +158,7 @@ function processChoreographyMatches(value: string): ProcessChoreographyMatch[] {
   return matches;
 }
 
-function semanticTextHasProcessChoreography(value: string): boolean {
+export function semanticTextHasProcessChoreography(value: string): boolean {
   return (
     processChoreographyMatches(value).length > 0 ||
     PROCESS_POLICY_PROSE_PATTERNS.some((pattern) => pattern.test(value))
