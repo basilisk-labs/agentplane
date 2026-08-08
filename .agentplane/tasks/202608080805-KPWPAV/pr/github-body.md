@@ -15,14 +15,14 @@ Expose a guarded task advance replacement path for a terminal operation_failed s
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-08T08:05:29.433Z
+- Updated: 2026-08-08T08:23:09.065Z
 - Branch: task/202608080805-KPWPAV/allow-task-advance-replacement
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
