@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 41
+revision: 42
 origin:
   system: "manual"
 depends_on: []
@@ -33,33 +33,34 @@ verification:
   note: "Verified final implementation 51072b303 with frozen parallelization benchmark evidence."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-08T15:02:39.372Z"
+  updated_at: "2026-08-08T15:05:24.570Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
   evaluated_sha: "51072b303b251d9bcadee01fbdf6e5b5a745f32d"
   blueprint_digest: "bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1"
   evidence_refs:
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150136861-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150136861-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/2007a0a74d54fc7df14d92a4a37dadca53c623328272518a2652b7d116b808e2.md"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150136861-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150136861-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150136861-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150136861-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150406904-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150406904-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/29ae78a3172de7650c32550b2438b750e749bc6c25dc1ec3bd25dc75510b68e9.md"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150406904-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150406904-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150406904-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150406904-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608081216-YAN7DW/README.md"
     - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/4aa90af7a4d2793d1ce6fdc7dfdf929b8c0620347f4eea9031c2f6bc397533d9.patch"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/864fbdf1d5a19a985b6db0511937c15dc1d23576ffd49c1f31b8aac04e2ebcb7.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/verification/20260808145956910-ddb123ecbe79bb51.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/292eab80cd67816bb603d2f3eeb5db5365c1302d5f19e14ebcaea8de7bf66e05.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/verification/20260808150338680-7660928be5e1ddc9.json"
+    - ".agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json"
     - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/66fa4c234b9ab066149f87bbec5b818fe331d23c90ef191589289397e54ec486.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen packet does not contain the benchmark artifact required to verify the claimed performance improvement."
-  recovery_reason: "deterministic_evidence_gap"
+    - "The performance benchmark is not attributable to the evaluated implementation SHA. It measures candidate 9fe09a4edb680de4444c8d76a21ee248f6b950fa, while the evaluated SHA is 51072b303b251d9bcadee01fbdf6e5b5a745f32d; subsequent commits include scheduler failure-handling changes, and the artifact provides no equivalence proof for them."
+    - "Concurrent provider capture records whichever worker failure wins the timing race as firstError, so the persisted failure message can vary when multiple active jobs fail. The regression test covers only one failing worker."
 token_usage:
   agent_runs: 11
   input_tokens: null
@@ -302,7 +303,7 @@ events:
     state: "ok"
     note: "Verified final implementation 51072b303 with frozen parallelization benchmark evidence."
 doc_version: 3
-doc_updated_at: "2026-08-08T15:03:42.079Z"
+doc_updated_at: "2026-08-08T15:05:24.604Z"
 doc_updated_by: "CODER"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:

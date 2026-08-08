@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The performance benchmark is not attributable to the evaluated implementation SHA. It measures candidate 9fe09a4edb680de4444c8d76a21ee248f6b950fa, while the evaluated SHA is 51072b303b251d9bcadee01fbdf6e5b5a745f32d; subsequent commits include scheduler failure-handling changes, and the artifact provides no equivalence proof for them.",
+      "broken_invariant": "The task requires exact-SHA attribution and a serial-versus-concurrent comparison for the verified change; benchmark evidence must cover the evaluated implementation or prove equivalence through that SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json",
+          "sha256": "sha256:023ac0cec9d54ccf3c1280a00711e47cd85e9b070ce15f38fd1fbae868301825",
+          "section": "candidate_sha, exact_candidate_confirmation, candidate_equivalence, evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/4aa90af7a4d2793d1ce6fdc7dfdf929b8c0620347f4eea9031c2f6bc397533d9.patch",
+          "sha256": "sha256:4aa90af7a4d2793d1ce6fdc7dfdf929b8c0620347f4eea9031c2f6bc397533d9",
+          "section": "runQualificationScenarios and createBoundedExecutor changes"
+        },
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/verification/20260808150338680-7660928be5e1ddc9.json",
+          "sha256": "sha256:ca8d483911b46f1bf5e2721bfdcf37533ddc4d4f04e3ee1f8def90b73f5cc68a",
+          "section": "implementation_sha and benchmark evidence claim"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "medium",
+      "summary": "Concurrent provider capture records whichever worker failure wins the timing race as firstError, so the persisted failure message can vary when multiple active jobs fail. The regression test covers only one failing worker.",
+      "broken_invariant": "Qualification evidence must remain deterministic under concurrency, including negative paths and failure reporting.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/4aa90af7a4d2793d1ce6fdc7dfdf929b8c0620347f4eea9031c2f6bc397533d9.patch",
+          "sha256": "sha256:4aa90af7a4d2793d1ce6fdc7dfdf929b8c0620347f4eea9031c2f6bc397533d9",
+          "section": "runCandidateCaptureJobs, captureCandidate failure artifact, and candidate concurrency tests"
+        },
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/README.md",
+          "sha256": "sha256:ec19d08e569c8905e68f7cf5a2ff78a009917b73d974f78b53774dd0cd9671b1",
+          "section": "Acceptance criteria: deterministic evidence and failure propagation"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Run the serial and concurrent benchmark on evaluated SHA 51072b303b251d9bcadee01fbdf6e5b5a745f32d, or provide a reviewed equivalence record covering every intervening implementation change.",
+    "Add a concurrent provider-capture test where two active jobs fail with distinct errors in reversed timing orders and assert identical canonical failure evidence."
+  ],
+  "hidden_assumptions": [
+    "Scheduler changes after benchmark candidate 9fe09a4edb680de4444c8d76a21ee248f6b950fa do not affect elapsed-time results or concurrency behavior.",
+    "At most one active provider replay job fails during a capture, making timing-selected firstError effectively deterministic.",
+    "Passing final checks on SHA 51072b303 is sufficient to transfer a performance measurement from an earlier SHA without an explicit equivalence analysis."
+  ],
+  "recovery_context": "Re-run or formally extend the benchmark equivalence proof through evaluated SHA 51072b303b251d9bcadee01fbdf6e5b5a745f32d, and make concurrent multi-failure evidence selection deterministic with focused regression coverage."
+}
