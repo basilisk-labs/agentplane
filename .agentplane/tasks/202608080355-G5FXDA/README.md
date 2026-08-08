@@ -4,7 +4,7 @@ title: "Correct stale plan comparison in next-action diagnostics"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +38,16 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "21a5bad500af96450ff8c101d50f78c27a89affa"
+  message: "🚧 G5FXDA task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 21a5bad500af. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -51,9 +56,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-08T04:02:14.139Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 21a5bad500af. CLI accepted one state-bound external-agent semantic result."
 doc_version: 3
-doc_updated_at: "2026-08-08T03:55:51.861Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-08T04:02:14.139Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix GitHub issue #4783: compare the latest plan target with the currently published version so a missing, current, or older plan requests a fresh patch plan and only a future plan permits candidate preparation. Add fixtures for missing, stale, current, and future targets. Mark INC-20260807-01 resolved in the repository and bundled incident registries because its dependency-readiness and supervisor protocol repairs are merged and verified. Close issue #4783 only after hosted checks pass and the fix merges."
 sections:
   Summary: |-
