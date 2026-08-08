@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -79,7 +79,9 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "1ba645fe2dafd67f435c0fc051f6a0a399e3aa55"
+  message: "🚧 KPWPAV task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -93,6 +95,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 1ba645fe2daf. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -149,9 +154,17 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Hosted CI rework: generated CLI reference is stale after adding task advance --replacement."
+  -
+    type: "status"
+    at: "2026-08-08T08:42:32.624Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 1ba645fe2daf. CLI accepted one state-bound external-agent semantic result."
+    commit: "1ba645fe2dafd67f435c0fc051f6a0a399e3aa55"
 doc_version: 3
-doc_updated_at: "2026-08-08T08:41:27.103Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-08T08:42:32.663Z"
+doc_updated_by: "SUPERVISOR"
 description: "Expose a guarded task advance replacement path for a terminal operation_failed supervisor journal so a newly recomputed route can continue without retrying the failed effect."
 sections:
   Summary: |-
