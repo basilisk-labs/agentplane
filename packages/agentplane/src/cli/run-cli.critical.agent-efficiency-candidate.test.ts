@@ -146,15 +146,18 @@ describeCritical("critical: RF-04 candidate measurement", () => {
   it("stops assigning queued provider jobs after the first failure", async () => {
     const fixture = await loadCandidateFixture();
     const started: string[] = [];
+    let activeSettled = false;
     await expect(
       fixture.candidate.runCandidateCaptureJobs(["fail", "active", "queued"], 2, async (job) => {
         started.push(job);
         if (job === "fail") throw new Error("provider failed");
         await new Promise((resolve) => setTimeout(resolve, 10));
+        activeSettled = true;
         return job;
       }),
     ).rejects.toThrow("provider failed");
     expect(started).toEqual(["fail", "active"]);
+    expect(activeSettled).toBe(true);
   });
 
   it("force-kills a provider driver that ignores SIGTERM at its fixed timeout", async () => {
