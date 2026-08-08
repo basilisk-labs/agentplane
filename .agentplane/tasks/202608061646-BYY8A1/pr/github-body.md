@@ -15,8 +15,8 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Unsupported declared check: AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:full
+- State: blocked_external
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
