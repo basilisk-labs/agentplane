@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608081216-YAN7DW-551820df4f67f0c1bc3dc517",
+  "task_id": "202608081216-YAN7DW",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the evaluator work order with the exact benchmark artifact included in work_order.evidence so its digest and measurements can be reviewed deterministically.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The frozen packet does not contain the benchmark artifact required to verify the claimed performance improvement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/66fa4c234b9ab066149f87bbec5b818fe331d23c90ef191589289397e54ec486.json",
+          "sha256": "sha256:66fa4c234b9ab066149f87bbec5b818fe331d23c90ef191589289397e54ec486",
+          "section": "requiredEvidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/verification/20260808145956910-ddb123ecbe79bb51.json",
+          "sha256": "sha256:81932933f32ac615ce8cee6e86781c566267e9b027bf747dec308f284de753ea",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/864fbdf1d5a19a985b6db0511937c15dc1d23576ffd49c1f31b8aac04e2ebcb7.json",
+          "sha256": "sha256:864fbdf1d5a19a985b6db0511937c15dc1d23576ffd49c1f31b8aac04e2ebcb7",
+          "section": "runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-150136861-recovery-context/evaluator-result.json"
+}
