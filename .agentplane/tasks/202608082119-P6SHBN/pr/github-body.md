@@ -15,14 +15,21 @@ Prepare the protected-main release candidate after PR #4798, run the canonical r
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Release candidate verification passed at 173f556bcb3bdb795c74d688d065ef7ddc9537d6. Local canonical
+prepublish, parity, version, notes, compatibility, migration, install, workflow, significant, and
+critical gates passed. All hosted PR checks on the same SHA passed. Exact merged-main validation and
+public registry checks remain downstream release gates.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-08T21:21:23.033Z
+- Updated: 2026-08-08T21:36:55.055Z
 - Branch: task/202608082119-P6SHBN/publish-agentplane-0-7-5-from-merged-qualified-c
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
