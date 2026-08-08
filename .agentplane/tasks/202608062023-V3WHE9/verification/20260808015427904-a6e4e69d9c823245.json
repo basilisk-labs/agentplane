@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evidence && bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.evidence.test.ts\nResult: pass; 3 files and 17 tests passed.\nEvidence: Vitest reported 2 evidence files with 14 tests and 1 CLI file with 3 tests.\nScope: inventory integrity, task-scoped writer locking, exact revalidation/unlink concurrency, compaction, garbage collection, and CLI rendering.\n\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts\nResult: pass; 3 files and 44 tests passed.\nEvidence: evaluator packet/store, run, and execute suites passed with the shared mutation lock active.\nScope: evaluator evidence publication and typed quality-review flow.\n\nCommand: bun run test:critical\nResult: pass; 12 chunks and 84 tests passed.\nEvidence: The critical CLI runner reported all twelve chunks passed.\nScope: compatibility, replay hardening, trust boundaries, protected paths, and git edge cases.\n\nCommand: bun run typecheck && bun run docs:cli:check\nResult: pass.\nEvidence: TypeScript build completed and generated CLI reference was current.\nScope: type safety and public CLI documentation.\n\nCommand: bun run ci:contract\nResult: pass.\nEvidence: Formatting, schemas, policy, compatibility 263commands/180args/843options, architecture, TypeScript 7 toolchain, clone, Knip, and coverage gates passed.\nScope: full repository contract for implementation 80d0ce11e11a01ee140d4f146e4f7362c7370ff0.",
+  "digest": "sha256:a6e4e69d9c8232450919b537db91688884b90042237c9becb36edd3c25e4b582",
+  "implementation_sha": "80d0ce11e11a01ee140d4f146e4f7362c7370ff0",
+  "kind": "task_verification_record",
+  "note": "Result: pass; all declared verification steps and the full contract suite passed for implementation 80d0ce11e11a01ee140d4f146e4f7362c7370ff0.",
+  "recorded_at": "2026-08-08T01:54:27.904Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evidence packages/agentplane/src/cli/run-cli.core.evidence.test.ts\n- bun run test:critical\n- bun run typecheck\n- bun run docs:cli:check",
+  "scope_digest": "sha256:e03b6b8572c687ad65e25d32e0460d9ce86132acfcae68bbe78b35a8b1e469b2",
+  "task_id": "202608062023-V3WHE9",
+  "verification_command": "agentplane verify 202608062023-V3WHE9 --ok --by TESTER",
+  "verifier": "TESTER"
+}

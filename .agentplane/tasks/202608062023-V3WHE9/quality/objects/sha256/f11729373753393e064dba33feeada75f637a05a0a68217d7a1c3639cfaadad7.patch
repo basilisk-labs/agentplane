@@ -1,0 +1,2623 @@
+diff --git a/docs/user/cli-reference.generated.mdx b/docs/user/cli-reference.generated.mdx
+index f8bb097ad..2372fcca5 100644
+--- a/docs/user/cli-reference.generated.mdx
++++ b/docs/user/cli-reference.generated.mdx
+@@ -212,6 +212,9 @@ Field names and casing are exact. Optional fields are omitted when no value is a
+   - [evaluator show](#evaluator-show)
+ - Evidence
+   - [evidence bundle](#evidence-bundle)
++  - [evidence compact](#evidence-compact)
++  - [evidence gc](#evidence-gc)
++  - [evidence stats](#evidence-stats)
+   - [evidence verify](#evidence-verify)
+ - Integrations
+   - [hermes doctor](#hermes-doctor)
+@@ -4098,6 +4101,100 @@ agentplane evidence bundle 202605031625-886KZ6
+ 
+ - Write \`.agentplane/tasks/&lt;task-id&gt;/evidence/manifest.json\`.
+ 
++### evidence compact
++
++Deduplicate verified evidence objects without rewriting manifests.
++
++Usage:
++
++```text
++agentplane evidence compact [options]
++```
++
++Options:
++
++- `--apply`: Apply the planned local maintenance. Default is dry-run. (default=false)
++- `--yes`: Confirm an apply operation. Required with --apply. (default=false)
++- `--json`: Emit machine-readable result. (default=false)
++
++Notes:
++
++- Apply requires a clean repository and refuses corrupt objects or missing references.
++
++Examples:
++
++```sh
++agentplane evidence compact --json
++```
++
++- Preview safe hard-link deduplication.
++
++```sh
++agentplane evidence compact --apply --yes
++```
++
++- Apply the verified plan.
++
++### evidence gc
++
++Remove only expired, unreferenced, unpinned evidence objects.
++
++Usage:
++
++```text
++agentplane evidence gc [options]
++```
++
++Options:
++
++- `--apply`: Apply the planned local maintenance. Default is dry-run. (default=false)
++- `--yes`: Confirm an apply operation. Required with --apply. (default=false)
++- `--json`: Emit machine-readable result. (default=false)
++
++Notes:
++
++- Reachable objects, active-task evidence, current failures, and release evidence are never collectible.
++
++Examples:
++
++```sh
++agentplane evidence gc --json
++```
++
++- Preview collectible objects.
++
++```sh
++agentplane evidence gc --apply --yes
++```
++
++- Apply the verified retention plan.
++
++### evidence stats
++
++Inspect tracked evidence and content-addressed object retention.
++
++Usage:
++
++```text
++agentplane evidence stats [options]
++```
++
++Options:
++
++- `--json`: Emit machine-readable result. (default=false)
++
++Notes:
++
++- Read-only. Retention defaults come from \`.agentplane/evidence-retention.json\` when present.
++
++Examples:
++
++```sh
++agentplane evidence stats --json
++```
++
++- Inspect reachability, pins, age, and disk use.
++
+ ### evidence verify
+ 
+ Verify a task evidence bundle manifest and referenced file hashes.
+diff --git a/docs/user/commands.mdx b/docs/user/commands.mdx
+index 13eb6227f..b3de59636 100644
+--- a/docs/user/commands.mdx
++++ b/docs/user/commands.mdx
+@@ -105,6 +105,45 @@ agentplane repair adopt-legacy-conflict <task-id> --expect-adoption-token <sha25
+ 
+ Run it only with the exact token emitted by `task next-action` or `pr conflict-rework`.
+ 
++## Evidence retention
++
++Evidence maintenance is local-only and dry-run-first:
++
++```bash
++agentplane evidence stats --json
++agentplane evidence compact --json
++agentplane evidence compact --apply --yes
++agentplane evidence gc --json
++agentplane evidence gc --apply --yes
++```
++
++`stats` reports tracked evidence, logical and allocated object bytes, duplicates, reachability,
++pins, expiry, corruption, missing references, and collectible objects. `compact` hard-links verified
++duplicate content-addressed objects without changing manifests or file contents. `gc` deletes only
++hash-verified objects that are expired, unreferenced, and unpinned. Apply mode requires a clean
++repository and refuses corrupt objects or missing references.
++
++Optional local retention policy:
++
++```json
++{
++  "schema_version": 1,
++  "objects": {
++    "keep_success_days": 30,
++    "keep_failure_days": 180,
++    "deduplicate": true,
++    "pin_release_evidence": true
++  }
++}
++```
++
++Save it as `evidence-retention.json` in the `.agentplane` control directory. Active tasks, current failures, and tasks tagged
++`release` remain pinned. Reachable objects are never collectible, even after the retention age.
++If apply is interrupted, rerun the same command: compaction replaces one verified object at a time,
++and garbage collection rechecks each candidate immediately before unlinking it. Recovery is the
++normal Git restore flow for the resulting deleted object paths; manifests and task summaries are
++never rewritten by these commands.
++
+ ## Config
+ 
+ ```bash
+diff --git a/packages/agentplane/src/cli/run-cli.core.evidence.test.ts b/packages/agentplane/src/cli/run-cli.core.evidence.test.ts
+new file mode 100644
+index 000000000..d6d88e4c4
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.evidence.test.ts
+@@ -0,0 +1,55 @@
++import { captureStdIO, mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
++import { describe, expect, it } from "vitest";
++
++import { runCli } from "./run-cli.js";
++
++describe("evidence maintenance CLI", () => {
++  it("exposes stats, compact, and gc through the advanced command catalog", async () => {
++    const io = captureStdIO();
++    try {
++      const code = await runCli(["help", "--json", "--all"]);
++      expect(code).toBe(0);
++      const ids = (JSON.parse(io.stdout) as { id: string[] }[]).map((entry) => entry.id.join(" "));
++      expect(ids).toEqual(
++        expect.arrayContaining(["evidence stats", "evidence compact", "evidence gc"]),
++      );
++    } finally {
++      io.restore();
++    }
++  });
++
++  it("reports an empty object store without mutating the project", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const io = captureStdIO();
++    try {
++      const code = await runCli(["evidence", "stats", "--json", "--root", root]);
++      expect(code).toBe(0);
++      const report = JSON.parse(io.stdout) as {
++        kind: string;
++        summary: { object_count: number; collectible_objects: number };
++        objects: unknown[];
++      };
++      expect(report.kind).toBe("agentplane.evidence.inventory");
++      expect(report.summary).toMatchObject({ object_count: 0, collectible_objects: 0 });
++      expect(report.objects).toEqual([]);
++      expect(io.stdout).not.toContain("absolute_path");
++      expect(io.stdout).not.toContain("inode_key");
++    } finally {
++      io.restore();
++    }
++  });
++
++  it("requires explicit confirmation before gc apply", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const io = captureStdIO();
++    try {
++      const code = await runCli(["evidence", "gc", "--apply", "--root", root]);
++      expect(code).not.toBe(0);
++      expect(io.stderr).toContain("requires --yes");
++    } finally {
++      io.restore();
++    }
++  });
++});
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index 6a94366f5..7e7fd23a6 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       const efficiency = await runNode([EFFICIENCY_CHECK]);
+ 
+       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
+-      expect(compatibility.stdout).toContain("260commands/180args/836options");
++      expect(compatibility.stdout).toContain("263commands/180args/843options");
+       expect(compatibility.stdout).toContain(
+         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
+       );
+@@ -195,13 +195,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202608021535-CNQKXP",
+           "202608061646-WCARQG",
+           "202608061646-30TKV4",
++          "202608062023-V3WHE9",
+         ],
+         candidate: {
+-          surface_sha256: "d0f057e72f5a3ae2bbd15f737469195d1ca9b4fb5b3e76cc336063c1e5e76c56",
++          surface_sha256: "f57ac6b3a4714ea8017d3d13aa82b97c52aad0467883202b0d011faff30d2d24",
+           section_digests: {
+             agent_facing_context_contracts:
+               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+-            cli_topology: "8d1f0c009fb24cfd4d897e63085f8077357eddd0d6d556c1f0f11a0f2c4ada21",
++            cli_topology: "fec6c3b1185691d9ff6f793d69afc2fbfc86e062d30733a60b5a1e5b5c41a80a",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+             package_manifests: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+@@ -231,7 +232,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           section: "package_manifests",
+           from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+           to_sha256: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+-          surface_sha256: "cd30e3bf54b3c211f2d174939e1b8f402075fa2efc745598d98386082da1fe3a",
++          surface_sha256: "226a337ec9c72e8da6d2191039f78f85d4db97e16101162540b4d948cfe70af4",
+           allowed_json_paths: [
+             "$.package_manifests[0].dependencies.@agentplaneorg/core",
+             "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -368,7 +369,11 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+         | undefined;
+       expect(cliDelta).toBeDefined();
+       expect(cliDelta?.source_tasks).toContain("202608061646-30TKV4");
++      expect(cliDelta?.source_tasks).toContain("202608062023-V3WHE9");
+       expect(cliDelta?.evidence.added_commands).toContain("task create");
++      expect(cliDelta?.evidence.added_commands).toEqual(
++        expect.arrayContaining(["evidence compact", "evidence gc", "evidence stats"]),
++      );
+       expect(cliDelta?.evidence.addition_sources).toContainEqual({
+         kind: "command",
+         command: "task create",
+@@ -593,7 +598,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
+       expect(JSON.parse(result.stdout)).toEqual({
+         packageManifestDigest: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+-        surfaceDigest: "cd30e3bf54b3c211f2d174939e1b8f402075fa2efc745598d98386082da1fe3a",
++        surfaceDigest: "226a337ec9c72e8da6d2191039f78f85d4db97e16101162540b4d948cfe70af4",
+         changedPaths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/project.ts b/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
+index 1bb9191e4..24690dd80 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
+@@ -12,6 +12,11 @@ import {
+   evidenceSpec,
+   evidenceVerifySpec,
+ } from "../../../commands/evidence/evidence.command.js";
++import {
++  evidenceCompactSpec,
++  evidenceGcSpec,
++  evidenceStatsSpec,
++} from "../../../commands/evidence/evidence-maintenance.command.js";
+ import {
+   blueprintDriftSpec,
+   blueprintExamplesSpec,
+@@ -147,9 +152,6 @@ import {
+   loadAcrValidateSpec,
+   loadAcrCheckSpec,
+   loadAcrExplainSpec,
+-  fromCommandsEvidenceCommand,
+-  loadEvidenceBundleSpec,
+-  loadEvidenceVerifySpec,
+   loadBlueprintSpec,
+   loadBlueprintListSpec,
+   loadBlueprintExamplesSpec,
+@@ -161,6 +163,14 @@ import {
+   loadBlueprintScaffoldSpec,
+   fromCommandsBlueprintsCommand,
+ } from "../command-loaders/project.js";
++import {
++  fromCommandsEvidenceCommand,
++  loadEvidenceBundleSpec,
++  loadEvidenceCompactSpec,
++  loadEvidenceGcSpec,
++  loadEvidenceStatsSpec,
++  loadEvidenceVerifySpec,
++} from "../command-loaders/evidence.js";
+ 
+ export const PROJECT_COMMANDS = [
+   declareCommand(acrSpec, {
+@@ -198,6 +208,18 @@ export const PROJECT_COMMANDS = [
+     load: loadEvidenceVerifySpec,
+     requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
+   }),
++  declareCommand(evidenceStatsSpec, {
++    load: loadEvidenceStatsSpec,
++    requirements: PROJECT_CONFIG_REQUIREMENTS,
++  }),
++  declareCommand(evidenceCompactSpec, {
++    load: loadEvidenceCompactSpec,
++    requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
++  }),
++  declareCommand(evidenceGcSpec, {
++    load: loadEvidenceGcSpec,
++    requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
++  }),
+   ...HERMES_COMMANDS,
+   declareCommand(blueprintSpec, {
+     load: loadBlueprintSpec,
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/evidence.ts b/packages/agentplane/src/cli/run-cli/command-loaders/evidence.ts
+new file mode 100644
+index 000000000..855ec8e17
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/evidence.ts
+@@ -0,0 +1,44 @@
++import type { ProjectConfigSession } from "../command-catalog/project-capability-profiles.js";
++import type { LocalOpsWriteSession } from "../command-catalog/provider-ops-capability-profiles.js";
++import type { TaskRouteLocalSession } from "../command-catalog/task-capability-profiles.js";
++import { commandModule } from "../command-catalog/kernel.js";
++
++export const fromCommandsEvidenceCommand = commandModule(
++  () => import("../../../commands/evidence/evidence.command.js"),
++);
++
++export const loadEvidenceBundleSpec = (session: TaskRouteLocalSession) =>
++  import("../../../commands/evidence/evidence.command.js").then((module) =>
++    module.makeRunEvidenceBundleHandler((command) => session.require("route.local", command)),
++  );
++
++export const loadEvidenceVerifySpec = (session: TaskRouteLocalSession) =>
++  import("../../../commands/evidence/evidence.command.js").then((module) =>
++    module.makeRunEvidenceVerifyHandler((command) => session.require("route.local", command)),
++  );
++
++const getProjectConfigMaintenanceContext = (session: ProjectConfigSession) => ({
++  getResolvedProject: (command: string) => session.require("project", command),
++  getLoadedConfig: (command: string) => session.require("config", command),
++});
++
++export const loadEvidenceStatsSpec = (session: ProjectConfigSession) =>
++  import("../../../commands/evidence/evidence-maintenance.command.js").then((module) =>
++    module.makeRunEvidenceStatsHandler(getProjectConfigMaintenanceContext(session)),
++  );
++
++const getMutationMaintenanceContext = (session: LocalOpsWriteSession) => ({
++  getResolvedProject: (command: string) => session.require("project", command),
++  getLoadedConfig: (command: string) => session.require("config", command),
++  getMutationContext: (command: string) => session.require("git.mutate", command),
++});
++
++export const loadEvidenceCompactSpec = (session: LocalOpsWriteSession) =>
++  import("../../../commands/evidence/evidence-maintenance.command.js").then((module) =>
++    module.makeRunEvidenceCompactHandler(getMutationMaintenanceContext(session)),
++  );
++
++export const loadEvidenceGcSpec = (session: LocalOpsWriteSession) =>
++  import("../../../commands/evidence/evidence-maintenance.command.js").then((module) =>
++    module.makeRunEvidenceGcHandler(getMutationMaintenanceContext(session)),
++  );
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/project.ts b/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
+index 2d8d655a5..ab2b8403d 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
+@@ -102,17 +102,6 @@ export const loadAcrExplainSpec = (session: TaskRouteLocalSession) =>
+   import("../../../commands/acr/acr.command.js").then((m) =>
+     m.makeRunAcrExplainHandler(getTaskRouteLocalContext(session)),
+   );
+-export const fromCommandsEvidenceCommand = commandModule(
+-  () => import("../../../commands/evidence/evidence.command.js"),
+-);
+-export const loadEvidenceBundleSpec = (session: TaskRouteLocalSession) =>
+-  import("../../../commands/evidence/evidence.command.js").then((m) =>
+-    m.makeRunEvidenceBundleHandler(getTaskRouteLocalContext(session)),
+-  );
+-export const loadEvidenceVerifySpec = (session: TaskRouteLocalSession) =>
+-  import("../../../commands/evidence/evidence.command.js").then((m) =>
+-    m.makeRunEvidenceVerifyHandler(getTaskRouteLocalContext(session)),
+-  );
+ export const loadHermesSpec = (_session: NoContextSession) =>
+   loadDeferredRuntime().then((m) => m.runHermesGroup);
+ export const loadHermesEnqueueSpec = (session: HermesProjectionSession) =>
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-result-validation.ts b/packages/agentplane/src/commands/evaluator/evaluator-result-validation.ts
+new file mode 100644
+index 000000000..f7db1d10c
+--- /dev/null
++++ b/packages/agentplane/src/commands/evaluator/evaluator-result-validation.ts
+@@ -0,0 +1,90 @@
++import {
++  validateEvaluatorSgrResult,
++  type EvaluatorSgrResult,
++} from "../../evaluators/sgr-result.js";
++import { CliError } from "../../shared/errors.js";
++
++function assertExactKeys(
++  value: unknown,
++  keys: readonly string[],
++  field: string,
++): asserts value is Record<string, unknown> {
++  if (!value || typeof value !== "object" || Array.isArray(value)) {
++    throw new CliError({ code: "E_VALIDATION", message: `${field} must be an object.` });
++  }
++  const unexpected = Object.keys(value).filter((key) => !keys.includes(key));
++  if (unexpected.length > 0) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `${field} contains forbidden fields: ${unexpected.join(", ")}. Evaluator results are read-only.`,
++    });
++  }
++}
++
++function normalizeEvaluatorStructuredNulls(raw: Record<string, unknown>): Record<string, unknown> {
++  const normalized: Record<string, unknown> = { ...raw };
++  if (normalized.recovery_context === null) delete normalized.recovery_context;
++  if (normalized.recovery_reason === null) delete normalized.recovery_reason;
++  if (!Array.isArray(normalized.findings)) return normalized;
++  normalized.findings = (normalized.findings as unknown[]).map((finding: unknown): unknown => {
++    if (!finding || typeof finding !== "object" || Array.isArray(finding)) return finding;
++    const normalizedFinding: Record<string, unknown> = { ...finding };
++    if (!Array.isArray(normalizedFinding.evidence_refs)) return normalizedFinding;
++    normalizedFinding.evidence_refs = (normalizedFinding.evidence_refs as unknown[]).map(
++      (evidence: unknown): unknown => {
++        if (!evidence || typeof evidence !== "object" || Array.isArray(evidence)) return evidence;
++        const normalizedEvidence: Record<string, unknown> = { ...evidence };
++        for (const field of ["sha256", "line", "lines", "section"] as const) {
++          if (normalizedEvidence[field] === null) delete normalizedEvidence[field];
++        }
++        return normalizedEvidence;
++      },
++    );
++    return normalizedFinding;
++  });
++  return normalized;
++}
++
++export function validateStrictEvaluatorResult(raw: unknown): EvaluatorSgrResult {
++  assertExactKeys(
++    raw,
++    [
++      "schema_version",
++      "kind",
++      "evaluator_id",
++      "verdict",
++      "findings",
++      "missing_tests",
++      "hidden_assumptions",
++      "recovery_context",
++      "recovery_reason",
++    ],
++    "EvaluatorSgrResult",
++  );
++  const record = raw as Record<string, unknown>;
++  if (Array.isArray(record.findings)) {
++    for (const [index, finding] of record.findings.entries()) {
++      assertExactKeys(
++        finding,
++        ["id", "severity", "summary", "broken_invariant", "evidence_refs"],
++        `EvaluatorSgrResult.findings[${index}]`,
++      );
++      if (
++        finding &&
++        typeof finding === "object" &&
++        Array.isArray((finding as Record<string, unknown>).evidence_refs)
++      ) {
++        for (const [evidenceIndex, evidence] of (
++          (finding as Record<string, unknown>).evidence_refs as unknown[]
++        ).entries()) {
++          assertExactKeys(
++            evidence,
++            ["path", "sha256", "line", "lines", "section"],
++            `EvaluatorSgrResult.findings[${index}].evidence_refs[${evidenceIndex}]`,
++          );
++        }
++      }
++    }
++  }
++  return validateEvaluatorSgrResult(normalizeEvaluatorStructuredNulls(record));
++}
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+index 3cb4e5751..cc2499921 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+@@ -1,10 +1,6 @@
+ import path from "node:path";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+-import {
+-  validateEvaluatorSgrResult,
+-  type EvaluatorSgrResult,
+-} from "../../evaluators/sgr-result.js";
+ import { CliError } from "../../shared/errors.js";
+ import {
+   checkTaskBlueprintSnapshotDrift,
+@@ -12,6 +8,7 @@ import {
+ } from "../blueprint/snapshot-artifact.js";
+ import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
+ import type { CommandContext } from "../shared/task-backend.js";
++import { withEvidenceMutationLock } from "../evidence/evidence-mutation-lock.js";
+ 
+ import type { EvaluatorModule } from "../../evaluators/catalog.js";
+ import {
+@@ -71,6 +68,7 @@ export {
+   type HumanEvaluatorReviewInput,
+ } from "./evaluator-review-shared.js";
+ export { renderActualDiff, resolveEvaluatorDiffBase } from "./evaluator-diff-evidence.js";
++export { validateStrictEvaluatorResult } from "./evaluator-result-validation.js";
+ export { assertResultEvidenceIsFrozen, readWorkOrder } from "./evaluator-work-order.js";
+ export type { EvaluatorWorkOrder } from "./evaluator-work-order.js";
+ 
+@@ -144,15 +142,33 @@ export function resolveEvaluatorPromptPath(opts: {
+     : reportPaths(opts.reviewDir).prompt_path;
+ }
+ 
+-export async function prepareEvaluatorReview(opts: {
++type PrepareEvaluatorReviewOptions = {
+   ctx: CommandContext;
+   task: TaskData;
+   evaluator: EvaluatorModule;
+   provenance: EvaluatorRunProvenance;
+   at?: string;
+-}): Promise<PreparedEvaluatorReview> {
++};
++
++export async function prepareEvaluatorReview(
++  opts: PrepareEvaluatorReviewOptions,
++): Promise<PreparedEvaluatorReview> {
+   await assertTaskReviewWorkspaceClean({ ctx: opts.ctx, taskId: opts.task.id });
+   const gitRoot = opts.ctx.resolvedProject.gitRoot;
++  return await withEvidenceMutationLock(
++    {
++      root: gitRoot,
++      workflowDir: opts.ctx.config.paths.workflow_dir,
++      taskId: opts.task.id,
++    },
++    () => prepareEvaluatorReviewLocked(opts, gitRoot),
++  );
++}
++
++async function prepareEvaluatorReviewLocked(
++  opts: PrepareEvaluatorReviewOptions,
++  gitRoot: string,
++): Promise<PreparedEvaluatorReview> {
+   const at = opts.at ?? new Date().toISOString();
+   const reviewDir = evaluatorQualityDir({
+     gitRoot,
+@@ -179,7 +195,10 @@ export async function prepareEvaluatorReview(opts: {
+       : null,
+     allowSingleCommitFallback: opts.ctx.config.workflow_mode !== "branch_pr",
+   });
+-  const blueprint = await buildTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, task: opts.task });
++  const blueprint = await buildTaskBlueprintResolvedSnapshot({
++    ctx: opts.ctx,
++    task: opts.task,
++  });
+   const verificationTargetSha = qualificationPacket?.packet.implementation_sha ?? evaluatedSha;
+   const recordPaths = await verificationRecordPaths(taskRoot, opts.task, verificationTargetSha, {
+     gitRoot,
+@@ -445,91 +464,6 @@ export async function prepareEvaluatorReview(opts: {
+   };
+ }
+ 
+-function assertExactKeys(
+-  value: unknown,
+-  keys: readonly string[],
+-  field: string,
+-): asserts value is Record<string, unknown> {
+-  if (!value || typeof value !== "object" || Array.isArray(value)) {
+-    throw new CliError({ code: "E_VALIDATION", message: `${field} must be an object.` });
+-  }
+-  const unexpected = Object.keys(value).filter((key) => !keys.includes(key));
+-  if (unexpected.length > 0) {
+-    throw new CliError({
+-      code: "E_VALIDATION",
+-      message: `${field} contains forbidden fields: ${unexpected.join(", ")}. Evaluator results are read-only.`,
+-    });
+-  }
+-}
+-
+-function normalizeEvaluatorStructuredNulls(raw: Record<string, unknown>): Record<string, unknown> {
+-  const normalized: Record<string, unknown> = { ...raw };
+-  if (normalized.recovery_context === null) delete normalized.recovery_context;
+-  if (normalized.recovery_reason === null) delete normalized.recovery_reason;
+-  if (!Array.isArray(normalized.findings)) return normalized;
+-  normalized.findings = (normalized.findings as unknown[]).map((finding: unknown): unknown => {
+-    if (!finding || typeof finding !== "object" || Array.isArray(finding)) return finding;
+-    const normalizedFinding: Record<string, unknown> = { ...finding };
+-    if (!Array.isArray(normalizedFinding.evidence_refs)) return normalizedFinding;
+-    normalizedFinding.evidence_refs = (normalizedFinding.evidence_refs as unknown[]).map(
+-      (evidence: unknown): unknown => {
+-        if (!evidence || typeof evidence !== "object" || Array.isArray(evidence)) return evidence;
+-        const normalizedEvidence: Record<string, unknown> = { ...evidence };
+-        for (const field of ["sha256", "line", "lines", "section"] as const) {
+-          if (normalizedEvidence[field] === null) delete normalizedEvidence[field];
+-        }
+-        return normalizedEvidence;
+-      },
+-    );
+-    return normalizedFinding;
+-  });
+-  return normalized;
+-}
+-
+-export function validateStrictEvaluatorResult(raw: unknown): EvaluatorSgrResult {
+-  assertExactKeys(
+-    raw,
+-    [
+-      "schema_version",
+-      "kind",
+-      "evaluator_id",
+-      "verdict",
+-      "findings",
+-      "missing_tests",
+-      "hidden_assumptions",
+-      "recovery_context",
+-      "recovery_reason",
+-    ],
+-    "EvaluatorSgrResult",
+-  );
+-  const record = raw as Record<string, unknown>;
+-  if (Array.isArray(record.findings)) {
+-    for (const [index, finding] of record.findings.entries()) {
+-      assertExactKeys(
+-        finding,
+-        ["id", "severity", "summary", "broken_invariant", "evidence_refs"],
+-        `EvaluatorSgrResult.findings[${index}]`,
+-      );
+-      if (
+-        finding &&
+-        typeof finding === "object" &&
+-        Array.isArray((finding as Record<string, unknown>).evidence_refs)
+-      ) {
+-        for (const [evidenceIndex, evidence] of (
+-          (finding as Record<string, unknown>).evidence_refs as unknown[]
+-        ).entries()) {
+-          assertExactKeys(
+-            evidence,
+-            ["path", "sha256", "line", "lines", "section"],
+-            `EvaluatorSgrResult.findings[${index}].evidence_refs[${evidenceIndex}]`,
+-          );
+-        }
+-      }
+-    }
+-  }
+-  return validateEvaluatorSgrResult(normalizeEvaluatorStructuredNulls(record));
+-}
+-
+ export async function assertFrozenEvaluatorArtifactsCurrent(opts: {
+   gitRoot: string;
+   workOrder: EvaluatorWorkOrder;
+diff --git a/packages/agentplane/src/commands/evidence/evidence-inventory.ts b/packages/agentplane/src/commands/evidence/evidence-inventory.ts
+new file mode 100644
+index 000000000..f6c76c9cd
+--- /dev/null
++++ b/packages/agentplane/src/commands/evidence/evidence-inventory.ts
+@@ -0,0 +1,350 @@
++import { execFile } from "node:child_process";
++import { lstat, readFile, readdir } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++
++import { parseTaskReadme } from "@agentplaneorg/core/tasks";
++import { z } from "zod";
++
++import { CliError } from "../../shared/errors.js";
++import { sha256EvidenceFile } from "./evidence-sha256.js";
++
++const execFileAsync = promisify(execFile);
++const OBJECT_NAME_PATTERN = /^(?<digest>[a-f0-9]{64})(?<extension>\.[a-z0-9][a-z0-9.-]{0,15})$/u;
++
++const RETENTION_POLICY_SCHEMA = z
++  .object({
++    schema_version: z.literal(1),
++    objects: z
++      .object({
++        keep_success_days: z.number().int().min(1),
++        keep_failure_days: z.number().int().min(1),
++        deduplicate: z.boolean(),
++        pin_release_evidence: z.boolean(),
++      })
++      .strict(),
++  })
++  .strict()
++  .superRefine((policy, ctx) => {
++    if (policy.objects.keep_failure_days < policy.objects.keep_success_days) {
++      ctx.addIssue({
++        code: "custom",
++        path: ["objects", "keep_failure_days"],
++        message: "must be greater than or equal to keep_success_days",
++      });
++    }
++  });
++
++type EvidenceRetentionPolicy = z.infer<typeof RETENTION_POLICY_SCHEMA>;
++
++const DEFAULT_EVIDENCE_RETENTION_POLICY: EvidenceRetentionPolicy = {
++  schema_version: 1,
++  objects: {
++    keep_success_days: 30,
++    keep_failure_days: 180,
++    deduplicate: true,
++    pin_release_evidence: true,
++  },
++};
++
++export type EvidenceObjectRecord = {
++  path: string;
++  absolute_path: string;
++  task_id: string;
++  digest: `sha256:${string}` | null;
++  size_bytes: number;
++  allocated_bytes: number;
++  mtime_ms: number;
++  inode_key: string | null;
++  hash_valid: boolean;
++  referenced: boolean;
++  pinned_reason: "active_task" | "current_failure" | "release_evidence" | null;
++  expired: boolean;
++  collectible: boolean;
++};
++
++export type EvidenceInventory = {
++  schema_version: 1;
++  kind: "agentplane.evidence.inventory";
++  generated_at: string;
++  policy_path: string;
++  policy: EvidenceRetentionPolicy;
++  summary: {
++    tasks_with_objects: number;
++    tracked_evidence_files: number;
++    tracked_evidence_bytes: number;
++    object_count: number;
++    logical_bytes: number;
++    allocated_bytes: number;
++    unique_contents: number;
++    duplicate_objects: number;
++    duplicate_bytes: number;
++    reachable_objects: number;
++    pinned_objects: number;
++    expired_objects: number;
++    collectible_objects: number;
++    collectible_bytes: number;
++    corrupt_objects: number;
++    missing_references: number;
++  };
++  objects: EvidenceObjectRecord[];
++  missing_references: string[];
++};
++
++type TaskRetentionState = {
++  pin: EvidenceObjectRecord["pinned_reason"];
++  failure: boolean;
++};
++
++function toPosix(value: string): string {
++  return value.replaceAll(path.sep, "/");
++}
++
++async function readPolicy(root: string): Promise<{
++  path: string;
++  value: EvidenceRetentionPolicy;
++}> {
++  const relative = ".agentplane/evidence-retention.json";
++  const absolute = path.join(root, relative);
++  const entry = await lstat(absolute).catch(() => null);
++  if (!entry) return { path: relative, value: DEFAULT_EVIDENCE_RETENTION_POLICY };
++  if (!entry.isFile() || entry.isSymbolicLink()) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `Evidence retention policy must be a regular file: ${relative}`,
++    });
++  }
++  try {
++    return {
++      path: relative,
++      value: RETENTION_POLICY_SCHEMA.parse(JSON.parse(await readFile(absolute, "utf8"))),
++    };
++  } catch (error) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `Invalid evidence retention policy: ${error instanceof Error ? error.message : String(error)}`,
++    });
++  }
++}
++
++async function taskRetentionState(
++  taskRoot: string,
++  pinReleaseEvidence: boolean,
++): Promise<TaskRetentionState> {
++  try {
++    const parsed = parseTaskReadme(await readFile(path.join(taskRoot, "README.md"), "utf8"));
++    const frontmatter = parsed.frontmatter;
++    const tags = Array.isArray(frontmatter.tags) ? frontmatter.tags : [];
++    const isRelease = tags.includes("release");
++    const verification =
++      frontmatter.verification && typeof frontmatter.verification === "object"
++        ? (frontmatter.verification as { state?: unknown }).state
++        : null;
++    const quality =
++      frontmatter.quality_review && typeof frontmatter.quality_review === "object"
++        ? (frontmatter.quality_review as { state?: unknown }).state
++        : null;
++    const failure =
++      frontmatter.status === "BLOCKED" ||
++      verification === "needs_rework" ||
++      quality === "rework" ||
++      quality === "blocked" ||
++      quality === "human_review";
++    if (pinReleaseEvidence && isRelease) return { pin: "release_evidence", failure };
++    if (failure) return { pin: "current_failure", failure: true };
++    if (frontmatter.status !== "DONE") return { pin: "active_task", failure: false };
++    return { pin: null, failure: false };
++  } catch {
++    return { pin: "active_task", failure: false };
++  }
++}
++
++async function collectManifestReferences(
++  qualityRoot: string,
++  root: string,
++): Promise<{ references: Set<string>; errors: string[] }> {
++  const references = new Set<string>();
++  const errors: string[] = [];
++  const expectedObjectPrefix = `${toPosix(
++    path.relative(root, path.join(qualityRoot, "objects", "sha256")),
++  )}/`;
++  const visit = async (directory: string): Promise<void> => {
++    const entries = await readdir(directory, { withFileTypes: true }).catch(() => []);
++    for (const entry of entries) {
++      if (entry.isSymbolicLink() || entry.name === "objects") continue;
++      const candidate = path.join(directory, entry.name);
++      if (entry.isDirectory()) {
++        await visit(candidate);
++        continue;
++      }
++      if (!entry.isFile() || entry.name !== "evaluator-evidence-manifest.json") continue;
++      try {
++        const manifest = JSON.parse(await readFile(candidate, "utf8")) as {
++          artifacts?: { path?: unknown }[];
++        };
++        for (const artifact of manifest.artifacts ?? []) {
++          if (typeof artifact.path !== "string") continue;
++          const normalized = toPosix(artifact.path);
++          const absolute = path.resolve(root, normalized);
++          if (!absolute.startsWith(`${path.resolve(root)}${path.sep}`)) {
++            errors.push(`unsafe_reference:${toPosix(path.relative(root, candidate))}`);
++            continue;
++          }
++          if (!normalized.startsWith(expectedObjectPrefix)) {
++            errors.push(`cross_task_reference:${toPosix(path.relative(root, candidate))}`);
++            continue;
++          }
++          references.add(normalized);
++        }
++      } catch {
++        errors.push(`invalid_manifest:${toPosix(path.relative(root, candidate))}`);
++      }
++    }
++  };
++  await visit(qualityRoot);
++  return { references, errors };
++}
++
++async function trackedEvidence(
++  root: string,
++  workflowDir: string,
++): Promise<{
++  files: number;
++  bytes: number;
++}> {
++  const { stdout } = await execFileAsync(
++    "git",
++    ["ls-files", "-z", "--", workflowDir, ".agentplane/.release"],
++    { cwd: root, encoding: "buffer", maxBuffer: 16 * 1024 * 1024 },
++  );
++  const paths = stdout.toString("utf8").split("\0").filter(Boolean);
++  let bytes = 0;
++  for (const relative of paths) {
++    const entry = await lstat(path.join(root, relative)).catch(() => null);
++    if (entry?.isFile() && !entry.isSymbolicLink()) bytes += entry.size;
++  }
++  return { files: paths.length, bytes };
++}
++
++export async function buildEvidenceInventory(opts: {
++  root: string;
++  workflowDir: string;
++  now?: Date;
++}): Promise<EvidenceInventory> {
++  const now = opts.now ?? new Date();
++  const policy = await readPolicy(opts.root);
++  const tasksRoot = path.join(opts.root, opts.workflowDir);
++  const taskEntries = await readdir(tasksRoot, { withFileTypes: true }).catch(() => []);
++  const objects: EvidenceObjectRecord[] = [];
++  const allReferences = new Set<string>();
++  const referenceErrors: string[] = [];
++  const tasksWithObjects = new Set<string>();
++
++  for (const taskEntry of taskEntries.toSorted((left, right) =>
++    left.name.localeCompare(right.name),
++  )) {
++    if (!taskEntry.isDirectory() || taskEntry.isSymbolicLink()) continue;
++    const taskRoot = path.join(tasksRoot, taskEntry.name);
++    const qualityRoot = path.join(taskRoot, "quality");
++    const objectRoot = path.join(qualityRoot, "objects", "sha256");
++    const objectEntries = await readdir(objectRoot, { withFileTypes: true }).catch(() => []);
++    const manifestReferences = await collectManifestReferences(qualityRoot, opts.root);
++    for (const reference of manifestReferences.references) {
++      allReferences.add(reference);
++    }
++    referenceErrors.push(...manifestReferences.errors);
++    if (objectEntries.length === 0) continue;
++    tasksWithObjects.add(taskEntry.name);
++    const state = await taskRetentionState(taskRoot, policy.value.objects.pin_release_evidence);
++    const retentionDays = state.failure
++      ? policy.value.objects.keep_failure_days
++      : policy.value.objects.keep_success_days;
++    for (const objectEntry of objectEntries.toSorted((left, right) =>
++      left.name.localeCompare(right.name),
++    )) {
++      const absolute = path.join(objectRoot, objectEntry.name);
++      const relative = toPosix(path.relative(opts.root, absolute));
++      const match = OBJECT_NAME_PATTERN.exec(objectEntry.name);
++      const entry = await lstat(absolute, { bigint: true }).catch(() => null);
++      const regular = Boolean(entry?.isFile() && !entry.isSymbolicLink());
++      const expectedDigest = match?.groups?.digest ? `sha256:${match.groups.digest}` : null;
++      const actualDigest = regular ? await sha256EvidenceFile(absolute).catch(() => null) : null;
++      const hashValid = expectedDigest !== null && actualDigest === expectedDigest;
++      const mtimeMs = entry ? Number(entry.mtimeNs / 1_000_000n) : 0;
++      const ageMs = Math.max(0, now.getTime() - mtimeMs);
++      const expired = ageMs >= retentionDays * 86_400_000;
++      const referenced = allReferences.has(relative);
++      objects.push({
++        path: relative,
++        absolute_path: absolute,
++        task_id: taskEntry.name,
++        digest: expectedDigest as `sha256:${string}` | null,
++        size_bytes: entry ? Number(entry.size) : 0,
++        allocated_bytes: entry ? Number(entry.blocks * 512n) : 0,
++        mtime_ms: mtimeMs,
++        inode_key: entry ? `${entry.dev}:${entry.ino}` : null,
++        hash_valid: hashValid,
++        referenced,
++        pinned_reason: state.pin,
++        expired,
++        collectible: hashValid && !referenced && state.pin === null && expired,
++      });
++    }
++  }
++
++  for (const object of objects) {
++    object.referenced = allReferences.has(object.path);
++    object.collectible =
++      object.hash_valid && !object.referenced && object.pinned_reason === null && object.expired;
++  }
++  const objectPaths = new Set(objects.map((object) => object.path));
++  const missingReferences = [
++    ...referenceErrors,
++    ...[...allReferences].filter((reference) => !objectPaths.has(reference)),
++  ].toSorted();
++  const byDigest = new Map<string, EvidenceObjectRecord[]>();
++  for (const object of objects) {
++    if (!object.hash_valid || object.digest === null) continue;
++    const group = byDigest.get(object.digest) ?? [];
++    group.push(object);
++    byDigest.set(object.digest, group);
++  }
++  let duplicateObjects = 0;
++  let duplicateBytes = 0;
++  for (const group of byDigest.values()) {
++    const uniqueInodes = new Set(group.map((object) => object.inode_key));
++    duplicateObjects += Math.max(0, uniqueInodes.size - 1);
++    if (uniqueInodes.size > 1)
++      duplicateBytes += (uniqueInodes.size - 1) * (group[0]?.size_bytes ?? 0);
++  }
++  const tracked = await trackedEvidence(opts.root, opts.workflowDir);
++  return {
++    schema_version: 1,
++    kind: "agentplane.evidence.inventory",
++    generated_at: now.toISOString(),
++    policy_path: policy.path,
++    policy: policy.value,
++    summary: {
++      tasks_with_objects: tasksWithObjects.size,
++      tracked_evidence_files: tracked.files,
++      tracked_evidence_bytes: tracked.bytes,
++      object_count: objects.length,
++      logical_bytes: objects.reduce((sum, object) => sum + object.size_bytes, 0),
++      allocated_bytes: objects.reduce((sum, object) => sum + object.allocated_bytes, 0),
++      unique_contents: byDigest.size,
++      duplicate_objects: duplicateObjects,
++      duplicate_bytes: duplicateBytes,
++      reachable_objects: objects.filter((object) => object.referenced).length,
++      pinned_objects: objects.filter((object) => object.pinned_reason !== null).length,
++      expired_objects: objects.filter((object) => object.expired).length,
++      collectible_objects: objects.filter((object) => object.collectible).length,
++      collectible_bytes: objects
++        .filter((object) => object.collectible)
++        .reduce((sum, object) => sum + object.size_bytes, 0),
++      corrupt_objects: objects.filter((object) => !object.hash_valid).length,
++      missing_references: missingReferences.length,
++    },
++    objects: objects.toSorted((left, right) => left.path.localeCompare(right.path)),
++    missing_references: missingReferences,
++  };
++}
+diff --git a/packages/agentplane/src/commands/evidence/evidence-maintenance.command.ts b/packages/agentplane/src/commands/evidence/evidence-maintenance.command.ts
+new file mode 100644
+index 000000000..21ac1da47
+--- /dev/null
++++ b/packages/agentplane/src/commands/evidence/evidence-maintenance.command.ts
+@@ -0,0 +1,185 @@
++import type { LoadedConfig } from "@agentplaneorg/core/config";
++import type { ResolvedProject } from "@agentplaneorg/core/project";
++
++import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
++import type { CommandContext } from "../shared/task-backend.js";
++import { buildEvidenceInventory, type EvidenceInventory } from "./evidence-inventory.js";
++import {
++  compactEvidenceObjects,
++  garbageCollectEvidenceObjects,
++  type EvidenceMaintenanceResult,
++} from "./evidence-maintenance.js";
++
++export type EvidenceStatsParsed = { json: boolean };
++export type EvidenceMaintenanceParsed = {
++  apply: boolean;
++  yes: boolean;
++  json: boolean;
++};
++
++type EvidenceProjectDeps = {
++  getResolvedProject: (command: string) => Promise<ResolvedProject>;
++  getLoadedConfig: (command: string) => Promise<LoadedConfig>;
++  getMutationContext?: (command: string) => Promise<CommandContext>;
++};
++
++export const evidenceStatsSpec: CommandSpec<EvidenceStatsParsed> = {
++  id: ["evidence", "stats"],
++  group: "Evidence",
++  summary: "Inspect tracked evidence and content-addressed object retention.",
++  options: [
++    { kind: "boolean", name: "json", default: false, description: "Emit machine-readable result." },
++  ],
++  examples: [
++    {
++      cmd: "agentplane evidence stats --json",
++      why: "Inspect reachability, pins, age, and disk use.",
++    },
++  ],
++  notes: [
++    "Read-only. Retention defaults come from `.agentplane/evidence-retention.json` when present.",
++  ],
++  parse: (raw) => ({ json: raw.opts.json === true }),
++};
++
++function maintenanceOptions() {
++  return [
++    {
++      kind: "boolean" as const,
++      name: "apply",
++      default: false,
++      description: "Apply the planned local maintenance. Default is dry-run.",
++    },
++    {
++      kind: "boolean" as const,
++      name: "yes",
++      default: false,
++      description: "Confirm an apply operation. Required with --apply.",
++    },
++    {
++      kind: "boolean" as const,
++      name: "json",
++      default: false,
++      description: "Emit machine-readable result.",
++    },
++  ];
++}
++
++export const evidenceCompactSpec: CommandSpec<EvidenceMaintenanceParsed> = {
++  id: ["evidence", "compact"],
++  group: "Evidence",
++  summary: "Deduplicate verified evidence objects without rewriting manifests.",
++  options: maintenanceOptions(),
++  examples: [
++    { cmd: "agentplane evidence compact --json", why: "Preview safe hard-link deduplication." },
++    { cmd: "agentplane evidence compact --apply --yes", why: "Apply the verified plan." },
++  ],
++  notes: ["Apply requires a clean repository and refuses corrupt objects or missing references."],
++  parse: (raw) => ({
++    apply: raw.opts.apply === true,
++    yes: raw.opts.yes === true,
++    json: raw.opts.json === true,
++  }),
++};
++
++export const evidenceGcSpec: CommandSpec<EvidenceMaintenanceParsed> = {
++  id: ["evidence", "gc"],
++  group: "Evidence",
++  summary: "Remove only expired, unreferenced, unpinned evidence objects.",
++  options: maintenanceOptions(),
++  examples: [
++    { cmd: "agentplane evidence gc --json", why: "Preview collectible objects." },
++    { cmd: "agentplane evidence gc --apply --yes", why: "Apply the verified retention plan." },
++  ],
++  notes: [
++    "Reachable objects, active-task evidence, current failures, and release evidence are never collectible.",
++  ],
++  parse: (raw) => ({
++    apply: raw.opts.apply === true,
++    yes: raw.opts.yes === true,
++    json: raw.opts.json === true,
++  }),
++};
++
++function machineJson(value: EvidenceInventory | EvidenceMaintenanceResult): string {
++  return `${JSON.stringify(
++    value,
++    (key: string, nested: unknown): unknown =>
++      key === "absolute_path" || key === "inode_key" ? undefined : nested,
++    2,
++  )}\n`;
++}
++
++function renderInventory(inventory: EvidenceInventory): string {
++  const summary = inventory.summary;
++  return (
++    `evidence stats: tracked=${summary.tracked_evidence_files} files/${summary.tracked_evidence_bytes} bytes ` +
++    `objects=${summary.object_count}/${summary.logical_bytes} bytes allocated=${summary.allocated_bytes}\n` +
++    `reachability: reachable=${summary.reachable_objects} pinned=${summary.pinned_objects} ` +
++    `expired=${summary.expired_objects} collectible=${summary.collectible_objects}/${summary.collectible_bytes} bytes\n` +
++    `integrity: corrupt=${summary.corrupt_objects} missing_references=${summary.missing_references} ` +
++    `duplicates=${summary.duplicate_objects}/${summary.duplicate_bytes} bytes\n` +
++    `policy: ${inventory.policy_path} success=${inventory.policy.objects.keep_success_days}d ` +
++    `failure=${inventory.policy.objects.keep_failure_days}d release_pins=${inventory.policy.objects.pin_release_evidence}\n`
++  );
++}
++
++export function makeRunEvidenceStatsHandler(
++  deps: EvidenceProjectDeps,
++): CommandHandler<EvidenceStatsParsed> {
++  return async (_ctx, parsed) => {
++    const [project, loaded] = await Promise.all([
++      deps.getResolvedProject("evidence stats"),
++      deps.getLoadedConfig("evidence stats"),
++    ]);
++    const inventory = await buildEvidenceInventory({
++      root: project.gitRoot,
++      workflowDir: loaded.config.paths.workflow_dir,
++    });
++    process.stdout.write(parsed.json ? machineJson(inventory) : renderInventory(inventory));
++    return 0;
++  };
++}
++
++function makeMaintenanceHandler(
++  operation: "compact" | "gc",
++  deps: EvidenceProjectDeps,
++): CommandHandler<EvidenceMaintenanceParsed> {
++  return async (_ctx, parsed) => {
++    const [project, loaded] = await Promise.all([
++      deps.getResolvedProject(`evidence ${operation}`),
++      deps.getLoadedConfig(`evidence ${operation}`),
++    ]);
++    if (parsed.apply) await deps.getMutationContext?.(`evidence ${operation}`);
++    const run = operation === "compact" ? compactEvidenceObjects : garbageCollectEvidenceObjects;
++    const result = await run({
++      root: project.gitRoot,
++      workflowDir: loaded.config.paths.workflow_dir,
++      apply: parsed.apply,
++      yes: parsed.yes,
++    });
++    if (parsed.json) {
++      process.stdout.write(machineJson(result));
++      return 0;
++    }
++    process.stdout.write(
++      `${operation === "compact" ? "evidence compact" : "evidence gc"}: ` +
++        `${parsed.apply ? "applied" : "dry-run"} candidates=${result.candidates.length} ` +
++        `changed=${result.changed_objects} reclaimed=${result.reclaimed_bytes} bytes\n` +
++        renderInventory(result.inventory),
++    );
++    return 0;
++  };
++}
++
++export function makeRunEvidenceCompactHandler(
++  deps: EvidenceProjectDeps,
++): CommandHandler<EvidenceMaintenanceParsed> {
++  return makeMaintenanceHandler("compact", deps);
++}
++
++export function makeRunEvidenceGcHandler(
++  deps: EvidenceProjectDeps,
++): CommandHandler<EvidenceMaintenanceParsed> {
++  return makeMaintenanceHandler("gc", deps);
++}
+diff --git a/packages/agentplane/src/commands/evidence/evidence-maintenance.test.ts b/packages/agentplane/src/commands/evidence/evidence-maintenance.test.ts
+new file mode 100644
+index 000000000..2871eb31b
+--- /dev/null
++++ b/packages/agentplane/src/commands/evidence/evidence-maintenance.test.ts
+@@ -0,0 +1,514 @@
++import { execFile } from "node:child_process";
++import { createHash } from "node:crypto";
++import { link, lstat, mkdir, mkdtemp, readFile, rename, utimes, writeFile } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++import { promisify } from "node:util";
++
++import { renderTaskReadme } from "@agentplaneorg/core/tasks";
++import { describe, expect, it } from "vitest";
++
++import {
++  evidenceCompactSpec,
++  evidenceGcSpec,
++  evidenceStatsSpec,
++} from "./evidence-maintenance.command.js";
++import { buildEvidenceInventory } from "./evidence-inventory.js";
++import { withEvidenceMutationLock } from "./evidence-mutation-lock.js";
++import { compactEvidenceObjects, garbageCollectEvidenceObjects } from "./evidence-maintenance.js";
++
++const execFileAsync = promisify(execFile);
++const WORKFLOW_DIR = ".agentplane/tasks";
++const OLD = new Date("2025-01-01T00:00:00.000Z");
++const NOW = new Date("2026-08-06T00:00:00.000Z");
++
++function noop(): void {
++  return undefined;
++}
++
++async function git(root: string, args: string[]): Promise<void> {
++  await execFileAsync("git", args, { cwd: root });
++}
++
++async function fixture(): Promise<string> {
++  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-evidence-maintenance-"));
++  await git(root, ["init", "-q", "-b", "main"]);
++  await git(root, ["config", "user.name", "Evidence Test"]);
++  await git(root, ["config", "user.email", "evidence@example.com"]);
++  return root;
++}
++
++function readme(opts: {
++  taskId: string;
++  status?: "DONE" | "DOING" | "BLOCKED";
++  tags?: string[];
++  verification?: "ok" | "needs_rework";
++}): string {
++  return renderTaskReadme(
++    {
++      id: opts.taskId,
++      title: `Evidence ${opts.taskId}`,
++      description: "Evidence retention fixture.",
++      status: opts.status ?? "DONE",
++      priority: "med",
++      owner: "CODER",
++      depends_on: [],
++      tags: opts.tags ?? ["code"],
++      verify: [],
++      plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
++      verification: {
++        state: opts.verification ?? "ok",
++        updated_at: null,
++        updated_by: null,
++        note: null,
++      },
++      commit: null,
++      comments: [],
++      events: [],
++      revision: 1,
++      doc_version: 3,
++      doc_updated_at: "2026-08-06T00:00:00.000Z",
++      doc_updated_by: "CODER",
++      sections: {
++        Summary: "Fixture.",
++        Scope: "Fixture.",
++        Plan: "Fixture.",
++        "Verify Steps": "Fixture.",
++        Verification: "",
++        "Rollback Plan": "Fixture.",
++        Findings: "",
++      },
++    },
++    "",
++  );
++}
++
++async function addTask(
++  root: string,
++  taskId: string,
++  opts?: Omit<Parameters<typeof readme>[0], "taskId">,
++): Promise<string> {
++  const taskRoot = path.join(root, WORKFLOW_DIR, taskId);
++  await mkdir(taskRoot, { recursive: true });
++  await writeFile(path.join(taskRoot, "README.md"), readme({ ...(opts ?? {}), taskId }), "utf8");
++  return taskRoot;
++}
++
++async function addObject(root: string, taskId: string, contents: string): Promise<string> {
++  const digest = createHash("sha256").update(contents).digest("hex");
++  const objectPath = path.join(
++    root,
++    WORKFLOW_DIR,
++    taskId,
++    "quality/objects/sha256",
++    `${digest}.json`,
++  );
++  await mkdir(path.dirname(objectPath), { recursive: true });
++  await writeFile(objectPath, contents, "utf8");
++  await utimes(objectPath, OLD, OLD);
++  return objectPath;
++}
++
++async function addManifest(root: string, taskId: string, objectPath: string): Promise<void> {
++  const manifestPath = path.join(
++    root,
++    WORKFLOW_DIR,
++    taskId,
++    "quality/review/evaluator-evidence-manifest.json",
++  );
++  await mkdir(path.dirname(manifestPath), { recursive: true });
++  await writeFile(
++    manifestPath,
++    `${JSON.stringify({ artifacts: [{ path: path.relative(root, objectPath).replaceAll(path.sep, "/") }] })}\n`,
++    "utf8",
++  );
++}
++
++async function publishManifestAtomically(
++  root: string,
++  taskId: string,
++  objectPath: string,
++): Promise<void> {
++  const manifestPath = path.join(
++    root,
++    WORKFLOW_DIR,
++    taskId,
++    "quality/review/evaluator-evidence-manifest.json",
++  );
++  const stagingPath = `${manifestPath}.tmp`;
++  await mkdir(path.dirname(manifestPath), { recursive: true });
++  await writeFile(
++    stagingPath,
++    `${JSON.stringify({ artifacts: [{ path: path.relative(root, objectPath).replaceAll(path.sep, "/") }] })}\n`,
++    "utf8",
++  );
++  await rename(stagingPath, manifestPath);
++}
++
++async function replaceTaskReadmeAtomically(
++  root: string,
++  taskId: string,
++  opts: Omit<Parameters<typeof readme>[0], "taskId">,
++): Promise<void> {
++  const readmePath = path.join(root, WORKFLOW_DIR, taskId, "README.md");
++  const stagingPath = `${readmePath}.tmp`;
++  await writeFile(stagingPath, readme({ ...opts, taskId }), "utf8");
++  await rename(stagingPath, readmePath);
++}
++
++async function commitFixture(root: string): Promise<void> {
++  await git(root, ["add", "."]);
++  await git(root, ["commit", "-q", "-m", "test: seed evidence objects"]);
++}
++
++describe("evidence maintenance command specs", () => {
++  it("keeps maintenance dry-run-first and requires an explicit apply confirmation", () => {
++    expect(evidenceStatsSpec.parse({ args: {}, opts: { json: true } })).toEqual({ json: true });
++    expect(evidenceCompactSpec.parse({ args: {}, opts: {} })).toEqual({
++      apply: false,
++      yes: false,
++      json: false,
++    });
++    expect(evidenceGcSpec.parse({ args: {}, opts: { apply: true, yes: true } })).toMatchObject({
++      apply: true,
++      yes: true,
++    });
++  });
++});
++
++describe("evidence object retention", () => {
++  it("reports, deduplicates, and collects only expired unreferenced unpinned objects", async () => {
++    const root = await fixture();
++    const referencedTask = "202608060001-AAAAAA";
++    const duplicateTask = "202608060002-BBBBBB";
++    const releaseTask = "202608060003-CCCCCC";
++    const failureTask = "202608060004-DDDDDD";
++    await addTask(root, referencedTask);
++    await addTask(root, duplicateTask);
++    await addTask(root, releaseTask, { tags: ["release"] });
++    await addTask(root, failureTask, {
++      status: "BLOCKED",
++      verification: "needs_rework",
++    });
++    const referenced = await addObject(root, referencedTask, '{"same":true}\n');
++    const duplicate = await addObject(root, duplicateTask, '{"same":true}\n');
++    const release = await addObject(root, releaseTask, '{"release":true}\n');
++    const failure = await addObject(root, failureTask, '{"failure":true}\n');
++    await addManifest(root, referencedTask, referenced);
++    await commitFixture(root);
++
++    const inventory = await buildEvidenceInventory({ root, workflowDir: WORKFLOW_DIR, now: NOW });
++    expect(inventory.summary).toMatchObject({
++      object_count: 4,
++      unique_contents: 3,
++      duplicate_objects: 1,
++      reachable_objects: 1,
++      pinned_objects: 2,
++      collectible_objects: 1,
++      corrupt_objects: 0,
++      missing_references: 0,
++    });
++    expect(
++      inventory.objects.find((object) => object.path.endsWith(path.basename(release))),
++    ).toMatchObject({ pinned_reason: "release_evidence", collectible: false });
++    expect(
++      inventory.objects.find((object) => object.path.endsWith(path.basename(failure))),
++    ).toMatchObject({ pinned_reason: "current_failure", collectible: false });
++
++    await expect(
++      compactEvidenceObjects({
++        root,
++        workflowDir: WORKFLOW_DIR,
++        apply: true,
++        yes: false,
++        now: NOW,
++      }),
++    ).rejects.toThrow(/requires --yes/u);
++    const compactDryRun = await compactEvidenceObjects({
++      root,
++      workflowDir: WORKFLOW_DIR,
++      apply: false,
++      yes: false,
++      now: NOW,
++    });
++    expect(compactDryRun.candidates).toEqual([
++      path.relative(root, duplicate).replaceAll(path.sep, "/"),
++    ]);
++    const compacted = await compactEvidenceObjects({
++      root,
++      workflowDir: WORKFLOW_DIR,
++      apply: true,
++      yes: true,
++      now: NOW,
++    });
++    expect(compacted.changed_objects).toBe(1);
++    const referencedEntry = await lstat(referenced, { bigint: true });
++    const duplicateEntry = await lstat(duplicate, { bigint: true });
++    expect(referencedEntry.ino).toBe(duplicateEntry.ino);
++
++    const gcDryRun = await garbageCollectEvidenceObjects({
++      root,
++      workflowDir: WORKFLOW_DIR,
++      apply: false,
++      yes: false,
++      now: NOW,
++    });
++    expect(gcDryRun.candidates).toEqual([path.relative(root, duplicate).replaceAll(path.sep, "/")]);
++    const collected = await garbageCollectEvidenceObjects({
++      root,
++      workflowDir: WORKFLOW_DIR,
++      apply: true,
++      yes: true,
++      now: NOW,
++    });
++    expect(collected.changed_objects).toBe(1);
++    await expect(readFile(duplicate, "utf8")).rejects.toThrow();
++    await expect(readFile(referenced, "utf8")).resolves.toBe('{"same":true}\n');
++    await expect(readFile(release, "utf8")).resolves.toBe('{"release":true}\n');
++    await expect(readFile(failure, "utf8")).resolves.toBe('{"failure":true}\n');
++
++    await git(root, ["add", "-A"]);
++    await git(root, ["commit", "-q", "-m", "test: record evidence gc"]);
++    const idempotent = await garbageCollectEvidenceObjects({
++      root,
++      workflowDir: WORKFLOW_DIR,
++      apply: true,
++      yes: true,
++      now: NOW,
++    });
++    expect(idempotent.changed_objects).toBe(0);
++  });
++
++  it("fails closed for dirty repositories, corrupt objects, and missing references", async () => {
++    const root = await fixture();
++    const firstTask = "202608060005-EEEEEE";
++    const secondTask = "202608060006-FFFFFF";
++    await addTask(root, firstTask);
++    await addTask(root, secondTask);
++    const first = await addObject(root, firstTask, '{"same":true}\n');
++    await addObject(root, secondTask, '{"same":true}\n');
++    await commitFixture(root);
++    await writeFile(path.join(root, "dirty.txt"), "dirty\n", "utf8");
++    await expect(
++      compactEvidenceObjects({ root, workflowDir: WORKFLOW_DIR, apply: true, yes: true, now: NOW }),
++    ).rejects.toThrow(/clean repository/u);
++
++    await git(root, ["clean", "-f", "--", "dirty.txt"]);
++    const corruptPath = path.join(path.dirname(first), `${"0".repeat(64)}.json`);
++    await link(first, corruptPath);
++    await addManifest(root, firstTask, path.join(path.dirname(first), `${"1".repeat(64)}.json`));
++    const inventory = await buildEvidenceInventory({ root, workflowDir: WORKFLOW_DIR, now: NOW });
++    expect(inventory.summary.corrupt_objects).toBe(1);
++    expect(inventory.summary.missing_references).toBe(1);
++    await expect(
++      garbageCollectEvidenceObjects({
++        root,
++        workflowDir: WORKFLOW_DIR,
++        apply: false,
++        yes: false,
++        now: NOW,
++      }),
++    ).rejects.toThrow(/inconsistent object store/u);
++  });
++
++  it("recovers idempotently from interruption and rejects a concurrent object rewrite", async () => {
++    const compactRoot = await fixture();
++    const taskIds = ["202608060007-GGGGGG", "202608060008-HHHHHH", "202608060009-IIIIII"];
++    const paths: string[] = [];
++    for (const taskId of taskIds) {
++      await addTask(compactRoot, taskId);
++      paths.push(await addObject(compactRoot, taskId, '{"shared":true}\n'));
++    }
++    await commitFixture(compactRoot);
++    let replacements = 0;
++    await expect(
++      compactEvidenceObjects({
++        root: compactRoot,
++        workflowDir: WORKFLOW_DIR,
++        apply: true,
++        yes: true,
++        now: NOW,
++        beforeReplace: () => {
++          replacements += 1;
++          if (replacements === 2) throw new Error("simulated interruption");
++          return Promise.resolve();
++        },
++      }),
++    ).rejects.toThrow(/simulated interruption/u);
++    const afterInterruption = await Promise.all(
++      paths.map((filePath) => lstat(filePath, { bigint: true })),
++    );
++    expect(afterInterruption[0]!.ino).toBe(afterInterruption[1]!.ino);
++    expect(afterInterruption[2]!.ino).not.toBe(afterInterruption[0]!.ino);
++
++    const resumed = await compactEvidenceObjects({
++      root: compactRoot,
++      workflowDir: WORKFLOW_DIR,
++      apply: true,
++      yes: true,
++      now: NOW,
++    });
++    expect(resumed.changed_objects).toBe(1);
++    const afterResume = await Promise.all(
++      paths.map((filePath) => lstat(filePath, { bigint: true })),
++    );
++    expect(new Set(afterResume.map((entry) => entry.ino)).size).toBe(1);
++
++    const gcRoot = await fixture();
++    const gcTask = "202608060010-JJJJJJ";
++    await addTask(gcRoot, gcTask);
++    const collectible = await addObject(gcRoot, gcTask, '{"collectible":true}\n');
++    await commitFixture(gcRoot);
++    await expect(
++      garbageCollectEvidenceObjects({
++        root: gcRoot,
++        workflowDir: WORKFLOW_DIR,
++        apply: true,
++        yes: true,
++        now: NOW,
++        beforeUnlink: async () => {
++          await writeFile(collectible, '{"writer":"won"}\n', "utf8");
++        },
++      }),
++    ).rejects.toThrow(/changed during maintenance/u);
++    await expect(readFile(collectible, "utf8")).resolves.toBe('{"writer":"won"}\n');
++  });
++
++  it("aborts GC when a manifest atomically makes a candidate reachable", async () => {
++    const root = await fixture();
++    const taskId = "202608060011-KKKKKK";
++    await addTask(root, taskId);
++    const collectible = await addObject(root, taskId, '{"collectible":true}\n');
++    await commitFixture(root);
++
++    await expect(
++      garbageCollectEvidenceObjects({
++        root,
++        workflowDir: WORKFLOW_DIR,
++        apply: true,
++        yes: true,
++        now: NOW,
++        beforeUnlink: async () => {
++          await publishManifestAtomically(root, taskId, collectible);
++          await commitFixture(root);
++        },
++      }),
++    ).rejects.toThrow(/no longer collectible/u);
++    await expect(readFile(collectible, "utf8")).resolves.toBe('{"collectible":true}\n');
++  });
++
++  it.each([
++    ["active", { status: "DOING" as const }],
++    ["failing", { status: "BLOCKED" as const, verification: "needs_rework" as const }],
++    ["release-pinned", { tags: ["release"] }],
++  ])("aborts GC when task state becomes %s", async (_label, nextState) => {
++    const root = await fixture();
++    const taskId = "202608060012-LLLLLL";
++    await addTask(root, taskId);
++    const collectible = await addObject(root, taskId, '{"collectible":true}\n');
++    await commitFixture(root);
++
++    await expect(
++      garbageCollectEvidenceObjects({
++        root,
++        workflowDir: WORKFLOW_DIR,
++        apply: true,
++        yes: true,
++        now: NOW,
++        beforeUnlink: async () => {
++          await replaceTaskReadmeAtomically(root, taskId, nextState);
++          await commitFixture(root);
++        },
++      }),
++    ).rejects.toThrow(/no longer collectible/u);
++    await expect(readFile(collectible, "utf8")).resolves.toBe('{"collectible":true}\n');
++  });
++
++  it("serializes evidence publication across the final revalidation and unlink window", async () => {
++    const root = await fixture();
++    const taskId = "202608060013-MMMMMM";
++    await addTask(root, taskId);
++    const contents = '{"collectible":true}\n';
++    const collectible = await addObject(root, taskId, contents);
++    await commitFixture(root);
++    let writerEntered = false;
++    let writer = Promise.resolve();
++    let signalWriterStarted = noop;
++    const writerStarted = new Promise<void>((resolve) => {
++      signalWriterStarted = resolve;
++    });
++
++    const collected = await garbageCollectEvidenceObjects({
++      root,
++      workflowDir: WORKFLOW_DIR,
++      apply: true,
++      yes: true,
++      now: NOW,
++      afterRevalidationBeforeUnlink: async () => {
++        writer = withEvidenceMutationLock({ root, workflowDir: WORKFLOW_DIR, taskId }, async () => {
++          writerEntered = true;
++          await writeFile(collectible, contents, "utf8");
++          await publishManifestAtomically(root, taskId, collectible);
++        });
++        signalWriterStarted();
++        await new Promise((resolve) => setTimeout(resolve, 50));
++        expect(writerEntered).toBe(false);
++      },
++    });
++    await writerStarted;
++    await writer;
++
++    expect(collected.changed_objects).toBe(1);
++    expect(writerEntered).toBe(true);
++    await expect(readFile(collectible, "utf8")).resolves.toBe(contents);
++    const inventory = await buildEvidenceInventory({ root, workflowDir: WORKFLOW_DIR, now: NOW });
++    expect(inventory.summary).toMatchObject({
++      reachable_objects: 1,
++      missing_references: 0,
++    });
++  });
++
++  it("fails closed when a manifest references another task's object store", async () => {
++    const root = await fixture();
++    const ownerTask = "202608060014-NNNNNN";
++    const referringTask = "202608060015-OOOOOO";
++    await addTask(root, ownerTask);
++    await addTask(root, referringTask);
++    const objectPath = await addObject(root, ownerTask, '{"owner":true}\n');
++    await addManifest(root, referringTask, objectPath);
++    await commitFixture(root);
++
++    const inventory = await buildEvidenceInventory({ root, workflowDir: WORKFLOW_DIR, now: NOW });
++    expect(inventory.summary.missing_references).toBe(1);
++    await expect(
++      garbageCollectEvidenceObjects({
++        root,
++        workflowDir: WORKFLOW_DIR,
++        apply: false,
++        yes: false,
++        now: NOW,
++      }),
++    ).rejects.toThrow(/inconsistent object store/u);
++  });
++
++  it("rejects retention policies that keep failures for less time than successes", async () => {
++    const root = await fixture();
++    await mkdir(path.join(root, ".agentplane"), { recursive: true });
++    await writeFile(
++      path.join(root, ".agentplane/evidence-retention.json"),
++      `${JSON.stringify({
++        schema_version: 1,
++        objects: {
++          keep_success_days: 30,
++          keep_failure_days: 7,
++          deduplicate: true,
++          pin_release_evidence: true,
++        },
++      })}\n`,
++      "utf8",
++    );
++    await expect(
++      buildEvidenceInventory({ root, workflowDir: WORKFLOW_DIR, now: NOW }),
++    ).rejects.toThrow(/keep_failure_days/u);
++  });
++});
+diff --git a/packages/agentplane/src/commands/evidence/evidence-maintenance.ts b/packages/agentplane/src/commands/evidence/evidence-maintenance.ts
+new file mode 100644
+index 000000000..4d9cf5d80
+--- /dev/null
++++ b/packages/agentplane/src/commands/evidence/evidence-maintenance.ts
+@@ -0,0 +1,284 @@
++import { execFile } from "node:child_process";
++import { randomUUID } from "node:crypto";
++import { link, lstat, rename, unlink } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++
++import { CliError } from "../../shared/errors.js";
++import {
++  buildEvidenceInventory,
++  type EvidenceInventory,
++  type EvidenceObjectRecord,
++} from "./evidence-inventory.js";
++import { evidenceMutationLockGitPath, withEvidenceMutationLock } from "./evidence-mutation-lock.js";
++import { sha256EvidenceFile } from "./evidence-sha256.js";
++
++const execFileAsync = promisify(execFile);
++
++export type EvidenceMaintenanceResult = {
++  schema_version: 1;
++  kind: "agentplane.evidence.maintenance";
++  operation: "compact" | "gc";
++  applied: boolean;
++  changed_objects: number;
++  reclaimed_bytes: number;
++  candidates: string[];
++  inventory: EvidenceInventory;
++};
++
++function assertSafeInventory(inventory: EvidenceInventory): void {
++  if (inventory.summary.corrupt_objects > 0 || inventory.summary.missing_references > 0) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        "Evidence maintenance refused an inconsistent object store: " +
++        `corrupt_objects=${inventory.summary.corrupt_objects} ` +
++        `missing_references=${inventory.summary.missing_references}.`,
++    });
++  }
++}
++
++async function assertCleanRepository(root: string): Promise<void> {
++  const { stdout } = await execFileAsync(
++    "git",
++    ["status", "--porcelain=v1", "--untracked-files=all"],
++    { cwd: root, maxBuffer: 16 * 1024 * 1024 },
++  );
++  if (stdout.trim().length > 0) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Evidence maintenance apply requires a clean repository.",
++    });
++  }
++}
++
++async function assertOnlyExpectedGcChanges(
++  root: string,
++  deletedPaths: ReadonlySet<string>,
++  lockGitPath: string,
++): Promise<void> {
++  const { stdout } = await execFileAsync(
++    "git",
++    ["status", "--porcelain=v1", "-z", "--untracked-files=all"],
++    { cwd: root, encoding: "buffer", maxBuffer: 16 * 1024 * 1024 },
++  );
++  const entries = stdout.toString("utf8").split("\0").filter(Boolean);
++  const isLockArtifact = (entry: string): boolean => {
++    const gitPath = entry.slice(3).replaceAll("\\", "/");
++    return gitPath === lockGitPath || gitPath.startsWith(`${lockGitPath}.candidate.`);
++  };
++  const unexpected = entries.filter(
++    (entry) => entry.startsWith(" D ") && deletedPaths.has(entry.slice(3)) === false,
++  );
++  const nonDeletionChanges = entries.filter(
++    (entry) => !entry.startsWith(" D ") && !isLockArtifact(entry),
++  );
++  if (unexpected.length > 0 || nonDeletionChanges.length > 0) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Evidence maintenance stopped because repository state changed during GC.",
++    });
++  }
++}
++
++function assertApplyConfirmed(apply: boolean, yes: boolean): void {
++  if (apply && !yes) {
++    throw new CliError({
++      code: "E_USAGE",
++      message: "Evidence maintenance apply requires --yes. Omit --apply for a dry run.",
++    });
++  }
++}
++
++async function assertObjectUnchanged(object: EvidenceObjectRecord): Promise<void> {
++  const entry = await lstat(object.absolute_path, { bigint: true }).catch(() => null);
++  const inodeKey = entry ? `${entry.dev}:${entry.ino}` : null;
++  if (
++    !entry?.isFile() ||
++    entry.isSymbolicLink() ||
++    inodeKey !== object.inode_key ||
++    Number(entry.size) !== object.size_bytes ||
++    Number(entry.mtimeNs / 1_000_000n) !== object.mtime_ms ||
++    (object.digest !== null && (await sha256EvidenceFile(object.absolute_path)) !== object.digest)
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `Evidence object changed during maintenance: ${object.path}`,
++    });
++  }
++}
++
++async function revalidateCollectibleObject(opts: {
++  root: string;
++  workflowDir: string;
++  object: EvidenceObjectRecord;
++  deletedPaths: ReadonlySet<string>;
++  lockGitPath: string;
++  now?: Date;
++}): Promise<EvidenceObjectRecord> {
++  await assertObjectUnchanged(opts.object);
++  await assertOnlyExpectedGcChanges(opts.root, opts.deletedPaths, opts.lockGitPath);
++  const inventory = await buildEvidenceInventory(opts);
++  assertSafeInventory(inventory);
++  const current = inventory.objects.find((candidate) => candidate.path === opts.object.path);
++  if (
++    !current?.collectible ||
++    current.digest !== opts.object.digest ||
++    current.inode_key !== opts.object.inode_key
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `Evidence object is no longer collectible: ${opts.object.path}`,
++    });
++  }
++  await assertObjectUnchanged(current);
++  await assertOnlyExpectedGcChanges(opts.root, opts.deletedPaths, opts.lockGitPath);
++  return current;
++}
++
++function compactCandidates(inventory: EvidenceInventory): {
++  canonical: EvidenceObjectRecord;
++  duplicates: EvidenceObjectRecord[];
++}[] {
++  const byDigest = new Map<string, EvidenceObjectRecord[]>();
++  for (const object of inventory.objects) {
++    if (!object.hash_valid || object.digest === null) continue;
++    const group = byDigest.get(object.digest) ?? [];
++    group.push(object);
++    byDigest.set(object.digest, group);
++  }
++  const groups: { canonical: EvidenceObjectRecord; duplicates: EvidenceObjectRecord[] }[] = [];
++  for (const objects of byDigest.values()) {
++    const sorted = objects.toSorted((left, right) => left.path.localeCompare(right.path));
++    const canonical = sorted[0];
++    if (!canonical) continue;
++    const seenInodes = new Set([canonical.inode_key]);
++    const duplicates = sorted.slice(1).filter((object) => {
++      if (seenInodes.has(object.inode_key)) return false;
++      seenInodes.add(object.inode_key);
++      return true;
++    });
++    if (duplicates.length > 0) groups.push({ canonical, duplicates });
++  }
++  return groups;
++}
++
++async function replaceWithHardLink(
++  canonical: EvidenceObjectRecord,
++  duplicate: EvidenceObjectRecord,
++): Promise<void> {
++  await assertObjectUnchanged(canonical);
++  await assertObjectUnchanged(duplicate);
++  const stagingPath = path.join(
++    path.dirname(duplicate.absolute_path),
++    `.evidence-compact-${randomUUID()}.tmp`,
++  );
++  await link(canonical.absolute_path, stagingPath);
++  try {
++    await rename(stagingPath, duplicate.absolute_path);
++  } catch (error) {
++    try {
++      await unlink(stagingPath);
++    } catch {
++      // Preserve the original atomic replacement failure.
++    }
++    throw error;
++  }
++  if ((await sha256EvidenceFile(duplicate.absolute_path)) !== duplicate.digest) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `Compacted evidence object failed hash verification: ${duplicate.path}`,
++    });
++  }
++}
++
++export async function compactEvidenceObjects(opts: {
++  root: string;
++  workflowDir: string;
++  apply: boolean;
++  yes: boolean;
++  now?: Date;
++  beforeReplace?: (object: EvidenceObjectRecord) => Promise<void>;
++}): Promise<EvidenceMaintenanceResult> {
++  assertApplyConfirmed(opts.apply, opts.yes);
++  const inventory = await buildEvidenceInventory(opts);
++  assertSafeInventory(inventory);
++  const groups = inventory.policy.objects.deduplicate ? compactCandidates(inventory) : [];
++  const candidates = groups.flatMap((group) => group.duplicates.map((object) => object.path));
++  const reclaimedBytes = groups.reduce(
++    (total, group) =>
++      total + group.duplicates.reduce((sum, object) => sum + object.allocated_bytes, 0),
++    0,
++  );
++  if (opts.apply) {
++    await assertCleanRepository(opts.root);
++    for (const group of groups) {
++      for (const duplicate of group.duplicates) {
++        await opts.beforeReplace?.(duplicate);
++        await replaceWithHardLink(group.canonical, duplicate);
++      }
++    }
++  }
++  return {
++    schema_version: 1,
++    kind: "agentplane.evidence.maintenance",
++    operation: "compact",
++    applied: opts.apply,
++    changed_objects: opts.apply ? candidates.length : 0,
++    reclaimed_bytes: opts.apply ? reclaimedBytes : 0,
++    candidates,
++    inventory,
++  };
++}
++
++export async function garbageCollectEvidenceObjects(opts: {
++  root: string;
++  workflowDir: string;
++  apply: boolean;
++  yes: boolean;
++  now?: Date;
++  beforeUnlink?: (object: EvidenceObjectRecord) => Promise<void>;
++  afterRevalidationBeforeUnlink?: (object: EvidenceObjectRecord) => Promise<void>;
++}): Promise<EvidenceMaintenanceResult> {
++  assertApplyConfirmed(opts.apply, opts.yes);
++  const inventory = await buildEvidenceInventory(opts);
++  assertSafeInventory(inventory);
++  const collectible = inventory.objects.filter((object) => object.collectible);
++  if (opts.apply) {
++    await assertCleanRepository(opts.root);
++    const deletedPaths = new Set<string>();
++    for (const object of collectible) {
++      const lockOpts = {
++        root: opts.root,
++        workflowDir: opts.workflowDir,
++        taskId: object.task_id,
++      };
++      await withEvidenceMutationLock(lockOpts, async () => {
++        await opts.beforeUnlink?.(object);
++        const current = await revalidateCollectibleObject({
++          root: opts.root,
++          workflowDir: opts.workflowDir,
++          object,
++          deletedPaths,
++          lockGitPath: evidenceMutationLockGitPath(lockOpts),
++          now: opts.now,
++        });
++        await opts.afterRevalidationBeforeUnlink?.(current);
++        await unlink(current.absolute_path);
++        deletedPaths.add(current.path);
++      });
++    }
++  }
++  return {
++    schema_version: 1,
++    kind: "agentplane.evidence.maintenance",
++    operation: "gc",
++    applied: opts.apply,
++    changed_objects: opts.apply ? collectible.length : 0,
++    reclaimed_bytes: opts.apply
++      ? collectible.reduce((sum, object) => sum + object.allocated_bytes, 0)
++      : 0,
++    candidates: collectible.map((object) => object.path),
++    inventory,
++  };
++}
+diff --git a/packages/agentplane/src/commands/evidence/evidence-manifest.ts b/packages/agentplane/src/commands/evidence/evidence-manifest.ts
+index 935df22a1..658909981 100644
+--- a/packages/agentplane/src/commands/evidence/evidence-manifest.ts
++++ b/packages/agentplane/src/commands/evidence/evidence-manifest.ts
+@@ -1,11 +1,11 @@
+ import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+ import { createHash } from "node:crypto";
+-import { createReadStream } from "node:fs";
+ import { readdir, readFile } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import { getVersion } from "../../meta/version.js";
+ import { CliError } from "../../shared/errors.js";
++import { sha256EvidenceFile } from "./evidence-sha256.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ 
+ type EvidenceFileRole =
+@@ -153,7 +153,7 @@ export async function verifyEvidenceManifest(opts: {
+     const abs = path.join(opts.root, file.path);
+     let actual: string;
+     try {
+-      actual = await sha256File(abs);
++      actual = await sha256EvidenceFile(abs);
+     } catch {
+       errors.push(`missing file: ${file.path}`);
+       continue;
+@@ -223,7 +223,7 @@ async function collectTaskEvidenceFiles(opts: {
+     if (relativeToTask.startsWith("evidence/")) continue;
+     files.push({
+       path: toPosix(path.relative(opts.root, filePath)),
+-      sha256: await sha256File(filePath),
++      sha256: await sha256EvidenceFile(filePath),
+       size_bytes: (await fileStatSize(filePath)) ?? 0,
+       role: inferEvidenceRole(relativeToTask),
+     });
+@@ -281,16 +281,6 @@ function isRepositoryRelativePath(value: string): boolean {
+   );
+ }
+ 
+-async function sha256File(filePath: string): Promise<string> {
+-  const hash = createHash("sha256");
+-  return await new Promise((resolve, reject) => {
+-    const stream = createReadStream(filePath);
+-    stream.on("data", (chunk: Buffer) => hash.update(chunk));
+-    stream.on("error", (err) => reject(err));
+-    stream.on("end", () => resolve(`sha256:${hash.digest("hex")}`));
+-  });
+-}
+-
+ async function fileStatSize(filePath: string): Promise<number | null> {
+   const bytes = await readFile(filePath);
+   return bytes.byteLength;
+diff --git a/packages/agentplane/src/commands/evidence/evidence-mutation-lock.ts b/packages/agentplane/src/commands/evidence/evidence-mutation-lock.ts
+new file mode 100644
+index 000000000..3bc5f27ce
+--- /dev/null
++++ b/packages/agentplane/src/commands/evidence/evidence-mutation-lock.ts
+@@ -0,0 +1,32 @@
++import path from "node:path";
++
++import { withTaskReadmeTransaction } from "@agentplaneorg/core/tasks";
++
++function taskReadmePath(opts: { root: string; workflowDir: string; taskId: string }): string {
++  return path.join(opts.root, opts.workflowDir, opts.taskId, "README.md");
++}
++
++export function evidenceMutationLockGitPath(opts: {
++  root: string;
++  workflowDir: string;
++  taskId: string;
++}): string {
++  const readmePath = taskReadmePath(opts);
++  const taskDirectory = path.dirname(readmePath);
++  const lockPath = path.join(
++    path.dirname(taskDirectory),
++    `.${path.basename(taskDirectory)}.${path.basename(readmePath)}.lock`,
++  );
++  return path.relative(opts.root, lockPath).replaceAll(path.sep, "/");
++}
++
++export async function withEvidenceMutationLock<T>(
++  opts: {
++    root: string;
++    workflowDir: string;
++    taskId: string;
++  },
++  operation: () => Promise<T> | T,
++): Promise<T> {
++  return await withTaskReadmeTransaction(taskReadmePath(opts), operation);
++}
+diff --git a/packages/agentplane/src/commands/evidence/evidence-sha256.ts b/packages/agentplane/src/commands/evidence/evidence-sha256.ts
+new file mode 100644
+index 000000000..5319fee25
+--- /dev/null
++++ b/packages/agentplane/src/commands/evidence/evidence-sha256.ts
+@@ -0,0 +1,12 @@
++import { createHash } from "node:crypto";
++import { createReadStream } from "node:fs";
++
++export async function sha256EvidenceFile(filePath: string): Promise<`sha256:${string}`> {
++  const hash = createHash("sha256");
++  return await new Promise((resolve, reject) => {
++    const stream = createReadStream(filePath);
++    stream.on("data", (chunk: Buffer) => hash.update(chunk));
++    stream.on("error", reject);
++    stream.on("end", () => resolve(`sha256:${hash.digest("hex")}`));
++  });
++}
+diff --git a/packages/agentplane/src/commands/evidence/evidence.command.ts b/packages/agentplane/src/commands/evidence/evidence.command.ts
+index adaaf0cd6..199ed4e06 100644
+--- a/packages/agentplane/src/commands/evidence/evidence.command.ts
++++ b/packages/agentplane/src/commands/evidence/evidence.command.ts
+@@ -43,9 +43,9 @@ export type EvidenceVerifyParsed = {
+ export const evidenceSpec: CommandSpec<GroupCommandParsed> = {
+   id: ["evidence"],
+   group: "Evidence",
+-  summary: "Create and verify deterministic task evidence bundle manifests.",
++  summary: "Create, verify, inspect, compact, and retain local evidence.",
+   description:
+-    "This is a command group. Use `agentplane evidence bundle <task-id>` or `agentplane evidence verify <task-id-or-manifest>`.",
++    "This is a command group. Bundle and verify task evidence, inspect local storage with stats, or run dry-run-first compact and gc maintenance.",
+   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
+   examples: [
+     {
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index d1de27c2b..0998771d1 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -31,7 +31,8 @@
+     "202608022324-9VCYWG",
+     "202608021535-CNQKXP",
+     "202608061646-WCARQG",
+-    "202608061646-30TKV4"
++    "202608061646-30TKV4",
++    "202608062023-V3WHE9"
+   ],
+   "base": {
+     "baseline_id": "agentplane.compatibility.v0.6.24",
+@@ -40,9 +41,9 @@
+     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
+   },
+   "candidate": {
+-    "surface_sha256": "d0f057e72f5a3ae2bbd15f737469195d1ca9b4fb5b3e76cc336063c1e5e76c56",
++    "surface_sha256": "f57ac6b3a4714ea8017d3d13aa82b97c52aad0467883202b0d011faff30d2d24",
+     "section_digests": {
+-      "cli_topology": "8d1f0c009fb24cfd4d897e63085f8077357eddd0d6d556c1f0f11a0f2c4ada21",
++      "cli_topology": "fec6c3b1185691d9ff6f793d69afc2fbfc86e062d30733a60b5a1e5b5c41a80a",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
+@@ -85,7 +86,7 @@
+     "section": "package_manifests",
+     "from_sha256": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+     "to_sha256": "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+-    "surface_sha256": "cd30e3bf54b3c211f2d174939e1b8f402075fa2efc745598d98386082da1fe3a",
++    "surface_sha256": "226a337ec9c72e8da6d2191039f78f85d4db97e16101162540b4d948cfe70af4",
+     "allowed_json_paths": [
+       "$.package_manifests[0].dependencies.@agentplaneorg/core",
+       "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -433,22 +434,26 @@
+         "202608022324-9VCYWG",
+         "202608021535-CNQKXP",
+         "202608061646-WCARQG",
+-        "202608061646-30TKV4"
++        "202608061646-30TKV4",
++        "202608062023-V3WHE9"
+       ],
+       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+-      "to_sha256": "8d1f0c009fb24cfd4d897e63085f8077357eddd0d6d556c1f0f11a0f2c4ada21",
++      "to_sha256": "fec6c3b1185691d9ff6f793d69afc2fbfc86e062d30733a60b5a1e5b5c41a80a",
+       "classification": "additive_with_visibility_simplification",
+-      "summary": "Adds the compact external task advance packet, user-first task creation with an execution preview, explainable per-task workflow routing, and compatibility retirement diagnostics; promotes the managed task runner; and moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces without removing commands or options.",
++      "summary": "Adds the compact external task advance packet, user-first task creation with an execution preview, explainable per-task workflow routing, compatibility retirement diagnostics, and safe local evidence statistics, compaction, and garbage collection; promotes the managed task runner; and moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces without removing commands or options.",
+       "evidence": {
+-        "command_count": { "from": 243, "to": 260 },
++        "command_count": { "from": 243, "to": 263 },
+         "positional_count": { "from": 165, "to": 180 },
+-        "option_count": { "from": 767, "to": 836 },
++        "option_count": { "from": 767, "to": 843 },
+         "added_commands": [
+           "context supervise-task",
+           "doctor legacy",
+           "evaluator apply",
+           "evaluator execute",
+           "evaluator prepare",
++          "evidence compact",
++          "evidence gc",
++          "evidence stats",
+           "integrate queue adopt-legacy-protected-conflict",
+           "pr conflict-rework",
+           "repair",
+@@ -599,6 +604,72 @@
+               }
+             ]
+           },
++          {
++            "id": ["evidence", "compact"],
++            "visibility": "user",
++            "group": "Evidence",
++            "args": [],
++            "options": [
++              {
++                "name": "apply",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              },
++              {
++                "name": "yes",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              },
++              {
++                "name": "json",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              }
++            ]
++          },
++          {
++            "id": ["evidence", "gc"],
++            "visibility": "user",
++            "group": "Evidence",
++            "args": [],
++            "options": [
++              {
++                "name": "apply",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              },
++              {
++                "name": "yes",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              },
++              {
++                "name": "json",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              }
++            ]
++          },
++          {
++            "id": ["evidence", "stats"],
++            "visibility": "user",
++            "group": "Evidence",
++            "args": [],
++            "options": [
++              {
++                "name": "json",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              }
++            ]
++          },
+           {
+             "id": ["integrate", "queue", "adopt-legacy-protected-conflict"],
+             "visibility": "internal",
+@@ -1273,6 +1344,55 @@
+             "valueHint": "<human_supplied|evaluator_supplied>",
+             "choices": ["human_supplied", "evaluator_supplied"]
+           },
++          {
++            "command": "evidence compact",
++            "name": "apply",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
++          {
++            "command": "evidence compact",
++            "name": "json",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
++          {
++            "command": "evidence compact",
++            "name": "yes",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
++          {
++            "command": "evidence gc",
++            "name": "apply",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
++          {
++            "command": "evidence gc",
++            "name": "json",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
++          {
++            "command": "evidence gc",
++            "name": "yes",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
++          {
++            "command": "evidence stats",
++            "name": "json",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
+           {
+             "command": "hermes supervise",
+             "name": "remote",
+@@ -1679,6 +1799,21 @@
+             "command": "evaluator prepare",
+             "source_task": "202607221849-TBTX8X"
+           },
++          {
++            "kind": "command",
++            "command": "evidence compact",
++            "source_task": "202608062023-V3WHE9"
++          },
++          {
++            "kind": "command",
++            "command": "evidence gc",
++            "source_task": "202608062023-V3WHE9"
++          },
++          {
++            "kind": "command",
++            "command": "evidence stats",
++            "source_task": "202608062023-V3WHE9"
++          },
+           {
+             "kind": "command",
+             "command": "integrate queue adopt-legacy-protected-conflict",
+@@ -1841,6 +1976,48 @@
+             "name": "provenance",
+             "source_task": "202607221846-YGWMA2"
+           },
++          {
++            "kind": "option",
++            "command": "evidence compact",
++            "name": "apply",
++            "source_task": "202608062023-V3WHE9"
++          },
++          {
++            "kind": "option",
++            "command": "evidence compact",
++            "name": "json",
++            "source_task": "202608062023-V3WHE9"
++          },
++          {
++            "kind": "option",
++            "command": "evidence compact",
++            "name": "yes",
++            "source_task": "202608062023-V3WHE9"
++          },
++          {
++            "kind": "option",
++            "command": "evidence gc",
++            "name": "apply",
++            "source_task": "202608062023-V3WHE9"
++          },
++          {
++            "kind": "option",
++            "command": "evidence gc",
++            "name": "json",
++            "source_task": "202608062023-V3WHE9"
++          },
++          {
++            "kind": "option",
++            "command": "evidence gc",
++            "name": "yes",
++            "source_task": "202608062023-V3WHE9"
++          },
++          {
++            "kind": "option",
++            "command": "evidence stats",
++            "name": "json",
++            "source_task": "202608062023-V3WHE9"
++          },
+           {
+             "kind": "option",
+             "command": "hermes supervise",
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index b10f1d5b2..acc0ab7c0 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -341,6 +341,7 @@ function validateReviewedCandidate({
+     "202608021535-CNQKXP",
+     "202608061646-WCARQG",
+     "202608061646-30TKV4",
++    "202608062023-V3WHE9",
+   ];
+   const expectedSourceTasks = [
+     "202607221846-4VB97J",
+@@ -373,6 +374,7 @@ function validateReviewedCandidate({
+     "202608021535-CNQKXP",
+     "202608061646-WCARQG",
+     "202608061646-30TKV4",
++    "202608062023-V3WHE9",
+   ];
+   assert(
+     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
+@@ -504,7 +506,7 @@ function validateReviewedCandidate({
+         section: "package_manifests",
+         from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+         to_sha256: "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
+-        surface_sha256: "cd30e3bf54b3c211f2d174939e1b8f402075fa2efc745598d98386082da1fe3a",
++        surface_sha256: "226a337ec9c72e8da6d2191039f78f85d4db97e16101162540b4d948cfe70af4",
+         allowed_json_paths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -1284,6 +1286,35 @@ function validateReviewedCandidate({
+         { name: "json", kind: "boolean", valueHint: null, default: false },
+       ],
+     },
++    {
++      id: ["evidence", "compact"],
++      visibility: "user",
++      group: "Evidence",
++      args: [],
++      options: [
++        { name: "apply", kind: "boolean", valueHint: null, default: false },
++        { name: "yes", kind: "boolean", valueHint: null, default: false },
++        { name: "json", kind: "boolean", valueHint: null, default: false },
++      ],
++    },
++    {
++      id: ["evidence", "gc"],
++      visibility: "user",
++      group: "Evidence",
++      args: [],
++      options: [
++        { name: "apply", kind: "boolean", valueHint: null, default: false },
++        { name: "yes", kind: "boolean", valueHint: null, default: false },
++        { name: "json", kind: "boolean", valueHint: null, default: false },
++      ],
++    },
++    {
++      id: ["evidence", "stats"],
++      visibility: "user",
++      group: "Evidence",
++      args: [],
++      options: [{ name: "json", kind: "boolean", valueHint: null, default: false }],
++    },
+     {
+       id: ["integrate", "queue", "adopt-legacy-protected-conflict"],
+       visibility: "internal",
+@@ -1543,6 +1574,55 @@ function validateReviewedCandidate({
+       valueHint: "<human_supplied|evaluator_supplied>",
+       choices: ["human_supplied", "evaluator_supplied"],
+     },
++    {
++      command: "evidence compact",
++      name: "apply",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
++    {
++      command: "evidence compact",
++      name: "json",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
++    {
++      command: "evidence compact",
++      name: "yes",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
++    {
++      command: "evidence gc",
++      name: "apply",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
++    {
++      command: "evidence gc",
++      name: "json",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
++    {
++      command: "evidence gc",
++      name: "yes",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
++    {
++      command: "evidence stats",
++      name: "json",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
+     {
+       command: "hermes supervise",
+       name: "remote",
+@@ -1791,6 +1871,9 @@ function validateReviewedCandidate({
+     { kind: "command", command: "evaluator apply", source_task: "202607221849-TBTX8X" },
+     { kind: "command", command: "evaluator execute", source_task: "202607221849-8YYZ9X" },
+     { kind: "command", command: "evaluator prepare", source_task: "202607221849-TBTX8X" },
++    { kind: "command", command: "evidence compact", source_task: "202608062023-V3WHE9" },
++    { kind: "command", command: "evidence gc", source_task: "202608062023-V3WHE9" },
++    { kind: "command", command: "evidence stats", source_task: "202608062023-V3WHE9" },
+     {
+       kind: "command",
+       command: "integrate queue adopt-legacy-protected-conflict",
+@@ -1936,6 +2019,48 @@ function validateReviewedCandidate({
+       name: "provenance",
+       source_task: "202607221846-YGWMA2",
+     },
++    {
++      kind: "option",
++      command: "evidence compact",
++      name: "apply",
++      source_task: "202608062023-V3WHE9",
++    },
++    {
++      kind: "option",
++      command: "evidence compact",
++      name: "json",
++      source_task: "202608062023-V3WHE9",
++    },
++    {
++      kind: "option",
++      command: "evidence compact",
++      name: "yes",
++      source_task: "202608062023-V3WHE9",
++    },
++    {
++      kind: "option",
++      command: "evidence gc",
++      name: "apply",
++      source_task: "202608062023-V3WHE9",
++    },
++    {
++      kind: "option",
++      command: "evidence gc",
++      name: "json",
++      source_task: "202608062023-V3WHE9",
++    },
++    {
++      kind: "option",
++      command: "evidence gc",
++      name: "yes",
++      source_task: "202608062023-V3WHE9",
++    },
++    {
++      kind: "option",
++      command: "evidence stats",
++      name: "json",
++      source_task: "202608062023-V3WHE9",
++    },
+     {
+       kind: "option",
+       command: "hermes supervise",
+@@ -2220,6 +2345,9 @@ function validateReviewedCandidate({
+         "evaluator apply",
+         "evaluator execute",
+         "evaluator prepare",
++        "evidence compact",
++        "evidence gc",
++        "evidence stats",
+         "integrate queue adopt-legacy-protected-conflict",
+         "pr conflict-rework",
+         "repair",

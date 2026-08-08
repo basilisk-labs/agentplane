@@ -1,0 +1,29 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evidence packages/agentplane/src/cli/run-cli.core.evidence.test.ts",
+    "bun run test:critical",
+    "bun run typecheck",
+    "bun run docs:cli:check"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-08T01:54:27.904Z",
+    "updated_by": "TESTER",
+    "note": "Result: pass; all declared verification steps and the full contract suite passed for implementation 80d0ce11e11a01ee140d4f146e4f7362c7370ff0."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608062023-V3WHE9/verification/20260808015427904-a6e4e69d9c823245.json",
+      "sha256": "sha256:8c7409d1b60f01221e8bdf94a049d2f4bc51a163d7867b253e66ac7600ad2c87"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

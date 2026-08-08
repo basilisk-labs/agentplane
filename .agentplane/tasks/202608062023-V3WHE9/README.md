@@ -1,10 +1,11 @@
 ---
 id: "202608062023-V3WHE9"
 title: "Add safe local evidence retention, statistics, and garbage collection"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 18
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -31,37 +32,50 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-08T01:36:31.621Z"
+  updated_at: "2026-08-08T01:54:27.904Z"
   updated_by: "TESTER"
-  note: "Result: pass; all declared verification steps and the full contract suite passed for implementation 40b758a4467e3186a89591dff2e79442575e383a."
+  note: "Result: pass; all declared verification steps and the full contract suite passed for implementation 80d0ce11e11a01ee140d4f146e4f7362c7370ff0."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-08T01:37:52.679Z"
+  updated_at: "2026-08-08T01:55:34.465Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "40b758a4467ed76c0fa59e92c1b3dd63535fb9de"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "80d0ce11e11a01ee140d4f146e4f7362c7370ff0"
   blueprint_digest: "a3242977958400cf037cf84a545367555fb4ee1e5e843f158d09e81746ab2f18"
   evidence_refs:
-    - ".agentplane/tasks/202608062023-V3WHE9/quality/20260808-013700827-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608062023-V3WHE9/quality/20260808-013700827-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/d31596e9bfeb08ae779ad2eb627ca8544a667caf8991ebd4ec7fc40251b5b563.md"
-    - ".agentplane/tasks/202608062023-V3WHE9/quality/20260808-013700827-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608062023-V3WHE9/quality/20260808-013700827-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608062023-V3WHE9/quality/20260808-013700827-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608062023-V3WHE9/quality/20260808-013700827-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608062023-V3WHE9/quality/20260808-015442152-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608062023-V3WHE9/quality/20260808-015442152-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/2c26a031a16573e6e6fac2d0fa2fed259d8f854412998fd0287f29b13e68efe0.md"
+    - ".agentplane/tasks/202608062023-V3WHE9/quality/20260808-015442152-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608062023-V3WHE9/quality/20260808-015442152-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608062023-V3WHE9/quality/20260808-015442152-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608062023-V3WHE9/README.md"
-    - ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/584f088bca262051b690931346a65ea1b305e34993e400707564c3e8559a63d0.patch"
-    - ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/0e9348b6fb004a474ba775a55d52cd8bc4455d30ac520b7e2d744c87d9da4fbb.json"
-    - ".agentplane/tasks/202608062023-V3WHE9/verification/20260808013631621-9ad700089a22a080.json"
+    - ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/f11729373753393e064dba33feeada75f637a05a0a68217d7a1c3639cfaadad7.patch"
+    - ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/b9eb20f0f0531a3e9ce8a98ab13bb66dcbf27edd01ffc50bd7579efc6af6ea8c.json"
+    - ".agentplane/tasks/202608062023-V3WHE9/verification/20260808015427904-a6e4e69d9c823245.json"
     - ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/c9d7a484a8e87808651fc468bba347dbb87badd5e309e74ccd7f58c4f13da183.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "GC всё ещё может удалить объект, который конкурентный процесс сделал достижимым после последней повторной инвентаризации: между финальной проверкой и unlink остаётся незащищённое окно TOCTOU."
+    - "The previous GC reachability TOCTOU finding is resolved: GC now holds the task-scoped evidence mutation lock across final inventory revalidation and unlink, while evaluator evidence publication uses the same lock."
+token_usage:
+  agent_runs: 3
+  input_tokens: 650741
+  journal_digest: "sha256:e80609f90fa8087e6195eedd2feffde8f96b2c38677175d784bcf6c370248ede"
+  observed_agent_runs: 3
+  observed_by: "agentplane"
+  output_tokens: 7002
+  reasoning_tokens: 1631
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "observed"
+  total_tokens: 659374
+  unavailable_reason: null
+  updated_at: "2026-08-08T01:56:12.385Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -71,8 +85,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "9ecb9fa40f42d2dc934c91da8d5cb814a7f122c8"
-  message: "♻️ V3WHE9 evidence: harden retention maintenance"
+  hash: "80d0ce11e11a01ee140d4f146e4f7362c7370ff0"
+  message: "🐛 V3WHE9 evidence: serialize GC with writers"
 comments:
   -
     author: "CODER"
@@ -83,6 +97,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework complete: reviewed compatibility candidate updated for evidence stats/compact/gc; evidence loaders split by responsibility; SHA-256 streaming shared without clone debt; no maintenance apply was run against repository evidence."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -129,8 +146,21 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Result: pass; all declared verification steps and the full contract suite passed for implementation 40b758a4467e3186a89591dff2e79442575e383a."
+  -
+    type: "verify"
+    at: "2026-08-08T01:54:27.904Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Result: pass; all declared verification steps and the full contract suite passed for implementation 80d0ce11e11a01ee140d4f146e4f7362c7370ff0."
+  -
+    type: "status"
+    at: "2026-08-08T01:56:12.385Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-08T01:36:32.841Z"
+doc_updated_at: "2026-08-08T01:56:12.395Z"
 doc_updated_by: "CODER"
 description: "Add OSS evidence stats, compact, and gc surfaces with a dry-run-first retention model: keep task summaries, ACRs, receipts, fingerprints, object hashes, compact manifests, and final findings in Git; deduplicate large raw prompts, diffs, logs, provider JSONL, evaluator inputs, and replay corpora in the content-addressed object store; protect current failures and release evidence; require explicit apply authority before deleting only proven unreferenced or expired objects."
 sections:
@@ -289,6 +319,61 @@ sections:
     Result: pass.
     Evidence: Formatting, schemas, policy, compatibility 263commands/180args/843options, architecture, TypeScript 7 toolchain, clone, Knip, and coverage gates passed.
     Scope: full repository contract for the committed evidence-maintenance implementation.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062023-V3WHE9-add-safe-local-evidence-retention-statistics-and/.agentplane/tasks/202608062023-V3WHE9/blueprint/resolved-snapshot.json
+    - old_digest: a3242977958400cf037cf84a545367555fb4ee1e5e843f158d09e81746ab2f18
+    - current_digest: a3242977958400cf037cf84a545367555fb4ee1e5e843f158d09e81746ab2f18
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062023-V3WHE9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608062023-V3WHE9
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T01:54:27.904Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Result: pass; all declared verification steps and the full contract suite passed for implementation 80d0ce11e11a01ee140d4f146e4f7362c7370ff0.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T01:36:32.841Z, excerpt_hash=sha256:e03b6b8572c687ad65e25d32e0460d9ce86132acfcae68bbe78b35a8b1e469b2
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evidence && bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.evidence.test.ts
+    Result: pass; 3 files and 17 tests passed.
+    Evidence: Vitest reported 2 evidence files with 14 tests and 1 CLI file with 3 tests.
+    Scope: inventory integrity, task-scoped writer locking, exact revalidation/unlink concurrency, compaction, garbage collection, and CLI rendering.
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+    Result: pass; 3 files and 44 tests passed.
+    Evidence: evaluator packet/store, run, and execute suites passed with the shared mutation lock active.
+    Scope: evaluator evidence publication and typed quality-review flow.
+
+    Command: bun run test:critical
+    Result: pass; 12 chunks and 84 tests passed.
+    Evidence: The critical CLI runner reported all twelve chunks passed.
+    Scope: compatibility, replay hardening, trust boundaries, protected paths, and git edge cases.
+
+    Command: bun run typecheck && bun run docs:cli:check
+    Result: pass.
+    Evidence: TypeScript build completed and generated CLI reference was current.
+    Scope: type safety and public CLI documentation.
+
+    Command: bun run ci:contract
+    Result: pass.
+    Evidence: Formatting, schemas, policy, compatibility 263commands/180args/843options, architecture, TypeScript 7 toolchain, clone, Knip, and coverage gates passed.
+    Scope: full repository contract for implementation 80d0ce11e11a01ee140d4f146e4f7362c7370ff0.
 
     BlueprintSnapshotRef:
     - state: current
@@ -508,6 +593,61 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-08T01:54:27.904Z — VERIFY — ok
+
+By: TESTER
+
+Note: Result: pass; all declared verification steps and the full contract suite passed for implementation 80d0ce11e11a01ee140d4f146e4f7362c7370ff0.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T01:36:32.841Z, excerpt_hash=sha256:e03b6b8572c687ad65e25d32e0460d9ce86132acfcae68bbe78b35a8b1e469b2
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evidence && bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.evidence.test.ts
+Result: pass; 3 files and 17 tests passed.
+Evidence: Vitest reported 2 evidence files with 14 tests and 1 CLI file with 3 tests.
+Scope: inventory integrity, task-scoped writer locking, exact revalidation/unlink concurrency, compaction, garbage collection, and CLI rendering.
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+Result: pass; 3 files and 44 tests passed.
+Evidence: evaluator packet/store, run, and execute suites passed with the shared mutation lock active.
+Scope: evaluator evidence publication and typed quality-review flow.
+
+Command: bun run test:critical
+Result: pass; 12 chunks and 84 tests passed.
+Evidence: The critical CLI runner reported all twelve chunks passed.
+Scope: compatibility, replay hardening, trust boundaries, protected paths, and git edge cases.
+
+Command: bun run typecheck && bun run docs:cli:check
+Result: pass.
+Evidence: TypeScript build completed and generated CLI reference was current.
+Scope: type safety and public CLI documentation.
+
+Command: bun run ci:contract
+Result: pass.
+Evidence: Formatting, schemas, policy, compatibility 263commands/180args/843options, architecture, TypeScript 7 toolchain, clone, Knip, and coverage gates passed.
+Scope: full repository contract for implementation 80d0ce11e11a01ee140d4f146e4f7362c7370ff0.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062023-V3WHE9-add-safe-local-evidence-retention-statistics-and/.agentplane/tasks/202608062023-V3WHE9/blueprint/resolved-snapshot.json
+- old_digest: a3242977958400cf037cf84a545367555fb4ee1e5e843f158d09e81746ab2f18
+- current_digest: a3242977958400cf037cf84a545367555fb4ee1e5e843f158d09e81746ab2f18
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062023-V3WHE9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608062023-V3WHE9
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -520,3 +660,16 @@ DecisionContextRef:
 - Observation: The first critical chunk rejects the pre-0.7.5 reviewed compatibility candidate after the three new advanced evidence commands change CLI topology; no task-local critical behavior failed.
   Impact: Final pass and publication must wait for the centralized baseline update and rebase.
   Resolution: Merge BZT3D9, rebase V3WHE9, rerun evidence tests, CLI test, critical, typecheck, and docs check, then record pass.
+
+## Token Usage
+
+- State: `observed`
+- Completeness: `3/3` agent runs
+- Input tokens: `650741`
+- Output tokens: `7002`
+- Reasoning tokens: `1631`
+- Total tokens: `659374`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:e80609f90fa8087e6195eedd2feffde8f96b2c38677175d784bcf6c370248ede`
+- Unavailable reason: `none`
+- Updated at: `2026-08-08T01:56:12.385Z`

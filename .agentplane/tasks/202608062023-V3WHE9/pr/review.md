@@ -6,14 +6,14 @@ Created: 2026-08-06T22:11:26.099Z
 
 - Task: `202608062023-V3WHE9`
 - Title: Add safe local evidence retention, statistics, and garbage collection
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608062023-V3WHE9/add-safe-local-evidence-retention-statistics-and`
 - Canonical task record: `.agentplane/tasks/202608062023-V3WHE9/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Result: pass; all declared verification steps and the full contract suite passed for implementation 40b758a4467e3186a89591dff2e79442575e383a.
+- Note: Result: pass; all declared verification steps and the full contract suite passed for implementation 80d0ce11e11a01ee140d4f146e4f7362c7370ff0.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

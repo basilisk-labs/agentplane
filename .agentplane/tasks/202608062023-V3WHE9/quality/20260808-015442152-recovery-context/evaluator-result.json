@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The previous GC reachability TOCTOU finding is resolved: GC now holds the task-scoped evidence mutation lock across final inventory revalidation and unlink, while evaluator evidence publication uses the same lock.",
+      "broken_invariant": "No invariant remains broken; concurrent AgentPlane evidence publication cannot make an object reachable inside the protected revalidation-to-unlink window.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/f11729373753393e064dba33feeada75f637a05a0a68217d7a1c3639cfaadad7.patch",
+          "sha256": "sha256:f11729373753393e064dba33feeada75f637a05a0a68217d7a1c3639cfaadad7",
+          "section": "evidence-maintenance.ts, evidence-mutation-lock.ts, evaluator-review-usecase.ts, and concurrency tests"
+        },
+        {
+          "path": ".agentplane/tasks/202608062023-V3WHE9/verification/20260808015427904-a6e4e69d9c823245.json",
+          "sha256": "sha256:8c7409d1b60f01221e8bdf94a049d2f4bc51a163d7867b253e66ac7600ad2c87",
+          "section": "Verification details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "All supported AgentPlane writers that publish evaluator manifests or their referenced objects participate in the shared task-scoped evidence mutation lock; arbitrary external filesystem writers remain outside the declared local maintenance trust model."
+  ]
+}

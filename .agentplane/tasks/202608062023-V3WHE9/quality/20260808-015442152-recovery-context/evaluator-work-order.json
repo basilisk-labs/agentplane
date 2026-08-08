@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608062023-V3WHE9-a74df08f02e5b58223aadc6c",
+  "prepared_at": "2026-08-08T01:54:42.152Z",
+  "task": {
+    "id": "202608062023-V3WHE9",
+    "revision": 19,
+    "objective": "Add safe local evidence retention, statistics, and garbage collection\n\nAdd OSS evidence stats, compact, and gc surfaces with a dry-run-first retention model: keep task summaries, ACRs, receipts, fingerprints, object hashes, compact manifests, and final findings in Git; deduplicate large raw prompts, diffs, logs, provider JSONL, evaluator inputs, and replay corpora in the content-addressed object store; protect current failures and release evidence; require explicit apply authority before deleting only proven unreferenced or expired objects.",
+    "acceptance_criteria": [
+      "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evidence packages/agentplane/src/cli/run-cli.core.evidence.test.ts",
+      "bun run test:critical",
+      "bun run typecheck",
+      "bun run docs:cli:check",
+      "- In scope: Add OSS evidence stats, compact, and gc surfaces with a dry-run-first retention model: keep task summaries, ACRs, receipts, fingerprints, object hashes, compact manifests, and final findings in Git; deduplicate large raw prompts, diffs, logs, provider JSONL, evaluator inputs, and replay corpora in the content-addressed object store; protect current failures and release evidence; require explicit apply authority before deleting only proven unreferenced or expired objects.\n- Out of scope: unrelated refactors not required for \"Add safe local evidence retention, statistics, and garbage collection\".",
+      "1. Define a local evidence inventory and reachability model separating immutable Git manifests from large content-addressed objects. 2. Add evidence stats with JSON and human output for tracked evidence, object counts and bytes, duplicates, reachable, pinned, expired, and collectible objects. 3. Add a dry-run-first compact path that only replaces supported duplicate large payloads with verified object references and refuses unsupported or dirty histories. 4. Add a dry-run-first gc path whose apply mode requires explicit authority and can delete only hash-verified unreferenced or retention-expired objects; never delete task summaries, ACRs, receipts, fingerprints, final findings, current failure evidence, or release-pinned evidence. 5. Add retention configuration with conservative defaults and fixtures for success/failure age, deduplication, pins, corrupted references, concurrent writers, interruption, and idempotency. 6. Document rollback/recovery and run critical compatibility checks.",
+      "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evidence packages/agentplane/src/cli/run-cli.core.evidence.test.ts\n- bun run test:critical\n- bun run typecheck\n- bun run docs:cli:check"
+    ]
+  },
+  "evaluated_sha": "80d0ce11e11a01ee140d4f146e4f7362c7370ff0",
+  "diff_base_sha": "7a52ed9e91a1e4dde0c14a5c06ba88ced7a12524",
+  "blueprint_digest": "a3242977958400cf037cf84a545367555fb4ee1e5e843f158d09e81746ab2f18",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608062023-V3WHE9/quality/20260808-015442152-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:2367928cba57cd7605bb2506a35092c8324c82fc276868ad987277f7662f9db8",
+    "prompt_path": ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/2c26a031a16573e6e6fac2d0fa2fed259d8f854412998fd0287f29b13e68efe0.md",
+    "result_schema_path": ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608062023-V3WHE9/README.md",
+      "sha256": "sha256:da1baf19e8a6a61407f52e8b98c5431db676fd43b572ad9277b9b898ef55decf",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/f11729373753393e064dba33feeada75f637a05a0a68217d7a1c3639cfaadad7.patch",
+      "sha256": "sha256:f11729373753393e064dba33feeada75f637a05a0a68217d7a1c3639cfaadad7",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/b9eb20f0f0531a3e9ce8a98ab13bb66dcbf27edd01ffc50bd7579efc6af6ea8c.json",
+      "sha256": "sha256:b9eb20f0f0531a3e9ce8a98ab13bb66dcbf27edd01ffc50bd7579efc6af6ea8c",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608062023-V3WHE9/verification/20260808015427904-a6e4e69d9c823245.json",
+      "sha256": "sha256:8c7409d1b60f01221e8bdf94a049d2f4bc51a163d7867b253e66ac7600ad2c87",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/c9d7a484a8e87808651fc468bba347dbb87badd5e309e74ccd7f58c4f13da183.json",
+      "sha256": "sha256:c9d7a484a8e87808651fc468bba347dbb87badd5e309e74ccd7f58c4f13da183",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
