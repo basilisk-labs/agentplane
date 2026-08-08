@@ -203,6 +203,63 @@ describe("DOING route quality rework", () => {
   });
 });
 
+describe("DOING route verification rework", () => {
+  function verificationReworkTask(withNewImplementation: boolean): TaskData {
+    const task = reviewedTask();
+    task.status = "DOING";
+    task.verification = {
+      state: "needs_rework",
+      updated_at: "2026-07-24T00:00:00.000Z",
+      updated_by: "SUPERVISOR",
+      note: "Declared verification failed.",
+    };
+    task.quality_review = undefined;
+    if (withNewImplementation) {
+      task.commit = { hash: headSha, message: "fix: address verification rework" };
+      task.events = [
+        {
+          type: "status",
+          at: "2026-07-24T00:00:01.000Z",
+          author: "SUPERVISOR",
+          from: "DOING",
+          to: "DOING",
+          note: "Implementation committed after verification rework.",
+        },
+      ];
+    }
+    return task;
+  }
+
+  it("keeps rework semantic while no newer implementation is recorded", async () => {
+    const blockers = await blockersFor(
+      headSha,
+      undefined,
+      openPrFlow(),
+      verificationReworkTask(false),
+    );
+
+    expect(blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+    );
+  });
+
+  it("moves a newer implementation to deterministic verification", async () => {
+    const blockers = await blockersFor(
+      headSha,
+      undefined,
+      openPrFlow(),
+      verificationReworkTask(true),
+    );
+
+    expect(blockers).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+    );
+    expect(blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "verification_required" })]),
+    );
+  });
+});
+
 describe("DONE route quality-review target", () => {
   it("keeps a reviewed metadata target fresh across managed closure artifacts", async () => {
     await expect(blockersFor(reviewedSha)).resolves.not.toEqual(

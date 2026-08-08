@@ -12,6 +12,7 @@ import type {
   ExternalAgentExchange,
   ExternalAgentResultEnvelope,
 } from "./external-agent-exchange.js";
+import { recoversRecordedImplementationCommit } from "./external-agent-purpose.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
 import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
 import { cmdTaskComment } from "./comment.js";
@@ -163,8 +164,9 @@ export async function applyExternalImplementationResult(opts: {
     readDirectTaskHead(opts.exchange.checkout),
     readDirectRepositoryStatus(opts.exchange.checkout),
   ]);
-  let implementationCommit =
-    opts.exchange.purpose === "task_worktree_resolution" ? null : opts.decision.task.commit;
+  let implementationCommit = recoversRecordedImplementationCommit(opts.exchange.purpose)
+    ? opts.decision.task.commit
+    : null;
   let observedChangedPaths: string[] | null = null;
   if (implementationCommit) {
     await assertRecoverableImplementationCommit({

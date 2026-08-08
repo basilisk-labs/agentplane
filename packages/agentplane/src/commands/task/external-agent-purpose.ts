@@ -9,3 +9,9 @@ export function usesExternalImplementationAuthority(
     purpose === "task_worktree_resolution"
   );
 }
+
+export function recoversRecordedImplementationCommit(
+  purpose: ExternalAgentExchange["purpose"],
+): boolean {
+  return purpose === "implementation";
+}
