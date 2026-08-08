@@ -29,9 +29,9 @@ Created: 2026-08-08T03:55:51.970Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../release/release-next-action-script.test.ts     | 58 ++++++++++++++++++++++
- scripts/release/next-action.mjs                    | 54 +++++++++++++++++++-
- 2 files changed, 111 insertions(+), 1 deletion(-)
+ .../release/release-next-action-script.test.ts     | 90 ++++++++++++++++++++++
+ scripts/release/next-action.mjs                    | 46 ++++++++++-
+ 2 files changed, 135 insertions(+), 1 deletion(-)
 ```
 
 </details>

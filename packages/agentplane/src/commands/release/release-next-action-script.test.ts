@@ -285,6 +285,8 @@ describe("release next-action script", () => {
     ["current", { nextVersion: "0.6.8", nextTag: "v0.6.8" }],
     ["invalid", { nextVersion: "not-semver", nextTag: "v0.6.9" }],
     ["inconsistent", { nextVersion: "0.6.9", nextTag: "v0.7.0" }],
+    ["version-only", { nextVersion: "0.6.9" }],
+    ["tag-only", { nextTag: "v0.6.9" }],
   ])("requests a fresh patch plan for a %s latest plan", async (_label, latestPlan) => {
     const closedState = structuredClone(releaseState);
     closedState.release.evidence_exists = true;
@@ -317,6 +319,36 @@ describe("release next-action script", () => {
     closedState.release.evidence_exists = true;
     closedState.release.evidence_valid = true;
     closedState.release.latest_plan = { nextVersion: "0.6.9", nextTag: "v0.6.9" };
+    const statePath = await writeJsonFixture("state.json", closedState);
+    const githubReleasePath = await writeJsonFixture("github-release.json", { state: "present" });
+
+    const result = await execFileAsync(
+      "node",
+      [SCRIPT_PATH, "--check-registry", "--check-github", "--json"],
+      {
+        env: {
+          ...process.env,
+          AGENTPLANE_TEST_RELEASE_STATE_PATH: statePath,
+          AGENTPLANE_TEST_GITHUB_RELEASE_STATUS_PATH: githubReleasePath,
+        },
+      },
+    );
+    const payload = JSON.parse(result.stdout) as { action: string; command: string };
+
+    expect(payload.action).toBe("run release candidate preparation");
+    expect(payload.command).toBe("bun run release:candidate:prepare -- --write");
+  });
+
+  it("orders future plan components beyond Number.MAX_SAFE_INTEGER without precision loss", async () => {
+    const closedState = structuredClone(releaseState);
+    closedState.release.version = "9007199254740992.0.0";
+    closedState.release.tag = "v9007199254740992.0.0";
+    closedState.release.evidence_exists = true;
+    closedState.release.evidence_valid = true;
+    closedState.release.latest_plan = {
+      nextVersion: "9007199254740993.0.0",
+      nextTag: "v9007199254740993.0.0",
+    };
     const statePath = await writeJsonFixture("state.json", closedState);
     const githubReleasePath = await writeJsonFixture("github-release.json", { state: "present" });
 
