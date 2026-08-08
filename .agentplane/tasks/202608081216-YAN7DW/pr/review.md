@@ -29,12 +29,12 @@ Created: 2026-08-08T12:17:23.101Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...cli.critical.agent-efficiency-candidate.test.ts |  46 ++++++-
+ ...cli.critical.agent-efficiency-candidate.test.ts |  49 ++++++-
  .../bench/capture-agent-efficiency-candidate.mjs   | 147 ++++++++++++++++-----
  .../qualification/release-qualification.test.mjs   |  36 +++++
  .../run-v0.7.1-release-qualification.mjs           | 131 +++++++++++++++++-
  .../v0.7.1-release-qualification.json              |   2 +
- 5 files changed, 319 insertions(+), 43 deletions(-)
+ 5 files changed, 322 insertions(+), 43 deletions(-)
 ```
 
 </details>

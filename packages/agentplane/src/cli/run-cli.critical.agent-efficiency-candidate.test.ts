@@ -132,6 +132,9 @@ describeCritical("critical: RF-04 candidate measurement", () => {
     expect(() => fixture.candidate.assertCandidateCaptureConcurrency(0)).toThrow(
       "--concurrency must be an integer >= 1",
     );
+    expect(() => fixture.candidate.assertCandidateCaptureConcurrency(Number.NaN)).toThrow(
+      "--concurrency must be an integer >= 1",
+    );
   });
 
   it("stops assigning queued provider jobs after the first failure", async () => {

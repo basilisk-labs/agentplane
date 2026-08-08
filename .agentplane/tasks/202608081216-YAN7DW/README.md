@@ -4,7 +4,7 @@ title: "Parallelize release qualification without weakening gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -16,8 +16,8 @@ task_kind: "code"
 mutation_scope: "code"
 blueprint_request: "performance.benchmark"
 verify:
-  - "node --test scripts/qualification/release-qualification.test.mjs"
-  - "bunx vitest run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts --pool=forks --maxWorkers=2"
+  - "bun run e2e:v0.7.1:check"
+  - "bun run test:critical"
   - "bun run format:check"
   - "bun run ci:contract"
 plan_approval:
@@ -87,7 +87,7 @@ events:
     state: "needs_rework"
     note: "Rework: Unsupported declared check: node --test scripts/qualification/release-qualification.test.mjs"
 doc_version: 3
-doc_updated_at: "2026-08-08T12:39:24.870Z"
+doc_updated_at: "2026-08-08T12:40:01.775Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
@@ -107,8 +107,8 @@ sections:
 
     Scope limit: qualification runner, provider replay capture, their focused tests, and required generated documentation only. No quality threshold, scenario count, provider episode count, retry policy, publish authority, or hosted gate may be weakened.
   Verify Steps: |-
-    1. Run `node --test scripts/qualification/release-qualification.test.mjs`. Expected: all qualification contract tests pass, including bounded concurrency, deterministic result ordering, dependency barriers, and the provider barrier.
-    2. Run `bunx vitest run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts --pool=forks --maxWorkers=2`. Expected: candidate capture concurrency, stop-on-first-failure, evidence cleanup, and existing RF-04 contracts pass.
+    1. Run `bun run e2e:v0.7.1:check`. Expected: qualification contract tests pass and the full gate command resolves every required variable in dry-run mode.
+    2. Run `bun run test:critical`. Expected: the critical CLI suite passes, including candidate capture concurrency, stop-on-first-failure, evidence cleanup, and existing RF-04 contracts.
     3. Run `bun run format:check`. Expected: formatting passes.
     4. Run `bun run ci:contract`. Expected: repository contracts, lint, architecture, clone, knip, and coverage thresholds pass.
     5. The subsequent v0.7.5 release gate must execute the full 50-run/55-episode provider matrix on the exact integrated candidate SHA; no provider evidence from the pre-change SHA may be reused.
@@ -218,8 +218,8 @@ Scope limit: qualification runner, provider replay capture, their focused tests,
 
 ## Verify Steps
 
-1. Run `node --test scripts/qualification/release-qualification.test.mjs`. Expected: all qualification contract tests pass, including bounded concurrency, deterministic result ordering, dependency barriers, and the provider barrier.
-2. Run `bunx vitest run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts --pool=forks --maxWorkers=2`. Expected: candidate capture concurrency, stop-on-first-failure, evidence cleanup, and existing RF-04 contracts pass.
+1. Run `bun run e2e:v0.7.1:check`. Expected: qualification contract tests pass and the full gate command resolves every required variable in dry-run mode.
+2. Run `bun run test:critical`. Expected: the critical CLI suite passes, including candidate capture concurrency, stop-on-first-failure, evidence cleanup, and existing RF-04 contracts.
 3. Run `bun run format:check`. Expected: formatting passes.
 4. Run `bun run ci:contract`. Expected: repository contracts, lint, architecture, clone, knip, and coverage thresholds pass.
 5. The subsequent v0.7.5 release gate must execute the full 50-run/55-episode provider matrix on the exact integrated candidate SHA; no provider evidence from the pre-change SHA may be reused.
