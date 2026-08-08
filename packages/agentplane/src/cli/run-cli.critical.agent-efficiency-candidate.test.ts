@@ -45,6 +45,12 @@ async function loadCandidateFixture() {
     captureCandidate(options: Json): Promise<Json>;
     createCandidateHarnessManifest(driver: Json, dependency: Json): Json;
     readPinnedQualificationBaseline(input: Json): Json;
+    runCandidateDriverProcess(
+      command: string,
+      args: string[],
+      options: { cwd: string; env: NodeJS.ProcessEnv; timeout: number },
+      label: string,
+    ): Promise<void>;
     runCandidateCaptureJobs<T, R>(
       jobs: T[],
       concurrency: number,
@@ -149,6 +155,21 @@ describeCritical("critical: RF-04 candidate measurement", () => {
       }),
     ).rejects.toThrow("provider failed");
     expect(started).toEqual(["fail", "active"]);
+  });
+
+  it("force-kills a provider driver that ignores SIGTERM at its fixed timeout", async () => {
+    const fixture = await loadCandidateFixture();
+    const startedAt = Date.now();
+
+    await expect(
+      fixture.candidate.runCandidateDriverProcess(
+        process.execPath,
+        ["-e", "process.on('SIGTERM', () => {}); setInterval(() => {}, 1_000);"],
+        { cwd: REPO_ROOT, env: process.env, timeout: 100 },
+        "timeout fixture",
+      ),
+    ).rejects.toThrow("timeout fixture failed to start or exceeded its fixed timeout");
+    expect(Date.now() - startedAt).toBeLessThan(3_000);
   });
 
   it("validates one exact candidate pilot envelope and returns bounded telemetry", async () => {

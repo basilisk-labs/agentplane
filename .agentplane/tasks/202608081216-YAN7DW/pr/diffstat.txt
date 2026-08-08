@@ -1,8 +1,8 @@
  package.json                                       |   3 +-
- ...cli.critical.agent-efficiency-candidate.test.ts |  49 ++++++-
+ ...cli.critical.agent-efficiency-candidate.test.ts |  70 +++++++++-
  scripts/README.md                                  |   4 +-
- .../bench/capture-agent-efficiency-candidate.mjs   | 147 ++++++++++++++++-----
- .../qualification/release-qualification.test.mjs   |  36 +++++
- .../run-v0.7.1-release-qualification.mjs           | 131 +++++++++++++++++-
+ .../bench/capture-agent-efficiency-candidate.mjs   | 142 ++++++++++++++++-----
+ .../qualification/release-qualification.test.mjs   |  36 ++++++
+ .../run-v0.7.1-release-qualification.mjs           | 124 +++++++++++++++++-
  .../v0.7.1-release-qualification.json              |   2 +
- 7 files changed, 327 insertions(+), 45 deletions(-)
+ 7 files changed, 335 insertions(+), 46 deletions(-)
