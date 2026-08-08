@@ -56,7 +56,12 @@ describe("direct task verification", () => {
     expect(result).toMatchObject({ status: "passed", reason: null });
     expect(mocks.runProcess).toHaveBeenNthCalledWith(
       1,
-      expect.objectContaining({ command: "bun", args: ["run", "test:critical"], cwd }),
+      expect.objectContaining({
+        command: "bun",
+        args: ["run", "test:critical"],
+        cwd,
+        timeoutMs: 30 * 60_000,
+      }),
     );
     expect(mocks.runProcess).toHaveBeenNthCalledWith(
       2,

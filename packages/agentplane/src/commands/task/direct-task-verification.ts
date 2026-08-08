@@ -7,7 +7,7 @@ import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
-const CHECK_TIMEOUT_MS = 10 * 60_000;
+const CHECK_TIMEOUT_MS = 30 * 60_000;
 const CHECK_OUTPUT_LIMIT = 4000;
 const SAFE_BUN_SCRIPT = /^[A-Za-z0-9][A-Za-z0-9:_-]*$/u;
 const AGENTPLANE_BIN = resolveAgentplaneBinPath();
