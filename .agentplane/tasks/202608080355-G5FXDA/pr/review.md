@@ -13,7 +13,7 @@ Created: 2026-08-08T03:55:51.970Z
 ## Verification
 
 - State: ok
-- Note: Release next-action now requests a fresh patch plan for missing, invalid, current, or stale targets and permits candidate preparation only for a valid future target; focused and full contract gates pass.
+- Note: Evaluator findings are resolved: future plans must provide mutually consistent nextVersion and nextTag, and version ordering now uses precision-safe BigInt components; 15 focused scenarios and the full contract gate pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

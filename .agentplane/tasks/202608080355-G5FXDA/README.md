@@ -4,7 +4,7 @@ title: "Correct stale plan comparison in next-action diagnostics"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-08T05:15:10.536Z"
+  updated_at: "2026-08-08T05:19:52.549Z"
   updated_by: "TESTER"
-  note: "Release next-action now requests a fresh patch plan for missing, invalid, current, or stale targets and permits candidate preparation only for a valid future target; focused and full contract gates pass."
+  note: "Evaluator findings are resolved: future plans must provide mutually consistent nextVersion and nextTag, and version ordering now uses precision-safe BigInt components; 15 focused scenarios and the full contract gate pass."
   attempts: 0
 quality_review:
   state: "rework"
@@ -97,8 +97,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Release next-action now requests a fresh patch plan for missing, invalid, current, or stale targets and permits candidate preparation only for a valid future target; focused and full contract gates pass."
+  -
+    type: "verify"
+    at: "2026-08-08T05:19:52.549Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Evaluator findings are resolved: future plans must provide mutually consistent nextVersion and nextTag, and version ordering now uses precision-safe BigInt components; 15 focused scenarios and the full contract gate pass."
 doc_version: 3
-doc_updated_at: "2026-08-08T05:15:11.672Z"
+doc_updated_at: "2026-08-08T05:19:53.989Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix GitHub issue #4783: compare the latest plan target with the currently published version so a missing, current, or older plan requests a fresh patch plan and only a future plan permits candidate preparation. Add fixtures for missing, stale, current, and future targets. Mark INC-20260807-01 resolved in the repository and bundled incident registries because its dependency-readiness and supervisor protocol repairs are merged and verified. Close issue #4783 only after hosted checks pass and the fix merges."
 sections:
@@ -179,6 +185,66 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608080355-G5FXDA
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T05:19:52.549Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Evaluator findings are resolved: future plans must provide mutually consistent nextVersion and nextTag, and version ordering now uses precision-safe BigInt components; 15 focused scenarios and the full contract gate pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T05:15:11.672Z, excerpt_hash=sha256:c61ab1404b86c65d2743628996382837dfb456532ac47c1279b9d9536e4c679c
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/release/release-next-action-script.test.ts
+    Result: pass; 15/15 tests passed after evaluator rework.
+    Evidence: the suite now covers incomplete nextVersion-only and nextTag-only future plans plus ordering beyond Number.MAX_SAFE_INTEGER.
+    Scope: RECOVERY-001 and RECOVERY-002 from evaluator run 20260808-051521745-recovery-context.
+
+    Command: bun run typecheck
+    Result: pass; precision-safe BigInt tuple comparison and updated fixtures compile cleanly.
+    Evidence: run-typescript-build.mjs exited 0.
+    Scope: Release next-action implementation and tests after evaluator rework.
+
+    Command: bunx prettier --check scripts/release/next-action.mjs packages/agentplane/src/commands/release/release-next-action-script.test.ts
+    Result: pass; both changed files match repository formatting.
+    Evidence: Prettier reported all matched files use its code style.
+    Scope: Evaluator-directed implementation rework.
+
+    Command: bunx eslint scripts/release/next-action.mjs packages/agentplane/src/commands/release/release-next-action-script.test.ts
+    Result: pass; no lint findings.
+    Evidence: ESLint exited 0.
+    Scope: Evaluator-directed implementation rework.
+
+    Command: bun run ci:contract
+    Result: pass on implementation commit a595da1b415f; all repository contract gates completed successfully after the evaluator-directed fix.
+    Evidence: command exited 0 after the coverage threshold guard.
+    Scope: Complete repository contract validation for the final issue #4783 implementation.
+
+    Command: git diff --check
+    Result: pass; no whitespace errors are present.
+    Evidence: command exited 0.
+    Scope: Final implementation and task evidence integrity before reevaluation.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608080355-G5FXDA-correct-stale-plan-comparison-in-next-action-dia/.agentplane/tasks/202608080355-G5FXDA/blueprint/resolved-snapshot.json
+    - old_digest: 1b180e9a165d9cb3562acf6522bc3586c6efcc4f7e890b83961f1821c1184d65
+    - current_digest: 1b180e9a165d9cb3562acf6522bc3586c6efcc4f7e890b83961f1821c1184d65
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608080355-G5FXDA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -283,6 +349,66 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608080355-G5FXDA
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T05:19:52.549Z — VERIFY — ok
+
+By: TESTER
+
+Note: Evaluator findings are resolved: future plans must provide mutually consistent nextVersion and nextTag, and version ordering now uses precision-safe BigInt components; 15 focused scenarios and the full contract gate pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T05:15:11.672Z, excerpt_hash=sha256:c61ab1404b86c65d2743628996382837dfb456532ac47c1279b9d9536e4c679c
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/release/release-next-action-script.test.ts
+Result: pass; 15/15 tests passed after evaluator rework.
+Evidence: the suite now covers incomplete nextVersion-only and nextTag-only future plans plus ordering beyond Number.MAX_SAFE_INTEGER.
+Scope: RECOVERY-001 and RECOVERY-002 from evaluator run 20260808-051521745-recovery-context.
+
+Command: bun run typecheck
+Result: pass; precision-safe BigInt tuple comparison and updated fixtures compile cleanly.
+Evidence: run-typescript-build.mjs exited 0.
+Scope: Release next-action implementation and tests after evaluator rework.
+
+Command: bunx prettier --check scripts/release/next-action.mjs packages/agentplane/src/commands/release/release-next-action-script.test.ts
+Result: pass; both changed files match repository formatting.
+Evidence: Prettier reported all matched files use its code style.
+Scope: Evaluator-directed implementation rework.
+
+Command: bunx eslint scripts/release/next-action.mjs packages/agentplane/src/commands/release/release-next-action-script.test.ts
+Result: pass; no lint findings.
+Evidence: ESLint exited 0.
+Scope: Evaluator-directed implementation rework.
+
+Command: bun run ci:contract
+Result: pass on implementation commit a595da1b415f; all repository contract gates completed successfully after the evaluator-directed fix.
+Evidence: command exited 0 after the coverage threshold guard.
+Scope: Complete repository contract validation for the final issue #4783 implementation.
+
+Command: git diff --check
+Result: pass; no whitespace errors are present.
+Evidence: command exited 0.
+Scope: Final implementation and task evidence integrity before reevaluation.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608080355-G5FXDA-correct-stale-plan-comparison-in-next-action-dia/.agentplane/tasks/202608080355-G5FXDA/blueprint/resolved-snapshot.json
+- old_digest: 1b180e9a165d9cb3562acf6522bc3586c6efcc4f7e890b83961f1821c1184d65
+- current_digest: 1b180e9a165d9cb3562acf6522bc3586c6efcc4f7e890b83961f1821c1184d65
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608080355-G5FXDA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
