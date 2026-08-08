@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
 status: "BLOCKED"
 priority: "high"
 owner: "DOCS"
-revision: 53
+revision: 54
 origin:
   system: "manual"
 depends_on:
@@ -107,6 +107,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: e3dc070ee55c. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned blocked: The packet baseline included an RF-04 temporary driver that the interrupted check correctly cleaned, so returning a completed implementation against this stale baseline would violate fail-closed workspace authority. The reviewed provider-cache resolver was committed separately and a fresh packet is required."
 events:
   -
     type: "status"
@@ -371,8 +374,13 @@ events:
     author: "SUPERVISOR"
     state: "blocked_external"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "comment"
+    at: "2026-08-08T16:33:12.491Z"
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned blocked: The packet baseline included an RF-04 temporary driver that the interrupted check correctly cleaned, so returning a completed implementation against this stale baseline would violate fail-closed workspace authority. The reviewed provider-cache resolver was committed separately and a fresh packet is required."
 doc_version: 3
-doc_updated_at: "2026-08-08T16:27:37.490Z"
+doc_updated_at: "2026-08-08T16:33:12.491Z"
 doc_updated_by: "SUPERVISOR"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
