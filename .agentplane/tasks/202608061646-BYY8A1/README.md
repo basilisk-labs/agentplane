@@ -1,10 +1,10 @@
 ---
 id: "202608061646-BYY8A1"
 title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 59
+revision: 60
 origin:
   system: "manual"
 depends_on:
@@ -45,7 +45,9 @@ verification:
   updated_by: "TESTER"
   note: "ci:local:full failed on implementation 1bf5c98ec: supervisor-execution-episode.ts is 632 lines, above the 600-line hotspot limit"
   attempts: 20
-commit: null
+commit:
+  hash: "409092608ca74b831f15fa780e54e95eca47d3f4"
+  message: "♻️ BYY8A1 task: split supervisor lease implementation"
 comments:
   -
     author: "DOCS"
@@ -119,6 +121,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: canonicalize regular pinned Codex binary paths through system directory aliases while preserving leaf-symlink and digest checks."
+  -
+    author: "CODER"
+    body: "Implemented hotspot-safe execution lease extraction and interrupted verification replacement; targeted supervisor tests, hotspot check, ESLint, and TypeScript pass."
 events:
   -
     type: "status"
@@ -424,8 +429,16 @@ events:
     author: "TESTER"
     state: "blocked_external"
     note: "ci:local:full failed on implementation 1bf5c98ec: supervisor-execution-episode.ts is 632 lines, above the 600-line hotspot limit"
+  -
+    type: "status"
+    at: "2026-08-08T17:23:00.434Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Implemented hotspot-safe execution lease extraction and interrupted verification replacement; targeted supervisor tests, hotspot check, ESLint, and TypeScript pass."
+    commit: "409092608ca74b831f15fa780e54e95eca47d3f4"
 doc_version: 3
-doc_updated_at: "2026-08-08T17:20:15.023Z"
+doc_updated_at: "2026-08-08T17:23:00.434Z"
 doc_updated_by: "CODER"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
