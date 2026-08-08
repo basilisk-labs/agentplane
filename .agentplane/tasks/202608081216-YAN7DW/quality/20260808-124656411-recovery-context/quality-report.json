@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608081216-YAN7DW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-08T12:48:43.386Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 4 typed finding(s).",
+  "evaluated_sha": "d76c54b377fff1a660ab4a25bcfd7a2360c68e43",
+  "blueprint_digest": "bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1",
+  "findings": [
+    "Bounded qualification concurrency preserves dependency ordering and result order; provider work is separated behind a local-scenario barrier.",
+    "Provider replay jobs use distinct repositories and stop assigning queued jobs after the first observed failure without changing counts, thresholds, or retry policy.",
+    "Both asynchronous child runners disable execFile's built-in timeout and only send SIGTERM from a timer. If the child ignores SIGTERM, the callback never fires and the advertised fixed timeout is unbounded.",
+    "Residual risk: Concurrent local suites may contaminate local latency measurements even though provider measurements are isolated behind a barrier."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/30712845a4f47b0ba6c4ec89a875b9e2c5cec7610044f3f23d2bf3498d693bec.patch"
+  ],
+  "missing_tests": [
+    "Add a regression proving a child that ignores SIGTERM cannot outlive the declared timeout boundary."
+  ],
+  "hidden_assumptions": [
+    "Every qualification and replay child exits promptly on SIGTERM."
+  ],
+  "residual_risks": [
+    "Use execFile's bounded timeout with an unconditional kill signal or add a short escalation timer to SIGKILL, preserve timeout classification, and rerun the same declared checks."
+  ]
+}
