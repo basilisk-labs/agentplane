@@ -4,7 +4,7 @@ title: "Parallelize release qualification without weakening gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -16,10 +16,10 @@ task_kind: "code"
 mutation_scope: "code"
 blueprint_request: "performance.benchmark"
 verify:
-  - "bun run ci:contract"
-  - "bun run format:check"
-  - "bunx vitest run scripts/bench/capture-agent-efficiency-candidate.test.mjs"
   - "node --test scripts/qualification/release-qualification.test.mjs"
+  - "bunx vitest run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts --pool=forks --maxWorkers=2"
+  - "bun run format:check"
+  - "bun run ci:contract"
 plan_approval:
   state: "approved"
   updated_at: "2026-08-08T12:17:11.125Z"
@@ -70,7 +70,7 @@ events:
     state: "needs_rework"
     note: "Rework: Unsupported declared check: bunx vitest run scripts/bench/capture-agent-efficiency-candidate.test.mjs"
 doc_version: 3
-doc_updated_at: "2026-08-08T12:34:32.897Z"
+doc_updated_at: "2026-08-08T12:35:31.113Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
@@ -90,14 +90,11 @@ sections:
 
     Scope limit: qualification runner, provider replay capture, their focused tests, and required generated documentation only. No quality threshold, scenario count, provider episode count, retry policy, publish authority, or hosted gate may be weakened.
   Verify Steps: |-
-    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Run `node --test scripts/qualification/release-qualification.test.mjs`. Expected: it succeeds and confirms the requested outcome for this task.
-    2. Run `bunx vitest run scripts/bench/capture-agent-efficiency-candidate.test.mjs`. Expected: it succeeds and confirms the requested outcome for this task.
-    3. Run `bun run format:check`. Expected: it succeeds and confirms the requested outcome for this task.
-    4. Run `bun run ci:contract`. Expected: it succeeds and confirms the requested outcome for this task.
-    5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-    6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+    1. Run `node --test scripts/qualification/release-qualification.test.mjs`. Expected: all qualification contract tests pass, including bounded concurrency, deterministic result ordering, dependency barriers, and the provider barrier.
+    2. Run `bunx vitest run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts --pool=forks --maxWorkers=2`. Expected: candidate capture concurrency, stop-on-first-failure, evidence cleanup, and existing RF-04 contracts pass.
+    3. Run `bun run format:check`. Expected: formatting passes.
+    4. Run `bun run ci:contract`. Expected: repository contracts, lint, architecture, clone, knip, and coverage thresholds pass.
+    5. The subsequent v0.7.5 release gate must execute the full 50-run/55-episode provider matrix on the exact integrated candidate SHA; no provider evidence from the pre-change SHA may be reused.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-08-08T12:34:31.801Z — VERIFY — needs_rework
@@ -174,14 +171,11 @@ Scope limit: qualification runner, provider replay capture, their focused tests,
 
 ## Verify Steps
 
-PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Run `node --test scripts/qualification/release-qualification.test.mjs`. Expected: it succeeds and confirms the requested outcome for this task.
-2. Run `bunx vitest run scripts/bench/capture-agent-efficiency-candidate.test.mjs`. Expected: it succeeds and confirms the requested outcome for this task.
-3. Run `bun run format:check`. Expected: it succeeds and confirms the requested outcome for this task.
-4. Run `bun run ci:contract`. Expected: it succeeds and confirms the requested outcome for this task.
-5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+1. Run `node --test scripts/qualification/release-qualification.test.mjs`. Expected: all qualification contract tests pass, including bounded concurrency, deterministic result ordering, dependency barriers, and the provider barrier.
+2. Run `bunx vitest run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts --pool=forks --maxWorkers=2`. Expected: candidate capture concurrency, stop-on-first-failure, evidence cleanup, and existing RF-04 contracts pass.
+3. Run `bun run format:check`. Expected: formatting passes.
+4. Run `bun run ci:contract`. Expected: repository contracts, lint, architecture, clone, knip, and coverage thresholds pass.
+5. The subsequent v0.7.5 release gate must execute the full 50-run/55-episode provider matrix on the exact integrated candidate SHA; no provider evidence from the pre-change SHA may be reused.
 
 ## Verification
 

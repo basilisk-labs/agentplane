@@ -175,6 +175,10 @@ describe("v0.7.1 release qualification contract", () => {
     assert.ok(events.indexOf("finish:slow") < events.indexOf("start:dependent"));
     assert.ok(events.indexOf("finish:fast") < events.indexOf("start:provider"));
     assert.ok(events.indexOf("finish:dependent") < events.indexOf("start:provider"));
+    await assert.rejects(
+      () => runQualificationScenarios(scenarios, {}, "/unused", { concurrency: 0 }),
+      /qualification concurrency must be an integer >= 1/u,
+    );
   });
 
   it("excludes disposable matched-latency fixtures from host indexing", () => {
