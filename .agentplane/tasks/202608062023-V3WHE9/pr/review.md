@@ -13,7 +13,7 @@ Created: 2026-08-06T22:11:26.099Z
 ## Verification
 
 - State: ok
-- Note: Result: pass; all declared verification steps and the full contract suite passed for implementation 9ecb9fa40f42d2dc934c91da8d5cb814a7f122c8.
+- Note: Result: pass; all declared verification steps and the full contract suite passed for implementation 40b758a4467e3186a89591dff2e79442575e383a.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,23 +29,26 @@ Created: 2026-08-06T22:11:26.099Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/user/cli-reference.generated.mdx              |  97 +++++
+ docs/user/cli-reference.generated.mdx              |  97 ++++
  docs/user/commands.mdx                             |  39 ++
  .../src/cli/run-cli.core.evidence.test.ts          |  55 +++
  ...-cli.critical.agent-efficiency-baseline.test.ts |  15 +-
  .../src/cli/run-cli/command-catalog/project.ts     |  28 +-
  .../src/cli/run-cli/command-loaders/evidence.ts    |  44 ++
  .../src/cli/run-cli/command-loaders/project.ts     |  11 -
- .../src/commands/evidence/evidence-inventory.ts    | 343 ++++++++++++++++
- .../evidence/evidence-maintenance.command.ts       | 185 +++++++++
- .../commands/evidence/evidence-maintenance.test.ts | 442 +++++++++++++++++++++
- .../src/commands/evidence/evidence-maintenance.ts  | 270 +++++++++++++
+ .../evaluator/evaluator-result-validation.ts       |  90 ++++
+ .../commands/evaluator/evaluator-review-usecase.ts | 118 ++---
+ .../src/commands/evidence/evidence-inventory.ts    | 350 ++++++++++++++
+ .../evidence/evidence-maintenance.command.ts       | 185 ++++++++
+ .../commands/evidence/evidence-maintenance.test.ts | 514 +++++++++++++++++++++
+ .../src/commands/evidence/evidence-maintenance.ts  | 284 ++++++++++++
  .../src/commands/evidence/evidence-manifest.ts     |  16 +-
+ .../commands/evidence/evidence-mutation-lock.ts    |  32 ++
  .../src/commands/evidence/evidence-sha256.ts       |  12 +
  .../src/commands/evidence/evidence.command.ts      |   4 +-
- .../baselines/v0.7-compatibility-candidate.json    | 195 ++++++++-
+ .../baselines/v0.7-compatibility-candidate.json    | 195 +++++++-
  .../check-compatibility-contract-baseline.mjs      | 130 +++++-
- 16 files changed, 1842 insertions(+), 44 deletions(-)
+ 19 files changed, 2083 insertions(+), 136 deletions(-)
 ```
 
 </details>

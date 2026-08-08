@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608062023-V3WHE9-4fa7544dca6cde61ca6518f9",
+  "task_id": "202608062023-V3WHE9",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Устранить окно TOCTOU между финальной проверкой достижимости/pin-состояния и unlink с помощью общего с писателями протокола блокировки либо эквивалентной атомарной схемы, затем добавить тест публикации ссылки именно в этом окне и повторить заявленные проверки.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "GC всё ещё может удалить объект, который конкурентный процесс сделал достижимым после последней повторной инвентаризации: между финальной проверкой и unlink остаётся незащищённое окно TOCTOU.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/584f088bca262051b690931346a65ea1b305e34993e400707564c3e8559a63d0.patch",
+          "sha256": "sha256:584f088bca262051b690931346a65ea1b305e34993e400707564c3e8559a63d0",
+          "line": 1533,
+          "lines": "revalidateCollectibleObject rebuilds the inventory and performs final object/repository checks, then returns without establishing a lock or atomic exclusion against manifest publication.",
+          "section": "packages/agentplane/src/commands/evidence/evidence-maintenance.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/584f088bca262051b690931346a65ea1b305e34993e400707564c3e8559a63d0.patch",
+          "sha256": "sha256:584f088bca262051b690931346a65ea1b305e34993e400707564c3e8559a63d0",
+          "line": 1666,
+          "lines": "await unlink(current.absolute_path); executes after revalidation, leaving a scheduling window in which another writer can publish a reference or pin.",
+          "section": "packages/agentplane/src/commands/evidence/evidence-maintenance.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608062023-V3WHE9/README.md",
+          "sha256": "sha256:cf4834ea71f8a58d70e96d6aef6b226c0acd12e7cd96b49139a941c0c9002536",
+          "section": "Plan"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608062023-V3WHE9/quality/20260808-013700827-recovery-context/evaluator-result.json"
+}

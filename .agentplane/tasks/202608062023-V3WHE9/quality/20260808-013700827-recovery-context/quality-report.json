@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608062023-V3WHE9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-08T01:37:52.679Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "40b758a4467ed76c0fa59e92c1b3dd63535fb9de",
+  "blueprint_digest": "a3242977958400cf037cf84a545367555fb4ee1e5e843f158d09e81746ab2f18",
+  "findings": [
+    "GC всё ещё может удалить объект, который конкурентный процесс сделал достижимым после последней повторной инвентаризации: между финальной проверкой и unlink остаётся незащищённое окно TOCTOU."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/584f088bca262051b690931346a65ea1b305e34993e400707564c3e8559a63d0.patch",
+    ".agentplane/tasks/202608062023-V3WHE9/README.md"
+  ],
+  "missing_tests": [
+    "Добавить детерминированный тест, который публикует новый manifest/reference или меняет task pin после завершения revalidateCollectibleObject, но до unlink, и доказывает, что объект не удаляется."
+  ],
+  "hidden_assumptions": [
+    "Предполагается, что ни один конкурентный писатель не сможет изменить достижимость или pin-состояние в промежутке между последней проверкой и unlink; протокол блокировки или атомарного исключения этого не гарантирует."
+  ],
+  "residual_risks": [
+    "Устранить окно TOCTOU между финальной проверкой достижимости/pin-состояния и unlink с помощью общего с писателями протокола блокировки либо эквивалентной атомарной схемы, затем добавить тест публикации ссылки именно в этом окне и повторить заявленные проверки."
+  ]
+}

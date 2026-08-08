@@ -165,6 +165,9 @@ async function collectManifestReferences(
 ): Promise<{ references: Set<string>; errors: string[] }> {
   const references = new Set<string>();
   const errors: string[] = [];
+  const expectedObjectPrefix = `${toPosix(
+    path.relative(root, path.join(qualityRoot, "objects", "sha256")),
+  )}/`;
   const visit = async (directory: string): Promise<void> => {
     const entries = await readdir(directory, { withFileTypes: true }).catch(() => []);
     for (const entry of entries) {
@@ -185,6 +188,10 @@ async function collectManifestReferences(
           const absolute = path.resolve(root, normalized);
           if (!absolute.startsWith(`${path.resolve(root)}${path.sep}`)) {
             errors.push(`unsafe_reference:${toPosix(path.relative(root, candidate))}`);
+            continue;
+          }
+          if (!normalized.startsWith(expectedObjectPrefix)) {
+            errors.push(`cross_task_reference:${toPosix(path.relative(root, candidate))}`);
             continue;
           }
           references.add(normalized);
@@ -241,13 +248,13 @@ export async function buildEvidenceInventory(opts: {
     const qualityRoot = path.join(taskRoot, "quality");
     const objectRoot = path.join(qualityRoot, "objects", "sha256");
     const objectEntries = await readdir(objectRoot, { withFileTypes: true }).catch(() => []);
-    if (objectEntries.length === 0) continue;
-    tasksWithObjects.add(taskEntry.name);
     const manifestReferences = await collectManifestReferences(qualityRoot, opts.root);
     for (const reference of manifestReferences.references) {
       allReferences.add(reference);
     }
     referenceErrors.push(...manifestReferences.errors);
+    if (objectEntries.length === 0) continue;
+    tasksWithObjects.add(taskEntry.name);
     const state = await taskRetentionState(taskRoot, policy.value.objects.pin_release_evidence);
     const retentionDays = state.failure
       ? policy.value.objects.keep_failure_days

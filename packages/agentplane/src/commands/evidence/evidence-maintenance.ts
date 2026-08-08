@@ -10,6 +10,7 @@ import {
   type EvidenceInventory,
   type EvidenceObjectRecord,
 } from "./evidence-inventory.js";
+import { evidenceMutationLockGitPath, withEvidenceMutationLock } from "./evidence-mutation-lock.js";
 import { sha256EvidenceFile } from "./evidence-sha256.js";
 
 const execFileAsync = promisify(execFile);
@@ -54,22 +55,24 @@ async function assertCleanRepository(root: string): Promise<void> {
 async function assertOnlyExpectedGcChanges(
   root: string,
   deletedPaths: ReadonlySet<string>,
+  lockGitPath: string,
 ): Promise<void> {
   const { stdout } = await execFileAsync(
     "git",
     ["status", "--porcelain=v1", "-z", "--untracked-files=all"],
     { cwd: root, encoding: "buffer", maxBuffer: 16 * 1024 * 1024 },
   );
-  const unexpected = stdout
-    .toString("utf8")
-    .split("\0")
-    .filter(Boolean)
-    .filter((entry) => entry.startsWith(" D ") && deletedPaths.has(entry.slice(3)) === false);
-  const nonDeletionChanges = stdout
-    .toString("utf8")
-    .split("\0")
-    .filter(Boolean)
-    .filter((entry) => !entry.startsWith(" D "));
+  const entries = stdout.toString("utf8").split("\0").filter(Boolean);
+  const isLockArtifact = (entry: string): boolean => {
+    const gitPath = entry.slice(3).replaceAll("\\", "/");
+    return gitPath === lockGitPath || gitPath.startsWith(`${lockGitPath}.candidate.`);
+  };
+  const unexpected = entries.filter(
+    (entry) => entry.startsWith(" D ") && deletedPaths.has(entry.slice(3)) === false,
+  );
+  const nonDeletionChanges = entries.filter(
+    (entry) => !entry.startsWith(" D ") && !isLockArtifact(entry),
+  );
   if (unexpected.length > 0 || nonDeletionChanges.length > 0) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -110,10 +113,11 @@ async function revalidateCollectibleObject(opts: {
   workflowDir: string;
   object: EvidenceObjectRecord;
   deletedPaths: ReadonlySet<string>;
+  lockGitPath: string;
   now?: Date;
 }): Promise<EvidenceObjectRecord> {
   await assertObjectUnchanged(opts.object);
-  await assertOnlyExpectedGcChanges(opts.root, opts.deletedPaths);
+  await assertOnlyExpectedGcChanges(opts.root, opts.deletedPaths, opts.lockGitPath);
   const inventory = await buildEvidenceInventory(opts);
   assertSafeInventory(inventory);
   const current = inventory.objects.find((candidate) => candidate.path === opts.object.path);
@@ -128,7 +132,7 @@ async function revalidateCollectibleObject(opts: {
     });
   }
   await assertObjectUnchanged(current);
-  await assertOnlyExpectedGcChanges(opts.root, opts.deletedPaths);
+  await assertOnlyExpectedGcChanges(opts.root, opts.deletedPaths, opts.lockGitPath);
   return current;
 }
 
@@ -234,6 +238,7 @@ export async function garbageCollectEvidenceObjects(opts: {
   yes: boolean;
   now?: Date;
   beforeUnlink?: (object: EvidenceObjectRecord) => Promise<void>;
+  afterRevalidationBeforeUnlink?: (object: EvidenceObjectRecord) => Promise<void>;
 }): Promise<EvidenceMaintenanceResult> {
   assertApplyConfirmed(opts.apply, opts.yes);
   const inventory = await buildEvidenceInventory(opts);
@@ -243,16 +248,25 @@ export async function garbageCollectEvidenceObjects(opts: {
     await assertCleanRepository(opts.root);
     const deletedPaths = new Set<string>();
     for (const object of collectible) {
-      await opts.beforeUnlink?.(object);
-      const current = await revalidateCollectibleObject({
+      const lockOpts = {
         root: opts.root,
         workflowDir: opts.workflowDir,
-        object,
-        deletedPaths,
-        now: opts.now,
+        taskId: object.task_id,
+      };
+      await withEvidenceMutationLock(lockOpts, async () => {
+        await opts.beforeUnlink?.(object);
+        const current = await revalidateCollectibleObject({
+          root: opts.root,
+          workflowDir: opts.workflowDir,
+          object,
+          deletedPaths,
+          lockGitPath: evidenceMutationLockGitPath(lockOpts),
+          now: opts.now,
+        });
+        await opts.afterRevalidationBeforeUnlink?.(current);
+        await unlink(current.absolute_path);
+        deletedPaths.add(current.path);
       });
-      await unlink(current.absolute_path);
-      deletedPaths.add(current.path);
     }
   }
   return {
