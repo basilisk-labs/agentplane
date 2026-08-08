@@ -2,10 +2,10 @@
 id: "202608080551-8BH6HY"
 title: "Accept external task-worktree resolution results"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-08T06:59:19.974Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-08T07:05:12.682Z"
+  updated_by: "REVIEWER"
+  note: "GitHub review found two uncovered task-worktree resolution cases: pre-existing dirty paths and read-only authority."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -75,9 +75,7 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit:
-  hash: "33abb5602bd726d13774f425537889870c29c72f"
-  message: "🧪 8BH6HY task: record evaluator pass evidence"
+commit: null
 comments:
   -
     author: "CODER"
@@ -190,8 +188,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-08T07:05:12.682Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "GitHub review found two uncovered task-worktree resolution cases: pre-existing dirty paths and read-only authority."
 doc_version: 3
-doc_updated_at: "2026-08-08T07:01:58.214Z"
+doc_updated_at: "2026-08-08T07:05:14.335Z"
 doc_updated_by: "CODER"
 description: "Fix task advance so a state-bound task_worktree_resolution episode can return a completed result after the CODER commits intended changes, without being rejected as an unsupported or stale read-only purpose; add focused regression coverage."
 sections:
@@ -421,11 +425,44 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-08T07:05:12.682Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: GitHub review found two uncovered task-worktree resolution cases: pre-existing dirty paths and read-only authority.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T07:01:58.214Z, excerpt_hash=sha256:5dfd6100a2b4d23e6f30dc43602bad090a9a87e1241cec1817c520633709aed3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608080551-8BH6HY-accept-external-task-worktree-resolution-results/.agentplane/tasks/202608080551-8BH6HY/blueprint/resolved-snapshot.json
+    - old_digest: f838ddb45c74406d87ad39a2b037d6fe7c88d657a5b7b4059642578ee7641be4
+    - current_digest: f838ddb45c74406d87ad39a2b037d6fe7c88d657a5b7b4059642578ee7641be4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608080551-8BH6HY
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: The implementation treats task_worktree_resolution like a clean-baseline implementation episode.
+      Impact: Keeping or restoring the pre-existing dirty paths can be rejected, and read-only resolution observations cannot be accepted.
+      Resolution: Use purpose-specific baseline ownership and a read-only observation path, with integration coverage.
 extensions:
   implementation_commit:
     hash: "c421bde71fb5260237a2cfbf84dfa91c692b6457"
@@ -671,6 +708,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-08T07:05:12.682Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: GitHub review found two uncovered task-worktree resolution cases: pre-existing dirty paths and read-only authority.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T07:01:58.214Z, excerpt_hash=sha256:5dfd6100a2b4d23e6f30dc43602bad090a9a87e1241cec1817c520633709aed3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608080551-8BH6HY-accept-external-task-worktree-resolution-results/.agentplane/tasks/202608080551-8BH6HY/blueprint/resolved-snapshot.json
+- old_digest: f838ddb45c74406d87ad39a2b037d6fe7c88d657a5b7b4059642578ee7641be4
+- current_digest: f838ddb45c74406d87ad39a2b037d6fe7c88d657a5b7b4059642578ee7641be4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608080551-8BH6HY
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -679,6 +746,10 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: The implementation treats task_worktree_resolution like a clean-baseline implementation episode.
+  Impact: Keeping or restoring the pre-existing dirty paths can be rejected, and read-only resolution observations cannot be accepted.
+  Resolution: Use purpose-specific baseline ownership and a read-only observation path, with integration coverage.
 
 ## Token Usage
 

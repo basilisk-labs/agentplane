@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:c3ae0283cfa5e6ecbdedb31fbbc2c6f976386ebd50f479dda042ed6eee042084",
+  "implementation_sha": "c421bde71fb5260237a2cfbf84dfa91c692b6457",
+  "kind": "task_verification_record",
+  "note": "GitHub review found two uncovered task-worktree resolution cases: pre-existing dirty paths and read-only authority.",
+  "recorded_at": "2026-08-08T07:05:12.682Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Accept external task-worktree resolution results\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Accept external task-worktree resolution results\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:5dfd6100a2b4d23e6f30dc43602bad090a9a87e1241cec1817c520633709aed3",
+  "task_id": "202608080551-8BH6HY",
+  "verification_command": "agentplane task verify rework 202608080551-8BH6HY --rework --by REVIEWER",
+  "verifier": "REVIEWER"
+}
