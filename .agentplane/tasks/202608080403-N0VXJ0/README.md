@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -56,19 +56,19 @@ quality_review:
   findings:
     - "The frozen diff archives INC-20260807-01 with final merged evidence and removes the corresponding active entry from both synchronized incident registries; current verification covers routing, registry release gating, generated asset parity, formatting, repository contracts, diff integrity, and the concurrency-sensitive rebase."
 token_usage:
-  agent_runs: 4
-  input_tokens: 279584
-  journal_digest: "sha256:4e894906a89beb236a10af4a682c1681909f79602c2b785ae24e4523949ea127"
-  observed_agent_runs: 3
+  agent_runs: 5
+  input_tokens: 399652
+  journal_digest: "sha256:fa729f74c80917cfd327bc5cb3419db4ec868aa36b97de5b6f150f5326bb6b5c"
+  observed_agent_runs: 4
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
   state: "partial"
-  total_tokens: 284911
+  total_tokens: 406925
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
-  updated_at: "2026-08-08T04:23:00.335Z"
+  updated_at: "2026-08-08T05:02:19.640Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -78,8 +78,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "fc2501733e7d12d578a406bb39885a0c2f5e3f9b"
-  message: "✅ N0VXJ0 task: record portable evaluator pass"
+  hash: "e5e6632687e286cd9cc6fafb1d60e50f9ae29827"
+  message: "✅ N0VXJ0 task: record rebased evaluator pass"
 comments:
   -
     author: "DOCS"
@@ -90,6 +90,9 @@ comments:
   -
     author: "DOCS"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "DOCS"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -142,8 +145,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "The incident archive branch rebased cleanly onto the runner-race fix; focused policy gates and the full repository contract gate pass on the current implementation head."
+  -
+    type: "status"
+    at: "2026-08-08T05:02:19.640Z"
+    author: "DOCS"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-08T05:01:08.452Z"
+doc_updated_at: "2026-08-08T05:02:19.669Z"
 doc_updated_by: "DOCS"
 description: "Preserve INC-20260807-01 with its final merged evidence in docs/developer/incident-archive.mdx, then remove it from the active repository and bundled incident registries. The dependency-readiness and supervisor protocol failure is repaired by merged task 202608062021-MCY8ZC and its focused, hosted, and evaluator evidence. Keep incident registry semantics and generated assets aligned so the release incident gate passes."
 sections:
@@ -471,7 +481,7 @@ sections:
     - No residual release blocker remains for `INC-20260807-01`; this task only archives the resolved incident and removes its active canonical and bundled registry entries.
 extensions:
   implementation_commit:
-    hash: "545fcf42424bbf202f490660f3bd2f446f8b47f7"
+    hash: "bd8e927e35fef00de49e82b1415cbb9e0496b84d"
     message: "📝 N0VXJ0 policy: retire resolved supervisor route incident"
   workflow_route_baseline:
     start_head_sha: "4a2895659e677071caaa9b56cadf35df8e261e82"
@@ -818,12 +828,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `partial`
-- Completeness: `3/4` agent runs
-- Input tokens: `279584`
+- Completeness: `4/5` agent runs
+- Input tokens: `399652`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
-- Total tokens: `284911`
+- Total tokens: `406925`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:4e894906a89beb236a10af4a682c1681909f79602c2b785ae24e4523949ea127`
+- Journal digest: `sha256:fa729f74c80917cfd327bc5cb3419db4ec868aa36b97de5b6f150f5326bb6b5c`
 - Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
-- Updated at: `2026-08-08T04:23:00.335Z`
+- Updated at: `2026-08-08T05:02:19.640Z`
