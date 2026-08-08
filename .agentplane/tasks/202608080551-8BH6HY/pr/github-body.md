@@ -15,12 +15,12 @@ Fix task advance so a state-bound task_worktree_resolution episode can return a 
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-Focused protocol coverage, typecheck, and the full contract gate pass on the exact implementation;
-external task-worktree resolution now follows implementation authority.
+Rework: Unsupported declared check: bun run vitest
+packages/agentplane/src/commands/task/external-agent-purpose.test.ts
 ```
 - Canonical workflow state lives in the task README.
 

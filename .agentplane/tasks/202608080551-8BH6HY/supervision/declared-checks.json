@@ -1,0 +1,8 @@
+{
+  "checks": [],
+  "kind": "direct_task_declared_checks",
+  "reason": "Unsupported declared check: bun run vitest packages/agentplane/src/commands/task/external-agent-purpose.test.ts",
+  "schema_version": 1,
+  "status": "unsupported",
+  "task_id": "202608080551-8BH6HY"
+}
