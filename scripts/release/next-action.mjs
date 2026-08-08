@@ -43,8 +43,11 @@ function latestPlanTargetsCurrentRelease(state) {
   return plan?.nextVersion === state.release?.version && plan?.nextTag === state.release?.tag;
 }
 
-function parseStableReleaseVersion(value) {
-  const match = /^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/u.exec(String(value ?? "").trim());
+function parseStableReleaseVersion(value, { tag = false } = {}) {
+  const pattern = tag
+    ? /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/u
+    : /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/u;
+  const match = pattern.exec(String(value ?? "").trim());
   return match ? [BigInt(match[1]), BigInt(match[2]), BigInt(match[3])] : null;
 }
 
@@ -58,12 +61,12 @@ function compareStableReleaseVersions(left, right) {
 
 function latestPlanTargetRelation(state) {
   const currentVersion = parseStableReleaseVersion(state.release?.version);
-  const currentTagVersion = parseStableReleaseVersion(state.release?.tag);
+  const currentTagVersion = parseStableReleaseVersion(state.release?.tag, { tag: true });
   const plan = state.release?.latest_plan;
   const hasPlannedVersion = plan && Object.hasOwn(plan, "nextVersion");
   const hasPlannedTag = plan && Object.hasOwn(plan, "nextTag");
   const plannedVersion = parseStableReleaseVersion(plan?.nextVersion);
-  const plannedTagVersion = parseStableReleaseVersion(plan?.nextTag);
+  const plannedTagVersion = parseStableReleaseVersion(plan?.nextTag, { tag: true });
 
   if (
     !currentVersion ||

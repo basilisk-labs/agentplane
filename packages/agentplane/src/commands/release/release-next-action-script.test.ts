@@ -287,6 +287,8 @@ describe("release next-action script", () => {
     ["inconsistent", { nextVersion: "0.6.9", nextTag: "v0.7.0" }],
     ["version-only", { nextVersion: "0.6.9" }],
     ["tag-only", { nextTag: "v0.6.9" }],
+    ["unprefixed-tag", { nextVersion: "0.6.9", nextTag: "0.6.9" }],
+    ["prefixed-version", { nextVersion: "v0.6.9", nextTag: "v0.6.9" }],
   ])("requests a fresh patch plan for a %s latest plan", async (_label, latestPlan) => {
     const closedState = structuredClone(releaseState);
     closedState.release.evidence_exists = true;
