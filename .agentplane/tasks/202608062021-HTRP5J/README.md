@@ -4,7 +4,7 @@ title: "Classify compatibility adapters for bounded 0.8 retirement"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -43,7 +43,9 @@ execution_route:
   requested_mode: "auto"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "f21c4469b93522cd9c953667a9918cd15749a09f"
+  message: "✨ HTRP5J compatibility: bound adapter retirement"
 comments:
   -
     author: "CODER"
@@ -51,6 +53,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: every compatibility adapter now has a validated scheduled-removal, support-window, zero-usage, archive-conversion, or permanent historical-reader policy; doctor legacy exposes policy counts and scopes."
+  -
+    author: "CODER"
+    body: "Rebased the bounded compatibility-retirement implementation onto current main after the shared compatibility foundation merged; all declared verification steps now pass."
 events:
   -
     type: "status"
@@ -72,8 +77,15 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Legacy manifest schema v2, doctor report, targeted tests, typecheck, docs reference, lint, and runtime JSON inspection pass. Critical suite remains blocked by the shared compatibility-contract ratchet owned by 202608061850-BZT3D9; rebase after that foundation merges and rerun all Verify Steps."
+  -
+    type: "status"
+    at: "2026-08-08T00:20:13.853Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rebased the bounded compatibility-retirement implementation onto current main after the shared compatibility foundation merged; all declared verification steps now pass."
 doc_version: 3
-doc_updated_at: "2026-08-06T22:10:58.036Z"
+doc_updated_at: "2026-08-08T00:20:13.853Z"
 doc_updated_by: "CODER"
 description: "Complete the compatibility retirement manifest so every adapter has an explicit removal version, support-until or zero-usage condition, archive conversion policy, or permanent historical-reader designation; keep historical readers out of normal execution paths where already separable, and verify doctor legacy reports the classification without deleting safety or recovery contracts in 0.7.5."
 sections:
