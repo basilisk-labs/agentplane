@@ -29,14 +29,14 @@ Reduce patch-release elapsed time by adding bounded concurrency to independent q
 ```text
  package.json                                       |   3 +-
  packages/agentplane/src/cli/critical/harness.ts    |   7 +-
- ...cli.critical.agent-efficiency-candidate.test.ts |  70 +++++++++-
+ ...cli.critical.agent-efficiency-candidate.test.ts |  73 ++++++++++-
  .../src/cli/run-cli.critical.exit-codes.test.ts    |  37 ++++--
  scripts/README.md                                  |   4 +-
- .../bench/capture-agent-efficiency-candidate.mjs   | 142 ++++++++++++++++-----
- .../qualification/release-qualification.test.mjs   |  72 +++++++++++
- .../run-v0.7.1-release-qualification.mjs           | 138 +++++++++++++++++++-
+ .../bench/capture-agent-efficiency-candidate.mjs   | 142 +++++++++++++++-----
+ .../qualification/release-qualification.test.mjs   | 136 +++++++++++++++++++
+ .../run-v0.7.1-release-qualification.mjs           | 145 ++++++++++++++++++++-
  .../v0.7.1-release-qualification.json              |   2 +
- 9 files changed, 418 insertions(+), 57 deletions(-)
+ 9 files changed, 492 insertions(+), 57 deletions(-)
 ```
 
 </details>
