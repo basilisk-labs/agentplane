@@ -27,7 +27,7 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/releases/v0.7.5.md                            |  61 +++++++++++++++++++++
+ docs/releases/v0.7.5.md                            |  62 +++++++++++++++++++++
  .../run-cli.core.help-snap.test.ts.snap            |   3 +-
  .../cli/run-cli.core.branch-meta.readiness.test.ts |  12 ++--
  ...n-cli.core.branch-meta.workflow-profile.test.ts |  10 +++-
@@ -36,15 +36,15 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
  .../src/cli/run-cli.core.pr-flow.test.ts           |  28 +++++++++-
  ...li.core.route-decision.pr-open-metadata.test.ts |  17 ++++++
  .../cli/run-cli.core.task-next-action-json.test.ts |  22 ++++++++
- .../commands/task/direct-task-verification.test.ts |   7 ++-
- .../src/commands/task/direct-task-verification.ts  |   2 +-
+ .../commands/task/direct-task-verification.test.ts |  11 +++-
+ .../src/commands/task/direct-task-verification.ts  |   4 +-
  .../runner/context/semantic-prompt-projection.ts   |   2 +-
  .../task-run-bootstrap.result-examples.test.ts     |  38 +++++++++++++
  .../src/runner/usecases/task-run-bootstrap.ts      |  14 ++++-
  website/static/img/social/docs/releases/v0.7.5.png | Bin 0 -> 53016 bytes
  website/static/img/social/manifest.json            |   8 +++
- website/static/llms-full.txt                       |  52 ++++++++++++++++--
- 17 files changed, 258 insertions(+), 22 deletions(-)
+ website/static/llms-full.txt                       |  52 +++++++++++++++--
+ 17 files changed, 264 insertions(+), 23 deletions(-)
 ```
 
 </details>

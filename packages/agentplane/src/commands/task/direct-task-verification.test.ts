@@ -35,8 +35,12 @@ afterEach(async () => {
 describe("direct task verification", () => {
   it("accepts only a structured bun script invocation", () => {
     expect(parseDirectTaskCheck(" bun run test:critical ")).toEqual({ script: "test:critical" });
+    expect(parseDirectTaskCheck("bun run e2e:v0.7.1:gate")).toEqual({
+      script: "e2e:v0.7.1:gate",
+    });
     expect(parseDirectTaskCheck("bun run test:critical -- --watch")).toBeNull();
     expect(parseDirectTaskCheck("bun run test:critical; rm -rf /tmp/x")).toBeNull();
+    expect(parseDirectTaskCheck("bun run ../test:critical")).toBeNull();
     expect(parseDirectTaskCheck("npm test")).toBeNull();
   });
 
