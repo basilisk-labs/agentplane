@@ -13,7 +13,7 @@ Created: 2026-08-08T04:03:53.324Z
 ## Verification
 
 - State: ok
-- Note: Portable task-local evidence now covers the source task, evaluator, hosted PR, merge equivalence, policy routing, generated assets, and release incident gate.
+- Note: The incident archive branch rebased cleanly onto the runner-race fix; focused policy gates and the full repository contract gate pass on the current implementation head.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
