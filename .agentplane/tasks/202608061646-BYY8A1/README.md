@@ -1,10 +1,10 @@
 ---
 id: "202608061646-BYY8A1"
 title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 65
+revision: 66
 origin:
   system: "manual"
 depends_on:
@@ -45,7 +45,9 @@ verification:
   updated_by: "TESTER"
   note: "Qualification concurrency rework: packaged-candidate-flow mutates shared CLI build artifacts while supervisor-frontends reads them, causing deterministic frontend command failures under overlap."
   attempts: 23
-commit: null
+commit:
+  hash: "cf672117ea6b473d67006c007002f1a53c731ba9"
+  message: "🐛 BYY8A1 task: isolate packaged qualification build"
 comments:
   -
     author: "DOCS"
@@ -471,8 +473,15 @@ events:
     author: "TESTER"
     state: "blocked_external"
     note: "Qualification concurrency rework: packaged-candidate-flow mutates shared CLI build artifacts while supervisor-frontends reads them, causing deterministic frontend command failures under overlap."
+  -
+    type: "status"
+    at: "2026-08-08T18:35:23.538Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    commit: "cf672117ea6b473d67006c007002f1a53c731ba9"
 doc_version: 3
-doc_updated_at: "2026-08-08T18:33:24.969Z"
+doc_updated_at: "2026-08-08T18:35:23.538Z"
 doc_updated_by: "CODER"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
