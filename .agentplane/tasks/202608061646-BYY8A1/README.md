@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -44,11 +44,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "d6dd00111035c5aff69c88d495d2f3503d597f90"
+  message: "🚧 BYY8A1 task: apply external agent result"
 comments:
   -
     author: "DOCS"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: d6dd00111035. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -57,9 +62,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-08T03:48:21.200Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: d6dd00111035. CLI accepted one state-bound external-agent semantic result."
 doc_version: 3
-doc_updated_at: "2026-08-08T03:44:44.256Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-08-08T03:48:21.200Z"
+doc_updated_by: "SUPERVISOR"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
   Summary: |-
