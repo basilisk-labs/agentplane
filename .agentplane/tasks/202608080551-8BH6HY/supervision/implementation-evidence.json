@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 91a1f06581846f9feef39f2eeb3fd068d3b5e9fd..3adfb7e654e5b51f5d8de44d932bc85081d19399",
+      "command": "git diff --check 8ba1a1fa264b747a3716ecfd92a3945d914d9e84..515d9e54edefebef5a8242a75fe7067281dddf3f",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 91a1f06581846f9feef39f2eeb3fd068d3b5e9fd..3adfb7e654e5b51f5d8de44d932bc85081d19399",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8ba1a1fa264b747a3716ecfd92a3945d914d9e84..515d9e54edefebef5a8242a75fe7067281dddf3f",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,12 @@
         "M\t.agentplane/tasks/202608080551-8BH6HY/pr/github-body.md",
         "M\t.agentplane/tasks/202608080551-8BH6HY/pr/meta.json",
         "M\t.agentplane/tasks/202608080551-8BH6HY/pr/review.md",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-verification.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-purpose.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-purpose.ts"
       ]
     },
     {
@@ -31,8 +36,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "91a1f06581846f9feef39f2eeb3fd068d3b5e9fd",
-  "implementation_commit": "3adfb7e654e5b51f5d8de44d932bc85081d19399",
+  "execution_base_commit": "8ba1a1fa264b747a3716ecfd92a3945d914d9e84",
+  "implementation_commit": "515d9e54edefebef5a8242a75fe7067281dddf3f",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
