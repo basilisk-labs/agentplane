@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Independent local scenarios run under a bounded scheduler while declared dependency barriers and deterministic report ordering remain enforced by contract tests.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/0d768cb34a12f24bd63e8be3a9455b6bdb1d5a1a389e9dbdd02101f333967aac.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Provider replay jobs use isolated repositories, bounded concurrency, deterministic evidence ordering, stop assigning after the first failure, and SIGKILL-backed fixed timeouts.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/0d768cb34a12f24bd63e8be3a9455b6bdb1d5a1a389e9dbdd02101f333967aac.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The critical CLI harness no longer inherits controller-only agent rendering markers, eliminating the verification-mode leak observed under task advance.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/0d768cb34a12f24bd63e8be3a9455b6bdb1d5a1a389e9dbdd02101f333967aac.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Supervisor-owned verification passed qualification:check, test:critical, format:check, and ci:contract for implementation SHA a458a3689d31c1fd8109711dfa2980dd9ff910fe.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/0d768cb34a12f24bd63e8be3a9455b6bdb1d5a1a389e9dbdd02101f333967aac.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Provider rate limits may reduce realized speedup; the release gate must measure this without weakening pass thresholds.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/0d768cb34a12f24bd63e8be3a9455b6bdb1d5a1a389e9dbdd02101f333967aac.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: No provider evidence from a pre-integration SHA may be reused.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/0d768cb34a12f24bd63e8be3a9455b6bdb1d5a1a389e9dbdd02101f333967aac.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
