@@ -1117,6 +1117,10 @@
             "type": "string",
             "minLength": 1
           },
+          "commit": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40,64}$"
+          },
           "from": {
             "type": "string"
           },

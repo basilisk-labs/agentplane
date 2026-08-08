@@ -574,6 +574,7 @@ export async function buildTasksExportSnapshot(opts: {
               type: string;
               at: string;
               author: string;
+              commit?: string;
               from?: string;
               to?: string;
               state?: string;
@@ -588,6 +589,7 @@ export async function buildTasksExportSnapshot(opts: {
             type: event.type,
             at: event.at,
             author: event.author,
+            commit: typeof event.commit === "string" ? event.commit : undefined,
             from: typeof event.from === "string" ? event.from : undefined,
             to: typeof event.to === "string" ? event.to : undefined,
             state: typeof event.state === "string" ? event.state : undefined,

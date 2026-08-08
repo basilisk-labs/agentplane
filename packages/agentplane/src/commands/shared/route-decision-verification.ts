@@ -44,17 +44,16 @@ export function qualityReworkHasNewVerification(task: TaskData): boolean {
 
 export function verificationReworkHasNewImplementation(task: TaskData): boolean {
   const verificationUpdatedAt = task.verification?.updated_at;
-  if (
-    task.verification?.state !== "needs_rework" ||
-    !verificationUpdatedAt ||
-    !task.commit?.hash?.trim()
-  ) {
+  const currentCommit = task.commit?.hash?.trim() ?? "";
+  if (task.verification?.state !== "needs_rework" || !verificationUpdatedAt || !currentCommit) {
     return false;
   }
   const verificationTime = Date.parse(verificationUpdatedAt);
   if (!Number.isFinite(verificationTime)) return false;
   return (task.events ?? []).some((event) => {
-    if (event.type !== "status" || event.to !== "DOING") return false;
+    if (event.type !== "status" || event.to !== "DOING" || event.commit?.trim() !== currentCommit) {
+      return false;
+    }
     const eventTime = Date.parse(event.at);
     return Number.isFinite(eventTime) && eventTime > verificationTime;
   });
