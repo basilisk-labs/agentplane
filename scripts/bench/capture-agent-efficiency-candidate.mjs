@@ -58,9 +58,9 @@ import {
   installFixtureRegistryOverlay,
 } from "./internal/agent-efficiency-capture-runtime.mjs";
 import {
-  CODEX_REPLAY_BINARY,
   CODEX_REPLAY_BINARY_ENV,
   CODEX_REPLAY_CLI_VERSION_ENV,
+  resolveCodexReplayBinary,
   resolveCodexReplayCliVersion,
 } from "./internal/agent-efficiency-codex-runtime.mjs";
 import { checkRuntimeBridge } from "./capture-agent-efficiency-runtime-bridge.mjs";
@@ -1069,7 +1069,12 @@ export async function captureCandidate(options) {
         const evidenceOutputPath = path.join(evidenceScenarioDirectory, fileName);
         const contractEnvironment = createReplayDriverContractEnvironment({
           anchor: subject,
-          codexBinary: process.env[CODEX_REPLAY_BINARY_ENV] ?? CODEX_REPLAY_BINARY,
+          codexBinary: resolveCodexReplayBinary({
+            [CODEX_REPLAY_CLI_VERSION_ENV]: codexCliVersion,
+            ...(process.env[CODEX_REPLAY_BINARY_ENV]
+              ? { [CODEX_REPLAY_BINARY_ENV]: process.env[CODEX_REPLAY_BINARY_ENV] }
+              : {}),
+          }),
           codexCliVersion,
           dependencyClaim,
           driverIdentity,

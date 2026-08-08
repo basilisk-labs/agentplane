@@ -5,6 +5,11 @@ import path from "node:path";
 
 export const CODEX_REPLAY_BINARY = "/Applications/ChatGPT.app/Contents/Resources/codex";
 export const CODEX_REPLAY_BINARY_ENV = "AGENTPLANE_RF04_REPLAY_CODEX_BINARY";
+export const CODEX_REPLAY_ARCHIVE_CACHE_DIR = path.join(
+  ".agentplane",
+  "cache",
+  "rf04-codex-archive",
+);
 export const CODEX_REPLAY_CLI_VERSION = "0.145.0-alpha.18";
 export const CODEX_REPLAY_CLI_VERSION_ENV = "AGENTPLANE_RF04_REPLAY_CODEX_CLI_VERSION";
 export const CODEX_REPLAY_MODEL = "gpt-5.6-terra";
@@ -87,8 +92,25 @@ export function resolveCodexReplayCliVersion(source = process.env) {
   return version;
 }
 
-export function resolveCodexReplayBinary(source = process.env) {
-  const candidate = source[CODEX_REPLAY_BINARY_ENV] ?? CODEX_REPLAY_BINARY;
+export function resolveCodexReplayArchiveCachePath(version, repoRoot = process.cwd()) {
+  const exactVersion = resolveCodexReplayCliVersion({ [CODEX_REPLAY_CLI_VERSION_ENV]: version });
+  return path.resolve(repoRoot, CODEX_REPLAY_ARCHIVE_CACHE_DIR, exactVersion, "codex");
+}
+
+function resolveCachedCodexReplayBinary(source, repoRoot) {
+  const candidate = resolveCodexReplayArchiveCachePath(
+    resolveCodexReplayCliVersion(source),
+    repoRoot,
+  );
+  const stats = lstatSync(candidate, { throwIfNoEntry: false });
+  return stats?.isFile() && !stats.isSymbolicLink() ? candidate : null;
+}
+
+export function resolveCodexReplayBinary(source = process.env, repoRoot = process.cwd()) {
+  const candidate =
+    source[CODEX_REPLAY_BINARY_ENV] ??
+    resolveCachedCodexReplayBinary(source, repoRoot) ??
+    CODEX_REPLAY_BINARY;
   if (typeof candidate !== "string" || !path.isAbsolute(candidate)) {
     fail("CODEX_BINARY_PATH");
   }
@@ -107,8 +129,8 @@ export function resolveCodexReplayBinary(source = process.env) {
   return candidate;
 }
 
-export function assertCodexBinary(source = process.env) {
-  const binary = resolveCodexReplayBinary(source);
+export function assertCodexBinary(source = process.env, repoRoot = process.cwd()) {
+  const binary = resolveCodexReplayBinary(source, repoRoot);
   const version = runSanitizedCommand(binary, ["--version"], {
     code: "CODEX_VERSION_COMMAND",
   }).trim();
