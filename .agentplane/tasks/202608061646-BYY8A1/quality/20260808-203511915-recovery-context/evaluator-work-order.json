@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608061646-BYY8A1-c58f9a61a8e959c3e98ad834",
+  "prepared_at": "2026-08-08T20:35:11.915Z",
+  "task": {
+    "id": "202608061646-BYY8A1",
+    "revision": 76,
+    "objective": "Qualify and publish AgentPlane 0.7.5 UX routing patch\n\nDocument the explainable auto-routing and simplified task UX, run focused and full release qualification including compatibility and efficiency checks, publish v0.7.5 through the protected branch_pr release route, and verify npm plus GitHub release truth.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bun run ci:release-extras",
+      "bun run e2e:v0.7.1:gate",
+      "bun run bench:compatibility:check",
+      "bun run bench:agent-efficiency:check",
+      "bun run bench:agent-efficiency:replay:check",
+      "- In scope: Document the explainable auto-routing and simplified task UX, run focused and full release qualification including compatibility and efficiency checks, publish v0.7.5 through the protected branch_pr release route, and verify npm plus GitHub release truth.\n- Out of scope: unrelated refactors not required for \"Qualify and publish AgentPlane 0.7.5 UX routing patch\".",
+      "1. Integrate every 0.7.5 dependency in serialized protected-main order and update the cumulative compatibility candidate only after the final code surface is stable. 2. Version all packages and write release notes covering automatic task routing, user-first task/init UX, exact Windows README identities, supervisor-first agent guidance, semantic-only provider prompts, protocol polish, legacy classification, evidence retention, and the RF-04 advisory sample-count caveat. 3. On one clean release SHA run full local CI, release extras, package/install/migration checks, Windows coverage, direct and branch_pr, managed and external protocols, stale state, interruption, effect-in-doubt, evaluator rework, hosted waits, cleanup races, exact compiled-prompt choreography gates, and init/new-user copy-paste flows. 4. Run the bounded 50 replay runs and 55 provider episodes once for the cumulative candidate, compare tokens, verified success, scope violations, golden mismatches, rework, setup, first mutation, and time-to-verified, and repair every blocking defect before release rather than publishing successive patches. 5. Obtain evaluator pass, merge through protected main, publish v0.7.5, and prove the GitHub release, tag, main SHA, and all npm package versions from hosted surfaces. 6. Delete temporary recovery and obsolete merged branches only after publication proof.",
+      "- bun run ci:local:full\n- bun run ci:release-extras\n- bun run e2e:v0.7.1:gate\n- bun run bench:compatibility:check\n- bun run bench:agent-efficiency:check\n- bun run bench:agent-efficiency:replay:check"
+    ]
+  },
+  "evaluated_sha": "68c3884984a8a57e6b96f56593e25a746836cd56",
+  "diff_base_sha": "76b5e372a87348e390350a9b8cfcd41153d04f39",
+  "blueprint_digest": "51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608061646-BYY8A1/quality/20260808-203511915-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:d1ba50cf045dcef33d415d576d5f9239b56aba9c168d2af490a81aef939c195d",
+    "prompt_path": ".agentplane/tasks/202608061646-BYY8A1/quality/objects/sha256/de308533e0bae121055475e832c9418a254dd3176608bb362f7e4f09c5273f0a.md",
+    "result_schema_path": ".agentplane/tasks/202608061646-BYY8A1/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608061646-BYY8A1/README.md",
+      "sha256": "sha256:71a91e285c89af9686ddedbd935c0c549c7f7630fa924d39536525f193f37354",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608061646-BYY8A1/quality/objects/sha256/8c499465cb33016efe147d72de5b0459214b5eef2df482f97f46705cd95ed99c.patch",
+      "sha256": "sha256:8c499465cb33016efe147d72de5b0459214b5eef2df482f97f46705cd95ed99c",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608061646-BYY8A1/quality/objects/sha256/c53fd3d229f9eb8ac4be66563ed93e3ad0f727bb99209bce07f3d218c8d22ad4.json",
+      "sha256": "sha256:c53fd3d229f9eb8ac4be66563ed93e3ad0f727bb99209bce07f3d218c8d22ad4",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608061646-BYY8A1/verification/20260808203451043-0a791fdd695d3517.json",
+      "sha256": "sha256:d1863a9e198363eaf1113c6c690a3bc1893de92f643131effabdddd53039730e",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-1",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/release-0.7.5/ci-local-full.log",
+      "sha256": "sha256:d22dede22371fa720433c5475a52d2e11bc9bcf0200d9f3cdd140d7cb2760387",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-2",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/release-0.7.5/ci-release-extras.log",
+      "sha256": "sha256:b541e15e6a3b22583964549c09412182484b7f775288795c24f466e7b20aa43f",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-3",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/release-0.7.5/cli-latency.log",
+      "sha256": "sha256:2d2353024176ceb86774dd502dff70d788ddc1877bff02ec8bd03a3445fdf0a0",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-4",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/release-0.7.5/efficiency-evidence.json",
+      "sha256": "sha256:addc59bec4134b1d97186b5ceb3d3d199247605361818344aee12ea3e9aae01d",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-5",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/release-0.7.5/full-contract.log",
+      "sha256": "sha256:75cdcf5c60d2ebbe3ab846aa394a22fbc2faa5a39b3ba9f43fe21e9891086f4e",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-6",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/release-0.7.5/matched-cli-latency.log",
+      "sha256": "sha256:09d3258e15ca4cfbf1346405ee66fd31905d3b7c4287f9ae4efde9e05fb6b666",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-7",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/release-0.7.5/provider-matrix.log",
+      "sha256": "sha256:9f380e0882e53ef883f0f189a704fe9fd68cf9f5cf6e200b1a70c63273d236b8",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-8",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/release-0.7.5/qualification-report.json",
+      "sha256": "sha256:3e239386ed8a9e6bf9415251df8ad21ad9893ef0df3ea1025cf77938d6b586ea",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-9",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/release-0.7.5/subject-equivalence.json",
+      "sha256": "sha256:cc749d16d0db6a14f21dd9a91057542439c0f6c437f25c8d278eb349c599d48a",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608061646-BYY8A1/quality/objects/sha256/14ae37d7b4eff36f28d698fd7886355f7ded68d655a8db26ad3c6525e74b90ef.json",
+      "sha256": "sha256:14ae37d7b4eff36f28d698fd7886355f7ded68d655a8db26ad3c6525e74b90ef",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:47ab8b04f9d747491398390dac415b34aa6d3df0cf0fb61e9924fd3e4851ec48",
+      "required": true
+    }
+  ]
+}

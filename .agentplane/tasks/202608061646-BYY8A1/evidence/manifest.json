@@ -17,8 +17,8 @@
     {
       "path": ".agentplane/tasks/202608061646-BYY8A1/pr/github-body.md",
       "role": "pr_artifact",
-      "sha256": "sha256:2cf151442d8758d78249733eed96d2a4325bdb7f2571cf3218c90edf9d7abf67",
-      "size_bytes": 4170
+      "sha256": "sha256:91b854ed21c51ec136d7e194048cbeeb254d7e67e76372ea3170686fa4e953a1",
+      "size_bytes": 4187
     },
     {
       "path": ".agentplane/tasks/202608061646-BYY8A1/pr/github-title.txt",
@@ -29,14 +29,14 @@
     {
       "path": ".agentplane/tasks/202608061646-BYY8A1/pr/meta.json",
       "role": "pr_artifact",
-      "sha256": "sha256:7e3950ac3a9a7cab2a07d2021f7f3519d3dda7716df0687fea74070acd4f0c3e",
+      "sha256": "sha256:08a947d5422272df1f6207b171a1aee2e419efd55ec651a6a9842ab23d683123",
       "size_bytes": 662
     },
     {
       "path": ".agentplane/tasks/202608061646-BYY8A1/pr/review.md",
       "role": "pr_artifact",
-      "sha256": "sha256:6dc360d61a00961daefdf689db8f7fac4aef22e7b1accc15f12c4e2c553cc2a3",
-      "size_bytes": 3758
+      "sha256": "sha256:5f95da77978ef0ffdb2b7f9bbfcbf669bb5da4aab4ada4c24a801857bbc1d9f2",
+      "size_bytes": 3775
     },
     {
       "path": ".agentplane/tasks/202608061646-BYY8A1/quality/20260808-200126680-recovery-context/evaluator-episode.json",
@@ -81,6 +81,18 @@
       "size_bytes": 2754
     },
     {
+      "path": ".agentplane/tasks/202608061646-BYY8A1/quality/20260808-203511915-recovery-context/evaluator-evidence-manifest.json",
+      "role": "task_artifact",
+      "sha256": "sha256:d1ba50cf045dcef33d415d576d5f9239b56aba9c168d2af490a81aef939c195d",
+      "size_bytes": 2494
+    },
+    {
+      "path": ".agentplane/tasks/202608061646-BYY8A1/quality/20260808-203511915-recovery-context/evaluator-work-order.json",
+      "role": "task_artifact",
+      "sha256": "sha256:a3c20345f9ec0ed6407738633a926405fe7ea1005953eb82958643cb4d16b6a3",
+      "size_bytes": 8997
+    },
+    {
       "path": ".agentplane/tasks/202608061646-BYY8A1/quality/objects/sha256/14ae37d7b4eff36f28d698fd7886355f7ded68d655a8db26ad3c6525e74b90ef.json",
       "role": "task_artifact",
       "sha256": "sha256:14ae37d7b4eff36f28d698fd7886355f7ded68d655a8db26ad3c6525e74b90ef",
@@ -111,10 +123,22 @@
       "size_bytes": 2688
     },
     {
+      "path": ".agentplane/tasks/202608061646-BYY8A1/quality/objects/sha256/c53fd3d229f9eb8ac4be66563ed93e3ad0f727bb99209bce07f3d218c8d22ad4.json",
+      "role": "task_artifact",
+      "sha256": "sha256:c53fd3d229f9eb8ac4be66563ed93e3ad0f727bb99209bce07f3d218c8d22ad4",
+      "size_bytes": 4269
+    },
+    {
+      "path": ".agentplane/tasks/202608061646-BYY8A1/quality/objects/sha256/de308533e0bae121055475e832c9418a254dd3176608bb362f7e4f09c5273f0a.md",
+      "role": "task_artifact",
+      "sha256": "sha256:de308533e0bae121055475e832c9418a254dd3176608bb362f7e4f09c5273f0a",
+      "size_bytes": 5030
+    },
+    {
       "path": ".agentplane/tasks/202608061646-BYY8A1/README.md",
       "role": "task_readme",
-      "sha256": "sha256:c546b4e9fbfb1bfb6fb31caba64aa0b817681825cdb6130874bc53dbfdff17cb",
-      "size_bytes": 135011
+      "sha256": "sha256:71a91e285c89af9686ddedbd935c0c549c7f7630fa924d39536525f193f37354",
+      "size_bytes": 142537
     },
     {
       "path": ".agentplane/tasks/202608061646-BYY8A1/supervision/declared-checks.json",
@@ -301,12 +325,18 @@
       "role": "task_artifact",
       "sha256": "sha256:fa12807a60c808ca8ebf7ecc2c0f55ed0daef0dc165c4d896956751cebdec6b3",
       "size_bytes": 2312
+    },
+    {
+      "path": ".agentplane/tasks/202608061646-BYY8A1/verification/20260808203451043-0a791fdd695d3517.json",
+      "role": "task_artifact",
+      "sha256": "sha256:d1863a9e198363eaf1113c6c690a3bc1893de92f643131effabdddd53039730e",
+      "size_bytes": 3019
     }
   ],
   "integrity": {
     "canonicalization": "agentplane-canonical-json-v1",
     "digest_algorithm": "sha256",
-    "manifest_digest": "sha256:67ae93b6ace217412831f06af55fd45d10cb56d2b914f325a709e51d32b3b2cc"
+    "manifest_digest": "sha256:0b93524c9db1ecfbed934a4ccd7d0923a995de39d2af1f9efca03dcf9841128e"
   },
   "kind": "agentplane_evidence_bundle",
   "producer": {
