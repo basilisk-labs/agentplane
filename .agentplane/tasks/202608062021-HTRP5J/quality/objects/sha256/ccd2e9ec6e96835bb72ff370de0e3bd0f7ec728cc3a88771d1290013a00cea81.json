@@ -1,0 +1,29 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/doctor/legacy-probes.test.ts packages/agentplane/src/commands/doctor-legacy.spec.ts",
+    "bun run test:critical",
+    "bun run typecheck",
+    "bun run docs:cli:check"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-08T00:32:15.669Z",
+    "updated_by": "TESTER",
+    "note": "Doctor legacy now exposes retirement policy, scope, and removal blocker in both JSON and human output; all declared and repository contract checks pass."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608062021-HTRP5J/verification/20260808003215669-2f43d83d7d3333e6.json",
+      "sha256": "sha256:076a4dfc270bcbbaa424ffcddb78ad9f596b8a939ed02f13f669ad61e0a939c6"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

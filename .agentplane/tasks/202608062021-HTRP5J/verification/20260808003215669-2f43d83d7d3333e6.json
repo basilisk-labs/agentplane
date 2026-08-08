@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/doctor/legacy-probes.test.ts packages/agentplane/src/commands/doctor-legacy.spec.ts\nResult: pass; 1 test file and 4 tests completed successfully.\nEvidence: The human-output regression assertions cover both a non-null removal blocker and the none case; Vitest exited with code 0.\nScope: HTRP5J doctor legacy classification and reporting.\n\nCommand: bun run test:critical\nResult: pass; all 12 critical-cli chunks and 84 tests completed successfully.\nEvidence: Every critical chunk exited with code 0 after the evaluator-driven fix.\nScope: Critical CLI and trust-boundary regression coverage.\n\nCommand: bun run typecheck\nResult: pass; TypeScript build completed successfully.\nEvidence: The command exited with code 0 and reported no type errors.\nScope: Workspace type safety.\n\nCommand: bun run docs:cli:check\nResult: pass; generated CLI reference is current.\nEvidence: The freshness checker reported docs/user/cli-reference.generated.mdx is up to date.\nScope: User-facing command documentation.\n\nCommand: bun run ci:contract\nResult: pass; all repository contract guards completed successfully.\nEvidence: Formatting, schemas, policy routing, compatibility ratchet, lifecycle invariants, lint, architecture, clone, Knip, and coverage thresholds exited with code 0.\nScope: Repository-wide contract evidence.",
+  "digest": "sha256:2f43d83d7d3333e636da426a4d7a2841bc267d81ab2c6b879cd13ed20aa20dd1",
+  "implementation_sha": "693ec073fd7fb4109a3f8b607dbdf630016dc688",
+  "kind": "task_verification_record",
+  "note": "Doctor legacy now exposes retirement policy, scope, and removal blocker in both JSON and human output; all declared and repository contract checks pass.",
+  "recorded_at": "2026-08-08T00:32:15.669Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/doctor/legacy-probes.test.ts packages/agentplane/src/commands/doctor-legacy.spec.ts\n- bun run test:critical\n- bun run typecheck\n- bun run docs:cli:check",
+  "scope_digest": "sha256:0808c51040237f79c1a808bd3980ac46b01d0d6d371abd836fbb241ce031c10f",
+  "task_id": "202608062021-HTRP5J",
+  "verification_command": "agentplane verify 202608062021-HTRP5J --ok --by TESTER",
+  "verifier": "TESTER"
+}

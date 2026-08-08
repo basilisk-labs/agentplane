@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RCI-000",
+      "severity": "low",
+      "summary": "The implementation satisfies the bounded compatibility-retirement and reporting contract.",
+      "broken_invariant": "None; manifest classifications are bounded, doctor JSON and text expose policy and blocker information, and declared verification passed.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608062021-HTRP5J/quality/objects/sha256/e7d4df0bd24bf9d8996ee97794270995b741dd0209e23fbe149f5df56738ff7d.patch",
+          "sha256": "sha256:e7d4df0bd24bf9d8996ee97794270995b741dd0209e23fbe149f5df56738ff7d"
+        },
+        {
+          "path": ".agentplane/tasks/202608062021-HTRP5J/verification/20260808003215669-2f43d83d7d3333e6.json",
+          "sha256": "sha256:076a4dfc270bcbbaa424ffcddb78ad9f596b8a939ed02f13f669ad61e0a939c6"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

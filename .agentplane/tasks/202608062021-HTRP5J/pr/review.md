@@ -6,14 +6,14 @@ Created: 2026-08-06T22:03:16.318Z
 
 - Task: `202608062021-HTRP5J`
 - Title: Classify compatibility adapters for bounded 0.8 retirement
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608062021-HTRP5J/classify-compatibility-adapters-for-bounded-0-8`
 - Canonical task record: `.agentplane/tasks/202608062021-HTRP5J/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Bounded compatibility-retirement policy, doctor reporting, generated docs, type safety, critical behavior, and repository contracts pass on current main.
+- Note: Doctor legacy now exposes retirement policy, scope, and removal blocker in both JSON and human output; all declared and repository contract checks pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

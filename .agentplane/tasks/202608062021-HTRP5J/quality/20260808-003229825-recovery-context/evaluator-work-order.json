@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608062021-HTRP5J-bdb3d3587186ce51b2e31347",
+  "prepared_at": "2026-08-08T00:32:29.825Z",
+  "task": {
+    "id": "202608062021-HTRP5J",
+    "revision": 22,
+    "objective": "Classify compatibility adapters for bounded 0.8 retirement\n\nComplete the compatibility retirement manifest so every adapter has an explicit removal version, support-until or zero-usage condition, archive conversion policy, or permanent historical-reader designation; keep historical readers out of normal execution paths where already separable, and verify doctor legacy reports the classification without deleting safety or recovery contracts in 0.7.5.",
+    "acceptance_criteria": [
+      "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/doctor/legacy-probes.test.ts packages/agentplane/src/commands/doctor-legacy.spec.ts",
+      "bun run test:critical",
+      "bun run typecheck",
+      "bun run docs:cli:check",
+      "- In scope: Complete the compatibility retirement manifest so every adapter has an explicit removal version, support-until or zero-usage condition, archive conversion policy, or permanent historical-reader designation; keep historical readers out of normal execution paths where already separable, and verify doctor legacy reports the classification without deleting safety or recovery contracts in 0.7.5.\n- Out of scope: unrelated refactors not required for \"Classify compatibility adapters for bounded 0.8 retirement\".",
+      "1. Audit every compatibility adapter in the retirement manifest and classify it as versioned removal, support-until, minimum zero-usage releases, archive conversion, or permanent historical reader. 2. Add schema validation that forbids an unbounded null retirement policy. 3. Surface the classification and remaining blocker through doctor legacy JSON and text output. 4. Where an existing clean boundary permits it, lazy-load historical readers only from upgrade, doctor, or archive paths; do not perform broad runtime extraction or delete safety/recovery contracts in this patch. 5. Document the 0.8 removal set and verify compatibility and critical suites.",
+      "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/doctor/legacy-probes.test.ts packages/agentplane/src/commands/doctor-legacy.spec.ts\n- bun run test:critical\n- bun run typecheck\n- bun run docs:cli:check"
+    ]
+  },
+  "evaluated_sha": "693ec073fd7fb4109a3f8b607dbdf630016dc688",
+  "diff_base_sha": "f1d00ff90a8754e39908b4602227fb67655d414d",
+  "blueprint_digest": "e17243ad8f8d431cb3e61b5bb0497de50b17e1626e2cb2fe4f7299e20fd4c7cc",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608062021-HTRP5J/quality/20260808-003229825-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:8e3d36e5fb7afef19e49dfe042fb15e72c8d9d0d038e5b1d87eab08b4c0512d0",
+    "prompt_path": ".agentplane/tasks/202608062021-HTRP5J/quality/objects/sha256/e7be094539a72ab21ed41490cf4572a694bc38406af214bb7d3e6a0e2a0709c5.md",
+    "result_schema_path": ".agentplane/tasks/202608062021-HTRP5J/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608062021-HTRP5J/README.md",
+      "sha256": "sha256:8488f754b24043072b75baac51f98061c0b53d699b8efdef0b11d636ac99bbb2",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608062021-HTRP5J/quality/objects/sha256/e7d4df0bd24bf9d8996ee97794270995b741dd0209e23fbe149f5df56738ff7d.patch",
+      "sha256": "sha256:e7d4df0bd24bf9d8996ee97794270995b741dd0209e23fbe149f5df56738ff7d",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608062021-HTRP5J/quality/objects/sha256/ccd2e9ec6e96835bb72ff370de0e3bd0f7ec728cc3a88771d1290013a00cea81.json",
+      "sha256": "sha256:ccd2e9ec6e96835bb72ff370de0e3bd0f7ec728cc3a88771d1290013a00cea81",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608062021-HTRP5J/verification/20260808003215669-2f43d83d7d3333e6.json",
+      "sha256": "sha256:076a4dfc270bcbbaa424ffcddb78ad9f596b8a939ed02f13f669ad61e0a939c6",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608062021-HTRP5J/quality/objects/sha256/c260c6f4806adbe7f17218606ed3073ec5c734a41ae4ef0fc30f0e5487627cc3.json",
+      "sha256": "sha256:c260c6f4806adbe7f17218606ed3073ec5c734a41ae4ef0fc30f0e5487627cc3",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
