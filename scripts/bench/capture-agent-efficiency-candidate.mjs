@@ -295,25 +295,23 @@ function replayDriverTimeoutMs(scenario) {
   return timeout;
 }
 
-function runChecked(command, args, options, label) {
+export function runCandidateDriverProcess(command, args, options, label) {
   return new Promise((resolve, reject) => {
-    let timedOut = false;
-    const child = execFile(
+    execFile(
       command,
       args,
       {
         ...options,
         encoding: null,
+        killSignal: "SIGKILL",
         maxBuffer: MAX_CHILD_OUTPUT_BYTES,
-        timeout: undefined,
       },
       (error, _stdout, stderr) => {
-        clearTimeout(timeout);
         if (error == null) {
           resolve();
           return;
         }
-        if (timedOut || !Number.isInteger(error.code)) {
+        if (error.killed === true || !Number.isInteger(error.code)) {
           reject(new Error(`${label} failed to start or exceeded its fixed timeout`));
           return;
         }
@@ -326,11 +324,6 @@ function runChecked(command, args, options, label) {
         );
       },
     );
-    const timeout = setTimeout(() => {
-      timedOut = true;
-      child.kill("SIGTERM");
-    }, options.timeout);
-    timeout.unref();
   });
 }
 
@@ -1085,7 +1078,7 @@ export async function captureCandidate(options) {
           outputPath,
           runId,
         });
-        await runChecked(
+        await runCandidateDriverProcess(
           process.execPath,
           [
             options.driverPath,

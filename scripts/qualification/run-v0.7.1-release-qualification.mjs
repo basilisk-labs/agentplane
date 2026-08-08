@@ -206,33 +206,26 @@ function outputTail(value, maximum = 4000) {
 
 function executeFile(command, args, options) {
   return new Promise((resolve) => {
-    let timedOut = false;
-    const child = execFile(
+    execFile(
       command,
       args,
       {
         ...options,
         encoding: "utf8",
+        killSignal: "SIGKILL",
         maxBuffer: MAX_CHILD_OUTPUT_BYTES,
-        timeout: undefined,
       },
       (error, stdout, stderr) => {
-        clearTimeout(timeout);
         resolve({
           error,
           signal: error?.signal ?? null,
           status: error == null ? 0 : Number.isInteger(error.code) ? error.code : null,
           stderr: stderr ?? "",
           stdout: stdout ?? "",
-          timedOut,
+          timedOut: error?.killed === true && error.signal === "SIGKILL",
         });
       },
     );
-    const timeout = setTimeout(() => {
-      timedOut = true;
-      child.kill("SIGTERM");
-    }, options.timeout);
-    timeout.unref();
   });
 }
 
