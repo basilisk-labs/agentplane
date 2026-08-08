@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608080805-KPWPAV-46838636523ab3d8bf042a80",
+  "prepared_at": "2026-08-08T08:34:53.599Z",
+  "task": {
+    "id": "202608080805-KPWPAV",
+    "revision": 10,
+    "objective": "Allow explicit replacement after failed task advance operation\n\nExpose a guarded task advance replacement path for a terminal operation_failed supervisor journal so a newly recomputed route can continue without retrying the failed effect.",
+    "acceptance_criteria": [
+      "bun run test:critical",
+      "bun run typecheck",
+      "bun run ci:contract",
+      "- In scope: Expose a guarded task advance replacement path for a terminal operation_failed supervisor journal so a newly recomputed route can continue without retrying the failed effect.\n- Out of scope: unrelated refactors not required for \"Allow explicit replacement after failed task advance operation\".",
+      "1. Add an explicit --replacement flag to task advance. 2. When and only when that flag is present, reopen a stopped operation_failed supervisor journal through the core exact-key replacement primitive before issuing the recomputed semantic episode. 3. Reject replacement outside the terminal failed-operation state and preserve effect_in_doubt/budget guards. 4. Add parser, supervisor, negative, and CLI recovery regressions. 5. Pass focused, critical, type, contract, evaluator, hosted, and integration gates.",
+      "PLANNER fallback scaffold for \"Allow explicit replacement after failed task advance operation\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow explicit replacement after failed task advance operation\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "0caa5838bb36e58165a19215f6bd16ea39673ac0",
+  "diff_base_sha": "f90a67a282234a4f42b5e3721e416f31e7f0be9b",
+  "blueprint_digest": "73e526b4dc469052abfe576ce64fa57a536cec2ab2b00ef508904629d13d0ba5",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608080805-KPWPAV/quality/20260808-083453599-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:e100dfeed95338f53ee098c867904505ac851f8a6f5a827af0a7d70ce96815ff",
+    "prompt_path": ".agentplane/tasks/202608080805-KPWPAV/quality/objects/sha256/e497f6fa0821b229135697729c61b96b091c677549a8e91fecfec42e6e632761.md",
+    "result_schema_path": ".agentplane/tasks/202608080805-KPWPAV/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608080805-KPWPAV/README.md",
+      "sha256": "sha256:80c00f40d42ec2733589a2a64ecf196054f54c14aa6b64b15f82932552bac686",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608080805-KPWPAV/quality/objects/sha256/f4b9cd76f6c65fa3fd5b5ef29645a3f9a11241d5acb4cecbe30580587816c3dc.patch",
+      "sha256": "sha256:f4b9cd76f6c65fa3fd5b5ef29645a3f9a11241d5acb4cecbe30580587816c3dc",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608080805-KPWPAV/quality/objects/sha256/da3bab6dfd54c4de579050c78744248f71e588fec112176cd002b555290b5b35.json",
+      "sha256": "sha256:da3bab6dfd54c4de579050c78744248f71e588fec112176cd002b555290b5b35",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608080805-KPWPAV/verification/20260808083445339-dcf089b32ca3a5d5.json",
+      "sha256": "sha256:086c4e681db60f3f1d9a62eec74e5395ae92462ca7a5f6e79b49c6af2cb02691",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608080805-KPWPAV/quality/objects/sha256/53e6d28c284158271b14a21b0326bced25eab10452d4d6f223e15ed9ed871bea.json",
+      "sha256": "sha256:53e6d28c284158271b14a21b0326bced25eab10452d4d6f223e15ed9ed871bea",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:47ab8b04f9d747491398390dac415b34aa6d3df0cf0fb61e9924fd3e4851ec48",
+      "required": true
+    }
+  ]
+}
