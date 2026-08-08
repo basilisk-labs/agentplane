@@ -251,7 +251,26 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const issued = await readAgentPacket(root, taskId);
     if (!issued.exchange) throw new Error("expected an external-agent exchange");
 
-    await writeFile(path.join(root, "concurrent-change.txt"), "changes the route fingerprint\n", "utf8");
+    await writeFile(
+      path.join(root, "concurrent-change.txt"),
+      "changes the route fingerprint\n",
+      "utf8",
+    );
+    await execFileAsync("git", ["add", "concurrent-change.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "change concurrent route fingerprint"], {
+      cwd: root,
+    });
+    await runCliSilent([
+      "task",
+      "comment",
+      taskId,
+      "--author",
+      "TESTER",
+      "--body",
+      "Concurrent route observation.",
+      "--root",
+      root,
+    ]);
     const fingerprint = await readRouteFingerprint(root, taskId);
     expect(fingerprint).not.toBe(issued.state_fingerprint);
 
@@ -259,7 +278,9 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     try {
       const code = await runCli(["task", "advance", taskId, "--agent-json", "--root", root]);
       expect(code).not.toBe(0);
-      expect(io.stderr).toContain("Another unresolved external-agent episode already owns this task");
+      expect(io.stderr).toContain(
+        "Another unresolved external-agent episode already owns this task",
+      );
     } finally {
       io.restore();
     }
@@ -273,9 +294,9 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
       await readFile(rejectedExchangePath, "utf8"),
     ) as ExternalAgentExchange;
     expect(rejectedExchange.status).toBe("prepared");
-    expect(
-      await readFile(path.join(issued.exchange.directory, "exchange.json"), "utf8"),
-    ).toContain('"status": "issued"');
+    expect(await readFile(path.join(issued.exchange.directory, "exchange.json"), "utf8")).toContain(
+      '"status": "issued"',
+    );
   });
 
   it("accepts one bound planning result, advances to approval, and refuses replay", async () => {

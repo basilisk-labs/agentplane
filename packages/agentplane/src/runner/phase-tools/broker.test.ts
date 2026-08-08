@@ -2,7 +2,28 @@ import { access, mkdtemp, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+const stableFileMock = vi.hoisted(() => ({ responseReadCollisions: 0 }));
+
+vi.mock("../stable-file.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../stable-file.js")>();
+  return {
+    ...actual,
+    readStableRegularTextNoFollow: async (
+      ...args: Parameters<typeof actual.readStableRegularTextNoFollow>
+    ) => {
+      if (
+        stableFileMock.responseReadCollisions > 0 &&
+        args[1] === "runner phase-tool broker response"
+      ) {
+        stableFileMock.responseReadCollisions -= 1;
+        throw new Error(`${args[1]} changed while it was being read: ${args[0]}`);
+      }
+      return await actual.readStableRegularTextNoFollow(...args);
+    },
+  };
+});
 
 import { buildAgentWorkOrderV2ValidFixture } from "@agentplaneorg/core/schemas";
 import { makeRunnerContextBundle, setRunnerBundleRunDir } from "@agentplane/testkit/runner";
@@ -20,6 +41,7 @@ import { issueRunnerPhaseToolGrant } from "./token.js";
 const roots: string[] = [];
 
 afterEach(async () => {
+  stableFileMock.responseReadCollisions = 0;
   await Promise.all(roots.splice(0).map(async (root) => await rm(root, { recursive: true })));
 });
 
@@ -64,33 +86,38 @@ describe("runner phase-tool broker", () => {
       directory: brokerDirectory,
     });
 
-    const response = await invokeRunnerPhaseToolThroughBroker({
-      directory: brokerDirectory,
-      token: grant.token,
-      tool: "report_blocker",
-      input: {
-        summary: "The requested lifecycle operation is outside the delegated phase.",
-        recommended_action: "Return control to the parent workflow.",
-      },
-    });
-
-    expect(response).toMatchObject({
-      status: "ok",
-      code: "accepted",
-      tool: "report_blocker",
-    });
-    expect(response.audit?.digest).toMatch(/^sha256:[0-9a-f]{64}$/u);
-    expect(
-      await readRunnerResultManifest(bundle.execution.artifact_paths.result_path),
-    ).toMatchObject({
-      semantic_result: {
-        value: {
-          work_order_id: workOrder.work_order_id,
-          status: "blocked",
+    stableFileMock.responseReadCollisions = 1;
+    try {
+      const response = await invokeRunnerPhaseToolThroughBroker({
+        directory: brokerDirectory,
+        token: grant.token,
+        tool: "report_blocker",
+        input: {
+          summary: "The requested lifecycle operation is outside the delegated phase.",
+          recommended_action: "Return control to the parent workflow.",
         },
-      },
-    });
-    await broker.stop();
+      });
+
+      expect(stableFileMock.responseReadCollisions).toBe(0);
+      expect(response).toMatchObject({
+        status: "ok",
+        code: "accepted",
+        tool: "report_blocker",
+      });
+      expect(response.audit?.digest).toMatch(/^sha256:[0-9a-f]{64}$/u);
+      expect(
+        await readRunnerResultManifest(bundle.execution.artifact_paths.result_path),
+      ).toMatchObject({
+        semantic_result: {
+          value: {
+            work_order_id: workOrder.work_order_id,
+            status: "blocked",
+          },
+        },
+      });
+    } finally {
+      await broker.stop();
+    }
     await expect(access(brokerDirectory)).rejects.toMatchObject({ code: "ENOENT" });
   });
 });

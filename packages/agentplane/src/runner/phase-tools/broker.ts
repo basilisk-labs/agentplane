@@ -4,6 +4,7 @@ import path from "node:path";
 
 import { isRecord } from "../../shared/guards.js";
 import {
+  isStableFileReadCollision,
   readStableRegularTextNoFollow,
   writeNewStableRegularFileNoFollow,
 } from "../stable-file.js";
@@ -18,6 +19,7 @@ const MAX_REQUEST_BYTES = 1024 * 1024;
 const MAX_BROKER_REQUESTS = 64;
 const CLIENT_TIMEOUT_MS = 120_000;
 const POLL_MS = 20;
+const RESPONSE_FILE_LABEL = "runner phase-tool broker response";
 const REQUEST_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u;
 
 type RunnerPhaseToolBrokerRequest = {
@@ -253,13 +255,18 @@ export async function invokeRunnerPhaseToolThroughBroker(opts: {
       try {
         return parseResponse(
           JSON.parse(
-            await readStableRegularTextNoFollow(responseFile, "runner phase-tool broker response", {
+            await readStableRegularTextNoFollow(responseFile, RESPONSE_FILE_LABEL, {
               max_bytes: MAX_REQUEST_BYTES,
             }),
           ) as unknown,
         );
       } catch (error) {
-        if ((error as NodeJS.ErrnoException | null)?.code !== "ENOENT") throw error;
+        if (
+          (error as NodeJS.ErrnoException | null)?.code !== "ENOENT" &&
+          !isStableFileReadCollision(error, RESPONSE_FILE_LABEL)
+        ) {
+          throw error;
+        }
       }
       await delay(POLL_MS);
     }
