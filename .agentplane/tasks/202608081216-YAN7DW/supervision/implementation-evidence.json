@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 853048c52e504e95fd54f3c9cab9b1c224c09e32..e98b2f655c04712c51f1b482106d1a045a51a55b",
+      "command": "git diff --check 95c1d564827c05f348ee50086cfe4cd04e6b8cc5..0af389fe8d6f8d6dfd5fcf52716cb55391157494",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 853048c52e504e95fd54f3c9cab9b1c224c09e32..e98b2f655c04712c51f1b482106d1a045a51a55b",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 95c1d564827c05f348ee50086cfe4cd04e6b8cc5..0af389fe8d6f8d6dfd5fcf52716cb55391157494",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,7 +22,7 @@
         "M\t.agentplane/tasks/202608081216-YAN7DW/pr/github-body.md",
         "M\t.agentplane/tasks/202608081216-YAN7DW/pr/meta.json",
         "M\t.agentplane/tasks/202608081216-YAN7DW/pr/review.md",
-        "M\tscripts/qualification/release-qualification.test.mjs"
+        "M\tpackages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts"
       ]
     },
     {
@@ -32,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "853048c52e504e95fd54f3c9cab9b1c224c09e32",
-  "implementation_commit": "e98b2f655c04712c51f1b482106d1a045a51a55b",
+  "execution_base_commit": "95c1d564827c05f348ee50086cfe4cd04e6b8cc5",
+  "implementation_commit": "0af389fe8d6f8d6dfd5fcf52716cb55391157494",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
