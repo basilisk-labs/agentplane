@@ -38,6 +38,11 @@ const defaultProviderBaselineEvidencePath = path.join(
 const DEFAULT_QUALIFICATION_CONCURRENCY = 4;
 const DEFAULT_PROVIDER_CONCURRENCY = 3;
 const MAX_CHILD_OUTPUT_BYTES = 128 * 1024 * 1024;
+const EXCLUSIVE_QUALIFICATION_SCENARIO_IDS = new Set([
+  "cli-latency",
+  "matched-cli-latency",
+  "supervisor-latency",
+]);
 
 function helpText() {
   return [
@@ -315,22 +320,31 @@ export async function runQualificationScenarios(
   const execute = createBoundedExecutor(concurrency);
   const scenarioRunner = options.scenarioRunner ?? runScenario;
   const promisesById = new Map();
+  let previousExclusivePromise = null;
   for (const scenario of scenarios) {
     const dependencyIds = new Set(scenario.depends_on);
     if (scenario.tier === "provider") {
       for (const priorScenarioId of promisesById.keys()) dependencyIds.add(priorScenarioId);
     }
-    const dependencies = [...dependencyIds].map((dependency) => {
-      const promise = promisesById.get(dependency);
-      if (!promise) {
-        throw new Error(`qualification scenario ${scenario.id} has an unordered dependency`);
-      }
-      return promise;
-    });
+    const dependencies = new Set(
+      [...dependencyIds].map((dependency) => {
+        const promise = promisesById.get(dependency);
+        if (!promise) {
+          throw new Error(`qualification scenario ${scenario.id} has an unordered dependency`);
+        }
+        return promise;
+      }),
+    );
+    if (previousExclusivePromise) dependencies.add(previousExclusivePromise);
+    const exclusive = EXCLUSIVE_QUALIFICATION_SCENARIO_IDS.has(scenario.id);
+    if (exclusive) {
+      for (const priorPromise of promisesById.values()) dependencies.add(priorPromise);
+    }
     const promise = Promise.all(dependencies).then(() =>
       execute(() => scenarioRunner(scenario, variables, outputDirectory)),
     );
     promisesById.set(scenario.id, promise);
+    if (exclusive) previousExclusivePromise = promise;
   }
   return Promise.all(scenarios.map((scenario) => promisesById.get(scenario.id)));
 }
