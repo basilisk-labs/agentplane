@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdir, mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, realpath, rm, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -198,6 +198,28 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
       ).toThrow("CODEX_BINARY_ARCHIVE_DIGEST");
     } finally {
       await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("canonicalizes a regular Codex binary beneath a symlinked parent before digesting it", async () => {
+    const replayDriver = await driver();
+    const physicalRoot = await realpath(
+      await mkdtemp(path.join(os.tmpdir(), "agentplane-rf04-realpath-")),
+    );
+    const linkedRoot = `${physicalRoot}-link`;
+    try {
+      await symlink(physicalRoot, linkedRoot, "dir");
+      const binaryPath = path.join(physicalRoot, "codex");
+      await writeFile(binaryPath, "not the reviewed archive", "utf8");
+      expect(() =>
+        replayDriver.resolveCodexReplayBinary({
+          [replayDriver.CODEX_REPLAY_BINARY_ENV]: path.join(linkedRoot, "codex"),
+          [replayDriver.CODEX_REPLAY_CLI_VERSION_ENV]: "0.146.0-alpha.3.1",
+        }),
+      ).toThrow("CODEX_BINARY_ARCHIVE_DIGEST");
+    } finally {
+      await rm(linkedRoot, { force: true });
+      await rm(physicalRoot, { recursive: true, force: true });
     }
   });
 

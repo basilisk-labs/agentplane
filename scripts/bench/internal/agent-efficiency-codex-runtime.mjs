@@ -116,17 +116,15 @@ export function resolveCodexReplayBinary(source = process.env, repoRoot = proces
   }
   const stats = lstatSync(candidate, { throwIfNoEntry: false });
   if (!stats?.isFile() || stats.isSymbolicLink()) fail("CODEX_BINARY");
-  if (path.resolve(realpathSync(candidate)) !== path.resolve(candidate)) {
-    fail("CODEX_BINARY_REALPATH");
-  }
+  const canonicalCandidate = path.resolve(realpathSync(candidate));
   if (candidate !== CODEX_REPLAY_BINARY) {
     const version = resolveCodexReplayCliVersion(source);
     const expectedDigest = CODEX_REPLAY_ARCHIVE_SHA256[version];
     if (!expectedDigest) fail("CODEX_BINARY_ARCHIVE_UNPINNED");
-    const actualDigest = `sha256:${createHash("sha256").update(readFileSync(candidate)).digest("hex")}`;
+    const actualDigest = `sha256:${createHash("sha256").update(readFileSync(canonicalCandidate)).digest("hex")}`;
     if (actualDigest !== expectedDigest) fail("CODEX_BINARY_ARCHIVE_DIGEST");
   }
-  return candidate;
+  return canonicalCandidate;
 }
 
 export function assertCodexBinary(source = process.env, repoRoot = process.cwd()) {
