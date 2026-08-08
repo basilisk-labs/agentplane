@@ -85,6 +85,27 @@ describe("direct task verification", () => {
     });
   });
 
+  it("gives the canonical provider qualification its bounded release window", async () => {
+    const cwd = await root();
+    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "provider gate ok", stderr: "" });
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: { verify: ["bun run e2e:v0.7.1:gate"] },
+      task_id: TASK_ID,
+      cwd,
+    });
+
+    expect(result).toMatchObject({ status: "passed" });
+    expect(mocks.runProcess).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: "bun",
+        args: ["run", "e2e:v0.7.1:gate"],
+        timeoutMs: 150 * 60_000,
+      }),
+    );
+  });
+
   it("adds the fixed docs policy checks to a docs task without trusting agent claims", async () => {
     const cwd = await root();
     mocks.runProcess

@@ -36,6 +36,8 @@ const defaultProviderBaselineEvidencePath = path.join(
   "agent-efficiency-v0.7-beta1-candidate.json",
 );
 
+export const QUALIFICATION_CODEX_CLI_VERSION = "0.146.0-alpha.3.1";
+
 function helpText() {
   return [
     "Usage: node scripts/qualification/run-v0.7.1-release-qualification.mjs [options]",

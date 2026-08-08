@@ -35,6 +35,7 @@ import {
 } from "./measure-v0.7.1-supervisor-latency.mjs";
 import {
   preflightQualificationProviderRuntime,
+  QUALIFICATION_CODEX_CLI_VERSION,
   readQualificationRunSubjectIdentity,
 } from "./run-v0.7.1-release-qualification.mjs";
 import {
@@ -145,6 +146,14 @@ function supervisorLatencySurfaces(count) {
 }
 
 describe("v0.7.1 release qualification contract", () => {
+  it("pins the canonical provider gate to the reviewed Codex runtime", () => {
+    const packageJson = JSON.parse(readFileSync(path.join(repoRoot, "package.json"), "utf8"));
+    assert.equal(
+      packageJson.scripts["e2e:v0.7.1:gate"],
+      `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version ${QUALIFICATION_CODEX_CLI_VERSION}`,
+    );
+  });
+
   it("excludes disposable matched-latency fixtures from host indexing", () => {
     const tempRoot = createMatchedLatencyTempRoot(tmpdir());
     try {
