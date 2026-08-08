@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
-import { mkdir, readdir, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readlink, writeFile } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
@@ -16,6 +17,19 @@ import { runCli } from "./run-cli.js";
 installRunCliIntegrationHarness();
 const TASKS_CLI_TIMEOUT_MS = 300_000;
 const execFileAsync = promisify(execFile);
+
+async function currentProcessDomainId(): Promise<string | null> {
+  const currentHostname = os.hostname().trim();
+  if (!currentHostname) return null;
+  if (process.platform !== "linux") return `${process.platform}:${currentHostname}`;
+  try {
+    const pidNamespaceLink = await readlink("/proc/self/ns/pid");
+    const pidNamespace = pidNamespaceLink.trim();
+    return pidNamespace ? `${process.platform}:${currentHostname}:${pidNamespace}` : null;
+  } catch {
+    return null;
+  }
+}
 
 type CliProcessResult = {
   code: number;
@@ -187,9 +201,10 @@ describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, () 
     await writeFile(
       lockPath,
       `${JSON.stringify({
-        schema_version: 1,
+        schema_version: 2,
         generation: "crashed-task-create",
         process_instance_id: "crashed-task-create",
+        owner_process_domain_id: await currentProcessDomainId(),
         owner_pid: 2_147_483_647,
         owner_command: "missing",
         owner_started_at: "2026-01-01T00:00:00.000Z",

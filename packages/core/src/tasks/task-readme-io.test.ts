@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, readlink, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -25,11 +25,30 @@ description: "x"
 ## Summary
 `;
 
-function crashedLockRecord(generation: string): string {
+async function currentProcessDomainId(): Promise<string | null> {
+  const currentHostname = os.hostname().trim();
+  if (!currentHostname) return null;
+  if (process.platform !== "linux") return `${process.platform}:${currentHostname}`;
+  try {
+    const pidNamespaceLink = await readlink("/proc/self/ns/pid");
+    const pidNamespace = pidNamespaceLink.trim();
+    return pidNamespace ? `${process.platform}:${currentHostname}:${pidNamespace}` : null;
+  } catch {
+    return null;
+  }
+}
+
+async function crashedLockRecord(
+  generation: string,
+  ownerProcessDomainId?: string | null,
+): Promise<string> {
+  const resolvedProcessDomainId =
+    ownerProcessDomainId === undefined ? await currentProcessDomainId() : ownerProcessDomainId;
   return `${JSON.stringify({
-    schema_version: 1,
+    schema_version: 2,
     generation,
     process_instance_id: "crashed-owner",
+    owner_process_domain_id: resolvedProcessDomainId,
     owner_pid: 2_147_483_647,
     owner_command: "missing",
     owner_started_at: "2026-01-01T00:00:00.000Z",
@@ -84,7 +103,7 @@ describe("updateTaskReadmeAtomic", () => {
     const taskDir = path.join(root, "202601010101-ABCDE");
     const readmePath = path.join(taskDir, "README.md");
     const lockPath = path.join(root, ".202601010101-ABCDE.README.md.lock");
-    await writeFile(lockPath, crashedLockRecord("crashed-owner"), "utf8");
+    await writeFile(lockPath, await crashedLockRecord("crashed-owner"), "utf8");
 
     try {
       let called = false;
@@ -98,7 +117,7 @@ describe("updateTaskReadmeAtomic", () => {
       expect(called).toBe(true);
       await expect(readFile(lockPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
       const entries = await readdir(root);
-      expect(entries.filter((name) => name.includes(".recovery."))).toEqual([]);
+      expect(entries.filter((name) => name.includes(".recovery"))).toEqual([]);
     } finally {
       await rm(root, { recursive: true, force: true });
     }
@@ -120,11 +139,31 @@ describe("updateTaskReadmeAtomic", () => {
     }
   });
 
+  it("does not reclaim a stale-looking lock from another process domain", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-core-lock-"));
+    const readmePath = path.join(root, "202601010101-ABCDE", "README.md");
+    const lockPath = path.join(root, ".202601010101-ABCDE.README.md.lock");
+    const lockRecord = await crashedLockRecord(
+      "foreign-owner",
+      `${process.platform}:another-host:another-pid-namespace`,
+    );
+    await writeFile(lockPath, lockRecord, "utf8");
+
+    try {
+      await expect(
+        withTaskReadmeTransaction(readmePath, () => null, { timeoutMs: 20, retryMs: 1 }),
+      ).rejects.toThrow(/owner_status=unverified; unverifiable locks are retained fail-closed/u);
+      expect(await readFile(lockPath, "utf8")).toBe(lockRecord);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
   it("serializes concurrent recoverers without overlapping transactions", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-core-lock-"));
     const readmePath = path.join(root, "202601010101-ABCDE", "README.md");
     const lockPath = path.join(root, ".202601010101-ABCDE.README.md.lock");
-    await writeFile(lockPath, crashedLockRecord("crashed-owner"), "utf8");
+    await writeFile(lockPath, await crashedLockRecord("crashed-owner"), "utf8");
     let active = 0;
     let maximumActive = 0;
     const operation = async (): Promise<void> => {

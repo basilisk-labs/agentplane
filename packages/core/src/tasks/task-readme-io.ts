@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { constants, type BigIntStats } from "node:fs";
-import { link, lstat, mkdir, open, readFile, readdir, unlink } from "node:fs/promises";
+import { link, lstat, mkdir, open, readFile, readdir, readlink, unlink } from "node:fs/promises";
+import { hostname } from "node:os";
 import path from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
 
@@ -21,9 +22,10 @@ type FileIdentity = {
 };
 
 type TaskReadmeLockRecord = {
-  schema_version: 1;
+  schema_version: 2;
   generation: string;
   process_instance_id: string;
+  owner_process_domain_id: string | null;
   owner_pid: number;
   owner_command: string | null;
   owner_started_at: string | null;
@@ -45,7 +47,11 @@ export type TaskReadmeTransactionOptions = {
 };
 
 let currentProcessIdentity:
-  | Promise<{ command: string | null; started_at: string | null }>
+  | Promise<{
+      command: string | null;
+      process_domain_id: string | null;
+      started_at: string | null;
+    }>
   | undefined;
 
 function identity(stat: BigIntStats): FileIdentity {
@@ -70,6 +76,10 @@ function candidatePathFor(lockPath: string, generation: string): string {
 
 function recoveryMarkerPathFor(lockPath: string, generation: string): string {
   return `${lockPath}.recovery.${generation}.json`;
+}
+
+function recoveryCandidatePathFor(lockPath: string, generation: string): string {
+  return `${lockPath}.recovery-candidate.${generation}`;
 }
 
 function recoveryTargetPathFor(lockPath: string, generation: string): string {
@@ -126,14 +136,37 @@ async function observeProcessIdentity(
   }
 }
 
+async function resolveCurrentProcessDomainId(): Promise<string | null> {
+  let currentHostname: string;
+  try {
+    currentHostname = hostname().trim();
+  } catch {
+    return null;
+  }
+  if (!currentHostname) return null;
+  if (process.platform !== "linux") return `${process.platform}:${currentHostname}`;
+  try {
+    const pidNamespaceLink = await readlink("/proc/self/ns/pid");
+    const pidNamespace = pidNamespaceLink.trim();
+    return pidNamespace ? `${process.platform}:${currentHostname}:${pidNamespace}` : null;
+  } catch {
+    return null;
+  }
+}
+
 async function resolveCurrentProcessIdentity(): Promise<{
   command: string | null;
+  process_domain_id: string | null;
   started_at: string | null;
 }> {
-  currentProcessIdentity ??= observeProcessIdentity(process.pid).then(
-    (observed) => observed ?? { command: null, started_at: null },
-    () => ({ command: null, started_at: null }),
-  );
+  currentProcessIdentity ??= Promise.all([
+    observeProcessIdentity(process.pid).catch(() => null),
+    resolveCurrentProcessDomainId(),
+  ]).then(([observed, processDomainId]) => ({
+    command: observed?.command ?? null,
+    process_domain_id: processDomainId,
+    started_at: observed?.started_at ?? null,
+  }));
   return await currentProcessIdentity;
 }
 
@@ -145,11 +178,14 @@ function parseLockRecord(raw: string): TaskReadmeLockRecord | null {
     return null;
   }
   if (
-    parsed.schema_version !== 1 ||
+    parsed.schema_version !== 2 ||
     typeof parsed.generation !== "string" ||
     parsed.generation.length === 0 ||
     typeof parsed.process_instance_id !== "string" ||
     parsed.process_instance_id.length === 0 ||
+    (parsed.owner_process_domain_id !== null &&
+      (typeof parsed.owner_process_domain_id !== "string" ||
+        parsed.owner_process_domain_id.length === 0)) ||
     typeof parsed.owner_pid !== "number" ||
     !Number.isInteger(parsed.owner_pid) ||
     parsed.owner_pid <= 0 ||
@@ -200,6 +236,15 @@ async function lockOwnerStatus(
   ) {
     return "active";
   }
+  const currentIdentity = await resolveCurrentProcessIdentity();
+  const currentProcessDomainId = currentIdentity.process_domain_id;
+  if (
+    !currentProcessDomainId ||
+    !lock.record.owner_process_domain_id ||
+    lock.record.owner_process_domain_id !== currentProcessDomainId
+  ) {
+    return "unverified";
+  }
   let observed: Awaited<ReturnType<typeof observeProcessIdentity>>;
   try {
     observed = await observeProcessIdentity(lock.record.owner_pid);
@@ -224,12 +269,33 @@ async function writeLockCandidate(
     constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0),
     0o600,
   );
+  let complete = false;
   try {
     await handle.writeFile(`${JSON.stringify(record)}\n`, "utf8");
     await handle.sync();
+    complete = true;
   } finally {
     await handle.close();
+    if (!complete) await unlink(candidatePath).catch(() => null);
   }
+}
+
+async function publishRecoveryClaim(
+  lockPath: string,
+  generation: string,
+  record: TaskReadmeLockRecord,
+): Promise<string> {
+  const candidatePath = recoveryCandidatePathFor(lockPath, generation);
+  const markerPath = recoveryMarkerPathFor(lockPath, generation);
+  await writeLockCandidate(candidatePath, record);
+  try {
+    await link(candidatePath, markerPath);
+    await syncDirectory(path.dirname(lockPath));
+  } finally {
+    await unlinkRegularFile(candidatePath);
+    await syncDirectory(path.dirname(lockPath));
+  }
+  return markerPath;
 }
 
 async function unlinkRegularFile(filePath: string): Promise<boolean> {
@@ -302,9 +368,8 @@ async function tryRecoverStaleLock(
   owner: Omit<TaskReadmeLockRecord, "generation" | "acquired_at">,
 ): Promise<boolean> {
   const generation = randomUUID();
-  const markerPath = recoveryMarkerPathFor(lockPath, generation);
   const targetPath = recoveryTargetPathFor(lockPath, generation);
-  await writeLockCandidate(markerPath, {
+  const markerPath = await publishRecoveryClaim(lockPath, generation, {
     ...owner,
     generation,
     acquired_at: new Date().toISOString(),
@@ -345,9 +410,10 @@ async function acquireTaskReadmeLock(
   const generation = randomUUID();
   const owner = await resolveCurrentProcessIdentity();
   const record: TaskReadmeLockRecord = {
-    schema_version: 1,
+    schema_version: 2,
     generation,
     process_instance_id: CURRENT_PROCESS_INSTANCE_ID,
+    owner_process_domain_id: owner.process_domain_id,
     owner_pid: process.pid,
     owner_command: owner.command,
     owner_started_at: owner.started_at,
@@ -398,8 +464,9 @@ async function acquireTaskReadmeLock(
       if (ownerStatus === "stale" && recoveryAttempts < TASK_README_LOCK_RECOVERY_ATTEMPTS) {
         recoveryAttempts += 1;
         const recovered = await tryRecoverStaleLock(lockPath, {
-          schema_version: 1,
+          schema_version: 2,
           process_instance_id: CURRENT_PROCESS_INSTANCE_ID,
+          owner_process_domain_id: owner.process_domain_id,
           owner_pid: process.pid,
           owner_command: owner.command,
           owner_started_at: owner.started_at,
