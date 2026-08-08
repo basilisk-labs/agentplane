@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608080551-8BH6HY/accept-external-task-worktree-resolution-results",
+  "created_at": "2026-08-08T05:52:09.195Z",
+  "diffstat_sha256": "sha256:b4deb0ecf9ed128b5d4e194d931b261e03b5bdb097253d365cbff9380a3d1c8e",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608080551-8BH6HY",
+  "updated_at": "2026-08-08T05:52:09.195Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

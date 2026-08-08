@@ -51,6 +51,7 @@ import {
   isExternalEvaluatorResultApplied,
 } from "./external-agent-evaluator.js";
 import { applyExternalImplementationResult } from "./external-agent-implementation-authority.js";
+import { usesExternalImplementationAuthority } from "./external-agent-purpose.js";
 import {
   applyExternalPlanningResult,
   isExternalPlanningResultApplied,
@@ -349,10 +350,7 @@ async function applyAcceptedResult(opts: {
     });
     return;
   }
-  if (
-    opts.exchange.purpose === "implementation" ||
-    opts.exchange.purpose === "implementation_rework"
-  ) {
+  if (usesExternalImplementationAuthority(opts.exchange.purpose)) {
     await applyExternalImplementationResult(opts);
     return;
   }
@@ -529,11 +527,7 @@ export async function acceptExternalAgentResult(opts: {
         decision: current,
         envelope,
       }));
-    if (
-      !alreadyApplied &&
-      exchange.purpose !== "implementation" &&
-      exchange.purpose !== "implementation_rework"
-    ) {
+    if (!alreadyApplied && !usesExternalImplementationAuthority(exchange.purpose)) {
       assertReadOnlyReturnFresh({ exchange, decision: current });
     }
     if (!(alreadyApplied && exchange.purpose === "planning")) {

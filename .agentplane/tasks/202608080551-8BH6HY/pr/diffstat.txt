@@ -1,0 +1,4 @@
+ .../src/commands/task/external-agent-purpose.test.ts  | 19 +++++++++++++++++++
+ .../src/commands/task/external-agent-purpose.ts       | 11 +++++++++++
+ .../src/commands/task/external-agent-supervisor.ts    | 12 +++---------
+ 3 files changed, 33 insertions(+), 9 deletions(-)
