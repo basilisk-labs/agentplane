@@ -6,14 +6,14 @@ Created: 2026-08-08T12:17:23.101Z
 
 - Task: `202608081216-YAN7DW`
 - Title: Parallelize release qualification without weakening gates
-- Status: BLOCKED
+- Status: DOING
 - Branch: `task/202608081216-YAN7DW/parallelize-release-qualification`
 - Canonical task record: `.agentplane/tasks/202608081216-YAN7DW/README.md`
 
 ## Verification
 
-- State: blocked_external
-- Note: Rework: Declared check failed: bun run ci:contract
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
