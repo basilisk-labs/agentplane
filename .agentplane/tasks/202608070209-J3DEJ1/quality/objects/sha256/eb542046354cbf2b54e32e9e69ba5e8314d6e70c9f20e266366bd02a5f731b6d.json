@@ -1,0 +1,28 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-readme-io.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts",
+    "bun run typecheck",
+    "bun run ci:contract"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-08T02:34:58.265Z",
+    "updated_by": "TESTER",
+    "note": "All local and hosted acceptance checks passed for implementation commit 1f452c38 and PR head 839d615a."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608070209-J3DEJ1/verification/20260808023458265-d2416214d187e60f.json",
+      "sha256": "sha256:c45f884d7672bf71e5cd9fb3c88dcfa29a3545e67c8da543ab2e424668460561"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
