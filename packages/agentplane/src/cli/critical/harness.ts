@@ -139,7 +139,7 @@ export async function runCli(
   let stdout = "";
   let stderr = "";
   try {
-    const ok = (await execFileAsync("bun", [runnerPath, ...args], {
+    const ok = (await execFileAsync("bun", [runnerPath, "--output", "text", ...args], {
       cwd: opts.cwd,
       env,
       encoding: "utf8",
