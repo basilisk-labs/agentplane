@@ -15,14 +15,14 @@ Reduce patch-release elapsed time by adding bounded concurrency to independent q
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Unsupported declared check: bunx vitest run scripts/bench/capture-agent-efficiency-candidate.test.mjs
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-08T12:17:23.101Z
+- Updated: 2026-08-08T12:31:23.616Z
 - Branch: task/202608081216-YAN7DW/parallelize-release-qualification
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
