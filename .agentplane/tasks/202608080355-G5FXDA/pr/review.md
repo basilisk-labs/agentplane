@@ -13,7 +13,7 @@ Created: 2026-08-08T03:55:51.970Z
 ## Verification
 
 - State: ok
-- Note: Evaluator findings are resolved: future plans must provide mutually consistent nextVersion and nextTag, and version ordering now uses precision-safe BigInt components; 15 focused scenarios and the full contract gate pass.
+- Note: Final committed implementation requires complete consistent plan metadata, compares arbitrarily large stable-version components without precision loss, and passes 15 focused scenarios plus the full contract gate.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

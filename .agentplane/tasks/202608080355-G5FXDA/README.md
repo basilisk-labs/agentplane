@@ -4,7 +4,7 @@ title: "Correct stale plan comparison in next-action diagnostics"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -26,38 +26,36 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-08T05:19:52.549Z"
+  updated_at: "2026-08-08T05:21:45.338Z"
   updated_by: "TESTER"
-  note: "Evaluator findings are resolved: future plans must provide mutually consistent nextVersion and nextTag, and version ordering now uses precision-safe BigInt components; 15 focused scenarios and the full contract gate pass."
+  note: "Final committed implementation requires complete consistent plan metadata, compares arbitrarily large stable-version components without precision loss, and passes 15 focused scenarios plus the full contract gate."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-08T05:16:06.210Z"
+  updated_at: "2026-08-08T05:22:37.155Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "331673c803537e76349decbf0d9cc163019a4db7"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "514ddf590f40272e1828df7fdd049f36133823ec"
   blueprint_digest: "1b180e9a165d9cb3562acf6522bc3586c6efcc4f7e890b83961f1821c1184d65"
   evidence_refs:
-    - ".agentplane/tasks/202608080355-G5FXDA/quality/20260808-051521745-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608080355-G5FXDA/quality/20260808-051521745-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/b0ca49e75d3a13924e23c376d0f2be3300de40c2dfe7eb81677572300957c0c3.md"
-    - ".agentplane/tasks/202608080355-G5FXDA/quality/20260808-051521745-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608080355-G5FXDA/quality/20260808-051521745-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608080355-G5FXDA/quality/20260808-051521745-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608080355-G5FXDA/quality/20260808-051521745-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608080355-G5FXDA/quality/20260808-052155446-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608080355-G5FXDA/quality/20260808-052155446-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/a30195db848fe806fc646010203300c86bf298b985306f1bf474c9aa51943cd3.md"
+    - ".agentplane/tasks/202608080355-G5FXDA/quality/20260808-052155446-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608080355-G5FXDA/quality/20260808-052155446-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608080355-G5FXDA/quality/20260808-052155446-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608080355-G5FXDA/README.md"
-    - ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/f80832943bfb517107b04fb8c0176bea60ce9b79cc5508f6c21331d9c1413f93.patch"
-    - ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/13082d3afe2010285f50789c0a87ea7d3fe7c27e2cf32145a083562b6120eaab.json"
-    - ".agentplane/tasks/202608080355-G5FXDA/verification/20260808051510536-c2ec50514313f301.json"
+    - ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/f23c607a0f34249f0d36ddea5e2887bd4255432b438942fa9e0367b996158a77.patch"
+    - ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/123d7fdd9d1bac77e35cc25ad2a7189ffe9c27e3cc45b56b2f66fe8013333388.json"
+    - ".agentplane/tasks/202608080355-G5FXDA/verification/20260808052145338-3ea80fbc55b57d6e.json"
     - ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/dd75b81e3c04dd45f2956403db2fccba72da81a54555d0758705a2e618b2755b.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "A future plan with only nextVersion or only nextTag is classified as valid and permits candidate preparation."
-    - "Version ordering converts arbitrary semver numeric components to Number, so values beyond the safe-integer range can compare incorrectly."
+    - "The implementation now rejects missing, stale, current, invalid, inconsistent, and incomplete plan targets, permits candidate preparation only for a complete consistent future target, and compares arbitrarily large stable-version components without precision loss."
 execution_route:
   frozen: true
   reason_codes:
@@ -103,8 +101,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Evaluator findings are resolved: future plans must provide mutually consistent nextVersion and nextTag, and version ordering now uses precision-safe BigInt components; 15 focused scenarios and the full contract gate pass."
+  -
+    type: "verify"
+    at: "2026-08-08T05:21:45.338Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Final committed implementation requires complete consistent plan metadata, compares arbitrarily large stable-version components without precision loss, and passes 15 focused scenarios plus the full contract gate."
 doc_version: 3
-doc_updated_at: "2026-08-08T05:19:53.989Z"
+doc_updated_at: "2026-08-08T05:21:46.395Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix GitHub issue #4783: compare the latest plan target with the currently published version so a missing, current, or older plan requests a fresh patch plan and only a future plan permits candidate preparation. Add fixtures for missing, stale, current, and future targets. Mark INC-20260807-01 resolved in the repository and bundled incident registries because its dependency-readiness and supervisor protocol repairs are merged and verified. Close issue #4783 only after hosted checks pass and the fix merges."
 sections:
@@ -245,6 +249,66 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T05:21:45.338Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Final committed implementation requires complete consistent plan metadata, compares arbitrarily large stable-version components without precision loss, and passes 15 focused scenarios plus the full contract gate.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T05:19:53.989Z, excerpt_hash=sha256:c61ab1404b86c65d2743628996382837dfb456532ac47c1279b9d9536e4c679c
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/release/release-next-action-script.test.ts
+    Result: pass; 15/15 tests passed for missing, stale, current, invalid, inconsistent, incomplete, future, and precision-boundary plan targets.
+    Evidence: focused suite exited 0; final implementation is committed at 514ddf590f40272e1828df7fdd049f36133823ec.
+    Scope: GitHub issue #4783 and both evaluator findings.
+
+    Command: bun run typecheck
+    Result: pass; precision-safe version comparison and fixtures compile cleanly.
+    Evidence: run-typescript-build.mjs exited 0 with the final working-tree content before its exact commit.
+    Scope: Final release next-action source and tests.
+
+    Command: bun run release:incidents:check
+    Result: pass; release incident gate has no active entries.
+    Evidence: check-release-incidents.mjs exited 0 after N0VXJ0 merged.
+    Scope: Release readiness dependency.
+
+    Command: bunx prettier --check scripts/release/next-action.mjs packages/agentplane/src/commands/release/release-next-action-script.test.ts && bunx eslint scripts/release/next-action.mjs packages/agentplane/src/commands/release/release-next-action-script.test.ts
+    Result: pass; formatting and lint checks report no findings.
+    Evidence: both commands exited 0 on the final file content.
+    Scope: Final changed implementation files.
+
+    Command: bun run ci:contract
+    Result: pass; every repository contract gate completed successfully on the exact final file content subsequently committed at 514ddf590f40272e1828df7fdd049f36133823ec.
+    Evidence: command exited 0 after the coverage threshold guard.
+    Scope: Complete contract validation for issue #4783.
+
+    Command: git diff --check && test -z "$(git status --porcelain=v1 --untracked-files=all)"
+    Result: pass; the implementation checkout is clean and has no whitespace errors before verification persistence.
+    Evidence: current task worktree is clean at 514ddf590f40272e1828df7fdd049f36133823ec.
+    Scope: Final committed implementation integrity.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608080355-G5FXDA-correct-stale-plan-comparison-in-next-action-dia/.agentplane/tasks/202608080355-G5FXDA/blueprint/resolved-snapshot.json
+    - old_digest: 1b180e9a165d9cb3562acf6522bc3586c6efcc4f7e890b83961f1821c1184d65
+    - current_digest: 1b180e9a165d9cb3562acf6522bc3586c6efcc4f7e890b83961f1821c1184d65
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608080355-G5FXDA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608080355-G5FXDA
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -409,6 +473,66 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T05:21:45.338Z — VERIFY — ok
+
+By: TESTER
+
+Note: Final committed implementation requires complete consistent plan metadata, compares arbitrarily large stable-version components without precision loss, and passes 15 focused scenarios plus the full contract gate.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T05:19:53.989Z, excerpt_hash=sha256:c61ab1404b86c65d2743628996382837dfb456532ac47c1279b9d9536e4c679c
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/release/release-next-action-script.test.ts
+Result: pass; 15/15 tests passed for missing, stale, current, invalid, inconsistent, incomplete, future, and precision-boundary plan targets.
+Evidence: focused suite exited 0; final implementation is committed at 514ddf590f40272e1828df7fdd049f36133823ec.
+Scope: GitHub issue #4783 and both evaluator findings.
+
+Command: bun run typecheck
+Result: pass; precision-safe version comparison and fixtures compile cleanly.
+Evidence: run-typescript-build.mjs exited 0 with the final working-tree content before its exact commit.
+Scope: Final release next-action source and tests.
+
+Command: bun run release:incidents:check
+Result: pass; release incident gate has no active entries.
+Evidence: check-release-incidents.mjs exited 0 after N0VXJ0 merged.
+Scope: Release readiness dependency.
+
+Command: bunx prettier --check scripts/release/next-action.mjs packages/agentplane/src/commands/release/release-next-action-script.test.ts && bunx eslint scripts/release/next-action.mjs packages/agentplane/src/commands/release/release-next-action-script.test.ts
+Result: pass; formatting and lint checks report no findings.
+Evidence: both commands exited 0 on the final file content.
+Scope: Final changed implementation files.
+
+Command: bun run ci:contract
+Result: pass; every repository contract gate completed successfully on the exact final file content subsequently committed at 514ddf590f40272e1828df7fdd049f36133823ec.
+Evidence: command exited 0 after the coverage threshold guard.
+Scope: Complete contract validation for issue #4783.
+
+Command: git diff --check && test -z "$(git status --porcelain=v1 --untracked-files=all)"
+Result: pass; the implementation checkout is clean and has no whitespace errors before verification persistence.
+Evidence: current task worktree is clean at 514ddf590f40272e1828df7fdd049f36133823ec.
+Scope: Final committed implementation integrity.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608080355-G5FXDA-correct-stale-plan-comparison-in-next-action-dia/.agentplane/tasks/202608080355-G5FXDA/blueprint/resolved-snapshot.json
+- old_digest: 1b180e9a165d9cb3562acf6522bc3586c6efcc4f7e890b83961f1821c1184d65
+- current_digest: 1b180e9a165d9cb3562acf6522bc3586c6efcc4f7e890b83961f1821c1184d65
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608080355-G5FXDA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608080355-G5FXDA
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
