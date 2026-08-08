@@ -1,0 +1,72 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run qualification:check",
+    "bun run test:critical",
+    "bun run format:check",
+    "bun run ci:contract"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-08T14:34:42.403Z",
+    "updated_by": "TESTER",
+    "note": "Verified acceleration rework on 1169b67af: qualification:check, test:critical, format:check, and ci:contract all passed; benchmark evidence exceeds the 10% threshold; provider 50-run/55-episode gate remains required on the integrated release SHA."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check cf63bf27ed515d9cbb279a26281466c76f7be25b..a59a4ba148844f27f7aaf69967fdf8914f6b0354",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB cf63bf27ed515d9cbb279a26281466c76f7be25b..a59a4ba148844f27f7aaf69967fdf8914f6b0354",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608081216-YAN7DW/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608081216-YAN7DW/pr/github-body.md",
+          "M\t.agentplane/tasks/202608081216-YAN7DW/pr/meta.json",
+          "M\t.agentplane/tasks/202608081216-YAN7DW/pr/review.md",
+          "M\tscripts/qualification/run-v0.7.1-release-qualification.mjs"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "cf63bf27ed515d9cbb279a26281466c76f7be25b",
+    "implementation_commit": "a59a4ba148844f27f7aaf69967fdf8914f6b0354",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608081216-YAN7DW",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608081216-YAN7DW/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

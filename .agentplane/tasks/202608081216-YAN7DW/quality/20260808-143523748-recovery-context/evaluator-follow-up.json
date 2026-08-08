@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608081216-YAN7DW-fdc914ec8bde27b43048a1e4",
+  "task_id": "202608081216-YAN7DW",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Add frozen benchmark artifacts satisfying every required performance.benchmark evidence item, and make the qualification executor stop draining unstarted work after the first failure with focused regression coverage; then rerun the declared checks on the resulting implementation SHA.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen evidence asserts a benchmark improvement but contains no baseline measurements, benchmark method, raw run results, serial-versus-concurrent comparison, or noise analysis supporting the claimed greater-than-10% reduction.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/README.md",
+          "sha256": "sha256:48319e87aa0785ab8b43cf806fc80204cf2827846005878ca9e1663c0f84ec90",
+          "line": 738,
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/75e45901d92bc6a87dfaed08b3337940782582094e13602146c209f35930d1c1.json",
+          "sha256": "sha256:75e45901d92bc6a87dfaed08b3337940782582094e13602146c209f35930d1c1",
+          "line": 1,
+          "section": "runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/66fa4c234b9ab066149f87bbec5b818fe331d23c90ef191589289397e54ec486.json",
+          "sha256": "sha256:66fa4c234b9ab066149f87bbec5b818fe331d23c90ef191589289397e54ec486",
+          "line": 250,
+          "section": "requiredEvidence"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "Qualification failure propagation does not stop already queued independent scenarios: all dependency-free scenarios are submitted to the bounded executor before any failure is observed, and the executor continues draining its queue after rejection.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/362b05ce91e3d90b0c2abf8831d2b8cfa522bf6fa643125e4981d38eb878a1a2.patch",
+          "sha256": "sha256:362b05ce91e3d90b0c2abf8831d2b8cfa522bf6fa643125e4981d38eb878a1a2",
+          "line": 827,
+          "section": "scripts/qualification/run-v0.7.1-release-qualification.mjs"
+        },
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/README.md",
+          "sha256": "sha256:48319e87aa0785ab8b43cf806fc80204cf2827846005878ca9e1663c0f84ec90",
+          "line": 300,
+          "section": "Plan"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-143523748-recovery-context/evaluator-result.json"
+}
