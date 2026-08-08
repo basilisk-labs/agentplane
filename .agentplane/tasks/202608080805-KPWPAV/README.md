@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -31,32 +31,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-08T08:36:29.832Z"
+  updated_at: "2026-08-08T08:46:20.485Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 4 typed finding(s)."
-  evaluated_sha: "0caa5838bb36e58165a19215f6bd16ea39673ac0"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "1ba645fe2dafd67f435c0fc051f6a0a399e3aa55"
   blueprint_digest: "73e526b4dc469052abfe576ce64fa57a536cec2ab2b00ef508904629d13d0ba5"
   evidence_refs:
-    - ".agentplane/tasks/202608080805-KPWPAV/quality/20260808-083453599-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608080805-KPWPAV/quality/20260808-083453599-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608080805-KPWPAV/quality/objects/sha256/e497f6fa0821b229135697729c61b96b091c677549a8e91fecfec42e6e632761.md"
-    - ".agentplane/tasks/202608080805-KPWPAV/quality/20260808-083453599-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608080805-KPWPAV/quality/20260808-083453599-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608080805-KPWPAV/quality/20260808-083453599-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608080805-KPWPAV/quality/20260808-084545796-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608080805-KPWPAV/quality/20260808-084545796-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608080805-KPWPAV/quality/objects/sha256/3b22e49a744d94f59a652feea9def7180ddc3b129b2295e9a12efea5480ce55f.md"
+    - ".agentplane/tasks/202608080805-KPWPAV/quality/20260808-084545796-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608080805-KPWPAV/quality/20260808-084545796-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608080805-KPWPAV/quality/20260808-084545796-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608080805-KPWPAV/README.md"
-    - ".agentplane/tasks/202608080805-KPWPAV/quality/objects/sha256/f4b9cd76f6c65fa3fd5b5ef29645a3f9a11241d5acb4cecbe30580587816c3dc.patch"
-    - ".agentplane/tasks/202608080805-KPWPAV/quality/objects/sha256/da3bab6dfd54c4de579050c78744248f71e588fec112176cd002b555290b5b35.json"
-    - ".agentplane/tasks/202608080805-KPWPAV/verification/20260808083445339-dcf089b32ca3a5d5.json"
+    - ".agentplane/tasks/202608080805-KPWPAV/quality/objects/sha256/77ce9d8b1fbf40b2e1fddcd4915e88f470cbc61c6279c391300ce227933956b0.patch"
+    - ".agentplane/tasks/202608080805-KPWPAV/quality/objects/sha256/fb036da4f446f3384ae9ca7255c6183808e04331581be518611801616ecf950f.json"
+    - ".agentplane/tasks/202608080805-KPWPAV/verification/20260808084534838-9ba14b37a9d04b68.json"
     - ".agentplane/tasks/202608080805-KPWPAV/quality/objects/sha256/53e6d28c284158271b14a21b0326bced25eab10452d4d6f223e15ed9ed871bea.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "The replacement preparation uses the core exact-failed-operation primitive and a journal CAS, then propagates replacement_of_operation_key into every successor start used by task advance."
-    - "The replacement flag is rejected without a terminal operation_failed journal and when combined with a semantic result."
-    - "The real task recovered its own failed verification journal through --replacement and reached a fresh semantic boundary, demonstrating the end-to-end path."
-    - "Focused recovery tests, the critical suite, typecheck, and the full contract suite passed on implementation commit 0caa5838bb36e58165a19215f6bd16ea39673ac0."
+    - "The rework is limited to generated CLI documentation and task lifecycle evidence."
+    - "bun run docs:cli:check passes on the regenerated reference."
+    - "The critical suite, typecheck, and full contract suite passed on implementation commit 1ba645fe2."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -169,7 +168,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-08T08:45:35.878Z"
+doc_updated_at: "2026-08-08T08:46:20.508Z"
 doc_updated_by: "SUPERVISOR"
 description: "Expose a guarded task advance replacement path for a terminal operation_failed supervisor journal so a newly recomputed route can continue without retrying the failed effect."
 sections:
