@@ -2,8 +2,8 @@
   "schema_version": 1,
   "kind": "agentplane.release_qualification_parallelization_benchmark",
   "task_id": "202608081216-YAN7DW",
-  "measured_at": "2026-08-08T14:18:23Z",
-  "candidate_sha": "9fe09a4edb680de4444c8d76a21ee248f6b950fa",
+  "measured_at": "2026-08-08T15:15:13Z",
+  "candidate_sha": "ac402da87f6841585852e11603840d702918da09",
   "baseline_measurement_sha": "58ae07c581374c7cc29fee87e64b9f0816f70edf",
   "manifest": {
     "path": "scripts/qualification/v0.7.1-release-qualification.json",
@@ -102,24 +102,24 @@
     "verdict": "pass"
   },
   "exact_candidate_confirmation": {
-    "candidate_sha": "9fe09a4edb680de4444c8d76a21ee248f6b950fa",
-    "serial_elapsed_seconds": 114.83,
-    "serial_user_seconds": 103.26,
-    "serial_system_seconds": 44.87,
+    "candidate_sha": "ac402da87f6841585852e11603840d702918da09",
+    "serial_elapsed_seconds": 222.7,
+    "serial_user_seconds": 229.56,
+    "serial_system_seconds": 105.25,
     "serial_exit_codes": [0, 0, 0, 0, 0],
-    "concurrent_elapsed_seconds": 69.17,
-    "concurrent_user_seconds": 134.27,
-    "concurrent_system_seconds": 63.13,
+    "concurrent_elapsed_seconds": 147.51,
+    "concurrent_user_seconds": 335.44,
+    "concurrent_system_seconds": 155.84,
     "concurrent_exit_codes": [0, 0, 0, 0, 0],
-    "elapsed_reduction_percent": 39.7631,
+    "elapsed_reduction_percent": 33.7629,
     "verdict": "pass"
   },
   "candidate_equivalence": {
     "baseline_measurement_sha": "58ae07c581374c7cc29fee87e64b9f0816f70edf",
-    "candidate_sha": "9fe09a4edb680de4444c8d76a21ee248f6b950fa",
+    "candidate_sha": "ac402da87f6841585852e11603840d702918da09",
     "selected_group_behavior_changed": false,
-    "intervening_scheduler_change": "critical-cli and full-contract became exclusive; neither scenario is present in the measured balanced group",
-    "confirmation": "the exact-candidate pair reran all five measured commands with zero exit codes and exceeded the same threshold"
+    "intervening_scheduler_change": "critical-cli and full-contract became exclusive, queued qualification work now stops after failure, and provider failures are selected by declared index; the measured successful group contains neither exclusive scenario and exercises no failure path",
+    "confirmation": "the final exact-candidate pair reran all five measured commands with zero exit codes and exceeded the same threshold"
   },
   "critical_path_control": {
     "scenario_ids": [
@@ -150,7 +150,7 @@
   ],
   "verdict": {
     "status": "pass",
-    "summary": "Bounded concurrency reduced median elapsed time by 37.74 percent for a balanced independent manifest group, and the exact-candidate confirmation reduced elapsed time by 39.76 percent with unchanged zero exit codes.",
+    "summary": "Bounded concurrency reduced median elapsed time by 37.74 percent for the paired baseline, and the final exact-candidate confirmation reduced elapsed time by 33.76 percent with unchanged zero exit codes.",
     "limits": [
       "No speedup is claimed for critical-path-dominated groups; critical-cli, full-contract, and timed latency scenarios are exclusive.",
       "Provider throughput remains bounded at three jobs and may be reduced if the release provider throttles.",
@@ -165,6 +165,6 @@
     "benchmark.comparison": "baseline_comparison and exact_candidate_confirmation",
     "benchmark.verdict": "verdict",
     "benchmark.quality": "pending fresh evaluator review",
-    "benchmark.commit": "9fe09a4edb680de4444c8d76a21ee248f6b950fa"
+    "benchmark.commit": "ac402da87f6841585852e11603840d702918da09"
   }
 }
