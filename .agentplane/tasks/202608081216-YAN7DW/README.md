@@ -4,7 +4,7 @@ title: "Parallelize release qualification without weakening gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -16,7 +16,7 @@ task_kind: "code"
 mutation_scope: "code"
 blueprint_request: "performance.benchmark"
 verify:
-  - "bun run e2e:v0.7.1:check"
+  - "bun run qualification:check"
   - "bun run test:critical"
   - "bun run format:check"
   - "bun run ci:contract"
@@ -104,7 +104,7 @@ events:
     state: "needs_rework"
     note: "Rework: Unsupported declared check: bun run e2e:v0.7.1:check"
 doc_version: 3
-doc_updated_at: "2026-08-08T12:41:35.400Z"
+doc_updated_at: "2026-08-08T12:42:22.124Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
@@ -124,7 +124,7 @@ sections:
 
     Scope limit: qualification runner, provider replay capture, their focused tests, and required generated documentation only. No quality threshold, scenario count, provider episode count, retry policy, publish authority, or hosted gate may be weakened.
   Verify Steps: |-
-    1. Run `bun run e2e:v0.7.1:check`. Expected: qualification contract tests pass and the full gate command resolves every required variable in dry-run mode.
+    1. Run `bun run qualification:check`. Expected: qualification contract tests pass and the full gate command resolves every required variable in dry-run mode.
     2. Run `bun run test:critical`. Expected: the critical CLI suite passes, including candidate capture concurrency, stop-on-first-failure, evidence cleanup, and existing RF-04 contracts.
     3. Run `bun run format:check`. Expected: formatting passes.
     4. Run `bun run ci:contract`. Expected: repository contracts, lint, architecture, clone, knip, and coverage thresholds pass.
@@ -265,7 +265,7 @@ Scope limit: qualification runner, provider replay capture, their focused tests,
 
 ## Verify Steps
 
-1. Run `bun run e2e:v0.7.1:check`. Expected: qualification contract tests pass and the full gate command resolves every required variable in dry-run mode.
+1. Run `bun run qualification:check`. Expected: qualification contract tests pass and the full gate command resolves every required variable in dry-run mode.
 2. Run `bun run test:critical`. Expected: the critical CLI suite passes, including candidate capture concurrency, stop-on-first-failure, evidence cleanup, and existing RF-04 contracts.
 3. Run `bun run format:check`. Expected: formatting passes.
 4. Run `bun run ci:contract`. Expected: repository contracts, lint, architecture, clone, knip, and coverage thresholds pass.
