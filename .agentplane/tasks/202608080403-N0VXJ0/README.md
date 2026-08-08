@@ -4,7 +4,7 @@ title: "Archive resolved supervisor route incident"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -37,11 +37,16 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "4e50a776a2a8028e2b02e964cfceade18cae271f"
+  message: "🚧 N0VXJ0 task: apply external agent result"
 comments:
   -
     author: "DOCS"
     body: "Start: archive the resolved incident through the dedicated policy task."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 4e50a776a2a8. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -50,9 +55,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: archive the resolved incident through the dedicated policy task."
+  -
+    type: "status"
+    at: "2026-08-08T04:06:20.509Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 4e50a776a2a8. CLI accepted one state-bound external-agent semantic result."
 doc_version: 3
-doc_updated_at: "2026-08-08T04:03:53.189Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-08-08T04:06:20.509Z"
+doc_updated_by: "SUPERVISOR"
 description: "Preserve INC-20260807-01 with its final merged evidence in docs/developer/incident-archive.mdx, then remove it from the active repository and bundled incident registries. The dependency-readiness and supervisor protocol failure is repaired by merged task 202608062021-MCY8ZC and its focused, hosted, and evaluator evidence. Keep incident registry semantics and generated assets aligned so the release incident gate passes."
 sections:
   Summary: |-
