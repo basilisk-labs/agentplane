@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608080403-N0VXJ0/archive-resolved-supervisor-route-incident",
+  "created_at": "2026-08-08T04:03:53.324Z",
+  "diffstat_sha256": "sha256:8ae8e42a418cf68a5f1bedd56c54a16ee125baefe9a559a8a4ff188045b1b151",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608080403-N0VXJ0",
+  "updated_at": "2026-08-08T04:03:53.324Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
