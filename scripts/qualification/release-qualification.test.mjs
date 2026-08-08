@@ -217,6 +217,38 @@ describe("v0.7.1 release qualification contract", () => {
     assert.ok(events.indexOf("finish:matched-cli-latency:1") < events.indexOf("start:after-b:2"));
   });
 
+  it("does not overlap internally parallel suites with other qualification work", async () => {
+    const scenarios = [
+      { id: "before-a", tier: "core", depends_on: [] },
+      { id: "before-b", tier: "core", depends_on: [] },
+      { id: "critical-cli", tier: "full", depends_on: [] },
+      { id: "after-a", tier: "full", depends_on: [] },
+      { id: "after-b", tier: "full", depends_on: [] },
+    ];
+    const events = [];
+    let active = 0;
+    const results = await runQualificationScenarios(scenarios, {}, "/unused", {
+      concurrency: 2,
+      async scenarioRunner(scenario) {
+        active += 1;
+        events.push(`start:${scenario.id}:${active}`);
+        await new Promise((resolve) => setTimeout(resolve, scenario.id === "before-a" ? 20 : 5));
+        events.push(`finish:${scenario.id}:${active}`);
+        active -= 1;
+        return scenario.id;
+      },
+    });
+
+    assert.deepEqual(
+      results,
+      scenarios.map((scenario) => scenario.id),
+    );
+    assert.ok(events.indexOf("finish:before-a:1") < events.indexOf("start:critical-cli:1"));
+    assert.ok(events.indexOf("finish:before-b:2") < events.indexOf("start:critical-cli:1"));
+    assert.ok(events.indexOf("finish:critical-cli:1") < events.indexOf("start:after-a:1"));
+    assert.ok(events.indexOf("finish:critical-cli:1") < events.indexOf("start:after-b:2"));
+  });
+
   it("propagates prerequisite failure after active work settles without starting dependents", async () => {
     const scenarios = [
       { id: "prerequisite", tier: "core", depends_on: [] },

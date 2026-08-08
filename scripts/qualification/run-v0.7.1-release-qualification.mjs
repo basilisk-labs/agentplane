@@ -40,7 +40,14 @@ const DEFAULT_PROVIDER_CONCURRENCY = 3;
 const MAX_CHILD_OUTPUT_BYTES = 128 * 1024 * 1024;
 const EXCLUSIVE_QUALIFICATION_SCENARIO_IDS = new Set([
   "cli-latency",
+  "context-matrix",
+  "critical-cli",
+  "full-contract",
+  "hosted-boundary-matrix",
+  "lifecycle-matrix",
   "matched-cli-latency",
+  "recovery-matrix",
+  "supervisor-parity",
   "supervisor-latency",
 ]);
 
