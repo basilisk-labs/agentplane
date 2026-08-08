@@ -305,13 +305,16 @@ function createBoundedExecutor(concurrency) {
             active -= 1;
             entry.resolve(value);
             drain();
+            return null;
           },
           (error) => {
             active -= 1;
             entry.reject(error);
             stop(error);
+            return null;
           },
-        );
+        )
+        .catch(entry.reject);
     }
   }
 
