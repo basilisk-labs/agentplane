@@ -44,7 +44,16 @@ export async function recordDirectTaskFormalOperation(opts: {
     });
     await opened.store.write(journal);
   }
-  if (journal.cursor.phase !== "ready") {
+  const pendingOperation = journal.operations.at(-1);
+  const resumedOperationKey =
+    journal.cursor.phase === "intent_recorded" &&
+    journal.state_fingerprint_digest === before.workflowStep.preconditionFingerprint.digest &&
+    pendingOperation?.status === "intent" &&
+    pendingOperation.effect_ref === opts.id &&
+    pendingOperation.operation_key === journal.cursor.operation_key
+      ? pendingOperation.operation_key
+      : null;
+  if (journal.cursor.phase !== "ready" && resumedOperationKey === null) {
     throw new CliError({
       code: "E_RUNTIME",
       message:
@@ -61,8 +70,14 @@ export async function recordDirectTaskFormalOperation(opts: {
       authority_ref: `direct-task-supervisor:${opts.id}`,
       authority_digest: before.workflowStep.preconditionFingerprint.digest,
       effect_ref: opts.id,
+      ...(journal.cursor.replacement_of_operation_key
+        ? { replacement_of_operation_key: journal.cursor.replacement_of_operation_key }
+        : {}),
     });
-  let started = start();
+  let started =
+    resumedOperationKey === null
+      ? start()
+      : ({ status: "started", journal, operation_key: resumedOperationKey } as const);
   // A completed runner episode is allowed to advance to the route observed
   // after its own durable outcome. This is distinct from retrying an unknown
   // effect: the helper only reopens a stale journal with a completed latest

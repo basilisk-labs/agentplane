@@ -67,6 +67,24 @@ describe("workflow transition service", () => {
     ]);
   });
 
+  it("binds a recorded implementation commit to its status event", () => {
+    const task = mkTask({ status: "DOING" });
+    const commit = { hash: "a".repeat(40), message: "fix: address verification rework" };
+    const transition = buildTaskStatusTransition({
+      task,
+      at: "2026-03-27T01:05:00.000Z",
+      toStatus: "DOING",
+      eventAuthor: "SUPERVISOR",
+      updatedBy: "SUPERVISOR",
+      commit,
+    });
+
+    expect(transition.nextTask.commit).toEqual(commit);
+    expect(transition.nextTask.events).toEqual([
+      expect.objectContaining({ type: "status", to: "DOING", commit: commit.hash }),
+    ]);
+  });
+
   it("buildTaskVerificationTransition keeps one canonical verification write", () => {
     const task = mkTask({
       status: "DONE",

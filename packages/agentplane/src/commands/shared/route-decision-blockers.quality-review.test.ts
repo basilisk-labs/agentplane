@@ -169,6 +169,33 @@ function reworkTask(verificationUpdatedAt: string): TaskData {
   return task;
 }
 
+function verificationReworkTask(withNewImplementation: boolean): TaskData {
+  const task = reviewedTask();
+  task.status = "DOING";
+  task.verification = {
+    state: "needs_rework",
+    updated_at: "2026-07-24T00:00:00.000Z",
+    updated_by: "SUPERVISOR",
+    note: "Declared verification failed.",
+  };
+  task.quality_review = undefined;
+  if (withNewImplementation) {
+    task.commit = { hash: headSha, message: "fix: address verification rework" };
+    task.events = [
+      {
+        type: "status",
+        at: "2026-07-24T00:00:01.000Z",
+        author: "SUPERVISOR",
+        commit: headSha,
+        from: "DOING",
+        to: "DOING",
+        note: "Implementation committed after verification rework.",
+      },
+    ];
+  }
+  return task;
+}
+
 describe("DOING route quality rework", () => {
   it("keeps fresh evaluator rework blocking until a newer verification exists", async () => {
     const blockers = await blockersFor(
@@ -199,6 +226,58 @@ describe("DOING route quality rework", () => {
     );
     expect(blockers).not.toEqual(
       expect.arrayContaining([expect.objectContaining({ code: "quality_review_stale" })]),
+    );
+  });
+});
+
+describe("DOING route verification rework", () => {
+  it("keeps rework semantic while no newer implementation is recorded", async () => {
+    const blockers = await blockersFor(
+      headSha,
+      undefined,
+      openPrFlow(),
+      verificationReworkTask(false),
+    );
+
+    expect(blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+    );
+  });
+
+  it("ignores an unrelated later DOING event for the failed implementation commit", async () => {
+    const task = verificationReworkTask(false);
+    task.commit = { hash: headSha, message: "fix: failed implementation" };
+    task.events = [
+      {
+        type: "status",
+        at: "2026-07-24T00:00:01.000Z",
+        author: "SUPERVISOR",
+        from: "DOING",
+        to: "DOING",
+        note: "Unrelated task-state refresh.",
+      },
+    ];
+
+    const blockers = await blockersFor(headSha, undefined, openPrFlow(), task);
+
+    expect(blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+    );
+  });
+
+  it("moves a newer implementation to deterministic verification", async () => {
+    const blockers = await blockersFor(
+      headSha,
+      undefined,
+      openPrFlow(),
+      verificationReworkTask(true),
+    );
+
+    expect(blockers).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+    );
+    expect(blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "verification_required" })]),
     );
   });
 });

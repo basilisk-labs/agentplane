@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "medium",
+      "summary": "Regression coverage tests only the purpose predicate; it does not exercise acceptance of a completed task_worktree_resolution result after the expected supervisor-owned commit transition.",
+      "broken_invariant": "Pass requires verification of the positive, negative, and concurrency-sensitive result-acceptance paths relevant to the task. The central state-bound commit-transition behavior remains unproven by the focused test.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/159b3156259d89a0cff246ab3d120d23b41c3c76c39b7935b9bf8a7f831c2d73.patch",
+          "sha256": "sha256:159b3156259d89a0cff246ab3d120d23b41c3c76c39b7935b9bf8a7f831c2d73",
+          "line": 1,
+          "lines": "1-19",
+          "section": "external-agent-purpose.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/c64a0ad3cb0d9a182e46a9188a94d670578ae46298329b92cbe1bab5cbbacd7c.json",
+          "sha256": "sha256:c64a0ad3cb0d9a182e46a9188a94d670578ae46298329b92cbe1bab5cbbacd7c",
+          "line": 1,
+          "section": "declared_checks and verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A behavioral regression test that creates a state-bound task_worktree_resolution exchange, simulates the expected supervisor-owned commit transition, submits a completed result, and verifies that acceptExternalAgentResult applies it without unsupported-purpose or stale-read-only rejection.",
+    "A negative behavioral test confirming that a read-only purpose still rejects the equivalent stale return after a commit transition."
+  ],
+  "hidden_assumptions": [
+    "Directly testing usesExternalImplementationAuthority is assumed to prove both result application and freshness behavior, although it does not execute either acceptance path.",
+    "Passing the broad contract suite is assumed to cover the new state-bound commit-transition scenario, but the frozen evidence identifies no such behavioral case."
+  ],
+  "recovery_context": "Add focused acceptance-level regression coverage for task_worktree_resolution after the expected commit transition, retain a read-only stale-return negative case, and rerun the declared checks."
+}

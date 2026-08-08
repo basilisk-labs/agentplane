@@ -1,0 +1,55 @@
+{
+  "artifacts": [
+    {
+      "kind": "blueprint",
+      "logical_name": "evaluator-blueprint",
+      "media_type": "application/json",
+      "path": ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/e7f0d8937798e7a28e334c69c2a382fb72e68022016a5544cd7eb10b3267bdcb.json",
+      "sha256": "sha256:e7f0d8937798e7a28e334c69c2a382fb72e68022016a5544cd7eb10b3267bdcb",
+      "size_bytes": 10519
+    },
+    {
+      "kind": "actual_diff",
+      "logical_name": "evaluator-diff",
+      "media_type": "text/x-diff",
+      "path": ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/4dd42e85fe95b8b553e4117112e35c40acd6b3467a9e8b0819d6bcf2a360b516.patch",
+      "sha256": "sha256:4dd42e85fe95b8b553e4117112e35c40acd6b3467a9e8b0819d6bcf2a360b516",
+      "size_bytes": 7972
+    },
+    {
+      "kind": "observed_checks",
+      "logical_name": "evaluator-observed-checks",
+      "media_type": "application/json",
+      "path": ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/07720aff1a19710b3faa463ff32e2aa24242d8d63a4b8f95511fbf71682efee5.json",
+      "sha256": "sha256:07720aff1a19710b3faa463ff32e2aa24242d8d63a4b8f95511fbf71682efee5",
+      "size_bytes": 5001
+    },
+    {
+      "kind": "prompt",
+      "logical_name": "evaluator-prompt",
+      "media_type": "text/markdown",
+      "path": ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/3820db636efbe009a14a078661879b5ba0317e3bc88ecb7d8031088d21696e7b.md",
+      "sha256": "sha256:3820db636efbe009a14a078661879b5ba0317e3bc88ecb7d8031088d21696e7b",
+      "size_bytes": 5030
+    },
+    {
+      "kind": "result_schema",
+      "logical_name": "evaluator-result-schema",
+      "media_type": "application/schema+json",
+      "path": ".agentplane/tasks/202608080403-N0VXJ0/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+      "sha256": "sha256:9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a",
+      "size_bytes": 3478
+    }
+  ],
+  "created_at": "2026-08-08T04:20:49.442Z",
+  "integrity": {
+    "canonicalization": "agentplane-canonical-json-v1",
+    "digest_algorithm": "sha256",
+    "manifest_digest": "sha256:4e9d87b37e02af647927c92efe6bffa27d40883d6a795fe632cc9f7935f81fd6"
+  },
+  "kind": "evaluator_evidence_packet",
+  "object_root": ".agentplane/tasks/202608080403-N0VXJ0/quality/objects",
+  "schema_version": 1,
+  "task_id": "202608080403-N0VXJ0",
+  "work_order_id": "evaluator-work-order-202608080403-N0VXJ0-9659fb223b3f869b16b9bf88"
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202608080355-G5FXDA-ad26ac9c570cb088ef6deab3",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608080355-G5FXDA-correct-stale-plan-comparison-in-next-action-dia",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608080355-G5FXDA-correct-stale-plan-comparison-in-next-action-dia/.agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-08-08T05:21:55.866Z",
+  "ended_at": "2026-08-08T05:22:36.820Z",
+  "stdout_bytes": 47168,
+  "stderr_bytes": 1072,
+  "provider_usage": {
+    "input_tokens": 80437,
+    "output_tokens": 1626,
+    "total_tokens": 82063,
+    "visible_output_tokens": 1263,
+    "reasoning_tokens": 363
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:ad27ae74c07e1f289fc88dfea7ed59d6a4cddc2365eb4cb6982ccc103a6c9d6b"
+}

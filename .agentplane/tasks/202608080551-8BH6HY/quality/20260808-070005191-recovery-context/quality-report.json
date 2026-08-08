@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608080551-8BH6HY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-08T07:01:01.223Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "c421bde71fb5260237a2cfbf84dfa91c692b6457",
+  "blueprint_digest": "f838ddb45c74406d87ad39a2b037d6fe7c88d657a5b7b4059642578ee7641be4",
+  "findings": [
+    "The implementation meets the approved contract: task_worktree_resolution shares implementation-authority routing, the completed result is accepted after the expected commit transition, read-only freshness remains enforced, and recorded checks pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/a795513810310d25ad12119d319e329fb1649025d34571a7f1705fa54e569737.patch",
+    ".agentplane/tasks/202608080551-8BH6HY/verification/20260808065919974-6bbaee56107e8436.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

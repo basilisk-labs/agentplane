@@ -2,6 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
+  completeSupervisorExecutionEpisode,
   recoverSupervisorExecutionEpisodeJournal,
   validateSupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
@@ -108,6 +109,112 @@ async function writePlanningResult(packet: AgentPacket, summary: string): Promis
 }
 
 describe("task advance effect recovery", () => {
+  it("rejects replacement when no terminal operation failure exists", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root);
+    const io = captureStdIO();
+    try {
+      expect(
+        await runCli(["task", "advance", taskId, "--replacement", "--agent-json", "--root", root]),
+      ).toBe(2);
+      expect(io.stderr).toContain("requires a terminal failed operation");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("requires an explicit exact-key replacement after a known operation failure", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root);
+    const issued = await readAgentPacket(root, taskId);
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    const journal = validateSupervisorExecutionEpisodeJournal(await store.read());
+    const failedOperation = journal.operations.at(-1);
+    if (!failedOperation) throw new Error("expected issued operation");
+    await store.write(
+      completeSupervisorExecutionEpisode({
+        journal,
+        operation_key: failedOperation.operation_key,
+        result: { classification: "known_pre_result_failure" },
+        failed: true,
+      }),
+    );
+
+    const rejected = captureStdIO();
+    try {
+      expect(await runCli(["task", "advance", taskId, "--agent-json", "--root", root])).toBe(8);
+      expect(rejected.stderr).toContain("rerun task advance with --replacement");
+    } finally {
+      rejected.restore();
+    }
+
+    const replaced = captureStdIO();
+    try {
+      expect(
+        await runCli(["task", "advance", taskId, "--replacement", "--agent-json", "--root", root]),
+        replaced.stderr,
+      ).toBe(0);
+      expect(JSON.parse(replaced.stdout)).toMatchObject({
+        task_id: issued.task_id,
+        action: { kind: "agent_episode" },
+      });
+    } finally {
+      replaced.restore();
+    }
+
+    const replacement = validateSupervisorExecutionEpisodeJournal(await store.read());
+    expect(replacement).toMatchObject({
+      status: "running",
+      cursor: { phase: "intent_recorded" },
+      operations: [
+        { operation_key: failedOperation.operation_key, status: "failed" },
+        {
+          status: "intent",
+          replacement_of_operation_key: failedOperation.operation_key,
+        },
+      ],
+    });
+  });
+
+  it("rejects replacement while accepting an external result", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root);
+    const issued = await readAgentPacket(root, taskId);
+    const resultPath = await writePlanningResult(issued, "1. Keep the result single-use.");
+    const io = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "task",
+          "advance",
+          taskId,
+          "--result",
+          resultPath,
+          "--replacement",
+          "--agent-json",
+          "--root",
+          root,
+        ]),
+      ).toBe(2);
+      expect(io.stderr).toContain("cannot be combined with --result");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("reconciles an exact approved planning result without replaying the agent", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

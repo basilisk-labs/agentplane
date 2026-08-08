@@ -4,6 +4,7 @@ export type TaskAdvanceParsed = {
   taskId: string;
   agentJson: boolean;
   remote: boolean;
+  replacement: boolean;
   result?: string;
 };
 
@@ -31,6 +32,13 @@ export const taskAdvanceSpec: CommandSpec<TaskAdvanceParsed> = {
       valueHint: "<path>",
       description: "Accept one state-bound external-agent result and return the next action.",
     },
+    {
+      kind: "boolean",
+      name: "replacement",
+      default: false,
+      description:
+        "Explicitly start a distinct exact-key successor after a terminal operation failure.",
+    },
   ],
   examples: [
     {
@@ -46,12 +54,14 @@ export const taskAdvanceSpec: CommandSpec<TaskAdvanceParsed> = {
     "The command prepares the same canonical work order and route decision used by the managed task runner.",
     "It executes only registered deterministic transitions, then stops before semantic work, approval, human input, external wait, or terminal attention.",
     "A result is single-use and must match the issued task, transition, role, state fingerprint, work-order id, and result_ref.",
+    "--replacement is valid only after a known terminal operation_failed journal; it never retries the failed effect and cannot be combined with --result.",
     "--agent-json changes only rendering; any formal transition is journaled, fingerprint-checked, and supervisor-owned.",
   ],
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
     agentJson: raw.opts["agent-json"] === true,
     remote: raw.opts.remote === true,
+    replacement: raw.opts.replacement === true,
     result: typeof raw.opts.result === "string" ? raw.opts.result.trim() : undefined,
   }),
 };

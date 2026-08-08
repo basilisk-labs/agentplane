@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "The implementation meets the approved contract: task_worktree_resolution shares implementation-authority routing, the completed result is accepted after the expected commit transition, read-only freshness remains enforced, and recorded checks pass.",
+      "broken_invariant": "No invariant is broken; the prior regression-coverage gap is closed.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/a795513810310d25ad12119d319e329fb1649025d34571a7f1705fa54e569737.patch",
+          "sha256": "sha256:a795513810310d25ad12119d319e329fb1649025d34571a7f1705fa54e569737",
+          "section": "external-agent-purpose.ts, external-agent-supervisor.ts, and task-advance regression tests"
+        },
+        {
+          "path": ".agentplane/tasks/202608080551-8BH6HY/verification/20260808065919974-6bbaee56107e8436.json",
+          "sha256": "sha256:451e1ad302c36e888c82bc47469aa08b1f0c425828f2e8c547410316dd2f3444",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "scope-drift-001",
+      "severity": "high",
+      "summary": "The evaluated patch includes unrelated verification-routing, quality-review, and formal-operation recovery changes beyond the approved task-worktree result-acceptance fix.",
+      "broken_invariant": "The task explicitly excludes unrelated refactors, and DoD requires files outside approved scope or expansion beyond five additional files to be treated as material drift requiring re-approval.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/0d8205290b2e749c44fb2689ec51d656d3c4557641356fe8aca7013418a18a52.patch",
+          "sha256": "sha256:0d8205290b2e749c44fb2689ec51d656d3c4557641356fe8aca7013418a18a52",
+          "section": "Changes to route-decision verification, quality-review blockers, and direct-task formal-operation recovery"
+        },
+        {
+          "path": ".agentplane/tasks/202608080551-8BH6HY/README.md",
+          "sha256": "sha256:e3d2731fdb19256e68c04905f84fc4805cd075450a6e38dd44f8ee4db062e7ab",
+          "section": "Scope and Plan"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc2415f934b9c32f80753",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add or enforce a changed-path scope check that distinguishes the approved task-worktree resolution implementation and focused regressions from unrelated lifecycle-routing changes."
+  ],
+  "hidden_assumptions": [
+    "The patch assumes the additional verification-rework, quality-review, and interrupted formal-operation changes are necessary for this task, but the approved plan does not establish that dependency and the evidence contains no material-drift re-approval."
+  ],
+  "recovery_context": "Separate or explicitly re-approve the unrelated lifecycle-routing and formal-operation recovery changes, then present a frozen diff limited to the approved task-worktree resolution result-acceptance behavior and its focused regression coverage."
+}

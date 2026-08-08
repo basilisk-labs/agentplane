@@ -1,0 +1,140 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run test:critical",
+    "bun run typecheck",
+    "bun run ci:contract"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-08T08:34:45.339Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608080805-KPWPAV/verification/20260808083445339-dcf089b32ca3a5d5.json",
+      "sha256": "sha256:086c4e681db60f3f1d9a62eec74e5395ae92462ca7a5f6e79b49c6af2cb02691"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check c0b33f29ba1d911ce7996c063774bb9a04fe8c4e..0caa5838bb36e58165a19215f6bd16ea39673ac0",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB c0b33f29ba1d911ce7996c063774bb9a04fe8c4e..0caa5838bb36e58165a19215f6bd16ea39673ac0",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608080805-KPWPAV/README.md",
+          "M\t.agentplane/tasks/202608080805-KPWPAV/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608080805-KPWPAV/pr/github-body.md",
+          "M\t.agentplane/tasks/202608080805-KPWPAV/pr/meta.json",
+          "M\t.agentplane/tasks/202608080805-KPWPAV/pr/review.md",
+          "A\t.agentplane/tasks/202608080805-KPWPAV/verification/20260808082324502-85c238495c848729.json",
+          "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+          "M\tpackages/agentplane/src/commands/task/advance.command.ts",
+          "M\tpackages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts",
+          "M\tpackages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts",
+          "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
+          "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "c0b33f29ba1d911ce7996c063774bb9a04fe8c4e",
+    "implementation_commit": "0caa5838bb36e58165a19215f6bd16ea39673ac0",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M .agentplane/tasks/202608080805-KPWPAV/README.md",
+        " M .agentplane/tasks/202608080805-KPWPAV/pr/meta.json",
+        " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+        " M packages/agentplane/src/commands/task/advance.command.ts",
+        " M packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts",
+        " M packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts",
+        " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+        "?? .agentplane/tasks/202608080805-KPWPAV/verification/20260808082324502-85c238495c848729.json"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608080805-KPWPAV/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608080805-KPWPAV/pr/meta.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/advance.command.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/direct-task-verification.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608080805-KPWPAV/verification/20260808082324502-85c238495c848729.json"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        " M .agentplane/tasks/202608080805-KPWPAV/README.md",
+        " M .agentplane/tasks/202608080805-KPWPAV/pr/meta.json",
+        " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+        " M packages/agentplane/src/commands/task/advance.command.ts",
+        " M packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts",
+        " M packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts",
+        " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+        "?? .agentplane/tasks/202608080805-KPWPAV/verification/20260808082324502-85c238495c848729.json"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608080805-KPWPAV",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608080805-KPWPAV/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

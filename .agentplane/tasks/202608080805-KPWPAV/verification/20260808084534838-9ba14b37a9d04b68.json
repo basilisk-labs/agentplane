@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test:critical\nResult: pass\nEvidence: .agentplane/tasks/202608080805-KPWPAV/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608080805-KPWPAV declared verification\n\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202608080805-KPWPAV/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608080805-KPWPAV declared verification\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: .agentplane/tasks/202608080805-KPWPAV/supervision/declared-checks.json#check-3\nScope: branch_pr task 202608080805-KPWPAV declared verification",
+  "digest": "sha256:9ba14b37a9d04b686535c546e9a45c6ba10325070d0ee7cce6fa5aff8e5cb9ef",
+  "implementation_sha": "1ba645fe2dafd67f435c0fc051f6a0a399e3aa55",
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-08-08T08:45:34.838Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Allow explicit replacement after failed task advance operation\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow explicit replacement after failed task advance operation\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:fae92571cbd16678a5608352c61596708e0d7118146fca9cb39936d01aeae5aa",
+  "task_id": "202608080805-KPWPAV",
+  "verification_command": "agentplane verify 202608080805-KPWPAV --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

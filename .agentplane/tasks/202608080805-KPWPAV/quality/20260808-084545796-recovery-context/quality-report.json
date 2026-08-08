@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608080805-KPWPAV",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-08T08:46:20.485Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "1ba645fe2dafd67f435c0fc051f6a0a399e3aa55",
+  "blueprint_digest": "73e526b4dc469052abfe576ce64fa57a536cec2ab2b00ef508904629d13d0ba5",
+  "findings": [
+    "The rework is limited to generated CLI documentation and task lifecycle evidence.",
+    "bun run docs:cli:check passes on the regenerated reference.",
+    "The critical suite, typecheck, and full contract suite passed on implementation commit 1ba645fe2."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608080805-KPWPAV/quality/objects/sha256/77ce9d8b1fbf40b2e1fddcd4915e88f470cbc61c6279c391300ce227933956b0.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -66,6 +66,7 @@ export type TaskEvent = {
   type: TaskEventType;
   at: string;
   author: string;
+  commit?: string;
   from?: string;
   to?: string;
   state?: string;

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608080551-8BH6HY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-08T07:30:09.485Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "bd07cac6d7b50201f5f2de53c8adeb0074bd3922",
+  "blueprint_digest": "f838ddb45c74406d87ad39a2b037d6fe7c88d657a5b7b4059642578ee7641be4",
+  "findings": [
+    "The evaluated patch includes unrelated verification-routing, quality-review, and formal-operation recovery changes beyond the approved task-worktree result-acceptance fix."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/0d8205290b2e749c44fb2689ec51d656d3c4557641356fe8aca7013418a18a52.patch",
+    ".agentplane/tasks/202608080551-8BH6HY/README.md",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [
+    "Add or enforce a changed-path scope check that distinguishes the approved task-worktree resolution implementation and focused regressions from unrelated lifecycle-routing changes."
+  ],
+  "hidden_assumptions": [
+    "The patch assumes the additional verification-rework, quality-review, and interrupted formal-operation changes are necessary for this task, but the approved plan does not establish that dependency and the evidence contains no material-drift re-approval."
+  ],
+  "residual_risks": [
+    "Separate or explicitly re-approve the unrelated lifecycle-routing and formal-operation recovery changes, then present a frozen diff limited to the approved task-worktree resolution result-acceptance behavior and its focused regression coverage."
+  ]
+}

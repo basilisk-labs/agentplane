@@ -19,6 +19,10 @@ export const TASK_EVENT_SCHEMA = z
     type: z.enum(TASK_EVENT_TYPE_VALUES),
     at: ISO_UTC_TIMESTAMP,
     author: NON_EMPTY_STRING,
+    commit: z
+      .string()
+      .regex(/^[0-9a-f]{40,64}$/u)
+      .optional(),
     from: z.string().optional(),
     to: z.string().optional(),
     state: z.string().optional(),

@@ -71,6 +71,16 @@ describe("LocalBackend", () => {
       depends_on: [],
       tags: ["tag"],
       verify: ["echo ok"],
+      events: [
+        {
+          type: "status",
+          at: "2026-01-30T00:00:00.000Z",
+          author: "SUPERVISOR",
+          commit: "a".repeat(40),
+          from: "TODO",
+          to: "DOING",
+        },
+      ],
       doc: "## Summary\n\nDoc body",
     };
     await backend.writeTask(task);
@@ -78,6 +88,7 @@ describe("LocalBackend", () => {
     expect(loaded?.doc).toContain("## Summary");
     expect(loaded?.doc_updated_by).toBe("tester");
     expect(loaded?.origin).toEqual({ system: "manual" });
+    expect(loaded?.events?.[0]?.commit).toBe("a".repeat(40));
     const doc = await backend.getTaskDoc(task.id);
     expect(doc).toContain("Doc body");
 

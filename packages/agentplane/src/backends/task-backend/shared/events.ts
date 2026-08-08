@@ -18,6 +18,7 @@ export function normalizeEvents(value: unknown): TaskEvent[] {
       type: type as TaskEventType,
       at,
       author,
+      commit: typeof entry.commit === "string" ? entry.commit : undefined,
       from: typeof entry.from === "string" ? entry.from : undefined,
       to: typeof entry.to === "string" ? entry.to : undefined,
       state: typeof entry.state === "string" ? entry.state : undefined,

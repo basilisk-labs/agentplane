@@ -1,0 +1,24 @@
+{
+  "base": "main",
+  "branch": "task/202608080403-N0VXJ0/archive-resolved-supervisor-route-incident",
+  "created_at": "2026-08-08T04:03:53.324Z",
+  "diffstat_sha256": "sha256:f321e4480a111f75749d641c5051c5e4884da96ef2ec42b713cc98b6144659db",
+  "last_verified_at": "2026-08-08T05:00:09.779Z",
+  "last_verified_diffstat_sha256": "sha256:f321e4480a111f75749d641c5051c5e4884da96ef2ec42b713cc98b6144659db",
+  "pr_number": 4800,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4800",
+  "pre_merge_closure": {
+    "basis_commit": "e5e6632687e286cd9cc6fafb1d60e50f9ae29827",
+    "branch": "task/202608080403-N0VXJ0/archive-resolved-supervisor-route-incident",
+    "pr_number": 4800,
+    "recorded_at": "2026-08-08T05:02:19.707Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608080403-N0VXJ0",
+  "updated_at": "2026-08-08T04:08:42.543Z",
+  "verify": {
+    "status": "pass"
+  }
+}

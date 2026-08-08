@@ -145,6 +145,7 @@ export function buildTaskStatusTransition(
     type: "status" as const,
     at: opts.at,
     author: opts.eventAuthor,
+    commit: opts.commit?.hash,
     from: currentStatus,
     to: opts.toStatus,
     note: opts.note,

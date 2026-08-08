@@ -519,6 +519,67 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     expect(readme).not.toContain("This stale plan must not be applied.");
   });
 
+  it("rejects a read-only evaluator result after a concurrent commit transition", async () => {
+    const root = await mkGitRepoRoot();
+    await cp(
+      path.join(process.cwd(), ".agentplane", "policy"),
+      path.join(root, ".agentplane", "policy"),
+      { recursive: true },
+    );
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    await writeFile(
+      path.join(root, "package.json"),
+      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"' } }, null, 2)}\n`,
+      "utf8",
+    );
+    const taskId = await createTask(root, "Commit-stale evaluator result", "bun run check");
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Create the scoped implementation before quality review.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed evaluator freshness"], { cwd: root });
+    const implementationPacket = await readAgentPacket(root, taskId);
+    await writeFile(path.join(root, "implemented.txt"), "implemented\n", "utf8");
+    const implementationResult = await writeCompletedResult(
+      implementationPacket,
+      "Created the scoped implementation.",
+    );
+    const afterImplementation = await returnAgentResult(root, taskId, implementationResult);
+    expect(afterImplementation.code, afterImplementation.stderr).toBe(0);
+    const evaluatorPacket = JSON.parse(afterImplementation.stdout) as AgentPacket;
+    const resultPath = await writeCompletedResult(
+      evaluatorPacket,
+      "This stale review must not apply.",
+      {
+        verdict: "pass",
+        missing_tests: [],
+        hidden_assumptions: [],
+        residual_risks: [],
+      },
+    );
+    await writeFile(path.join(root, "concurrent.txt"), "concurrent\n", "utf8");
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: concurrent evaluator commit"], {
+      cwd: root,
+    });
+
+    const stale = await returnAgentResult(root, taskId, resultPath);
+    expect(stale.code).not.toBe(0);
+    expect(stale.stderr).toContain("stale");
+  });
+
   it("projects the direct runner boundary as the same semantic agent episode", async () => {
     const root = await mkGitRepoRoot();
     const config = defaultConfig();

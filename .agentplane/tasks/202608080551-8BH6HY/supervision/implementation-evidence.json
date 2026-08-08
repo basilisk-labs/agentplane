@@ -1,0 +1,62 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 44d9ba215f69491f764f6f80021b3351b81bf0c4..5458ff29b48110d6d97b3d97d68b620aa8e61fe9",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 44d9ba215f69491f764f6f80021b3351b81bf0c4..5458ff29b48110d6d97b3d97d68b620aa8e61fe9",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608080551-8BH6HY/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608080551-8BH6HY/pr/github-body.md",
+        "M\t.agentplane/tasks/202608080551-8BH6HY/pr/meta.json",
+        "M\t.agentplane/tasks/202608080551-8BH6HY/pr/review.md",
+        "M\tpackages/agentplane/src/backends/task-backend.local.test.ts",
+        "M\tpackages/agentplane/src/backends/task-backend/shared/events.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-verification.ts",
+        "M\tpackages/agentplane/src/commands/task/shared/workflow-transition-service.ts",
+        "M\tpackages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts",
+        "M\tpackages/core/schemas/task-readme-frontmatter.schema.json",
+        "M\tpackages/core/schemas/tasks-export.schema.json",
+        "M\tpackages/core/src/tasks/task-artifact-schema.findings.ts",
+        "M\tpackages/core/src/tasks/task-store.ts",
+        "M\tpackages/core/src/tasks/tasks-export.test.ts",
+        "M\tpackages/core/src/tasks/tasks-export.ts",
+        "M\tpackages/spec/schemas/task-readme-frontmatter.schema.json",
+        "M\tpackages/spec/schemas/tasks-export.schema.json",
+        "M\tschemas/task-readme-frontmatter.schema.json",
+        "M\tschemas/tasks-export.schema.json"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "44d9ba215f69491f764f6f80021b3351b81bf0c4",
+  "implementation_commit": "5458ff29b48110d6d97b3d97d68b620aa8e61fe9",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608080551-8BH6HY"
+}

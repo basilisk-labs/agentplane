@@ -7,7 +7,10 @@ import {
 import { CliError } from "../../shared/errors.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
-import { supervisePersistedWorkflowEpisode } from "../shared/supervisor-execution-episode.js";
+import {
+  preparePersistedSupervisorReplacementAfterFailure,
+  supervisePersistedWorkflowEpisode,
+} from "../shared/supervisor-execution-episode.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 
@@ -29,6 +32,12 @@ export function makeRunTaskAdvanceHandler(deps: {
   getContext: (command: string, options: { includeRemote: boolean }) => Promise<CommandContext>;
 }) {
   return async (ctx: CommandCtx, parsed: TaskAdvanceParsed): Promise<number> => {
+    if (parsed.result && parsed.replacement) {
+      throw new CliError({
+        code: "E_USAGE",
+        message: "task advance --replacement cannot be combined with --result.",
+      });
+    }
     const command = await deps.getContext("task advance", { includeRemote: parsed.remote });
     const decide = async (freshHead = false): Promise<TaskRouteDecision> => {
       const routeCommand = freshHead
@@ -66,6 +75,21 @@ export function makeRunTaskAdvanceHandler(deps: {
       });
     } else {
       current = await decide();
+    }
+    let replacementPrepared = false;
+    if (parsed.replacement) {
+      const replacement = await preparePersistedSupervisorReplacementAfterFailure({
+        git_root: command.resolvedProject.gitRoot,
+        task_id: parsed.taskId,
+        state_fingerprint_digest: current.workflowStep.preconditionFingerprint.digest,
+      });
+      if (replacement === "not_failed") {
+        throw new CliError({
+          code: "E_USAGE",
+          message: "task advance --replacement requires a terminal failed operation.",
+        });
+      }
+      replacementPrepared = true;
     }
     let recovery: Parameters<typeof buildAgentActionPacket>[0]["recovery"];
     for (let operationCount = 0; operationCount < 32; operationCount += 1) {
@@ -224,6 +248,7 @@ export function makeRunTaskAdvanceHandler(deps: {
       command: preparationCommand,
       decision: prepared.route_decision,
       work_order: prepared.work_order,
+      replace_failed_operation: parsed.replacement && !replacementPrepared,
     });
     const resumeArgv = exchange
       ? [
