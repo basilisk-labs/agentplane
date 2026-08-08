@@ -131,6 +131,8 @@ export async function runCli(
     AGENTPLANE_HOME: isolatedAgentplaneHome,
     AGENTPLANE_NO_UPDATE_CHECK: "1",
   };
+  delete env.AGENTPLANE_AGENT_MODE;
+  delete env.AGENTPLANE_CLI_ALIAS;
   delete env.AGENTPLANE_OUTPUT;
   Object.assign(env, opts.extraEnv);
 
