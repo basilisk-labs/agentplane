@@ -1,11 +1,11 @@
 ---
 id: "202608061646-BYY8A1"
 title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
-result_summary: "pre-merge closure"
-status: "DOING"
+result_summary: "Merged via PR #4798."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 80
+revision: 81
 origin:
   system: "manual"
 depends_on:
@@ -82,22 +82,22 @@ quality_review:
   findings:
     - "Frozen evidence proves the evaluated implementation and qualified subject are equivalent outside task-local metadata, and the required release, negative-path, recovery, concurrency, compatibility, and efficiency checks passed under the declared gating policy."
 token_usage:
-  agent_runs: 25
-  input_tokens: 347860
-  journal_digest: "sha256:f3e45a9d74d558a4f6b75c8f8c414798e68563e91fd3643673c5d508e38a6708"
-  observed_agent_runs: 2
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
-  source: "supervisor_journal"
-  state: "partial"
-  total_tokens: 353797
-  unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
-  updated_at: "2026-08-08T20:38:57.417Z"
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-08T21:18:02.612Z"
 commit:
-  hash: "8d34ba8014523b6be8751c73adeccc5438c8f8df"
-  message: "🚧 BYY8A1 task: apply external agent result"
+  hash: "5c04e19b294d7467300df3843dde031ecf43671d"
+  message: "Merge pull request #4798 from basilisk-labs/task/202608061646-BYY8A1/qualify-and-publish-agentplane-0-7-5-supervisor"
 comments:
   -
     author: "DOCS"
@@ -183,6 +183,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 8d34ba801452. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4798 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -614,9 +617,17 @@ events:
     to: "DOING"
     note: "Implementation committed: 8d34ba801452. CLI accepted one state-bound external-agent semantic result."
     commit: "8d34ba8014523b6be8751c73adeccc5438c8f8df"
+  -
+    type: "status"
+    at: "2026-08-08T21:18:02.612Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4798 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+    commit: "5c04e19b294d7467300df3843dde031ecf43671d"
 doc_version: 3
-doc_updated_at: "2026-08-08T20:51:02.792Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-08T21:18:02.688Z"
+doc_updated_by: "INTEGRATOR"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
   Summary: |-
@@ -3038,13 +3049,13 @@ Do not publish unless all gates pass. Before publication, abandon the candidate 
 
 ## Token Usage
 
-- State: `partial`
-- Completeness: `2/25` agent runs
-- Input tokens: `347860`
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
-- Total tokens: `353797`
-- Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:f3e45a9d74d558a4f6b75c8f8c414798e68563e91fd3643673c5d508e38a6708`
-- Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
-- Updated at: `2026-08-08T20:38:57.417Z`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-08T21:18:02.612Z`

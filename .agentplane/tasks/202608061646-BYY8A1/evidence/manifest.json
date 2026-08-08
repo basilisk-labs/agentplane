@@ -11,13 +11,13 @@
     {
       "path": ".agentplane/tasks/202608061646-BYY8A1/pr/diffstat.txt",
       "role": "pr_artifact",
-      "sha256": "sha256:8c15cad45cef7de51eda512a799cb9ad987d00e6d33c18d846905d6985fa20cc",
+      "sha256": "sha256:81b2a9c5f0de5bb30b6b7a96028af12d4b79a04fbe3f2f56a7aa3be5c43c4fa4",
       "size_bytes": 2600
     },
     {
       "path": ".agentplane/tasks/202608061646-BYY8A1/pr/github-body.md",
       "role": "pr_artifact",
-      "sha256": "sha256:42047f15e869132db765766aea0fded04aa78b6e32257cee96e090e58b5d4895",
+      "sha256": "sha256:b221550a9bf615a20ac27a6c363683c921d38bd7d2adc86a480460a3125f9b91",
       "size_bytes": 3915
     },
     {
@@ -29,13 +29,13 @@
     {
       "path": ".agentplane/tasks/202608061646-BYY8A1/pr/meta.json",
       "role": "pr_artifact",
-      "sha256": "sha256:a4cef0ee445568c2287d29d78e8ceb2125c482838f50c6276ec9fb7ef258ff65",
-      "size_bytes": 662
+      "sha256": "sha256:005c55b0a4bab24d7bee3c30b925a771e63d7618e7ab858d2aa242a13f2a283b",
+      "size_bytes": 875
     },
     {
       "path": ".agentplane/tasks/202608061646-BYY8A1/pr/review.md",
       "role": "pr_artifact",
-      "sha256": "sha256:deea5a1e4fdcbd0a74deb5005d5ccfb28e5b7f41745dbf5f1e0bf251d2ff6b25",
+      "sha256": "sha256:d6c52b302d496f32028e16bd92d8caed999cf7e16e27771d6961d113bd3fae1e",
       "size_bytes": 3516
     },
     {
@@ -179,8 +179,8 @@
     {
       "path": ".agentplane/tasks/202608061646-BYY8A1/README.md",
       "role": "task_readme",
-      "sha256": "sha256:cd83144ff3ed169f8b980711585ac7a8ba382de4990117c5f1ede39f7eb424c2",
-      "size_bytes": 147847
+      "sha256": "sha256:8889fa6bd59a46a2f6ecd4fba4d35c6e88cb414a12f3359b0b8a0eb1887ca61d",
+      "size_bytes": 148181
     },
     {
       "path": ".agentplane/tasks/202608061646-BYY8A1/supervision/declared-checks.json",
@@ -384,7 +384,7 @@
   "integrity": {
     "canonicalization": "agentplane-canonical-json-v1",
     "digest_algorithm": "sha256",
-    "manifest_digest": "sha256:fe0851a0a5444ef931fda6c8172a3a7a7e097827d7c41cdc44e3e087ae6b9c26"
+    "manifest_digest": "sha256:f4afd714b6cbd7b7738caf2cda5008c3986585fe51d13b34326c5b7f4c8fc2fc"
   },
   "kind": "agentplane_evidence_bundle",
   "producer": {
