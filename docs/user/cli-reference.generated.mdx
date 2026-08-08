@@ -470,12 +470,14 @@ Options:
 - `--agent-json`: Emit the stable compact external-agent protocol. (default=false)
 - `--remote`: Include hosted state while preparing the shared supervisor decision. (default=false)
 - `--result <path>`: Accept one state-bound external-agent result and return the next action.
+- `--replacement`: Explicitly start a distinct exact-key successor after a terminal operation failure. (default=false)
 
 Notes:
 
 - The command prepares the same canonical work order and route decision used by the managed task runner.
 - It executes only registered deterministic transitions, then stops before semantic work, approval, human input, external wait, or terminal attention.
 - A result is single-use and must match the issued task, transition, role, state fingerprint, work-order id, and result_ref.
+- --replacement is valid only after a known terminal operation_failed journal; it never retries the failed effect and cannot be combined with --result.
 - --agent-json changes only rendering; any formal transition is journaled, fingerprint-checked, and supervisor-owned.
 
 Examples:

@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run docs:cli:check\nResult: fail\nEvidence: GitHub Actions run 31248814733 job 93081775869\nScope: generated CLI reference freshness",
+  "digest": "sha256:65d56d973da74ad61da7323b9f0fc4103864ce5fc6a6876be457a97cd3d4daaa",
+  "implementation_sha": "0caa5838bb36e58165a19215f6bd16ea39673ac0",
+  "kind": "task_verification_record",
+  "note": "Hosted CI rework: generated CLI reference is stale after adding task advance --replacement.",
+  "recorded_at": "2026-08-08T08:41:25.681Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Allow explicit replacement after failed task advance operation\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow explicit replacement after failed task advance operation\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:fae92571cbd16678a5608352c61596708e0d7118146fca9cb39936d01aeae5aa",
+  "task_id": "202608080805-KPWPAV",
+  "verification_command": "agentplane verify 202608080805-KPWPAV --rework --by TESTER",
+  "verifier": "TESTER"
+}
