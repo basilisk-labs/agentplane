@@ -28,7 +28,7 @@ export type ExternalAgentResultEnvelope = {
 export type ExternalAgentExchange = {
   schema_version: 1;
   kind: "external_agent_exchange";
-  status: "issued" | "accepted" | "consumed";
+  status: "prepared" | "issued" | "accepted" | "consumed";
   task_id: string;
   transition_id: string;
   state_fingerprint: string;

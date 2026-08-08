@@ -189,8 +189,15 @@ export async function issueExternalAgentExchange(opts: {
       issue_digest: externalAgentIssueDigest({ exchange: existing, work_order: workOrder }),
       replace_failed_operation: opts.replace_failed_operation,
     });
+    const issuedExchange: ExternalAgentExchange =
+      existing.status === "prepared"
+        ? { ...existing, status: "issued", updated_at: new Date().toISOString() }
+        : existing;
+    if (issuedExchange !== existing) {
+      await writeExternalAgentExchange(paths.exchange, issuedExchange);
+    }
     return {
-      exchange: existing,
+      exchange: issuedExchange,
       paths,
       work_order: workOrder,
     };
@@ -213,10 +220,10 @@ export async function issueExternalAgentExchange(opts: {
     readDirectRepositoryStatus(checkout),
   ]);
   const at = new Date().toISOString();
-  const exchange: ExternalAgentExchange = {
+  const preparedExchange: ExternalAgentExchange = {
     schema_version: 1,
     kind: "external_agent_exchange",
-    status: "issued",
+    status: "prepared",
     task_id: opts.decision.task.id,
     transition_id: transitionId,
     state_fingerprint: step.preconditionFingerprint.digest,
@@ -235,16 +242,26 @@ export async function issueExternalAgentExchange(opts: {
     created_at: at,
     updated_at: at,
   };
-  await persistExternalAgentExchangeArtifacts({ paths, work_order: workOrder, exchange });
+  await persistExternalAgentExchangeArtifacts({
+    paths,
+    work_order: workOrder,
+    exchange: preparedExchange,
+  });
   await recordIssuedExternalAgentEpisode({
     command: checkoutCommand,
     decision: opts.decision,
     work_order: workOrder,
     work_order_ref: paths.work_order,
     purpose,
-    issue_digest: externalAgentIssueDigest({ exchange, work_order: workOrder }),
+    issue_digest: externalAgentIssueDigest({ exchange: preparedExchange, work_order: workOrder }),
     replace_failed_operation: opts.replace_failed_operation,
   });
+  const exchange: ExternalAgentExchange = {
+    ...preparedExchange,
+    status: "issued",
+    updated_at: new Date().toISOString(),
+  };
+  await writeExternalAgentExchange(paths.exchange, exchange);
   return { exchange, paths, work_order: workOrder };
 }
 
