@@ -32,12 +32,13 @@ packages/agentplane/src/commands/task/external-agent-purpose.test.ts
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.task-advance.test.ts      | 237 +++++++++++++++++++++
+ .../src/cli/run-cli.core.task-advance.test.ts      |  61 +++++
+ ...i.core.task-advance.worktree-resolution.test.ts | 292 +++++++++++++++++++++
  .../external-agent-implementation-authority.ts     |   3 +-
  .../commands/task/external-agent-purpose.test.ts   |  19 ++
  .../src/commands/task/external-agent-purpose.ts    |  11 +
- .../src/commands/task/external-agent-supervisor.ts |  30 ++-
- 5 files changed, 283 insertions(+), 17 deletions(-)
+ .../src/commands/task/external-agent-supervisor.ts |  30 +--
+ 6 files changed, 399 insertions(+), 17 deletions(-)
 ```
 
 </details>
