@@ -795,6 +795,23 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     await execFileAsync("git", ["commit", "-m", "test: persist start-ready fixture"], {
       cwd: taskWorktree,
     });
+    const priorImplementationHead = (
+      await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: taskWorktree })
+    ).stdout.trim();
+    await runCliSilent([
+      "task",
+      "set-status",
+      taskId,
+      "DOING",
+      "--commit",
+      priorImplementationHead,
+      "--root",
+      taskWorktree,
+    ]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: taskWorktree });
+    await execFileAsync("git", ["commit", "-m", "test: persist prior implementation metadata"], {
+      cwd: taskWorktree,
+    });
     await writeFile(path.join(taskWorktree, "intended-resolution.txt"), "keep\n", "utf8");
 
     const taskCommand = await loadCommandContext({ cwd: taskWorktree, rootOverride: taskWorktree });

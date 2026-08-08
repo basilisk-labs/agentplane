@@ -32,11 +32,12 @@ external task-worktree resolution now follows implementation authority.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.task-advance.test.ts      | 220 +++++++++++++++++++++
+ .../src/cli/run-cli.core.task-advance.test.ts      | 237 +++++++++++++++++++++
+ .../external-agent-implementation-authority.ts     |   3 +-
  .../commands/task/external-agent-purpose.test.ts   |  19 ++
- .../src/commands/task/external-agent-purpose.ts    |  11 ++
+ .../src/commands/task/external-agent-purpose.ts    |  11 +
  .../src/commands/task/external-agent-supervisor.ts |  30 ++-
- 4 files changed, 264 insertions(+), 16 deletions(-)
+ 5 files changed, 283 insertions(+), 17 deletions(-)
 ```
 
 </details>
