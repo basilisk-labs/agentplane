@@ -4,7 +4,7 @@ title: "Classify compatibility adapters for bounded 0.8 retirement"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -30,11 +30,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-06T22:10:57.205Z"
+  updated_by: "TESTER"
+  note: "Legacy manifest schema v2, doctor report, targeted tests, typecheck, docs reference, lint, and runtime JSON inspection pass. Critical suite remains blocked by the shared compatibility-contract ratchet owned by 202608061850-BZT3D9; rebase after that foundation merges and rerun all Verify Steps."
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -48,6 +48,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: every compatibility adapter now has a validated scheduled-removal, support-window, zero-usage, archive-conversion, or permanent historical-reader policy; doctor legacy exposes policy counts and scopes."
 events:
   -
     type: "status"
@@ -56,8 +59,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-06T22:10:42.320Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: every compatibility adapter now has a validated scheduled-removal, support-window, zero-usage, archive-conversion, or permanent historical-reader policy; doctor legacy exposes policy counts and scopes."
+  -
+    type: "verify"
+    at: "2026-08-06T22:10:57.205Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Legacy manifest schema v2, doctor report, targeted tests, typecheck, docs reference, lint, and runtime JSON inspection pass. Critical suite remains blocked by the shared compatibility-contract ratchet owned by 202608061850-BZT3D9; rebase after that foundation merges and rerun all Verify Steps."
 doc_version: 3
-doc_updated_at: "2026-08-06T22:03:16.202Z"
+doc_updated_at: "2026-08-06T22:10:58.036Z"
 doc_updated_by: "CODER"
 description: "Complete the compatibility retirement manifest so every adapter has an explicit removal version, support-until or zero-usage condition, archive conversion policy, or permanent historical-reader designation; keep historical readers out of normal execution paths where already separable, and verify doctor legacy reports the classification without deleting safety or recovery contracts in 0.7.5."
 sections:
@@ -76,11 +92,44 @@ sections:
     - bun run docs:cli:check
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-06T22:10:57.205Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Legacy manifest schema v2, doctor report, targeted tests, typecheck, docs reference, lint, and runtime JSON inspection pass. Critical suite remains blocked by the shared compatibility-contract ratchet owned by 202608061850-BZT3D9; rebase after that foundation merges and rerun all Verify Steps.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T22:10:42.320Z, excerpt_hash=sha256:0808c51040237f79c1a808bd3980ac46b01d0d6d371abd836fbb241ce031c10f
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-HTRP5J-classify-compatibility-adapters-for-bounded-0-8/.agentplane/tasks/202608062021-HTRP5J/blueprint/resolved-snapshot.json
+    - old_digest: e17243ad8f8d431cb3e61b5bb0497de50b17e1626e2cb2fe4f7299e20fd4c7cc
+    - current_digest: e17243ad8f8d431cb3e61b5bb0497de50b17e1626e2cb2fe4f7299e20fd4c7cc
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-HTRP5J
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608062021-HTRP5J
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: The first critical chunk rejects the pre-0.7.5 compatibility candidate before task-specific critical checks because shared CLI/prompt/package surfaces already drifted on main.
+      Impact: This branch cannot receive final verification or publish its implementation head until BZT3D9 updates the reviewed candidate centrally.
+      Resolution: Merge BZT3D9, rebase HTRP5J, rerun doctor legacy tests, critical, typecheck, and docs checks, then record pass.
 extensions:
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
@@ -112,6 +161,36 @@ Complete the compatibility retirement manifest so every adapter has an explicit 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-06T22:10:57.205Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Legacy manifest schema v2, doctor report, targeted tests, typecheck, docs reference, lint, and runtime JSON inspection pass. Critical suite remains blocked by the shared compatibility-contract ratchet owned by 202608061850-BZT3D9; rebase after that foundation merges and rerun all Verify Steps.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T22:10:42.320Z, excerpt_hash=sha256:0808c51040237f79c1a808bd3980ac46b01d0d6d371abd836fbb241ce031c10f
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-HTRP5J-classify-compatibility-adapters-for-bounded-0-8/.agentplane/tasks/202608062021-HTRP5J/blueprint/resolved-snapshot.json
+- old_digest: e17243ad8f8d431cb3e61b5bb0497de50b17e1626e2cb2fe4f7299e20fd4c7cc
+- current_digest: e17243ad8f8d431cb3e61b5bb0497de50b17e1626e2cb2fe4f7299e20fd4c7cc
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-HTRP5J
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608062021-HTRP5J
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -120,3 +199,7 @@ Complete the compatibility retirement manifest so every adapter has an explicit 
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: The first critical chunk rejects the pre-0.7.5 compatibility candidate before task-specific critical checks because shared CLI/prompt/package surfaces already drifted on main.
+  Impact: This branch cannot receive final verification or publish its implementation head until BZT3D9 updates the reviewed candidate centrally.
+  Resolution: Merge BZT3D9, rebase HTRP5J, rerun doctor legacy tests, critical, typecheck, and docs checks, then record pass.

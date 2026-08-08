@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:479fd14ecc1267c22aba1d830b4cb184193117bdcb1d84d7b8cd2baa5e2ccbbf",
+  "implementation_sha": "8955c67681f4fba2b56079672aeb04b968eb4952",
+  "kind": "task_verification_record",
+  "note": "Legacy manifest schema v2, doctor report, targeted tests, typecheck, docs reference, lint, and runtime JSON inspection pass. Critical suite remains blocked by the shared compatibility-contract ratchet owned by 202608061850-BZT3D9; rebase after that foundation merges and rerun all Verify Steps.",
+  "recorded_at": "2026-08-06T22:10:57.205Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/doctor/legacy-probes.test.ts packages/agentplane/src/commands/doctor-legacy.spec.ts\n- bun run test:critical\n- bun run typecheck\n- bun run docs:cli:check",
+  "scope_digest": "sha256:0808c51040237f79c1a808bd3980ac46b01d0d6d371abd836fbb241ce031c10f",
+  "task_id": "202608062021-HTRP5J",
+  "verification_command": "agentplane verify 202608062021-HTRP5J --rework --by TESTER",
+  "verifier": "TESTER"
+}
