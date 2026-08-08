@@ -6,7 +6,7 @@ Created: 2026-08-08T08:05:29.433Z
 
 - Task: `202608080805-KPWPAV`
 - Title: Allow explicit replacement after failed task advance operation
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608080805-KPWPAV/allow-task-advance-replacement`
 - Canonical task record: `.agentplane/tasks/202608080805-KPWPAV/README.md`
 
