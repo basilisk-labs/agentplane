@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608070209-J3DEJ1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-08T03:25:31.935Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "2b8ee19e18f936d418cdd2736a2b393114da6a1d",
+  "blueprint_digest": "67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6",
+  "findings": [
+    "The implementation satisfies the unknown-intent and recoverable-lock contract, including conservative handling of unverifiable owners and serialized concurrent recovery."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/833e053130ba5464eeb8f2cf2f5074ceb02b5a0db55e469068e0eb95d72d8925.patch",
+    ".agentplane/tasks/202608070209-J3DEJ1/verification/20260808032430679-cf53d40380df99ba.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

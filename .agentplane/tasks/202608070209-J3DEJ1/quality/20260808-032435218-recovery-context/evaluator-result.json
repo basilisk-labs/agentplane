@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "low",
+      "summary": "The implementation satisfies the unknown-intent and recoverable-lock contract, including conservative handling of unverifiable owners and serialized concurrent recovery.",
+      "broken_invariant": "No invariant is broken; frozen implementation and verification evidence cover the declared positive, negative, interruption-recovery, and concurrency-sensitive paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/833e053130ba5464eeb8f2cf2f5074ceb02b5a0db55e469068e0eb95d72d8925.patch",
+          "sha256": "sha256:833e053130ba5464eeb8f2cf2f5074ceb02b5a0db55e469068e0eb95d72d8925"
+        },
+        {
+          "path": ".agentplane/tasks/202608070209-J3DEJ1/verification/20260808032430679-cf53d40380df99ba.json",
+          "sha256": "sha256:b41b5e36e852c301393a125f31357980e7dfd0705c801487b78cc44ee395cb0d"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
