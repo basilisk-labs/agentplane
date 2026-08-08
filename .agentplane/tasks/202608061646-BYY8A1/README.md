@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
 status: "BLOCKED"
 priority: "high"
 owner: "DOCS"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on:
@@ -134,7 +134,7 @@ events:
     state: "blocked_external"
     note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-08-08T09:11:05.725Z"
+doc_updated_at: "2026-08-08T09:13:18.876Z"
 doc_updated_by: "SUPERVISOR"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
@@ -147,11 +147,12 @@ sections:
     - Out of scope: unrelated refactors not required for "Qualify and publish AgentPlane 0.7.5 UX routing patch".
   Plan: "1. Integrate every 0.7.5 dependency in serialized protected-main order and update the cumulative compatibility candidate only after the final code surface is stable. 2. Version all packages and write release notes covering automatic task routing, user-first task/init UX, exact Windows README identities, supervisor-first agent guidance, semantic-only provider prompts, protocol polish, legacy classification, evidence retention, and the RF-04 advisory sample-count caveat. 3. On one clean release SHA run full local CI, release extras, package/install/migration checks, Windows coverage, direct and branch_pr, managed and external protocols, stale state, interruption, effect-in-doubt, evaluator rework, hosted waits, cleanup races, exact compiled-prompt choreography gates, and init/new-user copy-paste flows. 4. Run the bounded 50 replay runs and 55 provider episodes once for the cumulative candidate, compare tokens, verified success, scope violations, golden mismatches, rework, setup, first mutation, and time-to-verified, and repair every blocking defect before release rather than publishing successive patches. 5. Obtain evaluator pass, merge through protected main, publish v0.7.5, and prove the GitHub release, tag, main SHA, and all npm package versions from hosted surfaces. 6. Delete temporary recovery and obsolete merged branches only after publication proof."
   Verify Steps: |-
-    - AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:full
+    - bun run ci:local:full
     - bun run ci:release-extras
     - bun run e2e:v0.7.1:gate
-    - bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check
-    - npm view agentplane version && npm view @agentplaneorg/core version && npm view @agentplaneorg/recipes version && npm view @agentplaneorg/spec version && npm view @agentplaneorg/testkit version
+    - bun run bench:compatibility:check
+    - bun run bench:agent-efficiency:check
+    - bun run bench:agent-efficiency:replay:check
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-08-08T03:54:12.731Z — VERIFY — needs_rework
@@ -305,11 +306,12 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
 
 ## Verify Steps
 
-- AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:full
+- bun run ci:local:full
 - bun run ci:release-extras
 - bun run e2e:v0.7.1:gate
-- bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check
-- npm view agentplane version && npm view @agentplaneorg/core version && npm view @agentplaneorg/recipes version && npm view @agentplaneorg/spec version && npm view @agentplaneorg/testkit version
+- bun run bench:compatibility:check
+- bun run bench:agent-efficiency:check
+- bun run bench:agent-efficiency:replay:check
 
 ## Verification
 
