@@ -4,7 +4,7 @@ title: "Accept external task-worktree resolution results"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -27,31 +27,31 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-08T05:58:50.900Z"
+  updated_at: "2026-08-08T07:01:01.223Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "4ed5744750085850923f144349bb2aa705950c82"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "c421bde71fb5260237a2cfbf84dfa91c692b6457"
   blueprint_digest: "f838ddb45c74406d87ad39a2b037d6fe7c88d657a5b7b4059642578ee7641be4"
   evidence_refs:
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-055812835-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-055812835-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/55ddf88d25dcea0ac9b07fa45498d63857fa322682c395c514c6c853d8182831.md"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-055812835-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-055812835-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-055812835-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-055812835-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-070005191-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-070005191-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/45c9c609edf5f2c80819b247cc7648fcbd733add2862286cf132655938d0316b.md"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-070005191-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-070005191-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-070005191-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608080551-8BH6HY/README.md"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/159b3156259d89a0cff246ab3d120d23b41c3c76c39b7935b9bf8a7f831c2d73.patch"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/c64a0ad3cb0d9a182e46a9188a94d670578ae46298329b92cbe1bab5cbbacd7c.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/a795513810310d25ad12119d319e329fb1649025d34571a7f1705fa54e569737.patch"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/5aafa37973a2476d6e3d49422d27f81cd03bb93b823d884a6d7f223086db5ff0.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/verification/20260808065919974-6bbaee56107e8436.json"
     - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/9bdf501920399d2009207ee356cca9d401dd0ad0bfd8caf494e54982108db83a.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Regression coverage tests only the purpose predicate; it does not exercise acceptance of a completed task_worktree_resolution result after the expected supervisor-owned commit transition."
+    - "The implementation meets the approved contract: task_worktree_resolution shares implementation-authority routing, the completed result is accepted after the expected commit transition, read-only freshness remains enforced, and recorded checks pass."
 execution_route:
   frozen: true
   reason_codes:
