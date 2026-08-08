@@ -1,10 +1,10 @@
 ---
 id: "202608061646-BYY8A1"
 title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 43
+revision: 44
 origin:
   system: "manual"
 depends_on:
@@ -45,7 +45,9 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:release-extras"
   attempts: 13
-commit: null
+commit:
+  hash: "32e72498b096493825649f27f6e811126dccf14e"
+  message: "🚧 BYY8A1 task: apply external agent result"
 comments:
   -
     author: "DOCS"
@@ -92,6 +94,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 34398822054d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 32e72498b096. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -286,8 +291,16 @@ events:
     author: "SUPERVISOR"
     state: "blocked_external"
     note: "Rework: Declared check failed: bun run ci:release-extras"
+  -
+    type: "status"
+    at: "2026-08-08T12:33:54.437Z"
+    author: "SUPERVISOR"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Implementation committed: 32e72498b096. CLI accepted one state-bound external-agent semantic result."
+    commit: "32e72498b096493825649f27f6e811126dccf14e"
 doc_version: 3
-doc_updated_at: "2026-08-08T12:28:48.551Z"
+doc_updated_at: "2026-08-08T12:33:54.437Z"
 doc_updated_by: "SUPERVISOR"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
