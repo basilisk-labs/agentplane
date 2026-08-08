@@ -130,8 +130,9 @@ export async function runCli(
     XDG_CONFIG_HOME: path.join(isolatedHome, ".config"),
     AGENTPLANE_HOME: isolatedAgentplaneHome,
     AGENTPLANE_NO_UPDATE_CHECK: "1",
-    ...opts.extraEnv,
   };
+  delete env.AGENTPLANE_OUTPUT;
+  Object.assign(env, opts.extraEnv);
 
   // execFileAsync throws on non-zero exit. Normalize into a stable `{code,stdout,stderr}` shape.
   let code = 0;
