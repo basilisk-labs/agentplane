@@ -8,10 +8,10 @@
   "pr_number": 4800,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4800",
   "pre_merge_closure": {
-    "basis_commit": "fc2501733e7d12d578a406bb39885a0c2f5e3f9b",
+    "basis_commit": "e5e6632687e286cd9cc6fafb1d60e50f9ae29827",
     "branch": "task/202608080403-N0VXJ0/archive-resolved-supervisor-route-incident",
     "pr_number": 4800,
-    "recorded_at": "2026-08-08T04:23:00.398Z",
+    "recorded_at": "2026-08-08T05:02:19.707Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
