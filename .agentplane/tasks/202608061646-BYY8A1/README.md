@@ -1,10 +1,10 @@
 ---
 id: "202608061646-BYY8A1"
 title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 67
+revision: 68
 origin:
   system: "manual"
 depends_on:
@@ -45,7 +45,9 @@ verification:
   updated_by: "TESTER"
   note: "Provider qualification driver rejects the current semantic-projection bootstrap because it only recognizes the historical bundle.json instruction; zero provider episodes completed."
   attempts: 24
-commit: null
+commit:
+  hash: "60d2b29ed7584d0e0e9a08bd0b372960923497ea"
+  message: "🐛 BYY8A1 task: align RF-04 semantic bootstrap"
 comments:
   -
     author: "DOCS"
@@ -484,8 +486,15 @@ events:
     author: "TESTER"
     state: "blocked_external"
     note: "Provider qualification driver rejects the current semantic-projection bootstrap because it only recognizes the historical bundle.json instruction; zero provider episodes completed."
+  -
+    type: "status"
+    at: "2026-08-08T19:04:34.574Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    commit: "60d2b29ed7584d0e0e9a08bd0b372960923497ea"
 doc_version: 3
-doc_updated_at: "2026-08-08T19:03:35.716Z"
+doc_updated_at: "2026-08-08T19:04:34.574Z"
 doc_updated_by: "CODER"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
