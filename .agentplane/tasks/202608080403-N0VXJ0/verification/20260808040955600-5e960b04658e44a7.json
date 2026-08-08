@@ -1,0 +1,15 @@
+{
+  "details": "Command: node .agentplane/policy/check-routing.mjs\nResult: pass; policy routing completed successfully.\nEvidence: Output was policy routing OK on committed head 545fcf424.\nScope: Canonical policy module routing, budgets, and gateway constraints.\n\nCommand: bun run release:incidents:check\nResult: pass; the active incident registry is empty.\nEvidence: Output confirmed Release incident gate passed with no active entries.\nScope: Canonical release incident readiness after historical archival.\n\nCommand: bun run agents:check\nResult: pass; generated agent templates are synchronized.\nEvidence: Output was agents templates OK.\nScope: Canonical and bundled incident policy asset parity.\n\nCommand: bunx prettier --check docs/developer/incident-archive.mdx .agentplane/policy/incidents.md packages/agentplane/assets/policy/incidents.md\nResult: pass; all three changed files match repository formatting.\nEvidence: Prettier reported all matched files use its code style.\nScope: Incident archive and both active registry files.\n\nCommand: git diff --check && git status --short --untracked-files=all\nResult: pass; no whitespace errors or unintended worktree changes remain.\nEvidence: The tracked worktree was clean on head 545fcf424.\nScope: Final task diff and checkout cleanliness.",
+  "digest": "sha256:5e960b04658e44a7e9c92c0830d91d0e8bc4f9842f05d5e3cf02ccf905fdbf74",
+  "implementation_sha": "545fcf42424bbf202f490660f3bd2f446f8b47f7",
+  "kind": "task_verification_record",
+  "note": "Archived INC-20260807-01 is preserved with merged evidence; both active registries are empty and synchronized.",
+  "recorded_at": "2026-08-08T04:09:55.600Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Archive resolved supervisor route incident\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Archive resolved supervisor route incident\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:892885f258f55ec52bd79c98a9afd725a13f450f23cae28593d0d6e9b7053180",
+  "task_id": "202608080403-N0VXJ0",
+  "verification_command": "agentplane verify 202608080403-N0VXJ0 --ok --by TESTER",
+  "verifier": "TESTER"
+}

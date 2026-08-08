@@ -15,14 +15,14 @@ Preserve INC-20260807-01 with its final merged evidence in docs/developer/incide
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Archived INC-20260807-01 is preserved with merged evidence; both active registries are empty and synchronized.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-08T04:03:53.324Z
+- Updated: 2026-08-08T04:08:42.543Z
 - Branch: task/202608080403-N0VXJ0/archive-resolved-supervisor-route-incident
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
