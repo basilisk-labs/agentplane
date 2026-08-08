@@ -1,10 +1,10 @@
 ---
 id: "202608061646-BYY8A1"
 title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 61
+revision: 62
 origin:
   system: "manual"
 depends_on:
@@ -45,7 +45,9 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:release-extras"
   attempts: 21
-commit: null
+commit:
+  hash: "409092608ca74b831f15fa780e54e95eca47d3f4"
+  message: "♻️ BYY8A1 task: split supervisor lease implementation"
 comments:
   -
     author: "DOCS"
@@ -122,6 +124,9 @@ comments:
   -
     author: "CODER"
     body: "Implemented hotspot-safe execution lease extraction and interrupted verification replacement; targeted supervisor tests, hotspot check, ESLint, and TypeScript pass."
+  -
+    author: "CODER"
+    body: "Re-enter verification after one non-reproducing release-ci-base failure; the isolated start-ready test passed six consecutive retries. No semantic implementation change is required."
 events:
   -
     type: "status"
@@ -441,8 +446,16 @@ events:
     author: "SUPERVISOR"
     state: "blocked_external"
     note: "Rework: Declared check failed: bun run ci:release-extras"
+  -
+    type: "status"
+    at: "2026-08-08T18:09:10.308Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Re-enter verification after one non-reproducing release-ci-base failure; the isolated start-ready test passed six consecutive retries. No semantic implementation change is required."
+    commit: "409092608ca74b831f15fa780e54e95eca47d3f4"
 doc_version: 3
-doc_updated_at: "2026-08-08T18:05:11.484Z"
+doc_updated_at: "2026-08-08T18:09:10.308Z"
 doc_updated_by: "CODER"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
