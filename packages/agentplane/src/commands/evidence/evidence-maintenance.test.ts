@@ -14,12 +14,17 @@ import {
   evidenceStatsSpec,
 } from "./evidence-maintenance.command.js";
 import { buildEvidenceInventory } from "./evidence-inventory.js";
+import { withEvidenceMutationLock } from "./evidence-mutation-lock.js";
 import { compactEvidenceObjects, garbageCollectEvidenceObjects } from "./evidence-maintenance.js";
 
 const execFileAsync = promisify(execFile);
 const WORKFLOW_DIR = ".agentplane/tasks";
 const OLD = new Date("2025-01-01T00:00:00.000Z");
 const NOW = new Date("2026-08-06T00:00:00.000Z");
+
+function noop(): void {
+  return undefined;
+}
 
 async function git(root: string, args: string[]): Promise<void> {
   await execFileAsync("git", args, { cwd: root });
@@ -417,6 +422,73 @@ describe("evidence object retention", () => {
       }),
     ).rejects.toThrow(/no longer collectible/u);
     await expect(readFile(collectible, "utf8")).resolves.toBe('{"collectible":true}\n');
+  });
+
+  it("serializes evidence publication across the final revalidation and unlink window", async () => {
+    const root = await fixture();
+    const taskId = "202608060013-MMMMMM";
+    await addTask(root, taskId);
+    const contents = '{"collectible":true}\n';
+    const collectible = await addObject(root, taskId, contents);
+    await commitFixture(root);
+    let writerEntered = false;
+    let writer = Promise.resolve();
+    let signalWriterStarted = noop;
+    const writerStarted = new Promise<void>((resolve) => {
+      signalWriterStarted = resolve;
+    });
+
+    const collected = await garbageCollectEvidenceObjects({
+      root,
+      workflowDir: WORKFLOW_DIR,
+      apply: true,
+      yes: true,
+      now: NOW,
+      afterRevalidationBeforeUnlink: async () => {
+        writer = withEvidenceMutationLock({ root, workflowDir: WORKFLOW_DIR, taskId }, async () => {
+          writerEntered = true;
+          await writeFile(collectible, contents, "utf8");
+          await publishManifestAtomically(root, taskId, collectible);
+        });
+        signalWriterStarted();
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        expect(writerEntered).toBe(false);
+      },
+    });
+    await writerStarted;
+    await writer;
+
+    expect(collected.changed_objects).toBe(1);
+    expect(writerEntered).toBe(true);
+    await expect(readFile(collectible, "utf8")).resolves.toBe(contents);
+    const inventory = await buildEvidenceInventory({ root, workflowDir: WORKFLOW_DIR, now: NOW });
+    expect(inventory.summary).toMatchObject({
+      reachable_objects: 1,
+      missing_references: 0,
+    });
+  });
+
+  it("fails closed when a manifest references another task's object store", async () => {
+    const root = await fixture();
+    const ownerTask = "202608060014-NNNNNN";
+    const referringTask = "202608060015-OOOOOO";
+    await addTask(root, ownerTask);
+    await addTask(root, referringTask);
+    const objectPath = await addObject(root, ownerTask, '{"owner":true}\n');
+    await addManifest(root, referringTask, objectPath);
+    await commitFixture(root);
+
+    const inventory = await buildEvidenceInventory({ root, workflowDir: WORKFLOW_DIR, now: NOW });
+    expect(inventory.summary.missing_references).toBe(1);
+    await expect(
+      garbageCollectEvidenceObjects({
+        root,
+        workflowDir: WORKFLOW_DIR,
+        apply: false,
+        yes: false,
+        now: NOW,
+      }),
+    ).rejects.toThrow(/inconsistent object store/u);
   });
 
   it("rejects retention policies that keep failures for less time than successes", async () => {

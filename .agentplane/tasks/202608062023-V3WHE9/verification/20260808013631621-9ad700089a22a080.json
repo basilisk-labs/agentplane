@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evidence && bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.evidence.test.ts\nResult: pass; 3 files and 15 tests passed.\nEvidence: Vitest reported 2 evidence files with 12 tests and 1 CLI file with 3 tests.\nScope: evidence inventory, concurrent reachability and retention-pin revalidation, compaction, garbage collection, and CLI rendering.\n\nCommand: bun run test:critical\nResult: pass; 12 chunks and 84 tests passed.\nEvidence: The critical CLI runner reported all twelve chunks passed.\nScope: compatibility, replay hardening, trust boundaries, protected paths, and git edge cases.\n\nCommand: bun run typecheck && bun run docs:cli:check\nResult: pass.\nEvidence: TypeScript build completed and generated CLI reference was current.\nScope: type safety and public CLI documentation.\n\nCommand: bun run ci:contract\nResult: pass.\nEvidence: Formatting, schemas, policy, compatibility 263commands/180args/843options, architecture, TypeScript 7 toolchain, clone, Knip, and coverage gates passed.\nScope: full repository contract for the committed evidence-maintenance implementation.",
+  "digest": "sha256:9ad700089a22a0801a306a91c46a51c4024da9affdbcd44c8384c883ab2ada40",
+  "implementation_sha": "40b758a4467ed76c0fa59e92c1b3dd63535fb9de",
+  "kind": "task_verification_record",
+  "note": "Result: pass; all declared verification steps and the full contract suite passed for implementation 40b758a4467e3186a89591dff2e79442575e383a.",
+  "recorded_at": "2026-08-08T01:36:31.621Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evidence packages/agentplane/src/cli/run-cli.core.evidence.test.ts\n- bun run test:critical\n- bun run typecheck\n- bun run docs:cli:check",
+  "scope_digest": "sha256:e03b6b8572c687ad65e25d32e0460d9ce86132acfcae68bbe78b35a8b1e469b2",
+  "task_id": "202608062023-V3WHE9",
+  "verification_command": "agentplane verify 202608062023-V3WHE9 --ok --by TESTER",
+  "verifier": "TESTER"
+}

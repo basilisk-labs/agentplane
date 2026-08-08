@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202608062023-V3WHE9-4fa7544dca6cde61ca6518f9",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062023-V3WHE9-add-safe-local-evidence-retention-statistics-and",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062023-V3WHE9-add-safe-local-evidence-retention-statistics-and/.agentplane/tasks/202608062023-V3WHE9/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-08-08T01:37:01.204Z",
+  "ended_at": "2026-08-08T01:37:52.373Z",
+  "stdout_bytes": 73421,
+  "stderr_bytes": 1072,
+  "provider_usage": {
+    "input_tokens": 155502,
+    "output_tokens": 2729,
+    "total_tokens": 158231,
+    "visible_output_tokens": 2264,
+    "reasoning_tokens": 465
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:896b7e8ab998a8bce9650074a3e8df566bb9cdc0da2a6bf3ee00f48411893742"
+}
