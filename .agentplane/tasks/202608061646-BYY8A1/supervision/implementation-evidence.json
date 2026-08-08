@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 4a2895659e677071caaa9b56cadf35df8e261e82..d6dd00111035c5aff69c88d495d2f3503d597f90",
+      "command": "git diff --check 1849f28543b60a87515a835c91e42dd704e4f66b..83ec9ea90c0a67cfcf424ca61ac9971d6bd448d3",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,18 +13,16 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 4a2895659e677071caaa9b56cadf35df8e261e82..d6dd00111035c5aff69c88d495d2f3503d597f90",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 1849f28543b60a87515a835c91e42dd704e4f66b..83ec9ea90c0a67cfcf424ca61ac9971d6bd448d3",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202608061646-BYY8A1/README.md",
-        "A\t.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json",
-        "A\t.agentplane/tasks/202608061646-BYY8A1/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202608061646-BYY8A1/pr/github-body.md",
-        "A\t.agentplane/tasks/202608061646-BYY8A1/pr/github-title.txt",
-        "A\t.agentplane/tasks/202608061646-BYY8A1/pr/meta.json",
-        "A\t.agentplane/tasks/202608061646-BYY8A1/pr/review.md",
-        "A\tdocs/releases/v0.7.5.md"
+        "M\t.agentplane/tasks/202608061646-BYY8A1/README.md",
+        "M\t.agentplane/tasks/202608061646-BYY8A1/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608061646-BYY8A1/pr/github-body.md",
+        "M\t.agentplane/tasks/202608061646-BYY8A1/pr/meta.json",
+        "M\t.agentplane/tasks/202608061646-BYY8A1/pr/review.md",
+        "M\tdocs/releases/v0.7.5.md"
       ]
     },
     {
@@ -34,59 +32,29 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "4a2895659e677071caaa9b56cadf35df8e261e82",
-  "implementation_commit": "d6dd00111035c5aff69c88d495d2f3503d597f90",
+  "execution_base_commit": "1849f28543b60a87515a835c91e42dd704e4f66b",
+  "implementation_commit": "83ec9ea90c0a67cfcf424ca61ac9971d6bd448d3",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      "?? .agentplane/tasks/202608061646-BYY8A1/README.md",
-      "?? .agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json",
-      "?? .agentplane/tasks/202608061646-BYY8A1/pr/diffstat.txt",
-      "?? .agentplane/tasks/202608061646-BYY8A1/pr/github-body.md",
-      "?? .agentplane/tasks/202608061646-BYY8A1/pr/github-title.txt",
-      "?? .agentplane/tasks/202608061646-BYY8A1/pr/meta.json",
-      "?? .agentplane/tasks/202608061646-BYY8A1/pr/review.md"
+      " M .agentplane/tasks/202608061646-BYY8A1/README.md",
+      " M docs/releases/v0.7.5.md"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608061646-BYY8A1/README.md"
+        "line": " M .agentplane/tasks/202608061646-BYY8A1/README.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608061646-BYY8A1/pr/diffstat.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608061646-BYY8A1/pr/github-body.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608061646-BYY8A1/pr/github-title.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608061646-BYY8A1/pr/meta.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608061646-BYY8A1/pr/review.md"
+        "line": " M docs/releases/v0.7.5.md"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      "?? .agentplane/tasks/202608061646-BYY8A1/README.md",
-      "?? .agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json",
-      "?? .agentplane/tasks/202608061646-BYY8A1/pr/diffstat.txt",
-      "?? .agentplane/tasks/202608061646-BYY8A1/pr/github-body.md",
-      "?? .agentplane/tasks/202608061646-BYY8A1/pr/github-title.txt",
-      "?? .agentplane/tasks/202608061646-BYY8A1/pr/meta.json",
-      "?? .agentplane/tasks/202608061646-BYY8A1/pr/review.md"
+      " M .agentplane/tasks/202608061646-BYY8A1/README.md",
+      " M docs/releases/v0.7.5.md"
     ],
     "unchanged_from_execution_baseline": []
   },

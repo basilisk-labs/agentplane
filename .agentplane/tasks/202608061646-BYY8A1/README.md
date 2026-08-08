@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -44,7 +44,9 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Rework: Unsupported declared check: AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:full"
   attempts: 1
-commit: null
+commit:
+  hash: "83ec9ea90c0a67cfcf424ca61ac9971d6bd448d3"
+  message: "🚧 BYY8A1 task: apply external agent result"
 comments:
   -
     author: "DOCS"
@@ -55,6 +57,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "External EXECUTOR returned blocked: Release notes were updated for the final merged fixes, but the supervisor-owned verification contract cannot be completed as declared."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 83ec9ea90c0a. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -81,8 +86,16 @@ events:
     at: "2026-08-08T05:46:05.191Z"
     author: "SUPERVISOR"
     body: "External EXECUTOR returned blocked: Release notes were updated for the final merged fixes, but the supervisor-owned verification contract cannot be completed as declared."
+  -
+    type: "status"
+    at: "2026-08-08T08:01:59.836Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 83ec9ea90c0a. CLI accepted one state-bound external-agent semantic result."
+    commit: "83ec9ea90c0a67cfcf424ca61ac9971d6bd448d3"
 doc_version: 3
-doc_updated_at: "2026-08-08T05:46:05.191Z"
+doc_updated_at: "2026-08-08T08:01:59.836Z"
 doc_updated_by: "SUPERVISOR"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
