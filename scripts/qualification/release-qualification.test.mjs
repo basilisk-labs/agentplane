@@ -217,6 +217,38 @@ describe("v0.7.1 release qualification contract", () => {
     assert.ok(events.indexOf("finish:matched-cli-latency:1") < events.indexOf("start:after-b:2"));
   });
 
+  it("propagates prerequisite failure after active work settles without starting dependents", async () => {
+    const scenarios = [
+      { id: "prerequisite", tier: "core", depends_on: [] },
+      { id: "active", tier: "core", depends_on: [] },
+      { id: "dependent", tier: "full", depends_on: ["prerequisite"] },
+      { id: "provider", tier: "provider", depends_on: [] },
+    ];
+    const started = [];
+    let activeSettled = false;
+
+    await assert.rejects(
+      () =>
+        runQualificationScenarios(scenarios, {}, "/unused", {
+          concurrency: 2,
+          async scenarioRunner(scenario) {
+            started.push(scenario.id);
+            if (scenario.id === "prerequisite") {
+              await new Promise((resolve) => setTimeout(resolve, 5));
+              throw new Error("qualification infrastructure failed");
+            }
+            await new Promise((resolve) => setTimeout(resolve, 20));
+            activeSettled = true;
+            return scenario.id;
+          },
+        }),
+      /qualification infrastructure failed/u,
+    );
+
+    assert.equal(activeSettled, true);
+    assert.deepEqual(started, ["prerequisite", "active"]);
+  });
+
   it("excludes disposable matched-latency fixtures from host indexing", () => {
     const tempRoot = createMatchedLatencyTempRoot(tmpdir());
     try {

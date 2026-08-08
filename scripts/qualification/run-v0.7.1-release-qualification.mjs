@@ -346,7 +346,12 @@ export async function runQualificationScenarios(
     promisesById.set(scenario.id, promise);
     if (exclusive) previousExclusivePromise = promise;
   }
-  return Promise.all(scenarios.map((scenario) => promisesById.get(scenario.id)));
+  const settled = await Promise.allSettled(
+    scenarios.map((scenario) => promisesById.get(scenario.id)),
+  );
+  const firstFailure = settled.find((result) => result.status === "rejected");
+  if (firstFailure) throw firstFailure.reason;
+  return settled.map((result) => result.value);
 }
 
 function printDryRun(scenarios, variables) {
