@@ -20,6 +20,12 @@ describe("usesExternalImplementationAuthority", () => {
     },
   );
 
+  it("keeps read-only worktree resolution on freshness-checked observation handling", () => {
+    expect(usesExternalImplementationAuthority("task_worktree_resolution", "read-only")).toBe(
+      false,
+    );
+  });
+
   it.each([
     ["implementation", true],
     ["implementation_rework", false],

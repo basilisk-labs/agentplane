@@ -2,7 +2,9 @@ import type { ExternalAgentExchange } from "./external-agent-exchange.js";
 
 export function usesExternalImplementationAuthority(
   purpose: ExternalAgentExchange["purpose"],
+  sandbox: "read-only" | "workspace-write" | "danger-full-access" = "workspace-write",
 ): boolean {
+  if (purpose === "task_worktree_resolution" && sandbox === "read-only") return false;
   return (
     purpose === "implementation" ||
     purpose === "implementation_rework" ||

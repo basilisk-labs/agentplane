@@ -48,7 +48,10 @@ import {
   applyExternalEvaluatorResult,
   isExternalEvaluatorResultApplied,
 } from "./external-agent-evaluator.js";
-import { applyExternalImplementationResult } from "./external-agent-implementation-authority.js";
+import {
+  applyExternalImplementationResult,
+  applyExternalReadOnlyWorktreeObservation,
+} from "./external-agent-implementation-authority.js";
 import { usesExternalImplementationAuthority } from "./external-agent-purpose.js";
 import { recordIssuedExternalAgentEpisode } from "./external-agent-supervisor-episode.js";
 import {
@@ -257,8 +260,21 @@ async function applyAcceptedResult(opts: {
     });
     return;
   }
-  if (usesExternalImplementationAuthority(opts.exchange.purpose)) {
+  if (
+    usesExternalImplementationAuthority(
+      opts.exchange.purpose,
+      opts.work_order.authority.sandbox,
+    )
+  ) {
     await applyExternalImplementationResult(opts);
+    return;
+  }
+  if (opts.exchange.purpose === "task_worktree_resolution") {
+    await applyExternalReadOnlyWorktreeObservation({
+      command: opts.command,
+      exchange: opts.exchange,
+      envelope: opts.envelope,
+    });
     return;
   }
   if (opts.exchange.purpose === "quality_review") {
@@ -434,7 +450,10 @@ export async function acceptExternalAgentResult(opts: {
         decision: current,
         envelope,
       }));
-    if (!alreadyApplied && !usesExternalImplementationAuthority(exchange.purpose)) {
+    if (
+      !alreadyApplied &&
+      !usesExternalImplementationAuthority(exchange.purpose, workOrder.authority.sandbox)
+    ) {
       assertReadOnlyReturnFresh({ exchange, decision: current });
     }
     if (!(alreadyApplied && exchange.purpose === "planning")) {
