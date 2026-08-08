@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608080355-G5FXDA/correct-stale-plan-comparison-in-next-action-dia",
   "created_at": "2026-08-08T03:55:51.970Z",
-  "diffstat_sha256": "sha256:d5dde91b643241912baacc13d8c6aa5c736b161e59fac4d324b1f4787c5d84be",
+  "diffstat_sha256": "sha256:5feb8917d5e920c341edcca177fd6272fab08d9702db95b99d3a549a4fa72a14",
   "last_verified_at": "2026-08-08T05:21:45.338Z",
   "last_verified_diffstat_sha256": "sha256:d5dde91b643241912baacc13d8c6aa5c736b161e59fac4d324b1f4787c5d84be",
   "pr_number": 4799,
