@@ -110,7 +110,16 @@ export async function runDirectTaskVerification(opts: {
   cwd: string;
 }): Promise<DirectTaskVerificationResult> {
   const checks: DirectTaskCheck[] = [];
-  for (const command of directTaskVerificationCommands(opts.task)) {
+  const commands = directTaskVerificationCommands(opts.task);
+  if (commands.length === 0) {
+    const result = {
+      status: "unsupported" as const,
+      checks,
+      reason: "No executable declared verification checks are configured for this task.",
+    };
+    return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
+  }
+  for (const command of commands) {
     const parsed = parseTrustedDirectTaskCheck(command);
     if (!parsed) {
       const result = {

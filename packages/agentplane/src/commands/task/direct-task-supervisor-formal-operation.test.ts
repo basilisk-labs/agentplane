@@ -2,6 +2,7 @@ import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
   createSupervisorExecutionEpisodeJournal,
+  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   recoverSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
 } from "@agentplaneorg/core/schemas";
@@ -203,6 +204,72 @@ describe("direct task supervisor formal operation", () => {
       status: "running",
       state_fingerprint_digest: NEXT_FINGERPRINT,
       cursor: { phase: "ready", operation_key: null },
+    });
+  });
+
+  it("starts an exact-key successor after an explicit failed-operation replacement", async () => {
+    const initial = createSupervisorExecutionEpisodeJournal({
+      task_id: TASK_ID,
+      task_revision: null,
+      state_fingerprint_digest: FIRST_FINGERPRINT,
+      budget: {
+        max_episodes: 50,
+        max_agent_runs: 50,
+        max_input_tokens: 3_000_000,
+        max_output_tokens: 1_000_000,
+        max_total_tokens: 4_000_000,
+        max_wall_time_ms: 14_400_000,
+        max_changed_files: 2000,
+        max_diff_lines: null,
+        max_no_progress_episodes: 3,
+      },
+    });
+    const started = startSupervisorExecutionEpisode({
+      journal: initial,
+      role: "EXECUTOR",
+      kind: "cli_operation",
+      operation_identity: { direct_task_operation: "task_verify" },
+      precondition_fingerprint_digest: FIRST_FINGERPRINT,
+      authority_ref: "direct-task-supervisor:task_verify",
+      authority_digest: FIRST_FINGERPRINT,
+      effect_ref: "task_verify",
+    });
+    if (started.status !== "started") throw new Error("expected failed operation fixture");
+    const failed = completeSupervisorExecutionEpisode({
+      journal: started.journal,
+      operation_key: started.operation_key,
+      result: { error: "known_pre_result_failure" },
+      failed: true,
+    });
+    const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+      journal: failed,
+      state_fingerprint_digest: NEXT_FINGERPRINT,
+    });
+    const write = vi.fn().mockResolvedValue(undefined);
+    mocks.open.mockResolvedValue({
+      journal: replacement,
+      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+      store: { write },
+    });
+    const run = vi.fn().mockResolvedValue({ verification: "ok" });
+
+    const result = await recordDirectTaskFormalOperation({
+      git_root: "/repo",
+      task_id: TASK_ID,
+      id: "task_verify",
+      decision: vi.fn().mockResolvedValue(decision(NEXT_FINGERPRINT)),
+      run,
+    });
+
+    expect(run).toHaveBeenCalledOnce();
+    expect(result.journal.operations).toHaveLength(2);
+    expect(result.journal.operations[0]).toMatchObject({
+      operation_key: started.operation_key,
+      status: "failed",
+    });
+    expect(result.journal.operations[1]).toMatchObject({
+      status: "completed",
+      replacement_of_operation_key: started.operation_key,
     });
   });
 });

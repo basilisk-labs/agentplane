@@ -70,6 +70,9 @@ export async function recordDirectTaskFormalOperation(opts: {
       authority_ref: `direct-task-supervisor:${opts.id}`,
       authority_digest: before.workflowStep.preconditionFingerprint.digest,
       effect_ref: opts.id,
+      ...(journal.cursor.replacement_of_operation_key
+        ? { replacement_of_operation_key: journal.cursor.replacement_of_operation_key }
+        : {}),
     });
   let started =
     resumedOperationKey === null

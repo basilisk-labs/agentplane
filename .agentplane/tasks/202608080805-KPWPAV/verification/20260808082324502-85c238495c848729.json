@@ -1,0 +1,15 @@
+{
+  "details": "",
+  "digest": "sha256:85c238495c848729165bdf11fff28cf7defae91563d8dc69bef9d976b1c30bb1",
+  "implementation_sha": "f559a5b1fc5ad58c390645d05375caff21d21d60",
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-08-08T08:23:24.502Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Allow explicit replacement after failed task advance operation\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow explicit replacement after failed task advance operation\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:fae92571cbd16678a5608352c61596708e0d7118146fca9cb39936d01aeae5aa",
+  "task_id": "202608080805-KPWPAV",
+  "verification_command": "agentplane verify 202608080805-KPWPAV --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
