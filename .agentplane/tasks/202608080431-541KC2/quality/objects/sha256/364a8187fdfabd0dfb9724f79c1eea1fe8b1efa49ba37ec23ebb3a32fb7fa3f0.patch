@@ -1,0 +1,64 @@
+diff --git a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts
+index 1de15e0b0..7f77980ca 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts
+@@ -221,7 +221,7 @@ describe("task runner effect resolution", () => {
+     expect(existsSync(opposingFixture.adapterMarker)).toBe(false);
+   });
+ 
+-  it("waits through a concurrent active-claim retirement", async () => {
++  it("waits through a concurrent active-claim retirement beyond the legacy retry window", async () => {
+     const fixture = await uncertainEffectFixture();
+     const input = resolutionInput(fixture);
+     const acquisition = await acquireTaskRunnerActiveClaimRecoveryLease({
+@@ -258,6 +258,10 @@ describe("task runner effect resolution", () => {
+         lease: acquisition.lease,
+         succeeded: false,
+       });
++      // The former ten-attempt backoff exhausted in roughly 225 ms. Delaying
++      // the competing resolver beyond that window makes the regression
++      // deterministic without depending on hosted-runner scheduler pressure.
++      await new Promise<void>((resolve) => setTimeout(resolve, 300));
+       const [waiting, completing] = await Promise.all([
+         waitingResolution,
+         resolveTaskRunnerEffect(input),
+diff --git a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts
+index 3a32e79d4..abe4ac984 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts
+@@ -33,7 +33,7 @@ import { retireTaskRunnerActiveClaimAfterEffectResolution } from "./task-run-eff
+ const EFFECT_RESOLUTION_ARTIFACT_MAX_BYTES = 64 * 1024;
+ const LEGACY_EFFECT_ACCEPTANCE_FILENAME = ".runner-effect-legacy-acceptance.json";
+ const IMMUTABLE_ARTIFACT_OBSERVATION_ATTEMPTS = 5;
+-const CONCURRENT_RETIREMENT_OBSERVATION_ATTEMPTS = 10;
++const CONCURRENT_RETIREMENT_OBSERVATION_MS = { timeout: 2000, poll: 10 };
+ 
+ type ResolutionArtifacts = {
+   intent: RunnerEffectResolutionIntent;
+@@ -114,7 +114,8 @@ async function waitForConcurrentResolutionRetirement(opts: {
+   run_id: string;
+   resolution: RunnerEffectResolutionRef;
+ }): Promise<boolean> {
+-  for (let attempt = 1; attempt <= CONCURRENT_RETIREMENT_OBSERVATION_ATTEMPTS; attempt += 1) {
++  const deadline = performance.now() + CONCURRENT_RETIREMENT_OBSERVATION_MS.timeout;
++  for (;;) {
+     const [record, activeClaim] = await Promise.all([
+       opts.repository.readRequiredRecord({ task_id: opts.task_id, run_id: opts.run_id }),
+       readTaskRunnerActiveClaim({
+@@ -130,11 +131,12 @@ async function waitForConcurrentResolutionRetirement(opts: {
+     if (record.state.effect_resolution?.digest === opts.resolution.digest && activeClaim === null) {
+       return true;
+     }
+-    if (attempt < CONCURRENT_RETIREMENT_OBSERVATION_ATTEMPTS) {
+-      await new Promise<void>((resolve) => setTimeout(resolve, attempt * 5));
+-    }
++    const remainingMs = deadline - performance.now();
++    if (remainingMs <= 0) return false;
++    await new Promise<void>((resolve) =>
++      setTimeout(resolve, Math.min(CONCURRENT_RETIREMENT_OBSERVATION_MS.poll, remainingMs)),
++    );
+   }
+-  return false;
+ }
+ 
+ async function readOptionalImmutable<T>(opts: {
