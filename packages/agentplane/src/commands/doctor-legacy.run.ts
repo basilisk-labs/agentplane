@@ -43,6 +43,7 @@ export const runDoctorLegacy: CommandHandler<DoctorLegacyParsed> = async (ctx, p
         `  policy=${adapter.retirement_policy.kind} scope=${adapter.retirement_policy.compatibility_scope}` +
         ` support_until=${adapter.retirement_policy.support_until ?? "none"}` +
         ` zero_usage_releases=${adapter.retirement_policy.minimum_zero_usage_releases ?? "none"}\n` +
+        `  removal_blocker=${adapter.removal_blocker ?? "none"}\n` +
         `  archive_conversion=${adapter.retirement_policy.archive_conversion ?? "none"}\n` +
         `  probe=${adapter.usage_probe.kind} evidence=${adapter.evidence.join("; ")}\n` +
         `  migrate=${adapter.migration_command}\n`,

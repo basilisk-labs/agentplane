@@ -357,6 +357,10 @@ describe("doctor legacy", () => {
       expect(humanIo.stdout).toContain(
         "policy=permanent_historical_reader scope=historical_reader",
       );
+      expect(humanIo.stdout).toContain(
+        "removal_blocker=The published workspace upgrade promise needs a defined support window after observed usage reaches zero.",
+      );
+      expect(humanIo.stdout).toContain("removal_blocker=none");
     } finally {
       humanIo.restore();
     }

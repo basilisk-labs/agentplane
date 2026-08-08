@@ -1,0 +1,503 @@
+diff --git a/docs/user/breaking-changes.mdx b/docs/user/breaking-changes.mdx
+index 2c77f87a7..2272ffb01 100644
+--- a/docs/user/breaking-changes.mdx
++++ b/docs/user/breaking-changes.mdx
+@@ -36,6 +36,24 @@ For the complete 0.6.24/0.6.26 migration and rollback procedure, see
+     `agentplane repair adopt-legacy-conflict`; the former integration-queue command remains a hidden
+     compatibility alias during the retirement window.
+ 
++## Compatibility retirement policy
++
++Every adapter reported by `agentplane doctor legacy --json` has one explicit disposition:
++
++- `scheduled_removal`: removed in the declared `remove_in` release;
++- `support_window`: supported through the declared version while users migrate;
++- `zero_usage_window`: removable only after the usage probe stays at zero for the declared number
++  of releases;
++- `archive_conversion`: active state is migrated while historical artifacts remain read-only;
++- `permanent_historical_reader`: immutable historical records remain readable, but current writers
++  never emit the legacy form.
++
++The `compatibility_scope` field distinguishes normal input boundaries from migration-only,
++recovery-only, and historical-reader paths. The 0.8 removal set currently contains supervisor
++episode v0, AgentWorkContext v1, and legacy context profile aliases. Historical task README v2,
++runner result manifest v1, and historical commit-subject readers are permanent read-only readers,
++not normal execution paths.
++
+ ## Upgrade checklist
+ 
+ 1. Install the exact intended CLI version and confirm it with `agentplane runtime explain`.
+diff --git a/docs/user/commands.mdx b/docs/user/commands.mdx
+index 3105145b8..13eb6227f 100644
+--- a/docs/user/commands.mdx
++++ b/docs/user/commands.mdx
+@@ -94,7 +94,8 @@ agentplane doctor legacy --json
+ 
+ `doctor legacy` is read-only. It returns the packaged compatibility retirement manifest plus
+ workspace probes classified as `used`, `unused`, `unknown`, or `blocked`. Each adapter names its
+-introduction and deprecation versions, retirement target or blocker, and migration command.
++introduction and deprecation versions, bounded retirement policy, compatibility scope, retirement
++target or blocker, and migration command.
+ 
+ Exceptional legacy protected-conflict recovery lives outside the normal lifecycle surface:
+ 
+diff --git a/packages/agentplane/assets/compatibility-retirement-manifest.json b/packages/agentplane/assets/compatibility-retirement-manifest.json
+index 89bbd0486..5e7ea9f84 100644
+--- a/packages/agentplane/assets/compatibility-retirement-manifest.json
++++ b/packages/agentplane/assets/compatibility-retirement-manifest.json
+@@ -1,5 +1,5 @@
+ {
+-  "schema_version": 1,
++  "schema_version": 2,
+   "kind": "agentplane.compatibility_retirement_manifest",
+   "adapters": [
+     {
+@@ -10,6 +10,13 @@
+       "deprecated_in": "0.7.1",
+       "remove_in": null,
+       "removal_blocker": "The published workspace upgrade promise needs a defined support window after observed usage reaches zero.",
++      "retirement_policy": {
++        "kind": "zero_usage_window",
++        "support_until": null,
++        "minimum_zero_usage_releases": 2,
++        "archive_conversion": null,
++        "compatibility_scope": "migration_only"
++      },
+       "migration_command": "agentplane upgrade",
+       "usage_probe": { "kind": "legacy_config_json" }
+     },
+@@ -21,6 +28,13 @@
+       "deprecated_in": "0.7.1",
+       "remove_in": null,
+       "removal_blocker": "Existing WORKFLOW.md v1 installations remain covered by the published v0.7 migration contract.",
++      "retirement_policy": {
++        "kind": "support_window",
++        "support_until": "0.8.0",
++        "minimum_zero_usage_releases": null,
++        "archive_conversion": null,
++        "compatibility_scope": "migration_only"
++      },
+       "migration_command": "agentplane workflow migrate",
+       "usage_probe": { "kind": "workflow_contract_v1" }
+     },
+@@ -34,7 +48,14 @@
+       "introduced_in": "0.3.8",
+       "deprecated_in": "0.7.1",
+       "remove_in": null,
+-      "removal_blocker": "Historical task archives can still contain README v2 records and need an explicit archive support policy.",
++      "removal_blocker": null,
++      "retirement_policy": {
++        "kind": "permanent_historical_reader",
++        "support_until": null,
++        "minimum_zero_usage_releases": null,
++        "archive_conversion": "Migrate active task records to README v3; preserve immutable archived README v2 records as read-only input.",
++        "compatibility_scope": "historical_reader"
++      },
+       "migration_command": "agentplane task migrate-doc --all",
+       "usage_probe": { "kind": "task_readme_pre_v3" }
+     },
+@@ -44,8 +65,15 @@
+       "source_paths": ["packages/core/src/runner/agent-work-order-compat.ts"],
+       "introduced_in": "0.7.0",
+       "deprecated_in": "0.7.1",
+-      "remove_in": null,
+-      "removal_blocker": "Legacy v1 packets are caller-supplied and local workspace inspection cannot prove that external producers have stopped sending them.",
++      "remove_in": "0.8.0",
++      "removal_blocker": null,
++      "retirement_policy": {
++        "kind": "scheduled_removal",
++        "support_until": null,
++        "minimum_zero_usage_releases": null,
++        "archive_conversion": null,
++        "compatibility_scope": "normal_input_boundary"
++      },
+       "migration_command": "agentplane task advance <task-id> --agent-json",
+       "usage_probe": { "kind": "runtime_input_unobservable" }
+     },
+@@ -57,6 +85,13 @@
+       "deprecated_in": "0.7.1",
+       "remove_in": "0.8.0",
+       "removal_blocker": null,
++      "retirement_policy": {
++        "kind": "scheduled_removal",
++        "support_until": null,
++        "minimum_zero_usage_releases": null,
++        "archive_conversion": null,
++        "compatibility_scope": "recovery_only"
++      },
+       "migration_command": "agentplane task advance <task-id>",
+       "usage_probe": { "kind": "supervisor_episode_v0" }
+     },
+@@ -71,6 +106,13 @@
+       "deprecated_in": "0.7.1",
+       "remove_in": null,
+       "removal_blocker": "Historical task-local runs remain readable until upgrade migration and retention behavior are specified.",
++      "retirement_policy": {
++        "kind": "archive_conversion",
++        "support_until": null,
++        "minimum_zero_usage_releases": null,
++        "archive_conversion": "Move active task-local runs into supervisor-owned storage during upgrade; retain old task-local records as read-only recovery input.",
++        "compatibility_scope": "recovery_only"
++      },
+       "migration_command": "agentplane upgrade",
+       "usage_probe": { "kind": "task_local_runner_storage" }
+     },
+@@ -81,7 +123,14 @@
+       "introduced_in": "0.3.8",
+       "deprecated_in": "0.7.1",
+       "remove_in": null,
+-      "removal_blocker": "Historical runner result artifacts are immutable evidence and need a retention-aware reader policy before removal.",
++      "removal_blocker": null,
++      "retirement_policy": {
++        "kind": "permanent_historical_reader",
++        "support_until": null,
++        "minimum_zero_usage_releases": null,
++        "archive_conversion": "Keep schema v1 result manifests immutable and normalize them only when a historical result is explicitly opened.",
++        "compatibility_scope": "historical_reader"
++      },
+       "migration_command": "agentplane upgrade",
+       "usage_probe": { "kind": "runner_result_manifest_v1" }
+     },
+@@ -96,6 +145,13 @@
+       "deprecated_in": "0.7.1",
+       "remove_in": "0.8.0",
+       "removal_blocker": null,
++      "retirement_policy": {
++        "kind": "scheduled_removal",
++        "support_until": null,
++        "minimum_zero_usage_releases": null,
++        "archive_conversion": null,
++        "compatibility_scope": "normal_input_boundary"
++      },
+       "migration_command": "agentplane context init --profile maximum-assimilation",
+       "usage_probe": { "kind": "runtime_input_unobservable" }
+     },
+@@ -107,6 +163,13 @@
+       "deprecated_in": "0.7.1",
+       "remove_in": null,
+       "removal_blocker": "Existing context workspaces can preserve legacy knowledge artifacts whose semantic re-verification is not automatic.",
++      "retirement_policy": {
++        "kind": "archive_conversion",
++        "support_until": null,
++        "minimum_zero_usage_releases": null,
++        "archive_conversion": "Preserve legacy wiki and graph inputs as immutable provenance, create maximum-assimilation v2 derivatives, and require semantic re-verification before promotion.",
++        "compatibility_scope": "migration_only"
++      },
+       "migration_command": "agentplane context migrate maximum-assimilation-v2",
+       "usage_probe": { "kind": "context_workspace_legacy" }
+     },
+@@ -121,6 +184,13 @@
+       "deprecated_in": "0.7.1",
+       "remove_in": null,
+       "removal_blocker": "Active pre-v0.7 protected-conflict handoffs need an explicit support horizon and a zero-usage qualification window.",
++      "retirement_policy": {
++        "kind": "zero_usage_window",
++        "support_until": null,
++        "minimum_zero_usage_releases": 2,
++        "archive_conversion": null,
++        "compatibility_scope": "recovery_only"
++      },
+       "migration_command": "agentplane repair adopt-legacy-conflict <task-id> --expect-adoption-token <sha256:...>",
+       "usage_probe": { "kind": "legacy_protected_conflict_queue" }
+     },
+@@ -134,6 +204,13 @@
+       "deprecated_in": null,
+       "remove_in": null,
+       "removal_blocker": "Repositories with refs/replace need explicit operator cleanup before replacement-ref compatibility can be removed.",
++      "retirement_policy": {
++        "kind": "zero_usage_window",
++        "support_until": null,
++        "minimum_zero_usage_releases": 2,
++        "archive_conversion": null,
++        "compatibility_scope": "recovery_only"
++      },
+       "migration_command": "git replace -d <object>",
+       "usage_probe": { "kind": "git_replacement_refs" }
+     },
+@@ -144,7 +221,14 @@
+       "introduced_in": "0.1.1",
+       "deprecated_in": "0.7.1",
+       "remove_in": null,
+-      "removal_blocker": "Historical commit subjects are immutable and the compatibility reader needs a bounded history policy before retirement.",
++      "removal_blocker": null,
++      "retirement_policy": {
++        "kind": "permanent_historical_reader",
++        "support_until": null,
++        "minimum_zero_usage_releases": null,
++        "archive_conversion": "Accept historical subject forms only while validating immutable history; all current writers emit the canonical task-intent form.",
++        "compatibility_scope": "historical_reader"
++      },
+       "migration_command": "agentplane doctor legacy --json",
+       "usage_probe": { "kind": "runtime_input_unobservable" }
+     }
+diff --git a/packages/agentplane/src/commands/doctor-legacy.run.ts b/packages/agentplane/src/commands/doctor-legacy.run.ts
+index 0b7f512f6..9d9be3428 100644
+--- a/packages/agentplane/src/commands/doctor-legacy.run.ts
++++ b/packages/agentplane/src/commands/doctor-legacy.run.ts
+@@ -20,10 +20,30 @@ export const runDoctorLegacy: CommandHandler<DoctorLegacyParsed> = async (ctx, p
+       `unused=${report.summary.unused} unknown=${report.summary.unknown} ` +
+       `blocked=${report.summary.blocked}\n`,
+   );
++  process.stdout.write(
++    `Retirement policies: remove=${report.retirement_summary.scheduled_removal} ` +
++      `support=${report.retirement_summary.support_window} ` +
++      `zero_usage=${report.retirement_summary.zero_usage_window} ` +
++      `archive=${report.retirement_summary.archive_conversion} ` +
++      `permanent_reader=${report.retirement_summary.permanent_historical_reader}\n`,
++  );
+   for (const adapter of report.adapters) {
+-    const retirement = adapter.remove_in ?? `blocked: ${adapter.removal_blocker}`;
++    const retirement =
++      adapter.remove_in ??
++      adapter.retirement_policy.support_until ??
++      (adapter.retirement_policy.kind === "permanent_historical_reader"
++        ? "permanent"
++        : adapter.retirement_policy.kind === "zero_usage_window"
++          ? `after_${adapter.retirement_policy.minimum_zero_usage_releases}_zero_usage_releases`
++          : adapter.retirement_policy.kind === "archive_conversion"
++            ? "after_archive_conversion"
++            : `blocked: ${adapter.removal_blocker}`);
+     process.stdout.write(
+-      `${adapter.status.toUpperCase()} ${adapter.id} remove_in=${retirement}\n` +
++      `${adapter.status.toUpperCase()} ${adapter.id} retirement=${retirement}\n` +
++        `  policy=${adapter.retirement_policy.kind} scope=${adapter.retirement_policy.compatibility_scope}` +
++        ` support_until=${adapter.retirement_policy.support_until ?? "none"}` +
++        ` zero_usage_releases=${adapter.retirement_policy.minimum_zero_usage_releases ?? "none"}\n` +
++        `  archive_conversion=${adapter.retirement_policy.archive_conversion ?? "none"}\n` +
+         `  probe=${adapter.usage_probe.kind} evidence=${adapter.evidence.join("; ")}\n` +
+         `  migrate=${adapter.migration_command}\n`,
+     );
+diff --git a/packages/agentplane/src/commands/doctor/legacy-manifest.ts b/packages/agentplane/src/commands/doctor/legacy-manifest.ts
+index 5d41ae4aa..98f557871 100644
+--- a/packages/agentplane/src/commands/doctor/legacy-manifest.ts
++++ b/packages/agentplane/src/commands/doctor/legacy-manifest.ts
+@@ -18,6 +18,19 @@ const LEGACY_USAGE_PROBE_KINDS = [
+ ] as const;
+ 
+ const VERSION_SCHEMA = z.string().regex(/^\d+\.\d+\.\d+$/u);
++const RETIREMENT_POLICY_KINDS = [
++  "scheduled_removal",
++  "support_window",
++  "zero_usage_window",
++  "archive_conversion",
++  "permanent_historical_reader",
++] as const;
++const COMPATIBILITY_SCOPES = [
++  "normal_input_boundary",
++  "migration_only",
++  "recovery_only",
++  "historical_reader",
++] as const;
+ const SOURCE_PATH_SCHEMA = z
+   .string()
+   .min(1)
+@@ -34,6 +47,15 @@ const AdapterSchema = z
+     deprecated_in: VERSION_SCHEMA.nullable(),
+     remove_in: VERSION_SCHEMA.nullable(),
+     removal_blocker: z.string().trim().min(1).nullable(),
++    retirement_policy: z
++      .object({
++        kind: z.enum(RETIREMENT_POLICY_KINDS),
++        support_until: VERSION_SCHEMA.nullable(),
++        minimum_zero_usage_releases: z.number().int().min(1).nullable(),
++        archive_conversion: z.string().trim().min(1).nullable(),
++        compatibility_scope: z.enum(COMPATIBILITY_SCOPES),
++      })
++      .strict(),
+     migration_command: z.string().trim().min(1),
+     usage_probe: z.object({ kind: z.enum(LEGACY_USAGE_PROBE_KINDS) }).strict(),
+   })
+@@ -52,18 +74,66 @@ const AdapterSchema = z
+         message: "must be later than the introduction/deprecation version",
+       });
+     }
+-    if (adapter.remove_in === null && adapter.removal_blocker === null) {
++    const policy = adapter.retirement_policy;
++    if (policy.support_until) {
++      const supportUntil = versionTuple(policy.support_until);
++      if (compareVersions(supportUntil, deprecated ?? introduced) < 0) {
++        ctx.addIssue({
++          code: "custom",
++          path: ["retirement_policy", "support_until"],
++          message: "precedes introduction/deprecation version",
++        });
++      }
++      if (remove && compareVersions(supportUntil, remove) >= 0) {
++        ctx.addIssue({
++          code: "custom",
++          path: ["retirement_policy", "support_until"],
++          message: "must precede remove_in",
++        });
++      }
++    }
++    if (
++      adapter.remove_in === null &&
++      adapter.removal_blocker === null &&
++      policy.kind !== "permanent_historical_reader"
++    ) {
+       ctx.addIssue({
+         code: "custom",
+         path: ["removal_blocker"],
+         message: "is required while remove_in is unset",
+       });
+     }
++    const requiredPolicyField: Record<(typeof RETIREMENT_POLICY_KINDS)[number], boolean> = {
++      scheduled_removal: adapter.remove_in !== null,
++      support_window: policy.support_until !== null,
++      zero_usage_window: policy.minimum_zero_usage_releases !== null,
++      archive_conversion: policy.archive_conversion !== null,
++      permanent_historical_reader:
++        adapter.remove_in === null && policy.compatibility_scope === "historical_reader",
++    };
++    if (!requiredPolicyField[policy.kind]) {
++      ctx.addIssue({
++        code: "custom",
++        path: ["retirement_policy", "kind"],
++        message: `retirement policy ${policy.kind} is missing its required bound`,
++      });
++    }
++    if (
++      policy.kind !== "permanent_historical_reader" &&
++      policy.compatibility_scope === "historical_reader" &&
++      policy.archive_conversion === null
++    ) {
++      ctx.addIssue({
++        code: "custom",
++        path: ["retirement_policy", "archive_conversion"],
++        message: "historical readers require an archive conversion policy or permanent status",
++      });
++    }
+   });
+ 
+ const ManifestSchema = z
+   .object({
+-    schema_version: z.literal(1),
++    schema_version: z.literal(2),
+     kind: z.literal("agentplane.compatibility_retirement_manifest"),
+     adapters: z.array(AdapterSchema).min(1),
+   })
+diff --git a/packages/agentplane/src/commands/doctor/legacy-probes.test.ts b/packages/agentplane/src/commands/doctor/legacy-probes.test.ts
+index 47e9225a6..5341bcf86 100644
+--- a/packages/agentplane/src/commands/doctor/legacy-probes.test.ts
++++ b/packages/agentplane/src/commands/doctor/legacy-probes.test.ts
+@@ -120,6 +120,16 @@ describe("doctor legacy", () => {
+         (adapter) => adapter.migration_command.trim().length > 0,
+       ),
+     ).toBe(true);
++    expect(
++      COMPATIBILITY_RETIREMENT_MANIFEST.adapters.every(
++        (adapter) =>
++          adapter.remove_in !== null ||
++          adapter.retirement_policy.support_until !== null ||
++          adapter.retirement_policy.minimum_zero_usage_releases !== null ||
++          adapter.retirement_policy.archive_conversion !== null ||
++          adapter.retirement_policy.kind === "permanent_historical_reader",
++      ),
++    ).toBe(true);
+ 
+     const duplicate = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST);
+     duplicate.adapters.push(structuredClone(duplicate.adapters[0]!));
+@@ -152,6 +162,24 @@ describe("doctor legacy", () => {
+     missingMigration.adapters[0]!.migration_command = null;
+     expect(() => validateCompatibilityRetirementManifest(missingMigration)).toThrow();
+ 
++    const unboundedRetirement = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST);
++    unboundedRetirement.adapters[0]!.retirement_policy = {
++      kind: "zero_usage_window",
++      support_until: null,
++      minimum_zero_usage_releases: null,
++      archive_conversion: null,
++      compatibility_scope: "migration_only",
++    };
++    expect(() => validateCompatibilityRetirementManifest(unboundedRetirement)).toThrow(
++      /missing its required bound/u,
++    );
++
++    const unsafePermanentReader = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST);
++    unsafePermanentReader.adapters[2]!.retirement_policy.compatibility_scope = "recovery_only";
++    expect(() => validateCompatibilityRetirementManifest(unsafePermanentReader)).toThrow(
++      /missing its required bound/u,
++    );
++
+     const staleSource = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST);
+     staleSource.adapters[0]!.source_paths = ["packages/agentplane/src/missing-legacy-adapter.ts"];
+     await expect(
+@@ -267,6 +295,13 @@ describe("doctor legacy", () => {
+     });
+     expect(report.summary.used).toBe(9);
+     expect(report.summary.unknown).toBe(3);
++    expect(report.retirement_summary).toEqual({
++      scheduled_removal: 3,
++      support_window: 1,
++      zero_usage_window: 3,
++      archive_conversion: 2,
++      permanent_historical_reader: 3,
++    });
+   });
+ 
+   it("reports blocked probes and emits the stable JSON command contract", async () => {
+@@ -288,6 +323,7 @@ describe("doctor legacy", () => {
+       const report = JSON.parse(io.stdout) as {
+         kind: string;
+         summary: { total: number; blocked: number };
++        retirement_summary: { permanent_historical_reader: number };
+         adapters: { id: string; status: string; migration_command: string }[];
+       };
+       expect(report.kind).toBe("agentplane.doctor.legacy");
+@@ -299,6 +335,7 @@ describe("doctor legacy", () => {
+       expect(report.adapters.every((adapter) => adapter.migration_command.trim().length > 0)).toBe(
+         true,
+       );
++      expect(report.retirement_summary.permanent_historical_reader).toBe(3);
+     } finally {
+       io.restore();
+     }
+@@ -314,6 +351,12 @@ describe("doctor legacy", () => {
+         humanIo.stdout.split("\n").filter((line) => line.startsWith("  migrate=")),
+       ).toHaveLength(COMPATIBILITY_RETIREMENT_MANIFEST.adapters.length);
+       expect(humanIo.stdout).not.toContain("manual policy decision required");
++      expect(humanIo.stdout).toContain(
++        "Retirement policies: remove=3 support=1 zero_usage=3 archive=2 permanent_reader=3",
++      );
++      expect(humanIo.stdout).toContain(
++        "policy=permanent_historical_reader scope=historical_reader",
++      );
+     } finally {
+       humanIo.restore();
+     }
+diff --git a/packages/agentplane/src/commands/doctor/legacy-probes.ts b/packages/agentplane/src/commands/doctor/legacy-probes.ts
+index 2a12b9f4b..2e93055c9 100644
+--- a/packages/agentplane/src/commands/doctor/legacy-probes.ts
++++ b/packages/agentplane/src/commands/doctor/legacy-probes.ts
+@@ -23,8 +23,9 @@ type LegacyAdapterUsage = CompatibilityRetirementAdapter & {
+ export type LegacyDoctorReport = {
+   schema_version: 1;
+   kind: "agentplane.doctor.legacy";
+-  manifest_schema_version: 1;
++  manifest_schema_version: 2;
+   summary: Record<LegacyUsageStatus | "total", number>;
++  retirement_summary: Record<CompatibilityRetirementAdapter["retirement_policy"]["kind"], number>;
+   adapters: LegacyAdapterUsage[];
+ };
+ 
+@@ -385,11 +386,20 @@ export async function inspectLegacyCompatibilityUsage(opts: {
+     blocked: 0,
+   };
+   for (const adapter of adapters) summary[adapter.status] += 1;
++  const retirement_summary: LegacyDoctorReport["retirement_summary"] = {
++    scheduled_removal: 0,
++    support_window: 0,
++    zero_usage_window: 0,
++    archive_conversion: 0,
++    permanent_historical_reader: 0,
++  };
++  for (const adapter of adapters) retirement_summary[adapter.retirement_policy.kind] += 1;
+   return {
+     schema_version: 1,
+     kind: "agentplane.doctor.legacy",
+     manifest_schema_version: opts.manifest.schema_version,
+     summary,
++    retirement_summary,
+     adapters,
+   };
+ }

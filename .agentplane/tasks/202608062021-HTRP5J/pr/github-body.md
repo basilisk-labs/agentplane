@@ -35,11 +35,11 @@ behavior, and repository contracts pass on current main.
  docs/user/breaking-changes.mdx                     | 18 ++++
  docs/user/commands.mdx                             |  3 +-
  .../assets/compatibility-retirement-manifest.json  | 96 ++++++++++++++++++++--
- .../agentplane/src/commands/doctor-legacy.run.ts   | 24 +++++-
+ .../agentplane/src/commands/doctor-legacy.run.ts   | 25 +++++-
  .../src/commands/doctor/legacy-manifest.ts         | 74 ++++++++++++++++-
- .../src/commands/doctor/legacy-probes.test.ts      | 43 ++++++++++
+ .../src/commands/doctor/legacy-probes.test.ts      | 47 +++++++++++
  .../src/commands/doctor/legacy-probes.ts           | 12 ++-
- 7 files changed, 258 insertions(+), 12 deletions(-)
+ 7 files changed, 263 insertions(+), 12 deletions(-)
 ```
 
 </details>
