@@ -152,12 +152,6 @@ import {
   loadAcrValidateSpec,
   loadAcrCheckSpec,
   loadAcrExplainSpec,
-  fromCommandsEvidenceCommand,
-  loadEvidenceBundleSpec,
-  loadEvidenceCompactSpec,
-  loadEvidenceGcSpec,
-  loadEvidenceStatsSpec,
-  loadEvidenceVerifySpec,
   loadBlueprintSpec,
   loadBlueprintListSpec,
   loadBlueprintExamplesSpec,
@@ -169,6 +163,14 @@ import {
   loadBlueprintScaffoldSpec,
   fromCommandsBlueprintsCommand,
 } from "../command-loaders/project.js";
+import {
+  fromCommandsEvidenceCommand,
+  loadEvidenceBundleSpec,
+  loadEvidenceCompactSpec,
+  loadEvidenceGcSpec,
+  loadEvidenceStatsSpec,
+  loadEvidenceVerifySpec,
+} from "../command-loaders/evidence.js";
 
 export const PROJECT_COMMANDS = [
   declareCommand(acrSpec, {

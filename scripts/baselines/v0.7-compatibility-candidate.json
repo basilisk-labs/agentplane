@@ -31,7 +31,8 @@
     "202608022324-9VCYWG",
     "202608021535-CNQKXP",
     "202608061646-WCARQG",
-    "202608061646-30TKV4"
+    "202608061646-30TKV4",
+    "202608062023-V3WHE9"
   ],
   "base": {
     "baseline_id": "agentplane.compatibility.v0.6.24",
@@ -40,9 +41,9 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "d0f057e72f5a3ae2bbd15f737469195d1ca9b4fb5b3e76cc336063c1e5e76c56",
+    "surface_sha256": "f57ac6b3a4714ea8017d3d13aa82b97c52aad0467883202b0d011faff30d2d24",
     "section_digests": {
-      "cli_topology": "8d1f0c009fb24cfd4d897e63085f8077357eddd0d6d556c1f0f11a0f2c4ada21",
+      "cli_topology": "fec6c3b1185691d9ff6f793d69afc2fbfc86e062d30733a60b5a1e5b5c41a80a",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
@@ -85,7 +86,7 @@
     "section": "package_manifests",
     "from_sha256": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
     "to_sha256": "5bfdd271a95a30651075fa2eab26a226d7f36cbd64aeffb2624e567f97a26633",
-    "surface_sha256": "cd30e3bf54b3c211f2d174939e1b8f402075fa2efc745598d98386082da1fe3a",
+    "surface_sha256": "226a337ec9c72e8da6d2191039f78f85d4db97e16101162540b4d948cfe70af4",
     "allowed_json_paths": [
       "$.package_manifests[0].dependencies.@agentplaneorg/core",
       "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -433,22 +434,26 @@
         "202608022324-9VCYWG",
         "202608021535-CNQKXP",
         "202608061646-WCARQG",
-        "202608061646-30TKV4"
+        "202608061646-30TKV4",
+        "202608062023-V3WHE9"
       ],
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "8d1f0c009fb24cfd4d897e63085f8077357eddd0d6d556c1f0f11a0f2c4ada21",
+      "to_sha256": "fec6c3b1185691d9ff6f793d69afc2fbfc86e062d30733a60b5a1e5b5c41a80a",
       "classification": "additive_with_visibility_simplification",
-      "summary": "Adds the compact external task advance packet, user-first task creation with an execution preview, explainable per-task workflow routing, and compatibility retirement diagnostics; promotes the managed task runner; and moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces without removing commands or options.",
+      "summary": "Adds the compact external task advance packet, user-first task creation with an execution preview, explainable per-task workflow routing, compatibility retirement diagnostics, and safe local evidence statistics, compaction, and garbage collection; promotes the managed task runner; and moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces without removing commands or options.",
       "evidence": {
-        "command_count": { "from": 243, "to": 260 },
+        "command_count": { "from": 243, "to": 263 },
         "positional_count": { "from": 165, "to": 180 },
-        "option_count": { "from": 767, "to": 836 },
+        "option_count": { "from": 767, "to": 843 },
         "added_commands": [
           "context supervise-task",
           "doctor legacy",
           "evaluator apply",
           "evaluator execute",
           "evaluator prepare",
+          "evidence compact",
+          "evidence gc",
+          "evidence stats",
           "integrate queue adopt-legacy-protected-conflict",
           "pr conflict-rework",
           "repair",
@@ -591,6 +596,72 @@
                 "valueHint": "<id>",
                 "default": "recovery-context"
               },
+              {
+                "name": "json",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
+              }
+            ]
+          },
+          {
+            "id": ["evidence", "compact"],
+            "visibility": "user",
+            "group": "Evidence",
+            "args": [],
+            "options": [
+              {
+                "name": "apply",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
+              },
+              {
+                "name": "yes",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
+              },
+              {
+                "name": "json",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
+              }
+            ]
+          },
+          {
+            "id": ["evidence", "gc"],
+            "visibility": "user",
+            "group": "Evidence",
+            "args": [],
+            "options": [
+              {
+                "name": "apply",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
+              },
+              {
+                "name": "yes",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
+              },
+              {
+                "name": "json",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
+              }
+            ]
+          },
+          {
+            "id": ["evidence", "stats"],
+            "visibility": "user",
+            "group": "Evidence",
+            "args": [],
+            "options": [
               {
                 "name": "json",
                 "kind": "boolean",
@@ -1274,6 +1345,55 @@
             "choices": ["human_supplied", "evaluator_supplied"]
           },
           {
+            "command": "evidence compact",
+            "name": "apply",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
+            "command": "evidence compact",
+            "name": "json",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
+            "command": "evidence compact",
+            "name": "yes",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
+            "command": "evidence gc",
+            "name": "apply",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
+            "command": "evidence gc",
+            "name": "json",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
+            "command": "evidence gc",
+            "name": "yes",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
+            "command": "evidence stats",
+            "name": "json",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
             "command": "hermes supervise",
             "name": "remote",
             "kind": "boolean",
@@ -1681,6 +1801,21 @@
           },
           {
             "kind": "command",
+            "command": "evidence compact",
+            "source_task": "202608062023-V3WHE9"
+          },
+          {
+            "kind": "command",
+            "command": "evidence gc",
+            "source_task": "202608062023-V3WHE9"
+          },
+          {
+            "kind": "command",
+            "command": "evidence stats",
+            "source_task": "202608062023-V3WHE9"
+          },
+          {
+            "kind": "command",
             "command": "integrate queue adopt-legacy-protected-conflict",
             "source_task": "202607260532-9M7RNH"
           },
@@ -1840,6 +1975,48 @@
             "command": "evaluator run",
             "name": "provenance",
             "source_task": "202607221846-YGWMA2"
+          },
+          {
+            "kind": "option",
+            "command": "evidence compact",
+            "name": "apply",
+            "source_task": "202608062023-V3WHE9"
+          },
+          {
+            "kind": "option",
+            "command": "evidence compact",
+            "name": "json",
+            "source_task": "202608062023-V3WHE9"
+          },
+          {
+            "kind": "option",
+            "command": "evidence compact",
+            "name": "yes",
+            "source_task": "202608062023-V3WHE9"
+          },
+          {
+            "kind": "option",
+            "command": "evidence gc",
+            "name": "apply",
+            "source_task": "202608062023-V3WHE9"
+          },
+          {
+            "kind": "option",
+            "command": "evidence gc",
+            "name": "json",
+            "source_task": "202608062023-V3WHE9"
+          },
+          {
+            "kind": "option",
+            "command": "evidence gc",
+            "name": "yes",
+            "source_task": "202608062023-V3WHE9"
+          },
+          {
+            "kind": "option",
+            "command": "evidence stats",
+            "name": "json",
+            "source_task": "202608062023-V3WHE9"
           },
           {
             "kind": "option",
