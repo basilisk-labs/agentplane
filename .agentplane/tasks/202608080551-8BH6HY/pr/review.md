@@ -13,7 +13,7 @@ Created: 2026-08-08T05:52:09.195Z
 ## Verification
 
 - State: needs_rework
-- Note: Rework: Unsupported declared check: bun run vitest packages/agentplane/src/commands/task/external-agent-purpose.test.ts
+- Note: Rework: Declared check failed: bun run ci:contract
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
