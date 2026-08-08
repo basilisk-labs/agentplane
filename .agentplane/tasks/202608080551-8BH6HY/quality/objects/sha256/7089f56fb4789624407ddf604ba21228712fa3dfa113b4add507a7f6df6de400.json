@@ -1,0 +1,85 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run test:critical",
+    "bun run typecheck",
+    "bun run ci:contract"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-08T07:28:36.680Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608080551-8BH6HY/verification/20260808072836680-9f8fb1bc7c53a7bf.json",
+      "sha256": "sha256:9f3a7c399539e366c5bc3b57c57016fb5eba6ae1825fc2415f934b9c32f80753"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 4ff8acd243b3958150948fafd4fc8c6b3dc94bf5..bd07cac6d7b50201f5f2de53c8adeb0074bd3922",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 4ff8acd243b3958150948fafd4fc8c6b3dc94bf5..bd07cac6d7b50201f5f2de53c8adeb0074bd3922",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608080551-8BH6HY/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608080551-8BH6HY/pr/github-body.md",
+          "M\t.agentplane/tasks/202608080551-8BH6HY/pr/meta.json",
+          "M\t.agentplane/tasks/202608080551-8BH6HY/pr/review.md",
+          "M\tpackages/agentplane/src/commands/task/external-agent-supervisor.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "4ff8acd243b3958150948fafd4fc8c6b3dc94bf5",
+    "implementation_commit": "bd07cac6d7b50201f5f2de53c8adeb0074bd3922",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        " M packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608080551-8BH6HY",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608080551-8BH6HY/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

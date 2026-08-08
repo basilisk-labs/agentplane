@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -18,7 +18,7 @@ verify:
   - "bun run ci:contract"
 plan_approval:
   state: "approved"
-  updated_at: "2026-08-08T05:51:44.551Z"
+  updated_at: "2026-08-08T07:31:12.675Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
@@ -28,31 +28,32 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-08T07:01:01.223Z"
+  updated_at: "2026-08-08T07:30:09.485Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "c421bde71fb5260237a2cfbf84dfa91c692b6457"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "bd07cac6d7b50201f5f2de53c8adeb0074bd3922"
   blueprint_digest: "f838ddb45c74406d87ad39a2b037d6fe7c88d657a5b7b4059642578ee7641be4"
   evidence_refs:
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-070005191-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-070005191-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/45c9c609edf5f2c80819b247cc7648fcbd733add2862286cf132655938d0316b.md"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-070005191-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-070005191-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-070005191-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-072925107-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-072925107-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/de616200891a50d94c7b7e3fb7bc21596a226f3a9282ee3ae99c247bf350d1d6.md"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-072925107-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-072925107-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-072925107-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/20260808-072925107-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608080551-8BH6HY/README.md"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/a795513810310d25ad12119d319e329fb1649025d34571a7f1705fa54e569737.patch"
-    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/5aafa37973a2476d6e3d49422d27f81cd03bb93b823d884a6d7f223086db5ff0.json"
-    - ".agentplane/tasks/202608080551-8BH6HY/verification/20260808065919974-6bbaee56107e8436.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/0d8205290b2e749c44fb2689ec51d656d3c4557641356fe8aca7013418a18a52.patch"
+    - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/7089f56fb4789624407ddf604ba21228712fa3dfa113b4add507a7f6df6de400.json"
+    - ".agentplane/tasks/202608080551-8BH6HY/verification/20260808072836680-9f8fb1bc7c53a7bf.json"
     - ".agentplane/tasks/202608080551-8BH6HY/quality/objects/sha256/9bdf501920399d2009207ee356cca9d401dd0ad0bfd8caf494e54982108db83a.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The implementation meets the approved contract: task_worktree_resolution shares implementation-authority routing, the completed result is accepted after the expected commit transition, read-only freshness remains enforced, and recorded checks pass."
+    - "The evaluated patch includes unrelated verification-routing, quality-review, and formal-operation recovery changes beyond the approved task-worktree result-acceptance fix."
 token_usage:
   agent_runs: 9
   input_tokens: 273067
@@ -112,6 +113,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: bd07cac6d7b5. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "ORCHESTRATOR"
+    body: "Scope re-approved under the user's standing authorization for post-release defect fixes discovered by dogfooding and review; these recovery dependencies are required to make external worktree result acceptance usable end to end."
 events:
   -
     type: "status"
@@ -244,9 +248,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "comment"
+    at: "2026-08-08T07:31:13.097Z"
+    author: "ORCHESTRATOR"
+    body: "Scope re-approved under the user's standing authorization for post-release defect fixes discovered by dogfooding and review; these recovery dependencies are required to make external worktree result acceptance usable end to end."
 doc_version: 3
-doc_updated_at: "2026-08-08T07:28:37.705Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-08T07:31:13.124Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "Fix task advance so a state-bound task_worktree_resolution episode can return a completed result after the CODER commits intended changes, without being rejected as an unsupported or stale read-only purpose; add focused regression coverage."
 sections:
   Summary: |-
@@ -256,7 +265,7 @@ sections:
   Scope: |-
     - In scope: Fix task advance so a state-bound task_worktree_resolution episode can return a completed result after the CODER commits intended changes, without being rejected as an unsupported or stale read-only purpose; add focused regression coverage.
     - Out of scope: unrelated refactors not required for "Accept external task-worktree resolution results".
-  Plan: "1. Classify task_worktree_resolution as an external implementation-authority purpose so result acceptance tolerates the expected supervisor-owned commit transition. 2. Reuse one shared purpose predicate for application and freshness behavior. 3. Add focused regression tests for implementation, implementation_rework, task_worktree_resolution, and read-only purposes. 4. Run focused tests, typecheck, and contract checks; obtain evaluator pass and integrate before resuming the release task."
+  Plan: "1. Accept state-bound task_worktree_resolution and implementation_rework results with purpose-correct commit recovery. 2. Treat remaining pre-existing dirty paths as the semantic subject of writable worktree resolution while keeping read-only episodes freshness-checked and observation-only. 3. Recover completed stale external episodes, retry ready-but-stale routing within one bounded call, and resume an exact interrupted formal verification intent without replaying an unknown effect. 4. Route a newly recorded implementation after needs_rework back to deterministic verification instead of another rework loop. 5. Cover baseline keep, read-only observation, stale journal, process-loss, rework convergence, and prior-commit replacement; pass critical, type, contract, evaluator, hosted, and integration gates."
   Verify Steps: |-
     PLANNER fallback scaffold for "Accept external task-worktree resolution results". Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -660,7 +669,7 @@ Fix task advance so a state-bound task_worktree_resolution episode can return a 
 
 ## Plan
 
-1. Classify task_worktree_resolution as an external implementation-authority purpose so result acceptance tolerates the expected supervisor-owned commit transition. 2. Reuse one shared purpose predicate for application and freshness behavior. 3. Add focused regression tests for implementation, implementation_rework, task_worktree_resolution, and read-only purposes. 4. Run focused tests, typecheck, and contract checks; obtain evaluator pass and integrate before resuming the release task.
+1. Accept state-bound task_worktree_resolution and implementation_rework results with purpose-correct commit recovery. 2. Treat remaining pre-existing dirty paths as the semantic subject of writable worktree resolution while keeping read-only episodes freshness-checked and observation-only. 3. Recover completed stale external episodes, retry ready-but-stale routing within one bounded call, and resume an exact interrupted formal verification intent without replaying an unknown effect. 4. Route a newly recorded implementation after needs_rework back to deterministic verification instead of another rework loop. 5. Cover baseline keep, read-only observation, stale journal, process-loss, rework convergence, and prior-commit replacement; pass critical, type, contract, evaluator, hosted, and integration gates.
 
 ## Verify Steps
 
