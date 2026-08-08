@@ -43,6 +43,55 @@ function latestPlanTargetsCurrentRelease(state) {
   return plan?.nextVersion === state.release?.version && plan?.nextTag === state.release?.tag;
 }
 
+function parseStableReleaseVersion(value) {
+  const match = /^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/u.exec(String(value ?? "").trim());
+  return match ? [Number(match[1]), Number(match[2]), Number(match[3])] : null;
+}
+
+function compareStableReleaseVersions(left, right) {
+  for (const [index, leftPart] of left.entries()) {
+    const delta = leftPart - right[index];
+    if (delta !== 0) return Math.sign(delta);
+  }
+  return 0;
+}
+
+function latestPlanTargetRelation(state) {
+  const currentVersion = parseStableReleaseVersion(state.release?.version);
+  const currentTagVersion = parseStableReleaseVersion(state.release?.tag);
+  const plan = state.release?.latest_plan;
+  const hasPlannedVersion = plan && Object.hasOwn(plan, "nextVersion");
+  const hasPlannedTag = plan && Object.hasOwn(plan, "nextTag");
+  const plannedVersion = parseStableReleaseVersion(plan?.nextVersion);
+  const plannedTagVersion = parseStableReleaseVersion(plan?.nextTag);
+
+  if (
+    !currentVersion ||
+    !currentTagVersion ||
+    compareStableReleaseVersions(currentVersion, currentTagVersion) !== 0
+  ) {
+    return "invalid";
+  }
+  if (!plan || (!plannedVersion && !plannedTagVersion)) return "missing";
+  if ((hasPlannedVersion && !plannedVersion) || (hasPlannedTag && !plannedTagVersion)) {
+    return "invalid";
+  }
+  if (
+    plannedVersion &&
+    plannedTagVersion &&
+    compareStableReleaseVersions(plannedVersion, plannedTagVersion) !== 0
+  ) {
+    return "invalid";
+  }
+
+  const target = plannedVersion ?? plannedTagVersion;
+  if (!target) return "invalid";
+  const comparison = compareStableReleaseVersions(target, currentVersion);
+  if (comparison > 0) return "future";
+  if (comparison < 0) return "stale";
+  return "current";
+}
+
 function loadRecoveryReport(flags, state) {
   const fixturePath = process.env.AGENTPLANE_TEST_RELEASE_RECOVERY_REPORT_PATH;
   if (fixturePath) return readJsonFile(fixturePath);
@@ -244,7 +293,10 @@ function main() {
   ) {
     action = "collect hosted publish evidence";
     command = "bun run release:evidence:collect";
-  } else if (state.release.latest_plan?.nextTag === state.release.tag) {
+  } else if (
+    state.release.evidence_valid === true &&
+    latestPlanTargetRelation(state) !== "future"
+  ) {
     action = "generate a fresh release plan for the next patch";
     command = "ap release plan --patch";
   }
