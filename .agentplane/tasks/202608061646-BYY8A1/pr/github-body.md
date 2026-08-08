@@ -37,19 +37,23 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
  .../src/cli/run-cli.core.help-contract.test.ts     |   2 +-
  .../src/cli/run-cli.core.pr-flow.test.ts           |  28 ++++++++-
  ...li.core.route-decision.pr-open-metadata.test.ts |  17 ++++++
+ .../src/cli/run-cli.core.task-advance.test.ts      |  36 ++++++++++++
  .../cli/run-cli.core.task-next-action-json.test.ts |  22 +++++++
  .../commands/task/direct-task-verification.test.ts |  32 ++++++++++-
  .../src/commands/task/direct-task-verification.ts  |  15 ++++-
+ .../src/commands/task/external-agent-exchange.ts   |   2 +-
+ .../src/commands/task/external-agent-supervisor.ts |  27 +++++++--
  .../runner/context/semantic-prompt-projection.ts   |   2 +-
  .../task-run-bootstrap.result-examples.test.ts     |  38 ++++++++++++
  .../src/runner/usecases/task-run-bootstrap.ts      |  14 ++++-
+ packages/agentplane/src/shared/stable-file.test.ts |  23 ++++++++
  scripts/README.md                                  |   2 +-
  .../qualification/release-qualification.test.mjs   |   9 +++
  .../run-v0.7.1-release-qualification.mjs           |   2 +
  website/static/img/social/docs/releases/v0.7.5.png | Bin 0 -> 53016 bytes
  website/static/img/social/manifest.json            |   8 +++
  website/static/llms-full.txt                       |  52 +++++++++++++++--
- 22 files changed, 321 insertions(+), 30 deletions(-)
+ 26 files changed, 403 insertions(+), 36 deletions(-)
 ```
 
 </details>
