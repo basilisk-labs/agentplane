@@ -1,0 +1,15 @@
+{
+  "details": "",
+  "digest": "sha256:902402e46fa18062a1071d113c026d6777fa2d4aa250ea9a7eb9bf79de661db8",
+  "implementation_sha": "0af389fe8d6f8d6dfd5fcf52716cb55391157494",
+  "kind": "task_verification_record",
+  "note": "Rework: Unsupported declared check: bun run e2e:v0.7.1:check",
+  "recorded_at": "2026-08-08T12:41:34.504Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run `bun run e2e:v0.7.1:check`. Expected: qualification contract tests pass and the full gate command resolves every required variable in dry-run mode.\n2. Run `bun run test:critical`. Expected: the critical CLI suite passes, including candidate capture concurrency, stop-on-first-failure, evidence cleanup, and existing RF-04 contracts.\n3. Run `bun run format:check`. Expected: formatting passes.\n4. Run `bun run ci:contract`. Expected: repository contracts, lint, architecture, clone, knip, and coverage thresholds pass.\n5. The subsequent v0.7.5 release gate must execute the full 50-run/55-episode provider matrix on the exact integrated candidate SHA; no provider evidence from the pre-change SHA may be reused.",
+  "scope_digest": "sha256:9b9b41ba3c417a8ed34255f0de88407935ec799e26430041fe18c4f96f4b3780",
+  "task_id": "202608081216-YAN7DW",
+  "verification_command": "agentplane verify 202608081216-YAN7DW --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

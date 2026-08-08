@@ -1,7 +1,7 @@
 {
   "checks": [],
   "kind": "direct_task_declared_checks",
-  "reason": "Unsupported declared check: node --test scripts/qualification/release-qualification.test.mjs",
+  "reason": "Unsupported declared check: bun run e2e:v0.7.1:check",
   "schema_version": 1,
   "status": "unsupported",
   "task_id": "202608081216-YAN7DW"
