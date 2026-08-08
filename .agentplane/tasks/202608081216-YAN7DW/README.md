@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -33,36 +33,33 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-08T13:18:29.945Z"
+  updated_at: "2026-08-08T13:49:21.107Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "a458a3689d31c1fd8109711dfa2980dd9ff910fe"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "3b41dbe37c4885e0cb94ab4d7e2d58f53619353b"
   blueprint_digest: "bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1"
   evidence_refs:
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-131750525-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-131750525-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/472d4836986ab87ac6e000373a945b3f4bc11653eb87f02d7c5f9cc1c9b88c53.md"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-131750525-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-131750525-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-131750525-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-134812279-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-134812279-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/4b9c779f766645662ce905324809a7017eb8e1014ebe4b21ae97ff4902a69146.md"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-134812279-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-134812279-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-134812279-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-134812279-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608081216-YAN7DW/README.md"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/0d768cb34a12f24bd63e8be3a9455b6bdb1d5a1a389e9dbdd02101f333967aac.patch"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/97dd42ab147fda20c05c255bb977b4cab71c78f1d41c4bb0568c2c31c7343090.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/verification/20260808131742246-2234a7a4c88766d6.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/617dfb9f0c1bbfe25fcdbf3e1cbd0bbb4dff3af3cfbbda231b1ea932fa86f01c.patch"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/ab5d6f84e22cf4ec514959608ebfa23ea7cbc940b25d2bfdb2c1b3e162a278ea.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/verification/20260808134651510-40c153d29d5faf12.json"
     - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/66fa4c234b9ab066149f87bbec5b818fe331d23c90ef191589289397e54ec486.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Independent local scenarios run under a bounded scheduler while declared dependency barriers and deterministic report ordering remain enforced by contract tests."
-    - "Provider replay jobs use isolated repositories, bounded concurrency, deterministic evidence ordering, stop assigning after the first failure, and SIGKILL-backed fixed timeouts."
-    - "The critical CLI harness no longer inherits controller-only agent rendering markers, eliminating the verification-mode leak observed under task advance."
-    - "Supervisor-owned verification passed qualification:check, test:critical, format:check, and ci:contract for implementation SHA a458a3689d31c1fd8109711dfa2980dd9ff910fe."
-    - "Residual risk: Provider rate limits may reduce realized speedup; the release gate must measure this without weakening pass thresholds."
-    - "Residual risk: No provider evidence from a pre-integration SHA may be reused."
+    - "The frozen evidence does not establish the required timing baseline or provide a serial-versus-concurrent pilot comparison, so the claimed reduction in patch-release elapsed time is unproven."
+    - "The added qualification-runner tests cover concurrency, dependency barriers, exclusivity, and result ordering, but do not exercise scenario failure propagation or prove that dependent/provider work remains unstarted after a prerequisite failure."
 token_usage:
   agent_runs: 11
   input_tokens: null
@@ -271,7 +268,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-08T13:46:52.923Z"
+doc_updated_at: "2026-08-08T13:49:21.131Z"
 doc_updated_by: "CODER"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
