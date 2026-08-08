@@ -17,17 +17,36 @@ describeCritical("critical: exit codes contract", () => {
   it(
     "init is idempotent by default (second run reports conflicts with E_IO)",
     async () => {
-      const root = await makeTempDir("agentplane-critical-exit-");
-      await ensureDir(root);
+      const inheritedRendering = {
+        agentMode: process.env.AGENTPLANE_AGENT_MODE,
+        cliAlias: process.env.AGENTPLANE_CLI_ALIAS,
+        output: process.env.AGENTPLANE_OUTPUT,
+      };
+      process.env.AGENTPLANE_AGENT_MODE = "1";
+      process.env.AGENTPLANE_CLI_ALIAS = "ap";
+      process.env.AGENTPLANE_OUTPUT = "json";
+      try {
+        const root = await makeTempDir("agentplane-critical-exit-");
+        await ensureDir(root);
 
-      const first = await runCli(["init", "--yes"], { cwd: root });
-      expect(first.code).toBe(0);
-      expect(await pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).toBe(true);
+        const first = await runCli(["init", "--yes"], { cwd: root });
+        expect(first.code).toBe(0);
+        expect(await pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).toBe(true);
 
-      const second = await runCli(["init", "--yes"], { cwd: root });
-      expectCliError(second, 4, "E_IO");
-      expect(second.stderr).toMatch(/Init conflicts detected/i);
-      expect(second.stderr).toMatch(/--force/i);
+        const second = await runCli(["init", "--yes"], { cwd: root });
+        expectCliError(second, 4, "E_IO");
+        expect(second.stderr).toMatch(/Init conflicts detected/i);
+        expect(second.stderr).toMatch(/--force/i);
+      } finally {
+        for (const [key, value] of Object.entries({
+          AGENTPLANE_AGENT_MODE: inheritedRendering.agentMode,
+          AGENTPLANE_CLI_ALIAS: inheritedRendering.cliAlias,
+          AGENTPLANE_OUTPUT: inheritedRendering.output,
+        })) {
+          if (value === undefined) delete process.env[key];
+          else process.env[key] = value;
+        }
+      }
     },
     CRITICAL_EXIT_CODES_TIMEOUT_MS,
   );
