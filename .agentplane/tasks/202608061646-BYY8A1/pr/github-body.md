@@ -16,7 +16,7 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
 ## Verification
 
 - State: blocked_external
-- Note: Rework: Unsupported declared check: bun run e2e:v0.7.1:gate
+- Note: Rework: Declared check failed: bun run e2e:v0.7.1:gate
 - Canonical workflow state lives in the task README.
 
 <details>
