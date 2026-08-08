@@ -24,6 +24,7 @@ import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
 import {
   hasAcceptedVerificationForCurrentImplementation,
   qualityReworkHasNewVerification,
+  verificationReworkHasNewImplementation,
 } from "./route-decision-verification.js";
 import {
   filterTaskWorktreeBlockingPaths,
@@ -466,7 +467,9 @@ export async function deriveBlockers(opts: {
       (blocker) => blocker.code === "verification_required",
     );
     let implementationReworkRequired =
-      taskIsDoing && opts.task.verification?.state === "needs_rework";
+      taskIsDoing &&
+      opts.task.verification?.state === "needs_rework" &&
+      !verificationReworkHasNewImplementation(opts.task);
     if (
       !implementationReworkRequired &&
       taskIsDoing &&
