@@ -38,8 +38,8 @@ Fix task advance so a state-bound task_worktree_resolution episode can return a 
  .../commands/task/external-agent-purpose.test.ts   |  39 ++
  .../src/commands/task/external-agent-purpose.ts    |  21 ++
  .../task/external-agent-supervisor-episode.ts      | 116 ++++++
- .../src/commands/task/external-agent-supervisor.ts | 124 ++-----
- 12 files changed, 874 insertions(+), 112 deletions(-)
+ .../src/commands/task/external-agent-supervisor.ts | 121 +-----
+ 12 files changed, 871 insertions(+), 112 deletions(-)
 ```
 
 </details>
