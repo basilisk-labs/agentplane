@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -40,13 +40,11 @@ plan_approval:
   note: null
 verification:
   state: "needs_rework"
-  updated_at: "2026-08-08T03:54:12.731Z"
+  updated_at: "2026-08-08T08:02:05.276Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Unsupported declared check: AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:full"
-  attempts: 1
-commit:
-  hash: "83ec9ea90c0a67cfcf424ca61ac9971d6bd448d3"
-  message: "🚧 BYY8A1 task: apply external agent result"
+  attempts: 2
+commit: null
 comments:
   -
     author: "DOCS"
@@ -94,8 +92,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 83ec9ea90c0a. CLI accepted one state-bound external-agent semantic result."
     commit: "83ec9ea90c0a67cfcf424ca61ac9971d6bd448d3"
+  -
+    type: "verify"
+    at: "2026-08-08T08:02:05.276Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Unsupported declared check: AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-08-08T08:01:59.836Z"
+doc_updated_at: "2026-08-08T08:02:06.556Z"
 doc_updated_by: "SUPERVISOR"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
@@ -123,6 +127,36 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T03:48:21.200Z, excerpt_hash=sha256:444e80e5e6ac40e5e4a7eb589b240afb647ac0fd12411aef4136db88c015187b
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+    - old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608061646-BYY8A1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T08:02:05.276Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Unsupported declared check: AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T08:01:59.836Z, excerpt_hash=sha256:444e80e5e6ac40e5e4a7eb589b240afb647ac0fd12411aef4136db88c015187b
 
     Details:
 
@@ -188,6 +222,36 @@ Note: Rework: Unsupported declared check: AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T03:48:21.200Z, excerpt_hash=sha256:444e80e5e6ac40e5e4a7eb589b240afb647ac0fd12411aef4136db88c015187b
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608061646-BYY8A1-qualify-and-publish-agentplane-0-7-5-supervisor/.agentplane/tasks/202608061646-BYY8A1/blueprint/resolved-snapshot.json
+- old_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- current_digest: 51c98d1b8a7280b9af82ccc626052a143a3f0b33ae5a318e729e9b541402c9df
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608061646-BYY8A1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608061646-BYY8A1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T08:02:05.276Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Unsupported declared check: AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T08:01:59.836Z, excerpt_hash=sha256:444e80e5e6ac40e5e4a7eb589b240afb647ac0fd12411aef4136db88c015187b
 
 Details:
 
