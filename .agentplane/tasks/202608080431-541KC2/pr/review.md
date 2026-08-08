@@ -6,7 +6,7 @@ Created: 2026-08-08T04:32:07.103Z
 
 - Task: `202608080431-541KC2`
 - Title: Bound concurrent effect-retirement observation by time
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608080431-541KC2/bound-concurrent-effect-retirement`
 - Canonical task record: `.agentplane/tasks/202608080431-541KC2/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-08T04:32:07.103Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-08T04:32:07.103Z
+- Updated: 2026-08-08T04:45:45.828Z
 - Branch: task/202608080431-541KC2/bound-concurrent-effect-retirement
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
