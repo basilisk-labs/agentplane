@@ -20,7 +20,7 @@ Add OSS evidence stats, compact, and gc surfaces with a dry-run-first retention 
 
 ```text
 Result: pass; all declared verification steps and the full contract suite passed for implementation
-40b758a4467e3186a89591dff2e79442575e383a.
+80d0ce11e11a01ee140d4f146e4f7362c7370ff0.
 ```
 - Canonical workflow state lives in the task README.
 
