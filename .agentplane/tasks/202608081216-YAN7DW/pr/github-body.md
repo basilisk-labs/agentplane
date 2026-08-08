@@ -16,7 +16,12 @@ Reduce patch-release elapsed time by adding bounded concurrency to independent q
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note:
+
+```text
+Verified fail-closed qualification scheduling and measured parallelization on 51072b303; all
+declared local gates passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

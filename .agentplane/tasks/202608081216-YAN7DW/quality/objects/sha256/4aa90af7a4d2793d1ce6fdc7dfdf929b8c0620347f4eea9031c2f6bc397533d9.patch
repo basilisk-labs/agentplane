@@ -1,0 +1,956 @@
+diff --git a/package.json b/package.json
+index ad462f6ef..bf4ccadb1 100644
+--- a/package.json
++++ b/package.json
+@@ -70,7 +70,8 @@
+     "release:next-action": "node scripts/release/next-action.mjs",
+     "release:recover": "node scripts/release/check-release-recovery-state.mjs",
+     "release:e2e:local": "node scripts/release/run-local-release-e2e.mjs",
+-    "e2e:v0.7.1:check": "node --test scripts/qualification/release-qualification.test.mjs && node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --dry-run",
++    "qualification:check": "node --test scripts/qualification/release-qualification.test.mjs && node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --dry-run",
++    "e2e:v0.7.1:check": "bun run qualification:check",
+     "e2e:v0.7.1:core-audit": "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile core",
+     "e2e:v0.7.1:audit": "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full",
+     "e2e:v0.7.1:gate": "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider",
+diff --git a/packages/agentplane/src/cli/critical/harness.ts b/packages/agentplane/src/cli/critical/harness.ts
+index 30c4ede1b..e58fe710f 100644
+--- a/packages/agentplane/src/cli/critical/harness.ts
++++ b/packages/agentplane/src/cli/critical/harness.ts
+@@ -130,15 +130,18 @@ export async function runCli(
+     XDG_CONFIG_HOME: path.join(isolatedHome, ".config"),
+     AGENTPLANE_HOME: isolatedAgentplaneHome,
+     AGENTPLANE_NO_UPDATE_CHECK: "1",
+-    ...opts.extraEnv,
+   };
++  delete env.AGENTPLANE_AGENT_MODE;
++  delete env.AGENTPLANE_CLI_ALIAS;
++  delete env.AGENTPLANE_OUTPUT;
++  Object.assign(env, opts.extraEnv);
+ 
+   // execFileAsync throws on non-zero exit. Normalize into a stable `{code,stdout,stderr}` shape.
+   let code = 0;
+   let stdout = "";
+   let stderr = "";
+   try {
+-    const ok = (await execFileAsync("bun", [runnerPath, ...args], {
++    const ok = (await execFileAsync("bun", [runnerPath, "--output", "text", ...args], {
+       cwd: opts.cwd,
+       env,
+       encoding: "utf8",
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts
+index ecca99de4..d0e98f242 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts
+@@ -38,12 +38,24 @@ function canonical(value: unknown): string {
+ 
+ async function loadCandidateFixture() {
+   const candidate = (await import(CANDIDATE_URL)) as {
++    assertCandidateCaptureConcurrency(concurrency: number): number;
+     assertCandidateCaptureMode(options: Json): void;
+     buildCandidateMeasurement(input: Json): Json;
+     buildCandidateMeasurementFromPinnedBaseline(input: Json): Json;
+-    captureCandidate(options: Json): Json;
++    captureCandidate(options: Json): Promise<Json>;
+     createCandidateHarnessManifest(driver: Json, dependency: Json): Json;
+     readPinnedQualificationBaseline(input: Json): Json;
++    runCandidateDriverProcess(
++      command: string,
++      args: string[],
++      options: { cwd: string; env: NodeJS.ProcessEnv; timeout: number },
++      label: string,
++    ): Promise<void>;
++    runCandidateCaptureJobs<T, R>(
++      jobs: T[],
++      concurrency: number,
++      worker: (job: T, index: number) => Promise<R>,
++    ): Promise<R[]>;
+     validateCandidatePilotCapture(input: Json): Json;
+   };
+   const replay = (await import(REPLAY_URL)) as {
+@@ -108,6 +120,61 @@ async function loadCandidateFixture() {
+ }
+ 
+ describeCritical("critical: RF-04 candidate measurement", () => {
++  it("bounds candidate capture concurrency and preserves declared result order", async () => {
++    const fixture = await loadCandidateFixture();
++    const jobs = Array.from({ length: 8 }, (_unused, index) => index);
++    let active = 0;
++    let maximumActive = 0;
++    const results = await fixture.candidate.runCandidateCaptureJobs(jobs, 3, async (job) => {
++      active += 1;
++      maximumActive = Math.max(maximumActive, active);
++      await new Promise((resolve) => setTimeout(resolve, job % 2 === 0 ? 8 : 1));
++      active -= 1;
++      return `run-${job}`;
++    });
++
++    expect(maximumActive).toBe(3);
++    expect(results).toEqual(jobs.map((job) => `run-${job}`));
++    expect(() => fixture.candidate.assertCandidateCaptureConcurrency(0)).toThrow(
++      "--concurrency must be an integer >= 1",
++    );
++    expect(() => fixture.candidate.assertCandidateCaptureConcurrency(Number.NaN)).toThrow(
++      "--concurrency must be an integer >= 1",
++    );
++  });
++
++  it("stops assigning queued provider jobs after the first failure", async () => {
++    const fixture = await loadCandidateFixture();
++    const started: string[] = [];
++    let activeSettled = false;
++    await expect(
++      fixture.candidate.runCandidateCaptureJobs(["fail", "active", "queued"], 2, async (job) => {
++        started.push(job);
++        if (job === "fail") throw new Error("provider failed");
++        await new Promise((resolve) => setTimeout(resolve, 10));
++        activeSettled = true;
++        return job;
++      }),
++    ).rejects.toThrow("provider failed");
++    expect(started).toEqual(["fail", "active"]);
++    expect(activeSettled).toBe(true);
++  });
++
++  it("force-kills a provider driver that ignores SIGTERM at its fixed timeout", async () => {
++    const fixture = await loadCandidateFixture();
++    const startedAt = Date.now();
++
++    await expect(
++      fixture.candidate.runCandidateDriverProcess(
++        process.execPath,
++        ["-e", "process.on('SIGTERM', () => {}); setInterval(() => {}, 1_000);"],
++        { cwd: REPO_ROOT, env: process.env, timeout: 100 },
++        "timeout fixture",
++      ),
++    ).rejects.toThrow("timeout fixture failed to start or exceeded its fixed timeout");
++    expect(Date.now() - startedAt).toBeLessThan(3000);
++  });
++
+   it("validates one exact candidate pilot envelope and returns bounded telemetry", async () => {
+     const fixture = await loadCandidateFixture();
+     const envelope = fixture.envelopes.find(
+@@ -215,7 +282,7 @@ describeCritical("critical: RF-04 candidate measurement", () => {
+       'process.stderr.write("RF04_DRIVER_ERROR:CODEX_EXIT\\n");\nprocess.exitCode = 1;\n',
+     );
+     try {
+-      expect(() =>
++      await expect(
+         fixture.candidate.captureCandidate({
+           check: false,
+           codexCliVersion: "0.146.0-alpha.3.1",
+@@ -227,7 +294,7 @@ describeCritical("critical: RF-04 candidate measurement", () => {
+           runtimeBridgeVersion: null,
+           subject,
+         }),
+-      ).toThrow("direct/run-01 candidate driver failed with exit 1");
++      ).rejects.toThrow("direct/run-01 candidate driver failed with exit 1");
+     } finally {
+       rmSync(driverPath, { force: true });
+       rmSync(outputRoot, { force: true, recursive: true });
+diff --git a/packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts b/packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts
+index 5f66798d3..a91bf3131 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts
+@@ -17,17 +17,36 @@ describeCritical("critical: exit codes contract", () => {
+   it(
+     "init is idempotent by default (second run reports conflicts with E_IO)",
+     async () => {
+-      const root = await makeTempDir("agentplane-critical-exit-");
+-      await ensureDir(root);
++      const inheritedRendering = {
++        agentMode: process.env.AGENTPLANE_AGENT_MODE,
++        cliAlias: process.env.AGENTPLANE_CLI_ALIAS,
++        output: process.env.AGENTPLANE_OUTPUT,
++      };
++      process.env.AGENTPLANE_AGENT_MODE = "1";
++      process.env.AGENTPLANE_CLI_ALIAS = "ap";
++      process.env.AGENTPLANE_OUTPUT = "json";
++      try {
++        const root = await makeTempDir("agentplane-critical-exit-");
++        await ensureDir(root);
+ 
+-      const first = await runCli(["init", "--yes"], { cwd: root });
+-      expect(first.code).toBe(0);
+-      expect(await pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).toBe(true);
++        const first = await runCli(["init", "--yes"], { cwd: root });
++        expect(first.code).toBe(0);
++        expect(await pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).toBe(true);
+ 
+-      const second = await runCli(["init", "--yes"], { cwd: root });
+-      expectCliError(second, 4, "E_IO");
+-      expect(second.stderr).toMatch(/Init conflicts detected/i);
+-      expect(second.stderr).toMatch(/--force/i);
++        const second = await runCli(["init", "--yes"], { cwd: root });
++        expectCliError(second, 4, "E_IO");
++        expect(second.stderr).toMatch(/Init conflicts detected/i);
++        expect(second.stderr).toMatch(/--force/i);
++      } finally {
++        for (const [key, value] of Object.entries({
++          AGENTPLANE_AGENT_MODE: inheritedRendering.agentMode,
++          AGENTPLANE_CLI_ALIAS: inheritedRendering.cliAlias,
++          AGENTPLANE_OUTPUT: inheritedRendering.output,
++        })) {
++          if (value === undefined) delete process.env[key];
++          else process.env[key] = value;
++        }
++      }
+     },
+     CRITICAL_EXIT_CODES_TIMEOUT_MS,
+   );
+diff --git a/scripts/README.md b/scripts/README.md
+index b8e9c1a16..7abaf2a53 100644
+--- a/scripts/README.md
++++ b/scripts/README.md
+@@ -182,7 +182,7 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ | `dev:turbo:graph`                  | `mkdir -p .agentplane/cache && TURBO_TELEMETRY_DISABLED=1 turbo run build typecheck test --filter='./packages/*' --graph=.agentplane/cache/turbo-task-graph.mermaid`                                                             | Run dev workflow: turbo graph.                            |
+ | `dev:turbo:ls`                     | `TURBO_TELEMETRY_DISABLED=1 turbo ls --output=json`                                                                                                                                                                              | Run dev workflow: turbo ls.                               |
+ | `e2e:v0.7.1:audit`                 | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full`                                                                                                                                    | Run e2e workflow: v0.7.1 audit.                           |
+-| `e2e:v0.7.1:check`                 | `node --test scripts/qualification/release-qualification.test.mjs && node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --dry-run`                                                      | Run e2e workflow: v0.7.1 check.                           |
++| `e2e:v0.7.1:check`                 | `bun run qualification:check`                                                                                                                                                                                                    | Run e2e workflow: v0.7.1 check.                           |
+ | `e2e:v0.7.1:core-audit`            | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile core`                                                                                                                                    | Run e2e workflow: v0.7.1 core-audit.                      |
+ | `e2e:v0.7.1:gate`                  | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider`                                                                                                                          | Run e2e workflow: v0.7.1 gate.                            |
+ | `format`                           | `prettier . --write`                                                                                                                                                                                                             | Format repository files with Prettier.                    |
+@@ -204,6 +204,7 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ | `package:tarball:check`            | `node scripts/release/check-package-tarball.mjs`                                                                                                                                                                                 | Run package workflow: tarball check.                      |
+ | `policy:routing:check`             | `node scripts/checks/check-policy-routing.mjs`                                                                                                                                                                                   | Run policy workflow: routing check.                       |
+ | `postinstall`                      | `lefthook install`                                                                                                                                                                                                               | Run postinstall workflow commands.                        |
++| `qualification:check`              | `node --test scripts/qualification/release-qualification.test.mjs && node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --dry-run`                                                      | Run qualification workflow: check.                        |
+ | `runner:codex:approval-probe`      | `bun scripts/workflow/run-runner-codex-approval-probe.mjs`                                                                                                                                                                       | Run runner workflow: codex approval-probe.                |
+ | `runner:codex:smoke`               | `bun scripts/run-runner-codex-smoke.mjs`                                                                                                                                                                                         | Run runner workflow: codex smoke.                         |
+ | `schemas:check`                    | `bun scripts/generate/sync-schemas.mjs check`                                                                                                                                                                                    | Run schemas workflow: check.                              |
+@@ -258,6 +259,7 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ - `package:install-smoke` is currently grouped as `misc` (review namespace intent).
+ - `package:tarball:check` is currently grouped as `misc` (review namespace intent).
+ - `policy:routing:check` is currently grouped as `misc` (review namespace intent).
++- `qualification:check` is currently grouped as `misc` (review namespace intent).
+ - `runner:codex:approval-probe` is currently grouped as `misc` (review namespace intent).
+ - `runner:codex:smoke` is currently grouped as `misc` (review namespace intent).
+ - `schemas:check` is currently grouped as `misc` (review namespace intent).
+diff --git a/scripts/bench/capture-agent-efficiency-candidate.mjs b/scripts/bench/capture-agent-efficiency-candidate.mjs
+index a94eb498c..d71bfa5e9 100644
+--- a/scripts/bench/capture-agent-efficiency-candidate.mjs
++++ b/scripts/bench/capture-agent-efficiency-candidate.mjs
+@@ -1,4 +1,4 @@
+-import { spawnSync } from "node:child_process";
++import { execFile, spawnSync } from "node:child_process";
+ import { createHash } from "node:crypto";
+ import {
+   existsSync,
+@@ -80,6 +80,8 @@ const REPLAY_DRIVER_TURN_TIMEOUT_MS = 240_000;
+ const REPLAY_DRIVER_SETUP_TIMEOUT_MS = 5 * 60 * 1000;
+ const REPLAY_DRIVER_EXIT_GRACE_MS = 60_000;
+ const REPLAY_DRIVER_MAX_TIMEOUT_MS = 25 * 60 * 1000;
++const DEFAULT_CAPTURE_CONCURRENCY = 3;
++const MAX_CHILD_OUTPUT_BYTES = 128 * 1024 * 1024;
+ const MAX_INCREASE_RATIO = 0.1;
+ 
+ function sha256(value) {
+@@ -101,6 +103,7 @@ function helpText() {
+     "  --subject <sha>   Required full reviewed candidate commit SHA.",
+     "  --codex-version <version>  Required exact Codex CLI version for every candidate episode.",
+     `  --runs <count>   Runs per scenario. Minimum/default: ${MINIMUM_REPLAY_RUNS}.`,
++    `  --concurrency <count>  Isolated replay jobs. Default: ${DEFAULT_CAPTURE_CONCURRENCY}.`,
+     "  --driver <path>   Reviewed local RF-04 provider driver.",
+     "  --root <path>     Candidate evidence root under .agentplane/cache/rf04-candidate/.",
+     "  --runtime-bridge <version>  Materialize or validate a no-provider comparison against the",
+@@ -126,6 +129,7 @@ function parseArgs(argv) {
+     valueFlags: [
+       "subject",
+       "runs",
++      "concurrency",
+       "driver",
+       "root",
+       "codex-version",
+@@ -145,6 +149,9 @@ function parseArgs(argv) {
+       : null,
+     check: flags.check === true,
+     codexCliVersion: flags["codex-version"] ?? "",
++    concurrency: parseCandidateCaptureConcurrency(
++      flags.concurrency ?? String(DEFAULT_CAPTURE_CONCURRENCY),
++    ),
+     driverPath: path.resolve(flags.driver ?? DEFAULT_DRIVER_PATH),
+     help: flags.help === true,
+     outputRoot: flags.root ? path.resolve(flags.root) : null,
+@@ -198,6 +205,20 @@ function assertRuns(runs) {
+   return runs;
+ }
+ 
++export function assertCandidateCaptureConcurrency(concurrency) {
++  if (!Number.isSafeInteger(concurrency) || concurrency < 1) {
++    throw new Error("--concurrency must be an integer >= 1");
++  }
++  return concurrency;
++}
++
++function parseCandidateCaptureConcurrency(value) {
++  if (!/^\d+$/u.test(value)) {
++    throw new Error("--concurrency must be an integer >= 1");
++  }
++  return assertCandidateCaptureConcurrency(Number.parseInt(value, 10));
++}
++
+ function assertCandidateCodexCliVersion(value) {
+   if (typeof value !== "string" || value.length === 0) {
+     throw new Error("--codex-version must declare the exact reviewed Codex CLI version");
+@@ -274,22 +295,60 @@ function replayDriverTimeoutMs(scenario) {
+   return timeout;
+ }
+ 
+-function runChecked(command, args, options, label) {
+-  const result = spawnSync(command, args, {
+-    ...options,
+-    encoding: null,
+-    maxBuffer: 128 * 1024 * 1024,
+-  });
+-  if (result.error) {
+-    throw new Error(`${label} failed to start or exceeded its fixed timeout`);
+-  }
+-  if (result.status !== 0) {
+-    const diagnostic = replayDriverDiagnosticCode(result.stderr);
+-    throw new Error(
+-      `${label} failed with exit ${result.status}` +
+-        (diagnostic ? ` (RF04_DRIVER_ERROR:${diagnostic})` : ""),
++export function runCandidateDriverProcess(command, args, options, label) {
++  return new Promise((resolve, reject) => {
++    execFile(
++      command,
++      args,
++      {
++        ...options,
++        encoding: null,
++        killSignal: "SIGKILL",
++        maxBuffer: MAX_CHILD_OUTPUT_BYTES,
++      },
++      (error, _stdout, stderr) => {
++        if (error == null) {
++          resolve();
++          return;
++        }
++        if (error.killed === true || !Number.isInteger(error.code)) {
++          reject(new Error(`${label} failed to start or exceeded its fixed timeout`));
++          return;
++        }
++        const diagnostic = replayDriverDiagnosticCode(stderr);
++        reject(
++          new Error(
++            `${label} failed with exit ${error.code}` +
++              (diagnostic ? ` (RF04_DRIVER_ERROR:${diagnostic})` : ""),
++          ),
++        );
++      },
+     );
++  });
++}
++
++export async function runCandidateCaptureJobs(jobs, concurrency, worker) {
++  assertCandidateCaptureConcurrency(concurrency);
++  const results = Array.from({ length: jobs.length });
++  let cursor = 0;
++  let firstError = null;
++
++  async function runWorker() {
++    while (firstError == null) {
++      const index = cursor;
++      cursor += 1;
++      if (index >= jobs.length) return;
++      try {
++        results[index] = await worker(jobs[index], index);
++      } catch (error) {
++        firstError ??= error;
++      }
++    }
+   }
++
++  await Promise.all(Array.from({ length: Math.min(concurrency, jobs.length) }, () => runWorker()));
++  if (firstError) throw firstError;
++  return results;
+ }
+ 
+ function targetExists(target) {
+@@ -903,11 +962,14 @@ export function validateCandidatePilotCapture({
+   };
+ }
+ 
+-export function captureCandidate(options) {
++export async function captureCandidate(options) {
+   assertCandidateCaptureMode(options);
+   const subject = assertCandidateSubject(options.subject);
+   const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
+   const runs = assertRuns(options.runs);
++  const concurrency = assertCandidateCaptureConcurrency(
++    options.concurrency ?? DEFAULT_CAPTURE_CONCURRENCY,
++  );
+   assertGitCommitAvailable(repoRoot, subject);
+   const paths = resolveCandidatePaths(subject, options.outputRoot);
+   const publicationTargets = [
+@@ -950,11 +1012,11 @@ export function captureCandidate(options) {
+   const stagingEnvelopes = path.join(captureRoot, "envelopes");
+   const stagingEvidence = path.join(captureRoot, "evidence");
+   const stagingMeasurement = path.join(captureRoot, "measurement.json");
+-  const isolatedRepository = path.join(captureRoot, "subject");
++  const isolatedRepositoriesRoot = path.join(captureRoot, "subjects");
+   const activeRegistryPath = options.pilot
+     ? path.join(captureRoot, "fixture-registry.json")
+     : paths.registryPath;
+-  const completedRuns = [];
++  const completedRuns = new Set();
+   mkdirSync(stagingEnvelopes, { recursive: true });
+   mkdirSync(stagingEvidence, { recursive: true });
+   writeCandidateRegistry(registry, activeRegistryPath);
+@@ -971,9 +1033,22 @@ export function captureCandidate(options) {
+     }
+     const selectedScenarios = options.pilot ? [pilotScenario] : registry.scenarios;
+     const selectedRuns = options.pilot ? 1 : runs;
+-    for (const scenario of selectedScenarios) {
+-      for (let runIndex = 1; runIndex <= selectedRuns; runIndex += 1) {
+-        rmSync(isolatedRepository, { force: true, recursive: true });
++    const captureJobs = selectedScenarios.flatMap((scenario) =>
++      Array.from({ length: selectedRuns }, (_unused, index) => ({
++        runId: `${scenario.id}/run-${String(index + 1).padStart(2, "0")}`,
++        runIndex: index + 1,
++        scenario,
++      })),
++    );
++    await runCandidateCaptureJobs(
++      captureJobs,
++      options.pilot ? 1 : concurrency,
++      async ({ runId, runIndex, scenario }) => {
++        const isolatedRepository = path.join(
++          isolatedRepositoriesRoot,
++          scenario.id,
++          `run-${String(runIndex).padStart(2, "0")}`,
++        );
+         mkdirSync(isolatedRepository, { recursive: true });
+         initializeAnchorCheckout(repoRoot, isolatedRepository, subject);
+         const registryOverlay = installFixtureRegistryOverlay(
+@@ -988,7 +1063,6 @@ export function captureCandidate(options) {
+         const fileName = `run-${String(runIndex).padStart(2, "0")}.json`;
+         const outputPath = path.join(scenarioDirectory, fileName);
+         const evidenceOutputPath = path.join(evidenceScenarioDirectory, fileName);
+-        const runId = `${scenario.id}/run-${String(runIndex).padStart(2, "0")}`;
+         const contractEnvironment = createReplayDriverContractEnvironment({
+           anchor: subject,
+           codexBinary: process.env[CODEX_REPLAY_BINARY_ENV] ?? CODEX_REPLAY_BINARY,
+@@ -1004,7 +1078,7 @@ export function captureCandidate(options) {
+           outputPath,
+           runId,
+         });
+-        runChecked(
++        await runCandidateDriverProcess(
+           process.execPath,
+           [
+             options.driverPath,
+@@ -1035,10 +1109,10 @@ export function captureCandidate(options) {
+         ) {
+           throw new Error(`${runId} candidate driver output must be canonical stable JSON`);
+         }
+-        completedRuns.push(runId);
++        completedRuns.add(runId);
+         assertCandidateInputsUnchanged(expectedInputs, activeRegistryPath, options.driverPath);
+-      }
+-    }
++      },
++    );
+     const envelopes = readReplayEnvelopeRecords(repoRoot, stagingEnvelopes, {
+       logicalRoot: relativeRepoPath(
+         repoRoot,
+@@ -1111,7 +1185,7 @@ export function captureCandidate(options) {
+       writeFileSync(
+         paths.failurePath,
+         canonicalBytes({
+-          completed_runs: completedRuns,
++          completed_runs: [...completedRuns].toSorted(),
+           failed_at: new Date().toISOString(),
+           kind: "agent_efficiency_candidate_capture_failure_v1",
+           message: error instanceof Error ? error.message : String(error),
+@@ -1332,13 +1406,13 @@ export function materializePinnedBaselineMeasurement(options) {
+   return measurement;
+ }
+ 
+-export function captureCandidateWithPinnedBaseline(options) {
++export async function captureCandidateWithPinnedBaseline(options) {
+   assertCandidateCaptureMode(options);
+   readPinnedQualificationBaseline({
+     codexCliVersion: assertCandidateCodexCliVersion(options.codexCliVersion),
+     evidencePath: options.baselineEvidencePath,
+   });
+-  captureCandidate({
++  await captureCandidate({
+     ...options,
+     baselineEvidencePath: null,
+     capture: false,
+@@ -1398,7 +1472,7 @@ export function materializeRuntimeBridgeMeasurement(options) {
+   return measurement;
+ }
+ 
+-export function captureCandidateWithRuntimeBridge(options) {
++export async function captureCandidateWithRuntimeBridge(options) {
+   assertCandidateCaptureMode(options);
+   if (options.runtimeBridgeVersion === null) {
+     throw new Error("runtime bridge version is required for provider capture");
+@@ -1408,7 +1482,7 @@ export function captureCandidateWithRuntimeBridge(options) {
+     throw new Error("candidate and runtime bridge Codex CLI versions must match exactly");
+   }
+   checkRuntimeBridge({ codexCliVersion });
+-  captureCandidate({
++  await captureCandidate({
+     ...options,
+     capture: false,
+     runtimeBridgeVersion: null,
+@@ -1469,7 +1543,7 @@ const main = defineCheck({
+     }
+     assertCandidateCaptureMode(options);
+     if (options.pilot) {
+-      const pilot = captureCandidate(options);
++      const pilot = await captureCandidate(options);
+       stdout.write(
+         `RF-04 candidate pilot passed (subject=${pilot.subject_sha}; run=${pilot.run_id}; ` +
+           `episodes=${pilot.episode_count}; runtime=${pilot.profile.runtime_version})\n`,
+@@ -1478,7 +1552,7 @@ const main = defineCheck({
+     }
+     const runtimeBridge = options.runtimeBridgeVersion !== null;
+     const pinnedBaseline = options.baselineEvidencePath !== null;
+-    const measurement = pinnedBaseline
++    const measurement = await (pinnedBaseline
+       ? options.capture
+         ? captureCandidateWithPinnedBaseline(options)
+         : options.check
+@@ -1492,7 +1566,7 @@ const main = defineCheck({
+             : materializeRuntimeBridgeMeasurement(options)
+         : options.check
+           ? checkCandidateCapture(options)
+-          : captureCandidate(options);
++          : captureCandidate(options));
+     stdout.write(
+       `RF-04 candidate ${
+         pinnedBaseline
+diff --git a/scripts/qualification/release-qualification.test.mjs b/scripts/qualification/release-qualification.test.mjs
+index fe3764f8e..71acd0155 100644
+--- a/scripts/qualification/release-qualification.test.mjs
++++ b/scripts/qualification/release-qualification.test.mjs
+@@ -36,6 +36,7 @@ import {
+ import {
+   preflightQualificationProviderRuntime,
+   readQualificationRunSubjectIdentity,
++  runQualificationScenarios,
+ } from "./run-v0.7.1-release-qualification.mjs";
+ import {
+   CODEX_REPLAY_BINARY_ENV,
+@@ -145,6 +146,143 @@ function supervisorLatencySurfaces(count) {
+ }
+ 
+ describe("v0.7.1 release qualification contract", () => {
++  it("runs independent scenarios concurrently while preserving dependency barriers and report order", async () => {
++    const scenarios = [
++      { id: "slow", tier: "core" },
++      { id: "fast", tier: "core" },
++      { id: "dependent", tier: "full", depends_on: ["slow"] },
++      { id: "provider", tier: "provider" },
++    ];
++    const events = [];
++    let active = 0;
++    let maximumActive = 0;
++    const delays = { dependent: 1, fast: 5, provider: 1, slow: 20 };
++    const results = await runQualificationScenarios(scenarios, {}, "/unused", {
++      concurrency: 2,
++      async scenarioRunner(scenario) {
++        active += 1;
++        maximumActive = Math.max(maximumActive, active);
++        events.push(`start:${scenario.id}`);
++        await new Promise((resolve) => setTimeout(resolve, delays[scenario.id]));
++        events.push(`finish:${scenario.id}`);
++        active -= 1;
++        return scenario.id;
++      },
++    });
++
++    assert.equal(maximumActive, 2);
++    assert.deepEqual(results, ["slow", "fast", "dependent", "provider"]);
++    assert.ok(events.indexOf("finish:slow") < events.indexOf("start:dependent"));
++    assert.ok(events.indexOf("finish:fast") < events.indexOf("start:provider"));
++    assert.ok(events.indexOf("finish:dependent") < events.indexOf("start:provider"));
++    await assert.rejects(
++      () => runQualificationScenarios(scenarios, {}, "/unused", { concurrency: 0 }),
++      /qualification concurrency must be an integer >= 1/u,
++    );
++  });
++
++  it("runs latency measurements exclusively without disabling other concurrency", async () => {
++    const scenarios = [
++      { id: "slow", tier: "core", depends_on: [] },
++      { id: "fast", tier: "core", depends_on: [] },
++      { id: "matched-cli-latency", tier: "full", depends_on: [] },
++      { id: "after-a", tier: "full", depends_on: [] },
++      { id: "after-b", tier: "full", depends_on: [] },
++    ];
++    const events = [];
++    let active = 0;
++    let maximumActive = 0;
++    const delays = { "after-a": 5, "after-b": 5, fast: 5, "matched-cli-latency": 5, slow: 20 };
++    const results = await runQualificationScenarios(scenarios, {}, "/unused", {
++      concurrency: 2,
++      async scenarioRunner(scenario) {
++        active += 1;
++        maximumActive = Math.max(maximumActive, active);
++        events.push(`start:${scenario.id}:${active}`);
++        await new Promise((resolve) => setTimeout(resolve, delays[scenario.id]));
++        events.push(`finish:${scenario.id}:${active}`);
++        active -= 1;
++        return scenario.id;
++      },
++    });
++
++    assert.equal(maximumActive, 2);
++    assert.deepEqual(
++      results,
++      scenarios.map((scenario) => scenario.id),
++    );
++    assert.ok(events.indexOf("finish:slow:1") < events.indexOf("start:matched-cli-latency:1"));
++    assert.ok(events.indexOf("finish:fast:2") < events.indexOf("start:matched-cli-latency:1"));
++    assert.ok(events.indexOf("finish:matched-cli-latency:1") < events.indexOf("start:after-a:1"));
++    assert.ok(events.indexOf("finish:matched-cli-latency:1") < events.indexOf("start:after-b:2"));
++  });
++
++  it("does not overlap internally parallel suites with other qualification work", async () => {
++    const scenarios = [
++      { id: "before-a", tier: "core", depends_on: [] },
++      { id: "before-b", tier: "core", depends_on: [] },
++      { id: "critical-cli", tier: "full", depends_on: [] },
++      { id: "after-a", tier: "full", depends_on: [] },
++      { id: "after-b", tier: "full", depends_on: [] },
++    ];
++    const events = [];
++    let active = 0;
++    const results = await runQualificationScenarios(scenarios, {}, "/unused", {
++      concurrency: 2,
++      async scenarioRunner(scenario) {
++        active += 1;
++        events.push(`start:${scenario.id}:${active}`);
++        await new Promise((resolve) => setTimeout(resolve, scenario.id === "before-a" ? 20 : 5));
++        events.push(`finish:${scenario.id}:${active}`);
++        active -= 1;
++        return scenario.id;
++      },
++    });
++
++    assert.deepEqual(
++      results,
++      scenarios.map((scenario) => scenario.id),
++    );
++    assert.ok(events.indexOf("finish:before-a:1") < events.indexOf("start:critical-cli:1"));
++    assert.ok(events.indexOf("finish:before-b:2") < events.indexOf("start:critical-cli:1"));
++    assert.ok(events.indexOf("finish:critical-cli:1") < events.indexOf("start:after-a:1"));
++    assert.ok(events.indexOf("finish:critical-cli:1") < events.indexOf("start:after-b:2"));
++  });
++
++  it("stops queued work after failure and settles active work without starting dependents", async () => {
++    const scenarios = [
++      { id: "prerequisite", tier: "core", depends_on: [] },
++      { id: "active", tier: "core", depends_on: [] },
++      { id: "queued-a", tier: "core", depends_on: [] },
++      { id: "queued-b", tier: "core", depends_on: [] },
++      { id: "dependent", tier: "full", depends_on: ["prerequisite"] },
++      { id: "provider", tier: "provider", depends_on: [] },
++    ];
++    const started = [];
++    let activeSettled = false;
++
++    await assert.rejects(
++      () =>
++        runQualificationScenarios(scenarios, {}, "/unused", {
++          concurrency: 2,
++          async scenarioRunner(scenario) {
++            started.push(scenario.id);
++            if (scenario.id === "prerequisite") {
++              await new Promise((resolve) => setTimeout(resolve, 5));
++              throw new Error("qualification infrastructure failed");
++            }
++            await new Promise((resolve) => setTimeout(resolve, 20));
++            activeSettled = true;
++            return scenario.id;
++          },
++        }),
++      /qualification infrastructure failed/u,
++    );
++
++    assert.equal(activeSettled, true);
++    assert.deepEqual(started, ["prerequisite", "active"]);
++  });
++
+   it("excludes disposable matched-latency fixtures from host indexing", () => {
+     const tempRoot = createMatchedLatencyTempRoot(tmpdir());
+     try {
+diff --git a/scripts/qualification/run-v0.7.1-release-qualification.mjs b/scripts/qualification/run-v0.7.1-release-qualification.mjs
+index 50ab590f5..e000e9c06 100644
+--- a/scripts/qualification/run-v0.7.1-release-qualification.mjs
++++ b/scripts/qualification/run-v0.7.1-release-qualification.mjs
+@@ -1,4 +1,4 @@
+-import { spawnSync } from "node:child_process";
++import { execFile, spawnSync } from "node:child_process";
+ import { mkdirSync, writeFileSync } from "node:fs";
+ import path from "node:path";
+ import { fileURLToPath } from "node:url";
+@@ -35,6 +35,16 @@ const defaultProviderBaselineEvidencePath = path.join(
+   "baselines",
+   "agent-efficiency-v0.7-beta1-candidate.json",
+ );
++const DEFAULT_QUALIFICATION_CONCURRENCY = 4;
++const DEFAULT_PROVIDER_CONCURRENCY = 3;
++const MAX_CHILD_OUTPUT_BYTES = 128 * 1024 * 1024;
++const EXCLUSIVE_QUALIFICATION_SCENARIO_IDS = new Set([
++  "cli-latency",
++  "critical-cli",
++  "full-contract",
++  "matched-cli-latency",
++  "supervisor-latency",
++]);
+ 
+ function helpText() {
+   return [
+@@ -48,6 +58,8 @@ function helpText() {
+     "  --mode <audit|gate>       Default: audit.",
+     "  --profile <core|full>     Default: full. Gate requires full.",
+     "  --provider                Run the bounded 50-run/55-episode provider scenario.",
++    `  --concurrency <count>     Independent jobs; timing and critical gates stay exclusive. Default: ${DEFAULT_QUALIFICATION_CONCURRENCY}.`,
++    `  --provider-concurrency <count>  Separate limit for isolated provider replay jobs. Default: ${DEFAULT_PROVIDER_CONCURRENCY}.`,
+     "  --provider-evidence-subject <sha>  Reuse immutable provider evidence only when every",
+     "                              intervening change is explicitly provider-runtime-equivalent.",
+     "  --subject <sha>           Exact candidate commit. Defaults to current HEAD in audit mode.",
+@@ -96,6 +108,8 @@ function parseArgs(argv) {
+       "codex-version",
+       "manifest",
+       "out-dir",
++      "concurrency",
++      "provider-concurrency",
+     ],
+     booleanFlags: ["provider", "dry-run", "help"],
+     aliases: { h: "help" },
+@@ -127,8 +141,17 @@ function parseArgs(argv) {
+   if (!/^[a-f0-9]{40}$/u.test(providerEvidenceSubject)) {
+     throw new Error("--provider-evidence-subject must be a full 40-character Git commit SHA");
+   }
++  const concurrency = parseConcurrency(
++    flags.concurrency ?? String(DEFAULT_QUALIFICATION_CONCURRENCY),
++    "--concurrency",
++  );
++  const providerConcurrency = parseConcurrency(
++    flags["provider-concurrency"] ?? String(DEFAULT_PROVIDER_CONCURRENCY),
++    "--provider-concurrency",
++  );
+   return {
+     codexVersion: flags["codex-version"] ?? "",
++    concurrency,
+     dryRun: flags["dry-run"] === true,
+     help: flags.help === true,
+     manifestPath: path.resolve(flags.manifest ?? defaultManifestPath),
+@@ -138,11 +161,20 @@ function parseArgs(argv) {
+     providerEvidenceSubject,
+     profile,
+     provider: flags.provider === true,
++    providerConcurrency,
+     scenarioIds,
+     subject,
+   };
+ }
+ 
++function parseConcurrency(value, flag) {
++  const concurrency = Number.parseInt(value, 10);
++  if (!/^\d+$/u.test(value) || !Number.isSafeInteger(concurrency) || concurrency < 1) {
++    throw new Error(`${flag} must be an integer >= 1`);
++  }
++  return concurrency;
++}
++
+ function assertOutputInsideRepository(runRepoRoot, outputDirectory) {
+   const relative = path.relative(runRepoRoot, outputDirectory);
+   if (relative === "" || relative === ".." || relative.startsWith(`..${path.sep}`)) {
+@@ -179,21 +211,44 @@ function outputTail(value, maximum = 4000) {
+   return value.length <= maximum ? value : value.slice(-maximum);
+ }
+ 
+-function runScenario(scenario, variables, outputDirectory) {
++function executeFile(command, args, options) {
++  return new Promise((resolve) => {
++    execFile(
++      command,
++      args,
++      {
++        ...options,
++        encoding: "utf8",
++        killSignal: "SIGKILL",
++        maxBuffer: MAX_CHILD_OUTPUT_BYTES,
++      },
++      (error, stdout, stderr) => {
++        resolve({
++          error,
++          signal: error?.signal ?? null,
++          status: error == null ? 0 : Number.isInteger(error.code) ? error.code : null,
++          stderr: stderr ?? "",
++          stdout: stdout ?? "",
++          timedOut: error?.killed === true && error.signal === "SIGKILL",
++        });
++      },
++    );
++  });
++}
++
++async function runScenario(scenario, variables, outputDirectory) {
+   const command = substituteQualificationCommand(scenario.command, variables);
+   const logPath = path.join(outputDirectory, "logs", `${scenario.id}.log`);
+   mkdirSync(path.dirname(logPath), { recursive: true });
+   const started = performance.now();
+   process.stdout.write(`qualification: ${scenario.id} (${scenario.tier})\n`);
+-  const result = spawnSync(command[0], command.slice(1), {
++  const result = await executeFile(command[0], command.slice(1), {
+     cwd: repoRoot,
+-    encoding: "utf8",
+     env: {
+       ...process.env,
+       AGENTPLANE_NO_UPDATE_CHECK: "1",
+       AGENTPLANE_QUALIFICATION_EVIDENCE_DIR: outputDirectory,
+     },
+-    maxBuffer: 128 * 1024 * 1024,
+     timeout: scenario.timeout_ms,
+   });
+   const durationMs = Math.round(performance.now() - started);
+@@ -210,7 +265,7 @@ function runScenario(scenario, variables, outputDirectory) {
+     ].join("\n"),
+     "utf8",
+   );
+-  const timedOut = result.error?.code === "ETIMEDOUT";
++  const timedOut = result.timedOut;
+   const passed = !result.error && result.status === 0 && !result.signal;
+   process.stdout.write(
+     `qualification: ${scenario.id} ${passed ? "passed" : "failed"} in ${durationMs}ms\n`,
+@@ -228,6 +283,99 @@ function runScenario(scenario, variables, outputDirectory) {
+   };
+ }
+ 
++function createBoundedExecutor(concurrency) {
++  const pending = [];
++  let active = 0;
++  let failure = null;
++
++  function stop(error) {
++    if (failure !== null) return;
++    failure = error;
++    for (const entry of pending.splice(0)) entry.reject(error);
++  }
++
++  function drain() {
++    while (failure === null && active < concurrency && pending.length > 0) {
++      const entry = pending.shift();
++      active += 1;
++      Promise.resolve()
++        .then(entry.work)
++        .then(
++          (value) => {
++            active -= 1;
++            entry.resolve(value);
++            drain();
++            return null;
++          },
++          (error) => {
++            active -= 1;
++            entry.reject(error);
++            stop(error);
++            return null;
++          },
++        )
++        .catch(entry.reject);
++    }
++  }
++
++  return (work) =>
++    new Promise((resolve, reject) => {
++      if (failure !== null) {
++        reject(failure);
++        return;
++      }
++      pending.push({ reject, resolve, work });
++      drain();
++    });
++}
++
++export async function runQualificationScenarios(
++  scenarios,
++  variables,
++  outputDirectory,
++  options = {},
++) {
++  const concurrency = options.concurrency ?? DEFAULT_QUALIFICATION_CONCURRENCY;
++  if (!Number.isSafeInteger(concurrency) || concurrency < 1) {
++    throw new Error("qualification concurrency must be an integer >= 1");
++  }
++  const execute = createBoundedExecutor(concurrency);
++  const scenarioRunner = options.scenarioRunner ?? runScenario;
++  const promisesById = new Map();
++  let previousExclusivePromise = null;
++  for (const scenario of scenarios) {
++    const dependencyIds = new Set(scenario.depends_on);
++    if (scenario.tier === "provider") {
++      for (const priorScenarioId of promisesById.keys()) dependencyIds.add(priorScenarioId);
++    }
++    const dependencies = new Set(
++      [...dependencyIds].map((dependency) => {
++        const promise = promisesById.get(dependency);
++        if (!promise) {
++          throw new Error(`qualification scenario ${scenario.id} has an unordered dependency`);
++        }
++        return promise;
++      }),
++    );
++    if (previousExclusivePromise) dependencies.add(previousExclusivePromise);
++    const exclusive = EXCLUSIVE_QUALIFICATION_SCENARIO_IDS.has(scenario.id);
++    if (exclusive) {
++      for (const priorPromise of promisesById.values()) dependencies.add(priorPromise);
++    }
++    const promise = Promise.all(dependencies).then(() =>
++      execute(() => scenarioRunner(scenario, variables, outputDirectory)),
++    );
++    promisesById.set(scenario.id, promise);
++    if (exclusive) previousExclusivePromise = promise;
++  }
++  const settled = await Promise.allSettled(
++    scenarios.map((scenario) => promisesById.get(scenario.id)),
++  );
++  const firstFailure = settled.find((result) => result.status === "rejected");
++  if (firstFailure) throw firstFailure.reason;
++  return settled.map((result) => result.value);
++}
++
+ function printDryRun(scenarios, variables) {
+   for (const scenario of scenarios) {
+     const command = substituteQualificationCommand(scenario.command, variables);
+@@ -290,6 +438,7 @@ async function main(argv = process.argv.slice(2)) {
+     evidenceDir: relativeOutputDirectory,
+     providerBaselineEvidence: path.relative(repoRoot, options.providerBaselineEvidencePath),
+     providerAction: options.providerEvidenceSubject === options.subject ? "--capture" : "--check",
++    providerConcurrency: String(options.providerConcurrency),
+     providerSubject: options.providerEvidenceSubject,
+     repoRoot: ".",
+     subject: options.subject,
+@@ -303,7 +452,9 @@ async function main(argv = process.argv.slice(2)) {
+ 
+   mkdirSync(outputDirectory, { recursive: true });
+   const startedAt = new Date().toISOString();
+-  const results = scenarios.map((scenario) => runScenario(scenario, variables, outputDirectory));
++  const results = await runQualificationScenarios(scenarios, variables, outputDirectory, {
++    concurrency: options.concurrency,
++  });
+   const finishedAt = new Date().toISOString();
+   const report = buildQualificationReport({
+     manifest,
+diff --git a/scripts/qualification/v0.7.1-release-qualification.json b/scripts/qualification/v0.7.1-release-qualification.json
+index 8c19c9a2d..375dac074 100644
+--- a/scripts/qualification/v0.7.1-release-qualification.json
++++ b/scripts/qualification/v0.7.1-release-qualification.json
+@@ -414,6 +414,8 @@
+         "{codexVersion}",
+         "--runs",
+         "5",
++        "--concurrency",
++        "{providerConcurrency}",
+         "--baseline-evidence",
+         "{providerBaselineEvidence}",
+         "{providerAction}"
