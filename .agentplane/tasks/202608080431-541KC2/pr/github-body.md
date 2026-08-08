@@ -27,7 +27,7 @@ adjacent concurrency, full unit, typing, repository contracts, and module budget
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-08T04:32:07.103Z
+- Updated: 2026-08-08T04:45:45.828Z
 - Branch: task/202608080431-541KC2/bound-concurrent-effect-retirement
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
