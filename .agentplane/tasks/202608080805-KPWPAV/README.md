@@ -4,7 +4,7 @@ title: "Allow explicit replacement after failed task advance operation"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -32,11 +32,16 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "f559a5b1fc5ad58c390645d05375caff21d21d60"
+  message: "🚧 KPWPAV task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: f559a5b1fc5a. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -45,9 +50,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-08T08:22:39.161Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: f559a5b1fc5a. CLI accepted one state-bound external-agent semantic result."
+    commit: "f559a5b1fc5ad58c390645d05375caff21d21d60"
 doc_version: 3
-doc_updated_at: "2026-08-08T08:05:29.344Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-08T08:22:39.161Z"
+doc_updated_by: "SUPERVISOR"
 description: "Expose a guarded task advance replacement path for a terminal operation_failed supervisor journal so a newly recomputed route can continue without retrying the failed effect."
 sections:
   Summary: |-
