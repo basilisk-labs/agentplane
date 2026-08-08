@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 57
+revision: 58
 origin:
   system: "manual"
 depends_on:
@@ -46,8 +46,8 @@ verification:
   note: "Rework: Declared check failed: bun run ci:local:full"
   attempts: 19
 commit:
-  hash: "86111a72be11f3aeb11762132c2307e84acc7adf"
-  message: "🚧 BYY8A1 task: apply external agent result"
+  hash: "35c5607a2aecaaad928047ae7d6837da808b95b1"
+  message: "🐛 BYY8A1 task: canonicalize pinned binary paths"
 comments:
   -
     author: "DOCS"
@@ -118,6 +118,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 86111a72be11. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Implementation committed: canonicalize regular pinned Codex binary paths through system directory aliases while preserving leaf-symlink and digest checks."
 events:
   -
     type: "status"
@@ -409,9 +412,17 @@ events:
     to: "DOING"
     note: "Implementation committed: 86111a72be11. CLI accepted one state-bound external-agent semantic result."
     commit: "86111a72be11f3aeb11762132c2307e84acc7adf"
+  -
+    type: "status"
+    at: "2026-08-08T16:45:02.888Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: canonicalize regular pinned Codex binary paths through system directory aliases while preserving leaf-symlink and digest checks."
+    commit: "35c5607a2aecaaad928047ae7d6837da808b95b1"
 doc_version: 3
-doc_updated_at: "2026-08-08T16:43:17.282Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-08T16:45:02.888Z"
+doc_updated_by: "CODER"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
   Summary: |-
