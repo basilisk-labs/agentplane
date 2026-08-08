@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-readme-io.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts\nResult: pass; 3 files and 18 tests passed.\nEvidence: local process exited 0 after the repo-local runtime was rebuilt from the evaluated source.\nScope: unknown-intent classification, route isolation, stale and unverifiable task locks, same-process recovery contention, interrupted CLI creation, and cross-process duplicate serialization.\n\nCommand: bun run ci:core && bun run test:critical && bun run typecheck\nResult: pass; core 31 files/394 tests, critical CLI 12 chunks/84 tests, and workspace typecheck passed.\nEvidence: all three local commands exited 0 on implementation commit 1f452c38.\nScope: complete core package regressions, critical CLI behavior, and TypeScript contracts.\n\nCommand: bun run ci:contract\nResult: pass; all contract gates passed.\nEvidence: format, schemas, policy, compatibility 263/180/843, TypeScript 7 toolchain, architecture, clone, Knip, and coverage thresholds exited 0.\nScope: repository-wide static and compatibility contracts.\n\nCommand: gh pr checks 4797 --watch\nResult: pass; exact PR head 839d615a8fcf35ff3bc45b562579b216adbf12e9 passed.\nEvidence: Windows, unit, static, critical CLI, contract, coverage, workflow, package runtimes, docs, CodeQL, and aggregate PR verification all completed successfully.\nScope: hosted Linux and Windows execution plus security and documentation gates.",
+  "digest": "sha256:d2416214d187e60f378c5038fb0221d2b429eb3785fa0a0ae417b86b623cd0d1",
+  "implementation_sha": "1f452c38f24122aa1ce00e9ba7c38afc388ff8a6",
+  "kind": "task_verification_record",
+  "note": "All local and hosted acceptance checks passed for implementation commit 1f452c38 and PR head 839d615a.",
+  "recorded_at": "2026-08-08T02:34:58.265Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused core lock, route resolver, and user-first CLI suites. Expected: unknown outcomes require confirmation and branch isolation; explicit code outcomes retain the direct route; stale same-host process locks recover; malformed or unverifiable locks remain fail-closed; concurrent creators produce one task.\n2. Run `bun run typecheck`. Expected: all workspace packages typecheck.\n3. Run `bun run ci:contract`. Expected: formatting, schemas, compatibility, architecture, clone, Knip, and coverage contract gates pass.\n4. Run hosted Windows, unit, static, critical, contract, coverage, docs, and CodeQL checks on the exact PR head. Expected: all required checks pass.",
+  "scope_digest": "sha256:6c65d3895482f8de2d6e290107cf68ece00194ea75dd5dcdcaf0d012970b04ca",
+  "task_id": "202608070209-J3DEJ1",
+  "verification_command": "agentplane verify 202608070209-J3DEJ1 --ok --by TESTER",
+  "verifier": "TESTER"
+}

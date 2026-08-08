@@ -1,0 +1,15 @@
+{
+  "details": "Focused suites: 18/18 passed. Core package: 394/394 passed. Critical CLI: 12/12 chunks, 84/84 passed. Typecheck and ci:contract passed locally. Hosted PR #4797 on head 839d615a8fcf35ff3bc45b562579b216adbf12e9: Windows, unit, static, critical CLI, contract, coverage, workflow, package runtimes, docs, CodeQL, and aggregate PR verification all passed. Unknown fallback persists mutation_scope=unknown with mutation_scope_unknown branch isolation and confirmation_required=true; explicit code verbs retain code.direct. Stale exact process locks recover through serialized claims; malformed or unverifiable locks remain fail-closed; duplicate creators remain serialized.",
+  "digest": "sha256:4a8f6324266b61111a41ae03f0e38e8882546e6bdc1ff38106423f8879af28bd",
+  "implementation_sha": "1f452c38f24122aa1ce00e9ba7c38afc388ff8a6",
+  "kind": "task_verification_record",
+  "note": "Unknown-intent routing and stale-lock recovery verified on implementation commit 1f452c38 and PR head 839d615a.",
+  "recorded_at": "2026-08-08T02:33:27.722Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused core lock, route resolver, and user-first CLI suites. Expected: unknown outcomes require confirmation and branch isolation; explicit code outcomes retain the direct route; stale same-host process locks recover; malformed or unverifiable locks remain fail-closed; concurrent creators produce one task.\n2. Run `bun run typecheck`. Expected: all workspace packages typecheck.\n3. Run `bun run ci:contract`. Expected: formatting, schemas, compatibility, architecture, clone, Knip, and coverage contract gates pass.\n4. Run hosted Windows, unit, static, critical, contract, coverage, docs, and CodeQL checks on the exact PR head. Expected: all required checks pass.",
+  "scope_digest": "sha256:6c65d3895482f8de2d6e290107cf68ece00194ea75dd5dcdcaf0d012970b04ca",
+  "task_id": "202608070209-J3DEJ1",
+  "verification_command": "agentplane verify 202608070209-J3DEJ1 --ok --by TESTER",
+  "verifier": "TESTER"
+}

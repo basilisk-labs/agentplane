@@ -3,11 +3,22 @@
   "branch": "task/202608070209-J3DEJ1/harden-automatic-task-intake-against-unknown-int",
   "created_at": "2026-08-08T02:08:29.892Z",
   "diffstat_sha256": "sha256:5678e20982cb6c7184ee257e176ba3f630866db5b0b0bee52e311ddba1aabe73",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-08T02:34:58.265Z",
+  "last_verified_diffstat_sha256": "sha256:5678e20982cb6c7184ee257e176ba3f630866db5b0b0bee52e311ddba1aabe73",
+  "pr_number": 4797,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4797",
+  "pre_merge_closure": {
+    "basis_commit": "839d615a8fcf35ff3bc45b562579b216adbf12e9",
+    "branch": "task/202608070209-J3DEJ1/harden-automatic-task-intake-against-unknown-int",
+    "pr_number": 4797,
+    "recorded_at": "2026-08-08T02:36:40.292Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202608070209-J3DEJ1",
-  "updated_at": "2026-08-08T02:08:29.892Z",
+  "updated_at": "2026-08-08T02:26:56.151Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

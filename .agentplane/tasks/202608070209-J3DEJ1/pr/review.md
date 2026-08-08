@@ -6,14 +6,14 @@ Created: 2026-08-08T02:08:29.892Z
 
 - Task: `202608070209-J3DEJ1`
 - Title: Harden automatic task intake against unknown intent and stale locks
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608070209-J3DEJ1/harden-automatic-task-intake-against-unknown-int`
 - Canonical task record: `.agentplane/tasks/202608070209-J3DEJ1/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: All local and hosted acceptance checks passed for implementation commit 1f452c38 and PR head 839d615a.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-08T02:08:29.892Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-08T02:08:29.892Z
+- Updated: 2026-08-08T02:26:56.151Z
 - Branch: task/202608070209-J3DEJ1/harden-automatic-task-intake-against-unknown-int
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

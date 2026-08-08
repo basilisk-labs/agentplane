@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "Final repository cleanliness evidence is not included in the frozen verification packet.",
+      "broken_invariant": "DoD core requires final evidence containing `git status --short --untracked-files=all`; the recorded checks cover implementation behavior and hosted checks but do not record this final-state check.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        },
+        {
+          "path": ".agentplane/tasks/202608070209-J3DEJ1/verification/20260808023458265-d2416214d187e60f.json",
+          "sha256": "sha256:c45f884d7672bf71e5cd9fb3c88dcfa29a3545e67c8da543ab2e424668460561"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The hosted PR head 839d615a differs from evaluated implementation SHA 1f452c38; the evidence assumes the additional PR-head commit contains no implementation changes relevant to this evaluation.",
+    "Stale-lock recovery assumes process identity obtained from `ps` is sufficiently stable and comparable on supported non-Windows hosts; unverifiable identities remain fail-closed."
+  ]
+}
