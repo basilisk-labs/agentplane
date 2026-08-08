@@ -1,10 +1,10 @@
 ---
 id: "202608061646-BYY8A1"
 title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 69
+revision: 70
 origin:
   system: "manual"
 depends_on:
@@ -45,7 +45,9 @@ verification:
   updated_by: "TESTER"
   note: "RF-04 capture retains every completed isolated checkout until the full 50-run generation ends, exhausting disk after six completed runs."
   attempts: 25
-commit: null
+commit:
+  hash: "68c3884984a8a57e6b96f56593e25a746836cd56"
+  message: "🐛 BYY8A1 task: release RF-04 checkouts per run"
 comments:
   -
     author: "DOCS"
@@ -497,8 +499,15 @@ events:
     author: "TESTER"
     state: "blocked_external"
     note: "RF-04 capture retains every completed isolated checkout until the full 50-run generation ends, exhausting disk after six completed runs."
+  -
+    type: "status"
+    at: "2026-08-08T19:25:02.361Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    commit: "68c3884984a8a57e6b96f56593e25a746836cd56"
 doc_version: 3
-doc_updated_at: "2026-08-08T19:22:39.865Z"
+doc_updated_at: "2026-08-08T19:25:02.361Z"
 doc_updated_by: "CODER"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
