@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check b2f6069a9e280d86462746ea7ef76b1b7bf727b1..3b98368fac7d0f8ecf33006b8412deb1bfb8982a",
+      "command": "git diff --check 2ffeaee66838f798635edaf5fed2c777dbcf9762..9fd5418acbe36059c481dbdcec14d4db84b0157e",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB b2f6069a9e280d86462746ea7ef76b1b7bf727b1..3b98368fac7d0f8ecf33006b8412deb1bfb8982a",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2ffeaee66838f798635edaf5fed2c777dbcf9762..9fd5418acbe36059c481dbdcec14d4db84b0157e",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,11 +21,7 @@
         "M\t.agentplane/tasks/202608080551-8BH6HY/pr/github-body.md",
         "M\t.agentplane/tasks/202608080551-8BH6HY/pr/meta.json",
         "M\t.agentplane/tasks/202608080551-8BH6HY/pr/review.md",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-purpose.test.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-purpose.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor.ts"
+        "M\tpackages/agentplane/src/commands/task/external-agent-purpose.ts"
       ]
     },
     {
@@ -35,15 +31,24 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "b2f6069a9e280d86462746ea7ef76b1b7bf727b1",
-  "implementation_commit": "3b98368fac7d0f8ecf33006b8412deb1bfb8982a",
+  "execution_base_commit": "2ffeaee66838f798635edaf5fed2c777dbcf9762",
+  "implementation_commit": "9fd5418acbe36059c481dbdcec14d4db84b0157e",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M packages/agentplane/src/commands/task/external-agent-purpose.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/external-agent-purpose.ts"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/commands/task/external-agent-purpose.ts"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
