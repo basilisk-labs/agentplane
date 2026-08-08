@@ -27,7 +27,7 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/releases/v0.7.5.md                            |  63 +++++++++++++++++++++
+ docs/releases/v0.7.5.md                            |  64 +++++++++++++++++++++
  package.json                                       |   2 +-
  .../run-cli.core.help-snap.test.ts.snap            |   3 +-
  .../cli/run-cli.core.branch-meta.readiness.test.ts |  12 ++--
@@ -40,7 +40,7 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
  .../commands/task/direct-task-verification.test.ts |  32 ++++++++++-
  .../src/commands/task/direct-task-verification.ts  |  15 ++++-
  .../runner/context/semantic-prompt-projection.ts   |   2 +-
- .../task-run-bootstrap.result-examples.test.ts     |  38 +++++++++++++
+ .../task-run-bootstrap.result-examples.test.ts     |  38 ++++++++++++
  .../src/runner/usecases/task-run-bootstrap.ts      |  14 ++++-
  scripts/README.md                                  |   2 +-
  .../qualification/release-qualification.test.mjs   |   9 +++
@@ -48,7 +48,7 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
  website/static/img/social/docs/releases/v0.7.5.png | Bin 0 -> 53016 bytes
  website/static/img/social/manifest.json            |   8 +++
  website/static/llms-full.txt                       |  52 +++++++++++++++--
- 21 files changed, 309 insertions(+), 26 deletions(-)
+ 21 files changed, 310 insertions(+), 26 deletions(-)
 ```
 
 </details>
