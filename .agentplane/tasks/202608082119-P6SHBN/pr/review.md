@@ -6,14 +6,14 @@ Created: 2026-08-08T21:21:23.033Z
 
 - Task: `202608082119-P6SHBN`
 - Title: Publish AgentPlane 0.7.5 from merged qualified candidate
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608082119-P6SHBN/publish-agentplane-0-7-5-from-merged-qualified-c`
 - Canonical task record: `.agentplane/tasks/202608082119-P6SHBN/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Release candidate verification passed at 173f556bcb3bdb795c74d688d065ef7ddc9537d6. Local canonical prepublish, parity, version, notes, compatibility, migration, install, workflow, significant, and critical gates passed. All hosted PR checks on the same SHA passed. Exact merged-main validation and public registry checks remain downstream release gates.
+- Note: Release candidate verification passed for implementation 7761346d3f0f698e984e4893640d64c4959d5836 with task-evidence tail 8d3b2eaf5e46c99beb8576af1436a8ad2868ca00. The 0.7.5 independent compatibility reconstruction review finding is fixed; full local fast CI and full release prepublish pass. Exact final PR-head hosted checks, merge-main proof, publication, and registry checks remain downstream gates.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -48,7 +48,7 @@ Created: 2026-08-08T21:21:23.033Z
  docs/reference/generated-reference.mdx             |   6 +-
  docs/releases/v0.7.5.md                            | 475 +++++++++++++++++++++
  packages/agentplane/package.json                   |   6 +-
- ...-cli.critical.agent-efficiency-baseline.test.ts |  10 +-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  16 +-
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
@@ -56,7 +56,7 @@ Created: 2026-08-08T21:21:23.033Z
  packages/testkit/package.json                      |   2 +-
  .../baselines/v0.7-compatibility-candidate.json    |   8 +-
  .../check-compatibility-contract-baseline.mjs      |   8 +-
- 27 files changed, 532 insertions(+), 55 deletions(-)
+ 27 files changed, 535 insertions(+), 58 deletions(-)
 ```
 
 </details>

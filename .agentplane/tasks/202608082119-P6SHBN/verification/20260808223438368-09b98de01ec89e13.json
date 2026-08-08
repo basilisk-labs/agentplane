@@ -1,0 +1,15 @@
+{
+  "details": "Command: AGENTPLANE_FAST_CHANGED_FILES=<review-diff> bun run ci:local:fast\nResult: pass; 546 test files and 3938 tests passed, followed by all 12 critical CLI chunks.\nEvidence: process exited 0 after implementation commit 7761346d3f0f698e984e4893640d64c4959d5836.\nScope: broad local regression validation for the review fix.\n\nCommand: bun run release:prepublish\nResult: pass; 102 of 102 release-ci chunks, 8 migration scenarios, tarball install, workflow 50 tests, significant 204 tests, and release-critical 16 tests passed.\nEvidence: process exited 0 at task branch head 8d3b2eaf5e46c99beb8576af1436a8ad2868ca00 containing implementation 7761346d3f0f698e984e4893640d64c4959d5836.\nScope: full AgentPlane 0.7.5 release candidate gate.\n\nCommand: gh api graphql reviewThreads for PR 4806\nResult: pass; the single 0.7.5 reconstruction finding was fixed, replied to, and resolved.\nEvidence: https://github.com/basilisk-labs/agentplane/pull/4806#discussion_r3741820149\nScope: semantic review feedback closure.",
+  "digest": "sha256:09b98de01ec89e1392f466366736266bcbcf15698bacf5203c9c786f41b8e730",
+  "implementation_sha": "7761346d3f0f698e984e4893640d64c4959d5836",
+  "kind": "task_verification_record",
+  "note": "Release candidate verification passed for implementation 7761346d3f0f698e984e4893640d64c4959d5836 with task-evidence tail 8d3b2eaf5e46c99beb8576af1436a8ad2868ca00. The 0.7.5 independent compatibility reconstruction review finding is fixed; full local fast CI and full release prepublish pass. Exact final PR-head hosted checks, merge-main proof, publication, and registry checks remain downstream gates.",
+  "recorded_at": "2026-08-08T22:34:38.368Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. `bun run release:incidents:check` passes before release planning.\n2. The canonical release plan targets exactly `0.7.5`; all three public packages and both CLI dependency pins equal `0.7.5`, and `docs/releases/v0.7.5.md` satisfies release-note validation.\n3. `bun run release:parity` and `bun run release:prepublish` pass on the exact release-candidate SHA.\n4. The release PR has no unresolved review threads and all required GitHub checks pass on its exact head SHA; merged `main` contains that SHA.\n5. `Publish release` succeeds for the exact merged release SHA and emits the canonical `publish-result`; tag and GitHub Release `v0.7.5` exist.\n6. `node scripts/release/check-published-packages.mjs` confirms `agentplane`, `@agentplaneorg/core`, and `@agentplaneorg/recipes` at `0.7.5`.",
+  "scope_digest": "sha256:2cdcc3fcedc120041b7b775f20da1a8b2e378301549d87ec45e61a69337edf99",
+  "task_id": "202608082119-P6SHBN",
+  "verification_command": "agentplane verify 202608082119-P6SHBN --ok --by TESTER",
+  "verifier": "TESTER"
+}

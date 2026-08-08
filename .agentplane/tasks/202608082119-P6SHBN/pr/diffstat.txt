@@ -17,7 +17,7 @@
  docs/reference/generated-reference.mdx             |   6 +-
  docs/releases/v0.7.5.md                            | 475 +++++++++++++++++++++
  packages/agentplane/package.json                   |   6 +-
- ...-cli.critical.agent-efficiency-baseline.test.ts |  10 +-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  16 +-
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
@@ -25,4 +25,4 @@
  packages/testkit/package.json                      |   2 +-
  .../baselines/v0.7-compatibility-candidate.json    |   8 +-
  .../check-compatibility-contract-baseline.mjs      |   8 +-
- 27 files changed, 532 insertions(+), 55 deletions(-)
+ 27 files changed, 535 insertions(+), 58 deletions(-)
