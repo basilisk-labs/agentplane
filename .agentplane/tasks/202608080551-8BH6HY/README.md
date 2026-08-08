@@ -4,7 +4,7 @@ title: "Accept external task-worktree resolution results"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -22,7 +22,7 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-08T06:50:09.081Z"
+  updated_at: "2026-08-08T06:59:19.974Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
@@ -159,8 +159,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Recovery: recorded the implementation head containing exact interrupted formal-operation resumption."
+  -
+    type: "verify"
+    at: "2026-08-08T06:59:19.974Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-08T06:56:13.109Z"
+doc_updated_at: "2026-08-08T06:59:21.459Z"
 doc_updated_by: "CODER"
 description: "Fix task advance so a state-bound task_worktree_resolution episode can return a completed result after the CODER commits intended changes, without being rejected as an unsupported or stale read-only purpose; add focused regression coverage."
 sections:
@@ -308,6 +314,51 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T06:46:35.327Z, excerpt_hash=sha256:5dfd6100a2b4d23e6f30dc43602bad090a9a87e1241cec1817c520633709aed3
+
+    Details:
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202608080551-8BH6HY/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608080551-8BH6HY declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608080551-8BH6HY/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608080551-8BH6HY declared verification
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: .agentplane/tasks/202608080551-8BH6HY/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608080551-8BH6HY declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608080551-8BH6HY-accept-external-task-worktree-resolution-results/.agentplane/tasks/202608080551-8BH6HY/blueprint/resolved-snapshot.json
+    - old_digest: f838ddb45c74406d87ad39a2b037d6fe7c88d657a5b7b4059642578ee7641be4
+    - current_digest: f838ddb45c74406d87ad39a2b037d6fe7c88d657a5b7b4059642578ee7641be4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608080551-8BH6HY
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608080551-8BH6HY
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T06:59:19.974Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T06:56:13.109Z, excerpt_hash=sha256:5dfd6100a2b4d23e6f30dc43602bad090a9a87e1241cec1817c520633709aed3
 
     Details:
 
@@ -510,6 +561,51 @@ Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review i
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T06:46:35.327Z, excerpt_hash=sha256:5dfd6100a2b4d23e6f30dc43602bad090a9a87e1241cec1817c520633709aed3
+
+Details:
+
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202608080551-8BH6HY/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608080551-8BH6HY declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608080551-8BH6HY/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608080551-8BH6HY declared verification
+
+Command: bun run ci:contract
+Result: pass
+Evidence: .agentplane/tasks/202608080551-8BH6HY/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608080551-8BH6HY declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608080551-8BH6HY-accept-external-task-worktree-resolution-results/.agentplane/tasks/202608080551-8BH6HY/blueprint/resolved-snapshot.json
+- old_digest: f838ddb45c74406d87ad39a2b037d6fe7c88d657a5b7b4059642578ee7641be4
+- current_digest: f838ddb45c74406d87ad39a2b037d6fe7c88d657a5b7b4059642578ee7641be4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608080551-8BH6HY
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608080551-8BH6HY
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T06:59:19.974Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T06:56:13.109Z, excerpt_hash=sha256:5dfd6100a2b4d23e6f30dc43602bad090a9a87e1241cec1817c520633709aed3
 
 Details:
 

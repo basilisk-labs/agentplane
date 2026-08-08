@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test:critical\nResult: pass\nEvidence: .agentplane/tasks/202608080551-8BH6HY/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608080551-8BH6HY declared verification\n\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202608080551-8BH6HY/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608080551-8BH6HY declared verification\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: .agentplane/tasks/202608080551-8BH6HY/supervision/declared-checks.json#check-3\nScope: branch_pr task 202608080551-8BH6HY declared verification",
+  "digest": "sha256:6bbaee56107e843644ced1fa364378da4988ad8a3290e10a5bc218b83332eba2",
+  "implementation_sha": "c421bde71fb5260237a2cfbf84dfa91c692b6457",
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-08-08T06:59:19.974Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Accept external task-worktree resolution results\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Accept external task-worktree resolution results\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:5dfd6100a2b4d23e6f30dc43602bad090a9a87e1241cec1817c520633709aed3",
+  "task_id": "202608080551-8BH6HY",
+  "verification_command": "agentplane verify 202608080551-8BH6HY --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
