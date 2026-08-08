@@ -331,23 +331,27 @@ export async function runCandidateCaptureJobs(jobs, concurrency, worker) {
   assertCandidateCaptureConcurrency(concurrency);
   const results = Array.from({ length: jobs.length });
   let cursor = 0;
-  let firstError = null;
+  let selectedFailure = null;
+  let stopped = false;
 
   async function runWorker() {
-    while (firstError == null) {
+    while (!stopped) {
       const index = cursor;
       cursor += 1;
       if (index >= jobs.length) return;
       try {
         results[index] = await worker(jobs[index], index);
       } catch (error) {
-        firstError ??= error;
+        stopped = true;
+        if (selectedFailure == null || index < selectedFailure.index) {
+          selectedFailure = { error, index };
+        }
       }
     }
   }
 
   await Promise.all(Array.from({ length: Math.min(concurrency, jobs.length) }, () => runWorker()));
-  if (firstError) throw firstError;
+  if (selectedFailure) throw selectedFailure.error;
   return results;
 }
 
