@@ -1,0 +1,1490 @@
+diff --git a/packages/agentplane/src/backends/task-backend.local.test.ts b/packages/agentplane/src/backends/task-backend.local.test.ts
+index 9975fba5d..3be013ef9 100644
+--- a/packages/agentplane/src/backends/task-backend.local.test.ts
++++ b/packages/agentplane/src/backends/task-backend.local.test.ts
+@@ -71,6 +71,16 @@ describe("LocalBackend", () => {
+       depends_on: [],
+       tags: ["tag"],
+       verify: ["echo ok"],
++      events: [
++        {
++          type: "status",
++          at: "2026-01-30T00:00:00.000Z",
++          author: "SUPERVISOR",
++          commit: "a".repeat(40),
++          from: "TODO",
++          to: "DOING",
++        },
++      ],
+       doc: "## Summary\n\nDoc body",
+     };
+     await backend.writeTask(task);
+@@ -78,6 +88,7 @@ describe("LocalBackend", () => {
+     expect(loaded?.doc).toContain("## Summary");
+     expect(loaded?.doc_updated_by).toBe("tester");
+     expect(loaded?.origin).toEqual({ system: "manual" });
++    expect(loaded?.events?.[0]?.commit).toBe("a".repeat(40));
+     const doc = await backend.getTaskDoc(task.id);
+     expect(doc).toContain("Doc body");
+ 
+diff --git a/packages/agentplane/src/backends/task-backend/shared/events.ts b/packages/agentplane/src/backends/task-backend/shared/events.ts
+index c2fd26d28..72f532236 100644
+--- a/packages/agentplane/src/backends/task-backend/shared/events.ts
++++ b/packages/agentplane/src/backends/task-backend/shared/events.ts
+@@ -18,6 +18,7 @@ export function normalizeEvents(value: unknown): TaskEvent[] {
+       type: type as TaskEventType,
+       at,
+       author,
++      commit: typeof entry.commit === "string" ? entry.commit : undefined,
+       from: typeof entry.from === "string" ? entry.from : undefined,
+       to: typeof entry.to === "string" ? entry.to : undefined,
+       state: typeof entry.state === "string" ? entry.state : undefined,
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+index 9284a9e60..ee7101383 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+@@ -519,6 +519,67 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
+     expect(readme).not.toContain("This stale plan must not be applied.");
+   });
+ 
++  it("rejects a read-only evaluator result after a concurrent commit transition", async () => {
++    const root = await mkGitRepoRoot();
++    await cp(
++      path.join(process.cwd(), ".agentplane", "policy"),
++      path.join(root, ".agentplane", "policy"),
++      { recursive: true },
++    );
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    await writeConfig(root, config);
++    await writeFile(
++      path.join(root, "package.json"),
++      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"' } }, null, 2)}\n`,
++      "utf8",
++    );
++    const taskId = await createTask(root, "Commit-stale evaluator result", "bun run check");
++    await runCliSilent([
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      "Create the scoped implementation before quality review.",
++      "--updated-by",
++      "ORCHESTRATOR",
++      "--root",
++      root,
++    ]);
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await execFileAsync("git", ["add", "."], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: seed evaluator freshness"], { cwd: root });
++    const implementationPacket = await readAgentPacket(root, taskId);
++    await writeFile(path.join(root, "implemented.txt"), "implemented\n", "utf8");
++    const implementationResult = await writeCompletedResult(
++      implementationPacket,
++      "Created the scoped implementation.",
++    );
++    const afterImplementation = await returnAgentResult(root, taskId, implementationResult);
++    expect(afterImplementation.code, afterImplementation.stderr).toBe(0);
++    const evaluatorPacket = JSON.parse(afterImplementation.stdout) as AgentPacket;
++    const resultPath = await writeCompletedResult(
++      evaluatorPacket,
++      "This stale review must not apply.",
++      {
++        verdict: "pass",
++        missing_tests: [],
++        hidden_assumptions: [],
++        residual_risks: [],
++      },
++    );
++    await writeFile(path.join(root, "concurrent.txt"), "concurrent\n", "utf8");
++    await execFileAsync("git", ["add", "."], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: concurrent evaluator commit"], {
++      cwd: root,
++    });
++
++    const stale = await returnAgentResult(root, taskId, resultPath);
++    expect(stale.code).not.toBe(0);
++    expect(stale.stderr).toContain("stale");
++  });
++
+   it("projects the direct runner boundary as the same semantic agent episode", async () => {
+     const root = await mkGitRepoRoot();
+     const config = defaultConfig();
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
+new file mode 100644
+index 000000000..6620676ca
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
+@@ -0,0 +1,405 @@
++import { execFile } from "node:child_process";
++import { readFile, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++import { describe, expect, it } from "vitest";
++import {
++  advanceSupervisorExecutionEpisodeState,
++  completeSupervisorExecutionEpisode,
++  createSupervisorExecutionEpisodeJournal,
++  startSupervisorExecutionEpisode,
++} from "@agentplaneorg/core/schemas";
++
++import {
++  captureStdIO,
++  installRunCliIntegrationHarness,
++  mkGitRepoRootWithBranch,
++  runCliSilent,
++  writeConfig,
++} from "@agentplane/testkit";
++
++import { buildTaskRouteDecision } from "../commands/shared/route-decision.js";
++import {
++  createSupervisorEpisodeStore,
++  resolveSupervisorExecutionEpisodePath,
++} from "../commands/shared/supervisor-execution-episode.js";
++import { loadCommandContext } from "../commands/shared/task-backend.js";
++import { agentTransitionId } from "../commands/task/agent-action-packet.js";
++import type { ExternalAgentExchange } from "../commands/task/external-agent-exchange.js";
++import { defaultConfig } from "./core-imports.js";
++import { runCli } from "./run-cli.js";
++
++installRunCliIntegrationHarness();
++
++const execFileAsync = promisify(execFile);
++
++type AgentPacket = {
++  task_id: string;
++  transition_id: string;
++  state_fingerprint: string;
++  authority: { role: string };
++  exchange?: {
++    directory: string;
++    work_order_ref: string;
++    result_ref: string;
++  };
++};
++
++async function createTask(root: string): Promise<string> {
++  const io = captureStdIO();
++  try {
++    const code = await runCli([
++      "task",
++      "new",
++      "--title",
++      "External task-worktree resolution",
++      "--description",
++      "Exercise the state-bound worktree resolution protocol.",
++      "--priority",
++      "med",
++      "--owner",
++      "CODER",
++      "--tag",
++      "code",
++      "--verify",
++      "bun run test:critical",
++      "--root",
++      root,
++    ]);
++    expect(code, io.stderr).toBe(0);
++    return io.stdout.trim();
++  } finally {
++    io.restore();
++  }
++}
++
++async function writeHarnessGitignore(root: string): Promise<void> {
++  const gitignorePath = path.join(root, ".gitignore");
++  const existingGitignore = await readFile(gitignorePath, "utf8").catch(() => "");
++  await writeFile(
++    gitignorePath,
++    [
++      existingGitignore.trimEnd(),
++      ".agentplane/bin",
++      ".agentplane/cache.sqlite*",
++      "agentplane-recipes",
++      "node_modules",
++      "packages/agentplane/bin",
++      "packages/agentplane/dist",
++      "packages/agentplane/package.json",
++      "packages/core/dist",
++      "packages/core/package.json",
++      "website/node_modules",
++      "",
++    ].join("\n"),
++    "utf8",
++  );
++}
++
++async function readAgentPacket(root: string, taskId: string): Promise<AgentPacket> {
++  const io = captureStdIO();
++  try {
++    const code = await runCli(["task", "advance", taskId, "--agent-json", "--root", root]);
++    expect(code, io.stderr).toBe(0);
++    return JSON.parse(io.stdout) as AgentPacket;
++  } finally {
++    io.restore();
++  }
++}
++
++async function writeCompletedResult(packet: AgentPacket): Promise<string> {
++  if (!packet.exchange) throw new Error("expected an external-agent exchange");
++  const workOrder = JSON.parse(
++    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
++  ) as { work_order_id: string; role: string };
++  const resultPath = path.join(packet.exchange.directory, packet.exchange.result_ref);
++  await writeFile(
++    resultPath,
++    `${JSON.stringify(
++      {
++        schema_version: 1,
++        kind: "agent_action_result",
++        task_id: packet.task_id,
++        transition_id: packet.transition_id,
++        state_fingerprint: packet.state_fingerprint,
++        role: workOrder.role,
++        result: {
++          schema_version: 2,
++          kind: "agent_semantic_result",
++          work_order_id: workOrder.work_order_id,
++          status: "completed",
++          summary: "Keep the intended worktree changes.",
++          findings: [],
++          uncertainty: [],
++        },
++      },
++      null,
++      2,
++    )}\n`,
++    "utf8",
++  );
++  return resultPath;
++}
++
++async function returnAgentResult(root: string, taskId: string, resultPath: string) {
++  const io = captureStdIO();
++  try {
++    const code = await runCli([
++      "task",
++      "advance",
++      taskId,
++      "--result",
++      resultPath,
++      "--agent-json",
++      "--root",
++      root,
++    ]);
++    return { code, stdout: io.stdout, stderr: io.stderr };
++  } finally {
++    io.restore();
++  }
++}
++
++describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => {
++  it("recovers a completed stale journal and replaces prior implementation metadata", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++    const taskId = await createTask(root);
++    await runCliSilent([
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      "Keep and commit the intended task-worktree change.",
++      "--updated-by",
++      "ORCHESTRATOR",
++      "--root",
++      root,
++    ]);
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await writeHarnessGitignore(root);
++    await execFileAsync("git", ["add", "."], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: seed worktree resolution"], { cwd: root });
++
++    const slug = "external-resolution";
++    const taskWorktree = path.join(root, ".agentplane", "worktrees", `${taskId}-${slug}`);
++    await runCliSilent([
++      "work",
++      "start",
++      taskId,
++      "--agent",
++      "CODER",
++      "--slug",
++      slug,
++      "--worktree",
++      "--root",
++      root,
++    ]);
++    await runCliSilent([
++      "task",
++      "start-ready",
++      taskId,
++      "--author",
++      "CODER",
++      "--body",
++      "Start: reproduce external task-worktree resolution.",
++      "--root",
++      taskWorktree,
++    ]);
++    await execFileAsync("git", ["add", "."], { cwd: taskWorktree });
++    await execFileAsync("git", ["commit", "-m", "test: persist start-ready fixture"], {
++      cwd: taskWorktree,
++    });
++    const priorImplementationHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: taskWorktree,
++    });
++    const priorImplementationHead = priorImplementationHeadResult.stdout.trim();
++    await runCliSilent([
++      "task",
++      "set-status",
++      taskId,
++      "DOING",
++      "--commit",
++      priorImplementationHead,
++      "--root",
++      taskWorktree,
++    ]);
++    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: taskWorktree });
++    await execFileAsync("git", ["commit", "-m", "test: persist prior implementation metadata"], {
++      cwd: taskWorktree,
++    });
++    await writeFile(path.join(taskWorktree, "intended-resolution.txt"), "keep\n", "utf8");
++
++    const taskCommand = await loadCommandContext({ cwd: taskWorktree, rootOverride: taskWorktree });
++    const currentDecision = await buildTaskRouteDecision({
++      ctx: taskCommand,
++      cwd: taskWorktree,
++      rootOverride: taskWorktree,
++      taskId,
++      includeRemote: false,
++    });
++    const oldFingerprint = `sha256:${"a".repeat(64)}`;
++    const prior = createSupervisorExecutionEpisodeJournal({
++      task_id: taskId,
++      task_revision: currentDecision.workflowStep.preconditionFingerprint.task_revision,
++      state_fingerprint_digest: oldFingerprint,
++      budget: {
++        max_episodes: 4,
++        max_agent_runs: 4,
++        max_input_tokens: null,
++        max_output_tokens: null,
++        max_total_tokens: null,
++        max_wall_time_ms: null,
++        max_changed_files: null,
++        max_diff_lines: null,
++        max_no_progress_episodes: null,
++      },
++    });
++    const priorStarted = startSupervisorExecutionEpisode({
++      journal: prior,
++      role: "EVALUATOR",
++      kind: "evaluator_episode",
++      operation_identity: { test: "completed prior external episode" },
++      precondition_fingerprint_digest: oldFingerprint,
++    });
++    if (priorStarted.status !== "started") throw new Error("expected prior supervisor intent");
++    const priorCompleted = completeSupervisorExecutionEpisode({
++      journal: priorStarted.journal,
++      operation_key: priorStarted.operation_key,
++      result: { verdict: "rework" },
++    });
++    const priorReady = advanceSupervisorExecutionEpisodeState({
++      journal: priorCompleted,
++      state_fingerprint_digest: oldFingerprint,
++      route_observation: { test: "prior result persisted" },
++    });
++    const stale = startSupervisorExecutionEpisode({
++      journal: priorReady,
++      role: "EXECUTOR",
++      kind: "agent_episode",
++      operation_identity: { test: "changed route after prior result" },
++      precondition_fingerprint_digest: currentDecision.workflowStep.preconditionFingerprint.digest,
++    });
++    if (stale.status !== "stopped" || stale.stop.reason !== "stale_state") {
++      throw new Error("expected stale supervisor journal fixture");
++    }
++    const journalPath = await resolveSupervisorExecutionEpisodePath({
++      git_root: taskWorktree,
++      task_id: taskId,
++    });
++    await createSupervisorEpisodeStore(journalPath).write(priorReady);
++
++    const packet = await readAgentPacket(taskWorktree, taskId);
++    expect(packet.transition_id).toBe(agentTransitionId("agent.task_worktree_resolution"));
++    const resultPath = await writeCompletedResult(packet);
++    if (!packet.exchange) throw new Error("expected task-worktree resolution exchange");
++    const exchange = JSON.parse(
++      await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8"),
++    ) as ExternalAgentExchange;
++    const accepted = await returnAgentResult(taskWorktree, taskId, resultPath);
++    expect(accepted.code, accepted.stderr).toBe(0);
++    expect(accepted.stderr).not.toMatch(/unsupported purpose|stale/iu);
++    expect(
++      JSON.parse(await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8")),
++    ).toMatchObject({ status: "consumed" });
++    expect(exchange.baseline.head).not.toBe(priorImplementationHead);
++    const taskReadme = await readFile(
++      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
++      "utf8",
++    );
++    expect(taskReadme).toMatch(/commit:\n {2}hash: "[0-9a-f]{40}"/u);
++    expect(taskReadme).not.toContain(`hash: "${priorImplementationHead}"`);
++    const committedContent = await execFileAsync(
++      "git",
++      ["show", "HEAD~1:intended-resolution.txt"],
++      { cwd: taskWorktree },
++    );
++    expect(committedContent.stdout).toBe("keep\n");
++  });
++
++  it("accepts a fresh read-only worktree observation without implementation authority", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++    const taskId = await createTask(root);
++    await runCliSilent([
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      "Report the closed task worktree state without mutating it.",
++      "--updated-by",
++      "ORCHESTRATOR",
++      "--root",
++      root,
++    ]);
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await writeHarnessGitignore(root);
++    await execFileAsync("git", ["add", "."], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: seed read-only resolution"], {
++      cwd: root,
++    });
++
++    const slug = "read-only-resolution";
++    const taskWorktree = path.join(root, ".agentplane", "worktrees", `${taskId}-${slug}`);
++    await runCliSilent([
++      "work",
++      "start",
++      taskId,
++      "--agent",
++      "CODER",
++      "--slug",
++      slug,
++      "--worktree",
++      "--root",
++      root,
++    ]);
++    await runCliSilent([
++      "task",
++      "set-status",
++      taskId,
++      "DONE",
++      "--force",
++      "--yes",
++      "--root",
++      taskWorktree,
++    ]);
++    await execFileAsync("git", ["add", "."], { cwd: taskWorktree });
++    await execFileAsync("git", ["commit", "-m", "test: persist closed task fixture"], {
++      cwd: taskWorktree,
++    });
++    await writeFile(path.join(taskWorktree, "unresolved-local.txt"), "observe only\n", "utf8");
++
++    const packet = await readAgentPacket(taskWorktree, taskId);
++    expect(packet.transition_id).toBe(agentTransitionId("agent.task_worktree_resolution"));
++    if (!packet.exchange) throw new Error("expected read-only worktree exchange");
++    const workOrder = JSON.parse(
++      await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
++    ) as { authority: { sandbox: string } };
++    expect(workOrder.authority.sandbox).toBe("read-only");
++    const resultPath = await writeCompletedResult(packet);
++    const accepted = await returnAgentResult(taskWorktree, taskId, resultPath);
++
++    expect(accepted.code, accepted.stderr).toBe(0);
++    expect(
++      JSON.parse(await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8")),
++    ).toMatchObject({ status: "consumed" });
++    const unresolvedStatus = await execFileAsync(
++      "git",
++      ["status", "--short", "unresolved-local.txt"],
++      { cwd: taskWorktree },
++    );
++    expect(unresolvedStatus.stdout).toContain("unresolved-local.txt");
++    const latestSubject = await execFileAsync("git", ["log", "-1", "--format=%s"], {
++      cwd: taskWorktree,
++    });
++    expect(latestSubject.stdout).toContain("record worktree observation");
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts b/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts
+index 71a279938..042218b00 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts
+@@ -169,6 +169,33 @@ function reworkTask(verificationUpdatedAt: string): TaskData {
+   return task;
+ }
+ 
++function verificationReworkTask(withNewImplementation: boolean): TaskData {
++  const task = reviewedTask();
++  task.status = "DOING";
++  task.verification = {
++    state: "needs_rework",
++    updated_at: "2026-07-24T00:00:00.000Z",
++    updated_by: "SUPERVISOR",
++    note: "Declared verification failed.",
++  };
++  task.quality_review = undefined;
++  if (withNewImplementation) {
++    task.commit = { hash: headSha, message: "fix: address verification rework" };
++    task.events = [
++      {
++        type: "status",
++        at: "2026-07-24T00:00:01.000Z",
++        author: "SUPERVISOR",
++        commit: headSha,
++        from: "DOING",
++        to: "DOING",
++        note: "Implementation committed after verification rework.",
++      },
++    ];
++  }
++  return task;
++}
++
+ describe("DOING route quality rework", () => {
+   it("keeps fresh evaluator rework blocking until a newer verification exists", async () => {
+     const blockers = await blockersFor(
+@@ -203,6 +230,58 @@ describe("DOING route quality rework", () => {
+   });
+ });
+ 
++describe("DOING route verification rework", () => {
++  it("keeps rework semantic while no newer implementation is recorded", async () => {
++    const blockers = await blockersFor(
++      headSha,
++      undefined,
++      openPrFlow(),
++      verificationReworkTask(false),
++    );
++
++    expect(blockers).toEqual(
++      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
++    );
++  });
++
++  it("ignores an unrelated later DOING event for the failed implementation commit", async () => {
++    const task = verificationReworkTask(false);
++    task.commit = { hash: headSha, message: "fix: failed implementation" };
++    task.events = [
++      {
++        type: "status",
++        at: "2026-07-24T00:00:01.000Z",
++        author: "SUPERVISOR",
++        from: "DOING",
++        to: "DOING",
++        note: "Unrelated task-state refresh.",
++      },
++    ];
++
++    const blockers = await blockersFor(headSha, undefined, openPrFlow(), task);
++
++    expect(blockers).toEqual(
++      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
++    );
++  });
++
++  it("moves a newer implementation to deterministic verification", async () => {
++    const blockers = await blockersFor(
++      headSha,
++      undefined,
++      openPrFlow(),
++      verificationReworkTask(true),
++    );
++
++    expect(blockers).not.toEqual(
++      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
++    );
++    expect(blockers).toEqual(
++      expect.arrayContaining([expect.objectContaining({ code: "verification_required" })]),
++    );
++  });
++});
++
+ describe("DONE route quality-review target", () => {
+   it("keeps a reviewed metadata target fresh across managed closure artifacts", async () => {
+     await expect(blockersFor(reviewedSha)).resolves.not.toEqual(
+diff --git a/packages/agentplane/src/commands/shared/route-decision-blockers.ts b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+index 2f6ba5e35..9726a616b 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-blockers.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+@@ -24,6 +24,7 @@ import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
+ import {
+   hasAcceptedVerificationForCurrentImplementation,
+   qualityReworkHasNewVerification,
++  verificationReworkHasNewImplementation,
+ } from "./route-decision-verification.js";
+ import {
+   filterTaskWorktreeBlockingPaths,
+@@ -466,7 +467,9 @@ export async function deriveBlockers(opts: {
+       (blocker) => blocker.code === "verification_required",
+     );
+     let implementationReworkRequired =
+-      taskIsDoing && opts.task.verification?.state === "needs_rework";
++      taskIsDoing &&
++      opts.task.verification?.state === "needs_rework" &&
++      !verificationReworkHasNewImplementation(opts.task);
+     if (
+       !implementationReworkRequired &&
+       taskIsDoing &&
+diff --git a/packages/agentplane/src/commands/shared/route-decision-verification.ts b/packages/agentplane/src/commands/shared/route-decision-verification.ts
+index 388f6a3c4..c0a06c17d 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-verification.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-verification.ts
+@@ -42,6 +42,23 @@ export function qualityReworkHasNewVerification(task: TaskData): boolean {
+   );
+ }
+ 
++export function verificationReworkHasNewImplementation(task: TaskData): boolean {
++  const verificationUpdatedAt = task.verification?.updated_at;
++  const currentCommit = task.commit?.hash?.trim() ?? "";
++  if (task.verification?.state !== "needs_rework" || !verificationUpdatedAt || !currentCommit) {
++    return false;
++  }
++  const verificationTime = Date.parse(verificationUpdatedAt);
++  if (!Number.isFinite(verificationTime)) return false;
++  return (task.events ?? []).some((event) => {
++    if (event.type !== "status" || event.to !== "DOING" || event.commit?.trim() !== currentCommit) {
++      return false;
++    }
++    const eventTime = Date.parse(event.at);
++    return Number.isFinite(eventTime) && eventTime > verificationTime;
++  });
++}
++
+ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
+   ctx: CommandContext;
+   task: TaskData;
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts
+index fec22b3cb..1b1e967e2 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts
+@@ -144,4 +144,65 @@ describe("direct task supervisor formal operation", () => {
+     ).rejects.toThrow("journal is stopped (effect_in_doubt)");
+     expect(run).not.toHaveBeenCalled();
+   });
++
++  it("resumes the exact formal operation intent after process loss", async () => {
++    const initial = createSupervisorExecutionEpisodeJournal({
++      task_id: TASK_ID,
++      task_revision: null,
++      state_fingerprint_digest: FIRST_FINGERPRINT,
++      budget: {
++        max_episodes: 50,
++        max_agent_runs: 50,
++        max_input_tokens: 3_000_000,
++        max_output_tokens: 1_000_000,
++        max_total_tokens: 4_000_000,
++        max_wall_time_ms: 14_400_000,
++        max_changed_files: 2000,
++        max_diff_lines: null,
++        max_no_progress_episodes: 3,
++      },
++    });
++    const started = startSupervisorExecutionEpisode({
++      journal: initial,
++      role: "EXECUTOR",
++      kind: "cli_operation",
++      operation_identity: { direct_task_operation: "task_verify" },
++      precondition_fingerprint_digest: FIRST_FINGERPRINT,
++      authority_ref: "direct-task-supervisor:task_verify",
++      authority_digest: FIRST_FINGERPRINT,
++      effect_ref: "task_verify",
++    });
++    if (started.status !== "started") throw new Error("expected formal operation fixture");
++    const write = vi.fn().mockResolvedValue(undefined);
++    mocks.open.mockResolvedValue({
++      journal: started.journal,
++      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
++      store: { write },
++    });
++    const run = vi.fn().mockResolvedValue({ verification: "ok" });
++
++    const result = await recordDirectTaskFormalOperation({
++      git_root: "/repo",
++      task_id: TASK_ID,
++      id: "task_verify",
++      decision: vi
++        .fn()
++        .mockResolvedValueOnce(decision(FIRST_FINGERPRINT))
++        .mockResolvedValueOnce(decision(NEXT_FINGERPRINT)),
++      run,
++    });
++
++    expect(run).toHaveBeenCalledOnce();
++    expect(result.journal.operations).toHaveLength(1);
++    expect(result.journal.operations[0]).toMatchObject({
++      operation_key: started.operation_key,
++      status: "completed",
++      postcondition_fingerprint_digest: NEXT_FINGERPRINT,
++    });
++    expect(result.journal).toMatchObject({
++      status: "running",
++      state_fingerprint_digest: NEXT_FINGERPRINT,
++      cursor: { phase: "ready", operation_key: null },
++    });
++  });
+ });
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
+index 760ab401b..8c870db37 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
+@@ -44,7 +44,16 @@ export async function recordDirectTaskFormalOperation(opts: {
+     });
+     await opened.store.write(journal);
+   }
+-  if (journal.cursor.phase !== "ready") {
++  const pendingOperation = journal.operations.at(-1);
++  const resumedOperationKey =
++    journal.cursor.phase === "intent_recorded" &&
++    journal.state_fingerprint_digest === before.workflowStep.preconditionFingerprint.digest &&
++    pendingOperation?.status === "intent" &&
++    pendingOperation.effect_ref === opts.id &&
++    pendingOperation.operation_key === journal.cursor.operation_key
++      ? pendingOperation.operation_key
++      : null;
++  if (journal.cursor.phase !== "ready" && resumedOperationKey === null) {
+     throw new CliError({
+       code: "E_RUNTIME",
+       message:
+@@ -62,7 +71,10 @@ export async function recordDirectTaskFormalOperation(opts: {
+       authority_digest: before.workflowStep.preconditionFingerprint.digest,
+       effect_ref: opts.id,
+     });
+-  let started = start();
++  let started =
++    resumedOperationKey === null
++      ? start()
++      : ({ status: "started", journal, operation_key: resumedOperationKey } as const);
+   // A completed runner episode is allowed to advance to the route observed
+   // after its own durable outcome. This is distinct from retrying an unknown
+   // effect: the helper only reopens a stale journal with a completed latest
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+index 81671ea59..1611b1e1f 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+@@ -12,6 +12,7 @@ import type {
+   ExternalAgentExchange,
+   ExternalAgentResultEnvelope,
+ } from "./external-agent-exchange.js";
++import { recoversRecordedImplementationCommit } from "./external-agent-purpose.js";
+ import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
+ import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
+ import { cmdTaskComment } from "./comment.js";
+@@ -104,9 +105,13 @@ function assertExternalImplementationReturnState(opts: {
+       message: "External agent changed Git history; Agentplane must own the implementation commit.",
+     });
+   }
++  const resolvesDirtyWorktree = opts.exchange.purpose === "task_worktree_resolution";
+   const baseline = new Set(opts.exchange.baseline.changed_paths);
++  const baselinePaths = new Set(
++    opts.exchange.baseline.changed_paths.map((line) => pathFromStatusLine(line)),
++  );
+   for (const line of baseline) {
+-    if (!opts.current_status_lines.includes(line)) {
++    if (!resolvesDirtyWorktree && !opts.current_status_lines.includes(line)) {
+       throw new CliError({
+         code: "E_VALIDATION",
+         message: "A pre-existing repository change moved during the external-agent episode.",
+@@ -114,7 +119,7 @@ function assertExternalImplementationReturnState(opts: {
+     }
+   }
+   const changed = opts.current_status_lines
+-    .filter((line) => !baseline.has(line))
++    .filter((line) => resolvesDirtyWorktree || !baseline.has(line))
+     .map((line) => pathFromStatusLine(line))
+     .filter(Boolean)
+     .toSorted();
+@@ -122,16 +127,18 @@ function assertExternalImplementationReturnState(opts: {
+     .map((entry) => authorityPath(entry, opts.exchange.checkout))
+     .filter((entry): entry is string => entry !== null);
+   const taskPrefix = `.agentplane/tasks/${opts.exchange.task_id}/`;
+-  const forbidden = changed.filter(
+-    (entry) => entry.startsWith(taskPrefix) || !pathAllowed(entry, allowed),
+-  );
++  const forbidden = changed.filter((entry) => {
++    const protectedTaskArtifact =
++      entry.startsWith(taskPrefix) && !(resolvesDirtyWorktree && baselinePaths.has(entry));
++    return protectedTaskArtifact || !pathAllowed(entry, allowed);
++  });
+   if (forbidden.length > 0) {
+     throw new CliError({
+       code: "E_VALIDATION",
+       message: `External-agent changes escaped semantic authority: ${forbidden.join(", ")}.`,
+     });
+   }
+-  if (changed.length === 0) {
++  if (changed.length === 0 && !resolvesDirtyWorktree) {
+     throw new CliError({
+       code: "E_VALIDATION",
+       message: "Completed implementation result produced no supervisor-observed workspace change.",
+@@ -140,6 +147,45 @@ function assertExternalImplementationReturnState(opts: {
+   return changed;
+ }
+ 
++export async function applyExternalReadOnlyWorktreeObservation(opts: {
++  command: CommandContext;
++  exchange: ExternalAgentExchange;
++  envelope: ExternalAgentResultEnvelope;
++}): Promise<void> {
++  await cmdTaskComment({
++    ctx: opts.command,
++    cwd: opts.exchange.checkout,
++    taskId: opts.exchange.task_id,
++    author: "SUPERVISOR",
++    body:
++      `Read-only worktree observation (${opts.envelope.result.status}): ` +
++      opts.envelope.result.summary,
++    quiet: true,
++  });
++  const status = await readDirectRepositoryStatus(opts.exchange.checkout);
++  if (!hasChangedTaskArtifacts(status?.lines ?? [], opts.exchange.task_id)) return;
++  const exitCode = await cmdCommit({
++    ctx: opts.command,
++    cwd: opts.exchange.checkout,
++    taskId: opts.exchange.task_id,
++    message: `🚧 ${opts.exchange.task_id.split("-").at(-1)} task: record worktree observation`,
++    close: false,
++    allow: [],
++    autoAllow: false,
++    allowTasks: true,
++    allowBase: false,
++    allowPolicy: false,
++    allowConfig: false,
++    allowHooks: false,
++    allowCI: false,
++    requireClean: false,
++    quiet: true,
++    closeUnstageOthers: false,
++    closeCheckOnly: false,
++  });
++  if (exitCode !== 0) throw new Error(`External worktree observation commit exited ${exitCode}.`);
++}
++
+ export async function applyExternalImplementationResult(opts: {
+   command: CommandContext;
+   decision: TaskRouteDecision;
+@@ -163,7 +209,9 @@ export async function applyExternalImplementationResult(opts: {
+     readDirectTaskHead(opts.exchange.checkout),
+     readDirectRepositoryStatus(opts.exchange.checkout),
+   ]);
+-  let implementationCommit = opts.decision.task.commit;
++  let implementationCommit = recoversRecordedImplementationCommit(opts.exchange.purpose)
++    ? opts.decision.task.commit
++    : null;
+   let observedChangedPaths: string[] | null = null;
+   if (implementationCommit) {
+     await assertRecoverableImplementationCommit({
+@@ -188,6 +236,7 @@ export async function applyExternalImplementationResult(opts: {
+       current_head: head,
+       current_status_lines: status?.lines ?? [],
+     });
++    if (observedChangedPaths.length === 0) return;
+     const exitCode = await cmdCommit({
+       ctx: opts.command,
+       cwd: opts.exchange.checkout,
+diff --git a/packages/agentplane/src/commands/task/external-agent-purpose.test.ts b/packages/agentplane/src/commands/task/external-agent-purpose.test.ts
+new file mode 100644
+index 000000000..54c8e17ff
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-purpose.test.ts
+@@ -0,0 +1,39 @@
++import { describe, expect, it } from "vitest";
++
++import {
++  recoversRecordedImplementationCommit,
++  usesExternalImplementationAuthority,
++} from "./external-agent-purpose.js";
++
++describe("usesExternalImplementationAuthority", () => {
++  it.each(["implementation", "implementation_rework", "task_worktree_resolution"] as const)(
++    "classifies %s as implementation authority",
++    (purpose) => {
++      expect(usesExternalImplementationAuthority(purpose)).toBe(true);
++    },
++  );
++
++  it.each(["planning", "verification", "quality_review"] as const)(
++    "keeps %s on read-only result freshness",
++    (purpose) => {
++      expect(usesExternalImplementationAuthority(purpose)).toBe(false);
++    },
++  );
++
++  it("keeps read-only worktree resolution on freshness-checked observation handling", () => {
++    expect(usesExternalImplementationAuthority("task_worktree_resolution", "read-only")).toBe(
++      false,
++    );
++  });
++
++  it.each([
++    ["implementation", true],
++    ["implementation_rework", false],
++    ["task_worktree_resolution", false],
++    ["planning", false],
++    ["verification", false],
++    ["quality_review", false],
++  ] as const)("binds recorded commit recovery for %s: %s", (purpose, expected) => {
++    expect(recoversRecordedImplementationCommit(purpose)).toBe(expected);
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/external-agent-purpose.ts b/packages/agentplane/src/commands/task/external-agent-purpose.ts
+new file mode 100644
+index 000000000..d9c675a04
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-purpose.ts
+@@ -0,0 +1,21 @@
++import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++
++import type { ExternalAgentExchange } from "./external-agent-exchange.js";
++
++export function usesExternalImplementationAuthority(
++  purpose: ExternalAgentExchange["purpose"],
++  sandbox: AgentWorkOrderV2["authority"]["sandbox"] = "workspace-write",
++): boolean {
++  if (purpose === "task_worktree_resolution" && sandbox === "read-only") return false;
++  return (
++    purpose === "implementation" ||
++    purpose === "implementation_rework" ||
++    purpose === "task_worktree_resolution"
++  );
++}
++
++export function recoversRecordedImplementationCommit(
++  purpose: ExternalAgentExchange["purpose"],
++): boolean {
++  return purpose === "implementation";
++}
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts b/packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts
+new file mode 100644
+index 000000000..3860b46e0
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts
+@@ -0,0 +1,116 @@
++import {
++  advanceSupervisorExecutionEpisodeState,
++  reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
++  startSupervisorExecutionEpisode,
++  type AgentWorkOrderV2,
++} from "@agentplaneorg/core/schemas";
++
++import { CliError } from "../../shared/errors.js";
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import { openSupervisorExecutionEpisode } from "../shared/supervisor-execution-episode.js";
++import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
++
++import type { ExternalAgentExchange } from "./external-agent-exchange.js";
++
++export async function recordIssuedExternalAgentEpisode(opts: {
++  command: CommandContext;
++  decision: TaskRouteDecision;
++  work_order: AgentWorkOrderV2;
++  work_order_ref: string;
++  purpose: ExternalAgentExchange["purpose"];
++  issue_digest: string;
++}): Promise<void> {
++  const effectRef = `external-agent-issue:${opts.issue_digest}`;
++  const fingerprint = opts.decision.workflowStep.preconditionFingerprint.digest;
++  for (let attempt = 0; attempt < 3; attempt += 1) {
++    const opened = await openSupervisorExecutionEpisode({
++      git_root: opts.command.resolvedProject.gitRoot,
++      common_git_dir: await resolveCommandGitCommonDir(opts.command),
++      task_id: opts.decision.task.id,
++      task_revision: opts.work_order.task.revision,
++      state_fingerprint_digest: fingerprint,
++      recover_intent: false,
++    });
++    let journal = opened.journal;
++    if (journal.status === "stopped" && journal.stop?.reason === "stale_state") {
++      const reopened = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
++        journal,
++        state_fingerprint_digest: fingerprint,
++      });
++      if (!(await opened.store.compareAndSwap(journal.digest, reopened))) continue;
++      journal = reopened;
++    }
++    if (journal.status === "stopped") {
++      throw new CliError({
++        code: "E_RUNTIME",
++        message: `External-agent supervisor is stopped (${journal.stop?.reason ?? "unknown"}).`,
++      });
++    }
++    if (journal.cursor.phase === "completed") {
++      const advanced = advanceSupervisorExecutionEpisodeState({
++        journal,
++        state_fingerprint_digest: fingerprint,
++        route_observation: { step_id: opts.decision.workflowStep.id, surface: "task advance" },
++      });
++      if (!(await opened.store.compareAndSwap(journal.digest, advanced))) continue;
++      journal = advanced;
++    }
++    if (journal.cursor.phase === "intent_recorded") {
++      const latest = journal.operations.at(-1);
++      if (
++        latest?.status === "intent" &&
++        latest.precondition_fingerprint_digest === fingerprint &&
++        latest.work_order_ref === opts.work_order_ref &&
++        latest.role === opts.work_order.role &&
++        latest.effect_ref === effectRef
++      ) {
++        return;
++      }
++      throw new CliError({
++        code: "E_RUNTIME",
++        message: "Another unresolved external-agent episode already owns this task.",
++      });
++    }
++    if (journal.cursor.phase !== "ready") {
++      throw new CliError({
++        code: "E_RUNTIME",
++        message: "External-agent supervisor is not ready to issue a semantic work order.",
++      });
++    }
++    const started = startSupervisorExecutionEpisode({
++      journal,
++      role: opts.work_order.role,
++      kind: opts.purpose === "quality_review" ? "evaluator_episode" : "agent_episode",
++      operation_identity: {
++        workflow_step_id: opts.decision.workflowStep.id,
++        purpose: opts.purpose,
++        task_id: opts.decision.task.id,
++      },
++      precondition_fingerprint_digest: fingerprint,
++      authority_ref: `external-agent:${opts.decision.task.id}:${opts.decision.workflowStep.id}`,
++      authority_digest: fingerprint,
++      work_order_ref: opts.work_order_ref,
++      effect_ref: effectRef,
++    });
++    if (started.status === "stopped" && started.stop.reason === "stale_state") {
++      const reopened = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
++        journal: started.journal,
++        state_fingerprint_digest: fingerprint,
++      });
++      await opened.store.compareAndSwap(journal.digest, reopened);
++      continue;
++    }
++    if (started.status !== "started") {
++      await opened.store.write(started.journal);
++      throw new CliError({
++        code: "E_RUNTIME",
++        message: `External-agent episode could not start (${started.status}).`,
++      });
++    }
++    if (await opened.store.compareAndSwap(journal.digest, started.journal)) return;
++  }
++  throw new CliError({
++    code: "E_RUNTIME",
++    message: "External-agent supervisor changed concurrently while issuing the work order.",
++  });
++}
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor.ts b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+index fa3440df8..ce906c7dc 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+@@ -5,7 +5,6 @@ import path from "node:path";
+ import {
+   advanceSupervisorExecutionEpisodeState,
+   completeSupervisorExecutionEpisode,
+-  startSupervisorExecutionEpisode,
+   validateAgentWorkOrderV2,
+   type AgentWorkOrderV2,
+ } from "@agentplaneorg/core/schemas";
+@@ -16,7 +15,6 @@ import { createEvaluatorArtifactPreparationPort } from "../evaluator/evaluator-a
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+ import {
+   createSupervisorEpisodeStore,
+-  openSupervisorExecutionEpisode,
+   resolveSupervisorExecutionEpisodePath,
+   tryAcquireSupervisorExecutionLease,
+ } from "../shared/supervisor-execution-episode.js";
+@@ -50,7 +48,12 @@ import {
+   applyExternalEvaluatorResult,
+   isExternalEvaluatorResultApplied,
+ } from "./external-agent-evaluator.js";
+-import { applyExternalImplementationResult } from "./external-agent-implementation-authority.js";
++import {
++  applyExternalImplementationResult,
++  applyExternalReadOnlyWorktreeObservation,
++} from "./external-agent-implementation-authority.js";
++import { usesExternalImplementationAuthority } from "./external-agent-purpose.js";
++import { recordIssuedExternalAgentEpisode } from "./external-agent-supervisor-episode.js";
+ import {
+   applyExternalPlanningResult,
+   isExternalPlanningResultApplied,
+@@ -61,18 +64,13 @@ import {
+ } from "./external-agent-result-routing.js";
+ import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
+ 
+-type ExternalSemanticPurpose = Extract<
+-  TaskRouteDecision["workflowStep"],
+-  { kind: "agent_episode" }
+->["episode"]["purpose"];
+-
+ export type IssuedExternalAgentExchange = {
+   exchange: ExternalAgentExchange;
+   paths: ExternalAgentExchangePaths;
+   work_order: AgentWorkOrderV2;
+ };
+ 
+-function semanticPurpose(decision: TaskRouteDecision): ExternalSemanticPurpose | null {
++function semanticPurpose(decision: TaskRouteDecision): ExternalAgentExchange["purpose"] | null {
+   const step = decision.workflowStep;
+   if (step.kind === "agent_episode") return step.episode.purpose;
+   if (
+@@ -146,93 +144,6 @@ async function prepareEvaluatorInput(opts: {
+   };
+ }
+ 
+-async function recordIssuedEpisode(opts: {
+-  command: CommandContext;
+-  decision: TaskRouteDecision;
+-  work_order: AgentWorkOrderV2;
+-  work_order_ref: string;
+-  purpose: ExternalSemanticPurpose;
+-  issue_digest: string;
+-}): Promise<void> {
+-  const effectRef = `external-agent-issue:${opts.issue_digest}`;
+-  for (let attempt = 0; attempt < 3; attempt += 1) {
+-    const opened = await openSupervisorExecutionEpisode({
+-      git_root: opts.command.resolvedProject.gitRoot,
+-      common_git_dir: await resolveCommandGitCommonDir(opts.command),
+-      task_id: opts.decision.task.id,
+-      task_revision: opts.work_order.task.revision,
+-      state_fingerprint_digest: opts.decision.workflowStep.preconditionFingerprint.digest,
+-      recover_intent: false,
+-    });
+-    let journal = opened.journal;
+-    if (journal.status === "stopped") {
+-      throw new CliError({
+-        code: "E_RUNTIME",
+-        message: `External-agent supervisor is stopped (${journal.stop?.reason ?? "unknown"}).`,
+-      });
+-    }
+-    if (journal.cursor.phase === "completed") {
+-      const advanced = advanceSupervisorExecutionEpisodeState({
+-        journal,
+-        state_fingerprint_digest: opts.decision.workflowStep.preconditionFingerprint.digest,
+-        route_observation: { step_id: opts.decision.workflowStep.id, surface: "task advance" },
+-      });
+-      if (!(await opened.store.compareAndSwap(journal.digest, advanced))) continue;
+-      journal = advanced;
+-    }
+-    if (journal.cursor.phase === "intent_recorded") {
+-      const latest = journal.operations.at(-1);
+-      if (
+-        latest?.status === "intent" &&
+-        latest.precondition_fingerprint_digest ===
+-          opts.decision.workflowStep.preconditionFingerprint.digest &&
+-        latest.work_order_ref === opts.work_order_ref &&
+-        latest.role === opts.work_order.role &&
+-        latest.effect_ref === effectRef
+-      ) {
+-        return;
+-      }
+-      throw new CliError({
+-        code: "E_RUNTIME",
+-        message: "Another unresolved external-agent episode already owns this task.",
+-      });
+-    }
+-    if (journal.cursor.phase !== "ready") {
+-      throw new CliError({
+-        code: "E_RUNTIME",
+-        message: "External-agent supervisor is not ready to issue a semantic work order.",
+-      });
+-    }
+-    const started = startSupervisorExecutionEpisode({
+-      journal,
+-      role: opts.work_order.role,
+-      kind: opts.purpose === "quality_review" ? "evaluator_episode" : "agent_episode",
+-      operation_identity: {
+-        workflow_step_id: opts.decision.workflowStep.id,
+-        purpose: opts.purpose,
+-        task_id: opts.decision.task.id,
+-      },
+-      precondition_fingerprint_digest: opts.decision.workflowStep.preconditionFingerprint.digest,
+-      authority_ref: `external-agent:${opts.decision.task.id}:${opts.decision.workflowStep.id}`,
+-      authority_digest: opts.decision.workflowStep.preconditionFingerprint.digest,
+-      work_order_ref: opts.work_order_ref,
+-      effect_ref: effectRef,
+-    });
+-    if (started.status !== "started") {
+-      await opened.store.write(started.journal);
+-      throw new CliError({
+-        code: "E_RUNTIME",
+-        message: `External-agent episode could not start (${started.status}).`,
+-      });
+-    }
+-    if (await opened.store.compareAndSwap(journal.digest, started.journal)) return;
+-  }
+-  throw new CliError({
+-    code: "E_RUNTIME",
+-    message: "External-agent supervisor changed concurrently while issuing the work order.",
+-  });
+-}
+-
+ export async function issueExternalAgentExchange(opts: {
+   ctx: CommandCtx;
+   command: CommandContext;
+@@ -268,7 +179,7 @@ export async function issueExternalAgentExchange(opts: {
+       checkout,
+     });
+     const checkoutCommand = await commandContextForCheckout({ command: opts.command, checkout });
+-    await recordIssuedEpisode({
++    await recordIssuedExternalAgentEpisode({
+       command: checkoutCommand,
+       decision: opts.decision,
+       work_order: workOrder,
+@@ -323,7 +234,7 @@ export async function issueExternalAgentExchange(opts: {
+     updated_at: at,
+   };
+   await persistExternalAgentExchangeArtifacts({ paths, work_order: workOrder, exchange });
+-  await recordIssuedEpisode({
++  await recordIssuedExternalAgentEpisode({
+     command: checkoutCommand,
+     decision: opts.decision,
+     work_order: workOrder,
+@@ -350,12 +261,19 @@ async function applyAcceptedResult(opts: {
+     return;
+   }
+   if (
+-    opts.exchange.purpose === "implementation" ||
+-    opts.exchange.purpose === "implementation_rework"
++    usesExternalImplementationAuthority(opts.exchange.purpose, opts.work_order.authority.sandbox)
+   ) {
+     await applyExternalImplementationResult(opts);
+     return;
+   }
++  if (opts.exchange.purpose === "task_worktree_resolution") {
++    await applyExternalReadOnlyWorktreeObservation({
++      command: opts.command,
++      exchange: opts.exchange,
++      envelope: opts.envelope,
++    });
++    return;
++  }
+   if (opts.exchange.purpose === "quality_review") {
+     await applyExternalEvaluatorResult({
+       command: opts.command,
+@@ -531,8 +449,7 @@ export async function acceptExternalAgentResult(opts: {
+       }));
+     if (
+       !alreadyApplied &&
+-      exchange.purpose !== "implementation" &&
+-      exchange.purpose !== "implementation_rework"
++      !usesExternalImplementationAuthority(exchange.purpose, workOrder.authority.sandbox)
+     ) {
+       assertReadOnlyReturnFresh({ exchange, decision: current });
+     }
+diff --git a/packages/agentplane/src/commands/task/shared/workflow-transition-service.ts b/packages/agentplane/src/commands/task/shared/workflow-transition-service.ts
+index e4b77c581..5edd6bf05 100644
+--- a/packages/agentplane/src/commands/task/shared/workflow-transition-service.ts
++++ b/packages/agentplane/src/commands/task/shared/workflow-transition-service.ts
+@@ -145,6 +145,7 @@ export function buildTaskStatusTransition(
+     type: "status" as const,
+     at: opts.at,
+     author: opts.eventAuthor,
++    commit: opts.commit?.hash,
+     from: currentStatus,
+     to: opts.toStatus,
+     note: opts.note,
+diff --git a/packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts b/packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts
+index 88346aafa..ff9c82077 100644
+--- a/packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts
++++ b/packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts
+@@ -67,6 +67,24 @@ describe("workflow transition service", () => {
+     ]);
+   });
+ 
++  it("binds a recorded implementation commit to its status event", () => {
++    const task = mkTask({ status: "DOING" });
++    const commit = { hash: "a".repeat(40), message: "fix: address verification rework" };
++    const transition = buildTaskStatusTransition({
++      task,
++      at: "2026-03-27T01:05:00.000Z",
++      toStatus: "DOING",
++      eventAuthor: "SUPERVISOR",
++      updatedBy: "SUPERVISOR",
++      commit,
++    });
++
++    expect(transition.nextTask.commit).toEqual(commit);
++    expect(transition.nextTask.events).toEqual([
++      expect.objectContaining({ type: "status", to: "DOING", commit: commit.hash }),
++    ]);
++  });
++
+   it("buildTaskVerificationTransition keeps one canonical verification write", () => {
+     const task = mkTask({
+       status: "DONE",
+diff --git a/packages/core/schemas/task-readme-frontmatter.schema.json b/packages/core/schemas/task-readme-frontmatter.schema.json
+index ae12d2073..58ae24bb2 100644
+--- a/packages/core/schemas/task-readme-frontmatter.schema.json
++++ b/packages/core/schemas/task-readme-frontmatter.schema.json
+@@ -1117,6 +1117,10 @@
+             "type": "string",
+             "minLength": 1
+           },
++          "commit": {
++            "type": "string",
++            "pattern": "^[0-9a-f]{40,64}$"
++          },
+           "from": {
+             "type": "string"
+           },
+diff --git a/packages/core/schemas/tasks-export.schema.json b/packages/core/schemas/tasks-export.schema.json
+index 70b3df237..4f199defd 100644
+--- a/packages/core/schemas/tasks-export.schema.json
++++ b/packages/core/schemas/tasks-export.schema.json
+@@ -943,6 +943,10 @@
+                   "type": "string",
+                   "minLength": 1
+                 },
++                "commit": {
++                  "type": "string",
++                  "pattern": "^[0-9a-f]{40,64}$"
++                },
+                 "from": {
+                   "type": "string"
+                 },
+diff --git a/packages/core/src/tasks/task-artifact-schema.findings.ts b/packages/core/src/tasks/task-artifact-schema.findings.ts
+index 8c49306e5..9fbea7708 100644
+--- a/packages/core/src/tasks/task-artifact-schema.findings.ts
++++ b/packages/core/src/tasks/task-artifact-schema.findings.ts
+@@ -19,6 +19,10 @@ export const TASK_EVENT_SCHEMA = z
+     type: z.enum(TASK_EVENT_TYPE_VALUES),
+     at: ISO_UTC_TIMESTAMP,
+     author: NON_EMPTY_STRING,
++    commit: z
++      .string()
++      .regex(/^[0-9a-f]{40,64}$/u)
++      .optional(),
+     from: z.string().optional(),
+     to: z.string().optional(),
+     state: z.string().optional(),
+diff --git a/packages/core/src/tasks/task-store.ts b/packages/core/src/tasks/task-store.ts
+index da9db2fdb..8e2cfd914 100644
+--- a/packages/core/src/tasks/task-store.ts
++++ b/packages/core/src/tasks/task-store.ts
+@@ -66,6 +66,7 @@ export type TaskEvent = {
+   type: TaskEventType;
+   at: string;
+   author: string;
++  commit?: string;
+   from?: string;
+   to?: string;
+   state?: string;
+diff --git a/packages/core/src/tasks/tasks-export.test.ts b/packages/core/src/tasks/tasks-export.test.ts
+index 90da9c92f..1a3891cfb 100644
+--- a/packages/core/src/tasks/tasks-export.test.ts
++++ b/packages/core/src/tasks/tasks-export.test.ts
+@@ -213,6 +213,7 @@ describe("tasks-export", () => {
+         '  - type: "status"',
+         '    at: "2026-02-07T10:00:00.000Z"',
+         '    author: "CODER"',
++        `    commit: "${"a".repeat(40)}"`,
+         '    from: "TODO"',
+         '    to: "DOING"',
+         "doc_version: 3",
+@@ -229,6 +230,7 @@ describe("tasks-export", () => {
+     const exported = snapshot.tasks.find((t) => t.id === taskId);
+     expect(exported?.events?.length).toBe(1);
+     expect(exported?.events?.[0]?.type).toBe("status");
++    expect(exported?.events?.[0]?.commit).toBe("a".repeat(40));
+   });
+ 
+   it("preserves doc_version=3 in exported snapshots", async () => {
+diff --git a/packages/core/src/tasks/tasks-export.ts b/packages/core/src/tasks/tasks-export.ts
+index 3d23891c3..b9d50be9b 100644
+--- a/packages/core/src/tasks/tasks-export.ts
++++ b/packages/core/src/tasks/tasks-export.ts
+@@ -574,6 +574,7 @@ export async function buildTasksExportSnapshot(opts: {
+               type: string;
+               at: string;
+               author: string;
++              commit?: string;
+               from?: string;
+               to?: string;
+               state?: string;
+@@ -588,6 +589,7 @@ export async function buildTasksExportSnapshot(opts: {
+             type: event.type,
+             at: event.at,
+             author: event.author,
++            commit: typeof event.commit === "string" ? event.commit : undefined,
+             from: typeof event.from === "string" ? event.from : undefined,
+             to: typeof event.to === "string" ? event.to : undefined,
+             state: typeof event.state === "string" ? event.state : undefined,
+diff --git a/packages/spec/schemas/task-readme-frontmatter.schema.json b/packages/spec/schemas/task-readme-frontmatter.schema.json
+index ae12d2073..58ae24bb2 100644
+--- a/packages/spec/schemas/task-readme-frontmatter.schema.json
++++ b/packages/spec/schemas/task-readme-frontmatter.schema.json
+@@ -1117,6 +1117,10 @@
+             "type": "string",
+             "minLength": 1
+           },
++          "commit": {
++            "type": "string",
++            "pattern": "^[0-9a-f]{40,64}$"
++          },
+           "from": {
+             "type": "string"
+           },
+diff --git a/packages/spec/schemas/tasks-export.schema.json b/packages/spec/schemas/tasks-export.schema.json
+index 70b3df237..4f199defd 100644
+--- a/packages/spec/schemas/tasks-export.schema.json
++++ b/packages/spec/schemas/tasks-export.schema.json
+@@ -943,6 +943,10 @@
+                   "type": "string",
+                   "minLength": 1
+                 },
++                "commit": {
++                  "type": "string",
++                  "pattern": "^[0-9a-f]{40,64}$"
++                },
+                 "from": {
+                   "type": "string"
+                 },
+diff --git a/schemas/task-readme-frontmatter.schema.json b/schemas/task-readme-frontmatter.schema.json
+index ae12d2073..58ae24bb2 100644
+--- a/schemas/task-readme-frontmatter.schema.json
++++ b/schemas/task-readme-frontmatter.schema.json
+@@ -1117,6 +1117,10 @@
+             "type": "string",
+             "minLength": 1
+           },
++          "commit": {
++            "type": "string",
++            "pattern": "^[0-9a-f]{40,64}$"
++          },
+           "from": {
+             "type": "string"
+           },
+diff --git a/schemas/tasks-export.schema.json b/schemas/tasks-export.schema.json
+index 70b3df237..4f199defd 100644
+--- a/schemas/tasks-export.schema.json
++++ b/schemas/tasks-export.schema.json
+@@ -943,6 +943,10 @@
+                   "type": "string",
+                   "minLength": 1
+                 },
++                "commit": {
++                  "type": "string",
++                  "pattern": "^[0-9a-f]{40,64}$"
++                },
+                 "from": {
+                   "type": "string"
+                 },
