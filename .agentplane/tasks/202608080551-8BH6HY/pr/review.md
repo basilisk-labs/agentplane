@@ -6,7 +6,7 @@ Created: 2026-08-08T05:52:09.195Z
 
 - Task: `202608080551-8BH6HY`
 - Title: Accept external task-worktree resolution results
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608080551-8BH6HY/accept-external-task-worktree-resolution-results`
 - Canonical task record: `.agentplane/tasks/202608080551-8BH6HY/README.md`
 
