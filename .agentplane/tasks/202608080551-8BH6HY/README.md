@@ -4,7 +4,7 @@ title: "Accept external task-worktree resolution results"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -60,7 +60,9 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "67cad90645803330d942920235c3882f059dfa41"
+  message: "🚧 8BH6HY task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -77,6 +79,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 515d9e54edef. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 67cad9064580. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -131,8 +136,15 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:contract"
+  -
+    type: "status"
+    at: "2026-08-08T06:46:35.327Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 67cad9064580. CLI accepted one state-bound external-agent semantic result."
 doc_version: 3
-doc_updated_at: "2026-08-08T06:40:25.199Z"
+doc_updated_at: "2026-08-08T06:46:35.327Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix task advance so a state-bound task_worktree_resolution episode can return a completed result after the CODER commits intended changes, without being rejected as an unsupported or stale read-only purpose; add focused regression coverage."
 sections:
