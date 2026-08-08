@@ -4,7 +4,7 @@ title: "Add safe local evidence retention, statistics, and garbage collection"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -30,11 +30,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-06T22:28:55.868Z"
+  updated_by: "TESTER"
+  note: "Evidence unit/maintenance suites pass (8 tests), CLI contract passes (3 tests), typecheck/lint/docs/build pass, and live dry runs report 17,457 tracked evidence files / 145,406,551 bytes, 189 valid reachable objects, 19 safe compact candidates, and 0 GC candidates. Critical suite remains blocked by the shared compatibility ratchet owned by 202608061850-BZT3D9."
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -48,6 +48,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: local evidence stats, dry-run-first hard-link compaction, and hash-verified retention GC now protect reachable, active, failing, and release-pinned evidence; apply requires a clean repository and explicit confirmation."
 events:
   -
     type: "status"
@@ -56,8 +59,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-06T22:28:40.203Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: local evidence stats, dry-run-first hard-link compaction, and hash-verified retention GC now protect reachable, active, failing, and release-pinned evidence; apply requires a clean repository and explicit confirmation."
+  -
+    type: "verify"
+    at: "2026-08-06T22:28:55.868Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Evidence unit/maintenance suites pass (8 tests), CLI contract passes (3 tests), typecheck/lint/docs/build pass, and live dry runs report 17,457 tracked evidence files / 145,406,551 bytes, 189 valid reachable objects, 19 safe compact candidates, and 0 GC candidates. Critical suite remains blocked by the shared compatibility ratchet owned by 202608061850-BZT3D9."
 doc_version: 3
-doc_updated_at: "2026-08-06T22:11:26.005Z"
+doc_updated_at: "2026-08-06T22:28:56.702Z"
 doc_updated_by: "CODER"
 description: "Add OSS evidence stats, compact, and gc surfaces with a dry-run-first retention model: keep task summaries, ACRs, receipts, fingerprints, object hashes, compact manifests, and final findings in Git; deduplicate large raw prompts, diffs, logs, provider JSONL, evaluator inputs, and replay corpora in the content-addressed object store; protect current failures and release evidence; require explicit apply authority before deleting only proven unreferenced or expired objects."
 sections:
@@ -76,11 +92,44 @@ sections:
     - bun run docs:cli:check
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-06T22:28:55.868Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Evidence unit/maintenance suites pass (8 tests), CLI contract passes (3 tests), typecheck/lint/docs/build pass, and live dry runs report 17,457 tracked evidence files / 145,406,551 bytes, 189 valid reachable objects, 19 safe compact candidates, and 0 GC candidates. Critical suite remains blocked by the shared compatibility ratchet owned by 202608061850-BZT3D9.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T22:28:40.203Z, excerpt_hash=sha256:e03b6b8572c687ad65e25d32e0460d9ce86132acfcae68bbe78b35a8b1e469b2
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062023-V3WHE9-add-safe-local-evidence-retention-statistics-and/.agentplane/tasks/202608062023-V3WHE9/blueprint/resolved-snapshot.json
+    - old_digest: a3242977958400cf037cf84a545367555fb4ee1e5e843f158d09e81746ab2f18
+    - current_digest: a3242977958400cf037cf84a545367555fb4ee1e5e843f158d09e81746ab2f18
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062023-V3WHE9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608062023-V3WHE9
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: The first critical chunk rejects the pre-0.7.5 reviewed compatibility candidate after the three new advanced evidence commands change CLI topology; no task-local critical behavior failed.
+      Impact: Final pass and publication must wait for the centralized baseline update and rebase.
+      Resolution: Merge BZT3D9, rebase V3WHE9, rerun evidence tests, CLI test, critical, typecheck, and docs check, then record pass.
 extensions:
   workflow_route_baseline:
     start_head_sha: "0e1d30346d74b782d736e480700919077e532c5f"
@@ -112,6 +161,36 @@ Add OSS evidence stats, compact, and gc surfaces with a dry-run-first retention 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-06T22:28:55.868Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Evidence unit/maintenance suites pass (8 tests), CLI contract passes (3 tests), typecheck/lint/docs/build pass, and live dry runs report 17,457 tracked evidence files / 145,406,551 bytes, 189 valid reachable objects, 19 safe compact candidates, and 0 GC candidates. Critical suite remains blocked by the shared compatibility ratchet owned by 202608061850-BZT3D9.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-06T22:28:40.203Z, excerpt_hash=sha256:e03b6b8572c687ad65e25d32e0460d9ce86132acfcae68bbe78b35a8b1e469b2
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062023-V3WHE9-add-safe-local-evidence-retention-statistics-and/.agentplane/tasks/202608062023-V3WHE9/blueprint/resolved-snapshot.json
+- old_digest: a3242977958400cf037cf84a545367555fb4ee1e5e843f158d09e81746ab2f18
+- current_digest: a3242977958400cf037cf84a545367555fb4ee1e5e843f158d09e81746ab2f18
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062023-V3WHE9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608062023-V3WHE9
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -120,3 +199,7 @@ Add OSS evidence stats, compact, and gc surfaces with a dry-run-first retention 
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: The first critical chunk rejects the pre-0.7.5 reviewed compatibility candidate after the three new advanced evidence commands change CLI topology; no task-local critical behavior failed.
+  Impact: Final pass and publication must wait for the centralized baseline update and rebase.
+  Resolution: Merge BZT3D9, rebase V3WHE9, rerun evidence tests, CLI test, critical, typecheck, and docs check, then record pass.

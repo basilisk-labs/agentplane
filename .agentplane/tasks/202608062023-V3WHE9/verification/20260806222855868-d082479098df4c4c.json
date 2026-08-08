@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:d082479098df4c4c4a17b7981eb2ad995f8d010409f97f8d407990a0f10b6a1c",
+  "implementation_sha": "a5fbba7ea41d9bf1926b3f3962fa7ca332f8ed66",
+  "kind": "task_verification_record",
+  "note": "Evidence unit/maintenance suites pass (8 tests), CLI contract passes (3 tests), typecheck/lint/docs/build pass, and live dry runs report 17,457 tracked evidence files / 145,406,551 bytes, 189 valid reachable objects, 19 safe compact candidates, and 0 GC candidates. Critical suite remains blocked by the shared compatibility ratchet owned by 202608061850-BZT3D9.",
+  "recorded_at": "2026-08-06T22:28:55.868Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "- bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evidence packages/agentplane/src/cli/run-cli.core.evidence.test.ts\n- bun run test:critical\n- bun run typecheck\n- bun run docs:cli:check",
+  "scope_digest": "sha256:e03b6b8572c687ad65e25d32e0460d9ce86132acfcae68bbe78b35a8b1e469b2",
+  "task_id": "202608062023-V3WHE9",
+  "verification_command": "agentplane verify 202608062023-V3WHE9 --rework --by TESTER",
+  "verifier": "TESTER"
+}
