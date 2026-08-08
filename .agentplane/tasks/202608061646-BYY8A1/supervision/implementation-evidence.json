@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 8de6d402f42428f82e7baac64f5e63af7ccb84af..0fc19d767dc22011cc8c1b2740134b4814bc67fb",
+      "command": "git diff --check 2b1c7d84aa7a39784bea8ff073a1363c2c2c6c06..e3dc070ee55c85b53966ab39ac621be5084b4c74",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8de6d402f42428f82e7baac64f5e63af7ccb84af..0fc19d767dc22011cc8c1b2740134b4814bc67fb",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2b1c7d84aa7a39784bea8ff073a1363c2c2c6c06..e3dc070ee55c85b53966ab39ac621be5084b4c74",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,12 +21,7 @@
         "M\t.agentplane/tasks/202608061646-BYY8A1/pr/github-body.md",
         "M\t.agentplane/tasks/202608061646-BYY8A1/pr/meta.json",
         "M\t.agentplane/tasks/202608061646-BYY8A1/pr/review.md",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-exchange.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor.ts",
-        "M\tpackages/agentplane/src/runner/phase-tools/broker.test.ts",
-        "M\tpackages/agentplane/src/runner/phase-tools/broker.ts",
-        "A\tpackages/agentplane/src/shared/stable-file.test.ts"
+        "M\tpackages/agentplane/src/runner/phase-tools/broker.test.ts"
       ]
     },
     {
@@ -36,30 +31,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "8de6d402f42428f82e7baac64f5e63af7ccb84af",
-  "implementation_commit": "0fc19d767dc22011cc8c1b2740134b4814bc67fb",
+  "execution_base_commit": "2b1c7d84aa7a39784bea8ff073a1363c2c2c6c06",
+  "implementation_commit": "e3dc070ee55c85b53966ab39ac621be5084b4c74",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M packages/agentplane/src/runner/phase-tools/broker.test.ts",
-      " M packages/agentplane/src/runner/phase-tools/broker.ts"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/runner/phase-tools/broker.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/runner/phase-tools/broker.ts"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M packages/agentplane/src/runner/phase-tools/broker.test.ts",
-      " M packages/agentplane/src/runner/phase-tools/broker.ts"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
