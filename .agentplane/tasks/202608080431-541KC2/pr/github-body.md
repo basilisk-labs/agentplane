@@ -27,9 +27,9 @@ Prevent a valid concurrent runner effect resolution from failing with runner_eff
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../runner/usecases/task-run-effect-resolution.test.ts  |  6 +++++-
- .../src/runner/usecases/task-run-effect-resolution.ts   | 17 +++++++++++------
- 2 files changed, 16 insertions(+), 7 deletions(-)
+ .../src/runner/usecases/task-run-effect-resolution.test.ts |  6 +++++-
+ .../src/runner/usecases/task-run-effect-resolution.ts      | 14 ++++++++------
+ 2 files changed, 13 insertions(+), 7 deletions(-)
 ```
 
 </details>
