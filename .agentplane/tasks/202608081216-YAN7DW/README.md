@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 42
+revision: 43
 origin:
   system: "manual"
 depends_on: []
@@ -28,9 +28,9 @@ plan_approval:
   note: "User explicitly approved pausing the active v0.7.5 verification and implementing no-quality-loss release acceleration before restarting the release."
 verification:
   state: "ok"
-  updated_at: "2026-08-08T15:03:38.680Z"
+  updated_at: "2026-08-08T15:23:17.853Z"
   updated_by: "TESTER"
-  note: "Verified final implementation 51072b303 with frozen parallelization benchmark evidence."
+  note: "Verified deterministic provider failure evidence and final-SHA release qualification acceleration on ac402da87."
   attempts: 0
 quality_review:
   state: "rework"
@@ -302,8 +302,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified final implementation 51072b303 with frozen parallelization benchmark evidence."
+  -
+    type: "verify"
+    at: "2026-08-08T15:23:17.853Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified deterministic provider failure evidence and final-SHA release qualification acceleration on ac402da87."
 doc_version: 3
-doc_updated_at: "2026-08-08T15:05:24.604Z"
+doc_updated_at: "2026-08-08T15:23:19.512Z"
 doc_updated_by: "CODER"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
@@ -910,6 +916,56 @@ sections:
     Result: pass
     Evidence: .agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json
     Scope: final implementation 51072b303; contracts, lint, architecture, clone, knip, and coverage passed.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608081216-YAN7DW-parallelize-release-qualification/.agentplane/tasks/202608081216-YAN7DW/blueprint/resolved-snapshot.json
+    - old_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+    - current_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608081216-YAN7DW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608081216-YAN7DW
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T15:23:17.853Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified deterministic provider failure evidence and final-SHA release qualification acceleration on ac402da87.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T15:05:24.604Z, excerpt_hash=sha256:1cae1f99dc9a9a5efbce86fcedd6b0b11fc7737d54646d4fdec13617a8ab9fd5
+
+    Details:
+
+    Command: bun run qualification:check
+    Result: pass
+    Evidence: .agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json
+    Scope: implementation ac402da87f6841585852e11603840d702918da09; frozen SHA-256 0873c2610baee02391a7adbd777f966b51e1a4f0b00134cc3d34315a65ab85fc; exact serial 222.70s, concurrent 147.51s, reduction 33.7629%, ten exit codes zero.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json
+    Scope: 12/12 critical CLI chunks passed; multi-failure provider selection covered in reversed timing orders.
+
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json
+    Scope: final implementation ac402da87.
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: .agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json
+    Scope: contracts, lint, architecture, clone, knip, and coverage thresholds passed on final implementation.
 
     BlueprintSnapshotRef:
     - state: current
@@ -1559,6 +1615,56 @@ Command: bun run ci:contract
 Result: pass
 Evidence: .agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json
 Scope: final implementation 51072b303; contracts, lint, architecture, clone, knip, and coverage passed.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608081216-YAN7DW-parallelize-release-qualification/.agentplane/tasks/202608081216-YAN7DW/blueprint/resolved-snapshot.json
+- old_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+- current_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608081216-YAN7DW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608081216-YAN7DW
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T15:23:17.853Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified deterministic provider failure evidence and final-SHA release qualification acceleration on ac402da87.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T15:05:24.604Z, excerpt_hash=sha256:1cae1f99dc9a9a5efbce86fcedd6b0b11fc7737d54646d4fdec13617a8ab9fd5
+
+Details:
+
+Command: bun run qualification:check
+Result: pass
+Evidence: .agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json
+Scope: implementation ac402da87f6841585852e11603840d702918da09; frozen SHA-256 0873c2610baee02391a7adbd777f966b51e1a4f0b00134cc3d34315a65ab85fc; exact serial 222.70s, concurrent 147.51s, reduction 33.7629%, ten exit codes zero.
+
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json
+Scope: 12/12 critical CLI chunks passed; multi-failure provider selection covered in reversed timing orders.
+
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json
+Scope: final implementation ac402da87.
+
+Command: bun run ci:contract
+Result: pass
+Evidence: .agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json
+Scope: contracts, lint, architecture, clone, knip, and coverage thresholds passed on final implementation.
 
 BlueprintSnapshotRef:
 - state: current
