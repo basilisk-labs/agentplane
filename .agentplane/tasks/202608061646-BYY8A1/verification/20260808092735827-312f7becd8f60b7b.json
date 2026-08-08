@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202608061646-BYY8A1/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608061646-BYY8A1 declared verification",
+  "digest": "sha256:312f7becd8f60b7b4986c191f412406ff26e7828c448f6329ef91fd8c1652a42",
+  "implementation_sha": "a04fb279699f15072468e2b547e78c8b0e509285",
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-08-08T09:27:35.827Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "- bun run ci:local:full\n- bun run ci:release-extras\n- bun run e2e:v0.7.1:gate\n- bun run bench:compatibility:check\n- bun run bench:agent-efficiency:check\n- bun run bench:agent-efficiency:replay:check",
+  "scope_digest": "sha256:b6512de3fe91c5f38b6856ce50c6f4b54788c03b6d1dc88065aa75aa1a93222a",
+  "task_id": "202608061646-BYY8A1",
+  "verification_command": "agentplane verify 202608061646-BYY8A1 --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
