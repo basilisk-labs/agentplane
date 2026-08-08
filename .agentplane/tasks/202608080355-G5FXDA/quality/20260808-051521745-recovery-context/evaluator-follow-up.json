@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608080355-G5FXDA-cff8ef47fba16bccf840dab3",
+  "task_id": "202608080355-G5FXDA",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Require complete, mutually consistent nextVersion and nextTag metadata before classifying a plan as future, use precision-safe ordering or reject unsafe numeric components, and add the corresponding negative fixtures before reevaluation.",
+  "findings": [
+    {
+      "id": "RECOVERY-001",
+      "summary": "A future plan with only nextVersion or only nextTag is classified as valid and permits candidate preparation.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/f80832943bfb517107b04fb8c0176bea60ce9b79cc5508f6c21331d9c1413f93.patch",
+          "sha256": "sha256:f80832943bfb517107b04fb8c0176bea60ce9b79cc5508f6c21331d9c1413f93",
+          "lines": "latestPlanTargetRelation accepts plannedVersion ?? plannedTagVersion when either counterpart property is absent; the added invalid-metadata fixtures do not cover partial targets.",
+          "section": "scripts/release/next-action.mjs and release-next-action-script.test.ts"
+        }
+      ]
+    },
+    {
+      "id": "RECOVERY-002",
+      "summary": "Version ordering converts arbitrary semver numeric components to Number, so values beyond the safe-integer range can compare incorrectly.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608080355-G5FXDA/quality/objects/sha256/f80832943bfb517107b04fb8c0176bea60ce9b79cc5508f6c21331d9c1413f93.patch",
+          "sha256": "sha256:f80832943bfb517107b04fb8c0176bea60ce9b79cc5508f6c21331d9c1413f93",
+          "lines": "parseStableReleaseVersion returns Number(match[1]), Number(match[2]), and Number(match[3]), then compareStableReleaseVersions subtracts those values.",
+          "section": "scripts/release/next-action.mjs"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608080355-G5FXDA/quality/20260808-051521745-recovery-context/evaluator-result.json"
+}

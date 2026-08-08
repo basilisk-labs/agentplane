@@ -15,14 +15,20 @@ Fix GitHub issue #4783: compare the latest plan target with the currently publis
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Release next-action now requests a fresh patch plan for missing, invalid, current, or stale targets
+and permits candidate preparation only for a valid future target; focused and full contract gates
+pass.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-08T03:55:51.970Z
+- Updated: 2026-08-08T04:02:57.138Z
 - Branch: task/202608080355-G5FXDA/correct-stale-plan-comparison-in-next-action-dia
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
