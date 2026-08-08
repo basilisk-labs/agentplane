@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Bounded qualification concurrency preserves dependency ordering and result order; provider work is separated behind a local-scenario barrier.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/30712845a4f47b0ba6c4ec89a875b9e2c5cec7610044f3f23d2bf3498d693bec.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Provider replay jobs use distinct repositories and stop assigning queued jobs after the first observed failure without changing counts, thresholds, or retry policy.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/30712845a4f47b0ba6c4ec89a875b9e2c5cec7610044f3f23d2bf3498d693bec.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Both asynchronous child runners disable execFile's built-in timeout and only send SIGTERM from a timer. If the child ignores SIGTERM, the callback never fires and the advertised fixed timeout is unbounded.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/30712845a4f47b0ba6c4ec89a875b9e2c5cec7610044f3f23d2bf3498d693bec.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: Concurrent local suites may contaminate local latency measurements even though provider measurements are isolated behind a barrier.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/30712845a4f47b0ba6c4ec89a875b9e2c5cec7610044f3f23d2bf3498d693bec.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add a regression proving a child that ignores SIGTERM cannot outlive the declared timeout boundary."
+  ],
+  "hidden_assumptions": [
+    "Every qualification and replay child exits promptly on SIGTERM."
+  ],
+  "recovery_context": "Use execFile's bounded timeout with an unconditional kill signal or add a short escalation timer to SIGKILL, preserve timeout classification, and rerun the same declared checks."
+}

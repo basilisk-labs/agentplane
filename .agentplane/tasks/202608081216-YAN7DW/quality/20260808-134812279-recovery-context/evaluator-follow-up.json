@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608081216-YAN7DW-b1b4d814274dcf0cc0a9aa94",
+  "task_id": "202608081216-YAN7DW",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Record the blueprint-required baseline, method, raw serial and concurrent pilot runs, threshold, comparison, and performance verdict on the evaluated SHA; add focused qualification failure-propagation coverage and deterministic concurrent provider-failure evidence, then rerun the four declared checks.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen evidence does not establish the required timing baseline or provide a serial-versus-concurrent pilot comparison, so the claimed reduction in patch-release elapsed time is unproven.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/README.md",
+          "sha256": "sha256:c7e82a14d5d37e28b11021206c71fb6dec1fb394769f26006f711652ebf3d292",
+          "section": "acceptance_criteria"
+        },
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/66fa4c234b9ab066149f87bbec5b818fe331d23c90ef191589289397e54ec486.json",
+          "sha256": "sha256:66fa4c234b9ab066149f87bbec5b818fe331d23c90ef191589289397e54ec486",
+          "section": "requiredEvidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/ab5d6f84e22cf4ec514959608ebfa23ea7cbc940b25d2bfdb2c1b3e162a278ea.json",
+          "sha256": "sha256:ab5d6f84e22cf4ec514959608ebfa23ea7cbc940b25d2bfdb2c1b3e162a278ea",
+          "section": "runtime_evidence"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "The added qualification-runner tests cover concurrency, dependency barriers, exclusivity, and result ordering, but do not exercise scenario failure propagation or prove that dependent/provider work remains unstarted after a prerequisite failure.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/README.md",
+          "sha256": "sha256:c7e82a14d5d37e28b11021206c71fb6dec1fb394769f26006f711652ebf3d292",
+          "section": "acceptance_criteria"
+        },
+        {
+          "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/617dfb9f0c1bbfe25fcdbf3e1cbd0bbb4dff3af3cfbbda231b1ea932fa86f01c.patch",
+          "sha256": "sha256:617dfb9f0c1bbfe25fcdbf3e1cbd0bbb4dff3af3cfbbda231b1ea932fa86f01c",
+          "line": 540,
+          "lines": "Added qualification tests exercise bounded concurrency, dependency barriers, report ordering, invalid concurrency, and exclusive latency scenarios, but no scenarioRunner rejection case.",
+          "section": "scripts/qualification/release-qualification.test.mjs"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-134812279-recovery-context/evaluator-result.json"
+}

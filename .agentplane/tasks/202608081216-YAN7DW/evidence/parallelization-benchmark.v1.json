@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.release_qualification_parallelization_benchmark",
+  "task_id": "202608081216-YAN7DW",
+  "measured_at": "2026-08-08T15:15:13Z",
+  "candidate_sha": "ac402da87f68931c4d5a44e37f73a728a797a5c9",
+  "baseline_measurement_sha": "58ae07c581374c7cc29fee87e64b9f0816f70edf",
+  "manifest": {
+    "path": "scripts/qualification/v0.7.1-release-qualification.json",
+    "sha256": "a8333d2bdb9cddee0acec944052574054e874c4a9a0e340d9037a785e9f59f75"
+  },
+  "environment": {
+    "platform": "Darwin 25.5.0 arm64",
+    "macos": "26.5.1",
+    "node": "26.7.0",
+    "bun": "1.3.6",
+    "workspace": "same clean task worktree for every retained run"
+  },
+  "method": {
+    "mode": "two paired elapsed-time baseline runs with order reversal plus one exact-candidate confirmation pair",
+    "baseline_run_order": [
+      "serial-1",
+      "concurrent-1",
+      "concurrent-2",
+      "serial-2"
+    ],
+    "serial_concurrency": 1,
+    "concurrent_concurrency": 4,
+    "scenario_count": 5,
+    "scenario_ids": [
+      "qualification-contract",
+      "lifecycle-matrix",
+      "context-matrix",
+      "supervisor-parity",
+      "recovery-matrix"
+    ],
+    "commands": [
+      ["node", "--test", "scripts/qualification/release-qualification.test.mjs"],
+      ["node", "scripts/checks/run-vitest-suite.mjs", "v0.7-lifecycle"],
+      ["node", "scripts/checks/run-vitest-suite.mjs", "v0.7-context"],
+      ["node", "scripts/checks/run-vitest-suite.mjs", "v0.7-supervisor"],
+      ["node", "scripts/checks/run-vitest-suite.mjs", "v0.7-recovery"]
+    ],
+    "timing": "/usr/bin/time -p around the complete scenario group",
+    "output": "each command wrote stdout and stderr to a distinct temporary log; every retained group exited 0",
+    "warm_cold_mode": "fresh child processes per scenario; filesystem caches were not cleared; reversed baseline pair order limits systematic cache-order bias",
+    "scope_note": "Direct manifest-command execution avoids stateful test fixtures deleting the outer qualification report directory during a nested pilot."
+  },
+  "threshold": {
+    "median_elapsed_reduction_gte_percent": 10,
+    "all_scenario_groups_must_exit_zero": true,
+    "scenario_count_and_commands_must_match": true,
+    "reason": "A 10 percent floor separates a useful release-time improvement from ordinary local timing noise while preserving every quality command."
+  },
+  "baseline_runs": [
+    {
+      "id": "serial-1",
+      "mode": "serial",
+      "concurrency": 1,
+      "elapsed_seconds": 175.09,
+      "user_seconds": 71.69,
+      "system_seconds": 37.06,
+      "exit_code": 0
+    },
+    {
+      "id": "concurrent-1",
+      "mode": "concurrent",
+      "concurrency": 4,
+      "elapsed_seconds": 92.99,
+      "user_seconds": 210.98,
+      "system_seconds": 98.09,
+      "exit_code": 0
+    },
+    {
+      "id": "concurrent-2",
+      "mode": "concurrent",
+      "concurrency": 4,
+      "elapsed_seconds": 100.05,
+      "user_seconds": 188.08,
+      "system_seconds": 88.11,
+      "exit_code": 0
+    },
+    {
+      "id": "serial-2",
+      "mode": "serial",
+      "concurrency": 1,
+      "elapsed_seconds": 134.97,
+      "user_seconds": 47.77,
+      "system_seconds": 22.98,
+      "exit_code": 0
+    }
+  ],
+  "baseline_comparison": {
+    "serial_median_seconds": 155.03,
+    "concurrent_median_seconds": 96.52,
+    "median_elapsed_reduction_seconds": 58.51,
+    "median_elapsed_reduction_percent": 37.7411,
+    "concurrent_to_serial_ratio": 0.622589,
+    "pair_reduction_percent": [46.8902, 25.8724],
+    "threshold_percent": 10,
+    "all_groups_passed": true,
+    "verdict": "pass"
+  },
+  "exact_candidate_confirmation": {
+    "candidate_sha": "ac402da87f68931c4d5a44e37f73a728a797a5c9",
+    "serial_elapsed_seconds": 222.7,
+    "serial_user_seconds": 229.56,
+    "serial_system_seconds": 105.25,
+    "serial_exit_codes": [0, 0, 0, 0, 0],
+    "concurrent_elapsed_seconds": 147.51,
+    "concurrent_user_seconds": 335.44,
+    "concurrent_system_seconds": 155.84,
+    "concurrent_exit_codes": [0, 0, 0, 0, 0],
+    "elapsed_reduction_percent": 33.7629,
+    "verdict": "pass"
+  },
+  "candidate_equivalence": {
+    "baseline_measurement_sha": "58ae07c581374c7cc29fee87e64b9f0816f70edf",
+    "candidate_sha": "ac402da87f68931c4d5a44e37f73a728a797a5c9",
+    "selected_group_behavior_changed": false,
+    "intervening_scheduler_change": "critical-cli and full-contract became exclusive, queued qualification work now stops after failure, and provider failures are selected by declared index; the measured successful group contains neither exclusive scenario and exercises no failure path",
+    "confirmation": "the final exact-candidate pair reran all five measured commands with zero exit codes and exceeded the same threshold"
+  },
+  "critical_path_control": {
+    "scenario_ids": [
+      "qualification-contract",
+      "critical-cli",
+      "typecheck",
+      "workflow-coverage"
+    ],
+    "serial_elapsed_seconds": 80.44,
+    "concurrent_elapsed_seconds": 81.69,
+    "elapsed_reduction_percent": -1.5539,
+    "all_groups_passed": true,
+    "interpretation": "Concurrency does not improve a subset dominated by one critical scenario; critical-cli and full-contract are therefore exclusive scheduler barriers."
+  },
+  "excluded_diagnostics": [
+    {
+      "reason": "supervisor-frontends is not valid as a partial standalone pilot and produced a blocking audit verdict",
+      "retained": false
+    },
+    {
+      "reason": "stateful fixtures deleted the outer qualification report directory during one nested pilot, so that wrapper-report elapsed data was not used",
+      "retained": false
+    },
+    {
+      "reason": "exploratory concurrency=2 and concurrency=4 runs containing critical-cli showed CPU contention and were used to choose exclusive critical-path barriers, not to claim speedup",
+      "retained": false
+    }
+  ],
+  "verdict": {
+    "status": "pass",
+    "summary": "Bounded concurrency reduced median elapsed time by 37.74 percent for the paired baseline, and the final exact-candidate confirmation reduced elapsed time by 33.76 percent with unchanged zero exit codes.",
+    "limits": [
+      "No speedup is claimed for critical-path-dominated groups; critical-cli, full-contract, and timed latency scenarios are exclusive.",
+      "Provider throughput remains bounded at three jobs and may be reduced if the release provider throttles.",
+      "The v0.7.5 release gate still must run the full 50-run/55-episode provider matrix on the exact integrated candidate SHA."
+    ]
+  },
+  "evidence": {
+    "benchmark.baseline": "baseline_runs where mode is serial",
+    "benchmark.method": "method, environment, and candidate_equivalence",
+    "benchmark.runs": "baseline_runs, exact_candidate_confirmation, and critical_path_control",
+    "benchmark.threshold": "threshold",
+    "benchmark.comparison": "baseline_comparison and exact_candidate_confirmation",
+    "benchmark.verdict": "verdict",
+    "benchmark.quality": "pending fresh evaluator review",
+    "benchmark.commit": "ac402da87f68931c4d5a44e37f73a728a797a5c9"
+  }
+}

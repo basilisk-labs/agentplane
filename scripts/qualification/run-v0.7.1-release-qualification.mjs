@@ -1,4 +1,4 @@
-import { spawnSync } from "node:child_process";
+import { execFile, spawnSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -35,6 +35,16 @@ const defaultProviderBaselineEvidencePath = path.join(
   "baselines",
   "agent-efficiency-v0.7-beta1-candidate.json",
 );
+const DEFAULT_QUALIFICATION_CONCURRENCY = 4;
+const DEFAULT_PROVIDER_CONCURRENCY = 3;
+const MAX_CHILD_OUTPUT_BYTES = 128 * 1024 * 1024;
+const EXCLUSIVE_QUALIFICATION_SCENARIO_IDS = new Set([
+  "cli-latency",
+  "critical-cli",
+  "full-contract",
+  "matched-cli-latency",
+  "supervisor-latency",
+]);
 
 export const QUALIFICATION_CODEX_CLI_VERSION = "0.146.0-alpha.3.1";
 
@@ -50,6 +60,8 @@ function helpText() {
     "  --mode <audit|gate>       Default: audit.",
     "  --profile <core|full>     Default: full. Gate requires full.",
     "  --provider                Run the bounded 50-run/55-episode provider scenario.",
+    `  --concurrency <count>     Independent jobs; timing and critical gates stay exclusive. Default: ${DEFAULT_QUALIFICATION_CONCURRENCY}.`,
+    `  --provider-concurrency <count>  Separate limit for isolated provider replay jobs. Default: ${DEFAULT_PROVIDER_CONCURRENCY}.`,
     "  --provider-evidence-subject <sha>  Reuse immutable provider evidence only when every",
     "                              intervening change is explicitly provider-runtime-equivalent.",
     "  --subject <sha>           Exact candidate commit. Defaults to current HEAD in audit mode.",
@@ -98,6 +110,8 @@ function parseArgs(argv) {
       "codex-version",
       "manifest",
       "out-dir",
+      "concurrency",
+      "provider-concurrency",
     ],
     booleanFlags: ["provider", "dry-run", "help"],
     aliases: { h: "help" },
@@ -129,8 +143,17 @@ function parseArgs(argv) {
   if (!/^[a-f0-9]{40}$/u.test(providerEvidenceSubject)) {
     throw new Error("--provider-evidence-subject must be a full 40-character Git commit SHA");
   }
+  const concurrency = parseConcurrency(
+    flags.concurrency ?? String(DEFAULT_QUALIFICATION_CONCURRENCY),
+    "--concurrency",
+  );
+  const providerConcurrency = parseConcurrency(
+    flags["provider-concurrency"] ?? String(DEFAULT_PROVIDER_CONCURRENCY),
+    "--provider-concurrency",
+  );
   return {
     codexVersion: flags["codex-version"] ?? "",
+    concurrency,
     dryRun: flags["dry-run"] === true,
     help: flags.help === true,
     manifestPath: path.resolve(flags.manifest ?? defaultManifestPath),
@@ -140,9 +163,18 @@ function parseArgs(argv) {
     providerEvidenceSubject,
     profile,
     provider: flags.provider === true,
+    providerConcurrency,
     scenarioIds,
     subject,
   };
+}
+
+function parseConcurrency(value, flag) {
+  const concurrency = Number.parseInt(value, 10);
+  if (!/^\d+$/u.test(value) || !Number.isSafeInteger(concurrency) || concurrency < 1) {
+    throw new Error(`${flag} must be an integer >= 1`);
+  }
+  return concurrency;
 }
 
 function assertOutputInsideRepository(runRepoRoot, outputDirectory) {
@@ -181,21 +213,44 @@ function outputTail(value, maximum = 4000) {
   return value.length <= maximum ? value : value.slice(-maximum);
 }
 
-function runScenario(scenario, variables, outputDirectory) {
+function executeFile(command, args, options) {
+  return new Promise((resolve) => {
+    execFile(
+      command,
+      args,
+      {
+        ...options,
+        encoding: "utf8",
+        killSignal: "SIGKILL",
+        maxBuffer: MAX_CHILD_OUTPUT_BYTES,
+      },
+      (error, stdout, stderr) => {
+        resolve({
+          error,
+          signal: error?.signal ?? null,
+          status: error == null ? 0 : Number.isInteger(error.code) ? error.code : null,
+          stderr: stderr ?? "",
+          stdout: stdout ?? "",
+          timedOut: error?.killed === true && error.signal === "SIGKILL",
+        });
+      },
+    );
+  });
+}
+
+async function runScenario(scenario, variables, outputDirectory) {
   const command = substituteQualificationCommand(scenario.command, variables);
   const logPath = path.join(outputDirectory, "logs", `${scenario.id}.log`);
   mkdirSync(path.dirname(logPath), { recursive: true });
   const started = performance.now();
   process.stdout.write(`qualification: ${scenario.id} (${scenario.tier})\n`);
-  const result = spawnSync(command[0], command.slice(1), {
+  const result = await executeFile(command[0], command.slice(1), {
     cwd: repoRoot,
-    encoding: "utf8",
     env: {
       ...process.env,
       AGENTPLANE_NO_UPDATE_CHECK: "1",
       AGENTPLANE_QUALIFICATION_EVIDENCE_DIR: outputDirectory,
     },
-    maxBuffer: 128 * 1024 * 1024,
     timeout: scenario.timeout_ms,
   });
   const durationMs = Math.round(performance.now() - started);
@@ -212,7 +267,7 @@ function runScenario(scenario, variables, outputDirectory) {
     ].join("\n"),
     "utf8",
   );
-  const timedOut = result.error?.code === "ETIMEDOUT";
+  const timedOut = result.timedOut;
   const passed = !result.error && result.status === 0 && !result.signal;
   process.stdout.write(
     `qualification: ${scenario.id} ${passed ? "passed" : "failed"} in ${durationMs}ms\n`,
@@ -228,6 +283,99 @@ function runScenario(scenario, variables, outputDirectory) {
     log_path: logPath,
     output_tail: outputTail(combined),
   };
+}
+
+function createBoundedExecutor(concurrency) {
+  const pending = [];
+  let active = 0;
+  let failure = null;
+
+  function stop(error) {
+    if (failure !== null) return;
+    failure = error;
+    for (const entry of pending.splice(0)) entry.reject(error);
+  }
+
+  function drain() {
+    while (failure === null && active < concurrency && pending.length > 0) {
+      const entry = pending.shift();
+      active += 1;
+      Promise.resolve()
+        .then(entry.work)
+        .then(
+          (value) => {
+            active -= 1;
+            entry.resolve(value);
+            drain();
+            return null;
+          },
+          (error) => {
+            active -= 1;
+            entry.reject(error);
+            stop(error);
+            return null;
+          },
+        )
+        .catch(entry.reject);
+    }
+  }
+
+  return (work) =>
+    new Promise((resolve, reject) => {
+      if (failure !== null) {
+        reject(failure);
+        return;
+      }
+      pending.push({ reject, resolve, work });
+      drain();
+    });
+}
+
+export async function runQualificationScenarios(
+  scenarios,
+  variables,
+  outputDirectory,
+  options = {},
+) {
+  const concurrency = options.concurrency ?? DEFAULT_QUALIFICATION_CONCURRENCY;
+  if (!Number.isSafeInteger(concurrency) || concurrency < 1) {
+    throw new Error("qualification concurrency must be an integer >= 1");
+  }
+  const execute = createBoundedExecutor(concurrency);
+  const scenarioRunner = options.scenarioRunner ?? runScenario;
+  const promisesById = new Map();
+  let previousExclusivePromise = null;
+  for (const scenario of scenarios) {
+    const dependencyIds = new Set(scenario.depends_on);
+    if (scenario.tier === "provider") {
+      for (const priorScenarioId of promisesById.keys()) dependencyIds.add(priorScenarioId);
+    }
+    const dependencies = new Set(
+      [...dependencyIds].map((dependency) => {
+        const promise = promisesById.get(dependency);
+        if (!promise) {
+          throw new Error(`qualification scenario ${scenario.id} has an unordered dependency`);
+        }
+        return promise;
+      }),
+    );
+    if (previousExclusivePromise) dependencies.add(previousExclusivePromise);
+    const exclusive = EXCLUSIVE_QUALIFICATION_SCENARIO_IDS.has(scenario.id);
+    if (exclusive) {
+      for (const priorPromise of promisesById.values()) dependencies.add(priorPromise);
+    }
+    const promise = Promise.all(dependencies).then(() =>
+      execute(() => scenarioRunner(scenario, variables, outputDirectory)),
+    );
+    promisesById.set(scenario.id, promise);
+    if (exclusive) previousExclusivePromise = promise;
+  }
+  const settled = await Promise.allSettled(
+    scenarios.map((scenario) => promisesById.get(scenario.id)),
+  );
+  const firstFailure = settled.find((result) => result.status === "rejected");
+  if (firstFailure) throw firstFailure.reason;
+  return settled.map((result) => result.value);
 }
 
 function printDryRun(scenarios, variables) {
@@ -292,6 +440,7 @@ async function main(argv = process.argv.slice(2)) {
     evidenceDir: relativeOutputDirectory,
     providerBaselineEvidence: path.relative(repoRoot, options.providerBaselineEvidencePath),
     providerAction: options.providerEvidenceSubject === options.subject ? "--capture" : "--check",
+    providerConcurrency: String(options.providerConcurrency),
     providerSubject: options.providerEvidenceSubject,
     repoRoot: ".",
     subject: options.subject,
@@ -305,7 +454,9 @@ async function main(argv = process.argv.slice(2)) {
 
   mkdirSync(outputDirectory, { recursive: true });
   const startedAt = new Date().toISOString();
-  const results = scenarios.map((scenario) => runScenario(scenario, variables, outputDirectory));
+  const results = await runQualificationScenarios(scenarios, variables, outputDirectory, {
+    concurrency: options.concurrency,
+  });
   const finishedAt = new Date().toISOString();
   const report = buildQualificationReport({
     manifest,

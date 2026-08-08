@@ -38,12 +38,24 @@ function canonical(value: unknown): string {
 
 async function loadCandidateFixture() {
   const candidate = (await import(CANDIDATE_URL)) as {
+    assertCandidateCaptureConcurrency(concurrency: number): number;
     assertCandidateCaptureMode(options: Json): void;
     buildCandidateMeasurement(input: Json): Json;
     buildCandidateMeasurementFromPinnedBaseline(input: Json): Json;
-    captureCandidate(options: Json): Json;
+    captureCandidate(options: Json): Promise<Json>;
     createCandidateHarnessManifest(driver: Json, dependency: Json): Json;
     readPinnedQualificationBaseline(input: Json): Json;
+    runCandidateDriverProcess(
+      command: string,
+      args: string[],
+      options: { cwd: string; env: NodeJS.ProcessEnv; timeout: number },
+      label: string,
+    ): Promise<void>;
+    runCandidateCaptureJobs<T, R>(
+      jobs: T[],
+      concurrency: number,
+      worker: (job: T, index: number) => Promise<R>,
+    ): Promise<R[]>;
     validateCandidatePilotCapture(input: Json): Json;
   };
   const replay = (await import(REPLAY_URL)) as {
@@ -108,6 +120,86 @@ async function loadCandidateFixture() {
 }
 
 describeCritical("critical: RF-04 candidate measurement", () => {
+  it("bounds candidate capture concurrency and preserves declared result order", async () => {
+    const fixture = await loadCandidateFixture();
+    const jobs = Array.from({ length: 8 }, (_unused, index) => index);
+    let active = 0;
+    let maximumActive = 0;
+    const results = await fixture.candidate.runCandidateCaptureJobs(jobs, 3, async (job) => {
+      active += 1;
+      maximumActive = Math.max(maximumActive, active);
+      await new Promise((resolve) => setTimeout(resolve, job % 2 === 0 ? 8 : 1));
+      active -= 1;
+      return `run-${job}`;
+    });
+
+    expect(maximumActive).toBe(3);
+    expect(results).toEqual(jobs.map((job) => `run-${job}`));
+    expect(() => fixture.candidate.assertCandidateCaptureConcurrency(0)).toThrow(
+      "--concurrency must be an integer >= 1",
+    );
+    expect(() => fixture.candidate.assertCandidateCaptureConcurrency(Number.NaN)).toThrow(
+      "--concurrency must be an integer >= 1",
+    );
+  });
+
+  it("stops assigning queued provider jobs after the first failure", async () => {
+    const fixture = await loadCandidateFixture();
+    const started: string[] = [];
+    let activeSettled = false;
+    await expect(
+      fixture.candidate.runCandidateCaptureJobs(["fail", "active", "queued"], 2, async (job) => {
+        started.push(job);
+        if (job === "fail") throw new Error("provider failed");
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        activeSettled = true;
+        return job;
+      }),
+    ).rejects.toThrow("provider failed");
+    expect(started).toEqual(["fail", "active"]);
+    expect(activeSettled).toBe(true);
+  });
+
+  it("selects the lowest declared failing provider job regardless of completion order", async () => {
+    const fixture = await loadCandidateFixture();
+
+    for (const delays of [
+      new Map([
+        ["first", 10],
+        ["second", 1],
+      ]),
+      new Map([
+        ["first", 1],
+        ["second", 10],
+      ]),
+    ]) {
+      const started: string[] = [];
+      await expect(
+        fixture.candidate.runCandidateCaptureJobs(["first", "second", "queued"], 2, async (job) => {
+          started.push(job);
+          await new Promise((resolve) => setTimeout(resolve, delays.get(job) ?? 0));
+          throw new Error(`${job} provider failed`);
+        }),
+      ).rejects.toThrow("first provider failed");
+      expect(started).toEqual(["first", "second"]);
+    }
+  });
+
+  it("force-kills a provider driver that ignores SIGTERM at its fixed timeout", async () => {
+    const fixture = await loadCandidateFixture();
+    const startedAt = Date.now();
+
+    await expect(
+      fixture.candidate.runCandidateDriverProcess(
+        process.execPath,
+        ["-e", "process.on('SIGTERM', () => {}); setInterval(() => {}, 1_000);"],
+        { cwd: REPO_ROOT, env: process.env, timeout: 100 },
+        "timeout fixture",
+      ),
+    ).rejects.toThrow("timeout fixture failed to start or exceeded its fixed timeout");
+    expect(Date.now() - startedAt).toBeLessThan(3000);
+  });
+
   it("validates one exact candidate pilot envelope and returns bounded telemetry", async () => {
     const fixture = await loadCandidateFixture();
     const envelope = fixture.envelopes.find(
@@ -215,7 +307,7 @@ describeCritical("critical: RF-04 candidate measurement", () => {
       'process.stderr.write("RF04_DRIVER_ERROR:CODEX_EXIT\\n");\nprocess.exitCode = 1;\n',
     );
     try {
-      expect(() =>
+      await expect(
         fixture.candidate.captureCandidate({
           check: false,
           codexCliVersion: "0.146.0-alpha.3.1",
@@ -227,7 +319,7 @@ describeCritical("critical: RF-04 candidate measurement", () => {
           runtimeBridgeVersion: null,
           subject,
         }),
-      ).toThrow("direct/run-01 candidate driver failed with exit 1");
+      ).rejects.toThrow("direct/run-01 candidate driver failed with exit 1");
     } finally {
       rmSync(driverPath, { force: true });
       rmSync(outputRoot, { force: true, recursive: true });

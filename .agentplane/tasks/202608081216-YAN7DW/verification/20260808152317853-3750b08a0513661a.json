@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run qualification:check\nResult: pass\nEvidence: .agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json\nScope: implementation ac402da87f6841585852e11603840d702918da09; frozen SHA-256 0873c2610baee02391a7adbd777f966b51e1a4f0b00134cc3d34315a65ab85fc; exact serial 222.70s, concurrent 147.51s, reduction 33.7629%, ten exit codes zero.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: .agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json\nScope: 12/12 critical CLI chunks passed; multi-failure provider selection covered in reversed timing orders.\n\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json\nScope: final implementation ac402da87.\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: .agentplane/cache/202608081216-YAN7DW/parallelization-benchmark.v1.json\nScope: contracts, lint, architecture, clone, knip, and coverage thresholds passed on final implementation.",
+  "digest": "sha256:3750b08a0513661acfb081fbceaefeac50e86a0e488454348e0bfaa7aaa2fbc3",
+  "implementation_sha": "ac402da87f68931c4d5a44e37f73a728a797a5c9",
+  "kind": "task_verification_record",
+  "note": "Verified deterministic provider failure evidence and final-SHA release qualification acceleration on ac402da87.",
+  "recorded_at": "2026-08-08T15:23:17.853Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bun run qualification:check`. Expected: qualification contract tests pass and the full gate command resolves every required variable in dry-run mode.\n2. Run `bun run test:critical`. Expected: the critical CLI suite passes, including candidate capture concurrency, stop-on-first-failure, evidence cleanup, and existing RF-04 contracts.\n3. Run `bun run format:check`. Expected: formatting passes.\n4. Run `bun run ci:contract`. Expected: repository contracts, lint, architecture, clone, knip, and coverage thresholds pass.\n5. The subsequent v0.7.5 release gate must execute the full 50-run/55-episode provider matrix on the exact integrated candidate SHA; no provider evidence from the pre-change SHA may be reused.",
+  "scope_digest": "sha256:1cae1f99dc9a9a5efbce86fcedd6b0b11fc7737d54646d4fdec13617a8ab9fd5",
+  "task_id": "202608081216-YAN7DW",
+  "verification_command": "agentplane verify 202608081216-YAN7DW --ok --by TESTER",
+  "verifier": "TESTER"
+}

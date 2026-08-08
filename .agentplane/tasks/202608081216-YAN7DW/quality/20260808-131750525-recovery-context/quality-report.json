@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608081216-YAN7DW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-08T13:18:29.945Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 6 typed finding(s).",
+  "evaluated_sha": "a458a3689d31c1fd8109711dfa2980dd9ff910fe",
+  "blueprint_digest": "bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1",
+  "findings": [
+    "Independent local scenarios run under a bounded scheduler while declared dependency barriers and deterministic report ordering remain enforced by contract tests.",
+    "Provider replay jobs use isolated repositories, bounded concurrency, deterministic evidence ordering, stop assigning after the first failure, and SIGKILL-backed fixed timeouts.",
+    "The critical CLI harness no longer inherits controller-only agent rendering markers, eliminating the verification-mode leak observed under task advance.",
+    "Supervisor-owned verification passed qualification:check, test:critical, format:check, and ci:contract for implementation SHA a458a3689d31c1fd8109711dfa2980dd9ff910fe.",
+    "Residual risk: Provider rate limits may reduce realized speedup; the release gate must measure this without weakening pass thresholds.",
+    "Residual risk: No provider evidence from a pre-integration SHA may be reused."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/0d768cb34a12f24bd63e8be3a9455b6bdb1d5a1a389e9dbdd02101f333967aac.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

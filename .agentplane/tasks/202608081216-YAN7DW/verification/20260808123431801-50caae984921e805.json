@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run ci:contract\nResult: pass\nEvidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608081216-YAN7DW declared verification\n\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608081216-YAN7DW declared verification",
+  "digest": "sha256:50caae984921e805ddfc0164df83b5add0612803a549d49b21b743961b62a46d",
+  "implementation_sha": "44a20df62970908b1d043e9c8bdd9da7ded611c3",
+  "kind": "task_verification_record",
+  "note": "Rework: Unsupported declared check: bunx vitest run scripts/bench/capture-agent-efficiency-candidate.test.mjs",
+  "recorded_at": "2026-08-08T12:34:31.801Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `node --test scripts/qualification/release-qualification.test.mjs`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bunx vitest run scripts/bench/capture-agent-efficiency-candidate.test.mjs`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run format:check`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `bun run ci:contract`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:1c6dd78aa74d21c9fea2d5488d2cb1746ff3350caa20674cfc62d87e84021bb7",
+  "task_id": "202608081216-YAN7DW",
+  "verification_command": "agentplane verify 202608081216-YAN7DW --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "202608081216-YAN7DW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-08T13:49:21.107Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "3b41dbe37c4885e0cb94ab4d7e2d58f53619353b",
+  "blueprint_digest": "bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1",
+  "findings": [
+    "The frozen evidence does not establish the required timing baseline or provide a serial-versus-concurrent pilot comparison, so the claimed reduction in patch-release elapsed time is unproven.",
+    "The added qualification-runner tests cover concurrency, dependency barriers, exclusivity, and result ordering, but do not exercise scenario failure propagation or prove that dependent/provider work remains unstarted after a prerequisite failure."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608081216-YAN7DW/README.md",
+    ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/66fa4c234b9ab066149f87bbec5b818fe331d23c90ef191589289397e54ec486.json",
+    ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/ab5d6f84e22cf4ec514959608ebfa23ea7cbc940b25d2bfdb2c1b3e162a278ea.json",
+    ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/617dfb9f0c1bbfe25fcdbf3e1cbd0bbb4dff3af3cfbbda231b1ea932fa86f01c.patch"
+  ],
+  "missing_tests": [
+    "A qualification-runner regression test where a prerequisite scenario rejects and assertions prove rejection propagation, no dependent/provider execution, and fail-closed behavior while already-running independent work settles safely.",
+    "A deterministic serial-versus-concurrent pilot benchmark using the same manifest, candidate SHA, environment, run count, and declared noise threshold, with raw elapsed-time results retained.",
+    "A provider-capture failure test with multiple concurrently active jobs that verifies deterministic cleanup/failure evidence and confirms no queued jobs start after the first observed failure."
+  ],
+  "hidden_assumptions": [
+    "Default concurrency values of four qualification jobs and three provider jobs improve elapsed time in the release environment without resource contention or provider throttling erasing the benefit.",
+    "Existing passing checks are treated as sufficient performance evidence even though they validate correctness rather than the required baseline and before/after comparison.",
+    "Concurrent failure completion order does not affect externally observed diagnostics or cleanup artifacts beyond the explicitly sorted completed_runs field."
+  ],
+  "residual_risks": [
+    "Record the blueprint-required baseline, method, raw serial and concurrent pilot runs, threshold, comparison, and performance verdict on the evaluated SHA; add focused qualification failure-propagation coverage and deterministic concurrent provider-failure evidence, then rerun the four declared checks."
+  ]
+}

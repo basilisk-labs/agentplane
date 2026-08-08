@@ -37,6 +37,7 @@ import {
   preflightQualificationProviderRuntime,
   QUALIFICATION_CODEX_CLI_VERSION,
   readQualificationRunSubjectIdentity,
+  runQualificationScenarios,
 } from "./run-v0.7.1-release-qualification.mjs";
 import {
   CODEX_REPLAY_BINARY_ENV,
@@ -152,6 +153,143 @@ describe("v0.7.1 release qualification contract", () => {
       packageJson.scripts["e2e:v0.7.1:gate"],
       `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version ${QUALIFICATION_CODEX_CLI_VERSION}`,
     );
+  });
+
+  it("runs independent scenarios concurrently while preserving dependency barriers and report order", async () => {
+    const scenarios = [
+      { id: "slow", tier: "core" },
+      { id: "fast", tier: "core" },
+      { id: "dependent", tier: "full", depends_on: ["slow"] },
+      { id: "provider", tier: "provider" },
+    ];
+    const events = [];
+    let active = 0;
+    let maximumActive = 0;
+    const delays = { dependent: 1, fast: 5, provider: 1, slow: 20 };
+    const results = await runQualificationScenarios(scenarios, {}, "/unused", {
+      concurrency: 2,
+      async scenarioRunner(scenario) {
+        active += 1;
+        maximumActive = Math.max(maximumActive, active);
+        events.push(`start:${scenario.id}`);
+        await new Promise((resolve) => setTimeout(resolve, delays[scenario.id]));
+        events.push(`finish:${scenario.id}`);
+        active -= 1;
+        return scenario.id;
+      },
+    });
+
+    assert.equal(maximumActive, 2);
+    assert.deepEqual(results, ["slow", "fast", "dependent", "provider"]);
+    assert.ok(events.indexOf("finish:slow") < events.indexOf("start:dependent"));
+    assert.ok(events.indexOf("finish:fast") < events.indexOf("start:provider"));
+    assert.ok(events.indexOf("finish:dependent") < events.indexOf("start:provider"));
+    await assert.rejects(
+      () => runQualificationScenarios(scenarios, {}, "/unused", { concurrency: 0 }),
+      /qualification concurrency must be an integer >= 1/u,
+    );
+  });
+
+  it("runs latency measurements exclusively without disabling other concurrency", async () => {
+    const scenarios = [
+      { id: "slow", tier: "core", depends_on: [] },
+      { id: "fast", tier: "core", depends_on: [] },
+      { id: "matched-cli-latency", tier: "full", depends_on: [] },
+      { id: "after-a", tier: "full", depends_on: [] },
+      { id: "after-b", tier: "full", depends_on: [] },
+    ];
+    const events = [];
+    let active = 0;
+    let maximumActive = 0;
+    const delays = { "after-a": 5, "after-b": 5, fast: 5, "matched-cli-latency": 5, slow: 20 };
+    const results = await runQualificationScenarios(scenarios, {}, "/unused", {
+      concurrency: 2,
+      async scenarioRunner(scenario) {
+        active += 1;
+        maximumActive = Math.max(maximumActive, active);
+        events.push(`start:${scenario.id}:${active}`);
+        await new Promise((resolve) => setTimeout(resolve, delays[scenario.id]));
+        events.push(`finish:${scenario.id}:${active}`);
+        active -= 1;
+        return scenario.id;
+      },
+    });
+
+    assert.equal(maximumActive, 2);
+    assert.deepEqual(
+      results,
+      scenarios.map((scenario) => scenario.id),
+    );
+    assert.ok(events.indexOf("finish:slow:1") < events.indexOf("start:matched-cli-latency:1"));
+    assert.ok(events.indexOf("finish:fast:2") < events.indexOf("start:matched-cli-latency:1"));
+    assert.ok(events.indexOf("finish:matched-cli-latency:1") < events.indexOf("start:after-a:1"));
+    assert.ok(events.indexOf("finish:matched-cli-latency:1") < events.indexOf("start:after-b:2"));
+  });
+
+  it("does not overlap internally parallel suites with other qualification work", async () => {
+    const scenarios = [
+      { id: "before-a", tier: "core", depends_on: [] },
+      { id: "before-b", tier: "core", depends_on: [] },
+      { id: "critical-cli", tier: "full", depends_on: [] },
+      { id: "after-a", tier: "full", depends_on: [] },
+      { id: "after-b", tier: "full", depends_on: [] },
+    ];
+    const events = [];
+    let active = 0;
+    const results = await runQualificationScenarios(scenarios, {}, "/unused", {
+      concurrency: 2,
+      async scenarioRunner(scenario) {
+        active += 1;
+        events.push(`start:${scenario.id}:${active}`);
+        await new Promise((resolve) => setTimeout(resolve, scenario.id === "before-a" ? 20 : 5));
+        events.push(`finish:${scenario.id}:${active}`);
+        active -= 1;
+        return scenario.id;
+      },
+    });
+
+    assert.deepEqual(
+      results,
+      scenarios.map((scenario) => scenario.id),
+    );
+    assert.ok(events.indexOf("finish:before-a:1") < events.indexOf("start:critical-cli:1"));
+    assert.ok(events.indexOf("finish:before-b:2") < events.indexOf("start:critical-cli:1"));
+    assert.ok(events.indexOf("finish:critical-cli:1") < events.indexOf("start:after-a:1"));
+    assert.ok(events.indexOf("finish:critical-cli:1") < events.indexOf("start:after-b:2"));
+  });
+
+  it("stops queued work after failure and settles active work without starting dependents", async () => {
+    const scenarios = [
+      { id: "prerequisite", tier: "core", depends_on: [] },
+      { id: "active", tier: "core", depends_on: [] },
+      { id: "queued-a", tier: "core", depends_on: [] },
+      { id: "queued-b", tier: "core", depends_on: [] },
+      { id: "dependent", tier: "full", depends_on: ["prerequisite"] },
+      { id: "provider", tier: "provider", depends_on: [] },
+    ];
+    const started = [];
+    let activeSettled = false;
+
+    await assert.rejects(
+      () =>
+        runQualificationScenarios(scenarios, {}, "/unused", {
+          concurrency: 2,
+          async scenarioRunner(scenario) {
+            started.push(scenario.id);
+            if (scenario.id === "prerequisite") {
+              await new Promise((resolve) => setTimeout(resolve, 5));
+              throw new Error("qualification infrastructure failed");
+            }
+            await new Promise((resolve) => setTimeout(resolve, 20));
+            activeSettled = true;
+            return scenario.id;
+          },
+        }),
+      /qualification infrastructure failed/u,
+    );
+
+    assert.equal(activeSettled, true);
+    assert.deepEqual(started, ["prerequisite", "active"]);
   });
 
   it("excludes disposable matched-latency fixtures from host indexing", () => {

@@ -414,6 +414,8 @@
         "{codexVersion}",
         "--runs",
         "5",
+        "--concurrency",
+        "{providerConcurrency}",
         "--baseline-evidence",
         "{providerBaselineEvidence}",
         "{providerAction}"
