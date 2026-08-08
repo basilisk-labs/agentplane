@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "Frozen evidence proves the evaluated implementation and qualified subject are equivalent outside task-local metadata, and the required release, negative-path, recovery, concurrency, compatibility, and efficiency checks passed under the declared gating policy.",
+      "broken_invariant": "No invariant is broken; the prior evidence-binding and coverage gaps are resolved.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/cache/release-0.7.5/subject-equivalence.json",
+          "sha256": "sha256:cc749d16d0db6a14f21dd9a91057542439c0f6c437f25c8d278eb349c599d48a",
+          "section": "proof and conclusion"
+        },
+        {
+          "path": ".agentplane/cache/release-0.7.5/qualification-report.json",
+          "sha256": "sha256:3e239386ed8a9e6bf9415251df8ad21ad9893ef0df3ea1025cf77938d6b586ea",
+          "section": "summary, coverage, and scenarios"
+        },
+        {
+          "path": ".agentplane/cache/release-0.7.5/ci-local-full.log",
+          "sha256": "sha256:d22dede22371fa720433c5475a52d2e11bc9bcf0200d9f3cdd140d7cb2760387",
+          "section": "final checks and exit marker"
+        },
+        {
+          "path": ".agentplane/cache/release-0.7.5/ci-release-extras.log",
+          "sha256": "sha256:b541e15e6a3b22583964549c09412182484b7f775288795c24f466e7b20aa43f",
+          "section": "release suites and exit marker"
+        },
+        {
+          "path": ".agentplane/cache/release-0.7.5/full-contract.log",
+          "sha256": "sha256:75cdcf5c60d2ebbe3ab846aa394a22fbc2faa5a39b3ba9f43fe21e9891086f4e",
+          "section": "compatibility and replay checks"
+        },
+        {
+          "path": ".agentplane/cache/release-0.7.5/efficiency-evidence.json",
+          "sha256": "sha256:addc59bec4134b1d97186b5ceb3d3d199247605361818344aee12ea3e9aae01d",
+          "section": "coverage, outcomes, failures, and verdict"
+        },
+        {
+          "path": ".agentplane/tasks/202608061646-BYY8A1/verification/20260808203451043-0a791fdd695d3517.json",
+          "sha256": "sha256:d1863a9e198363eaf1113c6c690a3bc1893de92f643131effabdddd53039730e",
+          "section": "details and implementation_sha"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
