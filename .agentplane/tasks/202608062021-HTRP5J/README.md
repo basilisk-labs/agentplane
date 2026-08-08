@@ -4,7 +4,7 @@ title: "Classify compatibility adapters for bounded 0.8 retirement"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -30,11 +30,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-06T22:10:57.205Z"
+  state: "ok"
+  updated_at: "2026-08-08T00:20:54.918Z"
   updated_by: "TESTER"
-  note: "Legacy manifest schema v2, doctor report, targeted tests, typecheck, docs reference, lint, and runtime JSON inspection pass. Critical suite remains blocked by the shared compatibility-contract ratchet owned by 202608061850-BZT3D9; rebase after that foundation merges and rerun all Verify Steps."
-  attempts: 1
+  note: "Bounded compatibility-retirement policy, doctor reporting, generated docs, type safety, critical behavior, and repository contracts pass on current main."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -84,8 +84,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Rebased the bounded compatibility-retirement implementation onto current main after the shared compatibility foundation merged; all declared verification steps now pass."
+  -
+    type: "verify"
+    at: "2026-08-08T00:20:54.918Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Bounded compatibility-retirement policy, doctor reporting, generated docs, type safety, critical behavior, and repository contracts pass on current main."
 doc_version: 3
-doc_updated_at: "2026-08-08T00:20:13.853Z"
+doc_updated_at: "2026-08-08T00:20:56.198Z"
 doc_updated_by: "CODER"
 description: "Complete the compatibility retirement manifest so every adapter has an explicit removal version, support-until or zero-usage condition, archive conversion policy, or permanent historical-reader designation; keep historical readers out of normal execution paths where already separable, and verify doctor legacy reports the classification without deleting safety or recovery contracts in 0.7.5."
 sections:
@@ -128,6 +134,63 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608062021-HTRP5J
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T00:20:54.918Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Bounded compatibility-retirement policy, doctor reporting, generated docs, type safety, critical behavior, and repository contracts pass on current main.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T00:20:13.853Z, excerpt_hash=sha256:0808c51040237f79c1a808bd3980ac46b01d0d6d371abd836fbb241ce031c10f
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/doctor/legacy-probes.test.ts packages/agentplane/src/commands/doctor-legacy.spec.ts
+    Result: PASS — 1 test file, 4 tests.
+    Evidence: Vitest completed with exit code 0 and validated manifest policy classification plus doctor legacy reporting.
+    Scope: Targeted HTRP5J compatibility behavior.
+
+    Command: bun run test:critical
+    Result: PASS — all 12 critical-cli chunks, 84 tests.
+    Evidence: Every chunk completed successfully after rebasing onto the merged compatibility foundation.
+    Scope: Critical CLI and trust-boundary regression coverage.
+
+    Command: bun run typecheck
+    Result: PASS.
+    Evidence: TypeScript build completed with exit code 0.
+    Scope: Workspace type safety.
+
+    Command: bun run docs:cli:check
+    Result: PASS.
+    Evidence: Generated CLI reference is up to date.
+    Scope: User-facing command documentation.
+
+    Command: bun run ci:contract
+    Result: PASS.
+    Evidence: Formatting, schemas, policy routing, compatibility ratchet, lifecycle invariants, lint, architecture, clone, Knip, and coverage threshold guards all completed with exit code 0.
+    Scope: Repository-wide contract evidence.
+
+    Residual risk: None identified in the approved HTRP5J scope.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-HTRP5J-classify-compatibility-adapters-for-bounded-0-8/.agentplane/tasks/202608062021-HTRP5J/blueprint/resolved-snapshot.json
+    - old_digest: e17243ad8f8d431cb3e61b5bb0497de50b17e1626e2cb2fe4f7299e20fd4c7cc
+    - current_digest: e17243ad8f8d431cb3e61b5bb0497de50b17e1626e2cb2fe4f7299e20fd4c7cc
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608062021-HTRP5J
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -197,6 +260,63 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608062021-HTRP5J
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T00:20:54.918Z — VERIFY — ok
+
+By: TESTER
+
+Note: Bounded compatibility-retirement policy, doctor reporting, generated docs, type safety, critical behavior, and repository contracts pass on current main.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T00:20:13.853Z, excerpt_hash=sha256:0808c51040237f79c1a808bd3980ac46b01d0d6d371abd836fbb241ce031c10f
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/doctor/legacy-probes.test.ts packages/agentplane/src/commands/doctor-legacy.spec.ts
+Result: PASS — 1 test file, 4 tests.
+Evidence: Vitest completed with exit code 0 and validated manifest policy classification plus doctor legacy reporting.
+Scope: Targeted HTRP5J compatibility behavior.
+
+Command: bun run test:critical
+Result: PASS — all 12 critical-cli chunks, 84 tests.
+Evidence: Every chunk completed successfully after rebasing onto the merged compatibility foundation.
+Scope: Critical CLI and trust-boundary regression coverage.
+
+Command: bun run typecheck
+Result: PASS.
+Evidence: TypeScript build completed with exit code 0.
+Scope: Workspace type safety.
+
+Command: bun run docs:cli:check
+Result: PASS.
+Evidence: Generated CLI reference is up to date.
+Scope: User-facing command documentation.
+
+Command: bun run ci:contract
+Result: PASS.
+Evidence: Formatting, schemas, policy routing, compatibility ratchet, lifecycle invariants, lint, architecture, clone, Knip, and coverage threshold guards all completed with exit code 0.
+Scope: Repository-wide contract evidence.
+
+Residual risk: None identified in the approved HTRP5J scope.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608062021-HTRP5J-classify-compatibility-adapters-for-bounded-0-8/.agentplane/tasks/202608062021-HTRP5J/blueprint/resolved-snapshot.json
+- old_digest: e17243ad8f8d431cb3e61b5bb0497de50b17e1626e2cb2fe4f7299e20fd4c7cc
+- current_digest: e17243ad8f8d431cb3e61b5bb0497de50b17e1626e2cb2fe4f7299e20fd4c7cc
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608062021-HTRP5J
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
