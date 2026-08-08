@@ -4,7 +4,7 @@ title: "Parallelize release qualification without weakening gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -39,7 +39,9 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "0af389fe8d6f8d6dfd5fcf52716cb55391157494"
+  message: "🚧 YAN7DW task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -50,6 +52,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: e98b2f655c04. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 0af389fe8d6f. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -86,8 +91,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Unsupported declared check: node --test scripts/qualification/release-qualification.test.mjs"
+  -
+    type: "status"
+    at: "2026-08-08T12:41:28.320Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 0af389fe8d6f. CLI accepted one state-bound external-agent semantic result."
+    commit: "0af389fe8d6f8d6dfd5fcf52716cb55391157494"
 doc_version: 3
-doc_updated_at: "2026-08-08T12:40:01.775Z"
+doc_updated_at: "2026-08-08T12:41:28.320Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
