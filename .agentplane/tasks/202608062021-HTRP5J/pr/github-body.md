@@ -19,8 +19,8 @@ Complete the compatibility retirement manifest so every adapter has an explicit 
 - Note:
 
 ```text
-Bounded compatibility-retirement policy, doctor reporting, generated docs, type safety, critical
-behavior, and repository contracts pass on current main.
+Doctor legacy now exposes retirement policy, scope, and removal blocker in both JSON and human
+output; all declared and repository contract checks pass.
 ```
 - Canonical workflow state lives in the task README.
 
