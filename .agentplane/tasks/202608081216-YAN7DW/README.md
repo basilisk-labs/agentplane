@@ -4,7 +4,7 @@ title: "Parallelize release qualification without weakening gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -69,7 +69,9 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "fccdf746ecb553273393ac23a096fde242dc95f0"
+  message: "🚧 YAN7DW task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -89,6 +91,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 739dd5524406. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: fccdf746ecb5. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -167,8 +172,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run test:critical"
+  -
+    type: "status"
+    at: "2026-08-08T12:59:11.775Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: fccdf746ecb5. CLI accepted one state-bound external-agent semantic result."
+    commit: "fccdf746ecb553273393ac23a096fde242dc95f0"
 doc_version: 3
-doc_updated_at: "2026-08-08T12:53:36.910Z"
+doc_updated_at: "2026-08-08T12:59:11.775Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
