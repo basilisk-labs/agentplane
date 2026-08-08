@@ -4,7 +4,7 @@ title: "Parallelize release qualification without weakening gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -32,35 +32,36 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-08T12:48:43.386Z"
+  updated_at: "2026-08-08T13:18:29.945Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 4 typed finding(s)."
-  evaluated_sha: "d76c54b377fff1a660ab4a25bcfd7a2360c68e43"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "a458a3689d31c1fd8109711dfa2980dd9ff910fe"
   blueprint_digest: "bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1"
   evidence_refs:
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-124656411-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-124656411-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/1d00208235f555a2a4db1a0d01653ea1106dff35f6a379d3fb16b07a385ee69d.md"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-124656411-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-124656411-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-124656411-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-124656411-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-131750525-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-131750525-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/472d4836986ab87ac6e000373a945b3f4bc11653eb87f02d7c5f9cc1c9b88c53.md"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-131750525-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-131750525-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-131750525-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608081216-YAN7DW/README.md"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/30712845a4f47b0ba6c4ec89a875b9e2c5cec7610044f3f23d2bf3498d693bec.patch"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/52eb1b19b9d5d193f6d0c1788123685f0307a2622be7a861597fdcc4e80ab274.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/verification/20260808124648445-bcb71e73b33daeb7.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/0d768cb34a12f24bd63e8be3a9455b6bdb1d5a1a389e9dbdd02101f333967aac.patch"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/97dd42ab147fda20c05c255bb977b4cab71c78f1d41c4bb0568c2c31c7343090.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/verification/20260808131742246-2234a7a4c88766d6.json"
     - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/66fa4c234b9ab066149f87bbec5b818fe331d23c90ef191589289397e54ec486.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Bounded qualification concurrency preserves dependency ordering and result order; provider work is separated behind a local-scenario barrier."
-    - "Provider replay jobs use distinct repositories and stop assigning queued jobs after the first observed failure without changing counts, thresholds, or retry policy."
-    - "Both asynchronous child runners disable execFile's built-in timeout and only send SIGTERM from a timer. If the child ignores SIGTERM, the callback never fires and the advertised fixed timeout is unbounded."
-    - "Residual risk: Concurrent local suites may contaminate local latency measurements even though provider measurements are isolated behind a barrier."
+    - "Independent local scenarios run under a bounded scheduler while declared dependency barriers and deterministic report ordering remain enforced by contract tests."
+    - "Provider replay jobs use isolated repositories, bounded concurrency, deterministic evidence ordering, stop assigning after the first failure, and SIGKILL-backed fixed timeouts."
+    - "The critical CLI harness no longer inherits controller-only agent rendering markers, eliminating the verification-mode leak observed under task advance."
+    - "Supervisor-owned verification passed qualification:check, test:critical, format:check, and ci:contract for implementation SHA a458a3689d31c1fd8109711dfa2980dd9ff910fe."
+    - "Residual risk: Provider rate limits may reduce realized speedup; the release gate must measure this without weakening pass thresholds."
+    - "Residual risk: No provider evidence from a pre-integration SHA may be reused."
 execution_route:
   frozen: true
   reason_codes:
