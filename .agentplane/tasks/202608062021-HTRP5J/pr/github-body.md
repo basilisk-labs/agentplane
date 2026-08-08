@@ -15,8 +15,15 @@ Complete the compatibility retirement manifest so every adapter has an explicit 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Legacy manifest schema v2, doctor report, targeted tests, typecheck, docs reference, lint, and
+runtime JSON inspection pass. Critical suite remains blocked by the shared compatibility-contract
+ratchet owned by 202608061850-BZT3D9; rebase after that foundation merges and rerun all Verify
+Steps.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
