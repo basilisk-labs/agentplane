@@ -27,8 +27,8 @@ Document the explainable auto-routing and simplified task UX, run focused and fu
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/releases/v0.7.5.md | 58 +++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 58 insertions(+)
+ docs/releases/v0.7.5.md | 59 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 59 insertions(+)
 ```
 
 </details>
