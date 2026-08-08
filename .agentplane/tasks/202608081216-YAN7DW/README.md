@@ -4,7 +4,7 @@ title: "Parallelize release qualification without weakening gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -39,7 +39,9 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "e98b2f655c04712c51f1b482106d1a045a51a55b"
+  message: "🚧 YAN7DW task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -47,6 +49,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 44a20df62970. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: e98b2f655c04. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -69,8 +74,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Unsupported declared check: bunx vitest run scripts/bench/capture-agent-efficiency-candidate.test.mjs"
+  -
+    type: "status"
+    at: "2026-08-08T12:39:17.746Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: e98b2f655c04. CLI accepted one state-bound external-agent semantic result."
+    commit: "e98b2f655c04712c51f1b482106d1a045a51a55b"
 doc_version: 3
-doc_updated_at: "2026-08-08T12:35:31.113Z"
+doc_updated_at: "2026-08-08T12:39:17.746Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
