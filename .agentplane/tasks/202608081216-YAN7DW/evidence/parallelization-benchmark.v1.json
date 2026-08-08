@@ -3,7 +3,7 @@
   "kind": "agentplane.release_qualification_parallelization_benchmark",
   "task_id": "202608081216-YAN7DW",
   "measured_at": "2026-08-08T15:15:13Z",
-  "candidate_sha": "ac402da87f6841585852e11603840d702918da09",
+  "candidate_sha": "ac402da87f68931c4d5a44e37f73a728a797a5c9",
   "baseline_measurement_sha": "58ae07c581374c7cc29fee87e64b9f0816f70edf",
   "manifest": {
     "path": "scripts/qualification/v0.7.1-release-qualification.json",
@@ -102,7 +102,7 @@
     "verdict": "pass"
   },
   "exact_candidate_confirmation": {
-    "candidate_sha": "ac402da87f6841585852e11603840d702918da09",
+    "candidate_sha": "ac402da87f68931c4d5a44e37f73a728a797a5c9",
     "serial_elapsed_seconds": 222.7,
     "serial_user_seconds": 229.56,
     "serial_system_seconds": 105.25,
@@ -116,7 +116,7 @@
   },
   "candidate_equivalence": {
     "baseline_measurement_sha": "58ae07c581374c7cc29fee87e64b9f0816f70edf",
-    "candidate_sha": "ac402da87f6841585852e11603840d702918da09",
+    "candidate_sha": "ac402da87f68931c4d5a44e37f73a728a797a5c9",
     "selected_group_behavior_changed": false,
     "intervening_scheduler_change": "critical-cli and full-contract became exclusive, queued qualification work now stops after failure, and provider failures are selected by declared index; the measured successful group contains neither exclusive scenario and exercises no failure path",
     "confirmation": "the final exact-candidate pair reran all five measured commands with zero exit codes and exceeded the same threshold"
@@ -165,6 +165,6 @@
     "benchmark.comparison": "baseline_comparison and exact_candidate_confirmation",
     "benchmark.verdict": "verdict",
     "benchmark.quality": "pending fresh evaluator review",
-    "benchmark.commit": "ac402da87f6841585852e11603840d702918da09"
+    "benchmark.commit": "ac402da87f68931c4d5a44e37f73a728a797a5c9"
   }
 }
