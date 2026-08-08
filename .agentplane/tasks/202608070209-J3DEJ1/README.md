@@ -2,10 +2,10 @@
 id: "202608070209-J3DEJ1"
 title: "Harden automatic task intake against unknown intent and stale locks"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -23,51 +23,50 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-08T03:20:42.322Z"
+  updated_at: "2026-08-08T03:24:30.679Z"
   updated_by: "TESTER"
   note: "Independent local and hosted verification passed on post-review implementation"
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-08T03:21:40.372Z"
+  updated_at: "2026-08-08T03:25:31.935Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "2b8ee19e18f936d418cdd2736a2b393114da6a1d"
   blueprint_digest: "67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6"
   evidence_refs:
-    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032054934-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032054934-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/dd566a9b5d203afe6696debc870f09defa484a5d3d2decf976fad1b210bcd672.md"
-    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032054934-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032054934-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032054934-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032054934-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032435218-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032435218-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/b5e9a602280779f00f47842890d5f8fdc03b14822b4c2407ac700ac8cd945159.md"
+    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032435218-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032435218-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608070209-J3DEJ1/quality/20260808-032435218-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608070209-J3DEJ1/README.md"
     - ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/833e053130ba5464eeb8f2cf2f5074ceb02b5a0db55e469068e0eb95d72d8925.patch"
-    - ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/4a6b43a525c46f747c18c8548c61584197697dc4fe038f2a972f0c50d7f40a4c.json"
+    - ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/d9cab7f9c70f48ce92d16fe3e796f57dcb6cc8626737a9d4373a32bfb06b15e9.json"
+    - ".agentplane/tasks/202608070209-J3DEJ1/verification/20260808032430679-cf53d40380df99ba.json"
     - ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/a2ba69a380e48f032b46d95590f3b233521dff6a4ddef6ed545527402c3e3d8e.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Frozen evidence contains no deterministic verification record for evaluated SHA 2b8ee19e18f936d418cdd2736a2b393114da6a1d."
-  recovery_reason: "deterministic_evidence_gap"
+    - "The implementation satisfies the unknown-intent and recoverable-lock contract, including conservative handling of unverifiable owners and serialized concurrent recovery."
 token_usage:
-  agent_runs: 1
-  input_tokens: 203548
-  journal_digest: "sha256:74db76b5619b1e5efe9400da06493353de641d5de7fc05ac59b378b0057ff1b4"
-  observed_agent_runs: 1
+  agent_runs: 5
+  input_tokens: 925359
+  journal_digest: "sha256:af2d0eccd5435027e4ac2b85e8f97a88b73c31078133c1e2a4fbffec56c8ecdd"
+  observed_agent_runs: 5
   observed_by: "agentplane"
-  output_tokens: 1924
-  reasoning_tokens: 425
+  output_tokens: 10339
+  reasoning_tokens: 2405
   schema_version: 1
   source: "supervisor_journal"
   state: "observed"
-  total_tokens: 205897
+  total_tokens: 938103
   unavailable_reason: null
-  updated_at: "2026-08-08T02:36:40.231Z"
+  updated_at: "2026-08-08T03:26:04.314Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -76,7 +75,9 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "e9affd3da4527455d24d71460eb4bbc6a44afc8a"
+  message: "🧩 J3DEJ1 task: freeze post-review evidence"
 comments:
   -
     author: "CODER"
@@ -84,6 +85,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: unknown natural-language outcomes now persist an explicit unknown mutation scope and require confirmation; stale task-creation locks recover through serialized claims while unverifiable locks remain fail-closed. Focused 18/18, critical CLI 84/84, core 394/394, typecheck, and ci:contract passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -139,8 +143,21 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Independent local and hosted verification passed on post-review implementation"
+  -
+    type: "verify"
+    at: "2026-08-08T03:24:30.679Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Independent local and hosted verification passed on post-review implementation"
+  -
+    type: "status"
+    at: "2026-08-08T03:26:04.314Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-08T03:21:40.397Z"
+doc_updated_at: "2026-08-08T03:26:04.348Z"
 doc_updated_by: "CODER"
 description: "Treat unmatched natural-language outcomes as unknown instead of safe direct; make repository-wide task creation locking safely recoverable after process interruption; add regression and recovery tests before 0.7.5."
 sections:
@@ -346,6 +363,46 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-08T03:24:30.679Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Independent local and hosted verification passed on post-review implementation
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T03:23:05.584Z, excerpt_hash=sha256:6c65d3895482f8de2d6e290107cf68ece00194ea75dd5dcdcaf0d012970b04ca
+
+    Details:
+
+    Command: bunx vitest run packages/core/src/tasks/task-readme-io.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts; bun run typecheck; bun run ci:core; bun run test:critical; bun run ci:contract; AGENTPLANE_FAST_CHANGED_FILES=<exact diff> bun run ci:local:fast
+    Result: pass; focused 19/19, core 395/395, critical 12/12, full-fast 544 files/3900 tests, and all static/contract/type gates succeeded.
+    Evidence: evaluated implementation SHA 2b8ee19e18f936d418cdd2736a2b393114da6a1d; local command exits were 0.
+    Scope: post-review task intake and task README lock recovery changes only.
+
+    Command: gh pr checks 4797 --watch
+    Result: pass; exact PR head 2b8ee19e18f936d418cdd2736a2b393114da6a1d passed every required hosted check.
+    Evidence: Windows, unit, static, critical CLI, contract, coverage, workflow, package runtimes, docs, both CodeQL analyses, and aggregate PR verification completed successfully.
+    Scope: hosted Linux/Windows execution, security analysis, package compatibility, and documentation gates.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608070209-J3DEJ1-harden-automatic-task-intake-against-unknown-int/.agentplane/tasks/202608070209-J3DEJ1/blueprint/resolved-snapshot.json
+    - old_digest: 67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6
+    - current_digest: 67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608070209-J3DEJ1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608070209-J3DEJ1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -360,8 +417,8 @@ sections:
       IncidentTags: concurrency, recovery
 extensions:
   implementation_commit:
-    hash: "1f452c38f24122aa1ce00e9ba7c38afc388ff8a6"
-    message: "🐛 J3DEJ1 code: recover stale creation locks"
+    hash: "2b8ee19e18f936d418cdd2736a2b393114da6a1d"
+    message: "🐛 J3DEJ1 code: harden recovery claims"
   workflow_route_baseline:
     start_head_sha: "17632349ed759437d905d0945933c3d99ad3fea8"
     version: 1
@@ -579,6 +636,46 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-08T03:24:30.679Z — VERIFY — ok
+
+By: TESTER
+
+Note: Independent local and hosted verification passed on post-review implementation
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T03:23:05.584Z, excerpt_hash=sha256:6c65d3895482f8de2d6e290107cf68ece00194ea75dd5dcdcaf0d012970b04ca
+
+Details:
+
+Command: bunx vitest run packages/core/src/tasks/task-readme-io.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts; bun run typecheck; bun run ci:core; bun run test:critical; bun run ci:contract; AGENTPLANE_FAST_CHANGED_FILES=<exact diff> bun run ci:local:fast
+Result: pass; focused 19/19, core 395/395, critical 12/12, full-fast 544 files/3900 tests, and all static/contract/type gates succeeded.
+Evidence: evaluated implementation SHA 2b8ee19e18f936d418cdd2736a2b393114da6a1d; local command exits were 0.
+Scope: post-review task intake and task README lock recovery changes only.
+
+Command: gh pr checks 4797 --watch
+Result: pass; exact PR head 2b8ee19e18f936d418cdd2736a2b393114da6a1d passed every required hosted check.
+Evidence: Windows, unit, static, critical CLI, contract, coverage, workflow, package runtimes, docs, both CodeQL analyses, and aggregate PR verification completed successfully.
+Scope: hosted Linux/Windows execution, security analysis, package compatibility, and documentation gates.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608070209-J3DEJ1-harden-automatic-task-intake-against-unknown-int/.agentplane/tasks/202608070209-J3DEJ1/blueprint/resolved-snapshot.json
+- old_digest: 67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6
+- current_digest: 67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608070209-J3DEJ1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608070209-J3DEJ1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -599,12 +696,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `observed`
-- Completeness: `1/1` agent runs
-- Input tokens: `203548`
-- Output tokens: `1924`
-- Reasoning tokens: `425`
-- Total tokens: `205897`
+- Completeness: `5/5` agent runs
+- Input tokens: `925359`
+- Output tokens: `10339`
+- Reasoning tokens: `2405`
+- Total tokens: `938103`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:74db76b5619b1e5efe9400da06493353de641d5de7fc05ac59b378b0057ff1b4`
+- Journal digest: `sha256:af2d0eccd5435027e4ac2b85e8f97a88b73c31078133c1e2a4fbffec56c8ecdd`
 - Unavailable reason: `none`
-- Updated at: `2026-08-08T02:36:40.231Z`
+- Updated at: `2026-08-08T03:26:04.314Z`

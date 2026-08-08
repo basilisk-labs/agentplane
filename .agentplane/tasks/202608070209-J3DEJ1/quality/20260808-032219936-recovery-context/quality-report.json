@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608070209-J3DEJ1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-08T03:23:05.562Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "2b8ee19e18f936d418cdd2736a2b393114da6a1d",
+  "blueprint_digest": "67be03c5bf385fd03a972ca395680961064d3f079059ea55a5d14681478c55c6",
+  "findings": [
+    "Frozen observed-checks evidence contains no deterministic verification records for evaluated SHA 2b8ee19e18f936d418cdd2736a2b393114da6a1d."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608070209-J3DEJ1/quality/objects/sha256/4a6b43a525c46f747c18c8548c61584197697dc4fe038f2a972f0c50d7f40a4c.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The packet assumes narrative verification recorded in the task document is equivalent to deterministic observed-check evidence bound to the evaluated SHA."
+  ],
+  "residual_risks": [
+    "Regenerate the frozen evaluator packet after deterministic local and hosted verification records for exact SHA 2b8ee19e18f936d418cdd2736a2b393114da6a1d are persisted into observed-checks evidence."
+  ]
+}

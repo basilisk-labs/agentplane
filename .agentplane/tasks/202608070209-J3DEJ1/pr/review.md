@@ -6,7 +6,7 @@ Created: 2026-08-08T02:08:29.892Z
 
 - Task: `202608070209-J3DEJ1`
 - Title: Harden automatic task intake against unknown intent and stale locks
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608070209-J3DEJ1/harden-automatic-task-intake-against-unknown-int`
 - Canonical task record: `.agentplane/tasks/202608070209-J3DEJ1/README.md`
 
