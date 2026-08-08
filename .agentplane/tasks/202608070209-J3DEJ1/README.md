@@ -4,7 +4,7 @@ title: "Harden automatic task intake against unknown intent and stale locks"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -34,11 +34,16 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "1f452c38f24122aa1ce00e9ba7c38afc388ff8a6"
+  message: "🐛 J3DEJ1 code: recover stale creation locks"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed: unknown natural-language outcomes now persist an explicit unknown mutation scope and require confirmation; stale task-creation locks recover through serialized claims while unverifiable locks remain fail-closed. Focused 18/18, critical CLI 84/84, core 394/394, typecheck, and ci:contract passed."
 events:
   -
     type: "status"
@@ -47,8 +52,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-08T02:25:11.783Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: unknown natural-language outcomes now persist an explicit unknown mutation scope and require confirmation; stale task-creation locks recover through serialized claims while unverifiable locks remain fail-closed. Focused 18/18, critical CLI 84/84, core 394/394, typecheck, and ci:contract passed."
 doc_version: 3
-doc_updated_at: "2026-08-08T02:12:34.820Z"
+doc_updated_at: "2026-08-08T02:25:11.783Z"
 doc_updated_by: "CODER"
 description: "Treat unmatched natural-language outcomes as unknown instead of safe direct; make repository-wide task creation locking safely recoverable after process interruption; add regression and recovery tests before 0.7.5."
 sections:
