@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 39
 origin:
   system: "manual"
 depends_on: []
@@ -28,9 +28,9 @@ plan_approval:
   note: "User explicitly approved pausing the active v0.7.5 verification and implementing no-quality-loss release acceleration before restarting the release."
 verification:
   state: "ok"
-  updated_at: "2026-08-08T14:34:42.403Z"
+  updated_at: "2026-08-08T14:59:56.910Z"
   updated_by: "TESTER"
-  note: "Verified acceleration rework on 1169b67af: qualification:check, test:critical, format:check, and ci:contract all passed; benchmark evidence exceeds the 10% threshold; provider 50-run/55-episode gate remains required on the integrated release SHA."
+  note: "Verified fail-closed qualification scheduling and measured parallelization on 51072b303; all declared local gates passed."
   attempts: 0
 quality_review:
   state: "rework"
@@ -282,8 +282,20 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified acceleration rework on 1169b67af: qualification:check, test:critical, format:check, and ci:contract all passed; benchmark evidence exceeds the 10% threshold; provider 50-run/55-episode gate remains required on the integrated release SHA."
+  -
+    type: "verify"
+    at: "2026-08-08T14:59:52.621Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "verify"
+    at: "2026-08-08T14:59:56.910Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified fail-closed qualification scheduling and measured parallelization on 51072b303; all declared local gates passed."
 doc_version: 3
-doc_updated_at: "2026-08-08T14:39:08.154Z"
+doc_updated_at: "2026-08-08T14:59:59.465Z"
 doc_updated_by: "CODER"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
@@ -754,6 +766,106 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608081216-YAN7DW
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T14:59:52.621Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T14:39:08.154Z, excerpt_hash=sha256:1cae1f99dc9a9a5efbce86fcedd6b0b11fc7737d54646d4fdec13617a8ab9fd5
+
+    Details:
+
+    Command: bun run qualification:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608081216-YAN7DW-parallelize-release-qualification/.agentplane/tasks/202608081216-YAN7DW/blueprint/resolved-snapshot.json
+    - old_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+    - current_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608081216-YAN7DW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608081216-YAN7DW
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T14:59:56.910Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified fail-closed qualification scheduling and measured parallelization on 51072b303; all declared local gates passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T14:59:55.099Z, excerpt_hash=sha256:1cae1f99dc9a9a5efbce86fcedd6b0b11fc7737d54646d4fdec13617a8ab9fd5
+
+    Details:
+
+    Command: bun run qualification:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608081216-YAN7DW/evidence/parallelization-benchmark.v1.json
+    Scope: exact task head 51072b303b251d9bcadee01fbdf6e5b5a745f32d; benchmark artifact includes method, environment, paired raw timings, threshold, comparison, noise controls, verdict, and limits.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: scripts/qualification/release-qualification.test.mjs
+    Scope: 12/12 critical CLI chunks passed; queued independent scenarios do not start after first failure.
+
+    Command: bun run format:check
+    Result: pass
+    Evidence: scripts/qualification/run-v0.7.1-release-qualification.mjs
+    Scope: exact task head.
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: .agentplane/tasks/202608081216-YAN7DW/evidence/parallelization-benchmark.v1.json
+    Scope: contracts, lint, architecture, clone, knip, and coverage thresholds passed.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608081216-YAN7DW-parallelize-release-qualification/.agentplane/tasks/202608081216-YAN7DW/blueprint/resolved-snapshot.json
+    - old_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+    - current_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608081216-YAN7DW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1253,6 +1365,106 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608081216-YAN7DW
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T14:59:52.621Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T14:39:08.154Z, excerpt_hash=sha256:1cae1f99dc9a9a5efbce86fcedd6b0b11fc7737d54646d4fdec13617a8ab9fd5
+
+Details:
+
+Command: bun run qualification:check
+Result: pass
+Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+Command: bun run ci:contract
+Result: pass
+Evidence: .agentplane/tasks/202608081216-YAN7DW/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608081216-YAN7DW declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608081216-YAN7DW-parallelize-release-qualification/.agentplane/tasks/202608081216-YAN7DW/blueprint/resolved-snapshot.json
+- old_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+- current_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608081216-YAN7DW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608081216-YAN7DW
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T14:59:56.910Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified fail-closed qualification scheduling and measured parallelization on 51072b303; all declared local gates passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T14:59:55.099Z, excerpt_hash=sha256:1cae1f99dc9a9a5efbce86fcedd6b0b11fc7737d54646d4fdec13617a8ab9fd5
+
+Details:
+
+Command: bun run qualification:check
+Result: pass
+Evidence: .agentplane/tasks/202608081216-YAN7DW/evidence/parallelization-benchmark.v1.json
+Scope: exact task head 51072b303b251d9bcadee01fbdf6e5b5a745f32d; benchmark artifact includes method, environment, paired raw timings, threshold, comparison, noise controls, verdict, and limits.
+
+Command: bun run test:critical
+Result: pass
+Evidence: scripts/qualification/release-qualification.test.mjs
+Scope: 12/12 critical CLI chunks passed; queued independent scenarios do not start after first failure.
+
+Command: bun run format:check
+Result: pass
+Evidence: scripts/qualification/run-v0.7.1-release-qualification.mjs
+Scope: exact task head.
+
+Command: bun run ci:contract
+Result: pass
+Evidence: .agentplane/tasks/202608081216-YAN7DW/evidence/parallelization-benchmark.v1.json
+Scope: contracts, lint, architecture, clone, knip, and coverage thresholds passed.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608081216-YAN7DW-parallelize-release-qualification/.agentplane/tasks/202608081216-YAN7DW/blueprint/resolved-snapshot.json
+- old_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+- current_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608081216-YAN7DW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

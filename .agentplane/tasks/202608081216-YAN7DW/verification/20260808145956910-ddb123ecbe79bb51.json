@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run qualification:check\nResult: pass\nEvidence: .agentplane/tasks/202608081216-YAN7DW/evidence/parallelization-benchmark.v1.json\nScope: exact task head 51072b303b251d9bcadee01fbdf6e5b5a745f32d; benchmark artifact includes method, environment, paired raw timings, threshold, comparison, noise controls, verdict, and limits.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: scripts/qualification/release-qualification.test.mjs\nScope: 12/12 critical CLI chunks passed; queued independent scenarios do not start after first failure.\n\nCommand: bun run format:check\nResult: pass\nEvidence: scripts/qualification/run-v0.7.1-release-qualification.mjs\nScope: exact task head.\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: .agentplane/tasks/202608081216-YAN7DW/evidence/parallelization-benchmark.v1.json\nScope: contracts, lint, architecture, clone, knip, and coverage thresholds passed.",
+  "digest": "sha256:ddb123ecbe79bb51b9e7f9f2b5d91bc023b452a2475867619e67b074b7a17f3f",
+  "implementation_sha": "51072b303b251d9bcadee01fbdf6e5b5a745f32d",
+  "kind": "task_verification_record",
+  "note": "Verified fail-closed qualification scheduling and measured parallelization on 51072b303; all declared local gates passed.",
+  "recorded_at": "2026-08-08T14:59:56.910Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bun run qualification:check`. Expected: qualification contract tests pass and the full gate command resolves every required variable in dry-run mode.\n2. Run `bun run test:critical`. Expected: the critical CLI suite passes, including candidate capture concurrency, stop-on-first-failure, evidence cleanup, and existing RF-04 contracts.\n3. Run `bun run format:check`. Expected: formatting passes.\n4. Run `bun run ci:contract`. Expected: repository contracts, lint, architecture, clone, knip, and coverage thresholds pass.\n5. The subsequent v0.7.5 release gate must execute the full 50-run/55-episode provider matrix on the exact integrated candidate SHA; no provider evidence from the pre-change SHA may be reused.",
+  "scope_digest": "sha256:1cae1f99dc9a9a5efbce86fcedd6b0b11fc7737d54646d4fdec13617a8ab9fd5",
+  "task_id": "202608081216-YAN7DW",
+  "verification_command": "agentplane verify 202608081216-YAN7DW --ok --by TESTER",
+  "verifier": "TESTER"
+}

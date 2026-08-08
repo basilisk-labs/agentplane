@@ -13,7 +13,7 @@ Created: 2026-08-08T12:17:23.101Z
 ## Verification
 
 - State: ok
-- Note: Verified acceleration rework on 1169b67af: qualification:check, test:critical, format:check, and ci:contract all passed; benchmark evidence exceeds the 10% threshold; provider 50-run/55-episode gate remains required on the integrated release SHA.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
