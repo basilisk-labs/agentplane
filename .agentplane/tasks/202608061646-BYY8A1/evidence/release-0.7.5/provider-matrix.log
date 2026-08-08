@@ -1,4 +1,0 @@
-$ "node" "scripts/bench/capture-agent-efficiency-candidate.mjs" "--subject" "aaef3c8be167784f26f7c994fb44db2915a9c160" "--codex-version" "0.146.0-alpha.3.1" "--runs" "5" "--concurrency" "3" "--baseline-evidence" "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json" "--capture"
-exit_code=0 signal=none duration_ms=729571
-
-RF-04 candidate pinned baseline measurement materialized (subject=aaef3c8be167784f26f7c994fb44db2915a9c160; runs=50; episodes=55; verdict=fail)
