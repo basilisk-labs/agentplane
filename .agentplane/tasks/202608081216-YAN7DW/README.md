@@ -4,7 +4,7 @@ title: "Parallelize release qualification without weakening gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -27,10 +27,10 @@ plan_approval:
   note: "User explicitly approved pausing the active v0.7.5 verification and implementing no-quality-loss release acceleration before restarting the release."
 verification:
   state: "needs_rework"
-  updated_at: "2026-08-08T12:39:23.968Z"
+  updated_at: "2026-08-08T12:41:34.504Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Unsupported declared check: node --test scripts/qualification/release-qualification.test.mjs"
-  attempts: 2
+  note: "Rework: Unsupported declared check: bun run e2e:v0.7.1:check"
+  attempts: 3
 execution_route:
   frozen: true
   reason_codes:
@@ -39,9 +39,7 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit:
-  hash: "0af389fe8d6f8d6dfd5fcf52716cb55391157494"
-  message: "🚧 YAN7DW task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -99,8 +97,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 0af389fe8d6f. CLI accepted one state-bound external-agent semantic result."
     commit: "0af389fe8d6f8d6dfd5fcf52716cb55391157494"
+  -
+    type: "verify"
+    at: "2026-08-08T12:41:34.504Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Unsupported declared check: bun run e2e:v0.7.1:check"
 doc_version: 3
-doc_updated_at: "2026-08-08T12:41:28.320Z"
+doc_updated_at: "2026-08-08T12:41:35.400Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
@@ -175,6 +179,36 @@ sections:
     Attempts: 2
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T12:39:17.746Z, excerpt_hash=sha256:d4c1e7abe40d89ceafcb23b71203a483a6f3ce14597ea1726ebd22a853e65cad
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608081216-YAN7DW-parallelize-release-qualification/.agentplane/tasks/202608081216-YAN7DW/blueprint/resolved-snapshot.json
+    - old_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+    - current_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608081216-YAN7DW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608081216-YAN7DW
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-08T12:41:34.504Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Unsupported declared check: bun run e2e:v0.7.1:check
+    Attempts: 3
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T12:41:28.320Z, excerpt_hash=sha256:9b9b41ba3c417a8ed34255f0de88407935ec799e26430041fe18c4f96f4b3780
 
     Details:
 
@@ -288,6 +322,36 @@ Note: Rework: Unsupported declared check: node --test scripts/qualification/rele
 Attempts: 2
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T12:39:17.746Z, excerpt_hash=sha256:d4c1e7abe40d89ceafcb23b71203a483a6f3ce14597ea1726ebd22a853e65cad
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608081216-YAN7DW-parallelize-release-qualification/.agentplane/tasks/202608081216-YAN7DW/blueprint/resolved-snapshot.json
+- old_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+- current_digest: bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608081216-YAN7DW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608081216-YAN7DW
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-08T12:41:34.504Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Unsupported declared check: bun run e2e:v0.7.1:check
+Attempts: 3
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-08T12:41:28.320Z, excerpt_hash=sha256:9b9b41ba3c417a8ed34255f0de88407935ec799e26430041fe18c4f96f4b3780
 
 Details:
 
