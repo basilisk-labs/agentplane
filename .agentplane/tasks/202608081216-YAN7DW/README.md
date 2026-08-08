@@ -1,10 +1,10 @@
 ---
 id: "202608081216-YAN7DW"
 title: "Parallelize release qualification without weakening gates"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -69,7 +69,9 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "a458a3689d31c1fd8109711dfa2980dd9ff910fe"
+  message: "🚧 YAN7DW task: stabilize supervisor verification"
 comments:
   -
     author: "CODER"
@@ -98,6 +100,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 247d12585284. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Implementation complete: bounded parallel qualification, hard process timeouts, deterministic evidence, and isolated critical CLI rendering are committed and ready for fresh verification."
 events:
   -
     type: "status"
@@ -218,9 +223,17 @@ events:
     author: "SUPERVISOR"
     state: "blocked_external"
     note: "Rework: Declared check failed: bun run ci:contract"
+  -
+    type: "status"
+    at: "2026-08-08T13:11:26.164Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Implementation complete: bounded parallel qualification, hard process timeouts, deterministic evidence, and isolated critical CLI rendering are committed and ready for fresh verification."
+    commit: "a458a3689d31c1fd8109711dfa2980dd9ff910fe"
 doc_version: 3
-doc_updated_at: "2026-08-08T13:07:18.983Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-08T13:11:26.164Z"
+doc_updated_by: "CODER"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:
   Summary: |-
