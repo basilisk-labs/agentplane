@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane 0.7.5 supervisor-first UX patch"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -52,6 +52,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: d6dd00111035. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned blocked: Release notes were updated for the final merged fixes, but the supervisor-owned verification contract cannot be completed as declared."
 events:
   -
     type: "status"
@@ -73,8 +76,13 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Unsupported declared check: AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:full"
+  -
+    type: "comment"
+    at: "2026-08-08T05:46:05.191Z"
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned blocked: Release notes were updated for the final merged fixes, but the supervisor-owned verification contract cannot be completed as declared."
 doc_version: 3
-doc_updated_at: "2026-08-08T03:54:13.603Z"
+doc_updated_at: "2026-08-08T05:46:05.191Z"
 doc_updated_by: "SUPERVISOR"
 description: "Publish one cumulative 0.7.5 patch after routing, task UX, init, Windows file identity, supervisor-first guidance, semantic prompt projection, external protocol polish, bounded compatibility governance, and safe evidence retention all pass local, hosted, Windows, direct, branch_pr, managed, external, interruption/recovery, token-efficiency, package, migration, and post-release qualification."
 sections:
