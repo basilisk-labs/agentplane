@@ -1,4 +1,4 @@
-import { spawnSync } from "node:child_process";
+import { execFile, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   existsSync,
@@ -80,6 +80,8 @@ const REPLAY_DRIVER_TURN_TIMEOUT_MS = 240_000;
 const REPLAY_DRIVER_SETUP_TIMEOUT_MS = 5 * 60 * 1000;
 const REPLAY_DRIVER_EXIT_GRACE_MS = 60_000;
 const REPLAY_DRIVER_MAX_TIMEOUT_MS = 25 * 60 * 1000;
+const DEFAULT_CAPTURE_CONCURRENCY = 3;
+const MAX_CHILD_OUTPUT_BYTES = 128 * 1024 * 1024;
 const MAX_INCREASE_RATIO = 0.1;
 
 function sha256(value) {
@@ -101,6 +103,7 @@ function helpText() {
     "  --subject <sha>   Required full reviewed candidate commit SHA.",
     "  --codex-version <version>  Required exact Codex CLI version for every candidate episode.",
     `  --runs <count>   Runs per scenario. Minimum/default: ${MINIMUM_REPLAY_RUNS}.`,
+    `  --concurrency <count>  Isolated replay jobs. Default: ${DEFAULT_CAPTURE_CONCURRENCY}.`,
     "  --driver <path>   Reviewed local RF-04 provider driver.",
     "  --root <path>     Candidate evidence root under .agentplane/cache/rf04-candidate/.",
     "  --runtime-bridge <version>  Materialize or validate a no-provider comparison against the",
@@ -126,6 +129,7 @@ function parseArgs(argv) {
     valueFlags: [
       "subject",
       "runs",
+      "concurrency",
       "driver",
       "root",
       "codex-version",
@@ -145,6 +149,9 @@ function parseArgs(argv) {
       : null,
     check: flags.check === true,
     codexCliVersion: flags["codex-version"] ?? "",
+    concurrency: parseCandidateCaptureConcurrency(
+      flags.concurrency ?? String(DEFAULT_CAPTURE_CONCURRENCY),
+    ),
     driverPath: path.resolve(flags.driver ?? DEFAULT_DRIVER_PATH),
     help: flags.help === true,
     outputRoot: flags.root ? path.resolve(flags.root) : null,
@@ -196,6 +203,20 @@ function assertRuns(runs) {
     throw new Error(`--runs must be an integer >= ${MINIMUM_REPLAY_RUNS}`);
   }
   return runs;
+}
+
+export function assertCandidateCaptureConcurrency(concurrency) {
+  if (!Number.isSafeInteger(concurrency) || concurrency < 1) {
+    throw new Error("--concurrency must be an integer >= 1");
+  }
+  return concurrency;
+}
+
+function parseCandidateCaptureConcurrency(value) {
+  if (!/^\d+$/u.test(value)) {
+    throw new Error("--concurrency must be an integer >= 1");
+  }
+  return assertCandidateCaptureConcurrency(Number.parseInt(value, 10));
 }
 
 function assertCandidateCodexCliVersion(value) {
@@ -275,21 +296,66 @@ function replayDriverTimeoutMs(scenario) {
 }
 
 function runChecked(command, args, options, label) {
-  const result = spawnSync(command, args, {
-    ...options,
-    encoding: null,
-    maxBuffer: 128 * 1024 * 1024,
-  });
-  if (result.error) {
-    throw new Error(`${label} failed to start or exceeded its fixed timeout`);
-  }
-  if (result.status !== 0) {
-    const diagnostic = replayDriverDiagnosticCode(result.stderr);
-    throw new Error(
-      `${label} failed with exit ${result.status}` +
-        (diagnostic ? ` (RF04_DRIVER_ERROR:${diagnostic})` : ""),
+  return new Promise((resolve, reject) => {
+    let timedOut = false;
+    const child = execFile(
+      command,
+      args,
+      {
+        ...options,
+        encoding: null,
+        maxBuffer: MAX_CHILD_OUTPUT_BYTES,
+        timeout: undefined,
+      },
+      (error, _stdout, stderr) => {
+        clearTimeout(timeout);
+        if (error == null) {
+          resolve();
+          return;
+        }
+        if (timedOut || !Number.isInteger(error.code)) {
+          reject(new Error(`${label} failed to start or exceeded its fixed timeout`));
+          return;
+        }
+        const diagnostic = replayDriverDiagnosticCode(stderr);
+        reject(
+          new Error(
+            `${label} failed with exit ${error.code}` +
+              (diagnostic ? ` (RF04_DRIVER_ERROR:${diagnostic})` : ""),
+          ),
+        );
+      },
     );
+    const timeout = setTimeout(() => {
+      timedOut = true;
+      child.kill("SIGTERM");
+    }, options.timeout);
+    timeout.unref();
+  });
+}
+
+export async function runCandidateCaptureJobs(jobs, concurrency, worker) {
+  assertCandidateCaptureConcurrency(concurrency);
+  const results = Array.from({ length: jobs.length });
+  let cursor = 0;
+  let firstError = null;
+
+  async function runWorker() {
+    while (firstError == null) {
+      const index = cursor;
+      cursor += 1;
+      if (index >= jobs.length) return;
+      try {
+        results[index] = await worker(jobs[index], index);
+      } catch (error) {
+        firstError ??= error;
+      }
+    }
   }
+
+  await Promise.all(Array.from({ length: Math.min(concurrency, jobs.length) }, () => runWorker()));
+  if (firstError) throw firstError;
+  return results;
 }
 
 function targetExists(target) {
@@ -903,11 +969,14 @@ export function validateCandidatePilotCapture({
   };
 }
 
-export function captureCandidate(options) {
+export async function captureCandidate(options) {
   assertCandidateCaptureMode(options);
   const subject = assertCandidateSubject(options.subject);
   const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
   const runs = assertRuns(options.runs);
+  const concurrency = assertCandidateCaptureConcurrency(
+    options.concurrency ?? DEFAULT_CAPTURE_CONCURRENCY,
+  );
   assertGitCommitAvailable(repoRoot, subject);
   const paths = resolveCandidatePaths(subject, options.outputRoot);
   const publicationTargets = [
@@ -950,11 +1019,11 @@ export function captureCandidate(options) {
   const stagingEnvelopes = path.join(captureRoot, "envelopes");
   const stagingEvidence = path.join(captureRoot, "evidence");
   const stagingMeasurement = path.join(captureRoot, "measurement.json");
-  const isolatedRepository = path.join(captureRoot, "subject");
+  const isolatedRepositoriesRoot = path.join(captureRoot, "subjects");
   const activeRegistryPath = options.pilot
     ? path.join(captureRoot, "fixture-registry.json")
     : paths.registryPath;
-  const completedRuns = [];
+  const completedRuns = new Set();
   mkdirSync(stagingEnvelopes, { recursive: true });
   mkdirSync(stagingEvidence, { recursive: true });
   writeCandidateRegistry(registry, activeRegistryPath);
@@ -971,9 +1040,22 @@ export function captureCandidate(options) {
     }
     const selectedScenarios = options.pilot ? [pilotScenario] : registry.scenarios;
     const selectedRuns = options.pilot ? 1 : runs;
-    for (const scenario of selectedScenarios) {
-      for (let runIndex = 1; runIndex <= selectedRuns; runIndex += 1) {
-        rmSync(isolatedRepository, { force: true, recursive: true });
+    const captureJobs = selectedScenarios.flatMap((scenario) =>
+      Array.from({ length: selectedRuns }, (_unused, index) => ({
+        runId: `${scenario.id}/run-${String(index + 1).padStart(2, "0")}`,
+        runIndex: index + 1,
+        scenario,
+      })),
+    );
+    await runCandidateCaptureJobs(
+      captureJobs,
+      options.pilot ? 1 : concurrency,
+      async ({ runId, runIndex, scenario }) => {
+        const isolatedRepository = path.join(
+          isolatedRepositoriesRoot,
+          scenario.id,
+          `run-${String(runIndex).padStart(2, "0")}`,
+        );
         mkdirSync(isolatedRepository, { recursive: true });
         initializeAnchorCheckout(repoRoot, isolatedRepository, subject);
         const registryOverlay = installFixtureRegistryOverlay(
@@ -988,7 +1070,6 @@ export function captureCandidate(options) {
         const fileName = `run-${String(runIndex).padStart(2, "0")}.json`;
         const outputPath = path.join(scenarioDirectory, fileName);
         const evidenceOutputPath = path.join(evidenceScenarioDirectory, fileName);
-        const runId = `${scenario.id}/run-${String(runIndex).padStart(2, "0")}`;
         const contractEnvironment = createReplayDriverContractEnvironment({
           anchor: subject,
           codexBinary: process.env[CODEX_REPLAY_BINARY_ENV] ?? CODEX_REPLAY_BINARY,
@@ -1004,7 +1085,7 @@ export function captureCandidate(options) {
           outputPath,
           runId,
         });
-        runChecked(
+        await runChecked(
           process.execPath,
           [
             options.driverPath,
@@ -1035,10 +1116,10 @@ export function captureCandidate(options) {
         ) {
           throw new Error(`${runId} candidate driver output must be canonical stable JSON`);
         }
-        completedRuns.push(runId);
+        completedRuns.add(runId);
         assertCandidateInputsUnchanged(expectedInputs, activeRegistryPath, options.driverPath);
-      }
-    }
+      },
+    );
     const envelopes = readReplayEnvelopeRecords(repoRoot, stagingEnvelopes, {
       logicalRoot: relativeRepoPath(
         repoRoot,
@@ -1111,7 +1192,7 @@ export function captureCandidate(options) {
       writeFileSync(
         paths.failurePath,
         canonicalBytes({
-          completed_runs: completedRuns,
+          completed_runs: [...completedRuns].toSorted(),
           failed_at: new Date().toISOString(),
           kind: "agent_efficiency_candidate_capture_failure_v1",
           message: error instanceof Error ? error.message : String(error),
@@ -1332,13 +1413,13 @@ export function materializePinnedBaselineMeasurement(options) {
   return measurement;
 }
 
-export function captureCandidateWithPinnedBaseline(options) {
+export async function captureCandidateWithPinnedBaseline(options) {
   assertCandidateCaptureMode(options);
   readPinnedQualificationBaseline({
     codexCliVersion: assertCandidateCodexCliVersion(options.codexCliVersion),
     evidencePath: options.baselineEvidencePath,
   });
-  captureCandidate({
+  await captureCandidate({
     ...options,
     baselineEvidencePath: null,
     capture: false,
@@ -1398,7 +1479,7 @@ export function materializeRuntimeBridgeMeasurement(options) {
   return measurement;
 }
 
-export function captureCandidateWithRuntimeBridge(options) {
+export async function captureCandidateWithRuntimeBridge(options) {
   assertCandidateCaptureMode(options);
   if (options.runtimeBridgeVersion === null) {
     throw new Error("runtime bridge version is required for provider capture");
@@ -1408,7 +1489,7 @@ export function captureCandidateWithRuntimeBridge(options) {
     throw new Error("candidate and runtime bridge Codex CLI versions must match exactly");
   }
   checkRuntimeBridge({ codexCliVersion });
-  captureCandidate({
+  await captureCandidate({
     ...options,
     capture: false,
     runtimeBridgeVersion: null,
@@ -1469,7 +1550,7 @@ const main = defineCheck({
     }
     assertCandidateCaptureMode(options);
     if (options.pilot) {
-      const pilot = captureCandidate(options);
+      const pilot = await captureCandidate(options);
       stdout.write(
         `RF-04 candidate pilot passed (subject=${pilot.subject_sha}; run=${pilot.run_id}; ` +
           `episodes=${pilot.episode_count}; runtime=${pilot.profile.runtime_version})\n`,
@@ -1478,7 +1559,7 @@ const main = defineCheck({
     }
     const runtimeBridge = options.runtimeBridgeVersion !== null;
     const pinnedBaseline = options.baselineEvidencePath !== null;
-    const measurement = pinnedBaseline
+    const measurement = await (pinnedBaseline
       ? options.capture
         ? captureCandidateWithPinnedBaseline(options)
         : options.check
@@ -1492,7 +1573,7 @@ const main = defineCheck({
             : materializeRuntimeBridgeMeasurement(options)
         : options.check
           ? checkCandidateCapture(options)
-          : captureCandidate(options);
+          : captureCandidate(options));
     stdout.write(
       `RF-04 candidate ${
         pinnedBaseline

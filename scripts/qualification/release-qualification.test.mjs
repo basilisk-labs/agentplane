@@ -36,6 +36,7 @@ import {
 import {
   preflightQualificationProviderRuntime,
   readQualificationRunSubjectIdentity,
+  runQualificationScenarios,
 } from "./run-v0.7.1-release-qualification.mjs";
 import {
   CODEX_REPLAY_BINARY_ENV,
@@ -145,6 +146,37 @@ function supervisorLatencySurfaces(count) {
 }
 
 describe("v0.7.1 release qualification contract", () => {
+  it("runs independent scenarios concurrently while preserving dependency barriers and report order", async () => {
+    const scenarios = [
+      { id: "slow", tier: "core" },
+      { id: "fast", tier: "core" },
+      { id: "dependent", tier: "full", depends_on: ["slow"] },
+      { id: "provider", tier: "provider" },
+    ];
+    const events = [];
+    let active = 0;
+    let maximumActive = 0;
+    const delays = { dependent: 1, fast: 5, provider: 1, slow: 20 };
+    const results = await runQualificationScenarios(scenarios, {}, "/unused", {
+      concurrency: 2,
+      async scenarioRunner(scenario) {
+        active += 1;
+        maximumActive = Math.max(maximumActive, active);
+        events.push(`start:${scenario.id}`);
+        await new Promise((resolve) => setTimeout(resolve, delays[scenario.id]));
+        events.push(`finish:${scenario.id}`);
+        active -= 1;
+        return scenario.id;
+      },
+    });
+
+    assert.equal(maximumActive, 2);
+    assert.deepEqual(results, ["slow", "fast", "dependent", "provider"]);
+    assert.ok(events.indexOf("finish:slow") < events.indexOf("start:dependent"));
+    assert.ok(events.indexOf("finish:fast") < events.indexOf("start:provider"));
+    assert.ok(events.indexOf("finish:dependent") < events.indexOf("start:provider"));
+  });
+
   it("excludes disposable matched-latency fixtures from host indexing", () => {
     const tempRoot = createMatchedLatencyTempRoot(tmpdir());
     try {
