@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -35,31 +35,30 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-08T13:49:21.107Z"
+  updated_at: "2026-08-08T14:36:21.812Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "3b41dbe37c4885e0cb94ab4d7e2d58f53619353b"
+  evaluated_sha: "a59a4ba148844f27f7aaf69967fdf8914f6b0354"
   blueprint_digest: "bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1"
   evidence_refs:
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-134812279-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-134812279-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/4b9c779f766645662ce905324809a7017eb8e1014ebe4b21ae97ff4902a69146.md"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-134812279-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-134812279-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-134812279-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-134812279-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-143523748-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-143523748-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/7b1039a9288b3f5005560e538b83365c2a9eda5beb9bc1520b50a8e1f156adee.md"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-143523748-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-143523748-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-143523748-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-143523748-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608081216-YAN7DW/README.md"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/617dfb9f0c1bbfe25fcdbf3e1cbd0bbb4dff3af3cfbbda231b1ea932fa86f01c.patch"
-    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/ab5d6f84e22cf4ec514959608ebfa23ea7cbc940b25d2bfdb2c1b3e162a278ea.json"
-    - ".agentplane/tasks/202608081216-YAN7DW/verification/20260808134651510-40c153d29d5faf12.json"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/362b05ce91e3d90b0c2abf8831d2b8cfa522bf6fa643125e4981d38eb878a1a2.patch"
+    - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/75e45901d92bc6a87dfaed08b3337940782582094e13602146c209f35930d1c1.json"
     - ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/66fa4c234b9ab066149f87bbec5b818fe331d23c90ef191589289397e54ec486.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen evidence does not establish the required timing baseline or provide a serial-versus-concurrent pilot comparison, so the claimed reduction in patch-release elapsed time is unproven."
-    - "The added qualification-runner tests cover concurrency, dependency barriers, exclusivity, and result ordering, but do not exercise scenario failure propagation or prove that dependent/provider work remains unstarted after a prerequisite failure."
+    - "The frozen evidence asserts a benchmark improvement but contains no baseline measurements, benchmark method, raw run results, serial-versus-concurrent comparison, or noise analysis supporting the claimed greater-than-10% reduction."
+    - "Qualification failure propagation does not stop already queued independent scenarios: all dependency-free scenarios are submitted to the bounded executor before any failure is observed, and the executor continues draining its queue after rejection."
 token_usage:
   agent_runs: 11
   input_tokens: null
@@ -284,7 +283,7 @@ events:
     state: "ok"
     note: "Verified acceleration rework on 1169b67af: qualification:check, test:critical, format:check, and ci:contract all passed; benchmark evidence exceeds the 10% threshold; provider 50-run/55-episode gate remains required on the integrated release SHA."
 doc_version: 3
-doc_updated_at: "2026-08-08T14:34:44.832Z"
+doc_updated_at: "2026-08-08T14:36:21.852Z"
 doc_updated_by: "CODER"
 description: "Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds."
 sections:

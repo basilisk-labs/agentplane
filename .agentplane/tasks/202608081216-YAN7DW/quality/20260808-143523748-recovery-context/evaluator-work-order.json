@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608081216-YAN7DW-fdc914ec8bde27b43048a1e4",
+  "prepared_at": "2026-08-08T14:35:23.748Z",
+  "task": {
+    "id": "202608081216-YAN7DW",
+    "revision": 35,
+    "objective": "Parallelize release qualification without weakening gates\n\nReduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds.",
+    "acceptance_criteria": [
+      "bun run qualification:check",
+      "bun run test:critical",
+      "bun run format:check",
+      "bun run ci:contract",
+      "- In scope: Reduce patch-release elapsed time by adding bounded concurrency to independent qualification scenarios and provider replay runs while preserving dependency ordering, deterministic evidence, isolated fixtures, exact-SHA attribution, and all existing pass thresholds.\n- Out of scope: unrelated refactors not required for \"Parallelize release qualification without weakening gates\".",
+      "1. Establish a timing and behavior baseline for the qualification runner and provider replay capture.\n2. Add bounded concurrency for independent work while preserving manifest dependency ordering, per-run repository isolation, deterministic output ordering, and fail-closed behavior.\n3. Add focused regression tests for concurrency limits, dependency barriers, failure propagation, and evidence determinism.\n4. Run targeted tests, format, and ci:contract; compare serial and concurrent pilot behavior.\n5. Integrate the verified change into the v0.7.5 candidate, invalidate the paused old-SHA verification, and restart the full release gate.\n\nScope limit: qualification runner, provider replay capture, their focused tests, and required generated documentation only. No quality threshold, scenario count, provider episode count, retry policy, publish authority, or hosted gate may be weakened.",
+      "1. Run `bun run qualification:check`. Expected: qualification contract tests pass and the full gate command resolves every required variable in dry-run mode.\n2. Run `bun run test:critical`. Expected: the critical CLI suite passes, including candidate capture concurrency, stop-on-first-failure, evidence cleanup, and existing RF-04 contracts.\n3. Run `bun run format:check`. Expected: formatting passes.\n4. Run `bun run ci:contract`. Expected: repository contracts, lint, architecture, clone, knip, and coverage thresholds pass.\n5. The subsequent v0.7.5 release gate must execute the full 50-run/55-episode provider matrix on the exact integrated candidate SHA; no provider evidence from the pre-change SHA may be reused."
+    ]
+  },
+  "evaluated_sha": "a59a4ba148844f27f7aaf69967fdf8914f6b0354",
+  "diff_base_sha": "c603521981291f6487f926240137c3cba7cd8fc6",
+  "blueprint_digest": "bbaf4dbc8aee682941dbba86d4bff52b697512a1eafcd38eeff89c6b6df7b0b1",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608081216-YAN7DW/quality/20260808-143523748-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:41422db5e783ccca34c6b24a30a5a5d883a14a932c2e21208f0a2ca31aef4629",
+    "prompt_path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/7b1039a9288b3f5005560e538b83365c2a9eda5beb9bc1520b50a8e1f156adee.md",
+    "result_schema_path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608081216-YAN7DW/README.md",
+      "sha256": "sha256:48319e87aa0785ab8b43cf806fc80204cf2827846005878ca9e1663c0f84ec90",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/362b05ce91e3d90b0c2abf8831d2b8cfa522bf6fa643125e4981d38eb878a1a2.patch",
+      "sha256": "sha256:362b05ce91e3d90b0c2abf8831d2b8cfa522bf6fa643125e4981d38eb878a1a2",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/75e45901d92bc6a87dfaed08b3337940782582094e13602146c209f35930d1c1.json",
+      "sha256": "sha256:75e45901d92bc6a87dfaed08b3337940782582094e13602146c209f35930d1c1",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608081216-YAN7DW/quality/objects/sha256/66fa4c234b9ab066149f87bbec5b818fe331d23c90ef191589289397e54ec486.json",
+      "sha256": "sha256:66fa4c234b9ab066149f87bbec5b818fe331d23c90ef191589289397e54ec486",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
