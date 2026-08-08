@@ -286,24 +286,41 @@ async function runScenario(scenario, variables, outputDirectory) {
 function createBoundedExecutor(concurrency) {
   const pending = [];
   let active = 0;
+  let failure = null;
+
+  function stop(error) {
+    if (failure !== null) return;
+    failure = error;
+    for (const entry of pending.splice(0)) entry.reject(error);
+  }
 
   function drain() {
-    while (active < concurrency && pending.length > 0) {
+    while (failure === null && active < concurrency && pending.length > 0) {
       const entry = pending.shift();
       active += 1;
       Promise.resolve()
         .then(entry.work)
-        .then(entry.resolve, entry.reject)
-        .finally(() => {
-          active -= 1;
-          drain();
-        })
-        .catch(entry.reject);
+        .then(
+          (value) => {
+            active -= 1;
+            entry.resolve(value);
+            drain();
+          },
+          (error) => {
+            active -= 1;
+            entry.reject(error);
+            stop(error);
+          },
+        );
     }
   }
 
   return (work) =>
     new Promise((resolve, reject) => {
+      if (failure !== null) {
+        reject(failure);
+        return;
+      }
       pending.push({ reject, resolve, work });
       drain();
     });

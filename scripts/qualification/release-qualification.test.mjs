@@ -249,10 +249,12 @@ describe("v0.7.1 release qualification contract", () => {
     assert.ok(events.indexOf("finish:critical-cli:1") < events.indexOf("start:after-b:2"));
   });
 
-  it("propagates prerequisite failure after active work settles without starting dependents", async () => {
+  it("stops queued work after failure and settles active work without starting dependents", async () => {
     const scenarios = [
       { id: "prerequisite", tier: "core", depends_on: [] },
       { id: "active", tier: "core", depends_on: [] },
+      { id: "queued-a", tier: "core", depends_on: [] },
+      { id: "queued-b", tier: "core", depends_on: [] },
       { id: "dependent", tier: "full", depends_on: ["prerequisite"] },
       { id: "provider", tier: "provider", depends_on: [] },
     ];
