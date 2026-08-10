@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -13,8 +13,8 @@ tags:
   - "repo-recovery"
   - "worktree"
 verify:
-  - "git -C .agentplane/tmp/rf05b-integration-base rev-parse --abbrev-ref HEAD && git -C .agentplane/worktrees/base-main-for-XS41ZV rev-parse --abbrev-ref HEAD"
-  - "git rev-parse --abbrev-ref HEAD && test \"27671e9b8cdec21b1170719a87019f703cec9526\" = \"27671e9b8cdec21b1170719a87019f703cec9526\""
+  - "sh -lc \"test $(git -C .agentplane/tmp/rf05b-integration-base rev-parse --abbrev-ref HEAD) = codex/recovery-mt4fk2-rf05b-main-20260810 && test $(git -C .agentplane/worktrees/base-main-for-XS41ZV rev-parse --abbrev-ref HEAD) = codex/recovery-mt4fk2-xs41zv-main-20260810\""
+  - "sh -lc \"test $(git rev-parse --abbrev-ref HEAD) = main && test $(git rev-parse HEAD) = $(git rev-parse origin/main)\""
 plan_approval:
   state: "approved"
   updated_at: "2026-08-10T11:59:43.787Z"
