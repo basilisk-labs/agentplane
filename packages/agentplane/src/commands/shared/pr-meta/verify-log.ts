@@ -21,6 +21,16 @@ const VERIFY_EXECUTABLES = new Set([
   "unzip",
   "zip",
 ]);
+const VERIFY_RUNTIME_ENV_KEYS = [
+  "AGENTPLANE_CLI_ALIAS",
+  "AGENTPLANE_AGENT_MODE",
+  "AGENTPLANE_RUNTIME_ACTIVE_BIN",
+  "AGENTPLANE_RUNTIME_MODE",
+  "AGENTPLANE_RUNTIME_HANDOFF_FROM",
+  "AGENTPLANE_REPO_LOCAL_HANDOFF",
+  "AGENTPLANE_DEV_AUTO_BOOTSTRAPPED",
+  "AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH",
+] as const;
 
 type ShellInvocation = {
   command: string;
@@ -90,6 +100,12 @@ function parseCommandLine(command: string): string[] {
   return tokens;
 }
 
+export function verificationChildEnv(source: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
+  const env = { ...source };
+  for (const key of VERIFY_RUNTIME_ENV_KEYS) delete env[key];
+  return env;
+}
+
 export function extractLastVerifiedSha(logText: string): string | null {
   const regex = /verified_sha=([0-9a-f]{7,40})/gi;
   let match: RegExpExecArray | null = null;
@@ -126,19 +142,7 @@ export async function runShellCommand(
       output: `verify command executable is not allowed: ${invocation.command}`,
     };
   }
-  const env = { ...process.env };
-  for (const key of [
-    "AGENTPLANE_CLI_ALIAS",
-    "AGENTPLANE_AGENT_MODE",
-    "AGENTPLANE_RUNTIME_ACTIVE_BIN",
-    "AGENTPLANE_RUNTIME_MODE",
-    "AGENTPLANE_RUNTIME_HANDOFF_FROM",
-    "AGENTPLANE_REPO_LOCAL_HANDOFF",
-    "AGENTPLANE_DEV_AUTO_BOOTSTRAPPED",
-    "AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH",
-  ]) {
-    delete env[key];
-  }
+  const env = verificationChildEnv();
   try {
     const child = startProcess({
       command: invocation.command,

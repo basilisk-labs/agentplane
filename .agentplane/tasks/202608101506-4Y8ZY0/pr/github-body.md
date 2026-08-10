@@ -33,10 +33,11 @@ packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.task-advance.test.ts      |  8 +--
- .../commands/task/direct-task-verification.test.ts | 74 ++++++++++++++++++++--
- .../src/commands/task/direct-task-verification.ts  | 46 +++++++++++---
- 3 files changed, 109 insertions(+), 19 deletions(-)
+ .../src/cli/run-cli.core.task-advance.test.ts      |  8 +-
+ .../src/commands/shared/pr-meta/verify-log.ts      | 30 +++----
+ .../commands/task/direct-task-verification.test.ts | 91 ++++++++++++++++++++--
+ .../src/commands/task/direct-task-verification.ts  | 47 ++++++++---
+ 4 files changed, 144 insertions(+), 32 deletions(-)
 ```
 
 </details>
