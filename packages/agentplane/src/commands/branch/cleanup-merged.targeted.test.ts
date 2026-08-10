@@ -465,7 +465,9 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
       const result = await runTargetedCleanup(fakeBin, fixture);
 
       expect(result.code).toBe(5);
-      expect(result.stderr).toContain("requires the exact provider head");
+      expect(result.stderr).toContain(
+        "provider merged head is not contained by the recorded merge commit",
+      );
       expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
       expect(await pathExists(fixture.worktreePath)).toBe(true);
     },
@@ -499,6 +501,24 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     },
     TEST_TIMEOUT_MS,
   );
+
+  it("keeps legacy cleanup blocked when the task commit is outside the closure basis", async () => {
+    const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
+    const task = await readTask({ cwd: fixture.root, taskId: fixture.taskId });
+    const readme = await readFile(task.readmePath, "utf8");
+    const corrupted = readme.replace(/hash: "[0-9a-f]{40}"/u, `hash: "${fixture.branchHead}"`);
+    expect(corrupted).not.toBe(readme);
+    await writeFile(task.readmePath, corrupted, "utf8");
+    await commitAll(fixture.root, `chore ${fixture.taskId} corrupt task commit ancestry`);
+    const fakeBin = await installFakeGh({ kind: "found", fixture });
+
+    const result = await runTargetedCleanup(fakeBin, fixture);
+
+    expect(result.code).toBe(5);
+    expect(result.stderr).toContain("task commit is not covered by the pre-merge closure basis");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+    expect(await pathExists(fixture.worktreePath)).toBe(true);
+  });
 
   it.each([
     ["not_found", "provider PR was not found"],
@@ -548,7 +568,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
       expect(result.stderr).toContain(
         mismatch === "base"
           ? "provider PR was not found for the exact branch and base"
-          : "requires the exact provider head",
+          : "provider merge does not expose a base parent for symmetric patch proof",
       );
       expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
       expect(await pathExists(fixture.worktreePath)).toBe(true);
@@ -578,15 +598,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     expect(await gitBranchExists(fixture.root, fixture.unrelatedBranch)).toBe(true);
     expect(await pathExists(fixture.unrelatedWorktreePath)).toBe(true);
 
-    const second = await runWithFakeGh(fakeBin, [
-      "cleanup",
-      "merged",
-      "--task-id",
-      fixture.taskId,
-      "--yes",
-      "--root",
-      fixture.root,
-    ]);
+    const second = await runTargetedCleanup(fakeBin, fixture);
     expect(second.code).toBe(0);
     expect(second.stdout).toContain(`already clean: task=${fixture.taskId}`);
   });
@@ -645,15 +657,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     const fixture = await createTargetedFixture({ nestedSiblingWorktree: true });
     const fakeBin = await installFakeGh({ kind: "found", fixture });
 
-    const result = await runWithFakeGh(fakeBin, [
-      "cleanup",
-      "merged",
-      "--task-id",
-      fixture.taskId,
-      "--yes",
-      "--root",
-      fixture.root,
-    ]);
+    const result = await runTargetedCleanup(fakeBin, fixture);
 
     expect(result.code).toBe(5);
     expect(result.stderr).toContain("Refusing to remove worktree outside repo");
@@ -711,15 +715,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
   it("fails closed on provider head mismatch before deleting any candidate", async () => {
     const fixture = await createTargetedFixture();
     const fakeBin = await installFakeGh({ kind: "found", fixture, headSha: "0".repeat(40) });
-    const result = await runWithFakeGh(fakeBin, [
-      "cleanup",
-      "merged",
-      "--task-id",
-      fixture.taskId,
-      "--yes",
-      "--root",
-      fixture.root,
-    ]);
+    const result = await runTargetedCleanup(fakeBin, fixture);
     expect(result.code).toBe(5);
     expect(result.stderr).toContain("provider head object is unavailable locally");
     expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
@@ -735,15 +731,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
       headSha: "1".repeat(40),
       providerUpdateBaseSha: fixture.mergeCommit,
     });
-    const result = await runWithFakeGh(fakeBin, [
-      "cleanup",
-      "merged",
-      "--task-id",
-      fixture.taskId,
-      "--yes",
-      "--root",
-      fixture.root,
-    ]);
+    const result = await runTargetedCleanup(fakeBin, fixture);
     expect(result.code).toBe(0);
     expect(result.stdout).toContain("proof=provider_merge");
     expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(false);
@@ -758,15 +746,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
       headSha: "2".repeat(40),
       providerUpdateBaseSha: "0".repeat(40),
     });
-    const result = await runWithFakeGh(fakeBin, [
-      "cleanup",
-      "merged",
-      "--task-id",
-      fixture.taskId,
-      "--yes",
-      "--root",
-      fixture.root,
-    ]);
+    const result = await runTargetedCleanup(fakeBin, fixture);
     expect(result.code).toBe(5);
     expect(result.stderr).toContain("provider head object is unavailable locally");
     expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);

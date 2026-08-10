@@ -358,18 +358,6 @@ export async function resolveProviderReconciliation(opts: {
       reason: "pre-merge closure basis is not an ancestor of the stale local task head",
     };
   }
-  if (
-    !(await gitProofIsAncestor(
-      opts.gitRoot,
-      opts.receipt.providerHeadSha,
-      opts.receipt.mergeCommit,
-    ))
-  ) {
-    return {
-      proof: null,
-      reason: "provider merged head is not contained by the recorded merge commit",
-    };
-  }
   const common = {
     taskId: opts.taskId,
     branch: opts.branch,
@@ -383,6 +371,18 @@ export async function resolveProviderReconciliation(opts: {
   };
   if (opts.branchHead === opts.receipt.providerHeadSha) {
     return { proof: { ...common, kind: "exact_head" }, reason: null };
+  }
+  if (
+    !(await gitProofIsAncestor(
+      opts.gitRoot,
+      opts.receipt.providerHeadSha,
+      opts.receipt.mergeCommit,
+    ))
+  ) {
+    return {
+      proof: null,
+      reason: "provider merged head is not contained by the recorded merge commit",
+    };
   }
   const [headEquivalent, closureBasisCovered] = await Promise.all([
     gitCherryEquivalent({
