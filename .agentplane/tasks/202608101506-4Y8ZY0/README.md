@@ -2,10 +2,10 @@
 id: "202608101506-4Y8ZY0"
 title: "Accept safe shell-free Bun test checks in supervised verification"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -79,8 +79,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "f67e9cc90afc78076277678d9ce6816d0d138d0c"
-  message: "🚧 4Y8ZY0 task: record external evaluator result"
+  hash: "0300e25fecc7df8554b54678a1e1e71c6c2ab706"
+  message: "🚧 4Y8ZY0 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -97,6 +97,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): Keep the intended evaluator rework artifacts that record the unresolved zero-test verification risk."
+  -
+    author: "CODER"
+    body: "Recovery: reopen the task for evaluator-requested zero-test verification rework."
 events:
   -
     type: "status"
@@ -146,9 +149,17 @@ events:
     at: "2026-08-10T16:15:32.507Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): Keep the intended evaluator rework artifacts that record the unresolved zero-test verification risk."
+  -
+    type: "status"
+    at: "2026-08-10T16:24:51.198Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Recovery: reopen the task for evaluator-requested zero-test verification rework."
+    commit: "0300e25fecc7df8554b54678a1e1e71c6c2ab706"
 doc_version: 3
-doc_updated_at: "2026-08-10T16:15:32.573Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-10T16:24:51.341Z"
+doc_updated_by: "CODER"
 description: "The supervisor currently accepts only three-token bun run scripts and rejects valid repository checks such as bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Reuse the existing shell-free argv parser, accept bounded Bun run and test invocations without invoking a shell, preserve fixed policy checks and evidence capture, and prove that task advance no longer creates false implementation-rework cycles for valid Bun tests."
 sections:
   Summary: |-
