@@ -4,7 +4,7 @@ title: "Stop external-agent replay after a typed blocked result"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -67,7 +67,7 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "f418c45799e9eba70c561a386682a57b8cce7a26"
+  hash: "3b66b944ef0ef743f21acb3a524751736cf60a12"
   message: "🚧 4GSCYN task: apply external agent result"
 comments:
   -
@@ -79,6 +79,9 @@ comments:
   -
     author: "CODER"
     body: "Start: restore the unchanged implementation after the verifier rejected an already executed safe check."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 3b66b944ef0e. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -115,9 +118,17 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: blocked-result lifecycle, replay idempotency, explicit resume, routing, types, lint, formatting, and critical CLI coverage all pass."
+  -
+    type: "status"
+    at: "2026-08-10T14:46:01.039Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 3b66b944ef0e. CLI accepted one state-bound external-agent semantic result."
+    commit: "3b66b944ef0ef743f21acb3a524751736cf60a12"
 doc_version: 3
-doc_updated_at: "2026-08-10T14:37:54.429Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-10T14:46:01.039Z"
+doc_updated_by: "SUPERVISOR"
 description: "When an external EXECUTOR returns a valid state-bound blocked semantic result, consume that envelope exactly once, persist the blocker as task state and evidence, and return a non-episode boundary. Do not issue another implementation envelope until an operator deliberately resolves the blocker and resumes the task. Preserve completed-result behavior and exact replay idempotency."
 sections:
   Summary: |-
