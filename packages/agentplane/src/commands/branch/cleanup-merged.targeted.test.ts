@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
 import { chmod, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
@@ -26,6 +27,12 @@ installRunCliIntegrationHarness();
 
 const execFileAsync = promisify(execFile);
 const TEST_TIMEOUT_MS = 120_000;
+const bunTestRuntime = (
+  globalThis as typeof globalThis & {
+    Bun?: { jest: (moduleUrl: string) => { setDefaultTimeout: (timeoutMs: number) => void } };
+  }
+).Bun;
+bunTestRuntime?.jest(fileURLToPath(import.meta.url)).setDefaultTimeout(TEST_TIMEOUT_MS);
 const TEST_WORKFLOW_GITIGNORE =
   ".agentplane/worktrees\n" +
   ".agentplane/cache\n" +
@@ -223,6 +230,7 @@ async function createTargetedFixture(
 }
 
 async function installFakeGh(opts: {
+  additionalBranchPrNumbers?: number[];
   kind: "found" | "not_found" | "unavailable";
   fixture: TargetedFixture;
   headSha?: string;
@@ -245,6 +253,14 @@ async function installFakeGh(opts: {
     head: { ref: opts.fixture.branch, sha: opts.headSha ?? opts.fixture.branchHead },
     base: { ref: opts.baseRef ?? "main" },
   };
+  const branchPayloads = [
+    payload,
+    ...(opts.additionalBranchPrNumbers ?? []).map((number) => ({
+      ...payload,
+      number,
+      html_url: `https://github.com/example/repo/pull/${number}`,
+    })),
+  ];
   const providerUpdatePayload =
     opts.providerUpdateBaseSha && opts.headSha
       ? {
@@ -264,7 +280,7 @@ async function installFakeGh(opts: {
         : "",
       opts.kind === "found"
         ? `console.log(args[1]?.includes("pulls?") ? ${JSON.stringify(
-            JSON.stringify([payload]),
+            JSON.stringify(branchPayloads),
           )} : ${JSON.stringify(JSON.stringify(payload))});`
         : opts.kind === "not_found"
           ? `console.log(args[1]?.includes("pulls?") ? ${JSON.stringify(
@@ -411,6 +427,100 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(false);
     expect(await pathExists(fixture.worktreePath)).toBe(false);
   });
+
+  it(
+    "keeps legacy cleanup blocked when branch-and-base lookup returns multiple PRs",
+    async () => {
+      const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
+      const fakeBin = await installFakeGh({
+        additionalBranchPrNumbers: [456],
+        kind: "found",
+        fixture,
+      });
+
+      const result = await runWithFakeGh(fakeBin, [
+        "cleanup",
+        "merged",
+        "--task-id",
+        fixture.taskId,
+        "--yes",
+        "--root",
+        fixture.root,
+      ]);
+
+      expect(result.code).toBe(5);
+      expect(result.stderr).toContain("multiple PR records for the exact branch and base");
+      expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+      expect(await pathExists(fixture.worktreePath)).toBe(true);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  it(
+    "keeps legacy cleanup blocked after semantic local head drift",
+    async () => {
+      const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
+      await writeFile(
+        path.join(fixture.worktreePath, "legacy-semantic-tail.txt"),
+        "preserve\n",
+        "utf8",
+      );
+      await commitAll(fixture.worktreePath, `semantic ${fixture.taskId} legacy post-merge tail`);
+      const fakeBin = await installFakeGh({ kind: "found", fixture });
+
+      const result = await runWithFakeGh(fakeBin, [
+        "cleanup",
+        "merged",
+        "--task-id",
+        fixture.taskId,
+        "--yes",
+        "--root",
+        fixture.root,
+      ]);
+
+      expect(result.code).toBe(5);
+      expect(result.stderr).toContain("requires the exact provider head");
+      expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+      expect(await pathExists(fixture.worktreePath)).toBe(true);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  it(
+    "keeps legacy cleanup blocked without exact pre-merge closure evidence",
+    async () => {
+      const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
+      const metaPath = path.join(
+        fixture.root,
+        ".agentplane",
+        "tasks",
+        fixture.taskId,
+        "pr",
+        "meta.json",
+      );
+      const meta = JSON.parse(await readFile(metaPath, "utf8")) as Record<string, unknown>;
+      delete meta.pre_merge_closure;
+      await writeFile(metaPath, `${JSON.stringify(meta, null, 2)}\n`, "utf8");
+      await commitAll(fixture.root, `chore ${fixture.taskId} remove legacy closure fixture`);
+      const fakeBin = await installFakeGh({ kind: "found", fixture });
+
+      const result = await runWithFakeGh(fakeBin, [
+        "cleanup",
+        "merged",
+        "--task-id",
+        fixture.taskId,
+        "--yes",
+        "--root",
+        fixture.root,
+      ]);
+
+      expect(result.code).toBe(5);
+      expect(result.stderr).toContain("exact pre-merge closure marker is unavailable");
+      expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+      expect(await pathExists(fixture.worktreePath)).toBe(true);
+    },
+    TEST_TIMEOUT_MS,
+  );
 
   it.each([
     ["not_found", "provider PR was not found"],

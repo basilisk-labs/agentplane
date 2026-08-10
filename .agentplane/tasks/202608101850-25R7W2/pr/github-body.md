@@ -27,11 +27,15 @@ Allow explicit cleanup of a legacy DONE task branch when old PR metadata lacks p
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../branch/cleanup-merged-targeted-proof.ts        |  29 +++-
- .../branch/cleanup-merged.targeted.test.ts         | 159 +++++++++++++++++++--
+ .../branch/cleanup-merged-provider-rebase.test.ts  |   7 +
+ .../branch/cleanup-merged-provider-receipt.test.ts |   8 +
+ .../cleanup-merged-provider-reconciliation.ts      |   1 +
+ .../branch/cleanup-merged-targeted-proof.ts        |  29 ++-
+ .../branch/cleanup-merged.targeted.test.ts         | 269 ++++++++++++++++++++-
+ .../src/commands/pr/internal/sync-github.ts        |  30 ++-
  .../src/commands/task/close-tail-state.test.ts     |  13 +-
  .../src/commands/task/close-tail-state.ts          |   4 +-
- 4 files changed, 190 insertions(+), 15 deletions(-)
+ 8 files changed, 335 insertions(+), 26 deletions(-)
 ```
 
 </details>
