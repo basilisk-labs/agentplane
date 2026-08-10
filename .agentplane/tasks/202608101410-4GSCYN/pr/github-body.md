@@ -15,8 +15,13 @@ When an external EXECUTOR returns a valid state-bound blocked semantic result, c
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Unsupported declared check: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+- State: ok
+- Note:
+
+```text
+Verified current P11 head after P16 landed: focused task-advance lifecycle regression passes 16
+tests/161 assertions and repository typecheck passes.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

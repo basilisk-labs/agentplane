@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-10T15:00:35.054Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Unsupported declared check: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-10T16:47:38.603Z"
+  updated_by: "TESTER"
+  note: "Verified current P11 head after P16 landed: focused task-advance lifecycle regression passes 16 tests/161 assertions and repository typecheck passes."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -180,8 +180,14 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Unsupported declared check: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+  -
+    type: "verify"
+    at: "2026-08-10T16:47:38.603Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified current P11 head after P16 landed: focused task-advance lifecycle regression passes 16 tests/161 assertions and repository typecheck passes."
 doc_version: 3
-doc_updated_at: "2026-08-10T15:00:36.402Z"
+doc_updated_at: "2026-08-10T16:47:39.714Z"
 doc_updated_by: "CODER"
 description: "When an external EXECUTOR returns a valid state-bound blocked semantic result, consume that envelope exactly once, persist the blocker as task state and evidence, and return a non-episode boundary. Do not issue another implementation envelope until an operator deliberately resolves the blocker and resumes the task. Preserve completed-result behavior and exact replay idempotency."
 sections:
@@ -460,6 +466,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-10T16:47:38.603Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified current P11 head after P16 landed: focused task-advance lifecycle regression passes 16 tests/161 assertions and repository typecheck passes.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T15:00:36.402Z, excerpt_hash=sha256:86b0656c20c7d0d6524a42fa6cf6d195dbe7409e19e6ff8fadb0bd4d206b8eb2
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101410-4GSCYN-stop-external-agent-replay-after-a-typed-blocked/.agentplane/tasks/202608101410-4GSCYN/blueprint/resolved-snapshot.json
+    - old_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+    - current_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608101410-4GSCYN
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -477,6 +513,10 @@ sections:
     - Observation: The automatic declared-check runner rejects the valid command bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts as unsupported.
       Impact: Automatic verification can create a false implementation-rework cycle despite passing repository tests.
       Resolution: Recorded this run manually from passing local evidence; fix declared-check classification in the dedicated verifier task from the approved plan.
+
+    - Observation: Typed blocked results are consumed once, replay is refused, blocked tasks emit no new agent episode, explicit resume issues a fresh exchange, and agent-introduced workspace changes are rejected.
+      Impact: The original consumed-envelope replay failure is covered on the current task head.
+      Resolution: Proceed to semantic conflict rework against main, preserving the implementation and P16 verifier timeouts.
 extensions:
   implementation_commit:
     hash: "3b66b944ef0ef743f21acb3a524751736cf60a12"
@@ -770,6 +810,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-10T16:47:38.603Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified current P11 head after P16 landed: focused task-advance lifecycle regression passes 16 tests/161 assertions and repository typecheck passes.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T15:00:36.402Z, excerpt_hash=sha256:86b0656c20c7d0d6524a42fa6cf6d195dbe7409e19e6ff8fadb0bd4d206b8eb2
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101410-4GSCYN-stop-external-agent-replay-after-a-typed-blocked/.agentplane/tasks/202608101410-4GSCYN/blueprint/resolved-snapshot.json
+- old_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+- current_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608101410-4GSCYN
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -791,6 +861,10 @@ DecisionContextRef:
 - Observation: The automatic declared-check runner rejects the valid command bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts as unsupported.
   Impact: Automatic verification can create a false implementation-rework cycle despite passing repository tests.
   Resolution: Recorded this run manually from passing local evidence; fix declared-check classification in the dedicated verifier task from the approved plan.
+
+- Observation: Typed blocked results are consumed once, replay is refused, blocked tasks emit no new agent episode, explicit resume issues a fresh exchange, and agent-introduced workspace changes are rejected.
+  Impact: The original consumed-envelope replay failure is covered on the current task head.
+  Resolution: Proceed to semantic conflict rework against main, preserving the implementation and P16 verifier timeouts.
 
 ## Token Usage
 

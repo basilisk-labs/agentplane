@@ -12,8 +12,8 @@ Created: 2026-08-10T14:11:35.906Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Unsupported declared check: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+- State: ok
+- Note: Verified current P11 head after P16 landed: focused task-advance lifecycle regression passes 16 tests/161 assertions and repository typecheck passes.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
