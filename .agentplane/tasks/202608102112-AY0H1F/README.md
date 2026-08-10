@@ -4,7 +4,7 @@ title: "Repair exactly-once external episode recovery"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -31,11 +31,16 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "af1ff44cd3632496e227deabb2520cf4d0565dd1"
+  message: "🚧 AY0H1F task: repair exactly-once external recovery"
 comments:
   -
     author: "CODER"
     body: "Start: implement exactly-once external episode recovery from the reproduced 0.7.5 failure sequence."
+  -
+    author: "CODER"
+    body: "Implementation recorded: external results recover automatically, successful replay is idempotent, conflicting replay fails closed, stale ownership creates no phantom packet, and legitimate replacements receive distinct transition identities."
 events:
   -
     type: "status"
@@ -44,8 +49,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement exactly-once external episode recovery from the reproduced 0.7.5 failure sequence."
+  -
+    type: "status"
+    at: "2026-08-10T21:53:29.646Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation recorded: external results recover automatically, successful replay is idempotent, conflicting replay fails closed, stale ownership creates no phantom packet, and legitimate replacements receive distinct transition identities."
+    commit: "af1ff44cd3632496e227deabb2520cf4d0565dd1"
 doc_version: 3
-doc_updated_at: "2026-08-10T21:13:13.128Z"
+doc_updated_at: "2026-08-10T21:53:29.646Z"
 doc_updated_by: "CODER"
 description: "Make task advance consume an external-agent envelope exactly once only after its result is durably applied. Prevent read-only workspace-resolution packets from creating fresh intents, let stale in-flight intents transition to a recoverable terminal state after state-fingerprint drift, issue a fresh replacement transition without replaying old output, and return deterministic recovery instructions without manual journal edits."
 sections:
