@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608101223-ZCA7JG-a12b405e6389d7aba0b2020d",
+  "task_id": "202608101223-ZCA7JG",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Require record.implementation_sha === null when evaluatedSha is null, and add the missing-field regression while preserving semantic-SHA behavior.",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "summary": "matchesCurrentVerification normalizes every non-string implementation_sha, including an absent or malformed field, to null before the new null-target branch; a digest-valid record without the required field can therefore satisfy verification.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101223-ZCA7JG/quality/objects/sha256/c07333c02c9947371214be2c6dd32f52c6056b73030f34687f9bf83f753bb607.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608101223-ZCA7JG/quality/20260810-123437944-recovery-context/evaluator-result.json"
+}

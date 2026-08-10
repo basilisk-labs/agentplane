@@ -4,7 +4,7 @@ title: "Accept verification records for metadata-only branch_pr tasks"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,38 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-10T12:32:59.659Z"
+  updated_by: "TESTER"
+  note: "Verified null-target acceptance without weakening semantic SHA, freshness, digest, or concrete-details checks."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-10T12:34:38.178Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "45b1e5991528f862eff7f2eb414f17dc156df32b"
+  blueprint_digest: "b6986aee4a978b91eb932e4a53a9b6e572c6cb207d0305ef61fee8d5a5ce5d6c"
+  evidence_refs:
+    - ".agentplane/tasks/202608101223-ZCA7JG/quality/20260810-123437944-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608101223-ZCA7JG/quality/20260810-123437944-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608101223-ZCA7JG/quality/objects/sha256/78c6f2e9cc1ac0a35b326c643e9c4b7a36abed73b16590be9d0ed4f4490b02a0.md"
+    - ".agentplane/tasks/202608101223-ZCA7JG/quality/20260810-123437944-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608101223-ZCA7JG/quality/20260810-123437944-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608101223-ZCA7JG/quality/20260810-123437944-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608101223-ZCA7JG/quality/20260810-123437944-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608101223-ZCA7JG/README.md"
+    - ".agentplane/tasks/202608101223-ZCA7JG/quality/objects/sha256/c07333c02c9947371214be2c6dd32f52c6056b73030f34687f9bf83f753bb607.patch"
+    - ".agentplane/tasks/202608101223-ZCA7JG/quality/objects/sha256/3c5fc3df0128f433005c297003b0a083cdb9a34e2cc784e2804b0dadb0fccc90.json"
+    - ".agentplane/tasks/202608101223-ZCA7JG/verification/20260810123259659-96076c8fbacf74d2.json"
+    - ".agentplane/tasks/202608101223-ZCA7JG/quality/objects/sha256/332159daa5c17f2070a8d9f388a2197cbcbebdadc64331defb8392ef6d7bf5d8.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "matchesCurrentVerification normalizes every non-string implementation_sha, including an absent or malformed field, to null before the new null-target branch; a digest-valid record without the required field can therefore satisfy verification."
 execution_route:
   frozen: true
   reason_codes:
@@ -60,8 +87,14 @@ events:
     to: "DOING"
     note: "Implementation complete: metadata-only verification records now match only when both semantic targets are null; focused regression, mismatch, stale-metadata, and concrete-details checks pass."
     commit: "8993e891fdf4aabc57db9131c64f8f7e58b7dd3a"
+  -
+    type: "verify"
+    at: "2026-08-10T12:32:59.659Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified null-target acceptance without weakening semantic SHA, freshness, digest, or concrete-details checks."
 doc_version: 3
-doc_updated_at: "2026-08-10T12:31:17.475Z"
+doc_updated_at: "2026-08-10T12:33:00.758Z"
 doc_updated_by: "CODER"
 description: "Allow branch_pr tasks whose reviewable result consists only of managed task metadata to persist and satisfy verification without fabricating an implementation SHA. Preserve freshness checks for semantic code changes and add a regression reproducing PR 4809 where resolveQualityReviewTargetSha returns null."
 sections:
@@ -82,6 +115,56 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-10T12:32:59.659Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified null-target acceptance without weakening semantic SHA, freshness, digest, or concrete-details checks.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T12:31:17.475Z, excerpt_hash=sha256:ac4429827278e260520341199234e5a36490a036b69f56a128e918ce699c0770
+
+    Details:
+
+    Command: bun vitest run packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts
+    Result: pass
+    Evidence: 2 test files passed; 12 tests passed.
+    Scope: focused metadata-only verification regression and worktree route blockers.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build completed with exit code 0.
+    Scope: repository TypeScript contracts affected by verification-record matching.
+
+    Command: git show --stat --oneline HEAD
+    Result: pass
+    Evidence: review shows one guarded matcher change plus focused null/null, mismatch, non-concrete, and stale-metadata tests.
+    Scope: committed implementation and regression coverage.
+
+    Command: bun run ci:local:smoke
+    Result: pass
+    Evidence: formatting, project routing, lint, and 153 precommit tests passed.
+    Scope: local precommit quality gate and regression matrix.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101223-ZCA7JG-accept-verification-records-for-metadata-only-br/.agentplane/tasks/202608101223-ZCA7JG/blueprint/resolved-snapshot.json
+    - old_digest: b6986aee4a978b91eb932e4a53a9b6e572c6cb207d0305ef61fee8d5a5ce5d6c
+    - current_digest: b6986aee4a978b91eb932e4a53a9b6e572c6cb207d0305ef61fee8d5a5ce5d6c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608101223-ZCA7JG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608101223-ZCA7JG
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -123,6 +206,56 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-10T12:32:59.659Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified null-target acceptance without weakening semantic SHA, freshness, digest, or concrete-details checks.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T12:31:17.475Z, excerpt_hash=sha256:ac4429827278e260520341199234e5a36490a036b69f56a128e918ce699c0770
+
+Details:
+
+Command: bun vitest run packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts
+Result: pass
+Evidence: 2 test files passed; 12 tests passed.
+Scope: focused metadata-only verification regression and worktree route blockers.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build completed with exit code 0.
+Scope: repository TypeScript contracts affected by verification-record matching.
+
+Command: git show --stat --oneline HEAD
+Result: pass
+Evidence: review shows one guarded matcher change plus focused null/null, mismatch, non-concrete, and stale-metadata tests.
+Scope: committed implementation and regression coverage.
+
+Command: bun run ci:local:smoke
+Result: pass
+Evidence: formatting, project routing, lint, and 153 precommit tests passed.
+Scope: local precommit quality gate and regression matrix.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101223-ZCA7JG-accept-verification-records-for-metadata-only-br/.agentplane/tasks/202608101223-ZCA7JG/blueprint/resolved-snapshot.json
+- old_digest: b6986aee4a978b91eb932e4a53a9b6e572c6cb207d0305ef61fee8d5a5ce5d6c
+- current_digest: b6986aee4a978b91eb932e4a53a9b6e572c6cb207d0305ef61fee8d5a5ce5d6c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608101223-ZCA7JG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608101223-ZCA7JG
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

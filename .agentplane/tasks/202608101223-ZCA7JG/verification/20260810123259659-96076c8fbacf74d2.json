@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun vitest run packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts\nResult: pass\nEvidence: 2 test files passed; 12 tests passed.\nScope: focused metadata-only verification regression and worktree route blockers.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit code 0.\nScope: repository TypeScript contracts affected by verification-record matching.\n\nCommand: git show --stat --oneline HEAD\nResult: pass\nEvidence: review shows one guarded matcher change plus focused null/null, mismatch, non-concrete, and stale-metadata tests.\nScope: committed implementation and regression coverage.\n\nCommand: bun run ci:local:smoke\nResult: pass\nEvidence: formatting, project routing, lint, and 153 precommit tests passed.\nScope: local precommit quality gate and regression matrix.",
+  "digest": "sha256:96076c8fbacf74d22f12eecb1e914e0bbb5ac03736a6cde6d793d1a3caa6c9c8",
+  "implementation_sha": "45b1e5991528f862eff7f2eb414f17dc156df32b",
+  "kind": "task_verification_record",
+  "note": "Verified null-target acceptance without weakening semantic SHA, freshness, digest, or concrete-details checks.",
+  "recorded_at": "2026-08-10T12:32:59.659Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun vitest run packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:ac4429827278e260520341199234e5a36490a036b69f56a128e918ce699c0770",
+  "task_id": "202608101223-ZCA7JG",
+  "verification_command": "agentplane verify 202608101223-ZCA7JG --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "matchesCurrentVerification normalizes every non-string implementation_sha, including an absent or malformed field, to null before the new null-target branch; a digest-valid record without the required field can therefore satisfy verification.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101223-ZCA7JG/quality/objects/sha256/c07333c02c9947371214be2c6dd32f52c6056b73030f34687f9bf83f753bb607.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Reject a metadata-only verification record whose implementation_sha field is absent."
+  ],
+  "hidden_assumptions": [
+    "The current matcher assumes null normalization is equivalent to validating the explicit nullable schema field."
+  ],
+  "recovery_context": "Require record.implementation_sha === null when evaluatedSha is null, and add the missing-field regression while preserving semantic-SHA behavior."
+}

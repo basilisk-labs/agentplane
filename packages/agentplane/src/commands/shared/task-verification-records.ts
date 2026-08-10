@@ -65,9 +65,9 @@ async function matchesCurrentVerification(
   ) {
     return false;
   }
+  if (evaluatedSha === null) return record.implementation_sha === null;
   const implementationSha =
     typeof record.implementation_sha === "string" ? record.implementation_sha : null;
-  if (evaluatedSha === null) return implementationSha === null;
   return (
     implementationSha === evaluatedSha ||
     (implementationSha !== null &&
