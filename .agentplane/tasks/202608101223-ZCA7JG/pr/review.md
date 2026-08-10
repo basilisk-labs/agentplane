@@ -6,14 +6,14 @@ Created: 2026-08-10T12:25:44.479Z
 
 - Task: `202608101223-ZCA7JG`
 - Title: Accept verification records for metadata-only branch_pr tasks
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608101223-ZCA7JG/accept-verification-records-for-metadata-only-br`
 - Canonical task record: `.agentplane/tasks/202608101223-ZCA7JG/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified null-target acceptance without weakening semantic SHA, freshness, digest, or concrete-details checks.
+- Note: Verified explicit null-target acceptance and rejection of omitted or malformed target identity.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

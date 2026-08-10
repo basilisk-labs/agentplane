@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun vitest run packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts\nResult: pass\nEvidence: 2 test files passed; 13 tests passed, including omitted implementation_sha rejection.\nScope: focused metadata-only verification regression and worktree route blockers.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit code 0.\nScope: repository TypeScript contracts affected by verification-record matching.\n\nCommand: git diff 45b1e5991..HEAD -- packages/agentplane/src/commands/shared/task-verification-records.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts\nResult: pass\nEvidence: rework requires record.implementation_sha === null and adds the missing-field regression.\nScope: evaluator-requested implementation refinement.\n\nCommand: bun run ci:local:smoke\nResult: pass\nEvidence: formatting, project routing, lint, and 153 precommit tests passed.\nScope: current implementation head local quality gate.",
+  "digest": "sha256:353c9a251d44bedd51b3f2c30115926bee03c0b29fa12cea21834460d87d2ebf",
+  "implementation_sha": "222c682e2f6ab586ad00e99f894a42715a590499",
+  "kind": "task_verification_record",
+  "note": "Verified explicit null-target acceptance and rejection of omitted or malformed target identity.",
+  "recorded_at": "2026-08-10T12:45:46.545Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun vitest run packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:ac4429827278e260520341199234e5a36490a036b69f56a128e918ce699c0770",
+  "task_id": "202608101223-ZCA7JG",
+  "verification_command": "agentplane verify 202608101223-ZCA7JG --ok --by TESTER",
+  "verifier": "TESTER"
+}
