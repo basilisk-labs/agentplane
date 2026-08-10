@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -81,7 +81,7 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "0300e25fecc7df8554b54678a1e1e71c6c2ab706"
+  hash: "7d00386e1104e6cd2b0e0eccea98434d3bec0ca0"
   message: "🚧 4Y8ZY0 task: apply external agent result"
 comments:
   -
@@ -102,6 +102,9 @@ comments:
   -
     author: "CODER"
     body: "Recovery: reopen the task for evaluator-requested zero-test verification rework."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 7d00386e1104. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -165,9 +168,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-10T16:31:27.188Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 7d00386e1104. CLI accepted one state-bound external-agent semantic result."
+    commit: "7d00386e1104e6cd2b0e0eccea98434d3bec0ca0"
 doc_version: 3
-doc_updated_at: "2026-08-10T16:29:24.985Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-10T16:31:27.229Z"
+doc_updated_by: "SUPERVISOR"
 description: "The supervisor currently accepts only three-token bun run scripts and rejects valid repository checks such as bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Reuse the existing shell-free argv parser, accept bounded Bun run and test invocations without invoking a shell, preserve fixed policy checks and evidence capture, and prove that task advance no longer creates false implementation-rework cycles for valid Bun tests."
 sections:
   Summary: |-
