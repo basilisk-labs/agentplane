@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-08-10T21:05:06Z",
+  "base_branch": "main",
+  "base_head_after": "30390d4a2c545984642bcc2e4754582ff5d2316b",
+  "remote_refs_deleted": false,
+  "targeted_cleanups": [
+    {
+      "task_id": "202606050702-9E8DFM",
+      "branch": "task/202606050702-9E8DFM/recover-readme-when-closing-no-op-tasks",
+      "head_before": "b5d24bb7ad2cda06378b712cde18880e32da67f0",
+      "provider_pr": 4456,
+      "proof": "provider_merge",
+      "deleted_worktrees": 1,
+      "deleted_local_branches": 1
+    },
+    {
+      "task_id": "202606050748-TSVF5R",
+      "branch": "task/202606050748-TSVF5R/tolerate-rebased-pre-merge-closure",
+      "head_before": "850ae963241b6dde16cf827cc4fa15aa18f9ba66",
+      "provider_pr": 4457,
+      "proof": "provider_merge",
+      "deleted_worktrees": 1,
+      "deleted_local_branches": 1
+    },
+    {
+      "task_id": "202606050808-HP5P63",
+      "branch": "task/202606050808-HP5P63/rebase-premerge-done",
+      "head_before": "c184caf556b3649bac74ce6903d534694f3fcae0",
+      "provider_pr": 4458,
+      "proof": "provider_merge",
+      "deleted_worktrees": 1,
+      "deleted_local_branches": 1
+    },
+    {
+      "task_id": "202606120809-85QTY9",
+      "branch": "task/202606120809-85QTY9/reduce-branch-pr-commit-count-for-single-task-fi",
+      "head_before": "4b378a58b61eb46f787f7880209ac6f717ac2596",
+      "provider_pr": 4510,
+      "proof": "provider_merge",
+      "deleted_worktrees": 1,
+      "deleted_local_branches": 1
+    }
+  ],
+  "stale_registration_prune": {
+    "path": "/private/tmp/nwvcag-scope-adUDF0",
+    "dry_run_reason": "gitdir file points to non-existent location",
+    "pruned": true
+  }
+}
