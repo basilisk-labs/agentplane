@@ -4,7 +4,7 @@ title: "Accept safe shell-free Bun test checks in supervised verification"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -36,11 +36,16 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "8e38a866dfee0f9c801bc6b178db56f0dfeb1e86"
+  message: "🚧 4Y8ZY0 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 8e38a866dfee. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -49,9 +54,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-10T15:33:54.793Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 8e38a866dfee. CLI accepted one state-bound external-agent semantic result."
+    commit: "8e38a866dfee0f9c801bc6b178db56f0dfeb1e86"
 doc_version: 3
-doc_updated_at: "2026-08-10T15:08:59.533Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-10T15:33:54.793Z"
+doc_updated_by: "SUPERVISOR"
 description: "The supervisor currently accepts only three-token bun run scripts and rejects valid repository checks such as bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Reuse the existing shell-free argv parser, accept bounded Bun run and test invocations without invoking a shell, preserve fixed policy checks and evidence capture, and prove that task advance no longer creates false implementation-rework cycles for valid Bun tests."
 sections:
   Summary: |-
