@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608101410-4GSCYN/stop-external-agent-replay-after-a-typed-blocked",
+  "created_at": "2026-08-10T14:11:35.906Z",
+  "diffstat_sha256": "sha256:d5051c500e7bd4421761f05676f302d3b77d53c3801401363376b20bcf1723a2",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608101410-4GSCYN",
+  "updated_at": "2026-08-10T14:11:35.906Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

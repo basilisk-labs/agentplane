@@ -168,6 +168,44 @@ async function writeCompletedResult(
   return resultPath;
 }
 
+async function writeBlockedResult(packet: AgentPacket, summary: string): Promise<string> {
+  if (!packet.exchange) throw new Error("expected an external-agent exchange");
+  const workOrder = JSON.parse(
+    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
+  ) as { work_order_id: string; role: string };
+  const resultPath = path.join(packet.exchange.directory, packet.exchange.result_ref);
+  await writeFile(
+    resultPath,
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        kind: "agent_action_result",
+        task_id: packet.task_id,
+        transition_id: packet.transition_id,
+        state_fingerprint: packet.state_fingerprint,
+        role: workOrder.role,
+        result: {
+          schema_version: 2,
+          kind: "agent_semantic_result",
+          work_order_id: workOrder.work_order_id,
+          status: "blocked",
+          summary,
+          findings: ["The issued authority cannot satisfy the requested effect."],
+          uncertainty: [],
+          blocker: {
+            summary,
+            recommended_action: "Resolve the recorded authority boundary, then resume the task.",
+          },
+        },
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+  return resultPath;
+}
+
 async function returnAgentResult(
   root: string,
   taskId: string,
@@ -832,7 +870,9 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     ]);
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
     await execFileAsync("git", ["add", "."], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "test: seed branch external task"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed branch external task"], {
+      cwd: root,
+    });
 
     const branch = `task/${taskId}/external-round-trip`;
     const taskWorktree = path.join(
@@ -917,6 +957,117 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const packet = JSON.parse(protectedBoundary.stdout) as AgentPacket;
     expect(["approval_required", "external_wait"]).toContain(packet.action.kind);
     expect(packet.stop.reason).not.toBe("semantic_boundary");
+  }, 15_000);
+
+  it("consumes a blocked branch implementation once and waits for an explicit resume", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await cp(
+      path.join(process.cwd(), ".agentplane", "policy"),
+      path.join(root, ".agentplane", "policy"),
+      { recursive: true },
+    );
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const taskId = await createTask(root, "Blocked external branch result");
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Attempt one scoped implementation and preserve any typed blocker.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed blocked external task"], {
+      cwd: root,
+    });
+
+    const branch = `task/${taskId}/blocked-external-result`;
+    const taskWorktree = path.join(
+      root,
+      ".agentplane",
+      "worktrees",
+      `${taskId}-blocked-external-result`,
+    );
+    await mkdir(path.dirname(taskWorktree), { recursive: true });
+    await execFileAsync("git", ["worktree", "add", "-b", branch, taskWorktree], { cwd: root });
+
+    const issued = await readAgentPacket(taskWorktree, taskId);
+    expect(issued.action.kind).toBe("agent_episode");
+    const resultPath = await writeBlockedResult(
+      issued,
+      "The implementation requires authority outside the issued writable roots.",
+    );
+    const firstReturn = await returnAgentResult(taskWorktree, taskId, resultPath);
+    expect(firstReturn.code, firstReturn.stderr).toBe(0);
+    const blockedPacket = JSON.parse(firstReturn.stdout) as AgentPacket;
+    expect(blockedPacket.action.kind).toBe("terminal");
+    expect(blockedPacket.exchange).toBeUndefined();
+    expect(blockedPacket.stop).toEqual({ reason: "terminal", resume: "none" });
+
+    const readmePath = path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md");
+    const readmeAfterFirstReturn = await readFile(readmePath, "utf8");
+    expect(readmeAfterFirstReturn).toContain('status: "BLOCKED"');
+    expect(readmeAfterFirstReturn).toContain(
+      "The implementation requires authority outside the issued writable roots.",
+    );
+    const headAfterFirstReturnResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: taskWorktree,
+    });
+    const headAfterFirstReturn = headAfterFirstReturnResult.stdout.trim();
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: taskWorktree,
+      task_id: taskId,
+    });
+    const journalAfterFirstReturnText = await readFile(journalPath, "utf8");
+    const journalAfterFirstReturn = validateSupervisorExecutionEpisodeJournal(
+      JSON.parse(journalAfterFirstReturnText) as unknown,
+    );
+    const agentRunsAfterFirstReturn = journalAfterFirstReturn.usage.agent_runs;
+
+    const replay = await returnAgentResult(taskWorktree, taskId, resultPath);
+    expect(replay.code).not.toBe(0);
+    expect(replay.stderr).toContain("already consumed");
+    expect(await readFile(readmePath, "utf8")).toBe(readmeAfterFirstReturn);
+    const headAfterReplayResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: taskWorktree,
+    });
+    expect(headAfterReplayResult.stdout.trim()).toBe(headAfterFirstReturn);
+
+    const stillBlocked = await readAgentPacket(taskWorktree, taskId);
+    expect(stillBlocked.action.kind).toBe("terminal");
+    expect(stillBlocked.exchange).toBeUndefined();
+    const journalWhileBlockedText = await readFile(journalPath, "utf8");
+    const journalWhileBlocked = validateSupervisorExecutionEpisodeJournal(
+      JSON.parse(journalWhileBlockedText) as unknown,
+    );
+    expect(journalWhileBlocked.usage.agent_runs).toBe(agentRunsAfterFirstReturn);
+
+    await runCliSilent([
+      "task",
+      "set-status",
+      taskId,
+      "DOING",
+      "--author",
+      "CODER",
+      "--body",
+      "Start: resume after the recorded authority boundary was resolved.",
+      "--root",
+      taskWorktree,
+    ]);
+
+    const resumed = await readAgentPacket(taskWorktree, taskId);
+    expect(resumed.action.kind).toBe("agent_episode");
+    expect(resumed.exchange).toBeDefined();
+    expect(resumed.exchange!.result_path).not.toBe(resultPath);
+    expect(resumed.state_fingerprint).not.toBe(issued.state_fingerprint);
   });
 
   it("matches the managed direct-run preview fingerprint and preserves task evidence", async () => {

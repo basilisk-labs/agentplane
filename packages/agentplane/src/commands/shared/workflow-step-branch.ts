@@ -384,6 +384,21 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: null,
     });
   }
+  if (status === "BLOCKED") {
+    return terminalStep({
+      state,
+      id: "terminal.task_blocked",
+      code: "task_blocked",
+      phase: "task_blocked",
+      checkout: "task_worktree",
+      role: "CODER",
+      outcome: "attention_required",
+      summary:
+        "the task is blocked by a recorded semantic outcome; resolve the blocker and explicitly resume the task before requesting another implementation episode",
+      evidenceMissing: ["blocker_resolution"],
+      selectedBlocker: null,
+    });
+  }
   if (state.batchOwnership.role === "included") return includedBatchStep(state);
   if (!state.prFlow?.branch.name && verifiedIncludedClosureCandidate(state.task)) {
     return cliOperationStep({

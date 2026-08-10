@@ -41,6 +41,62 @@ function implementationSubject(taskId: string): string {
   return `🚧 ${taskId.split("-").at(-1)} task: apply external agent result`;
 }
 
+function blockedResultBody(opts: {
+  role: ExternalAgentExchange["role"];
+  semantic: ExternalAgentResultEnvelope["result"];
+}): string {
+  const recommendation = opts.semantic.blocker?.recommended_action?.trim();
+  return (
+    `Blocked: external ${opts.role} could not complete the scoped implementation. ` +
+    `${opts.semantic.summary.trim()}` +
+    (recommendation ? ` Recommended action: ${recommendation}` : "")
+  );
+}
+
+async function recordExternalBlockedResult(opts: {
+  command: CommandContext;
+  exchange: ExternalAgentExchange;
+  semantic: ExternalAgentResultEnvelope["result"];
+}): Promise<void> {
+  await cmdTaskSetStatus({
+    ctx: opts.command,
+    cwd: opts.exchange.checkout,
+    taskId: opts.exchange.task_id,
+    status: "BLOCKED",
+    author: "SUPERVISOR",
+    body: blockedResultBody({ role: opts.exchange.role, semantic: opts.semantic }),
+    force: false,
+    yes: false,
+    commitFromComment: false,
+    commitAllow: [],
+    commitAutoAllow: false,
+    commitAllowTasks: true,
+    commitRequireClean: false,
+    confirmStatusCommit: false,
+    quiet: true,
+  });
+  const exitCode = await cmdCommit({
+    ctx: opts.command,
+    cwd: opts.exchange.checkout,
+    taskId: opts.exchange.task_id,
+    message: `🚧 ${opts.exchange.task_id.split("-").at(-1)} task: record external blocker`,
+    close: false,
+    allow: [],
+    autoAllow: false,
+    allowTasks: true,
+    allowBase: false,
+    allowPolicy: false,
+    allowConfig: false,
+    allowHooks: false,
+    allowCI: false,
+    requireClean: false,
+    quiet: true,
+    closeUnstageOthers: false,
+    closeCheckOnly: false,
+  });
+  if (exitCode !== 0) throw new Error(`External-agent blocker commit exited ${exitCode}.`);
+}
+
 async function assertRecoverableImplementationCommit(opts: {
   cwd: string;
   baseline: string | null;
@@ -195,6 +251,14 @@ export async function applyExternalImplementationResult(opts: {
 }): Promise<void> {
   const semantic = opts.envelope.result;
   if (semantic.status !== "completed") {
+    if (semantic.status === "blocked" && opts.decision.workflowMode === "branch_pr") {
+      await recordExternalBlockedResult({
+        command: opts.command,
+        exchange: opts.exchange,
+        semantic,
+      });
+      return;
+    }
     await cmdTaskComment({
       ctx: opts.command,
       cwd: opts.exchange.checkout,
