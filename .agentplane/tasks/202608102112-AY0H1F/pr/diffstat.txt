@@ -1,0 +1,14 @@
+ ...n-cli.core.task-advance-effect-recovery.test.ts | 112 +++++++++-
+ ...un-cli.core.task-advance.blocked-result.test.ts |   4 +-
+ ...n-cli.core.task-advance.branch-worktree.test.ts |  12 +-
+ .../src/cli/run-cli.core.task-advance.test.ts      |  28 +--
+ ...i.core.task-advance.worktree-resolution.test.ts |   8 +-
+ .../src/commands/task/advance.command.ts           |  16 +-
+ .../src/commands/task/agent-action-packet.test.ts  |   9 +-
+ .../src/commands/task/agent-action-packet.ts       |  17 +-
+ .../task/external-agent-exchange-authority.ts      |  16 +-
+ .../src/commands/task/external-agent-exchange.ts   |  51 +++--
+ .../task/external-agent-supervisor-episode.ts      |  13 ++
+ .../task/external-agent-supervisor-recovery.ts     | 238 +++++++++++++++++++++
+ .../src/commands/task/external-agent-supervisor.ts |  64 +++++-
+ 13 files changed, 527 insertions(+), 61 deletions(-)

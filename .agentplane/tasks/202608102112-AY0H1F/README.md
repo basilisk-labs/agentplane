@@ -4,7 +4,7 @@ title: "Repair exactly-once external episode recovery"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-10T21:54:25.177Z"
+  updated_by: "TESTER"
+  note: "PASS for implementation af1ff44cd: exactly-once task-advance suites pass (30/30); focused packet and recovery suites pass (26/26); identical consumed replay is idempotent, conflicting replay fails closed, plain advance resumes result_received, ownership conflict creates no phantom exchange, and replacement gets a distinct transition; typecheck, ESLint, changed-format, diff check, and hotspot gates pass. Full critical-cli stopped on the pre-existing RF-04 workspace dependency-seed path defect before reaching changed tests; this is unrelated to the patch."
   attempts: 0
 execution_route:
   frozen: true
@@ -57,8 +57,14 @@ events:
     to: "DOING"
     note: "Implementation recorded: external results recover automatically, successful replay is idempotent, conflicting replay fails closed, stale ownership creates no phantom packet, and legitimate replacements receive distinct transition identities."
     commit: "af1ff44cd3632496e227deabb2520cf4d0565dd1"
+  -
+    type: "verify"
+    at: "2026-08-10T21:54:25.177Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS for implementation af1ff44cd: exactly-once task-advance suites pass (30/30); focused packet and recovery suites pass (26/26); identical consumed replay is idempotent, conflicting replay fails closed, plain advance resumes result_received, ownership conflict creates no phantom exchange, and replacement gets a distinct transition; typecheck, ESLint, changed-format, diff check, and hotspot gates pass. Full critical-cli stopped on the pre-existing RF-04 workspace dependency-seed path defect before reaching changed tests; this is unrelated to the patch."
 doc_version: 3
-doc_updated_at: "2026-08-10T21:53:29.646Z"
+doc_updated_at: "2026-08-10T21:54:26.167Z"
 doc_updated_by: "CODER"
 description: "Make task advance consume an external-agent envelope exactly once only after its result is durably applied. Prevent read-only workspace-resolution packets from creating fresh intents, let stale in-flight intents transition to a recoverable terminal state after state-fingerprint drift, issue a fresh replacement transition without replaying old output, and return deterministic recovery instructions without manual journal edits."
 sections:
@@ -89,6 +95,36 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-10T21:54:25.177Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS for implementation af1ff44cd: exactly-once task-advance suites pass (30/30); focused packet and recovery suites pass (26/26); identical consumed replay is idempotent, conflicting replay fails closed, plain advance resumes result_received, ownership conflict creates no phantom exchange, and replacement gets a distinct transition; typecheck, ESLint, changed-format, diff check, and hotspot gates pass. Full critical-cli stopped on the pre-existing RF-04 workspace dependency-seed path defect before reaching changed tests; this is unrelated to the patch.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T21:53:29.646Z, excerpt_hash=sha256:8922db684fa37dde6d3ed1b685016f3d5b2523e84a98aa8c7fae61403fac0633
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608102112-AY0H1F-exactly-once-external-episode-recovery/.agentplane/tasks/202608102112-AY0H1F/blueprint/resolved-snapshot.json
+    - old_digest: 945ec6c25c798ad216f96f1049720fc7e2e853efc958dd7e111ac0c301f12b1d
+    - current_digest: 945ec6c25c798ad216f96f1049720fc7e2e853efc958dd7e111ac0c301f12b1d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608102112-AY0H1F
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -136,6 +172,36 @@ PLANNER fallback scaffold for "Repair exactly-once external episode recovery". R
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-10T21:54:25.177Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS for implementation af1ff44cd: exactly-once task-advance suites pass (30/30); focused packet and recovery suites pass (26/26); identical consumed replay is idempotent, conflicting replay fails closed, plain advance resumes result_received, ownership conflict creates no phantom exchange, and replacement gets a distinct transition; typecheck, ESLint, changed-format, diff check, and hotspot gates pass. Full critical-cli stopped on the pre-existing RF-04 workspace dependency-seed path defect before reaching changed tests; this is unrelated to the patch.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T21:53:29.646Z, excerpt_hash=sha256:8922db684fa37dde6d3ed1b685016f3d5b2523e84a98aa8c7fae61403fac0633
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608102112-AY0H1F-exactly-once-external-episode-recovery/.agentplane/tasks/202608102112-AY0H1F/blueprint/resolved-snapshot.json
+- old_digest: 945ec6c25c798ad216f96f1049720fc7e2e853efc958dd7e111ac0c301f12b1d
+- current_digest: 945ec6c25c798ad216f96f1049720fc7e2e853efc958dd7e111ac0c301f12b1d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608102112-AY0H1F
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
