@@ -99,12 +99,12 @@ export function assertExternalAgentSupervisorIntent(opts: {
   if (operation.status === "completed" && opts.exchange.status === "consumed") {
     throw new CliError({
       code: "E_VALIDATION",
-      message: "External-agent result was already consumed; replay is refused.",
+      message: "External-agent result was already consumed; replay must use the stored receipt.",
     });
   }
   if (
     operation.status === "completed" &&
-    opts.exchange.status === "accepted" &&
+    (opts.exchange.status === "result_received" || opts.exchange.status === "accepted") &&
     (journal.cursor.phase === "completed" ||
       journal.cursor.phase === "ready" ||
       (journal.cursor.phase === "stopped" && journal.stop?.reason === "budget_exhausted"))
@@ -119,7 +119,11 @@ export function assertExternalAgentSupervisorIntent(opts: {
     journal.stop.operation_key === operation.operation_key &&
     operation.status === "intent"
   ) {
-    if (opts.exchange.status !== "issued" && opts.exchange.status !== "accepted") {
+    if (
+      opts.exchange.status !== "issued" &&
+      opts.exchange.status !== "result_received" &&
+      opts.exchange.status !== "accepted"
+    ) {
       throw new CliError({
         code: "E_VALIDATION",
         message: "External-agent exchange state is invalid for effect reconciliation.",
@@ -145,7 +149,11 @@ export function assertExternalAgentSupervisorIntent(opts: {
       message: "External-agent supervisor has no matching issued operation intent.",
     });
   }
-  if (opts.exchange.status !== "issued" && opts.exchange.status !== "accepted") {
+  if (
+    opts.exchange.status !== "issued" &&
+    opts.exchange.status !== "result_received" &&
+    opts.exchange.status !== "accepted"
+  ) {
     throw new CliError({
       code: "E_VALIDATION",
       message: "External-agent exchange state is invalid for an issued operation intent.",

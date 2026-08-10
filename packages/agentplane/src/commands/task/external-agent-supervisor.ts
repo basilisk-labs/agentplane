@@ -53,6 +53,7 @@ import {
   applyExternalReadOnlyWorktreeObservation,
 } from "./external-agent-implementation-authority.js";
 import { usesExternalImplementationAuthority } from "./external-agent-purpose.js";
+import { superviseExternalAgentIssuance } from "./external-agent-supervisor-recovery.js";
 import { recordIssuedExternalAgentEpisode } from "./external-agent-supervisor-episode.js";
 import {
   applyExternalPlanningResult,
@@ -144,17 +145,22 @@ async function prepareEvaluatorInput(opts: {
   };
 }
 
-export async function issueExternalAgentExchange(opts: {
+async function issueExternalAgentExchangeUnlocked(opts: {
   ctx: CommandCtx;
   command: CommandContext;
   decision: TaskRouteDecision;
   work_order: AgentWorkOrderV2;
   replace_failed_operation: boolean;
+  transition_identity: string | null;
 }): Promise<IssuedExternalAgentExchange | null> {
   const step = opts.decision.workflowStep;
   const purpose = semanticPurpose(opts.decision);
   if (!purpose) return null;
-  const transitionId = agentTransitionId(step.id);
+  const transitionId = agentTransitionId(
+    step.id,
+    step.preconditionFingerprint.digest,
+    opts.transition_identity ?? undefined,
+  );
   const commonGitDir = await resolveCommandGitCommonDir(opts.command);
   const paths = await resolveExternalAgentExchangePaths({
     git_root: opts.command.resolvedProject.gitRoot,
@@ -223,6 +229,7 @@ export async function issueExternalAgentExchange(opts: {
   const preparedExchange: ExternalAgentExchange = {
     schema_version: 1,
     kind: "external_agent_exchange",
+    issue_digest_version: 2,
     status: "prepared",
     task_id: opts.decision.task.id,
     transition_id: transitionId,
@@ -263,6 +270,28 @@ export async function issueExternalAgentExchange(opts: {
   };
   await writeExternalAgentExchange(paths.exchange, exchange);
   return { exchange, paths, work_order: workOrder };
+}
+
+export async function issueExternalAgentExchange(opts: {
+  ctx: CommandCtx;
+  command: CommandContext;
+  decision: TaskRouteDecision;
+  work_order: AgentWorkOrderV2;
+  replace_failed_operation: boolean;
+}): Promise<IssuedExternalAgentExchange | null> {
+  const purpose = semanticPurpose(opts.decision);
+  if (!purpose) return null;
+  return await superviseExternalAgentIssuance({
+    command: opts.command,
+    decision: opts.decision,
+    work_order: opts.work_order,
+    purpose,
+    issue: async (transitionIdentity) =>
+      await issueExternalAgentExchangeUnlocked({
+        ...opts,
+        transition_identity: transitionIdentity,
+      }),
+  });
 }
 
 async function applyAcceptedResult(opts: {
@@ -313,8 +342,7 @@ function assertReadOnlyReturnFresh(opts: {
   decision: TaskRouteDecision;
 }): void {
   if (
-    opts.decision.workflowStep.preconditionFingerprint.digest !== opts.exchange.state_fingerprint ||
-    agentTransitionId(opts.decision.workflowStep.id) !== opts.exchange.transition_id
+    opts.decision.workflowStep.preconditionFingerprint.digest !== opts.exchange.state_fingerprint
   ) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -397,6 +425,21 @@ export async function acceptExternalAgentResult(opts: {
   try {
     let exchange = (await readExternalAgentExchange(paths.exchange)) ?? initial;
     const workOrder = await readExternalAgentWorkOrder(paths.work_order);
+    const envelope = validateExternalAgentResultEnvelope({ raw, exchange, work_order: workOrder });
+    const resultDigest = externalAgentResultDigest(envelope);
+    if (exchange.status === "consumed") {
+      if (exchange.result_digest !== resultDigest) {
+        throw new CliError({
+          code: "E_VALIDATION",
+          message: "A different result is already recorded for this external-agent exchange.",
+        });
+      }
+      return await refreshExternalAgentRoute({
+        cwd: exchange.checkout,
+        task_id: opts.task_id,
+        include_remote: opts.include_remote,
+      });
+    }
     const store = createSupervisorEpisodeStore(journalPath);
     const intent = assertExternalAgentSupervisorIntent({
       journal: await store.read(),
@@ -406,12 +449,13 @@ export async function acceptExternalAgentResult(opts: {
       task_id: opts.task_id,
       state_fingerprint: identity.state_fingerprint,
     });
-    const envelope = validateExternalAgentResultEnvelope({ raw, exchange, work_order: workOrder });
-    const resultDigest = externalAgentResultDigest(envelope);
-    if (exchange.status === "accepted" && exchange.result_digest !== resultDigest) {
+    if (
+      (exchange.status === "result_received" || exchange.status === "accepted") &&
+      exchange.result_digest !== resultDigest
+    ) {
       throw new CliError({
         code: "E_VALIDATION",
-        message: "A different result is already accepted for this external-agent exchange.",
+        message: "A different result is already recorded for this external-agent exchange.",
       });
     }
     if (
@@ -427,7 +471,7 @@ export async function acceptExternalAgentResult(opts: {
     if (exchange.status === "issued") {
       exchange = {
         ...exchange,
-        status: "accepted",
+        status: "result_received",
         result_digest: resultDigest,
         result: envelope,
         updated_at: new Date().toISOString(),
@@ -460,7 +504,7 @@ export async function acceptExternalAgentResult(opts: {
       return current;
     }
     const alreadyApplied =
-      exchange.status === "accepted" &&
+      (exchange.status === "result_received" || exchange.status === "accepted") &&
       (await isReadOnlyResultAlreadyApplied({
         command: checkoutCommand,
         exchange,

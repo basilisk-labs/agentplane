@@ -59,6 +59,19 @@ export async function recordIssuedExternalAgentEpisode(opts: {
       if (!(await opened.store.compareAndSwap(journal.digest, reopened))) continue;
       journal = reopened;
     }
+    if (journal.status === "stopped" && journal.stop?.reason === "effect_in_doubt") {
+      const latest = journal.operations.at(-1);
+      if (
+        latest?.status === "intent" &&
+        journal.stop.operation_key === latest.operation_key &&
+        latest.precondition_fingerprint_digest === fingerprint &&
+        latest.work_order_ref === opts.work_order_ref &&
+        latest.role === opts.work_order.role &&
+        latest.effect_ref === effectRef
+      ) {
+        return;
+      }
+    }
     if (journal.status === "stopped") {
       throw new CliError({
         code: "E_RUNTIME",

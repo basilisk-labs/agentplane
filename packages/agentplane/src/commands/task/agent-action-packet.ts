@@ -264,14 +264,20 @@ function packetBytes(packet: AgentActionPacket): number {
   return Buffer.byteLength(JSON.stringify(packet, null, 2), "utf8");
 }
 
-export function agentTransitionId(stepId: string): string {
-  return `tr_${createHash("sha256").update(stepId).digest("hex").slice(0, 32)}`;
+export function agentTransitionId(
+  stepId: string,
+  stateFingerprint?: string,
+  issuanceIdentity?: string,
+): string {
+  const identity = [stepId, stateFingerprint, issuanceIdentity].filter(Boolean).join("\u0000");
+  return `tr_${createHash("sha256").update(identity).digest("hex").slice(0, 32)}`;
 }
 
 export function buildAgentActionPacket(opts: {
   decision: TaskRouteDecision;
   work_order: AgentWorkOrderV2;
   exchange?: AgentActionPacket["exchange"];
+  transition_id?: string;
   recovery?: AgentActionPacket["recovery"];
   remote?: boolean;
 }): AgentActionPacket {
@@ -295,7 +301,12 @@ export function buildAgentActionPacket(opts: {
   const packet: AgentActionPacket = {
     schema_version: 1,
     task_id: opts.decision.task.id,
-    transition_id: agentTransitionId(opts.decision.workflowStep.id),
+    transition_id:
+      opts.transition_id ??
+      agentTransitionId(
+        opts.decision.workflowStep.id,
+        opts.decision.workflowStep.preconditionFingerprint.digest,
+      ),
     state_fingerprint: opts.decision.workflowStep.preconditionFingerprint.digest,
     ...projected,
     authority: {

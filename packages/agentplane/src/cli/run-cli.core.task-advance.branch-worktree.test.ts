@@ -181,7 +181,7 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
       cwd: taskWorktree,
     });
     expect(jsonPacket.transition_id, worktreeStatus.stdout).toBe(
-      agentTransitionId("agent.branch_implementation"),
+      agentTransitionId("agent.branch_implementation", jsonPacket.state_fingerprint),
     );
     expect(jsonPacket).toMatchObject({
       action: { kind: "agent_episode" },
@@ -255,7 +255,10 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
     const beforeRenderOnly = await readFile(readmePath, "utf8");
     const journalBeforeRenderOnly = await readFile(journalPath, "utf8");
     const stablePacket = await readAgentPacket(root, taskId);
-    expect(stablePacket.transition_id).toBe(jsonPacket.transition_id);
+    expect(stablePacket.transition_id).toBe(
+      agentTransitionId("agent.branch_implementation", stablePacket.state_fingerprint),
+    );
+    expect(stablePacket.transition_id).not.toBe(jsonPacket.transition_id);
     expect(stablePacket.action).toEqual(jsonPacket.action);
     expect(humanOutput).toContain(stablePacket.state_fingerprint);
     expect(await readFile(readmePath, "utf8")).toBe(beforeRenderOnly);
@@ -311,7 +314,10 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
     const recoveryReadme = await readFile(readmePath, "utf8");
     const recoveryPacket = await readAgentPacket(taskWorktree, taskId);
     expect(recoveryPacket).toMatchObject({
-      transition_id: agentTransitionId(recoveryDecision.workflowStep.id),
+      transition_id: agentTransitionId(
+        recoveryDecision.workflowStep.id,
+        recoveryDecision.workflowStep.preconditionFingerprint.digest,
+      ),
       state_fingerprint: recoveryDecision.workflowStep.preconditionFingerprint.digest,
       action: { kind: "framework_transition" },
       recovery: { reason: "effect_in_doubt", evidence_digest: effectInDoubt.digest },
