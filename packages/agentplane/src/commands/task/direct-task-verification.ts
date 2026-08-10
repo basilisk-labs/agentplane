@@ -14,6 +14,11 @@ const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.free
 });
 const CHECK_OUTPUT_LIMIT = 4000;
 const SAFE_BUN_SCRIPT = /^[A-Za-z0-9][A-Za-z0-9:._-]*$/u;
+const BUN_ZERO_TEST_PATTERNS = [
+  /following filters did not match any test files/iu,
+  /\bno tests? (?:found|matched|ran|were run)\b/iu,
+  /\bran 0 tests?\b/iu,
+] as const;
 const AGENTPLANE_BIN = resolveAgentplaneBinPath();
 
 type DirectTaskCheck = {
@@ -78,6 +83,18 @@ function directTaskCheckTimeoutMs(script: string | null): number {
   return script === null
     ? DEFAULT_CHECK_TIMEOUT_MS
     : (CHECK_TIMEOUT_MS_BY_SCRIPT[script] ?? DEFAULT_CHECK_TIMEOUT_MS);
+}
+
+function bunTestReportedZeroTests(opts: {
+  parsed: ParsedDirectTaskCheck;
+  stdout: string;
+  stderr: string;
+}): boolean {
+  if (opts.parsed.executable !== "bun" || opts.parsed.args[0] !== "test") return false;
+  const output = `${opts.stdout}\n${opts.stderr}`;
+  if (BUN_ZERO_TEST_PATTERNS.some((pattern) => pattern.test(output))) return true;
+  const passCounts = [...output.matchAll(/\b(\d+)\s+pass\b/giu)].map((match) => Number(match[1]));
+  return passCounts.length > 0 && !passCounts.some((count) => count > 0);
 }
 
 function parseTrustedDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
@@ -190,6 +207,14 @@ export async function runDirectTaskVerification(opts: {
           status: "failed" as const,
           checks,
           reason: `Declared check failed: ${command}`,
+        };
+        return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
+      }
+      if (bunTestReportedZeroTests({ parsed, stdout: executed.stdout, stderr: executed.stderr })) {
+        const result = {
+          status: "failed" as const,
+          checks,
+          reason: `Declared bun test check executed zero tests: ${command}`,
         };
         return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
       }

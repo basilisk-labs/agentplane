@@ -117,6 +117,40 @@ describe("direct task verification", () => {
     expect(invocation?.env).not.toHaveProperty("AGENTPLANE_RUNTIME_ACTIVE_BIN");
   });
 
+  it("rejects successful Bun processes that report zero executed tests", async () => {
+    for (const output of [
+      { stdout: "0 pass\n0 fail\nRan 0 tests across 0 files.", stderr: "" },
+      {
+        stdout: "1 pass",
+        stderr: "The following filters did not match any test files: missing-filter",
+      },
+    ]) {
+      const cwd = await root();
+      mocks.runProcess.mockResolvedValueOnce({ exitCode: 0, ...output });
+      const check = "bun test missing-filter";
+
+      const result = await runDirectTaskVerification({
+        command: command(cwd),
+        task: { verify: [check], task_kind: "code", mutation_scope: "code" },
+        task_id: TASK_ID,
+        cwd,
+        run_process: mocks.runProcess,
+      });
+
+      expect(result).toMatchObject({
+        status: "failed",
+        reason: `Declared bun test check executed zero tests: ${check}`,
+        checks: [{ command: check, exit_code: 0 }],
+      });
+      expect(
+        JSON.parse(await readFile(path.join(cwd, result.artifact_path), "utf8")),
+      ).toMatchObject({
+        status: "failed",
+        reason: `Declared bun test check executed zero tests: ${check}`,
+      });
+    }
+  });
+
   it("runs every declared check without a shell and records durable evidence", async () => {
     const cwd = await root();
     mocks.runProcess
