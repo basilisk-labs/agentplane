@@ -12,8 +12,8 @@ Created: 2026-08-10T15:08:59.810Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-10T15:08:59.810Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-10T15:08:59.810Z
+- Updated: 2026-08-10T15:35:05.028Z
 - Branch: task/202608101506-4Y8ZY0/accept-safe-shell-free-bun-test-checks-in-superv
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
