@@ -16,7 +16,7 @@ Record and verify the recovery that preserved both dirty qualification worktrees
 ## Verification
 
 - State: ok
-- Note: Verified canonical main ownership and byte-preservation of both dirty recovery worktrees.
+- Note: Verified integration-safe commands assert the observed recovery branches and canonical main state.
 - Canonical workflow state lives in the task README.
 
 <details>

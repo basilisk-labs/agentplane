@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608101159-Y4H8N5-94190fa03993104823ac9106",
+  "prepared_at": "2026-08-10T13:49:11.044Z",
+  "task": {
+    "id": "202608101159-Y4H8N5",
+    "revision": 16,
+    "objective": "Restore canonical primary checkout ownership\n\nRecord and verify the recovery that preserved both dirty qualification worktrees on dedicated recovery branches, freed main, refreshed origin/main, and attached the primary checkout to the exact hosted main head without deleting user state.",
+    "acceptance_criteria": [
+      "sh -lc \"test $(git -C .agentplane/tmp/rf05b-integration-base rev-parse --abbrev-ref HEAD) = codex/recovery-mt4fk2-rf05b-main-20260810 && test $(git -C .agentplane/worktrees/base-main-for-XS41ZV rev-parse --abbrev-ref HEAD) = codex/recovery-mt4fk2-xs41zv-main-20260810\"",
+      "sh -lc \"test $(git rev-parse --abbrev-ref HEAD) = main && test $(git rev-parse HEAD) = $(git rev-parse origin/main)\"",
+      "- In scope: Record and verify the recovery that preserved both dirty qualification worktrees on dedicated recovery branches, freed main, refreshed origin/main, and attached the primary checkout to the exact hosted main head without deleting user state.\n- Out of scope: unrelated refactors not required for \"Restore canonical primary checkout ownership\".",
+      "1. Verify the primary checkout is attached to main at the exact origin/main SHA. 2. Verify the two previously dirty main-owning worktrees now use distinct codex/recovery-* branches at the unchanged d6f6dc64270c0b5ce8db59d6c30a7a23b7f73d83 commit. 3. Compare the preserved status, working-tree diff, and index digests with the pre-switch evidence captured during recovery. 4. Confirm no worktree, branch, untracked file, stash, or tracked change was deleted. 5. Record the remaining local cleanup debt as dependent tasks and finish this task as a no-product-code repository recovery.",
+      "PLANNER fallback scaffold for \"Restore canonical primary checkout ownership\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Restore canonical primary checkout ownership\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "a732d257eadd01754e31ef8f603e0b0c958e3179",
+  "diff_base_sha": "427ebc45a1e2ad9b12d50a9ad2e89db5d2785fee",
+  "blueprint_digest": "eb2556bcf3d3d7ec6907851fbb817d505566ba1703aa7332ddc8c7a18780c9db",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608101159-Y4H8N5/quality/20260810-134911044-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:c2802b8cb583467e033740d497f76ec6610c21da4ee90698198511126443f975",
+    "prompt_path": ".agentplane/tasks/202608101159-Y4H8N5/quality/objects/sha256/ed29650d891297bb8c0f55b2b8a67565a398578fb16116b30ea500a728aec4a8.md",
+    "result_schema_path": ".agentplane/tasks/202608101159-Y4H8N5/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608101159-Y4H8N5/README.md",
+      "sha256": "sha256:3c9fa47f1576a61df7d1920042c5761ba1b6bfba24f7bc2ba0a856a9e5877780",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608101159-Y4H8N5/quality/objects/sha256/0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5.patch",
+      "sha256": "sha256:0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608101159-Y4H8N5/quality/objects/sha256/ce629ed017f3813eb1c63c4c9b14f2e5cff736cd579ef07bcb07ee3991d650aa.json",
+      "sha256": "sha256:ce629ed017f3813eb1c63c4c9b14f2e5cff736cd579ef07bcb07ee3991d650aa",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608101159-Y4H8N5/verification/20260810134832124-54d83ed57f45c68a.json",
+      "sha256": "sha256:6d27c5ee59f3edadd692091f8d13b5e8b885e3e6b6e3aa44de310ee64f7d6c70",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608101159-Y4H8N5/quality/objects/sha256/73ab16f31bed8264e4c3b195805537945f29e1b45b6bb17ed2ba27ede0804c16.json",
+      "sha256": "sha256:73ab16f31bed8264e4c3b195805537945f29e1b45b6bb17ed2ba27ede0804c16",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
