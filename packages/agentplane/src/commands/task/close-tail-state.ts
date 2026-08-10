@@ -32,6 +32,7 @@ export async function taskPreMergeClosureRecordedOnBase(opts: {
   baseBranch: string;
   branch: string;
   prNumber: number;
+  allowProviderRecoveredPrNumber?: boolean;
 }): Promise<boolean> {
   const taskPath = path.posix.join(opts.workflowDir, opts.taskId, "README.md");
   const metaPath = path.posix.join(opts.workflowDir, opts.taskId, "pr", "meta.json");
@@ -64,7 +65,8 @@ export async function taskPreMergeClosureRecordedOnBase(opts: {
       marker.branch === opts.branch &&
       (marker.prNumber === undefined || marker.prNumber === opts.prNumber) &&
       meta.branch?.trim() === opts.branch &&
-      meta.pr_number === opts.prNumber
+      (meta.pr_number === opts.prNumber ||
+        (opts.allowProviderRecoveredPrNumber === true && meta.pr_number === undefined))
     );
   } catch {
     return false;
