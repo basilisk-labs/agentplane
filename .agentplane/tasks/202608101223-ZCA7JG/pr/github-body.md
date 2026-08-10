@@ -15,8 +15,13 @@ Allow branch_pr tasks whose reviewable result consists only of managed task meta
 
 ## Verification
 
-- State: needs_rework
-- Note: P1: route verification rejects evaluatedSha=null before checking the newly valid null-bound record.
+- State: ok
+- Note:
+
+```text
+Verified the complete metadata-only path from route target resolution through durable
+verification-record acceptance.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

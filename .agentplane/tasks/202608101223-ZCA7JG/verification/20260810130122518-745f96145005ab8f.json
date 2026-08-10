@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun vitest run packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/shared/route-decision-verification.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts\nResult: pass\nEvidence: 4 test files passed; 28 tests passed, including route-level evaluatedSha=null propagation.\nScope: durable record matching, route target selection, and verification blocker derivation.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit code 0.\nScope: changed route and verification-record contracts.\n\nCommand: bun run ci:local:smoke\nResult: pass\nEvidence: formatting, project routing, lint, and 153 precommit tests passed on the current source changes.\nScope: local precommit quality gate.\n\nCommand: inspect GitHub review thread PRRT_kwDORCLmJM6X3nFI against HEAD\nResult: pass\nEvidence: the cited early null return is removed and a caller-level regression now requires hasAcceptedVerificationRecord to receive evaluatedSha:null.\nScope: resolution of PR #4810 P1 review finding.",
+  "digest": "sha256:745f96145005ab8f2cbe3807b350c3a56da55386604efa063974a2803098b41a",
+  "implementation_sha": "1e534df0b17f3ab1929f54cf2a2ba7a8bf3c1103",
+  "kind": "task_verification_record",
+  "note": "Verified the complete metadata-only path from route target resolution through durable verification-record acceptance.",
+  "recorded_at": "2026-08-10T13:01:22.518Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun vitest run packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:ac4429827278e260520341199234e5a36490a036b69f56a128e918ce699c0770",
+  "task_id": "202608101223-ZCA7JG",
+  "verification_command": "agentplane verify 202608101223-ZCA7JG --ok --by TESTER",
+  "verifier": "TESTER"
+}

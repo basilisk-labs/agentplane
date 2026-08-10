@@ -6,14 +6,14 @@ Created: 2026-08-10T12:25:44.479Z
 
 - Task: `202608101223-ZCA7JG`
 - Title: Accept verification records for metadata-only branch_pr tasks
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608101223-ZCA7JG/accept-verification-records-for-metadata-only-br`
 - Canonical task record: `.agentplane/tasks/202608101223-ZCA7JG/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: P1: route verification rejects evaluatedSha=null before checking the newly valid null-bound record.
+- State: ok
+- Note: Verified the complete metadata-only path from route target resolution through durable verification-record acceptance.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

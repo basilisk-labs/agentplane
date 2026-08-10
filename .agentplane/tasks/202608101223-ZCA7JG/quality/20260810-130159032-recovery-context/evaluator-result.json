@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "hasAcceptedVerificationForCurrentImplementation no longer converts a legitimate null semantic target into an unconditional verification failure; the nullable target reaches the strict durable-record matcher.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101223-ZCA7JG/quality/objects/sha256/a8a11e1ed16335fa75a83ec5b899494002a82750e6e89259ea9dd424920bb74b.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The caller-level regression proves the open-PR branch path, null resolver output, explicit concrete-details requirement, and branch-head snapshot are preserved together.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101223-ZCA7JG/quality/objects/sha256/a8a11e1ed16335fa75a83ec5b899494002a82750e6e89259ea9dd424920bb74b.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

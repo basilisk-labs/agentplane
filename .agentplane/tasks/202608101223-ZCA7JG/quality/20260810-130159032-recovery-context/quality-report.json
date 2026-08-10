@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608101223-ZCA7JG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-10T13:01:59.297Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "1e534df0b17f3ab1929f54cf2a2ba7a8bf3c1103",
+  "blueprint_digest": "b6986aee4a978b91eb932e4a53a9b6e572c6cb207d0305ef61fee8d5a5ce5d6c",
+  "findings": [
+    "hasAcceptedVerificationForCurrentImplementation no longer converts a legitimate null semantic target into an unconditional verification failure; the nullable target reaches the strict durable-record matcher.",
+    "The caller-level regression proves the open-PR branch path, null resolver output, explicit concrete-details requirement, and branch-head snapshot are preserved together."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608101223-ZCA7JG/quality/objects/sha256/a8a11e1ed16335fa75a83ec5b899494002a82750e6e89259ea9dd424920bb74b.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
