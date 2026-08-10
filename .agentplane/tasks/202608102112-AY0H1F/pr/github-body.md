@@ -19,11 +19,11 @@ Make task advance consume an external-agent envelope exactly once only after its
 - Note:
 
 ```text
-PASS reused after rebase: implementation b633b400c has the exact stable patch-id
-6b5ea030de0049fcb030d7808fd42f2ee49ac5af as previously verified af1ff44cd; no code, tests, Verify
-Steps, or declared inputs changed. Reused the prior exactly-once suites, typecheck, ESLint,
-changed-format, diff, and hotspot receipts without rerunning them. The pre-existing RF-04 workspace
-dependency-seed defect remains unrelated.
+PASS for implementation 2af7e6bd4: focused exactly-once and supervisor suites pass 51/51; full-fast
+passes 546/546 test files and 3958/3958 unit tests; critical-cli passes all 12 chunks and 91/91
+tests; build, typecheck, lint, format, schemas, policy routing, release parity, docs freshness,
+cold-start baseline, and hotspot gates pass. The first full-fast run exposed transition-parity
+regressions, which were corrected before this green receipt.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -37,18 +37,17 @@ dependency-seed defect remains unrelated.
 ```text
  ...n-cli.core.task-advance-effect-recovery.test.ts | 112 +++++++++-
  ...un-cli.core.task-advance.blocked-result.test.ts |   4 +-
- ...n-cli.core.task-advance.branch-worktree.test.ts |  12 +-
- .../src/cli/run-cli.core.task-advance.test.ts      |  28 +--
+ ...n-cli.core.task-advance.branch-worktree.test.ts |   7 +-
+ .../src/cli/run-cli.core.task-advance.test.ts      |  26 +--
  ...i.core.task-advance.worktree-resolution.test.ts |   8 +-
  .../src/commands/task/advance.command.ts           |  16 +-
- .../src/commands/task/agent-action-packet.test.ts  |   9 +-
- .../src/commands/task/agent-action-packet.ts       |  17 +-
+ .../src/commands/task/agent-action-packet.ts       |  12 +-
  .../task/external-agent-exchange-authority.ts      |  16 +-
  .../src/commands/task/external-agent-exchange.ts   |  51 +++--
  .../task/external-agent-supervisor-episode.ts      |  13 ++
  .../task/external-agent-supervisor-recovery.ts     | 238 +++++++++++++++++++++
  .../src/commands/task/external-agent-supervisor.ts |  64 +++++-
- 13 files changed, 527 insertions(+), 61 deletions(-)
+ 12 files changed, 510 insertions(+), 57 deletions(-)
 ```
 
 </details>
