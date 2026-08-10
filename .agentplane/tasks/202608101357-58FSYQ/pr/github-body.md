@@ -15,8 +15,16 @@ Inventory every registered worktree and local branch, prune stale registrations,
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+PASS for implementation 2a4022ed19eb: provider proof receipts cover four exact merged PR heads;
+after-inventory is 70 worktrees/84 branches with zero stale or safe-delete candidates and zero
+duplicate active-task worktrees; primary main equals origin/main; protected RF05B and XS41ZV
+status/diff/staged digests are unchanged; doctor exits 0 with four pre-existing lifecycle warnings;
+policy routing passes.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

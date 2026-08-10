@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:4c65bbc3fb2fefc2dde154a6e2d6b3d0a216ec15d3e141f9c9718904e25da18f",
+  "implementation_sha": "6822262e8a1aff89b6eb6ef5434ec170016897a9",
+  "kind": "task_verification_record",
+  "note": "PASS for implementation 2a4022ed19eb: provider proof receipts cover four exact merged PR heads; after-inventory is 70 worktrees/84 branches with zero stale or safe-delete candidates and zero duplicate active-task worktrees; primary main equals origin/main; protected RF05B and XS41ZV status/diff/staged digests are unchanged; doctor exits 0 with four pre-existing lifecycle warnings; policy routing passes.",
+  "recorded_at": "2026-08-10T21:11:00.368Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run agentplane cleanup merged --base main --report .agentplane/tasks/202608101357-58FSYQ/operations/candidates.json without confirmation. Expected: every proposed candidate is clean, merged, inactive, and excludes main, open PRs, the current task, and both codex/recovery-mt4fk2-* branches.\n2. For each approved cleanup batch, retain the AgentPlane report and exact pre-deletion branch SHA. Expected: every removed worktree/local branch has an explicit proof and no remote branch is deleted.\n3. Run git worktree prune --dry-run --verbose after cleanup. Expected: no stale registration is reported.\n4. Recompute worktree-to-task identities. Expected: each active task has at most one registered worktree; distinct active tasks may each have one; every retained inactive worktree has a recorded dirty, unmerged, open, recovery, or ambiguous reason.\n5. Verify the primary checkout is main, its HEAD equals origin/main, and it has no tracked changes.\n6. Verify rf05b diff/staged SHA-256 values remain 48fd0889b89263b0172345217ed97a3cf4b0976996a4183f3d414e0674faef86 and ce1b36a44fc7c15eaf980e6f1b1cf7bf78b7def9a360b8368af60d2ddbab685e, with its three untracked files present. Verify XS41ZV diff/staged SHA-256 values remain 4affeecefecf3af316bdffa514bb1360013db5a04c7d3a7433c0d19b28be6910 and e5e693833dd4c508f6a1cd874f72c70071992a1632d5120fcdf51aeaa776efb4a, with its three untracked entries present.\n7. Run agentplane doctor and node .agentplane/policy/check-routing.mjs. Expected: both pass; any unrelated pre-existing warning is identified rather than silently ignored.",
+  "scope_digest": "sha256:390386ebe8cb82bf5fc4de23886869fee34ffda2b2a34fa135ca2ec0f335c78c",
+  "task_id": "202608101357-58FSYQ",
+  "verification_command": "agentplane verify 202608101357-58FSYQ --ok --by TESTER",
+  "verifier": "TESTER"
+}

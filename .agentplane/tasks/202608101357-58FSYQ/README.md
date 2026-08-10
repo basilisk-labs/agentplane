@@ -4,7 +4,7 @@ title: "Reconcile local worktree and branch debt safely"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +22,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-10T21:11:00.368Z"
+  updated_by: "TESTER"
+  note: "PASS for implementation 2a4022ed19eb: provider proof receipts cover four exact merged PR heads; after-inventory is 70 worktrees/84 branches with zero stale or safe-delete candidates and zero duplicate active-task worktrees; primary main equals origin/main; protected RF05B and XS41ZV status/diff/staged digests are unchanged; doctor exits 0 with four pre-existing lifecycle warnings; policy routing passes."
   attempts: 0
 execution_route:
   frozen: true
@@ -69,8 +69,14 @@ events:
     to: "DOING"
     note: "Implementation recorded: provider-backed cleanup removed only four proven merged legacy worktrees/local branches, pruned one absent registration, and preserved every dirty, active, ambiguous, or protected recovery checkout."
     commit: "6822262e8a1aff89b6eb6ef5434ec170016897a9"
+  -
+    type: "verify"
+    at: "2026-08-10T21:11:00.368Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS for implementation 2a4022ed19eb: provider proof receipts cover four exact merged PR heads; after-inventory is 70 worktrees/84 branches with zero stale or safe-delete candidates and zero duplicate active-task worktrees; primary main equals origin/main; protected RF05B and XS41ZV status/diff/staged digests are unchanged; doctor exits 0 with four pre-existing lifecycle warnings; policy routing passes."
 doc_version: 3
-doc_updated_at: "2026-08-10T21:07:18.508Z"
+doc_updated_at: "2026-08-10T21:11:01.322Z"
 doc_updated_by: "CODER"
 description: "Inventory every registered worktree and local branch, prune stale registrations, and remove only worktrees and branches proven clean, merged, inactive, and recoverable. Preserve all dirty, unmerged, active, or ambiguous worktrees, including the two MT4FK2 recovery checkouts. Enforce one worktree per active task while allowing different tasks to run concurrently in separate worktrees. Record machine-checkable before/after evidence and cleanup receipts."
 sections:
@@ -104,6 +110,36 @@ sections:
     7. Run agentplane doctor and node .agentplane/policy/check-routing.mjs. Expected: both pass; any unrelated pre-existing warning is identified rather than silently ignored.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-10T21:11:00.368Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS for implementation 2a4022ed19eb: provider proof receipts cover four exact merged PR heads; after-inventory is 70 worktrees/84 branches with zero stale or safe-delete candidates and zero duplicate active-task worktrees; primary main equals origin/main; protected RF05B and XS41ZV status/diff/staged digests are unchanged; doctor exits 0 with four pre-existing lifecycle warnings; policy routing passes.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T21:07:18.508Z, excerpt_hash=sha256:390386ebe8cb82bf5fc4de23886869fee34ffda2b2a34fa135ca2ec0f335c78c
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101357-58FSYQ-reconcile-local-worktree-and-branch-debt-safely/.agentplane/tasks/202608101357-58FSYQ/blueprint/resolved-snapshot.json
+    - old_digest: c4cb21c87ac4b957619ee98c69a30383bdc3050931b3455d00f1fce5fff052f2
+    - current_digest: c4cb21c87ac4b957619ee98c69a30383bdc3050931b3455d00f1fce5fff052f2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608101357-58FSYQ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608101357-58FSYQ
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -154,6 +190,36 @@ Rollback: stop before any ambiguous deletion; local branches are recoverable fro
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-10T21:11:00.368Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS for implementation 2a4022ed19eb: provider proof receipts cover four exact merged PR heads; after-inventory is 70 worktrees/84 branches with zero stale or safe-delete candidates and zero duplicate active-task worktrees; primary main equals origin/main; protected RF05B and XS41ZV status/diff/staged digests are unchanged; doctor exits 0 with four pre-existing lifecycle warnings; policy routing passes.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T21:07:18.508Z, excerpt_hash=sha256:390386ebe8cb82bf5fc4de23886869fee34ffda2b2a34fa135ca2ec0f335c78c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101357-58FSYQ-reconcile-local-worktree-and-branch-debt-safely/.agentplane/tasks/202608101357-58FSYQ/blueprint/resolved-snapshot.json
+- old_digest: c4cb21c87ac4b957619ee98c69a30383bdc3050931b3455d00f1fce5fff052f2
+- current_digest: c4cb21c87ac4b957619ee98c69a30383bdc3050931b3455d00f1fce5fff052f2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608101357-58FSYQ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608101357-58FSYQ
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
