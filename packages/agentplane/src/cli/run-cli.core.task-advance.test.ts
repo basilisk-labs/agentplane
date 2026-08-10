@@ -242,7 +242,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     expect(taskAfter).toBe(taskBefore);
   });
 
-  it("does not publish a concurrently rejected exchange", async () => {
+  it("retires a drifted result-less exchange and issues one exact-key replacement", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -278,7 +278,8 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     try {
       const code = await runCli(["task", "advance", taskId, "--agent-json", "--root", root]);
       expect(code).not.toBe(0);
-      expect(io.stderr).toContain("A previous external-agent episode still owns this task");
+      expect(io.stderr).toContain("AgentPlane retired it");
+      expect(io.stderr).toContain("--replacement");
     } finally {
       io.restore();
     }
@@ -289,9 +290,62 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
       "exchange.json",
     );
     await expect(readFile(rejectedExchangePath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
-    expect(await readFile(path.join(issued.exchange.directory, "exchange.json"), "utf8")).toContain(
-      '"status": "issued"',
+    expect(
+      JSON.parse(await readFile(path.join(issued.exchange.directory, "exchange.json"), "utf8")),
+    ).toMatchObject({ status: "retired", postcondition_fingerprint: fingerprint });
+
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const retiredJournal = validateSupervisorExecutionEpisodeJournal(
+      await createSupervisorEpisodeStore(journalPath).read(),
     );
+    const retiredOperation = retiredJournal.operations.at(-1);
+    expect(retiredJournal).toMatchObject({
+      status: "stopped",
+      stop: { reason: "operation_failed" },
+      operations: [expect.objectContaining({ status: "failed" })],
+    });
+
+    const replacementIo = captureStdIO();
+    let replacement: AgentPacket;
+    try {
+      const code = await runCli([
+        "task",
+        "advance",
+        taskId,
+        "--replacement",
+        "--agent-json",
+        "--root",
+        root,
+      ]);
+      expect(code, replacementIo.stderr).toBe(0);
+      replacement = JSON.parse(replacementIo.stdout) as AgentPacket;
+    } finally {
+      replacementIo.restore();
+    }
+    expect(replacement.transition_id).not.toBe(issued.transition_id);
+    expect(replacement.exchange?.directory).not.toBe(issued.exchange.directory);
+    const replacementJournal = validateSupervisorExecutionEpisodeJournal(
+      await createSupervisorEpisodeStore(journalPath).read(),
+    );
+    expect(replacementJournal).toMatchObject({
+      status: "running",
+      cursor: { phase: "intent_recorded" },
+      operations: [
+        { status: "failed" },
+        {
+          status: "intent",
+          replacement_of_operation_key: retiredOperation?.operation_key,
+        },
+      ],
+    });
+
+    const lateResultPath = await writeCompletedResult(issued, "Late output must stay retired.");
+    const lateResult = await returnAgentResult(root, taskId, lateResultPath);
+    expect(lateResult.code).not.toBe(0);
+    expect(lateResult.stderr).toContain("exchange was retired after state drift");
   });
 
   it("accepts one bound planning result and makes an identical replay idempotent", async () => {

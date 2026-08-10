@@ -2,6 +2,7 @@ import { access } from "node:fs/promises";
 import path from "node:path";
 
 import {
+  retireSupervisorExecutionEpisodeIntentAfterStateDrift,
   validateSupervisorExecutionEpisodeJournal,
   type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
@@ -91,6 +92,56 @@ async function unresolvedExternalAgentExchange(opts: {
     operation.effect_ref ===
       `external-agent-issue:${externalAgentIssueDigest({ exchange, work_order: workOrder })}`;
   if (!matchesCurrentBoundary) {
+    const noResultReturned = await access(paths.result).then(
+      () => false,
+      (error) => {
+        if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return true;
+        throw error;
+      },
+    );
+    if (noResultReturned && (exchange.status === "prepared" || exchange.status === "issued")) {
+      const retired = retireSupervisorExecutionEpisodeIntentAfterStateDrift({
+        journal,
+        state_fingerprint_digest: opts.decision.workflowStep.preconditionFingerprint.digest,
+        result: {
+          classification: "state_fingerprint_drift",
+          transition_id: exchange.transition_id,
+          previous_state_fingerprint: exchange.state_fingerprint,
+          current_state_fingerprint: opts.decision.workflowStep.preconditionFingerprint.digest,
+        },
+      });
+      const store = createSupervisorEpisodeStore(journalPath);
+      if (!(await store.compareAndSwap(journal.digest, retired))) {
+        throw new CliError({
+          code: "E_RUNTIME",
+          message: "External-agent supervisor changed while retiring the stale episode.",
+        });
+      }
+      await writeExternalAgentExchange(paths.exchange, {
+        ...exchange,
+        status: "retired",
+        postcondition_fingerprint: opts.decision.workflowStep.preconditionFingerprint.digest,
+        updated_at: new Date().toISOString(),
+      });
+      throw new CliError({
+        code: "E_RUNTIME",
+        message:
+          "The issued external-agent episode became stale before any result was returned. " +
+          `AgentPlane retired it; run: agentplane task advance ${opts.decision.task.id} ` +
+          "--replacement --agent-json",
+        context: {
+          task_id: opts.decision.task.id,
+          exact_argv: [
+            "agentplane",
+            "task",
+            "advance",
+            opts.decision.task.id,
+            "--replacement",
+            "--agent-json",
+          ],
+        },
+      });
+    }
     throw new CliError({
       code: "E_RUNTIME",
       message:
@@ -208,7 +259,12 @@ export async function recoverPendingExternalAgentResult(opts: {
   }
   const paths = exchangePathsFromWorkOrderRef(operation.work_order_ref);
   const exchange = await readExternalAgentExchange(paths.exchange);
-  if (exchange?.task_id !== opts.task_id || exchange.status === "consumed") return null;
+  if (
+    exchange?.task_id !== opts.task_id ||
+    exchange.status === "consumed" ||
+    exchange.status === "retired"
+  )
+    return null;
 
   if (exchange.status === "result_received" || exchange.status === "accepted") {
     if (!exchange.result || !exchange.result_digest) {
