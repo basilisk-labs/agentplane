@@ -378,7 +378,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const packet = await readAgentPacket(root, taskId);
 
     expect(packet).toMatchObject({
-      transition_id: agentTransitionId("wait.dependencies", packet.state_fingerprint),
+      transition_id: agentTransitionId("wait.dependencies"),
       action: { kind: "external_wait" },
       stop: { reason: "external_boundary", resume: "request_fresh_packet" },
     });

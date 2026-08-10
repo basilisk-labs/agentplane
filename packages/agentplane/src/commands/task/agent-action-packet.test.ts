@@ -163,9 +163,7 @@ describe("compact agent action packet", () => {
     const packet = packetFor(workflowStep);
     expect(packet.action.kind).toBe(kind);
     expect(packet.stop.reason).toBe(stopReason);
-    expect(packet.transition_id).toBe(
-      agentTransitionId(workflowStep.id, workflowStep.preconditionFingerprint.digest),
-    );
+    expect(packet.transition_id).toBe(agentTransitionId(workflowStep.id));
     expect(packet.state_fingerprint).toBe(FINGERPRINT);
     expect(packet.context_refs).toEqual([
       { kind: "task_document", ref: `.agentplane/tasks/${TASK_ID}/README.md` },
@@ -292,10 +290,7 @@ describe("compact agent action packet", () => {
       },
     });
     expect(packet).toMatchObject({
-      transition_id: agentTransitionId(
-        workflowStep.id,
-        workflowStep.preconditionFingerprint.digest,
-      ),
+      transition_id: agentTransitionId(workflowStep.id),
       action: { kind: "framework_transition" },
       recovery: { reason: "effect_in_doubt" },
       stop: { reason: "control_plane_boundary" },
