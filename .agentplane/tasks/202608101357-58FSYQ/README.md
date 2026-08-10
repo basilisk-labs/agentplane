@@ -4,7 +4,7 @@ title: "Reconcile local worktree and branch debt safely"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -35,7 +35,9 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "6822262e8a1aff89b6eb6ef5434ec170016897a9"
+  message: "🧹 58FSYQ ops: record safe cleanup inventory"
 comments:
   -
     author: "CODER"
@@ -43,6 +45,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "External EXECUTOR returned blocked: Completed the read-only worktree inventory, but the issued episode cannot perform the approved cleanup because its authority excludes the shared worktree registry and provider-backed lifecycle operations."
+  -
+    author: "CODER"
+    body: "Implementation recorded: provider-backed cleanup removed only four proven merged legacy worktrees/local branches, pruned one absent registration, and preserved every dirty, active, ambiguous, or protected recovery checkout."
 events:
   -
     type: "status"
@@ -56,9 +61,17 @@ events:
     at: "2026-08-10T14:04:30.499Z"
     author: "SUPERVISOR"
     body: "External EXECUTOR returned blocked: Completed the read-only worktree inventory, but the issued episode cannot perform the approved cleanup because its authority excludes the shared worktree registry and provider-backed lifecycle operations."
+  -
+    type: "status"
+    at: "2026-08-10T21:07:18.508Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation recorded: provider-backed cleanup removed only four proven merged legacy worktrees/local branches, pruned one absent registration, and preserved every dirty, active, ambiguous, or protected recovery checkout."
+    commit: "6822262e8a1aff89b6eb6ef5434ec170016897a9"
 doc_version: 3
-doc_updated_at: "2026-08-10T14:04:30.499Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-10T21:07:18.508Z"
+doc_updated_by: "CODER"
 description: "Inventory every registered worktree and local branch, prune stale registrations, and remove only worktrees and branches proven clean, merged, inactive, and recoverable. Preserve all dirty, unmerged, active, or ambiguous worktrees, including the two MT4FK2 recovery checkouts. Enforce one worktree per active task while allowing different tasks to run concurrently in separate worktrees. Record machine-checkable before/after evidence and cleanup receipts."
 sections:
   Summary: |-
