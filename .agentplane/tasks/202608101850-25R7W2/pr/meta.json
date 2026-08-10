@@ -3,11 +3,15 @@
   "branch": "task/202608101850-25R7W2/recover-legacy-merged-cleanup-identity-from-the",
   "created_at": "2026-08-10T18:51:39.548Z",
   "diffstat_sha256": "sha256:adb227a3464430d02d0b1e2f5124d39c1d48e5439831ed65466b076413b90f08",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-10T19:10:11.361Z",
+  "last_verified_diffstat_sha256": "sha256:adb227a3464430d02d0b1e2f5124d39c1d48e5439831ed65466b076413b90f08",
+  "pr_number": 4813,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4813",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202608101850-25R7W2",
-  "updated_at": "2026-08-10T18:51:39.548Z",
+  "updated_at": "2026-08-10T19:07:56.432Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

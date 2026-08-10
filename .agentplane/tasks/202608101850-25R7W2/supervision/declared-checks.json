@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "command": "bun test packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts",
+      "duration_ms": 49656,
+      "exit_code": 0,
+      "script": null,
+      "stderr_tail": "e provider PR identity differs from the recorded closure [651.20ms]\n(pass) cleanup merged targeted provider proof > fails closed when the provider merge commit is not on base [719.24ms]\n(pass) cleanup merged targeted provider proof > requires exact pre-merge closure evidence on base [724.07ms]\n(pass) cleanup merged targeted provider proof > distinguishes provider not-found from unavailable and fails closed for both [952.99ms]\n(pass) cleanup merged targeted provider proof > refuses a dirty requested worktree without touching unrelated candidates [818.15ms]\n(pass) cleanup merged targeted provider proof > cleans a provider-less task-close branch only after close evidence reaches base [500.11ms]\n\npackages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts:\n(pass) cleanup merged targeted provider proof > recovers a legacy missing PR number from an exact merged branch-and-base lookup [910.19ms]\n(pass) cleanup merged targeted provider proof > keeps legacy cleanup blocked when the exact provider lookup is not_found [659.66ms]\n(pass) cleanup merged targeted provider proof > keeps legacy cleanup blocked when the exact provider lookup is unavailable [685.19ms]\n(pass) cleanup merged targeted provider proof > keeps legacy cleanup blocked when the exact provider PR is OPEN [649.23ms]\n(pass) cleanup merged targeted provider proof > keeps legacy cleanup blocked when the exact provider PR is CLOSED [669.15ms]\n(pass) cleanup merged targeted provider proof > keeps legacy cleanup blocked on provider base or head mismatch [1505.80ms]\n(pass) cleanup merged targeted provider proof > keeps a recorded PR number authoritative when the provider returns another identity [686.54ms]\n(pass) cleanup merged targeted provider proof > deletes only the requested rebase-merged task and is idempotent [906.21ms]\n(pass) cleanup merged targeted provider proof > allows a clean registered sibling worktree only for targeted finalization [1688.95ms]\n(pass) cleanup merged targeted provider proof > keeps a directly registered /tmp worktree even for targeted finalization [1317.83ms]\n(pass) cleanup merged targeted provider proof > keeps a registered sibling worktree when targeted cleanup omits --finalize [793.20ms]\n(pass) cleanup merged targeted provider proof > keeps a registered sibling worktree when broad finalization omits --task-id [678.89ms]\n(pass) cleanup merged targeted provider proof > rejects a dirty registered sibling before archiving its PR artifacts [1264.25ms]\n(pass) cleanup merged targeted provider proof > fails closed on provider head mismatch before deleting any candidate [720.79ms]\n(pass) cleanup merged targeted provider proof > cleans after a provider-generated update branch head merges the local task head with base [844.28ms]\n(pass) cleanup merged targeted provider proof > keeps cleanup blocked when a provider update head lacks a base-ancestry parent [747.76ms]\n(pass) cleanup merged targeted provider proof > cleans a provider-merged task with a local authority-only post-merge tail [962.96ms]\n(pass) cleanup merged targeted provider proof > keeps a semantic post-merge tail blocked despite a matching provider head [907.06ms]\n(pass) cleanup merged targeted provider proof > fails closed on provider base mismatch before deleting the worktree [640.96ms]\n(pass) cleanup merged targeted provider proof > fails closed when the provider merge commit is not on base [697.95ms]\n(pass) cleanup merged targeted provider proof > requires exact pre-merge closure evidence on base [700.31ms]\n(pass) cleanup merged targeted provider proof > distinguishes provider not-found from unavailable and fails closed for both [1003.15ms]\n(pass) cleanup merged targeted provider proof > refuses a dirty requested worktree without touching unrelated candidates [831.59ms]\n(pass) cleanup merged targeted provider proof > cleans a provider-less task-close branch only after close evidence reaches base [511.36ms]\n\n 47 pass\n 0 fail\n 531 expect() calls\nRan 47 tests across 3 files. [49.64s]\n",
+      "stdout_tail": "bun test v1.3.6 (d530ed99)\n"
+    },
+    {
+      "command": "bun run typecheck",
+      "duration_ms": 157,
+      "exit_code": 0,
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202608101850-25R7W2"
+}

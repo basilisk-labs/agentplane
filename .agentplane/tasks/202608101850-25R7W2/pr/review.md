@@ -12,8 +12,8 @@ Created: 2026-08-10T18:51:39.548Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-10T18:51:39.548Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-10T18:51:39.548Z
+- Updated: 2026-08-10T19:07:56.432Z
 - Branch: task/202608101850-25R7W2/recover-legacy-merged-cleanup-identity-from-the
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

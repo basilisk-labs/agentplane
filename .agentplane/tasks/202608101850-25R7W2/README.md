@@ -4,7 +4,7 @@ title: "Recover legacy merged cleanup identity from the provider"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +22,10 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-10T19:10:11.361Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -61,8 +61,14 @@ events:
     to: "DOING"
     note: "Implementation committed: deee9a3afda8. CLI accepted one state-bound external-agent semantic result."
     commit: "deee9a3afda80cb7f4b532f96632dc2a6e43d4eb"
+  -
+    type: "verify"
+    at: "2026-08-10T19:10:11.361Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-10T19:06:35.392Z"
+doc_updated_at: "2026-08-10T19:10:12.336Z"
 doc_updated_by: "SUPERVISOR"
 description: "Allow explicit cleanup of a legacy DONE task branch when old PR metadata lacks pr_number but an exact branch-and-base provider lookup proves a merged PR, its provider head equals the local branch head, its merge commit is on the base branch, and pre-merge closure evidence is present. Preserve rejection for ambiguous, closed, open, mismatched-head, post-merge-drift, or unavailable-provider cases."
 sections:
@@ -93,6 +99,46 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-10T19:10:11.361Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T19:06:35.392Z, excerpt_hash=sha256:c43c26e154b15bf38457790b4eea19f4ea45147d63426a96e590f7c88ea4dfeb
+
+    Details:
+
+    Command: bun test packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608101850-25R7W2/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608101850-25R7W2 declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608101850-25R7W2/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608101850-25R7W2 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101850-25R7W2-recover-legacy-merged-cleanup-identity-from-the/.agentplane/tasks/202608101850-25R7W2/blueprint/resolved-snapshot.json
+    - old_digest: 4c6d7d1bd6cfd331e0afd25e7d4f5f805c1d4cd4c0223e935cb363f5a33e6f82
+    - current_digest: 4c6d7d1bd6cfd331e0afd25e7d4f5f805c1d4cd4c0223e935cb363f5a33e6f82
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608101850-25R7W2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608101850-25R7W2
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -140,6 +186,46 @@ PLANNER fallback scaffold for "Recover legacy merged cleanup identity from the p
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-10T19:10:11.361Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T19:06:35.392Z, excerpt_hash=sha256:c43c26e154b15bf38457790b4eea19f4ea45147d63426a96e590f7c88ea4dfeb
+
+Details:
+
+Command: bun test packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608101850-25R7W2/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608101850-25R7W2 declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608101850-25R7W2/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608101850-25R7W2 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101850-25R7W2-recover-legacy-merged-cleanup-identity-from-the/.agentplane/tasks/202608101850-25R7W2/blueprint/resolved-snapshot.json
+- old_digest: 4c6d7d1bd6cfd331e0afd25e7d4f5f805c1d4cd4c0223e935cb363f5a33e6f82
+- current_digest: 4c6d7d1bd6cfd331e0afd25e7d4f5f805c1d4cd4c0223e935cb363f5a33e6f82
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608101850-25R7W2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608101850-25R7W2
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
