@@ -4,7 +4,7 @@ title: "Accept safe shell-free Bun test checks in supervised verification"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -28,6 +28,35 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-10T15:58:25.546Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "19da6e260c15c58ad6c5bce41fbc73548a8fca69"
+  blueprint_digest: "e9896b989c3ebae1e6efacc43e759bc6c69e5978f2e09383e7e45ae2e30fda89"
+  evidence_refs:
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-155403159-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-155403159-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/cf27d3c0c7131d155d74d4e873d8f33b796488f5cdfea38d318a083dcd16688d.md"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-155403159-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-155403159-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-155403159-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/README.md"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/753e2769f5ffbbe8912400d1a0d1b569ca63dbd062b0d5e89dad6a5b318ff9b6.patch"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/57e12ce445f6d9b9a39d7f2ced662e9fc17e9c5bf221027482585f1dd465dd44.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/verification/20260810155341698-b13c1e6ef421f0c7.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/90ab2dd9e61cdb54839a0d6ccc70e595be5e4223b8e083a6ccda2d2c88f81956.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The parser reuses the existing quoted-argv resolver and rejects shell metacharacters, environment prefixes, unsupported executables, unsupported Bun subcommands, absolute paths, and parent traversal before process launch."
+    - "Verification children receive a sanitized environment, preventing the supervisor's agent-mode variables from changing nested CLI behavior."
+    - "Critical tests, typecheck, 21 focused lifecycle/verifier tests, lint, formatting, and git diff --check all pass."
+    - "Residual risk: Hosted CI must independently validate the final published PR head."
 execution_route:
   frozen: true
   reason_codes:

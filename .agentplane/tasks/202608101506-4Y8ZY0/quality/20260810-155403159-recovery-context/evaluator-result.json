@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The parser reuses the existing quoted-argv resolver and rejects shell metacharacters, environment prefixes, unsupported executables, unsupported Bun subcommands, absolute paths, and parent traversal before process launch.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/753e2769f5ffbbe8912400d1a0d1b569ca63dbd062b0d5e89dad6a5b318ff9b6.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Verification children receive a sanitized environment, preventing the supervisor's agent-mode variables from changing nested CLI behavior.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/753e2769f5ffbbe8912400d1a0d1b569ca63dbd062b0d5e89dad6a5b318ff9b6.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Critical tests, typecheck, 21 focused lifecycle/verifier tests, lint, formatting, and git diff --check all pass.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/753e2769f5ffbbe8912400d1a0d1b569ca63dbd062b0d5e89dad6a5b318ff9b6.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted CI must independently validate the final published PR head.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/753e2769f5ffbbe8912400d1a0d1b569ca63dbd062b0d5e89dad6a5b318ff9b6.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Repository-authored Bun tests and scripts are intentionally inside the task verification trust boundary."
+  ]
+}
