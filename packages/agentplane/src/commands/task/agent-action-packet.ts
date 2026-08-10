@@ -301,12 +301,7 @@ export function buildAgentActionPacket(opts: {
   const packet: AgentActionPacket = {
     schema_version: 1,
     task_id: opts.decision.task.id,
-    transition_id:
-      opts.transition_id ??
-      agentTransitionId(
-        opts.decision.workflowStep.id,
-        opts.decision.workflowStep.preconditionFingerprint.digest,
-      ),
+    transition_id: opts.transition_id ?? agentTransitionId(opts.decision.workflowStep.id),
     state_fingerprint: opts.decision.workflowStep.preconditionFingerprint.digest,
     ...projected,
     authority: {

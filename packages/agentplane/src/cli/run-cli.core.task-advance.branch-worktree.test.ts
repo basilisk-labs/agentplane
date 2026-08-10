@@ -314,10 +314,7 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
     const recoveryReadme = await readFile(readmePath, "utf8");
     const recoveryPacket = await readAgentPacket(taskWorktree, taskId);
     expect(recoveryPacket).toMatchObject({
-      transition_id: agentTransitionId(
-        recoveryDecision.workflowStep.id,
-        recoveryDecision.workflowStep.preconditionFingerprint.digest,
-      ),
+      transition_id: agentTransitionId(recoveryDecision.workflowStep.id),
       state_fingerprint: recoveryDecision.workflowStep.preconditionFingerprint.digest,
       action: { kind: "framework_transition" },
       recovery: { reason: "effect_in_doubt", evidence_digest: effectInDoubt.digest },
