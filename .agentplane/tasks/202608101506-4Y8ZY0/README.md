@@ -4,7 +4,7 @@ title: "Accept safe shell-free Bun test checks in supervised verification"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -36,7 +36,9 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "19da6e260c15c58ad6c5bce41fbc73548a8fca69"
+  message: "🚧 4Y8ZY0 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -44,6 +46,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 8e38a866dfee. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 19da6e260c15. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -66,8 +71,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+  -
+    type: "status"
+    at: "2026-08-10T15:47:35.335Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 19da6e260c15. CLI accepted one state-bound external-agent semantic result."
+    commit: "19da6e260c15c58ad6c5bce41fbc73548a8fca69"
 doc_version: 3
-doc_updated_at: "2026-08-10T15:40:39.710Z"
+doc_updated_at: "2026-08-10T15:47:35.335Z"
 doc_updated_by: "SUPERVISOR"
 description: "The supervisor currently accepts only three-token bun run scripts and rejects valid repository checks such as bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Reuse the existing shell-free argv parser, accept bounded Bun run and test invocations without invoking a shell, preserve fixed policy checks and evidence capture, and prove that task advance no longer creates false implementation-rework cycles for valid Bun tests."
 sections:
