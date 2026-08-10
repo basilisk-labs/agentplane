@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608101506-4Y8ZY0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-10T16:29:24.954Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
+  "evaluated_sha": "0300e25fecc7df8554b54678a1e1e71c6c2ab706",
+  "blueprint_digest": "e9896b989c3ebae1e6efacc43e759bc6c69e5978f2e09383e7e45ae2e30fda89",
+  "findings": [
+    "The implementation checks generic patterns such as 'no tests found' before inspecting a nonzero pass summary, so ordinary test output can create a false verification failure.",
+    "The exact unmatched-filter marker should remain authoritative even when another filter reports passes, but generic zero-test markers should be ignored when the Bun summary proves at least one passing test.",
+    "Residual risk: Without summary precedence for generic markers, legitimate repository checks can re-enter the same false-rework loop this task is intended to remove."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/e6ccca892e3c9d1c33ac817d966447e7e01a96a0c33d1a872b3d2f1b401a9c88.patch"
+  ],
+  "missing_tests": [
+    "A successful Bun output with a nonzero pass summary plus a generic 'no tests found' phrase must pass, while the exact unmatched-filter marker must still fail."
+  ],
+  "hidden_assumptions": [
+    "Generic zero-test phrases only appear in Bun summary diagnostics and never in test names or captured logs."
+  ],
+  "residual_risks": [
+    "Separate the exact unmatched-filter diagnostic from generic zero-test markers. Fail unmatched filters unconditionally; otherwise let a nonzero pass summary prove execution before considering generic zero-test markers, and add the corresponding regression."
+  ]
+}
