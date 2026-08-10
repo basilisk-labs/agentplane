@@ -4,7 +4,7 @@ title: "Stop external-agent replay after a typed blocked result"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -36,11 +36,16 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "f418c45799e9eba70c561a386682a57b8cce7a26"
+  message: "🚧 4GSCYN task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: f418c45799e9. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -49,9 +54,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-10T14:25:19.785Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: f418c45799e9. CLI accepted one state-bound external-agent semantic result."
+    commit: "f418c45799e9eba70c561a386682a57b8cce7a26"
 doc_version: 3
-doc_updated_at: "2026-08-10T14:11:35.782Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-10T14:25:19.785Z"
+doc_updated_by: "SUPERVISOR"
 description: "When an external EXECUTOR returns a valid state-bound blocked semantic result, consume that envelope exactly once, persist the blocker as task state and evidence, and return a non-episode boundary. Do not issue another implementation envelope until an operator deliberately resolves the blocker and resumes the task. Preserve completed-result behavior and exact replay idempotency."
 sections:
   Summary: |-
