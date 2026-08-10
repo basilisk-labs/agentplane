@@ -6,6 +6,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
 
 const mocks = { runProcess: vi.fn() };
+const ORIGINAL_AGENT_MODE = process.env.AGENTPLANE_AGENT_MODE;
+const ORIGINAL_RUNTIME_ACTIVE_BIN = process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
 
 import { parseDirectTaskCheck, runDirectTaskVerification } from "./direct-task-verification.js";
 
@@ -27,6 +29,10 @@ async function root(): Promise<string> {
 
 afterEach(async () => {
   vi.clearAllMocks();
+  if (ORIGINAL_AGENT_MODE === undefined) delete process.env.AGENTPLANE_AGENT_MODE;
+  else process.env.AGENTPLANE_AGENT_MODE = ORIGINAL_AGENT_MODE;
+  if (ORIGINAL_RUNTIME_ACTIVE_BIN === undefined) delete process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
+  else process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = ORIGINAL_RUNTIME_ACTIVE_BIN;
   await Promise.all(roots.splice(0).map(async (entry) => await rm(entry, { recursive: true })));
 });
 
@@ -75,6 +81,8 @@ describe("direct task verification", () => {
   it("runs the reported bun test command as structured argv and records it", async () => {
     const cwd = await root();
     mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "16 pass", stderr: "" });
+    process.env.AGENTPLANE_AGENT_MODE = "1";
+    process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = "/maintenance/agentplane.js";
     const check = "bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts";
 
     const result = await runDirectTaskVerification({
@@ -90,14 +98,23 @@ describe("direct task verification", () => {
       reason: null,
       checks: [{ command: check, script: null, exit_code: 0, stdout_tail: "16 pass" }],
     });
-    expect(mocks.runProcess).toHaveBeenCalledWith(
-      expect.objectContaining({
-        command: "bun",
-        args: ["test", "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"],
-        cwd,
-        timeoutMs: 30 * 60_000,
-      }),
-    );
+    const invocation = mocks.runProcess.mock.calls.at(0)?.[0] as
+      | {
+          command: string;
+          args: string[];
+          cwd: string;
+          timeoutMs: number;
+          env: NodeJS.ProcessEnv;
+        }
+      | undefined;
+    expect(invocation).toMatchObject({
+      command: "bun",
+      args: ["test", "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"],
+      cwd,
+      timeoutMs: 30 * 60_000,
+    });
+    expect(invocation?.env).not.toHaveProperty("AGENTPLANE_AGENT_MODE");
+    expect(invocation?.env).not.toHaveProperty("AGENTPLANE_RUNTIME_ACTIVE_BIN");
   });
 
   it("runs every declared check without a shell and records durable evidence", async () => {

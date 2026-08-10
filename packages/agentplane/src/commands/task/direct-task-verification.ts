@@ -5,7 +5,7 @@ import path from "node:path";
 import type { TaskData } from "../../backends/task-backend.js";
 import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
-import { resolveShellInvocation } from "../shared/pr-meta/verify-log.js";
+import { resolveShellInvocation, verificationChildEnv } from "../shared/pr-meta/verify-log.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
@@ -172,6 +172,7 @@ export async function runDirectTaskVerification(opts: {
         command: parsed.executable,
         args: parsed.args,
         cwd: opts.cwd,
+        env: verificationChildEnv(),
         timeoutMs: directTaskCheckTimeoutMs(parsed.script),
         maxBuffer: 1024 * 1024,
         reject: false,
