@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "High: the approved contract requires ambiguous provider identity to remain blocked, but the patch accepts the existing branch lookup result without adding a uniqueness condition. The underlying branch lookup may return one record from multiple historical PRs for the same head branch and base, so a missing recorded PR number is not yet replaced by an exact unique identity.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/bc56bbed36eeb09837f001bd7bc933c48de9361fbb17b5caa104fc5a8f3e8727.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Medium: the new legacy-specific tests cover not-found, unavailable, OPEN, CLOSED, base mismatch, head mismatch, and recorded-number mismatch, but do not exercise multiple matching PR records, a legacy semantic post-merge tail, or missing legacy closure evidence.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/bc56bbed36eeb09837f001bd7bc933c48de9361fbb17b5caa104fc5a8f3e8727.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Medium: frozen verification contains the focused suites and typecheck, but no provider-backed dry-run evidence for the four P02 candidates required by the approved plan.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/bc56bbed36eeb09837f001bd7bc933c48de9361fbb17b5caa104fc5a8f3e8727.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: A repository with reused task branch names or multiple historical PR records can authorize cleanup from a provider record that was selected by response order rather than unique identity.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/bc56bbed36eeb09837f001bd7bc933c48de9361fbb17b5caa104fc5a8f3e8727.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: The four concrete P02 cleanup candidates remain unqualified against live provider truth.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/bc56bbed36eeb09837f001bd7bc933c48de9361fbb17b5caa104fc5a8f3e8727.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Reject two or more valid GitHub PR records for the same legacy task branch and base when metadata has no PR number.",
+    "Reject a legacy branch whose local head gained a semantic post-merge commit after the provider head was recorded.",
+    "Reject legacy metadata with no exact pre-merge closure marker on the base branch."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes an exact GitHub branch-and-base query identifies at most one historical PR.",
+    "The implementation assumes existing modern-metadata drift tests fully exercise the new missing-number branch."
+  ],
+  "recovery_context": "Require a unique valid provider PR record for missing-number cleanup, add legacy-specific ambiguity and drift/closure regressions, rerun declared checks, then perform provider-backed dry runs for the four P02 candidates without deletion."
+}
