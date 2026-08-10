@@ -29,11 +29,11 @@ Created: 2026-08-10T15:08:59.810Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.task-advance.test.ts      |  8 +-
- .../src/commands/shared/pr-meta/verify-log.ts      | 30 +++----
- .../commands/task/direct-task-verification.test.ts | 91 ++++++++++++++++++++--
- .../src/commands/task/direct-task-verification.ts  | 47 ++++++++---
- 4 files changed, 144 insertions(+), 32 deletions(-)
+ .../src/cli/run-cli.core.task-advance.test.ts      |   8 +-
+ .../src/commands/shared/pr-meta/verify-log.ts      |  30 ++---
+ .../commands/task/direct-task-verification.test.ts | 125 ++++++++++++++++++++-
+ .../src/commands/task/direct-task-verification.ts  |  72 ++++++++++--
+ 4 files changed, 203 insertions(+), 32 deletions(-)
 ```
 
 </details>
