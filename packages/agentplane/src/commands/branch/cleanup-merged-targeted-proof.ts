@@ -326,6 +326,12 @@ export async function targetedCleanupProof(opts: {
       receipt,
     });
     if (reconciliation.proof) {
+      if (
+        reconciliation.proof.kind === "exact_head" &&
+        (await gitRepositoryHasReplacementRefs(opts.gitRoot))
+      ) {
+        return result(null, "provider merged head is not contained by the recorded merge commit");
+      }
       if (recordedPrNumber === null && reconciliation.proof.kind !== "exact_head") {
         return result(
           null,
@@ -340,15 +346,10 @@ export async function targetedCleanupProof(opts: {
     }
 
     if (recordedPrNumber === null) {
-      if (
-        receipt.providerHeadSha === branchHead &&
-        !(await gitRepositoryHasReplacementRefs(opts.gitRoot))
-      ) {
-        return result("provider_merge", null);
-      }
       return result(
         null,
-        "legacy cleanup without a recorded PR number requires the exact provider head",
+        reconciliation.reason ??
+          "legacy cleanup without a recorded PR number requires valid exact-head reconciliation",
       );
     }
 
