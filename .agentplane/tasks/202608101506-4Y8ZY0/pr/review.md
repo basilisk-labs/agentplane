@@ -6,7 +6,7 @@ Created: 2026-08-10T15:08:59.810Z
 
 - Task: `202608101506-4Y8ZY0`
 - Title: Accept safe shell-free Bun test checks in supervised verification
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608101506-4Y8ZY0/accept-safe-shell-free-bun-test-checks-in-superv`
 - Canonical task record: `.agentplane/tasks/202608101506-4Y8ZY0/README.md`
 
