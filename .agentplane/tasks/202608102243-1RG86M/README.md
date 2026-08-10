@@ -4,7 +4,7 @@ title: "Make verification atomic and reusable across lifecycle-only drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -35,8 +35,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "ee79d2660f8aa9bedf36f67d39f8c62686384734"
-  message: "🐛 1RG86M task: reuse content-addressed verification"
+  hash: "b18a06196eac99099017805ab649aa1229d65335"
+  message: "🐛 1RG86M task: exclude direct lifecycle metadata"
 comments:
   -
     author: "CODER"
@@ -44,6 +44,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: content-addressed verification reuse, atomic finding transition, exact invalidation reasons, and terminal cleanup convergence."
+  -
+    author: "CODER"
+    body: "Implementation updated: direct-mode verification identity now excludes the complete lifecycle task directory, preserving source, Verify Steps, toolchain context, and runtime invalidation. Full test suite 3971/3971 and all static/build gates passed."
 events:
   -
     type: "status"
@@ -66,8 +69,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Content-addressed verification reuse and atomic finding persistence passed."
+  -
+    type: "status"
+    at: "2026-08-10T23:54:05.889Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation updated: direct-mode verification identity now excludes the complete lifecycle task directory, preserving source, Verify Steps, toolchain context, and runtime invalidation. Full test suite 3971/3971 and all static/build gates passed."
+    commit: "b18a06196eac99099017805ab649aa1229d65335"
 doc_version: 3
-doc_updated_at: "2026-08-10T23:42:30.864Z"
+doc_updated_at: "2026-08-10T23:54:05.889Z"
 doc_updated_by: "CODER"
 description: "Persist pass or rework, structured findings, tested input identity, and evidence references in one atomic verification transaction. Define freshness from content-addressed implementation and verification inputs rather than task README revision or lifecycle-only commits; reuse receipts after rebases or metadata-only changes when the relevant patch and declared inputs are identical; invalidate them when code, Verify Steps, configuration, dependencies, environment contract, or evidence changes. DONE tasks must remain terminal and must not route back to verification. Provide deterministic CLI reasons for reuse or invalidation and regression coverage for the ordering defect reproduced in AgentPlane 0.7.5."
 sections:
