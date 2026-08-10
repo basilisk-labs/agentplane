@@ -15,21 +15,21 @@ Allow branch_pr tasks whose reviewable result consists only of managed task meta
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified null-target acceptance without weakening semantic SHA, freshness, digest, or concrete-details checks.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-10T12:25:44.479Z
+- Updated: 2026-08-10T12:31:59.419Z
 - Branch: task/202608101223-ZCA7JG/accept-verification-records-for-metadata-only-br
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../shared/task-verification-records.test.ts       | 121 ++++++++++++++++++---
+ .../shared/task-verification-records.test.ts       | 137 ++++++++++++++++++---
  .../commands/shared/task-verification-records.ts   |   3 +-
- 2 files changed, 105 insertions(+), 19 deletions(-)
+ 2 files changed, 121 insertions(+), 19 deletions(-)
 ```
 
 </details>

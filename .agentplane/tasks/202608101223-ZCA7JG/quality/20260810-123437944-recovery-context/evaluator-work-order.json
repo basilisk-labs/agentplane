@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608101223-ZCA7JG-a12b405e6389d7aba0b2020d",
+  "prepared_at": "2026-08-10T12:34:37.944Z",
+  "task": {
+    "id": "202608101223-ZCA7JG",
+    "revision": 7,
+    "objective": "Accept verification records for metadata-only branch_pr tasks\n\nAllow branch_pr tasks whose reviewable result consists only of managed task metadata to persist and satisfy verification without fabricating an implementation SHA. Preserve freshness checks for semantic code changes and add a regression reproducing PR 4809 where resolveQualityReviewTargetSha returns null.",
+    "acceptance_criteria": [
+      "bun run typecheck",
+      "bun vitest run packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts",
+      "- In scope: Allow branch_pr tasks whose reviewable result consists only of managed task metadata to persist and satisfy verification without fabricating an implementation SHA. Preserve freshness checks for semantic code changes and add a regression reproducing PR 4809 where resolveQualityReviewTargetSha returns null.\n- Out of scope: unrelated refactors not required for \"Accept verification records for metadata-only branch_pr tasks\".",
+      "1. Add focused tests proving that a valid verification record with implementation_sha=null is accepted only when the current branch_pr quality target is also null and the task verification metadata, Verify Steps digest, record digest, and concrete check details all match. 2. Preserve the existing rejection behavior when a semantic implementation SHA exists, the record SHA differs, details are not concrete, or task metadata is stale. 3. Update the verification-record acceptance logic without weakening code-task freshness. 4. Run the focused verification/route tests, typecheck, and routing policy check. 5. Record the fix as the prerequisite that unblocks metadata-only recovery PR #4809.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun vitest run packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "45b1e5991528f862eff7f2eb414f17dc156df32b",
+  "diff_base_sha": "27671e9b8cdec21b1170719a87019f703cec9526",
+  "blueprint_digest": "b6986aee4a978b91eb932e4a53a9b6e572c6cb207d0305ef61fee8d5a5ce5d6c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608101223-ZCA7JG/quality/20260810-123437944-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:d134be4a3f868d654b3c8da41af63cd97d47da50bfe5d66e4f85351a56ae9ab5",
+    "prompt_path": ".agentplane/tasks/202608101223-ZCA7JG/quality/objects/sha256/78c6f2e9cc1ac0a35b326c643e9c4b7a36abed73b16590be9d0ed4f4490b02a0.md",
+    "result_schema_path": ".agentplane/tasks/202608101223-ZCA7JG/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608101223-ZCA7JG/README.md",
+      "sha256": "sha256:1d6766062d9935107cc738d17af2e2eeec73cb01e42516693fbcfd27927dd6c2",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608101223-ZCA7JG/quality/objects/sha256/c07333c02c9947371214be2c6dd32f52c6056b73030f34687f9bf83f753bb607.patch",
+      "sha256": "sha256:c07333c02c9947371214be2c6dd32f52c6056b73030f34687f9bf83f753bb607",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608101223-ZCA7JG/quality/objects/sha256/3c5fc3df0128f433005c297003b0a083cdb9a34e2cc784e2804b0dadb0fccc90.json",
+      "sha256": "sha256:3c5fc3df0128f433005c297003b0a083cdb9a34e2cc784e2804b0dadb0fccc90",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608101223-ZCA7JG/verification/20260810123259659-96076c8fbacf74d2.json",
+      "sha256": "sha256:42d8b3fbb6e30c259dbe391f1a8f0221c21c3e8cfcb6cb2d8c93354b2d51b062",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608101223-ZCA7JG/quality/objects/sha256/332159daa5c17f2070a8d9f388a2197cbcbebdadc64331defb8392ef6d7bf5d8.json",
+      "sha256": "sha256:332159daa5c17f2070a8d9f388a2197cbcbebdadc64331defb8392ef6d7bf5d8",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

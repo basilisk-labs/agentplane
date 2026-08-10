@@ -48,6 +48,7 @@ async function writeValidRecord(opts: {
   task: TaskData;
   implementationSha: string | null;
   details?: string | null;
+  omitImplementationSha?: boolean;
 }): Promise<string> {
   const verification = opts.task.verification;
   if (!verification) throw new Error("test task must have verification metadata");
@@ -66,7 +67,7 @@ async function writeValidRecord(opts: {
       opts.details === undefined
         ? "Command: bun test\nResult: pass\nEvidence: focused tests passed\nScope: verification matching"
         : opts.details,
-    implementation_sha: opts.implementationSha,
+    ...(opts.omitImplementationSha ? {} : { implementation_sha: opts.implementationSha }),
     scope: opts.task.sections?.["Verify Steps"],
     scope_digest: sha256(opts.task.sections?.["Verify Steps"]?.trim() ?? ""),
   };
@@ -120,6 +121,21 @@ describe("task verification records", () => {
     const task = makeTask("T-NON-CONCRETE");
     const taskRoot = path.join(gitRoot, ".agentplane", "tasks", task.id);
     await writeValidRecord({ taskRoot, task, implementationSha: null, details: null });
+
+    await expect(verificationRecordPaths(taskRoot, task, null)).resolves.toEqual([]);
+  });
+
+  it("rejects a metadata-only record without an explicit implementation SHA field", async () => {
+    const gitRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-verification-record-"));
+    tempRoots.push(gitRoot);
+    const task = makeTask("T-MISSING-SHA");
+    const taskRoot = path.join(gitRoot, ".agentplane", "tasks", task.id);
+    await writeValidRecord({
+      taskRoot,
+      task,
+      implementationSha: null,
+      omitImplementationSha: true,
+    });
 
     await expect(verificationRecordPaths(taskRoot, task, null)).resolves.toEqual([]);
   });
