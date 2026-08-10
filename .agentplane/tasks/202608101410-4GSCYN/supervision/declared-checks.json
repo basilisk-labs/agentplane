@@ -1,0 +1,17 @@
+{
+  "checks": [
+    {
+      "command": "bun run typecheck",
+      "duration_ms": 105,
+      "exit_code": 0,
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Unsupported declared check: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
+  "schema_version": 1,
+  "status": "unsupported",
+  "task_id": "202608101410-4GSCYN"
+}

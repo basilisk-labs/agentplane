@@ -4,7 +4,7 @@ title: "Stop external-agent replay after a typed blocked result"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-10T14:33:30.394Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Unsupported declared check: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -36,9 +36,7 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit:
-  hash: "f418c45799e9eba70c561a386682a57b8cce7a26"
-  message: "🚧 4GSCYN task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -62,8 +60,14 @@ events:
     to: "DOING"
     note: "Implementation committed: f418c45799e9. CLI accepted one state-bound external-agent semantic result."
     commit: "f418c45799e9eba70c561a386682a57b8cce7a26"
+  -
+    type: "verify"
+    at: "2026-08-10T14:33:30.394Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Unsupported declared check: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
 doc_version: 3
-doc_updated_at: "2026-08-10T14:25:19.785Z"
+doc_updated_at: "2026-08-10T14:33:31.383Z"
 doc_updated_by: "SUPERVISOR"
 description: "When an external EXECUTOR returns a valid state-bound blocked semantic result, consume that envelope exactly once, persist the blocker as task state and evidence, and return a non-episode boundary. Do not issue another implementation envelope until an operator deliberately resolves the blocker and resumes the task. Preserve completed-result behavior and exact replay idempotency."
 sections:
@@ -97,6 +101,41 @@ sections:
     7. Run bun run typecheck and bun run test:critical. Expected: all pass.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-10T14:33:30.394Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Unsupported declared check: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T14:25:19.785Z, excerpt_hash=sha256:86b0656c20c7d0d6524a42fa6cf6d195dbe7409e19e6ff8fadb0bd4d206b8eb2
+
+    Details:
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608101410-4GSCYN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608101410-4GSCYN declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101410-4GSCYN-stop-external-agent-replay-after-a-typed-blocked/.agentplane/tasks/202608101410-4GSCYN/blueprint/resolved-snapshot.json
+    - old_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+    - current_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608101410-4GSCYN
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608101410-4GSCYN
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -147,6 +186,41 @@ Rollback: revert the isolated blocked-result projection and application changes;
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-10T14:33:30.394Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Unsupported declared check: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T14:25:19.785Z, excerpt_hash=sha256:86b0656c20c7d0d6524a42fa6cf6d195dbe7409e19e6ff8fadb0bd4d206b8eb2
+
+Details:
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608101410-4GSCYN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608101410-4GSCYN declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101410-4GSCYN-stop-external-agent-replay-after-a-typed-blocked/.agentplane/tasks/202608101410-4GSCYN/blueprint/resolved-snapshot.json
+- old_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+- current_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608101410-4GSCYN
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608101410-4GSCYN
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
