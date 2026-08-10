@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:d071c23e43d1b4ce0de92bd58abacd05b32ff6eafb82b94f707acf97e5ffbf23",
   "pr_number": 4811,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4811",
+  "pre_merge_closure": {
+    "basis_commit": "d495666428bc8d9eaa686df071b514dbd8a08c2a",
+    "branch": "task/202608101410-4GSCYN/stop-external-agent-replay-after-a-typed-blocked",
+    "pr_number": 4811,
+    "recorded_at": "2026-08-10T17:51:55.866Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608101410-4GSCYN",

@@ -2,10 +2,10 @@
 id: "202608101410-4GSCYN"
 title: "Stop external-agent replay after a typed blocked result"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -57,9 +57,9 @@ quality_review:
     - "The implementation now covers both partial-effect boundaries identified by review while preserving the one-envelope, one-blocker, one-commit invariant."
     - "Residual risk: The broader accepted-before-freshness lifecycle defect observed while running this task remains outside P11 and requires its own regression task."
 token_usage:
-  agent_runs: 6
+  agent_runs: 8
   input_tokens: null
-  journal_digest: "sha256:ffb8fa8e25ac2c21f8bd99bee8f191556348ad6e0d7491f6b836d5e5e3388a58"
+  journal_digest: "sha256:4251ac29176ea5d72240bd4fd026551d9cc719c3d84aae02adc7e87ddd59f0de"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -69,7 +69,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-10T17:21:19.794Z"
+  updated_at: "2026-08-10T17:51:55.794Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -79,8 +79,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "beab407e2597b158ff1bb344ee76f2391abc54b7"
-  message: "🚧 4GSCYN task: apply external agent result"
+  hash: "d495666428bc8d9eaa686df071b514dbd8a08c2a"
+  message: "🚧 4GSCYN task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -106,6 +106,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: beab407e2597. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -243,9 +246,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-10T17:51:55.794Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "d495666428bc8d9eaa686df071b514dbd8a08c2a"
 doc_version: 3
-doc_updated_at: "2026-08-10T17:51:32.570Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-10T17:51:55.826Z"
+doc_updated_by: "CODER"
 description: "When an external EXECUTOR returns a valid state-bound blocked semantic result, consume that envelope exactly once, persist the blocker as task state and evidence, and return a non-episode boundary. Do not issue another implementation envelope until an operator deliberately resolves the blocker and resumes the task. Preserve completed-result behavior and exact replay idempotency."
 sections:
   Summary: |-
@@ -730,8 +741,8 @@ sections:
       Resolution: Add a deterministic blocker receipt, recover partial persistence without another status transition, and amend an existing single blocker commit after post-commit refresh failure.
 extensions:
   implementation_commit:
-    hash: "ccd5dd6b4c31690b0e1adb785eab434dc05da0ac"
-    message: "🧩 4GSCYN task: satisfy hotspot contract"
+    hash: "beab407e2597b158ff1bb344ee76f2391abc54b7"
+    message: "🚧 4GSCYN task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "3d417620e9a8b333416d25c2cf19b3ccbdbdd1c9"
     version: 1
@@ -1234,12 +1245,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/6` agent runs
+- Completeness: `0/8` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:ffb8fa8e25ac2c21f8bd99bee8f191556348ad6e0d7491f6b836d5e5e3388a58`
+- Journal digest: `sha256:4251ac29176ea5d72240bd4fd026551d9cc719c3d84aae02adc7e87ddd59f0de`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-10T17:21:19.794Z`
+- Updated at: `2026-08-10T17:51:55.794Z`
