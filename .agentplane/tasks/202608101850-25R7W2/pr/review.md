@@ -6,7 +6,7 @@ Created: 2026-08-10T18:51:39.548Z
 
 - Task: `202608101850-25R7W2`
 - Title: Recover legacy merged cleanup identity from the provider
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608101850-25R7W2/recover-legacy-merged-cleanup-identity-from-the`
 - Canonical task record: `.agentplane/tasks/202608101850-25R7W2/README.md`
 
