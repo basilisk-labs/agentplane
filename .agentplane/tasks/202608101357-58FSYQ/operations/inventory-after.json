@@ -1,0 +1,3908 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-10T21:06:18.933Z",
+  "repository": "/Users/densmirnov/Github/agentplane",
+  "base_ref": "origin/main",
+  "base_head": "30390d4a2c545984642bcc2e4754582ff5d2316b",
+  "counts": {
+    "worktrees": 70,
+    "local_branches": 84,
+    "dirty_worktrees": 13,
+    "clean_worktrees": 57,
+    "stale_registrations": 0,
+    "protected_recovery_worktrees": 48,
+    "active_task_worktrees": 12,
+    "safe_worktree_cleanup_candidates": 0,
+    "safe_local_branch_delete_candidates": 0,
+    "duplicate_active_tasks": 0
+  },
+  "cleanup_cli_observation": {
+    "command": "agentplane cleanup merged --task-id <id> --root <base-checkout>",
+    "result": "no remaining proven candidates after four targeted provider_merge cleanups",
+    "execution": "repo-local CLI from the task worktree targeted the primary main checkout explicitly"
+  },
+  "protected_roots": [
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base",
+    "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV"
+  ],
+  "duplicate_active_tasks": [],
+  "worktrees": [
+    {
+      "path": "/Users/densmirnov/Github/agentplane",
+      "head": "30390d4a2c545984642bcc2e4754582ff5d2316b",
+      "branch": "main",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": null,
+      "task_status": null,
+      "pr": null,
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "dirty": true,
+      "status_count": 20,
+      "status_digest": "d4867cf968f29eb6817ec53288fb725abaa36b89048db5e6a6c7610bf9be6956",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "primary_checkout",
+        "dirty"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane-v0.6.24-closeout-fix",
+      "head": "b9a1ba4b72f0f0f7851969f0045ac537899a23aa",
+      "branch": "codex/fix-v0.6.24-closeout-route",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": null,
+      "task_status": null,
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "dirty": true,
+      "status_count": 1,
+      "status_digest": "8e7408f4f368dd52cf4829d647a64f87ce0b09ca9d1eeaca3fc1fa53f5c23a5c",
+      "diff_sha256": "feae8005eea8ffd4b4d94a6f991ab794b5ceeebe8d4da194271791621900904e",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "dirty",
+        "unmerged"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-a70-baseline",
+      "head": "a70f76286f9f2050e80f1d19f4470cdbe97a824f",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "task_id": null,
+      "task_status": null,
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "unmerged"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base",
+      "head": "d6f6dc64270c0b5ce8db59d6c30a7a23b7f73d83",
+      "branch": "codex/recovery-mt4fk2-rf05b-main-20260810",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": null,
+      "task_status": null,
+      "pr": null,
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": true,
+      "status_count": 39,
+      "status_digest": "4c3114aca6a261e3a68b7b0742ace4a96ee57da4a75ae595bd6d323cbd5aad77",
+      "diff_sha256": "48fd0889b89263b0172345217ed97a3cf4b0976996a4183f3d414e0674faef86",
+      "staged_sha256": "ce1b36a44fc7c15eaf980e6f1b1cf7bf78b7def9a360b8368af60d2ddbab685e",
+      "reasons": [
+        "protected_recovery",
+        "dirty"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607221849-8YYZ9X-execute-and-calibrate-evaluator-episodes",
+      "head": "9324be861dced6533437a06278a4826c7d3604e4",
+      "branch": "task/202607221849-8YYZ9X/execute-and-calibrate-evaluator-episodes",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607221849-8YYZ9X",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4643,
+        "state": "MERGED",
+        "merged_at": "2026-07-27T20:05:32Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4643",
+        "head": "9324be861dced6533437a06278a4826c7d3604e4"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607242204-SX8T09-persist-typed-runner-effect-operations-before-ex",
+      "head": "a1d9f1a0f2b9b928942e518d7a5d0001bc5bfe69",
+      "branch": "task/202607242204-SX8T09/persist-typed-runner-effect-operations-before-ex",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607242204-SX8T09",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4637,
+        "state": "MERGED",
+        "merged_at": "2026-07-27T04:34:22Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4637",
+        "head": "a1d9f1a0f2b9b928942e518d7a5d0001bc5bfe69"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-origin-main-baseline",
+      "head": "4da09cdaca713eb3be1576f00a4f57e72b1353db",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "task_id": null,
+      "task_status": null,
+      "pr": null,
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "ambiguous"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141554-XDGR0C-context-conflict-gate",
+      "head": "2736619d21f0424e30980643af22e693ca01eea5",
+      "branch": "task/202605141554-XDGR0C/context-conflict-gate",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202605141554-XDGR0C",
+      "task_status": "DOING",
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "active_task",
+        "unmerged"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200819-3K686F-context-modes",
+      "head": "d119f511d9251f4112206a109795b6e38524b6da",
+      "branch": "task/202605200819-3K686F/context-modes",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202605200819-3K686F",
+      "task_status": "DOING",
+      "pr": {
+        "number": 3961,
+        "state": "CLOSED",
+        "merged_at": null,
+        "url": "https://github.com/basilisk-labs/agentplane/pull/3961",
+        "head": "d119f511d9251f4112206a109795b6e38524b6da"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "dirty": true,
+      "status_count": 1,
+      "status_digest": "ad3732d3adb7f854eee3e1db25ba46917e2c4d3e10c094c438a87dfc74b86be5",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "active_task",
+        "dirty",
+        "unmerged"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231756-7VSXMJ-maximum-assimilation-polygon",
+      "head": "f50fa82c37154fd8d9d0483888a8c767210aca27",
+      "branch": "task/202605231756-7VSXMJ/maximum-assimilation-polygon",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202605231756-7VSXMJ",
+      "task_status": "DOING",
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "active_task",
+        "unmerged"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240752-GKJ285-maximum-assimilation-polygon",
+      "head": "1e2ab4f944df85cf6c8b086b0a1ddf66f5480839",
+      "branch": "task/202605240752-GKJ285/maximum-assimilation-polygon",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202605240752-GKJ285",
+      "task_status": "DOING",
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "active_task",
+        "unmerged"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240804-G1QZPR-fix-publication-edge-cases",
+      "head": "f3c653c612a8a8fdf3ad21067aab2f0073556f4e",
+      "branch": "task/202605240804-G1QZPR/fix-publication-edge-cases",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202605240804-G1QZPR",
+      "task_status": "DOING",
+      "pr": {
+        "number": 4131,
+        "state": "CLOSED",
+        "merged_at": null,
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4131",
+        "head": "f3c653c612a8a8fdf3ad21067aab2f0073556f4e"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "active_task",
+        "unmerged"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605271846-E4WTNS-document-0-7-runner-architecture",
+      "head": "8fc540f66a8bb9c35014be9db3cb87a678ee501c",
+      "branch": "task/202605271846-E4WTNS/document-0-7-runner-architecture",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202605271846-E4WTNS",
+      "task_status": "DOING",
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "active_task",
+        "unmerged"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011137-D5MAJ3-implement-hermes-agentplane-projection-bridge-me",
+      "head": "0cc515b7ac40ea5e906da7502d3e90b96506772a",
+      "branch": "task/202606011137-D5MAJ3/implement-hermes-agentplane-projection-bridge-me",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202606011137-D5MAJ3",
+      "task_status": "DOING",
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "active_task",
+        "unmerged"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606031942-Y9BSF3-add-structured-feedback-issue-triage",
+      "head": "cf0dfe7c6e24db61c4465c7b29aad9ceb6e1f12f",
+      "branch": "task/202606031942-Y9BSF3/add-structured-feedback-issue-triage",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202606031942-Y9BSF3",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4409,
+        "state": "MERGED",
+        "merged_at": "2026-06-03T22:05:05Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4409",
+        "head": "4c1a8bfa923d486ae7234b3b032ad1f6449e09ec"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "unmerged",
+        "post_merge_head_drift"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606041521-5Z2CG6-harden-task-run-route-gating",
+      "head": "592fe3b6e8b427ec2dc8ba73667ad928db6a2af9",
+      "branch": "task/202606041521-5Z2CG6/harden-task-run-route-gating",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202606041521-5Z2CG6",
+      "task_status": "DOING",
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "active_task",
+        "unmerged"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606050832-6M43J3-legacy-premerge-marker",
+      "head": "7b5cdcb5374c3a5976e38b9e2c086637e2bec0c8",
+      "branch": "task/202606050832-6M43J3/legacy-premerge-marker",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202606050832-6M43J3",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4459,
+        "state": "MERGED",
+        "merged_at": "2026-06-05T10:49:29Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4459",
+        "head": "8c38224871709b88319bef5a4662af058c3aec78"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "dirty": true,
+      "status_count": 2,
+      "status_digest": "42f43892fd2017ce4d795ddaf28cd2e37347cad3ec377b293a9d82c73aa6b539",
+      "diff_sha256": "ea0345e090a54c2d289d32d0350620ea45aef17821bd93b4a63d154050bc9146",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "dirty",
+        "unmerged",
+        "post_merge_head_drift"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606081917-EYAKN6-implement-agentplane-loop-model-v0-1",
+      "head": "f0e8ca7aa0562201a7fcceeb6798adc356f93502",
+      "branch": "task/202606081917-EYAKN6/implement-agentplane-loop-model-v0-1",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202606081917-EYAKN6",
+      "task_status": "DOING",
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "active_task",
+        "unmerged"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101357-58FSYQ-reconcile-local-worktree-and-branch-debt-safely",
+      "head": "30390d4a2c545984642bcc2e4754582ff5d2316b",
+      "branch": "task/202608101357-58FSYQ/reconcile-local-worktree-and-branch-debt-safely",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202608101357-58FSYQ",
+      "task_status": "DOING",
+      "pr": null,
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "dirty": true,
+      "status_count": 12,
+      "status_digest": "6bd0d517fadb04d523d98c16b5fd2b24064920d1863071de7109a6fa7852afa2",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "active_task",
+        "dirty"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV",
+      "head": "d6f6dc64270c0b5ce8db59d6c30a7a23b7f73d83",
+      "branch": "codex/recovery-mt4fk2-xs41zv-main-20260810",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": null,
+      "task_status": null,
+      "pr": null,
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": true,
+      "status_count": 343,
+      "status_digest": "b3dd5c74682894b37cd085fa5601cf2a1133aeecc8e131f97c85867a5f7adf90",
+      "diff_sha256": "4affeecefecf3af316bdffa514bb1360013db5a04c7d3a7433c0d19b28be6910",
+      "staged_sha256": "e5e693833dd4c508f6a1cd874f72c70071992a1632d5120fcdf51aeaa776efb4",
+      "reasons": [
+        "protected_recovery",
+        "dirty"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606141629-3KVKMY-add-deepwiki-auto-sync-badge",
+      "head": "ff1165533016d4d06048dd9e35729754ca8c6a34",
+      "branch": "task/202606141629-3KVKMY/add-deepwiki-auto-sync-badge",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202606141629-3KVKMY",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4515,
+        "state": "MERGED",
+        "merged_at": "2026-06-14T16:45:47Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4515",
+        "head": "4115c835d2d56011d2e7bf36dca4df1dec7b0806"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "unmerged",
+        "post_merge_head_drift"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606171318-HMV399-platform-sync",
+      "head": "51b52152969230da78ef6ce245cd48074e166c1d",
+      "branch": "task/202606171318-HMV399/platform-sync",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202606171318-HMV399",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4522,
+        "state": "MERGED",
+        "merged_at": "2026-06-18T20:09:29Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4522",
+        "head": "95e905c7a84442754417d9076858b25a63234fa6"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "dirty": true,
+      "status_count": 1,
+      "status_digest": "82f3006da560bfefa7c618e6aee3fde9dcbfefdd093f3f2691a5efe95f731c9f",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "dirty",
+        "unmerged",
+        "post_merge_head_drift"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606181941-HP0WZT-fix-close-dirty-state-regressions",
+      "head": "ae58cb5fa5b095eadfc295162833ae36dbfb42cf",
+      "branch": "task/202606181941-HP0WZT/fix-close-dirty-state-regressions",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202606181941-HP0WZT",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4525,
+        "state": "MERGED",
+        "merged_at": "2026-06-18T20:14:28Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4525",
+        "head": "adbd2fe15d97bd36eeff72c8e7e690ffb0b977b0"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "unmerged",
+        "post_merge_head_drift"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021729-1F4FNM-add-sgr-v2-typed-context-extraction-writer",
+      "head": "ea9f1dc64207b15da8c187246c5bde5b76406780",
+      "branch": "task/202607021729-1F4FNM/add-sgr-v2-typed-context-extraction-writer",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607021729-1F4FNM",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4539,
+        "state": "MERGED",
+        "merged_at": "2026-07-02T19:15:32Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4539",
+        "head": "ea9f1dc64207b15da8c187246c5bde5b76406780"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021729-8S1DF3-add-maximum-assimilation-wiki-reports-and-evalua",
+      "head": "1013fdc49a2acb290f9a35d193da4a63b9197813",
+      "branch": "task/202607021729-8S1DF3/add-maximum-assimilation-wiki-reports-and-evalua",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607021729-8S1DF3",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4541,
+        "state": "MERGED",
+        "merged_at": "2026-07-02T20:22:26Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4541",
+        "head": "1013fdc49a2acb290f9a35d193da4a63b9197813"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021729-BC11BT-enforce-maximum-assimilation-structural-validato",
+      "head": "b8562751c9ee917c72ce547860298f06ff5d383f",
+      "branch": "task/202607021729-BC11BT/enforce-maximum-assimilation-structural-validato",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607021729-BC11BT",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4540,
+        "state": "MERGED",
+        "merged_at": "2026-07-02T19:40:46Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4540",
+        "head": "b8562751c9ee917c72ce547860298f06ff5d383f"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021730-7KG1WF-document-and-migrate-maximum-assimilation-v2",
+      "head": "b371a0ad3734f99bae09cec0ed99b7f7b0dc654d",
+      "branch": "task/202607021730-7KG1WF/document-and-migrate-maximum-assimilation-v2",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607021730-7KG1WF",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4542,
+        "state": "MERGED",
+        "merged_at": "2026-07-02T21:08:56Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4542",
+        "head": "b371a0ad3734f99bae09cec0ed99b7f7b0dc654d"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607030734-7S66KX-context-graph-align-sgr-vocabulary-and-diagnosti",
+      "head": "49a6b976f9adbc7775dfcac122e22a69c692316c",
+      "branch": "task/202607030734-7S66KX/context-graph-align-sgr-vocabulary-and-diagnosti",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607030734-7S66KX",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4543,
+        "state": "MERGED",
+        "merged_at": "2026-07-03T08:38:38Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4543",
+        "head": "49a6b976f9adbc7775dfcac122e22a69c692316c"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607030856-SQ3TMK-fix-context-wiki-index-lint-and-strengthen-extra",
+      "head": "3331f6ce225b03d4a72d9b0465de6d19e56d48b5",
+      "branch": "task/202607030856-SQ3TMK/fix-context-wiki-index-lint-and-strengthen-extra",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607030856-SQ3TMK",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4544,
+        "state": "MERGED",
+        "merged_at": "2026-07-03T09:56:22Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4544",
+        "head": "3331f6ce225b03d4a72d9b0465de6d19e56d48b5"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607031240-R18YKH-improve-wiki-connectivity-reports",
+      "head": "d6c1cb478925cf9e9a242e6158c1158765d84433",
+      "branch": "task/202607031240-R18YKH/improve-wiki-connectivity-reports",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607031240-R18YKH",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4545,
+        "state": "MERGED",
+        "merged_at": "2026-07-03T13:07:19Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4545",
+        "head": "d6c1cb478925cf9e9a242e6158c1158765d84433"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092115-G7H9BC-harden-patch-release-quality-and-routing-contrac",
+      "head": "39978d59499236e85feb81d7bd2b361941d6102f",
+      "branch": "task/202607092115-G7H9BC/harden-patch-release-quality-and-routing-contrac",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607092115-G7H9BC",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4552,
+        "state": "MERGED",
+        "merged_at": "2026-07-09T22:04:06Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4552",
+        "head": "39978d59499236e85feb81d7bd2b361941d6102f"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092206-Z480S9-plan-v0-6-22-refactor-graph",
+      "head": "804ae33fdd6277a5f8a9752b286beaef5dea2fc2",
+      "branch": "task/202607092206-Z480S9/plan-v0-6-22-refactor-graph",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607092206-Z480S9",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4554,
+        "state": "MERGED",
+        "merged_at": "2026-07-09T22:21:20Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4554",
+        "head": "804ae33fdd6277a5f8a9752b286beaef5dea2fc2"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092207-MS2B7B-make-context-extraction-writes-transactional-for",
+      "head": "d7ce7eb8060529d3fde8de33dee5ca8ff8b20571",
+      "branch": "task/202607092207-MS2B7B/make-context-extraction-writes-transactional-for",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607092207-MS2B7B",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4555,
+        "state": "MERGED",
+        "merged_at": "2026-07-09T23:40:22Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4555",
+        "head": "d7ce7eb8060529d3fde8de33dee5ca8ff8b20571"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092208-1J49NQ-split-routing-and-task-command-hotspots-for-v0-6",
+      "head": "9ce14f5dd957eba2c2b0490059d1821cbaa1ef23",
+      "branch": "task/202607092208-1J49NQ/split-routing-and-task-command-hotspots-for-v0-6",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607092208-1J49NQ",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4574,
+        "state": "MERGED",
+        "merged_at": "2026-07-11T11:29:43Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4574",
+        "head": "9ce14f5dd957eba2c2b0490059d1821cbaa1ef23"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092208-KSXT6H-split-runtime-and-backend-hotspots-for-v0-6-22",
+      "head": "efd46019e215718011d9b5e4d3bd7e53802fb42b",
+      "branch": "task/202607092208-KSXT6H/split-runtime-and-backend-hotspots-for-v0-6-22",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607092208-KSXT6H",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4575,
+        "state": "MERGED",
+        "merged_at": "2026-07-11T12:00:36Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4575",
+        "head": "efd46019e215718011d9b5e4d3bd7e53802fb42b"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092208-NGVXDD-reduce-the-knip-baseline-for-v0-6-22",
+      "head": "7aeff958b1a9b1d44e6be398cc7350d353446efe",
+      "branch": "task/202607092208-NGVXDD/reduce-the-knip-baseline-for-v0-6-22",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607092208-NGVXDD",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4576,
+        "state": "MERGED",
+        "merged_at": "2026-07-11T12:28:35Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4576",
+        "head": "7aeff958b1a9b1d44e6be398cc7350d353446efe"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092208-PC3904-decompose-oversized-test-suites-for-v0-6-22",
+      "head": "afad89f2f057d479fee2bb35b5a4504ac6852c34",
+      "branch": "task/202607092208-PC3904/decompose-oversized-test-suites-for-v0-6-22",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607092208-PC3904",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4577,
+        "state": "MERGED",
+        "merged_at": "2026-07-11T12:47:53Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4577",
+        "head": "afad89f2f057d479fee2bb35b5a4504ac6852c34"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092208-VQ05Q1-split-context-pipeline-hotspots-for-v0-6-22",
+      "head": "a162648c9c4d117327d8e033ed301f06c64f6fc9",
+      "branch": "task/202607092208-VQ05Q1/split-context-pipeline-hotspots-for-v0-6-22",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607092208-VQ05Q1",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4573,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T16:19:44Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4573",
+        "head": "a162648c9c4d117327d8e033ed301f06c64f6fc9"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092209-F33MNN-prepare-and-publish-patch-release-v0-6-22",
+      "head": "fce3a5c45deafbd618d0c2a0c8c0c81f2f083ec4",
+      "branch": "task/202607092209-F33MNN/prepare-and-publish-patch-release-v0-6-22",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607092209-F33MNN",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4578,
+        "state": "MERGED",
+        "merged_at": "2026-07-11T14:10:45Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4578",
+        "head": "fce3a5c45deafbd618d0c2a0c8c0c81f2f083ec4"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100244-T9T7B2-prefer-merged-pr-commit-when-reconciling-include",
+      "head": "3b69e28cf0727d5a290e7504a5469632278b6a04",
+      "branch": "task/202607100244-T9T7B2/prefer-merged-pr-commit-when-reconciling-include",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607100244-T9T7B2",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4564,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T03:19:54Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4564",
+        "head": "3b69e28cf0727d5a290e7504a5469632278b6a04"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100321-3WQPYW-persist-reconciled-included-batch-closure-for-v0",
+      "head": "084a447559aa926b852d837710dd7a38139ed002",
+      "branch": "task/202607100321-3WQPYW/persist-reconciled-included-batch-closure-for-v0",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607100321-3WQPYW",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4565,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T03:37:44Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4565",
+        "head": "084a447559aa926b852d837710dd7a38139ed002"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100340-KW3B8P-keep-premerge-done-in-integration-queue",
+      "head": "bcfab4d32d69c319cc40e93c5e719e51446856dd",
+      "branch": "task/202607100340-KW3B8P/keep-premerge-done-in-integration-queue",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607100340-KW3B8P",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4566,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T04:02:18Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4566",
+        "head": "bcfab4d32d69c319cc40e93c5e719e51446856dd"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100404-WPRBVK-make-doctor-batch-consistency-rebase-aware",
+      "head": "444abb2078d109f575bf5b560aa09f9078948c92",
+      "branch": "task/202607100404-WPRBVK/make-doctor-batch-consistency-rebase-aware",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607100404-WPRBVK",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4567,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T04:32:46Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4567",
+        "head": "444abb2078d109f575bf5b560aa09f9078948c92"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100435-A932SP-release-lane-after-premerge-hosted-close",
+      "head": "8a0f0523bb525f14f30d6c15d87e52dcdde80ce6",
+      "branch": "task/202607100435-A932SP/release-lane-after-premerge-hosted-close",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607100435-A932SP",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4568,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T10:31:44Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4568",
+        "head": "8a0f0523bb525f14f30d6c15d87e52dcdde80ce6"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100436-D7QB76-anchor-evaluator-reviews-for-metadata-only-tasks",
+      "head": "0595df997202ace5c1c9cf690d642e0dfab10204",
+      "branch": "task/202607100436-D7QB76/anchor-evaluator-reviews-for-metadata-only-tasks",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607100436-D7QB76",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4570,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T15:52:33Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4570",
+        "head": "0595df997202ace5c1c9cf690d642e0dfab10204"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100945-T0215Q-resolve-website-lint-incident",
+      "head": "66d8151b6ae8300a729b18f516e60b886a2ea409",
+      "branch": "task/202607100945-T0215Q/resolve-website-lint-incident",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607100945-T0215Q",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4569,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T10:12:20Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4569",
+        "head": "66d8151b6ae8300a729b18f516e60b886a2ea409"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607101059-S3N0X5-recover-queue-lanes-after-merged-pr-branch-delet",
+      "head": "6d6ba4936a2b8cf6ab195db513e2592c1f9fd2e9",
+      "branch": "task/202607101059-S3N0X5/recover-queue-lanes-after-merged-pr-branch-delet",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607101059-S3N0X5",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4571,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T11:38:00Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4571",
+        "head": "6d6ba4936a2b8cf6ab195db513e2592c1f9fd2e9"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607101141-6T0H1E-recognize-rebased-pre-merge-closure-recorded-on",
+      "head": "5ae94983fa35202973ef5779c4de9dc9c1f516f2",
+      "branch": "task/202607101141-6T0H1E/recognize-rebased-pre-merge-closure-recorded-on",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607101141-6T0H1E",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4572,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T12:33:15Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4572",
+        "head": "5ae94983fa35202973ef5779c4de9dc9c1f516f2"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607131641-Z7NE99-align-master-and-agent-prompts-with-gpt-5-6-guid",
+      "head": "78512bb958984e0fa34d2c90d9a2f7c64a143e65",
+      "branch": "task/202607131641-Z7NE99/align-master-and-agent-prompts-with-gpt-5-6-guid",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607131641-Z7NE99",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4587,
+        "state": "MERGED",
+        "merged_at": "2026-07-13T17:32:49Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4587",
+        "head": "78512bb958984e0fa34d2c90d9a2f7c64a143e65"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607131808-4XZ5WY-prepare-and-publish-patch-release-v0-6-23",
+      "head": "e8f7757ee769250d937c333de1acae151f58f8b9",
+      "branch": "task/202607131808-4XZ5WY/prepare-and-publish-patch-release-v0-6-23",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607131808-4XZ5WY",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4588,
+        "state": "MERGED",
+        "merged_at": "2026-07-13T21:43:29Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4588",
+        "head": "e8f7757ee769250d937c333de1acae151f58f8b9"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607211613-0ZXQXK-test-context-assimilation-on-main",
+      "head": "b844277777f0cca835b063e6f5f348d55c9e3051",
+      "branch": "task/202607211613-0ZXQXK/test-context-assimilation-on-main",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607211613-0ZXQXK",
+      "task_status": "DOING",
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "active_task",
+        "unmerged"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607211645-TQ70WD-repair-maximum-assimilation-context-lifecycle",
+      "head": "ff0c4230ee3d59cdc6379b78789163dcf6230df4",
+      "branch": "task/202607211645-TQ70WD/repair-maximum-assimilation-context-lifecycle",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607211645-TQ70WD",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4590,
+        "state": "MERGED",
+        "merged_at": "2026-07-22T11:16:27Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4590",
+        "head": "ff0c4230ee3d59cdc6379b78789163dcf6230df4"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221118-0BZKB6-compile-atomic-linked-wiki-during-context-assimi",
+      "head": "93084dd498d1455736cec3abf56b11e2a0285a74",
+      "branch": "task/202607221118-0BZKB6/compile-atomic-linked-wiki-during-context-assimi",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607221118-0BZKB6",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4591,
+        "state": "MERGED",
+        "merged_at": "2026-07-22T13:10:24Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4591",
+        "head": "93084dd498d1455736cec3abf56b11e2a0285a74"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221313-P57KJ4-archive-resolved-context-incidents-before-v0-6-2",
+      "head": "573efee70b14a1493390921940af6468c1108232",
+      "branch": "task/202607221313-P57KJ4/archive-resolved-context-incidents-before-v0-6-2",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607221313-P57KJ4",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4592,
+        "state": "MERGED",
+        "merged_at": "2026-07-22T13:41:38Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4592",
+        "head": "573efee70b14a1493390921940af6468c1108232"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221344-D9JTEY-release-v0-6-24",
+      "head": "272acac53c30b317ff3f07e500a29593ee4fe924",
+      "branch": "task/202607221344-D9JTEY/release-v0-6-24",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607221344-D9JTEY",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4593,
+        "state": "MERGED",
+        "merged_at": "2026-07-22T14:50:30Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4593",
+        "head": "272acac53c30b317ff3f07e500a29593ee4fe924"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221555-JSEZ5E-delegate-semantic-entity-reconciliation-to-the-c",
+      "head": "73c793127f8b8e340d690131aa152f0882e5c8ff",
+      "branch": "task/202607221555-JSEZ5E/delegate-semantic-entity-reconciliation-to-the-c",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607221555-JSEZ5E",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4595,
+        "state": "MERGED",
+        "merged_at": "2026-07-22T17:00:25Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4595",
+        "head": "73c793127f8b8e340d690131aa152f0882e5c8ff"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221838-SD1W93-define-the-agentplane-0-7-refactor-execution-gra",
+      "head": "7ca42e357011e9f07e38cef3e6a451716437c1ef",
+      "branch": "task/202607221838-SD1W93/define-the-agentplane-0-7-refactor-execution-gra",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607221838-SD1W93",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4596,
+        "state": "MERGED",
+        "merged_at": "2026-07-22T19:33:30Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4596",
+        "head": "7ca42e357011e9f07e38cef3e6a451716437c1ef"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-VC4VVS-unify-brief-next-action-runner-and-hermes-on-age",
+      "head": "aab52fbfc3ef7bd4279dfd7dba8504f1a4003814",
+      "branch": "task/202607221848-VC4VVS/unify-brief-next-action-runner-and-hermes-on-age",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607221848-VC4VVS",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4632,
+        "state": "MERGED",
+        "merged_at": "2026-07-26T16:36:37Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4632",
+        "head": "aab52fbfc3ef7bd4279dfd7dba8504f1a4003814"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252051-ZMVZRZ-make-merged-worktree-cleanup-resilient",
+      "head": "d61ab0f55d1c122e5acbaf2a296e2ff508e87b55",
+      "branch": "task/202607252051-ZMVZRZ/make-merged-worktree-cleanup-resilient",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607252051-ZMVZRZ",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4622,
+        "state": "MERGED",
+        "merged_at": "2026-07-25T23:54:45Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4622",
+        "head": "2a6d152b87666912d189304c4a6084eccaaff262"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "unmerged",
+        "post_merge_head_drift"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252218-XBHBE5-archive-resolved-knowledgeref-guard-incident",
+      "head": "cdcf246bfd87b6fa7c656dc9346f32e2b1cf3aba",
+      "branch": "task/202607252218-XBHBE5/archive-resolved-knowledgeref-guard-incident",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607252218-XBHBE5",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4623,
+        "state": "CLOSED",
+        "merged_at": null,
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4623",
+        "head": "4642eba23ff61deea768392c8040a4e57b7431ff"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "dirty": true,
+      "status_count": 1,
+      "status_digest": "10d4809801c5f710b18e02a80c34ba77ff729055833844cd677fab1f7f06f10a",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "dirty",
+        "unmerged"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252223-THDN0G-bound-branch-snapshot-probes-in-task-active",
+      "head": "040d8df0eaf431e2292eb161efe80e1466ffbd8e",
+      "branch": "task/202607252223-THDN0G/bound-branch-snapshot-probes-in-task-active",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607252223-THDN0G",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4626,
+        "state": "CLOSED",
+        "merged_at": null,
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4626",
+        "head": "040d8df0eaf431e2292eb161efe80e1466ffbd8e"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "unmerged"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252235-5ZKP6T-prevent-foreign-task-artifacts-in-branch-pr-work",
+      "head": "1f262accd7cd6eadc186af86110e9ed23916d266",
+      "branch": "task/202607252235-5ZKP6T/prevent-foreign-task-artifacts-in-branch-pr-work",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607252235-5ZKP6T",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4625,
+        "state": "CLOSED",
+        "merged_at": null,
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4625",
+        "head": "1f262accd7cd6eadc186af86110e9ed23916d266"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "unmerged"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252308-9EXMV8-restore-hotspot-budget-for-merged-cleanup-regres",
+      "head": "61605bcf45f3baf08fb15d6bc006655ec01e8991",
+      "branch": "task/202607252308-9EXMV8/restore-hotspot-budget-for-merged-cleanup-regres",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607252308-9EXMV8",
+      "task_status": "DOING",
+      "pr": null,
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "dirty": true,
+      "status_count": 7,
+      "status_digest": "eb6eac0df6ae6dd16caad7a6d26b7d17ee066713fecfef2f31d7f2a867beffc5",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "active_task",
+        "dirty"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260005-EMP7RC-reconcile-provider-rebased-protected-pr-heads",
+      "head": "1f17f92ed8d65a02326bd4dfc1aa9530e07a2004",
+      "branch": "task/202607260005-EMP7RC/reconcile-provider-rebased-protected-pr-heads",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202607260005-EMP7RC",
+      "task_status": "DONE",
+      "pr": {
+        "number": 4628,
+        "state": "CLOSED",
+        "merged_at": null,
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4628",
+        "head": "170268ae2beea1c7d1a413313de4af2373983270"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "dirty": true,
+      "status_count": 1,
+      "status_digest": "075e01ba3888e0b379600ce46335b654ce7336edce0c23e5dca4250253cb4c3c",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "protected_recovery",
+        "dirty",
+        "unmerged"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/dependabot-bun-lockfile-flow",
+      "head": "6b2155aac55419f18706d9db5b0898886c17f519",
+      "branch": "codex/dependabot-bun-lockfile-flow",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": null,
+      "task_status": null,
+      "pr": {
+        "number": 3809,
+        "state": "MERGED",
+        "merged_at": "2026-05-17T10:24:59Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/3809",
+        "head": "6b2155aac55419f18706d9db5b0898886c17f519"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "dirty": true,
+      "status_count": 2,
+      "status_digest": "a16650141cde15fa931ddb3e42342a7ba07391c5f23c264198b876eff09a4cd6",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "dirty",
+        "provider_merged_identity"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/pr-4376-website-lockfile",
+      "head": "8b8c321fdc3542aa1c160684dea46799c8dae5c5",
+      "branch": "dependabot/bun/website/website-dependencies-25ad053142",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": null,
+      "task_status": null,
+      "pr": {
+        "number": 4376,
+        "state": "MERGED",
+        "merged_at": "2026-06-02T08:12:16Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4376",
+        "head": "b7a3b7b3da9315e4f5f4cf0edbbc2fc987b64954"
+      },
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "post_merge_head_drift"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/pr-4422-fix",
+      "head": "89ae7001136e1336daa3f4cb2c193bab80539e46",
+      "branch": "task/202606032105-HR1S1W/surface-website-dependency-requirements-in-branc",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202606032105-HR1S1W",
+      "task_status": null,
+      "pr": {
+        "number": 4422,
+        "state": "MERGED",
+        "merged_at": "2026-06-04T04:38:22Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4422",
+        "head": "89ae7001136e1336daa3f4cb2c193bab80539e46"
+      },
+      "merged_into_origin_main": true,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "provider_merged_identity",
+        "task_truth_missing"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/pr-4427-fix",
+      "head": "2536d816da67d72792aad2b206e7ef80dff1a422",
+      "branch": "task/202606032154-9DX697/handle-blocked-runner-manifests-without-internal",
+      "detached": false,
+      "locked": null,
+      "prunable": null,
+      "task_id": "202606032154-9DX697",
+      "task_status": null,
+      "pr": {
+        "number": 4427,
+        "state": "MERGED",
+        "merged_at": "2026-06-04T05:15:24Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4427",
+        "head": "c3288f8b11257cdee87ed66e67d851f658dfa53c"
+      },
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "post_merge_head_drift",
+        "task_truth_missing"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/release-followup-check",
+      "head": "0637623f2915196d2b7973ff3400a9537fca6f85",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "task_id": null,
+      "task_status": null,
+      "pr": null,
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "dirty": true,
+      "status_count": 15,
+      "status_digest": "98bb5285a3ea34e89b8afdb18aeaf0e33b434b7a668463e34a5d5d6568e9cff3",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "c43abd398d0e6f74637b3a1c2cc7ba72d7525ee0d39fa5b1b791189df849a25f",
+      "reasons": [
+        "dirty"
+      ],
+      "safe_cleanup_candidate": false
+    },
+    {
+      "path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/release-ready-main-check",
+      "head": "edf4efd10a38b67c31cd78933eb2b0aa4868057b",
+      "branch": null,
+      "detached": true,
+      "locked": null,
+      "prunable": null,
+      "task_id": null,
+      "task_status": null,
+      "pr": null,
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "dirty": false,
+      "status_count": 0,
+      "status_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasons": [
+        "ambiguous"
+      ],
+      "safe_cleanup_candidate": false
+    }
+  ],
+  "local_branches": [
+    {
+      "branch": "backup/202605221340-G8VYEJ-before-squash",
+      "head": "f706cb47dc9330dc1fb243a2a831a7d044308d83",
+      "upstream": null,
+      "worktree": null,
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "backup/202605271737-1K3J53-evaluator-amend",
+      "head": "32ba1ee6dd75d58ab437b72292137c4e505c554e",
+      "upstream": null,
+      "worktree": null,
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "backup/51DD0G-before-rebase-20260531",
+      "head": "3a95cb229f9e7124f215739822f63a4917e50204",
+      "upstream": null,
+      "worktree": null,
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "backup/947S9Q-stale-before-origin-sync",
+      "head": "f58f7b43d5c83b03807dbd44e7367cf6df246691",
+      "upstream": null,
+      "worktree": null,
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "backup/XW33V9-before-rebase-20260531",
+      "head": "df99e3be0ef46912748f2ae95479e689fd4b3122",
+      "upstream": null,
+      "worktree": null,
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "backup/YPT798-merge-main-before-reset",
+      "head": "e73f2eee8058ffb76502e95d9ed902ea3edfee15",
+      "upstream": null,
+      "worktree": null,
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "codex/backup-main-before-release-20260529",
+      "head": "48fb54bdc5a5e2e3fb991123df3990ca5576ab33",
+      "upstream": null,
+      "worktree": null,
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "codex/dependabot-bun-lockfile-flow",
+      "head": "6b2155aac55419f18706d9db5b0898886c17f519",
+      "upstream": "origin/codex/dependabot-bun-lockfile-flow",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/dependabot-bun-lockfile-flow",
+      "task_id": null,
+      "pr": {
+        "number": 3809,
+        "state": "MERGED",
+        "merged_at": "2026-05-17T10:24:59Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/3809",
+        "head": "6b2155aac55419f18706d9db5b0898886c17f519"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "codex/fix-bun-smoke-git-context",
+      "head": "37615cf9af3ebedc1292248fc46880a1766c08ae",
+      "upstream": "origin/main",
+      "worktree": null,
+      "task_id": null,
+      "pr": {
+        "number": 4429,
+        "state": "MERGED",
+        "merged_at": "2026-06-04T04:55:36Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4429",
+        "head": "a6daba8504878d2d4d33cf8f013d7c3371bb290b"
+      },
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "reasons": [
+        "post_merge_head_drift"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "codex/fix-v0.6.24-closeout-route",
+      "head": "b9a1ba4b72f0f0f7851969f0045ac537899a23aa",
+      "upstream": "origin/codex/fix-v0.6.24-closeout-route",
+      "worktree": "/Users/densmirnov/Github/agentplane-v0.6.24-closeout-fix",
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "codex/nwvcag-unsafe-authority-wip-20260726",
+      "head": "642050de6cf81d9f00ecc816ede0366ebe9f8591",
+      "upstream": null,
+      "worktree": null,
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "codex/open-pr-assimilation-2026-06-03",
+      "head": "1ef5ec0f598517ed25ef59251bea134e58efdb33",
+      "upstream": "origin/codex/open-pr-assimilation-2026-06-03",
+      "worktree": null,
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "codex/pr-4533-context-policy-sync",
+      "head": "73bede4fce6db8276125973b00d25dc0f68d9dd9",
+      "upstream": null,
+      "worktree": null,
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "reasons": [
+        "ambiguous"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "codex/prompt-policy-optimization",
+      "head": "1383b6f871876c7fb4ee22ee5e2959cdee2f5ea9",
+      "upstream": null,
+      "worktree": null,
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "codex/recovery-mt4fk2-rf05b-main-20260810",
+      "head": "d6f6dc64270c0b5ce8db59d6c30a7a23b7f73d83",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base",
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "codex/recovery-mt4fk2-xs41zv-main-20260810",
+      "head": "d6f6dc64270c0b5ce8db59d6c30a7a23b7f73d83",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV",
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "dependabot/bun/website/website-dependencies-25ad053142",
+      "head": "8b8c321fdc3542aa1c160684dea46799c8dae5c5",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/pr-4376-website-lockfile",
+      "task_id": null,
+      "pr": {
+        "number": 4376,
+        "state": "MERGED",
+        "merged_at": "2026-06-02T08:12:16Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4376",
+        "head": "b7a3b7b3da9315e4f5f4cf0edbbc2fc987b64954"
+      },
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "post_merge_head_drift"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "main",
+      "head": "30390d4a2c545984642bcc2e4754582ff5d2316b",
+      "upstream": "origin/main",
+      "worktree": "/Users/densmirnov/Github/agentplane",
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "reasons": [
+        "primary_branch",
+        "registered_worktree"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "post-merge-202606050055-6XZ1JZ-lifecycle-doctor-repair",
+      "head": "d5f8fcee5506fb54682652325652858cb5b43f3e",
+      "upstream": null,
+      "worktree": null,
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "post-merge-202606050055-6XZ1JZ-vcqpp7-commit-repair",
+      "head": "322bb7cbcb25a4c06b53ca4292279fc1b0ec636e",
+      "upstream": null,
+      "worktree": null,
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "release/v0.6.15",
+      "head": "4ff4026031b6fed81ad469b925e780cffab339f4",
+      "upstream": "origin/release/v0.6.15",
+      "worktree": null,
+      "task_id": null,
+      "pr": {
+        "number": 4411,
+        "state": "MERGED",
+        "merged_at": "2026-06-03T20:36:41Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4411",
+        "head": "4ff4026031b6fed81ad469b925e780cffab339f4"
+      },
+      "merged_into_origin_main": true,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "reasons": [
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task-close/202605201656-J68MDT-done-next-action",
+      "head": "c771447ee1a546f76695038f15111af5e332ec55",
+      "upstream": null,
+      "worktree": null,
+      "task_id": null,
+      "pr": {
+        "number": 3979,
+        "state": "CLOSED",
+        "merged_at": null,
+        "url": "https://github.com/basilisk-labs/agentplane/pull/3979",
+        "head": "c771447ee1a546f76695038f15111af5e332ec55"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task-close/202605221103-SESBXC/7ff33ffb3c20",
+      "head": "0dad14ce3417f73d81a24a971c4cbd8347c5b1a9",
+      "upstream": null,
+      "worktree": null,
+      "task_id": null,
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202605141554-XDGR0C/context-conflict-gate",
+      "head": "2736619d21f0424e30980643af22e693ca01eea5",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141554-XDGR0C-context-conflict-gate",
+      "task_id": "202605141554-XDGR0C",
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "unmerged",
+        "pr_truth_missing"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202605200819-3K686F/context-modes",
+      "head": "d119f511d9251f4112206a109795b6e38524b6da",
+      "upstream": "origin/task/202605200819-3K686F/context-modes",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605200819-3K686F-context-modes",
+      "task_id": "202605200819-3K686F",
+      "pr": {
+        "number": 3961,
+        "state": "CLOSED",
+        "merged_at": null,
+        "url": "https://github.com/basilisk-labs/agentplane/pull/3961",
+        "head": "d119f511d9251f4112206a109795b6e38524b6da"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202605231756-7VSXMJ/maximum-assimilation-polygon",
+      "head": "f50fa82c37154fd8d9d0483888a8c767210aca27",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605231756-7VSXMJ-maximum-assimilation-polygon",
+      "task_id": "202605231756-7VSXMJ",
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "unmerged",
+        "pr_truth_missing"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202605240752-GKJ285/maximum-assimilation-polygon",
+      "head": "1e2ab4f944df85cf6c8b086b0a1ddf66f5480839",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240752-GKJ285-maximum-assimilation-polygon",
+      "task_id": "202605240752-GKJ285",
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "unmerged",
+        "pr_truth_missing"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202605240804-G1QZPR/fix-publication-edge-cases",
+      "head": "f3c653c612a8a8fdf3ad21067aab2f0073556f4e",
+      "upstream": "origin/task/202605240804-G1QZPR/fix-publication-edge-cases",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605240804-G1QZPR-fix-publication-edge-cases",
+      "task_id": "202605240804-G1QZPR",
+      "pr": {
+        "number": 4131,
+        "state": "CLOSED",
+        "merged_at": null,
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4131",
+        "head": "f3c653c612a8a8fdf3ad21067aab2f0073556f4e"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202605271846-E4WTNS/document-0-7-runner-architecture",
+      "head": "8fc540f66a8bb9c35014be9db3cb87a678ee501c",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605271846-E4WTNS-document-0-7-runner-architecture",
+      "task_id": "202605271846-E4WTNS",
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "unmerged",
+        "pr_truth_missing"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202606011137-D5MAJ3/implement-hermes-agentplane-projection-bridge-me",
+      "head": "0cc515b7ac40ea5e906da7502d3e90b96506772a",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606011137-D5MAJ3-implement-hermes-agentplane-projection-bridge-me",
+      "task_id": "202606011137-D5MAJ3",
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "unmerged",
+        "pr_truth_missing"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202606031942-Y9BSF3/add-structured-feedback-issue-triage",
+      "head": "cf0dfe7c6e24db61c4465c7b29aad9ceb6e1f12f",
+      "upstream": "origin/task/202606031942-Y9BSF3/add-structured-feedback-issue-triage",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606031942-Y9BSF3-add-structured-feedback-issue-triage",
+      "task_id": "202606031942-Y9BSF3",
+      "pr": {
+        "number": 4409,
+        "state": "MERGED",
+        "merged_at": "2026-06-03T22:05:05Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4409",
+        "head": "4c1a8bfa923d486ae7234b3b032ad1f6449e09ec"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "unmerged",
+        "post_merge_head_drift"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202606032105-HR1S1W/surface-website-dependency-requirements-in-branc",
+      "head": "89ae7001136e1336daa3f4cb2c193bab80539e46",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/pr-4422-fix",
+      "task_id": "202606032105-HR1S1W",
+      "pr": {
+        "number": 4422,
+        "state": "MERGED",
+        "merged_at": "2026-06-04T04:38:22Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4422",
+        "head": "89ae7001136e1336daa3f4cb2c193bab80539e46"
+      },
+      "merged_into_origin_main": true,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202606032154-9DX697/handle-blocked-runner-manifests-without-internal",
+      "head": "2536d816da67d72792aad2b206e7ef80dff1a422",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/pr-4427-fix",
+      "task_id": "202606032154-9DX697",
+      "pr": {
+        "number": 4427,
+        "state": "MERGED",
+        "merged_at": "2026-06-04T05:15:24Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4427",
+        "head": "c3288f8b11257cdee87ed66e67d851f658dfa53c"
+      },
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "post_merge_head_drift"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202606041521-5Z2CG6/harden-task-run-route-gating",
+      "head": "592fe3b6e8b427ec2dc8ba73667ad928db6a2af9",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606041521-5Z2CG6-harden-task-run-route-gating",
+      "task_id": "202606041521-5Z2CG6",
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "unmerged",
+        "pr_truth_missing"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202606050832-6M43J3/legacy-premerge-marker",
+      "head": "7b5cdcb5374c3a5976e38b9e2c086637e2bec0c8",
+      "upstream": "origin/task/202606050832-6M43J3/legacy-premerge-marker",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606050832-6M43J3-legacy-premerge-marker",
+      "task_id": "202606050832-6M43J3",
+      "pr": {
+        "number": 4459,
+        "state": "MERGED",
+        "merged_at": "2026-06-05T10:49:29Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4459",
+        "head": "8c38224871709b88319bef5a4662af058c3aec78"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "unmerged",
+        "post_merge_head_drift"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202606081917-EYAKN6/implement-agentplane-loop-model-v0-1",
+      "head": "f0e8ca7aa0562201a7fcceeb6798adc356f93502",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202606081917-EYAKN6-implement-agentplane-loop-model-v0-1",
+      "task_id": "202606081917-EYAKN6",
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "unmerged",
+        "pr_truth_missing"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202606141629-3KVKMY/add-deepwiki-auto-sync-badge",
+      "head": "ff1165533016d4d06048dd9e35729754ca8c6a34",
+      "upstream": "origin/task/202606141629-3KVKMY/add-deepwiki-auto-sync-badge",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606141629-3KVKMY-add-deepwiki-auto-sync-badge",
+      "task_id": "202606141629-3KVKMY",
+      "pr": {
+        "number": 4515,
+        "state": "MERGED",
+        "merged_at": "2026-06-14T16:45:47Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4515",
+        "head": "4115c835d2d56011d2e7bf36dca4df1dec7b0806"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "unmerged",
+        "post_merge_head_drift"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202606171318-HMV399/platform-sync",
+      "head": "51b52152969230da78ef6ce245cd48074e166c1d",
+      "upstream": "origin/task/202606171318-HMV399/platform-sync",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606171318-HMV399-platform-sync",
+      "task_id": "202606171318-HMV399",
+      "pr": {
+        "number": 4522,
+        "state": "MERGED",
+        "merged_at": "2026-06-18T20:09:29Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4522",
+        "head": "95e905c7a84442754417d9076858b25a63234fa6"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "unmerged",
+        "post_merge_head_drift"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202606181941-HP0WZT/fix-close-dirty-state-regressions",
+      "head": "ae58cb5fa5b095eadfc295162833ae36dbfb42cf",
+      "upstream": "origin/task/202606181941-HP0WZT/fix-close-dirty-state-regressions",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606181941-HP0WZT-fix-close-dirty-state-regressions",
+      "task_id": "202606181941-HP0WZT",
+      "pr": {
+        "number": 4525,
+        "state": "MERGED",
+        "merged_at": "2026-06-18T20:14:28Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4525",
+        "head": "adbd2fe15d97bd36eeff72c8e7e690ffb0b977b0"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "unmerged",
+        "post_merge_head_drift"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607021729-1F4FNM/add-sgr-v2-typed-context-extraction-writer",
+      "head": "ea9f1dc64207b15da8c187246c5bde5b76406780",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021729-1F4FNM-add-sgr-v2-typed-context-extraction-writer",
+      "task_id": "202607021729-1F4FNM",
+      "pr": {
+        "number": 4539,
+        "state": "MERGED",
+        "merged_at": "2026-07-02T19:15:32Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4539",
+        "head": "ea9f1dc64207b15da8c187246c5bde5b76406780"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607021729-8S1DF3/add-maximum-assimilation-wiki-reports-and-evalua",
+      "head": "1013fdc49a2acb290f9a35d193da4a63b9197813",
+      "upstream": "origin/task/202607021729-8S1DF3/add-maximum-assimilation-wiki-reports-and-evalua",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021729-8S1DF3-add-maximum-assimilation-wiki-reports-and-evalua",
+      "task_id": "202607021729-8S1DF3",
+      "pr": {
+        "number": 4541,
+        "state": "MERGED",
+        "merged_at": "2026-07-02T20:22:26Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4541",
+        "head": "1013fdc49a2acb290f9a35d193da4a63b9197813"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607021729-BC11BT/enforce-maximum-assimilation-structural-validato",
+      "head": "b8562751c9ee917c72ce547860298f06ff5d383f",
+      "upstream": "origin/task/202607021729-BC11BT/enforce-maximum-assimilation-structural-validato",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021729-BC11BT-enforce-maximum-assimilation-structural-validato",
+      "task_id": "202607021729-BC11BT",
+      "pr": {
+        "number": 4540,
+        "state": "MERGED",
+        "merged_at": "2026-07-02T19:40:46Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4540",
+        "head": "b8562751c9ee917c72ce547860298f06ff5d383f"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607021730-7KG1WF/document-and-migrate-maximum-assimilation-v2",
+      "head": "b371a0ad3734f99bae09cec0ed99b7f7b0dc654d",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607021730-7KG1WF-document-and-migrate-maximum-assimilation-v2",
+      "task_id": "202607021730-7KG1WF",
+      "pr": {
+        "number": 4542,
+        "state": "MERGED",
+        "merged_at": "2026-07-02T21:08:56Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4542",
+        "head": "b371a0ad3734f99bae09cec0ed99b7f7b0dc654d"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607030734-7S66KX/context-graph-align-sgr-vocabulary-and-diagnosti",
+      "head": "49a6b976f9adbc7775dfcac122e22a69c692316c",
+      "upstream": "origin/task/202607030734-7S66KX/context-graph-align-sgr-vocabulary-and-diagnosti",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607030734-7S66KX-context-graph-align-sgr-vocabulary-and-diagnosti",
+      "task_id": "202607030734-7S66KX",
+      "pr": {
+        "number": 4543,
+        "state": "MERGED",
+        "merged_at": "2026-07-03T08:38:38Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4543",
+        "head": "49a6b976f9adbc7775dfcac122e22a69c692316c"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607030856-SQ3TMK/fix-context-wiki-index-lint-and-strengthen-extra",
+      "head": "3331f6ce225b03d4a72d9b0465de6d19e56d48b5",
+      "upstream": "origin/task/202607030856-SQ3TMK/fix-context-wiki-index-lint-and-strengthen-extra",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607030856-SQ3TMK-fix-context-wiki-index-lint-and-strengthen-extra",
+      "task_id": "202607030856-SQ3TMK",
+      "pr": {
+        "number": 4544,
+        "state": "MERGED",
+        "merged_at": "2026-07-03T09:56:22Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4544",
+        "head": "3331f6ce225b03d4a72d9b0465de6d19e56d48b5"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607031240-R18YKH/improve-wiki-connectivity-reports",
+      "head": "d6c1cb478925cf9e9a242e6158c1158765d84433",
+      "upstream": "origin/task/202607031240-R18YKH/improve-wiki-connectivity-reports",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607031240-R18YKH-improve-wiki-connectivity-reports",
+      "task_id": "202607031240-R18YKH",
+      "pr": {
+        "number": 4545,
+        "state": "MERGED",
+        "merged_at": "2026-07-03T13:07:19Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4545",
+        "head": "d6c1cb478925cf9e9a242e6158c1158765d84433"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607092115-G7H9BC/harden-patch-release-quality-and-routing-contrac",
+      "head": "39978d59499236e85feb81d7bd2b361941d6102f",
+      "upstream": "origin/task/202607092115-G7H9BC/harden-patch-release-quality-and-routing-contrac",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092115-G7H9BC-harden-patch-release-quality-and-routing-contrac",
+      "task_id": "202607092115-G7H9BC",
+      "pr": {
+        "number": 4552,
+        "state": "MERGED",
+        "merged_at": "2026-07-09T22:04:06Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4552",
+        "head": "39978d59499236e85feb81d7bd2b361941d6102f"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607092206-Z480S9/plan-v0-6-22-refactor-graph",
+      "head": "804ae33fdd6277a5f8a9752b286beaef5dea2fc2",
+      "upstream": "origin/task/202607092206-Z480S9/plan-v0-6-22-refactor-graph",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092206-Z480S9-plan-v0-6-22-refactor-graph",
+      "task_id": "202607092206-Z480S9",
+      "pr": {
+        "number": 4554,
+        "state": "MERGED",
+        "merged_at": "2026-07-09T22:21:20Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4554",
+        "head": "804ae33fdd6277a5f8a9752b286beaef5dea2fc2"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607092207-MS2B7B/make-context-extraction-writes-transactional-for",
+      "head": "d7ce7eb8060529d3fde8de33dee5ca8ff8b20571",
+      "upstream": "origin/task/202607092207-MS2B7B/make-context-extraction-writes-transactional-for",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092207-MS2B7B-make-context-extraction-writes-transactional-for",
+      "task_id": "202607092207-MS2B7B",
+      "pr": {
+        "number": 4555,
+        "state": "MERGED",
+        "merged_at": "2026-07-09T23:40:22Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4555",
+        "head": "d7ce7eb8060529d3fde8de33dee5ca8ff8b20571"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607092208-1J49NQ/split-routing-and-task-command-hotspots-for-v0-6",
+      "head": "9ce14f5dd957eba2c2b0490059d1821cbaa1ef23",
+      "upstream": "origin/task/202607092208-1J49NQ/split-routing-and-task-command-hotspots-for-v0-6",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092208-1J49NQ-split-routing-and-task-command-hotspots-for-v0-6",
+      "task_id": "202607092208-1J49NQ",
+      "pr": {
+        "number": 4574,
+        "state": "MERGED",
+        "merged_at": "2026-07-11T11:29:43Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4574",
+        "head": "9ce14f5dd957eba2c2b0490059d1821cbaa1ef23"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607092208-KSXT6H/split-runtime-and-backend-hotspots-for-v0-6-22",
+      "head": "efd46019e215718011d9b5e4d3bd7e53802fb42b",
+      "upstream": "origin/task/202607092208-KSXT6H/split-runtime-and-backend-hotspots-for-v0-6-22",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092208-KSXT6H-split-runtime-and-backend-hotspots-for-v0-6-22",
+      "task_id": "202607092208-KSXT6H",
+      "pr": {
+        "number": 4575,
+        "state": "MERGED",
+        "merged_at": "2026-07-11T12:00:36Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4575",
+        "head": "efd46019e215718011d9b5e4d3bd7e53802fb42b"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607092208-NGVXDD/reduce-the-knip-baseline-for-v0-6-22",
+      "head": "7aeff958b1a9b1d44e6be398cc7350d353446efe",
+      "upstream": "origin/task/202607092208-NGVXDD/reduce-the-knip-baseline-for-v0-6-22",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092208-NGVXDD-reduce-the-knip-baseline-for-v0-6-22",
+      "task_id": "202607092208-NGVXDD",
+      "pr": {
+        "number": 4576,
+        "state": "MERGED",
+        "merged_at": "2026-07-11T12:28:35Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4576",
+        "head": "7aeff958b1a9b1d44e6be398cc7350d353446efe"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607092208-PC3904/decompose-oversized-test-suites-for-v0-6-22",
+      "head": "afad89f2f057d479fee2bb35b5a4504ac6852c34",
+      "upstream": "origin/task/202607092208-PC3904/decompose-oversized-test-suites-for-v0-6-22",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092208-PC3904-decompose-oversized-test-suites-for-v0-6-22",
+      "task_id": "202607092208-PC3904",
+      "pr": {
+        "number": 4577,
+        "state": "MERGED",
+        "merged_at": "2026-07-11T12:47:53Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4577",
+        "head": "afad89f2f057d479fee2bb35b5a4504ac6852c34"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607092208-VQ05Q1/split-context-pipeline-hotspots-for-v0-6-22",
+      "head": "a162648c9c4d117327d8e033ed301f06c64f6fc9",
+      "upstream": "origin/task/202607092208-VQ05Q1/split-context-pipeline-hotspots-for-v0-6-22",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092208-VQ05Q1-split-context-pipeline-hotspots-for-v0-6-22",
+      "task_id": "202607092208-VQ05Q1",
+      "pr": {
+        "number": 4573,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T16:19:44Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4573",
+        "head": "a162648c9c4d117327d8e033ed301f06c64f6fc9"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607092209-F33MNN/prepare-and-publish-patch-release-v0-6-22",
+      "head": "fce3a5c45deafbd618d0c2a0c8c0c81f2f083ec4",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607092209-F33MNN-prepare-and-publish-patch-release-v0-6-22",
+      "task_id": "202607092209-F33MNN",
+      "pr": {
+        "number": 4578,
+        "state": "MERGED",
+        "merged_at": "2026-07-11T14:10:45Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4578",
+        "head": "fce3a5c45deafbd618d0c2a0c8c0c81f2f083ec4"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607100244-T9T7B2/prefer-merged-pr-commit-when-reconciling-include",
+      "head": "3b69e28cf0727d5a290e7504a5469632278b6a04",
+      "upstream": "origin/task/202607100244-T9T7B2/prefer-merged-pr-commit-when-reconciling-include",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100244-T9T7B2-prefer-merged-pr-commit-when-reconciling-include",
+      "task_id": "202607100244-T9T7B2",
+      "pr": {
+        "number": 4564,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T03:19:54Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4564",
+        "head": "3b69e28cf0727d5a290e7504a5469632278b6a04"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607100321-3WQPYW/persist-reconciled-included-batch-closure-for-v0",
+      "head": "084a447559aa926b852d837710dd7a38139ed002",
+      "upstream": "origin/task/202607100321-3WQPYW/persist-reconciled-included-batch-closure-for-v0",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100321-3WQPYW-persist-reconciled-included-batch-closure-for-v0",
+      "task_id": "202607100321-3WQPYW",
+      "pr": {
+        "number": 4565,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T03:37:44Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4565",
+        "head": "084a447559aa926b852d837710dd7a38139ed002"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607100340-KW3B8P/keep-premerge-done-in-integration-queue",
+      "head": "bcfab4d32d69c319cc40e93c5e719e51446856dd",
+      "upstream": "origin/task/202607100340-KW3B8P/keep-premerge-done-in-integration-queue",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100340-KW3B8P-keep-premerge-done-in-integration-queue",
+      "task_id": "202607100340-KW3B8P",
+      "pr": {
+        "number": 4566,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T04:02:18Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4566",
+        "head": "bcfab4d32d69c319cc40e93c5e719e51446856dd"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607100404-WPRBVK/make-doctor-batch-consistency-rebase-aware",
+      "head": "444abb2078d109f575bf5b560aa09f9078948c92",
+      "upstream": "origin/task/202607100404-WPRBVK/make-doctor-batch-consistency-rebase-aware",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100404-WPRBVK-make-doctor-batch-consistency-rebase-aware",
+      "task_id": "202607100404-WPRBVK",
+      "pr": {
+        "number": 4567,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T04:32:46Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4567",
+        "head": "444abb2078d109f575bf5b560aa09f9078948c92"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607100435-A932SP/release-lane-after-premerge-hosted-close",
+      "head": "8a0f0523bb525f14f30d6c15d87e52dcdde80ce6",
+      "upstream": "origin/task/202607100435-A932SP/release-lane-after-premerge-hosted-close",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100435-A932SP-release-lane-after-premerge-hosted-close",
+      "task_id": "202607100435-A932SP",
+      "pr": {
+        "number": 4568,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T10:31:44Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4568",
+        "head": "8a0f0523bb525f14f30d6c15d87e52dcdde80ce6"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607100436-D7QB76/anchor-evaluator-reviews-for-metadata-only-tasks",
+      "head": "0595df997202ace5c1c9cf690d642e0dfab10204",
+      "upstream": "origin/task/202607100436-D7QB76/anchor-evaluator-reviews-for-metadata-only-tasks",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100436-D7QB76-anchor-evaluator-reviews-for-metadata-only-tasks",
+      "task_id": "202607100436-D7QB76",
+      "pr": {
+        "number": 4570,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T15:52:33Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4570",
+        "head": "0595df997202ace5c1c9cf690d642e0dfab10204"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607100945-T0215Q/resolve-website-lint-incident",
+      "head": "66d8151b6ae8300a729b18f516e60b886a2ea409",
+      "upstream": "origin/task/202607100945-T0215Q/resolve-website-lint-incident",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607100945-T0215Q-resolve-website-lint-incident",
+      "task_id": "202607100945-T0215Q",
+      "pr": {
+        "number": 4569,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T10:12:20Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4569",
+        "head": "66d8151b6ae8300a729b18f516e60b886a2ea409"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607101059-S3N0X5/recover-queue-lanes-after-merged-pr-branch-delet",
+      "head": "6d6ba4936a2b8cf6ab195db513e2592c1f9fd2e9",
+      "upstream": "origin/task/202607101059-S3N0X5/recover-queue-lanes-after-merged-pr-branch-delet",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607101059-S3N0X5-recover-queue-lanes-after-merged-pr-branch-delet",
+      "task_id": "202607101059-S3N0X5",
+      "pr": {
+        "number": 4571,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T11:38:00Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4571",
+        "head": "6d6ba4936a2b8cf6ab195db513e2592c1f9fd2e9"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607101141-6T0H1E/recognize-rebased-pre-merge-closure-recorded-on",
+      "head": "5ae94983fa35202973ef5779c4de9dc9c1f516f2",
+      "upstream": "origin/task/202607101141-6T0H1E/recognize-rebased-pre-merge-closure-recorded-on",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607101141-6T0H1E-recognize-rebased-pre-merge-closure-recorded-on",
+      "task_id": "202607101141-6T0H1E",
+      "pr": {
+        "number": 4572,
+        "state": "MERGED",
+        "merged_at": "2026-07-10T12:33:15Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4572",
+        "head": "5ae94983fa35202973ef5779c4de9dc9c1f516f2"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607131641-Z7NE99/align-master-and-agent-prompts-with-gpt-5-6-guid",
+      "head": "78512bb958984e0fa34d2c90d9a2f7c64a143e65",
+      "upstream": "origin/task/202607131641-Z7NE99/align-master-and-agent-prompts-with-gpt-5-6-guid",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607131641-Z7NE99-align-master-and-agent-prompts-with-gpt-5-6-guid",
+      "task_id": "202607131641-Z7NE99",
+      "pr": {
+        "number": 4587,
+        "state": "MERGED",
+        "merged_at": "2026-07-13T17:32:49Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4587",
+        "head": "78512bb958984e0fa34d2c90d9a2f7c64a143e65"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607131808-4XZ5WY/prepare-and-publish-patch-release-v0-6-23",
+      "head": "e8f7757ee769250d937c333de1acae151f58f8b9",
+      "upstream": "origin/task/202607131808-4XZ5WY/prepare-and-publish-patch-release-v0-6-23",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607131808-4XZ5WY-prepare-and-publish-patch-release-v0-6-23",
+      "task_id": "202607131808-4XZ5WY",
+      "pr": {
+        "number": 4588,
+        "state": "MERGED",
+        "merged_at": "2026-07-13T21:43:29Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4588",
+        "head": "e8f7757ee769250d937c333de1acae151f58f8b9"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607211613-0ZXQXK/test-context-assimilation-on-main",
+      "head": "b844277777f0cca835b063e6f5f348d55c9e3051",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607211613-0ZXQXK-test-context-assimilation-on-main",
+      "task_id": "202607211613-0ZXQXK",
+      "pr": null,
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "unmerged",
+        "pr_truth_missing"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607211645-TQ70WD/repair-maximum-assimilation-context-lifecycle",
+      "head": "ff0c4230ee3d59cdc6379b78789163dcf6230df4",
+      "upstream": "origin/task/202607211645-TQ70WD/repair-maximum-assimilation-context-lifecycle",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607211645-TQ70WD-repair-maximum-assimilation-context-lifecycle",
+      "task_id": "202607211645-TQ70WD",
+      "pr": {
+        "number": 4590,
+        "state": "MERGED",
+        "merged_at": "2026-07-22T11:16:27Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4590",
+        "head": "ff0c4230ee3d59cdc6379b78789163dcf6230df4"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607221118-0BZKB6/compile-atomic-linked-wiki-during-context-assimi",
+      "head": "93084dd498d1455736cec3abf56b11e2a0285a74",
+      "upstream": "origin/task/202607221118-0BZKB6/compile-atomic-linked-wiki-during-context-assimi",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221118-0BZKB6-compile-atomic-linked-wiki-during-context-assimi",
+      "task_id": "202607221118-0BZKB6",
+      "pr": {
+        "number": 4591,
+        "state": "MERGED",
+        "merged_at": "2026-07-22T13:10:24Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4591",
+        "head": "93084dd498d1455736cec3abf56b11e2a0285a74"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607221313-P57KJ4/archive-resolved-context-incidents-before-v0-6-2",
+      "head": "573efee70b14a1493390921940af6468c1108232",
+      "upstream": "origin/task/202607221313-P57KJ4/archive-resolved-context-incidents-before-v0-6-2",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221313-P57KJ4-archive-resolved-context-incidents-before-v0-6-2",
+      "task_id": "202607221313-P57KJ4",
+      "pr": {
+        "number": 4592,
+        "state": "MERGED",
+        "merged_at": "2026-07-22T13:41:38Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4592",
+        "head": "573efee70b14a1493390921940af6468c1108232"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607221344-D9JTEY/release-v0-6-24",
+      "head": "272acac53c30b317ff3f07e500a29593ee4fe924",
+      "upstream": "origin/task/202607221344-D9JTEY/release-v0-6-24",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221344-D9JTEY-release-v0-6-24",
+      "task_id": "202607221344-D9JTEY",
+      "pr": {
+        "number": 4593,
+        "state": "MERGED",
+        "merged_at": "2026-07-22T14:50:30Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4593",
+        "head": "272acac53c30b317ff3f07e500a29593ee4fe924"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607221555-JSEZ5E/delegate-semantic-entity-reconciliation-to-the-c",
+      "head": "73c793127f8b8e340d690131aa152f0882e5c8ff",
+      "upstream": "origin/task/202607221555-JSEZ5E/delegate-semantic-entity-reconciliation-to-the-c",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221555-JSEZ5E-delegate-semantic-entity-reconciliation-to-the-c",
+      "task_id": "202607221555-JSEZ5E",
+      "pr": {
+        "number": 4595,
+        "state": "MERGED",
+        "merged_at": "2026-07-22T17:00:25Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4595",
+        "head": "73c793127f8b8e340d690131aa152f0882e5c8ff"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607221838-SD1W93/define-the-agentplane-0-7-refactor-execution-gra",
+      "head": "7ca42e357011e9f07e38cef3e6a451716437c1ef",
+      "upstream": "origin/task/202607221838-SD1W93/define-the-agentplane-0-7-refactor-execution-gra",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221838-SD1W93-define-the-agentplane-0-7-refactor-execution-gra",
+      "task_id": "202607221838-SD1W93",
+      "pr": {
+        "number": 4596,
+        "state": "MERGED",
+        "merged_at": "2026-07-22T19:33:30Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4596",
+        "head": "7ca42e357011e9f07e38cef3e6a451716437c1ef"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607221848-VC4VVS/unify-brief-next-action-runner-and-hermes-on-age",
+      "head": "aab52fbfc3ef7bd4279dfd7dba8504f1a4003814",
+      "upstream": "origin/task/202607221848-VC4VVS/unify-brief-next-action-runner-and-hermes-on-age",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-VC4VVS-unify-brief-next-action-runner-and-hermes-on-age",
+      "task_id": "202607221848-VC4VVS",
+      "pr": {
+        "number": 4632,
+        "state": "MERGED",
+        "merged_at": "2026-07-26T16:36:37Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4632",
+        "head": "aab52fbfc3ef7bd4279dfd7dba8504f1a4003814"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607221849-8YYZ9X/execute-and-calibrate-evaluator-episodes",
+      "head": "9324be861dced6533437a06278a4826c7d3604e4",
+      "upstream": "origin/task/202607221849-8YYZ9X/execute-and-calibrate-evaluator-episodes",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607221849-8YYZ9X-execute-and-calibrate-evaluator-episodes",
+      "task_id": "202607221849-8YYZ9X",
+      "pr": {
+        "number": 4643,
+        "state": "MERGED",
+        "merged_at": "2026-07-27T20:05:32Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4643",
+        "head": "9324be861dced6533437a06278a4826c7d3604e4"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607242204-SX8T09/persist-typed-runner-effect-operations-before-ex",
+      "head": "a1d9f1a0f2b9b928942e518d7a5d0001bc5bfe69",
+      "upstream": "origin/task/202607242204-SX8T09/persist-typed-runner-effect-operations-before-ex",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607242204-SX8T09-persist-typed-runner-effect-operations-before-ex",
+      "task_id": "202607242204-SX8T09",
+      "pr": {
+        "number": 4637,
+        "state": "MERGED",
+        "merged_at": "2026-07-27T04:34:22Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4637",
+        "head": "a1d9f1a0f2b9b928942e518d7a5d0001bc5bfe69"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": true,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "provider_merged_identity"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607252051-ZMVZRZ/make-merged-worktree-cleanup-resilient",
+      "head": "d61ab0f55d1c122e5acbaf2a296e2ff508e87b55",
+      "upstream": "origin/task/202607252051-ZMVZRZ/make-merged-worktree-cleanup-resilient",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252051-ZMVZRZ-make-merged-worktree-cleanup-resilient",
+      "task_id": "202607252051-ZMVZRZ",
+      "pr": {
+        "number": 4622,
+        "state": "MERGED",
+        "merged_at": "2026-07-25T23:54:45Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4622",
+        "head": "2a6d152b87666912d189304c4a6084eccaaff262"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "unmerged",
+        "post_merge_head_drift"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607252218-XBHBE5/archive-resolved-knowledgeref-guard-incident",
+      "head": "cdcf246bfd87b6fa7c656dc9346f32e2b1cf3aba",
+      "upstream": "origin/task/202607252218-XBHBE5/archive-resolved-knowledgeref-guard-incident",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252218-XBHBE5-archive-resolved-knowledgeref-guard-incident",
+      "task_id": "202607252218-XBHBE5",
+      "pr": {
+        "number": 4623,
+        "state": "CLOSED",
+        "merged_at": null,
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4623",
+        "head": "4642eba23ff61deea768392c8040a4e57b7431ff"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607252223-THDN0G/bound-branch-snapshot-probes-in-task-active",
+      "head": "040d8df0eaf431e2292eb161efe80e1466ffbd8e",
+      "upstream": "origin/task/202607252223-THDN0G/bound-branch-snapshot-probes-in-task-active",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252223-THDN0G-bound-branch-snapshot-probes-in-task-active",
+      "task_id": "202607252223-THDN0G",
+      "pr": {
+        "number": 4626,
+        "state": "CLOSED",
+        "merged_at": null,
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4626",
+        "head": "040d8df0eaf431e2292eb161efe80e1466ffbd8e"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607252235-5ZKP6T/prevent-foreign-task-artifacts-in-branch-pr-work",
+      "head": "1f262accd7cd6eadc186af86110e9ed23916d266",
+      "upstream": "origin/task/202607252235-5ZKP6T/prevent-foreign-task-artifacts-in-branch-pr-work",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252235-5ZKP6T-prevent-foreign-task-artifacts-in-branch-pr-work",
+      "task_id": "202607252235-5ZKP6T",
+      "pr": {
+        "number": 4625,
+        "state": "CLOSED",
+        "merged_at": null,
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4625",
+        "head": "1f262accd7cd6eadc186af86110e9ed23916d266"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607252308-9EXMV8/restore-hotspot-budget-for-merged-cleanup-regres",
+      "head": "61605bcf45f3baf08fb15d6bc006655ec01e8991",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252308-9EXMV8-restore-hotspot-budget-for-merged-cleanup-regres",
+      "task_id": "202607252308-9EXMV8",
+      "pr": null,
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "pr_truth_missing"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202607260005-EMP7RC/reconcile-provider-rebased-protected-pr-heads",
+      "head": "1f17f92ed8d65a02326bd4dfc1aa9530e07a2004",
+      "upstream": "origin/task/202607260005-EMP7RC/reconcile-provider-rebased-protected-pr-heads",
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260005-EMP7RC-reconcile-provider-rebased-protected-pr-heads",
+      "task_id": "202607260005-EMP7RC",
+      "pr": {
+        "number": 4628,
+        "state": "CLOSED",
+        "merged_at": null,
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4628",
+        "head": "170268ae2beea1c7d1a413313de4af2373983270"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": true,
+      "reasons": [
+        "registered_worktree",
+        "protected_recovery",
+        "unmerged"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202608021232-MT4FK2/audit-and-remove-obsolete-agentplane-branches-be",
+      "head": "bf43a1df503608846e159cb00936084495399c9b",
+      "upstream": null,
+      "worktree": null,
+      "task_id": "202608021232-MT4FK2",
+      "pr": {
+        "number": 4772,
+        "state": "MERGED",
+        "merged_at": "2026-08-04T08:33:07Z",
+        "url": "https://github.com/basilisk-labs/agentplane/pull/4772",
+        "head": "2d17e4877723c5d6106570425dd377e46b15fa89"
+      },
+      "merged_into_origin_main": false,
+      "provider_merged_identity": false,
+      "merged_proof": false,
+      "protected_recovery": false,
+      "reasons": [
+        "unmerged",
+        "post_merge_head_drift"
+      ],
+      "safe_delete_candidate": false
+    },
+    {
+      "branch": "task/202608101357-58FSYQ/reconcile-local-worktree-and-branch-debt-safely",
+      "head": "30390d4a2c545984642bcc2e4754582ff5d2316b",
+      "upstream": null,
+      "worktree": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101357-58FSYQ-reconcile-local-worktree-and-branch-debt-safely",
+      "task_id": "202608101357-58FSYQ",
+      "pr": null,
+      "merged_into_origin_main": true,
+      "provider_merged_identity": false,
+      "merged_proof": true,
+      "protected_recovery": false,
+      "reasons": [
+        "registered_worktree",
+        "pr_truth_missing"
+      ],
+      "safe_delete_candidate": false
+    }
+  ]
+}
