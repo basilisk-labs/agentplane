@@ -2,12 +2,13 @@
   "base": "main",
   "branch": "task/202608102112-AY0H1F/exactly-once-external-episode-recovery",
   "created_at": "2026-08-10T21:13:13.244Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:542aef58bd87b62891103fe1890576cec6a3a33449e20d9ef4d524f31a8fc9be",
+  "last_verified_at": "2026-08-10T21:54:25.177Z",
+  "last_verified_diffstat_sha256": "sha256:542aef58bd87b62891103fe1890576cec6a3a33449e20d9ef4d524f31a8fc9be",
   "schema_version": 1,
   "task_id": "202608102112-AY0H1F",
   "updated_at": "2026-08-10T21:13:13.244Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
