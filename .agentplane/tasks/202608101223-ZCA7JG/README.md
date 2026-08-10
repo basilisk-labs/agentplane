@@ -2,10 +2,10 @@
 id: "202608101223-ZCA7JG"
 title: "Accept verification records for metadata-only branch_pr tasks"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-10T12:45:46.545Z"
-  updated_by: "TESTER"
-  note: "Verified explicit null-target acceptance and rejection of omitted or malformed target identity."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-10T12:57:36.157Z"
+  updated_by: "REVIEWER"
+  note: "P1: route verification rejects evaluatedSha=null before checking the newly valid null-bound record."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -76,9 +76,7 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit:
-  hash: "222c682e2f6ab586ad00e99f894a42715a590499"
-  message: "🐛 ZCA7JG lifecycle: require explicit null target"
+commit: null
 comments:
   -
     author: "CODER"
@@ -136,8 +134,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "222c682e2f6ab586ad00e99f894a42715a590499"
+  -
+    type: "verify"
+    at: "2026-08-10T12:57:36.157Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "P1: route verification rejects evaluatedSha=null before checking the newly valid null-bound record."
 doc_version: 3
-doc_updated_at: "2026-08-10T12:47:21.570Z"
+doc_updated_at: "2026-08-10T13:00:06.195Z"
 doc_updated_by: "CODER"
 description: "Allow branch_pr tasks whose reviewable result consists only of managed task metadata to persist and satisfy verification without fabricating an implementation SHA. Preserve freshness checks for semantic code changes and add a regression reproducing PR 4809 where resolveQualityReviewTargetSha returns null."
 sections:
@@ -258,6 +262,46 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-10T12:57:36.157Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: P1: route verification rejects evaluatedSha=null before checking the newly valid null-bound record.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T12:47:21.570Z, excerpt_hash=sha256:ac4429827278e260520341199234e5a36490a036b69f56a128e918ce699c0770
+
+    Details:
+
+    Command: python3 /Users/densmirnov/.codex/skills/gh-address-comments/scripts/fetch_comments.py
+    Result: fail
+    Evidence: unresolved GitHub review thread PRRT_kwDORCLmJM6X3nFI identifies an early if (!evaluatedSha) return false in route-decision-verification.ts.
+    Scope: end-to-end route acceptance for metadata-only branch_pr verification.
+
+    Command: inspect hasAcceptedVerificationForCurrentImplementation
+    Result: fail
+    Evidence: the caller can return false before hasAcceptedVerificationRecord receives evaluatedSha=null.
+    Scope: verification_required blocker derivation and integration eligibility.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101223-ZCA7JG-accept-verification-records-for-metadata-only-br/.agentplane/tasks/202608101223-ZCA7JG/blueprint/resolved-snapshot.json
+    - old_digest: b6986aee4a978b91eb932e4a53a9b6e572c6cb207d0305ef61fee8d5a5ce5d6c
+    - current_digest: b6986aee4a978b91eb932e4a53a9b6e572c6cb207d0305ef61fee8d5a5ce5d6c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608101223-ZCA7JG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -266,6 +310,10 @@ sections:
     - Observation: A current verification record with implementation_sha=null was rejected before metadata and digest validation because matchesCurrentVerification required evaluatedSha to be truthy.
       Impact: Metadata-only branch_pr tasks could never satisfy verification after recording their implementation receipt, blocking PR integration and cleanup even when all concrete checks passed.
       Resolution: Accept null implementation_sha only when the current semantic review target is also null; keep metadata, scope digest, record digest, concrete-details, and semantic-SHA mismatch checks unchanged.
+
+    - Observation: The durable record matcher accepted null targets, but hasAcceptedVerificationForCurrentImplementation returned false before invoking it whenever resolveQualityReviewTargetSha produced null.
+      Impact: The original metadata-only branch_pr recovery path still emitted verification_required and could not reach integration, despite a valid null-bound record.
+      Resolution: Pass evaluatedSha=null through the route gate to hasAcceptedVerificationRecord and cover the full caller path with a route-level regression.
 extensions:
   workflow_route_baseline:
     start_head_sha: "27671e9b8cdec21b1170719a87019f703cec9526"
@@ -399,6 +447,46 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-10T12:57:36.157Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: P1: route verification rejects evaluatedSha=null before checking the newly valid null-bound record.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T12:47:21.570Z, excerpt_hash=sha256:ac4429827278e260520341199234e5a36490a036b69f56a128e918ce699c0770
+
+Details:
+
+Command: python3 /Users/densmirnov/.codex/skills/gh-address-comments/scripts/fetch_comments.py
+Result: fail
+Evidence: unresolved GitHub review thread PRRT_kwDORCLmJM6X3nFI identifies an early if (!evaluatedSha) return false in route-decision-verification.ts.
+Scope: end-to-end route acceptance for metadata-only branch_pr verification.
+
+Command: inspect hasAcceptedVerificationForCurrentImplementation
+Result: fail
+Evidence: the caller can return false before hasAcceptedVerificationRecord receives evaluatedSha=null.
+Scope: verification_required blocker derivation and integration eligibility.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101223-ZCA7JG-accept-verification-records-for-metadata-only-br/.agentplane/tasks/202608101223-ZCA7JG/blueprint/resolved-snapshot.json
+- old_digest: b6986aee4a978b91eb932e4a53a9b6e572c6cb207d0305ef61fee8d5a5ce5d6c
+- current_digest: b6986aee4a978b91eb932e4a53a9b6e572c6cb207d0305ef61fee8d5a5ce5d6c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608101223-ZCA7JG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -411,6 +499,10 @@ DecisionContextRef:
 - Observation: A current verification record with implementation_sha=null was rejected before metadata and digest validation because matchesCurrentVerification required evaluatedSha to be truthy.
   Impact: Metadata-only branch_pr tasks could never satisfy verification after recording their implementation receipt, blocking PR integration and cleanup even when all concrete checks passed.
   Resolution: Accept null implementation_sha only when the current semantic review target is also null; keep metadata, scope digest, record digest, concrete-details, and semantic-SHA mismatch checks unchanged.
+
+- Observation: The durable record matcher accepted null targets, but hasAcceptedVerificationForCurrentImplementation returned false before invoking it whenever resolveQualityReviewTargetSha produced null.
+  Impact: The original metadata-only branch_pr recovery path still emitted verification_required and could not reach integration, despite a valid null-bound record.
+  Resolution: Pass evaluatedSha=null through the route gate to hasAcceptedVerificationRecord and cover the full caller path with a route-level regression.
 
 ## Token Usage
 

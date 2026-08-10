@@ -1,1 +1,1 @@
-✅ ZCA7JG task: Accept verification records for metadata-only branch_pr tasks [202608101223-ZCA7JG]
+🚧 ZCA7JG task: Accept verification records for metadata-only branch_pr tasks [202608101223-ZCA7JG]
