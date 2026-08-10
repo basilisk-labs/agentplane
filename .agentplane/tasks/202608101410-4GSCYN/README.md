@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -62,7 +62,9 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "b07419e2f5cf369848dad0876a88fb2cf6e1c6b5"
+  message: "🚧 4GSCYN task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -91,6 +93,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: b07419e2f5cf. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -242,9 +247,17 @@ events:
     author: "EVALUATOR"
     state: "needs_rework"
     note: "Rework: hosted verify-static found one unused internal export in the retry-safe blocker helper."
+  -
+    type: "status"
+    at: "2026-08-10T18:03:38.408Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: b07419e2f5cf. CLI accepted one state-bound external-agent semantic result."
+    commit: "b07419e2f5cf369848dad0876a88fb2cf6e1c6b5"
 doc_version: 3
-doc_updated_at: "2026-08-10T17:59:36.410Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-10T18:03:38.468Z"
+doc_updated_by: "SUPERVISOR"
 description: "When an external EXECUTOR returns a valid state-bound blocked semantic result, consume that envelope exactly once, persist the blocker as task state and evidence, and return a non-episode boundary. Do not issue another implementation envelope until an operator deliberately resolves the blocker and resumes the task. Preserve completed-result behavior and exact replay idempotency."
 sections:
   Summary: |-
