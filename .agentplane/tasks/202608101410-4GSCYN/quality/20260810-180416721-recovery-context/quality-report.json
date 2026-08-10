@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608101410-4GSCYN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-10T18:06:00.489Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "b07419e2f5cf369848dad0876a88fb2cf6e1c6b5",
+  "blueprint_digest": "d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c",
+  "findings": [
+    "No correctness, scope, or regression finding requires rework for implementation commit b07419e2f5cf369848dad0876a88fb2cf6e1c6b5.",
+    "Residual risk: The separate accepted-before-freshness/worktree-resolution lifecycle defect observed during recovery is outside this task and requires its own regression and fix."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/ff3d88c96ad19b6815ebffc37c977dedc943fee9290b3b14710451bd93ec4887.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

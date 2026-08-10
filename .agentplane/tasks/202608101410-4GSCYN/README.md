@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -30,16 +30,32 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "rework"
-  updated_at: "2026-08-10T17:59:34.701Z"
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-10T18:06:00.489Z"
   updated_by: "EVALUATOR"
-  note: "Rework: hosted verify-static found one unused internal export in the retry-safe blocker helper."
-  evaluated_sha: "beab407e2597b158ff1bb344ee76f2391abc54b7"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "b07419e2f5cf369848dad0876a88fb2cf6e1c6b5"
   blueprint_digest: "d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c"
   evidence_refs:
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-180416721-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-180416721-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/880eaeadaa0fbac83ebf688d9c248f13d8177361a4439df04f43b1653aa9127f.md"
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-180416721-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-180416721-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-180416721-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608101410-4GSCYN/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101410-4GSCYN-stop-external-agent-replay-after-a-typed-blocked/.agentplane/tasks/202608101410-4GSCYN/blueprint/resolved-snapshot.json"
-  findings: []
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/ff3d88c96ad19b6815ebffc37c977dedc943fee9290b3b14710451bd93ec4887.patch"
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/68d09f2e125166e2eca27d3cf4fa6491cf37be715e1cbc24d3f07d8cf3c22ab7.json"
+    - ".agentplane/tasks/202608101410-4GSCYN/verification/20260810180357982-791eb0461b9f5ad2.json"
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/0ccfda77d6f1cfdf86c92a8efe75935565ee4ca301ad143fdb7804153736afa7.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "No correctness, scope, or regression finding requires rework for implementation commit b07419e2f5cf369848dad0876a88fb2cf6e1c6b5."
+    - "Residual risk: The separate accepted-before-freshness/worktree-resolution lifecycle defect observed during recovery is outside this task and requires its own regression and fix."
 token_usage:
   agent_runs: 8
   input_tokens: null
@@ -262,7 +278,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-10T18:03:58.932Z"
+doc_updated_at: "2026-08-10T18:06:00.516Z"
 doc_updated_by: "SUPERVISOR"
 description: "When an external EXECUTOR returns a valid state-bound blocked semantic result, consume that envelope exactly once, persist the blocker as task state and evidence, and return a non-episode boundary. Do not issue another implementation envelope until an operator deliberately resolves the blocker and resumes the task. Preserve completed-result behavior and exact replay idempotency."
 sections:
