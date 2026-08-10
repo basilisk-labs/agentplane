@@ -1,4 +1,6 @@
+ .agentplane/policy/incidents.md                    |   1 +
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  .../src/cli/run-cli.core.task-advance.test.ts      | 225 ++++++++++++++++++++-
  .../src/commands/shared/workflow-step-branch.ts    |  15 ++
  .../external-agent-implementation-authority.ts     |  87 +++++++-
- 3 files changed, 325 insertions(+), 2 deletions(-)
+ 5 files changed, 327 insertions(+), 2 deletions(-)

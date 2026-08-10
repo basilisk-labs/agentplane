@@ -15,13 +15,8 @@ When an external EXECUTOR returns a valid state-bound blocked semantic result, c
 
 ## Verification
 
-- State: ok
-- Note:
-
-```text
-Verified blocked-result terminal behavior, replay refusal, zero-change trust boundary, resume
-freshness, typecheck, formatting, and critical suite.
-```
+- State: needs_rework
+- Note: Rework: Unsupported declared check: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -32,10 +27,12 @@ freshness, typecheck, formatting, and critical suite.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |   1 +
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  .../src/cli/run-cli.core.task-advance.test.ts      | 225 ++++++++++++++++++++-
  .../src/commands/shared/workflow-step-branch.ts    |  15 ++
  .../external-agent-implementation-authority.ts     |  87 +++++++-
- 3 files changed, 325 insertions(+), 2 deletions(-)
+ 5 files changed, 327 insertions(+), 2 deletions(-)
 ```
 
 </details>
