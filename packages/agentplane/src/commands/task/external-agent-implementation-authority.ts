@@ -12,6 +12,10 @@ import type {
   ExternalAgentExchange,
   ExternalAgentResultEnvelope,
 } from "./external-agent-exchange.js";
+import {
+  isExternalBlockedResultRecorded,
+  recordExternalBlockedResult,
+} from "./external-agent-blocked-result.js";
 import { recoversRecordedImplementationCommit } from "./external-agent-purpose.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
 import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
@@ -84,6 +88,7 @@ function assertExternalImplementationReturnState(opts: {
   current: TaskRouteDecision;
   current_head: string | null;
   current_status_lines: readonly string[];
+  require_changes: boolean;
 }): string[] {
   const expected = opts.work_order.state_fingerprint;
   const current = opts.current.workflowStep.preconditionFingerprint;
@@ -138,7 +143,7 @@ function assertExternalImplementationReturnState(opts: {
       message: `External-agent changes escaped semantic authority: ${forbidden.join(", ")}.`,
     });
   }
-  if (changed.length === 0 && !resolvesDirtyWorktree) {
+  if (changed.length === 0 && !resolvesDirtyWorktree && opts.require_changes) {
     throw new CliError({
       code: "E_VALIDATION",
       message: "Completed implementation result produced no supervisor-observed workspace change.",
@@ -195,6 +200,39 @@ export async function applyExternalImplementationResult(opts: {
 }): Promise<void> {
   const semantic = opts.envelope.result;
   if (semantic.status !== "completed") {
+    if (semantic.status === "blocked" && opts.decision.workflowMode === "branch_pr") {
+      const alreadyRecorded = await isExternalBlockedResultRecorded({
+        command: opts.command,
+        exchange: opts.exchange,
+      });
+      if (!alreadyRecorded) {
+        const [head, status] = await Promise.all([
+          readDirectTaskHead(opts.exchange.checkout),
+          readDirectRepositoryStatus(opts.exchange.checkout),
+        ]);
+        const changed = assertExternalImplementationReturnState({
+          exchange: opts.exchange,
+          work_order: opts.work_order,
+          current: opts.decision,
+          current_head: head,
+          current_status_lines: status?.lines ?? [],
+          require_changes: false,
+        });
+        if (changed.length > 0) {
+          throw new CliError({
+            code: "E_VALIDATION",
+            message:
+              "Blocked implementation result produced workspace changes; restore them or return a completed implementation result.",
+          });
+        }
+      }
+      await recordExternalBlockedResult({
+        command: opts.command,
+        exchange: opts.exchange,
+        semantic,
+      });
+      return;
+    }
     await cmdTaskComment({
       ctx: opts.command,
       cwd: opts.exchange.checkout,
@@ -235,6 +273,7 @@ export async function applyExternalImplementationResult(opts: {
       current: opts.decision,
       current_head: head,
       current_status_lines: status?.lines ?? [],
+      require_changes: true,
     });
     if (observedChangedPaths.length === 0) return;
     const exitCode = await cmdCommit({

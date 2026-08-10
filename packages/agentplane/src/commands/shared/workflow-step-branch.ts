@@ -1,7 +1,11 @@
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
-import { preMergeCommit, primaryIncludeTaskIds } from "./workflow-step-branch-state.js";
+import {
+  blockedTaskStep,
+  preMergeCommit,
+  primaryIncludeTaskIds,
+} from "./workflow-step-branch-state.js";
 import { supersededProviderConflictStep } from "./workflow-step-provider-conflict-superseded.js";
 import { needsQualityEvidenceRefresh } from "./workflow-step-quality.js";
 import { integrationQueueStep } from "./workflow-step-integration-queue.js";
@@ -384,6 +388,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: null,
     });
   }
+  if (status === "BLOCKED") return blockedTaskStep(state);
   if (state.batchOwnership.role === "included") return includedBatchStep(state);
   if (!state.prFlow?.branch.name && verifiedIncludedClosureCandidate(state.task)) {
     return cliOperationStep({

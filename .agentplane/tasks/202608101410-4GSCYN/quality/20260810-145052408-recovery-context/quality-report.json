@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608101410-4GSCYN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-10T14:59:34.534Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 4 typed finding(s).",
+  "evaluated_sha": "3b66b944ef0ef743f21acb3a524751736cf60a12",
+  "blueprint_digest": "d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c",
+  "findings": [
+    "No blocking implementation finding: the previously identified trust-boundary gap is closed before supervisor-owned task mutation.",
+    "The focused lifecycle suite covers one-time blocked consumption, exact replay refusal, no agent-run budget growth while blocked, explicit resume freshness, and rejection of agent-introduced workspace changes.",
+    "Direct-workflow, completed-result, stale-result, planning, evaluator, workflow projection, typecheck, and critical regression evidence remains passing.",
+    "Residual risk: The automatic declared-check classifier still rejects the valid focused bun test command; this is a separate lifecycle defect already captured for the dedicated verifier task in the approved plan."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/fa9de618f129d14f8d81936a0b41668bf4f0772ec9e1b734d6ffcc0fb9a57fb0.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

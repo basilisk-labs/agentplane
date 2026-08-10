@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\nResult: pass\nEvidence: 15 tests passed with 153 assertions, including the new blocked-result round trip.\nScope: external-agent task advance, direct and branch_pr behavior, planning, evaluator, replay, and stale-result handling.\n\nCommand: bun test packages/agentplane/src/commands/shared/workflow-step-projections.test.ts\nResult: pass\nEvidence: 15 route projection tests passed with 61 assertions.\nScope: workflow-step authority and checkout projection.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build exited 0.\nScope: repository TypeScript contracts.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: all 12 critical-cli chunks passed after canonical framework bootstrap.\nScope: critical CLI, trust-boundary, Git-edge, protected-path, RF-04, and replay suites.\n\nCommand: focused ESLint, format:changed, and policy routing\nResult: pass\nEvidence: changed files have zero lint/format errors and policy routing reports OK.\nScope: three changed source/test files and gateway routing.",
+  "digest": "sha256:5534c674a516bc5ecba085c870a735c172e46171f282fe66eee72b7f906d6131",
+  "implementation_sha": "f418c45799e9eba70c561a386682a57b8cce7a26",
+  "kind": "task_verification_record",
+  "note": "Verified: blocked-result lifecycle, replay idempotency, explicit resume, routing, types, lint, formatting, and critical CLI coverage all pass.",
+  "recorded_at": "2026-08-10T14:37:53.314Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused external task-advance regression. Expected: a valid blocked implementation result is consumed once, the task becomes BLOCKED, and the returned packet has no exchange and no agent_episode action.\n2. Replay the same result path. Expected: no duplicate blocker comment, event, status commit, or semantic application is created.\n3. Request a fresh packet while the task remains BLOCKED. Expected: no implementation envelope is issued and agent-run usage does not increase.\n4. Resume the fixture task to DOING and request a packet. Expected: a fresh state-bound exchange is issued; the consumed envelope is not reused.\n5. Run completed, stale, differing-result, direct-workflow, planning, and evaluator regression cases. Expected: existing behavior remains intact.\n6. Run bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts and the relevant workflow-step projection tests.\n7. Run bun run typecheck and bun run test:critical. Expected: all pass.",
+  "scope_digest": "sha256:86b0656c20c7d0d6524a42fa6cf6d195dbe7409e19e6ff8fadb0bd4d206b8eb2",
+  "task_id": "202608101410-4GSCYN",
+  "verification_command": "agentplane verify 202608101410-4GSCYN --ok --by TESTER",
+  "verifier": "TESTER"
+}

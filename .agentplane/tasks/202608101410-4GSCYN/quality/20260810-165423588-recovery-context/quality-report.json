@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608101410-4GSCYN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-10T16:58:40.886Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "832bd4756e0b190343dcc3e8801613c43d0206a9",
+  "blueprint_digest": "d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c",
+  "findings": [
+    "No blocking implementation finding: a typed blocked branch result is persisted once as task BLOCKED state and projected to a non-agent terminal boundary.",
+    "The focused lifecycle regression proves exact replay refusal, no duplicate task or Git mutation, stable agent-run usage while blocked, a fresh exchange after explicit resume, and rejection of blocked results that leave workspace changes.",
+    "Current-head evidence passes the declared typecheck and 16-test task-advance suite; evaluator checks also pass all 12 critical CLI chunks and 15 workflow-step projection tests after the P16 merge resolution.",
+    "The zero-change trust boundary remains strict for completed results while allowing blocked results only when the workspace is unchanged.",
+    "Residual risk: The automatically promoted verifier incident remains open in this task diff even though P16 fixed it; archive it through a dedicated governance task after P11 integration."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/ac9cba6c1dc968147a835df7cc5c045aa613254dff8b32a11759418e6e3cee8a.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

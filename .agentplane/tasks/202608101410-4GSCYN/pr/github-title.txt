@@ -1,0 +1,1 @@
+✅ 4GSCYN task: Stop external-agent replay after a typed blocked result [202608101410-4GSCYN]

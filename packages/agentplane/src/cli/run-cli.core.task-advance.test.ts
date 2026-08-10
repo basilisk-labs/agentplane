@@ -832,7 +832,9 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     ]);
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
     await execFileAsync("git", ["add", "."], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "test: seed branch external task"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed branch external task"], {
+      cwd: root,
+    });
 
     const branch = `task/${taskId}/external-round-trip`;
     const taskWorktree = path.join(

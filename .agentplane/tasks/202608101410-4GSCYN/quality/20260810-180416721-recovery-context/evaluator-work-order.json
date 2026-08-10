@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608101410-4GSCYN-5def55b20272a388a8f431be",
+  "prepared_at": "2026-08-10T18:04:16.721Z",
+  "task": {
+    "id": "202608101410-4GSCYN",
+    "revision": 33,
+    "objective": "Stop external-agent replay after a typed blocked result\n\nWhen an external EXECUTOR returns a valid state-bound blocked semantic result, consume that envelope exactly once, persist the blocker as task state and evidence, and return a non-episode boundary. Do not issue another implementation envelope until an operator deliberately resolves the blocker and resumes the task. Preserve completed-result behavior and exact replay idempotency.",
+    "acceptance_criteria": [
+      "bun run typecheck",
+      "bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
+      "- In scope: When an external EXECUTOR returns a valid state-bound blocked semantic result, consume that envelope exactly once, persist the blocker as task state and evidence, and return a non-episode boundary. Do not issue another implementation envelope until an operator deliberately resolves the blocker and resumes the task. Preserve completed-result behavior and exact replay idempotency.\n- Out of scope: unrelated refactors not required for \"Stop external-agent replay after a typed blocked result\".",
+      "Goal: make typed blocked external-agent results terminal for the current implementation attempt instead of silently replaying the same semantic episode.\n\n1. Add a failing branch_pr task-advance regression that issues an implementation envelope, returns a valid blocked AgentSemanticResult, and observes the next packet.\n2. Apply a blocked implementation result as a supervisor-owned task transition: preserve the semantic summary and recommended action, set task status to BLOCKED, and record the task-local evidence once.\n3. Project an approved BLOCKED branch_pr task to a non-agent operator boundary. The packet must contain no new exchange and must not consume another agent-run budget slot.\n4. Keep the accepted exchange consumed with its original result digest. Replaying the exact result must be idempotent and must not duplicate comments, events, commits, or result application.\n5. Require an explicit task resume transition before another implementation episode can be issued; after resume, issue a fresh state-bound exchange rather than reviving the consumed one.\n6. Preserve completed-result behavior, stale-result rejection, differing-result rejection, planning/evaluator paths, and direct workflow behavior.\n7. Run focused task-advance and workflow projection tests, then typecheck and the critical CLI suite.\n\nSuccess: one blocked envelope produces one durable blocker and one non-episode boundary; requesting another packet without resolving the blocker never replays implementation.\nRollback: revert the isolated blocked-result projection and application changes; existing exchange digests remain readable.",
+      "1. Run the focused external task-advance regression. Expected: a valid blocked implementation result is consumed once, the task becomes BLOCKED, and the returned packet has no exchange and no agent_episode action.\n2. Replay the same result path. Expected: no duplicate blocker comment, event, status commit, or semantic application is created.\n3. Request a fresh packet while the task remains BLOCKED. Expected: no implementation envelope is issued and agent-run usage does not increase.\n4. Resume the fixture task to DOING and request a packet. Expected: a fresh state-bound exchange is issued; the consumed envelope is not reused.\n5. Run completed, stale, differing-result, direct-workflow, planning, and evaluator regression cases. Expected: existing behavior remains intact.\n6. Run bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts and the relevant workflow-step projection tests.\n7. Run bun run typecheck and bun run test:critical. Expected: all pass."
+    ]
+  },
+  "evaluated_sha": "b07419e2f5cf369848dad0876a88fb2cf6e1c6b5",
+  "diff_base_sha": "9a3458aa315e3002ffdcd4c89a218b5836162c30",
+  "blueprint_digest": "d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-180416721-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:76e487093897319edf45ff29d146004aca779cd8d61078c1d11744524f8ae144",
+    "prompt_path": ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/880eaeadaa0fbac83ebf688d9c248f13d8177361a4439df04f43b1653aa9127f.md",
+    "result_schema_path": ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608101410-4GSCYN/README.md",
+      "sha256": "sha256:89bc8f555115447eb4298a1d3d977d5821bddd5ce4bae3cc448e1ef03db2f240",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/ff3d88c96ad19b6815ebffc37c977dedc943fee9290b3b14710451bd93ec4887.patch",
+      "sha256": "sha256:ff3d88c96ad19b6815ebffc37c977dedc943fee9290b3b14710451bd93ec4887",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/68d09f2e125166e2eca27d3cf4fa6491cf37be715e1cbc24d3f07d8cf3c22ab7.json",
+      "sha256": "sha256:68d09f2e125166e2eca27d3cf4fa6491cf37be715e1cbc24d3f07d8cf3c22ab7",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608101410-4GSCYN/verification/20260810180357982-791eb0461b9f5ad2.json",
+      "sha256": "sha256:e4831e96f93d75345825b143fab6db32caa0cf56c444972f088280773477f49c",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/0ccfda77d6f1cfdf86c92a8efe75935565ee4ca301ad143fdb7804153736afa7.json",
+      "sha256": "sha256:0ccfda77d6f1cfdf86c92a8efe75935565ee4ca301ad143fdb7804153736afa7",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
