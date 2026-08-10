@@ -4,7 +4,7 @@ title: "Repair exactly-once external episode recovery"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-10T22:11:24.492Z"
+  updated_at: "2026-08-10T22:19:36.486Z"
   updated_by: "TESTER"
-  note: "PASS for implementation 2af7e6bd4: focused exactly-once and supervisor suites pass 51/51; full-fast passes 546/546 test files and 3958/3958 unit tests; critical-cli passes all 12 chunks and 91/91 tests; build, typecheck, lint, format, schemas, policy routing, release parity, docs freshness, cold-start baseline, and hotspot gates pass. The first full-fast run exposed transition-parity regressions, which were corrected before this green receipt."
+  note: "PASS for implementation 1a87a5216: reused the green full-fast receipt from 2af7e6bd4 because the only delta removes three export modifiers from internal helpers and changes no runtime behavior; delta checks pass knip baseline, typecheck, file ESLint, format, and package build. Hosted CI will provide the independent full rerun."
   attempts: 0
 execution_route:
   frozen: true
@@ -32,8 +32,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "2af7e6bd4b10f8f2387972306e1f11dfe791f754"
-  message: "🐛 AY0H1F task: preserve supervisor transition parity"
+  hash: "1a87a52168e518d8692d34bec8fde5f1542dbbec"
+  message: "♻️ AY0H1F task: keep recovery helpers private"
 comments:
   -
     author: "CODER"
@@ -47,6 +47,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation finalized after full-fast parity correction: semantic exchanges keep state- and replacement-bound identities while control-plane packets preserve managed/external transition parity."
+  -
+    author: "CODER"
+    body: "Hosted static follow-up: removed three unintended exports from the internal recovery module; runtime behavior and test inputs are unchanged."
 events:
   -
     type: "status"
@@ -97,8 +100,22 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS for implementation 2af7e6bd4: focused exactly-once and supervisor suites pass 51/51; full-fast passes 546/546 test files and 3958/3958 unit tests; critical-cli passes all 12 chunks and 91/91 tests; build, typecheck, lint, format, schemas, policy routing, release parity, docs freshness, cold-start baseline, and hotspot gates pass. The first full-fast run exposed transition-parity regressions, which were corrected before this green receipt."
+  -
+    type: "status"
+    at: "2026-08-10T22:19:33.848Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Hosted static follow-up: removed three unintended exports from the internal recovery module; runtime behavior and test inputs are unchanged."
+    commit: "1a87a52168e518d8692d34bec8fde5f1542dbbec"
+  -
+    type: "verify"
+    at: "2026-08-10T22:19:36.486Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS for implementation 1a87a5216: reused the green full-fast receipt from 2af7e6bd4 because the only delta removes three export modifiers from internal helpers and changes no runtime behavior; delta checks pass knip baseline, typecheck, file ESLint, format, and package build. Hosted CI will provide the independent full rerun."
 doc_version: 3
-doc_updated_at: "2026-08-10T22:11:25.613Z"
+doc_updated_at: "2026-08-10T22:19:37.429Z"
 doc_updated_by: "CODER"
 description: "Make task advance consume an external-agent envelope exactly once only after its result is durably applied. Prevent read-only workspace-resolution packets from creating fresh intents, let stale in-flight intents transition to a recoverable terminal state after state-fingerprint drift, issue a fresh replacement transition without replaying old output, and return deterministic recovery instructions without manual journal edits."
 sections:
@@ -197,6 +214,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T22:11:21.610Z, excerpt_hash=sha256:8922db684fa37dde6d3ed1b685016f3d5b2523e84a98aa8c7fae61403fac0633
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608102112-AY0H1F-exactly-once-external-episode-recovery/.agentplane/tasks/202608102112-AY0H1F/blueprint/resolved-snapshot.json
+    - old_digest: 945ec6c25c798ad216f96f1049720fc7e2e853efc958dd7e111ac0c301f12b1d
+    - current_digest: 945ec6c25c798ad216f96f1049720fc7e2e853efc958dd7e111ac0c301f12b1d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608102112-AY0H1F
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-10T22:19:36.486Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS for implementation 1a87a5216: reused the green full-fast receipt from 2af7e6bd4 because the only delta removes three export modifiers from internal helpers and changes no runtime behavior; delta checks pass knip baseline, typecheck, file ESLint, format, and package build. Hosted CI will provide the independent full rerun.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T22:19:33.848Z, excerpt_hash=sha256:8922db684fa37dde6d3ed1b685016f3d5b2523e84a98aa8c7fae61403fac0633
 
     Details:
 
@@ -334,6 +381,36 @@ Note: PASS for implementation 2af7e6bd4: focused exactly-once and supervisor sui
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T22:11:21.610Z, excerpt_hash=sha256:8922db684fa37dde6d3ed1b685016f3d5b2523e84a98aa8c7fae61403fac0633
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608102112-AY0H1F-exactly-once-external-episode-recovery/.agentplane/tasks/202608102112-AY0H1F/blueprint/resolved-snapshot.json
+- old_digest: 945ec6c25c798ad216f96f1049720fc7e2e853efc958dd7e111ac0c301f12b1d
+- current_digest: 945ec6c25c798ad216f96f1049720fc7e2e853efc958dd7e111ac0c301f12b1d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608102112-AY0H1F
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-10T22:19:36.486Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS for implementation 1a87a5216: reused the green full-fast receipt from 2af7e6bd4 because the only delta removes three export modifiers from internal helpers and changes no runtime behavior; delta checks pass knip baseline, typecheck, file ESLint, format, and package build. Hosted CI will provide the independent full rerun.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T22:19:33.848Z, excerpt_hash=sha256:8922db684fa37dde6d3ed1b685016f3d5b2523e84a98aa8c7fae61403fac0633
 
 Details:
 
