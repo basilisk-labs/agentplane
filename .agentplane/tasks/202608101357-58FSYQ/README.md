@@ -1,10 +1,11 @@
 ---
 id: "202608101357-58FSYQ"
 title: "Reconcile local worktree and branch debt safely"
-status: "DOING"
+result_summary: "Merged via PR #4814."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -27,6 +28,20 @@ verification:
   updated_by: "TESTER"
   note: "PASS for implementation 2a4022ed19eb: provider proof receipts cover four exact merged PR heads; after-inventory is 70 worktrees/84 branches with zero stale or safe-delete candidates and zero duplicate active-task worktrees; primary main equals origin/main; protected RF05B and XS41ZV status/diff/staged digests are unchanged; doctor exits 0 with four pre-existing lifecycle warnings; policy routing passes."
   attempts: 0
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-10T21:47:55.696Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -36,8 +51,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "6822262e8a1aff89b6eb6ef5434ec170016897a9"
-  message: "🧹 58FSYQ ops: record safe cleanup inventory"
+  hash: "8d96137482ed18bbe54eae3bde3735cba30983c4"
+  message: "🚧 58FSYQ task: preserve active branches in cleanup inventory"
 comments:
   -
     author: "CODER"
@@ -48,6 +63,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation recorded: provider-backed cleanup removed only four proven merged legacy worktrees/local branches, pruned one absent registration, and preserved every dirty, active, ambiguous, or protected recovery checkout."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4814 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -75,9 +93,17 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS for implementation 2a4022ed19eb: provider proof receipts cover four exact merged PR heads; after-inventory is 70 worktrees/84 branches with zero stale or safe-delete candidates and zero duplicate active-task worktrees; primary main equals origin/main; protected RF05B and XS41ZV status/diff/staged digests are unchanged; doctor exits 0 with four pre-existing lifecycle warnings; policy routing passes."
+  -
+    type: "status"
+    at: "2026-08-10T21:47:55.696Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4814 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+    commit: "8d96137482ed18bbe54eae3bde3735cba30983c4"
 doc_version: 3
-doc_updated_at: "2026-08-10T21:11:01.322Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-10T21:47:55.708Z"
+doc_updated_by: "INTEGRATOR"
 description: "Inventory every registered worktree and local branch, prune stale registrations, and remove only worktrees and branches proven clean, merged, inactive, and recoverable. Preserve all dirty, unmerged, active, or ambiguous worktrees, including the two MT4FK2 recovery checkouts. Enforce one worktree per active task while allowing different tasks to run concurrently in separate worktrees. Record machine-checkable before/after evidence and cleanup receipts."
 sections:
   Summary: |-
@@ -228,3 +254,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-10T21:47:55.696Z`
