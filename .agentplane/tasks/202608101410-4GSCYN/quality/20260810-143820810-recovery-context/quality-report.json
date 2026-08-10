@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608101410-4GSCYN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-10T14:40:06.741Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 4 typed finding(s).",
+  "evaluated_sha": "f418c45799e9eba70c561a386682a57b8cce7a26",
+  "blueprint_digest": "d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c",
+  "findings": [
+    "recordExternalBlockedResult calls task set-status and then cmdCommit with allowTasks=true without first validating the current head, task fingerprint, baseline status, or agent-introduced paths.",
+    "A non-completed agent could alter active-task README or PR metadata and return blocked; the new path can then stage those task artifacts under a trusted supervisor commit.",
+    "The positive lifecycle and replay tests pass, but no negative test mutates task artifacts or workspace content before returning blocked.",
+    "Residual risk: Without a zero-change return check, protected task metadata can cross the external-agent trust boundary inside a supervisor-attributed commit."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/3f2e6486bcb8fefe73ac994f158421e1dcfee6ba27f12e7d40eb647abecb9474.patch"
+  ],
+  "missing_tests": [
+    "A blocked external result after agent-introduced task-artifact or workspace changes must be rejected before any BLOCKED transition or supervisor commit."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes a non-completed external agent result implies the workspace remained unchanged, but the supervisor does not enforce that condition."
+  ],
+  "residual_risks": [
+    "Before recording BLOCKED, validate the state-bound task/head baseline and require zero agent-introduced workspace changes. Add a regression that tampers with task artifacts or an allowed source path before returning blocked and proves rejection leaves task status, exchange application, and Git history unchanged."
+  ]
+}
