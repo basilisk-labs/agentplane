@@ -19,18 +19,17 @@ Make task advance consume an external-agent envelope exactly once only after its
 - Note:
 
 ```text
-PASS for implementation 2af7e6bd4: focused exactly-once and supervisor suites pass 51/51; full-fast
-passes 546/546 test files and 3958/3958 unit tests; critical-cli passes all 12 chunks and 91/91
-tests; build, typecheck, lint, format, schemas, policy routing, release parity, docs freshness,
-cold-start baseline, and hotspot gates pass. The first full-fast run exposed transition-parity
-regressions, which were corrected before this green receipt.
+PASS for implementation 1a87a5216: reused the green full-fast receipt from 2af7e6bd4 because the
+only delta removes three export modifiers from internal helpers and changes no runtime behavior;
+delta checks pass knip baseline, typecheck, file ESLint, format, and package build. Hosted CI will
+provide the independent full rerun.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-10T21:13:13.244Z
+- Updated: 2026-08-10T22:19:37.467Z
 - Branch: task/202608102112-AY0H1F/exactly-once-external-episode-recovery
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
