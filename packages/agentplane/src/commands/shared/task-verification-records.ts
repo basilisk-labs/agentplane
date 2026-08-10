@@ -47,7 +47,7 @@ async function matchesCurrentVerification(
 ): Promise<boolean> {
   const verification = task.verification;
   const scopeDigest = verifyStepsDigest(task);
-  if (!raw || typeof raw !== "object" || Array.isArray(raw) || !verification || !evaluatedSha) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw) || !verification) {
     return false;
   }
   const record = raw as Record<string, unknown>;
@@ -65,6 +65,7 @@ async function matchesCurrentVerification(
   ) {
     return false;
   }
+  if (evaluatedSha === null) return record.implementation_sha === null;
   const implementationSha =
     typeof record.implementation_sha === "string" ? record.implementation_sha : null;
   return (

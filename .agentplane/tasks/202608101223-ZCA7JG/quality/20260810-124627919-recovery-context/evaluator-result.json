@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The null-target branch now accepts only an explicit implementation_sha:null after task metadata, Verify Steps digest, record digest, and concrete check details have all matched.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101223-ZCA7JG/quality/objects/sha256/f09a87dc9ba09608dee59ada71da6181773d654513095067bcd1dcab8e9ca18d.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Focused coverage proves acceptance for null/null and rejection for semantic/null mismatch, null/string mismatch, missing target field, non-concrete details, and stale task metadata.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101223-ZCA7JG/quality/objects/sha256/f09a87dc9ba09608dee59ada71da6181773d654513095067bcd1dcab8e9ca18d.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

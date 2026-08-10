@@ -1,0 +1,5 @@
+ .../shared/route-decision-verification.test.ts     |  26 ++++
+ .../commands/shared/route-decision-verification.ts |   1 -
+ .../shared/task-verification-records.test.ts       | 137 ++++++++++++++++++---
+ .../commands/shared/task-verification-records.ts   |   3 +-
+ 4 files changed, 147 insertions(+), 20 deletions(-)

@@ -1,0 +1,27 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run typecheck",
+    "bun vitest run packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-10T13:01:22.518Z",
+    "updated_by": "TESTER",
+    "note": "Verified the complete metadata-only path from route target resolution through durable verification-record acceptance."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608101223-ZCA7JG/verification/20260810130122518-745f96145005ab8f.json",
+      "sha256": "sha256:0b4ce4d418051421f1014383d36b75bb4f7a5f996cbb91292f984ab4764ca5c8"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

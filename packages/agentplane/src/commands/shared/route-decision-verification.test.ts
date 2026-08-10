@@ -139,6 +139,32 @@ describe("route verification target selection", () => {
     );
   });
 
+  it("passes a metadata-only null target to verification-record matching", async () => {
+    const flow = mergedFlow();
+    flow.pr.state = "OPEN";
+    flow.branch.headSha = newerBranchHead;
+    flow.closeTail = { state: "not_applicable", reason: "implementation PR is open" };
+    mocks.resolveQualityReviewTargetSha.mockResolvedValue(null);
+
+    await expect(
+      hasAcceptedVerificationForCurrentImplementation({
+        ctx,
+        task,
+        resume,
+        prFlow: flow,
+        batchOwnership: { role: "none" },
+      }),
+    ).resolves.toBe(true);
+
+    expect(mocks.hasAcceptedVerificationRecord).toHaveBeenCalledWith(
+      expect.objectContaining({
+        evaluatedSha: null,
+        requireConcreteCheckDetails: true,
+        snapshotRef: newerBranchHead,
+      }),
+    );
+  });
+
   it("keeps a surviving task-branch head authoritative after merge", async () => {
     const flow = mergedFlow();
     flow.branch.headSha = newerBranchHead;
