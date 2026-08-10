@@ -24,7 +24,6 @@ import {
 } from "@agentplane/testkit";
 
 installRunCliIntegrationHarness();
-
 const execFileAsync = promisify(execFile);
 const TEST_TIMEOUT_MS = 120_000;
 const bunTestRuntime = (
@@ -407,20 +406,23 @@ async function runWithFakeGh(fakeBin: string, argv: string[]) {
   }
 }
 
+async function runTargetedCleanup(fakeBin: string, fixture: TargetedFixture) {
+  return runWithFakeGh(fakeBin, [
+    "cleanup",
+    "merged",
+    "--task-id",
+    fixture.taskId,
+    "--yes",
+    "--root",
+    fixture.root,
+  ]);
+}
 describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS }, () => {
   it("recovers a legacy missing PR number from an exact merged branch-and-base lookup", async () => {
     const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
     const fakeBin = await installFakeGh({ kind: "found", fixture });
 
-    const result = await runWithFakeGh(fakeBin, [
-      "cleanup",
-      "merged",
-      "--task-id",
-      fixture.taskId,
-      "--yes",
-      "--root",
-      fixture.root,
-    ]);
+    const result = await runTargetedCleanup(fakeBin, fixture);
 
     expect(result.code).toBe(0);
     expect(result.stdout).toContain("proof=provider_merge");
@@ -438,15 +440,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
         fixture,
       });
 
-      const result = await runWithFakeGh(fakeBin, [
-        "cleanup",
-        "merged",
-        "--task-id",
-        fixture.taskId,
-        "--yes",
-        "--root",
-        fixture.root,
-      ]);
+      const result = await runTargetedCleanup(fakeBin, fixture);
 
       expect(result.code).toBe(5);
       expect(result.stderr).toContain("multiple PR records for the exact branch and base");
@@ -468,15 +462,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
       await commitAll(fixture.worktreePath, `semantic ${fixture.taskId} legacy post-merge tail`);
       const fakeBin = await installFakeGh({ kind: "found", fixture });
 
-      const result = await runWithFakeGh(fakeBin, [
-        "cleanup",
-        "merged",
-        "--task-id",
-        fixture.taskId,
-        "--yes",
-        "--root",
-        fixture.root,
-      ]);
+      const result = await runTargetedCleanup(fakeBin, fixture);
 
       expect(result.code).toBe(5);
       expect(result.stderr).toContain("requires the exact provider head");
@@ -504,15 +490,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
       await commitAll(fixture.root, `chore ${fixture.taskId} remove legacy closure fixture`);
       const fakeBin = await installFakeGh({ kind: "found", fixture });
 
-      const result = await runWithFakeGh(fakeBin, [
-        "cleanup",
-        "merged",
-        "--task-id",
-        fixture.taskId,
-        "--yes",
-        "--root",
-        fixture.root,
-      ]);
+      const result = await runTargetedCleanup(fakeBin, fixture);
 
       expect(result.code).toBe(5);
       expect(result.stderr).toContain("exact pre-merge closure marker is unavailable");
@@ -531,15 +509,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
       const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
       const fakeBin = await installFakeGh({ kind, fixture });
 
-      const result = await runWithFakeGh(fakeBin, [
-        "cleanup",
-        "merged",
-        "--task-id",
-        fixture.taskId,
-        "--yes",
-        "--root",
-        fixture.root,
-      ]);
+      const result = await runTargetedCleanup(fakeBin, fixture);
 
       expect(result.code).toBe(5);
       expect(result.stderr).toContain(expectedReason);
@@ -554,15 +524,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
       const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
       const fakeBin = await installFakeGh({ kind: "found", fixture, providerStatus });
 
-      const result = await runWithFakeGh(fakeBin, [
-        "cleanup",
-        "merged",
-        "--task-id",
-        fixture.taskId,
-        "--yes",
-        "--root",
-        fixture.root,
-      ]);
+      const result = await runTargetedCleanup(fakeBin, fixture);
 
       expect(result.code).toBe(5);
       expect(result.stderr).toContain(`is ${providerStatus.toLowerCase()}, not merged`);
@@ -580,15 +542,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
         ...(mismatch === "base" ? { baseRef: "release" } : { headSha: fixture.mergeCommit }),
       });
 
-      const result = await runWithFakeGh(fakeBin, [
-        "cleanup",
-        "merged",
-        "--task-id",
-        fixture.taskId,
-        "--yes",
-        "--root",
-        fixture.root,
-      ]);
+      const result = await runTargetedCleanup(fakeBin, fixture);
 
       expect(result.code).toBe(5);
       expect(result.stderr).toContain(
@@ -605,15 +559,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     const fixture = await createTargetedFixture();
     const fakeBin = await installFakeGh({ kind: "found", fixture, prNumber: 456 });
 
-    const result = await runWithFakeGh(fakeBin, [
-      "cleanup",
-      "merged",
-      "--task-id",
-      fixture.taskId,
-      "--yes",
-      "--root",
-      fixture.root,
-    ]);
+    const result = await runTargetedCleanup(fakeBin, fixture);
 
     expect(result.code).toBe(5);
     expect(result.stderr).toContain("provider PR identity mismatch: expected=123 observed=456");
@@ -624,15 +570,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
   it("deletes only the requested rebase-merged task and is idempotent", async () => {
     const fixture = await createTargetedFixture();
     const fakeBin = await installFakeGh({ kind: "found", fixture });
-    const first = await runWithFakeGh(fakeBin, [
-      "cleanup",
-      "merged",
-      "--task-id",
-      fixture.taskId,
-      "--yes",
-      "--root",
-      fixture.root,
-    ]);
+    const first = await runTargetedCleanup(fakeBin, fixture);
     expect(first.code).toBe(0);
     expect(first.stdout).toContain("proof=provider_merge");
     expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(false);
