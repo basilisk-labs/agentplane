@@ -16,7 +16,12 @@ if (!output) throw new Error("--output is required");
 
 const git = (gitArgs, cwd = root, allowFailure = false) => {
   try {
-    return execFileSync("git", gitArgs, { cwd, encoding: "utf8", maxBuffer: 32 * 1024 * 1024 });
+    return execFileSync("git", gitArgs, {
+      cwd,
+      encoding: "utf8",
+      maxBuffer: 32 * 1024 * 1024,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
   } catch (error) {
     if (allowFailure) return null;
     throw error;
@@ -32,6 +37,12 @@ const statusFromTask = (worktree, taskId) => {
   } catch {
     return null;
   }
+};
+const statusFromBranch = (branch, taskId) => {
+  if (!branch || !taskId) return null;
+  const taskArtifact = `.agentplane/tasks/${taskId}/README.md`;
+  const text = git(["show", `${branch}:${taskArtifact}`], root, true);
+  return text?.match(/^status:\s*"?([A-Z_]+)"?\s*$/mu)?.[1] ?? null;
 };
 
 const parseWorktrees = (raw) => raw.trim().split(/\n\n+/u).filter(Boolean).map((block) => {
@@ -140,14 +151,24 @@ const branches = branchRows.map((item) => {
   );
   const mergedProof = mergedIntoMain || providerMergedIdentity;
   const worktree = worktreeByBranch.get(item.branch) ?? null;
+  const taskStatus = worktree?.task_status ?? statusFromBranch(item.branch, taskId);
+  const active = Boolean(taskStatus && activeStatuses.has(taskStatus));
   const protectedRecovery = item.branch.startsWith("codex/recovery-mt4fk2-") || Boolean(worktree?.protected_recovery);
   const safeDeleteCandidate = Boolean(
-    item.branch !== "main" && !item.worktree && !protectedRecovery && mergedProof && taskId && pr?.state === "MERGED",
+    item.branch !== "main" &&
+    !item.worktree &&
+    !protectedRecovery &&
+    mergedProof &&
+    taskId &&
+    pr?.state === "MERGED" &&
+    taskStatus === "DONE",
   );
   const reasons = [];
   if (item.branch === "main") reasons.push("primary_branch");
   if (item.worktree) reasons.push("registered_worktree");
   if (protectedRecovery) reasons.push("protected_recovery");
+  if (active) reasons.push("active_task");
+  if (!taskStatus && taskId) reasons.push("task_truth_missing");
   if (!mergedProof) reasons.push("unmerged");
   if (providerMergedIdentity) reasons.push("provider_merged_identity");
   if (pr?.state === "MERGED" && pr.headRefOid !== item.head) reasons.push("post_merge_head_drift");
@@ -158,6 +179,7 @@ const branches = branchRows.map((item) => {
   return {
     ...item,
     task_id: taskId,
+    task_status: taskStatus,
     pr: pr ? { number: pr.number, state: pr.state, merged_at: pr.mergedAt, url: pr.url, head: pr.headRefOid } : null,
     merged_into_origin_main: mergedIntoMain,
     provider_merged_identity: providerMergedIdentity,
