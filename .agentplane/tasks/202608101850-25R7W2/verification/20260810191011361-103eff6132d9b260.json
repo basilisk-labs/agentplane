@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun test packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608101850-25R7W2/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608101850-25R7W2 declared verification\n\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202608101850-25R7W2/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608101850-25R7W2 declared verification",
+  "digest": "sha256:103eff6132d9b260b04303951175e3c1c173dc2af98743daf147f5e1665501b4",
+  "implementation_sha": "deee9a3afda80cb7f4b532f96632dc2a6e43d4eb",
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-08-10T19:10:11.361Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Recover legacy merged cleanup identity from the provider\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Recover legacy merged cleanup identity from the provider\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:c43c26e154b15bf38457790b4eea19f4ea45147d63426a96e590f7c88ea4dfeb",
+  "task_id": "202608101850-25R7W2",
+  "verification_command": "agentplane verify 202608101850-25R7W2 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
