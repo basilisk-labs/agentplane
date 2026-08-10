@@ -4,7 +4,7 @@ title: "Recover legacy merged cleanup identity from the provider"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -67,7 +67,7 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "deee9a3afda80cb7f4b532f96632dc2a6e43d4eb"
+  hash: "d15d591b882d3d0618121becbf2327047e64958f"
   message: "🚧 25R7W2 task: apply external agent result"
 comments:
   -
@@ -76,6 +76,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: deee9a3afda8. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: d15d591b882d. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -98,8 +101,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-10T19:40:53.990Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: d15d591b882d. CLI accepted one state-bound external-agent semantic result."
+    commit: "d15d591b882d3d0618121becbf2327047e64958f"
 doc_version: 3
-doc_updated_at: "2026-08-10T19:10:12.336Z"
+doc_updated_at: "2026-08-10T19:40:53.990Z"
 doc_updated_by: "SUPERVISOR"
 description: "Allow explicit cleanup of a legacy DONE task branch when old PR metadata lacks pr_number but an exact branch-and-base provider lookup proves a merged PR, its provider head equals the local branch head, its merge commit is on the base branch, and pre-merge closure evidence is present. Preserve rejection for ambiguous, closed, open, mismatched-head, post-merge-drift, or unavailable-provider cases."
 sections:
