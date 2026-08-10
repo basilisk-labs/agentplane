@@ -12,8 +12,8 @@ Created: 2026-08-10T15:08:59.810Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

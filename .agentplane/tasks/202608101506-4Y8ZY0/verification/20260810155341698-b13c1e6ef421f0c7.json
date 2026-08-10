@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test:critical\nResult: pass\nEvidence: .agentplane/tasks/202608101506-4Y8ZY0/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608101506-4Y8ZY0 declared verification\n\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202608101506-4Y8ZY0/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608101506-4Y8ZY0 declared verification\n\nCommand: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608101506-4Y8ZY0/supervision/declared-checks.json#check-3\nScope: branch_pr task 202608101506-4Y8ZY0 declared verification",
+  "digest": "sha256:b13c1e6ef421f0c7b1ae264995a6da3b0eaf67854e83ea142c77c56855237dca",
+  "implementation_sha": "19da6e260c15c58ad6c5bce41fbc73548a8fca69",
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-08-10T15:53:41.698Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts. Expected: bun test with one or more repository paths is parsed into executable bun plus inert argv, quoted arguments remain single argv entries, and runProcess is called without a shell.\n2. Exercise negative parser cases for shell metacharacters, environment prefixes, unsupported executables, and unsupported Bun subcommands. Expected: each is rejected before runProcess is called.\n3. Run the exact P11 command bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts through supervised declared-check execution. Expected: status=passed and durable evidence records the exact command, exit code 0, and output tail.\n4. Run bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Expected: all focused verifier and lifecycle regressions pass.\n5. Run bun run typecheck and bun run test:critical. Expected: both pass.\n6. Run lint, formatting, and git diff --check for changed files. Expected: no findings.\n7. Inspect the final diff. Expected: changes stay inside verifier parsing/execution and focused tests; no shell execution, policy change, workflow change, or unrelated refactor is introduced.",
+  "scope_digest": "sha256:096ad1a48f15c3fef8ee0ada006dd0aaa185399688650edb1eb8d3afd6000260",
+  "task_id": "202608101506-4Y8ZY0",
+  "verification_command": "agentplane verify 202608101506-4Y8ZY0 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
