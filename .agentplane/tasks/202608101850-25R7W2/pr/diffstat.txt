@@ -1,0 +1,5 @@
+ .../branch/cleanup-merged-targeted-proof.ts        |  29 +++-
+ .../branch/cleanup-merged.targeted.test.ts         | 159 +++++++++++++++++++--
+ .../src/commands/task/close-tail-state.test.ts     |  13 +-
+ .../src/commands/task/close-tail-state.ts          |   4 +-
+ 4 files changed, 190 insertions(+), 15 deletions(-)

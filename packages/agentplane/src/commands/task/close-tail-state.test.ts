@@ -136,6 +136,7 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
       objectType?: string;
       branch?: string;
       prNumber?: number;
+      metaPrNumber?: number | null;
       markerPrNumber?: number | null;
     } = {},
   ): void {
@@ -159,7 +160,7 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
           schema_version: 1,
           task_id: "T-1",
           branch: resolvedBranch,
-          pr_number: prNumber,
+          ...(opts.metaPrNumber === null ? {} : { pr_number: opts.metaPrNumber ?? prNumber }),
           created_at: "2026-07-10T00:00:00.000Z",
           updated_at: "2026-07-10T00:00:00.000Z",
           pre_merge_closure: {
@@ -176,6 +177,7 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
 
   async function recorded(
     overrides: Partial<{
+      allowProviderRecoveredPrNumber: boolean;
       branch: string;
       prNumber: number;
     }> = {},
@@ -188,6 +190,7 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
       baseBranch: "main",
       branch: overrides.branch ?? branch,
       prNumber: overrides.prNumber ?? 101,
+      allowProviderRecoveredPrNumber: overrides.allowProviderRecoveredPrNumber,
     });
   }
 
@@ -204,6 +207,14 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
   it("accepts a legacy marker without a duplicated PR number", async () => {
     mockBaseArtifacts({ markerPrNumber: null });
     await expect(recorded()).resolves.toBe(true);
+  });
+
+  it("accepts a missing legacy metadata PR number only for provider-recovered identity", async () => {
+    mockBaseArtifacts({ metaPrNumber: null, markerPrNumber: null });
+    await expect(recorded()).resolves.toBe(false);
+
+    mockBaseArtifacts({ metaPrNumber: null, markerPrNumber: null });
+    await expect(recorded({ allowProviderRecoveredPrNumber: true })).resolves.toBe(true);
   });
 
   it("rejects incomplete or mismatched base evidence", async () => {

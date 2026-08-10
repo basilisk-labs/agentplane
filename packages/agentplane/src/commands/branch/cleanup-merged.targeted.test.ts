@@ -81,7 +81,11 @@ function markDone(readme: string, commitHash: string): string {
 }
 
 async function createTargetedFixture(
-  opts: { directExternalWorktree?: boolean; nestedSiblingWorktree?: boolean } = {},
+  opts: {
+    directExternalWorktree?: boolean;
+    legacyMissingPrNumber?: boolean;
+    nestedSiblingWorktree?: boolean;
+  } = {},
 ): Promise<TargetedFixture> {
   const root = await mkGitRepoRootWithBranch("main");
   await configureGitUser(root);
@@ -138,9 +142,13 @@ async function createTargetedFixture(
         task_id: taskId,
         branch,
         base: "main",
-        pr_number: 123,
-        pr_url: "https://github.com/example/repo/pull/123",
-        status: "OPEN",
+        ...(opts.legacyMissingPrNumber
+          ? {}
+          : {
+              pr_number: 123,
+              pr_url: "https://github.com/example/repo/pull/123",
+              status: "OPEN",
+            }),
         created_at: "2026-07-23T00:00:00.000Z",
         updated_at: "2026-07-23T00:00:00.000Z",
         last_verified_at: "2026-07-23T00:00:00.000Z",
@@ -150,7 +158,7 @@ async function createTargetedFixture(
           branch,
           basis_commit: scaffoldCommit,
           recorded_at: "2026-07-23T00:00:00.000Z",
-          pr_number: 123,
+          ...(opts.legacyMissingPrNumber ? {} : { pr_number: 123 }),
         },
       },
       null,
@@ -220,15 +228,18 @@ async function installFakeGh(opts: {
   headSha?: string;
   baseRef?: string;
   mergeCommitSha?: string;
+  prNumber?: number;
+  providerStatus?: "MERGED" | "OPEN" | "CLOSED";
   providerUpdateBaseSha?: string;
 }): Promise<string> {
   const fakeBin = await mkdtemp(path.join(os.tmpdir(), "agentplane-cleanup-gh-"));
   const scriptPath = path.join(fakeBin, "fake-gh.mjs");
   const ghPath = path.join(fakeBin, process.platform === "win32" ? "gh.cmd" : "gh");
+  const providerStatus = opts.providerStatus ?? "MERGED";
   const payload = {
-    number: 123,
-    state: "closed",
-    merged_at: "2026-07-23T00:01:00.000Z",
+    number: opts.prNumber ?? 123,
+    state: providerStatus === "OPEN" ? "open" : "closed",
+    merged_at: providerStatus === "MERGED" ? "2026-07-23T00:01:00.000Z" : null,
     merge_commit_sha: opts.mergeCommitSha ?? opts.fixture.mergeCommit,
     html_url: "https://github.com/example/repo/pull/123",
     head: { ref: opts.fixture.branch, sha: opts.headSha ?? opts.fixture.branchHead },
@@ -252,9 +263,18 @@ async function installFakeGh(opts: {
           )}) { console.log(${JSON.stringify(JSON.stringify(providerUpdatePayload))}); process.exit(0); }`
         : "",
       opts.kind === "found"
-        ? `console.log(${JSON.stringify(JSON.stringify(payload))});`
+        ? `console.log(args[1]?.includes("pulls?") ? ${JSON.stringify(
+            JSON.stringify([payload]),
+          )} : ${JSON.stringify(JSON.stringify(payload))});`
         : opts.kind === "not_found"
-          ? `console.log(${JSON.stringify(
+          ? `console.log(args[1]?.includes("pulls?") ? ${JSON.stringify(
+              JSON.stringify([
+                {
+                  ...payload,
+                  head: { ...payload.head, ref: `${payload.head.ref}-different` },
+                },
+              ]),
+            )} : ${JSON.stringify(
               JSON.stringify({
                 ...payload,
                 head: { ...payload.head, ref: `${payload.head.ref}-different` },
@@ -372,6 +392,125 @@ async function runWithFakeGh(fakeBin: string, argv: string[]) {
 }
 
 describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS }, () => {
+  it("recovers a legacy missing PR number from an exact merged branch-and-base lookup", async () => {
+    const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
+    const fakeBin = await installFakeGh({ kind: "found", fixture });
+
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+
+    expect(result.code).toBe(0);
+    expect(result.stdout).toContain("proof=provider_merge");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(false);
+    expect(await pathExists(fixture.worktreePath)).toBe(false);
+  });
+
+  it.each([
+    ["not_found", "provider PR was not found"],
+    ["unavailable", "provider lookup is unavailable"],
+  ] as const)(
+    "keeps legacy cleanup blocked when the exact provider lookup is %s",
+    async (kind, expectedReason) => {
+      const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
+      const fakeBin = await installFakeGh({ kind, fixture });
+
+      const result = await runWithFakeGh(fakeBin, [
+        "cleanup",
+        "merged",
+        "--task-id",
+        fixture.taskId,
+        "--yes",
+        "--root",
+        fixture.root,
+      ]);
+
+      expect(result.code).toBe(5);
+      expect(result.stderr).toContain(expectedReason);
+      expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+      expect(await pathExists(fixture.worktreePath)).toBe(true);
+    },
+  );
+
+  it.each(["OPEN", "CLOSED"] as const)(
+    "keeps legacy cleanup blocked when the exact provider PR is %s",
+    async (providerStatus) => {
+      const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
+      const fakeBin = await installFakeGh({ kind: "found", fixture, providerStatus });
+
+      const result = await runWithFakeGh(fakeBin, [
+        "cleanup",
+        "merged",
+        "--task-id",
+        fixture.taskId,
+        "--yes",
+        "--root",
+        fixture.root,
+      ]);
+
+      expect(result.code).toBe(5);
+      expect(result.stderr).toContain(`is ${providerStatus.toLowerCase()}, not merged`);
+      expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+      expect(await pathExists(fixture.worktreePath)).toBe(true);
+    },
+  );
+
+  it("keeps legacy cleanup blocked on provider base or head mismatch", async () => {
+    for (const mismatch of ["base", "head"] as const) {
+      const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
+      const fakeBin = await installFakeGh({
+        kind: "found",
+        fixture,
+        ...(mismatch === "base" ? { baseRef: "release" } : { headSha: fixture.mergeCommit }),
+      });
+
+      const result = await runWithFakeGh(fakeBin, [
+        "cleanup",
+        "merged",
+        "--task-id",
+        fixture.taskId,
+        "--yes",
+        "--root",
+        fixture.root,
+      ]);
+
+      expect(result.code).toBe(5);
+      expect(result.stderr).toContain(
+        mismatch === "base"
+          ? "provider PR was not found for the exact branch and base"
+          : "requires the exact provider head",
+      );
+      expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+      expect(await pathExists(fixture.worktreePath)).toBe(true);
+    }
+  });
+
+  it("keeps a recorded PR number authoritative when the provider returns another identity", async () => {
+    const fixture = await createTargetedFixture();
+    const fakeBin = await installFakeGh({ kind: "found", fixture, prNumber: 456 });
+
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+
+    expect(result.code).toBe(5);
+    expect(result.stderr).toContain("provider PR identity mismatch: expected=123 observed=456");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+    expect(await pathExists(fixture.worktreePath)).toBe(true);
+  });
+
   it("deletes only the requested rebase-merged task and is idempotent", async () => {
     const fixture = await createTargetedFixture();
     const fakeBin = await installFakeGh({ kind: "found", fixture });

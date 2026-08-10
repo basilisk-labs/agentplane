@@ -258,9 +258,6 @@ export async function targetedCleanupProof(opts: {
     prNumber: recordedPrNumber,
   });
   if (opts.kind === "task") {
-    if (recordedPrNumber === null) {
-      return result(null, "exact task PR identity is unavailable from metadata");
-    }
     const strictProviderReceipt = await validateStrictMergedProviderReceipt({
       gitRoot: opts.gitRoot,
       baseBranch: opts.baseBranch,
@@ -269,6 +266,12 @@ export async function targetedCleanupProof(opts: {
       result: providerResult,
     });
     if (strictProviderReceipt.reason || !strictProviderReceipt.receipt) {
+      if (recordedPrNumber === null) {
+        return result(
+          null,
+          strictProviderReceipt.reason ?? "provider merge receipt is unavailable",
+        );
+      }
       const updateReceipt = await validateProviderUpdateReceipt({
         gitRoot: opts.gitRoot,
         baseBranch: opts.baseBranch,
@@ -307,6 +310,7 @@ export async function targetedCleanupProof(opts: {
       baseBranch: opts.baseBranch,
       branch: opts.branch,
       prNumber: receipt.prNumber,
+      allowProviderRecoveredPrNumber: recordedPrNumber === null,
     });
     if (!closureRecorded) {
       return result(null, "exact pre-merge closure evidence is not recorded on base");
@@ -322,10 +326,29 @@ export async function targetedCleanupProof(opts: {
       receipt,
     });
     if (reconciliation.proof) {
+      if (recordedPrNumber === null && reconciliation.proof.kind !== "exact_head") {
+        return result(
+          null,
+          "legacy cleanup without a recorded PR number requires the exact provider head",
+        );
+      }
       return result(
         reconciliation.proof.kind === "exact_head" ? "provider_merge" : "provider_rebase",
         null,
         reconciliation.proof,
+      );
+    }
+
+    if (recordedPrNumber === null) {
+      if (
+        receipt.providerHeadSha === branchHead &&
+        !(await gitRepositoryHasReplacementRefs(opts.gitRoot))
+      ) {
+        return result("provider_merge", null);
+      }
+      return result(
+        null,
+        "legacy cleanup without a recorded PR number requires the exact provider head",
       );
     }
 
