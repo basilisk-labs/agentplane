@@ -1,0 +1,3 @@
+ .../shared/task-verification-records.test.ts       | 121 ++++++++++++++++++---
+ .../commands/shared/task-verification-records.ts   |   3 +-
+ 2 files changed, 105 insertions(+), 19 deletions(-)
