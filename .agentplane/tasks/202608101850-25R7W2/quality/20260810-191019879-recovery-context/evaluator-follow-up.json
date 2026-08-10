@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608101850-25R7W2-7a89227ff0d7912a68a4edf0",
+  "task_id": "202608101850-25R7W2",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Require a unique valid provider PR record for missing-number cleanup, add legacy-specific ambiguity and drift/closure regressions, rerun declared checks, then perform provider-backed dry runs for the four P02 candidates without deletion.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "High: the approved contract requires ambiguous provider identity to remain blocked, but the patch accepts the existing branch lookup result without adding a uniqueness condition. The underlying branch lookup may return one record from multiple historical PRs for the same head branch and base, so a missing recorded PR number is not yet replaced by an exact unique identity.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/bc56bbed36eeb09837f001bd7bc933c48de9361fbb17b5caa104fc5a8f3e8727.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "Medium: the new legacy-specific tests cover not-found, unavailable, OPEN, CLOSED, base mismatch, head mismatch, and recorded-number mismatch, but do not exercise multiple matching PR records, a legacy semantic post-merge tail, or missing legacy closure evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/bc56bbed36eeb09837f001bd7bc933c48de9361fbb17b5caa104fc5a8f3e8727.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "Medium: frozen verification contains the focused suites and typecheck, but no provider-backed dry-run evidence for the four P02 candidates required by the approved plan.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/bc56bbed36eeb09837f001bd7bc933c48de9361fbb17b5caa104fc5a8f3e8727.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "Residual risk: A repository with reused task branch names or multiple historical PR records can authorize cleanup from a provider record that was selected by response order rather than unique identity.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/bc56bbed36eeb09837f001bd7bc933c48de9361fbb17b5caa104fc5a8f3e8727.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "summary": "Residual risk: The four concrete P02 cleanup candidates remain unqualified against live provider truth.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/bc56bbed36eeb09837f001bd7bc933c48de9361fbb17b5caa104fc5a8f3e8727.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608101850-25R7W2/quality/20260810-191019879-recovery-context/evaluator-result.json"
+}

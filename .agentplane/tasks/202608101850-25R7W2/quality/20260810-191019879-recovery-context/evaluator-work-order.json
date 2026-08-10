@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608101850-25R7W2-7a89227ff0d7912a68a4edf0",
+  "prepared_at": "2026-08-10T19:10:19.879Z",
+  "task": {
+    "id": "202608101850-25R7W2",
+    "revision": 7,
+    "objective": "Recover legacy merged cleanup identity from the provider\n\nAllow explicit cleanup of a legacy DONE task branch when old PR metadata lacks pr_number but an exact branch-and-base provider lookup proves a merged PR, its provider head equals the local branch head, its merge commit is on the base branch, and pre-merge closure evidence is present. Preserve rejection for ambiguous, closed, open, mismatched-head, post-merge-drift, or unavailable-provider cases.",
+    "acceptance_criteria": [
+      "bun test packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts",
+      "bun run typecheck",
+      "- In scope: Allow explicit cleanup of a legacy DONE task branch when old PR metadata lacks pr_number but an exact branch-and-base provider lookup proves a merged PR, its provider head equals the local branch head, its merge commit is on the base branch, and pre-merge closure evidence is present. Preserve rejection for ambiguous, closed, open, mismatched-head, post-merge-drift, or unavailable-provider cases.\n- Out of scope: unrelated refactors not required for \"Recover legacy merged cleanup identity from the provider\".",
+      "Goal: let an operator clean a legacy merged branch through the existing targeted AgentPlane cleanup command without weakening cleanup identity.\n\n1. Add a failing targeted-cleanup regression for a legacy task whose PR metadata has the exact task branch and pre-merge closure marker but no pr_number. Stub an exact provider lookup by branch and base that returns a merged PR whose head equals the local branch head and whose merge commit is on main.\n2. Change targetedCleanupProof to treat the exact branch-and-base provider observation as the missing PR identity when metadata has no number. Keep a recorded pr_number authoritative when it exists.\n3. Run the observed provider record through the same strict merged receipt, closure-on-base, commit-object, base-containment, and branch-head reconciliation checks used for modern metadata. Do not infer merge state from age, names, or local ancestry alone.\n4. Add negative regressions for multiple unsafe boundaries: provider not found or unavailable, open or closed PR, base mismatch, provider-head mismatch, local post-merge head drift, missing closure evidence, and a recorded PR number that disagrees with the provider.\n5. Verify the four known legacy cleanup candidates from the P02 inventory become dry-run candidates only when exact provider identity matches. No deletion is performed in this code task.\n6. Run focused cleanup proof suites, typecheck, lint, and critical CLI checks.\n\nSuccess: explicit cleanup by task id can recover old missing pr_number metadata from exact provider truth while every ambiguous or changed history remains blocked.\nRollback: revert the isolated fallback and its tests; legacy cleanup returns to the current fail-closed behavior.",
+      "PLANNER fallback scaffold for \"Recover legacy merged cleanup identity from the provider\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Recover legacy merged cleanup identity from the provider\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "deee9a3afda80cb7f4b532f96632dc2a6e43d4eb",
+  "diff_base_sha": "52cca0b0097a5ec4682b90a25b9ba98d7abaef0c",
+  "blueprint_digest": "4c6d7d1bd6cfd331e0afd25e7d4f5f805c1d4cd4c0223e935cb363f5a33e6f82",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608101850-25R7W2/quality/20260810-191019879-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:7b3b605c2e0febec85fa6ee1e275365d89123f6dec87024a67496a6f0d85759a",
+    "prompt_path": ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/4ca49feae606cab2fe3237701f97ff6f4e0af1ded0d7a85245588243295abeef.md",
+    "result_schema_path": ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608101850-25R7W2/README.md",
+      "sha256": "sha256:c646e906945ed136fa5f50ab0685f2a2fd90c91f470eb8098a7c9864501d9ea2",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/bc56bbed36eeb09837f001bd7bc933c48de9361fbb17b5caa104fc5a8f3e8727.patch",
+      "sha256": "sha256:bc56bbed36eeb09837f001bd7bc933c48de9361fbb17b5caa104fc5a8f3e8727",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/2a28b7152c82bd6b7a96b57e5ba56e6f689aa805480b1c912befb61ae4db6471.json",
+      "sha256": "sha256:2a28b7152c82bd6b7a96b57e5ba56e6f689aa805480b1c912befb61ae4db6471",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608101850-25R7W2/verification/20260810191011361-103eff6132d9b260.json",
+      "sha256": "sha256:80cb696c07f9d6fc32cbf6e581fb447a9dfe74e5843415261a697fced113d1e9",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/b661d264dc7b3aa73fe445619628929aae1bf4434136ebd5c29807b06470b102.json",
+      "sha256": "sha256:b661d264dc7b3aa73fe445619628929aae1bf4434136ebd5c29807b06470b102",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
