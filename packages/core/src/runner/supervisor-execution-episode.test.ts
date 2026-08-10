@@ -9,6 +9,7 @@ import {
   recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   reopenSupervisorExecutionEpisodeAfterEffectEvidence,
+  retireSupervisorExecutionEpisodeIntentAfterStateDrift,
   retryFailedSupervisorExecutionEpisode,
   stopSupervisorExecutionEpisode,
   startSupervisorExecutionEpisode,
@@ -272,6 +273,55 @@ describe("SupervisorExecutionEpisodeJournal", () => {
       operations: [{ status: "intent", operation_key: prepared.operation_key }],
     });
   });
+
+  it.each(["running", "effect_in_doubt"] as const)(
+    "retires a drifted %s intent as an exact-key replaceable failure",
+    (state) => {
+      const prepared = start({ journal: journal() });
+      if (prepared.status !== "started") throw new Error("expected started episode");
+      const unresolved =
+        state === "effect_in_doubt"
+          ? recoverSupervisorExecutionEpisodeJournal({
+              journal: prepared.journal,
+              state_fingerprint_digest: FINGERPRINT,
+              now: "2026-07-28T00:00:01.000Z",
+            })
+          : prepared.journal;
+      const retired = retireSupervisorExecutionEpisodeIntentAfterStateDrift({
+        journal: unresolved,
+        state_fingerprint_digest: NEXT_FINGERPRINT,
+        result: { classification: "state_fingerprint_drift" },
+        now: "2026-07-28T00:00:02.000Z",
+      });
+      const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+        journal: retired,
+        state_fingerprint_digest: NEXT_FINGERPRINT,
+        now: "2026-07-28T00:00:03.000Z",
+      });
+
+      expect(retired).toMatchObject({
+        status: "stopped",
+        cursor: { phase: "stopped", operation_key: prepared.operation_key },
+        stop: { reason: "operation_failed", operation_key: prepared.operation_key },
+        operations: [{ status: "failed", operation_key: prepared.operation_key }],
+      });
+      expect(replacement).toMatchObject({
+        status: "running",
+        state_fingerprint_digest: NEXT_FINGERPRINT,
+        cursor: {
+          phase: "ready",
+          replacement_of_operation_key: prepared.operation_key,
+        },
+      });
+      expect(() =>
+        retireSupervisorExecutionEpisodeIntentAfterStateDrift({
+          journal: prepared.journal,
+          state_fingerprint_digest: FINGERPRINT,
+          result: { classification: "not_drifted" },
+        }),
+      ).toThrow("requires a changed state fingerprint");
+    },
+  );
 
   it("records successful completion as a terminal journal that cannot start another operation", () => {
     const terminal = stopSupervisorExecutionEpisode({

@@ -485,6 +485,66 @@ export function reopenSupervisorExecutionEpisodeAfterEffectEvidence(opts: {
   return createJournal(next);
 }
 
+/**
+ * Retire an unresolved external intent only after its precondition has
+ * definitively drifted. The old operation remains in history as failed, so a
+ * successor must use the explicit exact-key replacement path and late output
+ * from the retired exchange cannot be mistaken for current work.
+ */
+export function retireSupervisorExecutionEpisodeIntentAfterStateDrift(opts: {
+  journal: SupervisorExecutionEpisodeJournal;
+  state_fingerprint_digest: string;
+  result: unknown;
+  now?: string;
+}): SupervisorExecutionEpisodeJournal {
+  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+  const now = opts.now ?? new Date().toISOString();
+  const last = journal.operations.at(-1);
+  const runningIntent =
+    journal.status === "running" &&
+    journal.cursor.phase === "intent_recorded" &&
+    journal.cursor.operation_key === last?.operation_key;
+  const effectInDoubtIntent =
+    journal.status === "stopped" &&
+    journal.stop?.reason === "effect_in_doubt" &&
+    journal.cursor.phase === "stopped" &&
+    journal.cursor.operation_key === last?.operation_key &&
+    journal.stop.operation_key === last?.operation_key;
+  if (last?.status !== "intent" || (!runningIntent && !effectInDoubtIntent)) {
+    throw new Error(
+      "Supervisor state-drift retirement requires the exact unresolved latest operation intent.",
+    );
+  }
+  if (last.precondition_fingerprint_digest === opts.state_fingerprint_digest) {
+    throw new Error("Supervisor state-drift retirement requires a changed state fingerprint.");
+  }
+  const failedOperation = {
+    ...last,
+    status: "failed" as const,
+    result_digest: digestSupervisorEpisodeValue(opts.result),
+    completed_at: now,
+  };
+  const completed = createJournal({
+    ...journal,
+    cursor: {
+      episode: journal.cursor.episode,
+      phase: "completed",
+      operation_key: last.operation_key,
+    },
+    operations: [...journal.operations.slice(0, -1), failedOperation],
+    status: "running",
+    stop: null,
+    updated_at: now,
+    previous_digest: journal.digest,
+  });
+  return stoppedJournal({
+    journal: completed,
+    reason: "operation_failed",
+    operation_key: last.operation_key,
+    at: now,
+  });
+}
+
 export function startSupervisorExecutionEpisode(opts: {
   journal: SupervisorExecutionEpisodeJournal;
   role: SupervisorEpisodeRole;

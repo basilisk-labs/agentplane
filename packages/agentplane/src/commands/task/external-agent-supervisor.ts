@@ -404,6 +404,13 @@ export async function acceptExternalAgentResult(opts: {
       message: "No issued external-agent exchange matches this result.",
     });
   }
+  if (initial.status === "retired") {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message:
+        "This external-agent exchange was retired after state drift; discard its result and request the current task route.",
+    });
+  }
   if (path.resolve(opts.ctx.cwd, opts.result_path) !== path.resolve(paths.result)) {
     throw new CliError({
       code: "E_VALIDATION",
