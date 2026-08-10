@@ -2,7 +2,7 @@
   "checks": [
     {
       "command": "bun run typecheck",
-      "duration_ms": 100,
+      "duration_ms": 96,
       "exit_code": 0,
       "script": "typecheck",
       "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
@@ -10,10 +10,10 @@
     },
     {
       "command": "bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
-      "duration_ms": 13737,
+      "duration_ms": 12845,
       "exit_code": 0,
       "script": null,
-      "stderr_tail": "\npackages/agentplane/src/cli/run-cli.core.task-advance.test.ts:\n(pass) runCli task advance > returns one compact planning action without changing repository state [524.46ms]\n(pass) runCli task advance > keeps a concurrently rejected exchange inert until its journal intent is owned [402.46ms]\n(pass) runCli task advance > accepts one bound planning result, advances to approval, and refuses replay [426.96ms]\n(pass) runCli task advance > returns an external wait instead of advertising start-ready for incomplete dependencies [156.61ms]\n(pass) runCli task advance > rejects a tampered exchange checkout before applying semantic task state [157.81ms]\n(pass) runCli task advance > finalizes an accepted result after its effect and supervisor completion were persisted [349.94ms]\n(pass) runCli task advance > rejects a stale planning result before applying semantic task state [236.75ms]\n(pass) runCli task advance > rejects a read-only evaluator result after a concurrent commit transition [1505.14ms]\n(pass) runCli task advance > projects the direct runner boundary as the same semantic agent episode [296.68ms]\n(pass) runCli task advance > converges a direct external-agent implementation and evaluator through CLI-owned closeout [2195.95ms]\n(pass) runCli task advance > recovers an accepted implementation after the CLI-owned commit was already created [1209.79ms]\n(pass) runCli task advance > converges branch implementation and evaluator to the protected publication boundary [5638.21ms]\n(pass) runCli task advance > matches the managed direct-run preview fingerprint and preserves task evidence [279.04ms]\n(pass) runCli task advance > fails closed when a branch control-plane path is not authoritative [218.47ms]\n\n 14 pass\n 0 fail\n 128 expect() calls\nRan 14 tests across 1 file. [13.73s]\n",
+      "stderr_tail": "\npackages/agentplane/src/cli/run-cli.core.task-advance.test.ts:\n(pass) runCli task advance > returns one compact planning action without changing repository state [483.28ms]\n(pass) runCli task advance > keeps a concurrently rejected exchange inert until its journal intent is owned [378.61ms]\n(pass) runCli task advance > accepts one bound planning result, advances to approval, and refuses replay [415.96ms]\n(pass) runCli task advance > returns an external wait instead of advertising start-ready for incomplete dependencies [148.15ms]\n(pass) runCli task advance > rejects a tampered exchange checkout before applying semantic task state [144.23ms]\n(pass) runCli task advance > finalizes an accepted result after its effect and supervisor completion were persisted [332.08ms]\n(pass) runCli task advance > rejects a stale planning result before applying semantic task state [225.58ms]\n(pass) runCli task advance > rejects a read-only evaluator result after a concurrent commit transition [1435.58ms]\n(pass) runCli task advance > projects the direct runner boundary as the same semantic agent episode [282.82ms]\n(pass) runCli task advance > converges a direct external-agent implementation and evaluator through CLI-owned closeout [2076.55ms]\n(pass) runCli task advance > recovers an accepted implementation after the CLI-owned commit was already created [1130.64ms]\n(pass) runCli task advance > converges branch implementation and evaluator to the protected publication boundary [5189.11ms]\n(pass) runCli task advance > matches the managed direct-run preview fingerprint and preserves task evidence [269.58ms]\n(pass) runCli task advance > fails closed when a branch control-plane path is not authoritative [197.68ms]\n\n 14 pass\n 0 fail\n 128 expect() calls\nRan 14 tests across 1 file. [12.83s]\n",
       "stdout_tail": "bun test v1.3.6 (d530ed99)\n"
     }
   ],

@@ -12,8 +12,8 @@ Created: 2026-08-10T14:11:35.906Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: hosted verify-static found one unused internal export in the retry-safe blocker helper.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
