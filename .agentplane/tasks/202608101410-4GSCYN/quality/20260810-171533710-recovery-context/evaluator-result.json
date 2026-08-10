@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "current-contract-covered",
+      "severity": "low",
+      "summary": "No blocking divergence was found between the approved blocked-result contract and the current implementation or its focused regression coverage.",
+      "broken_invariant": "A pass requires evidence that blocked results are consumed once, remain terminal until explicit resume, and cannot carry workspace changes.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/cc5908dd74b74e58a6b9493fd9fe0b694fe9caac22c857556435d9775bd91941.patch",
+          "sha256": "sha256:cc5908dd74b74e58a6b9493fd9fe0b694fe9caac22c857556435d9775bd91941"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

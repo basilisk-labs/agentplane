@@ -1,0 +1,76 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run typecheck",
+    "bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-10T17:11:35.468Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608101410-4GSCYN/verification/20260810171135468-252a9817c03a9517.json",
+      "sha256": "sha256:403c806729bf7bac65b51880571d55473b8e1fd3319cebd062af4bd7472035fe"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 17820683ec2da94c739a4698b3e27470690d1914..3b66b944ef0ef743f21acb3a524751736cf60a12",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 17820683ec2da94c739a4698b3e27470690d1914..3b66b944ef0ef743f21acb3a524751736cf60a12",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608101410-4GSCYN/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608101410-4GSCYN/pr/github-body.md",
+          "M\t.agentplane/tasks/202608101410-4GSCYN/pr/meta.json",
+          "M\t.agentplane/tasks/202608101410-4GSCYN/pr/review.md",
+          "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
+          "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "17820683ec2da94c739a4698b3e27470690d1914",
+    "implementation_commit": "3b66b944ef0ef743f21acb3a524751736cf60a12",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608101410-4GSCYN",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608101410-4GSCYN/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
