@@ -16,7 +16,7 @@ Allow branch_pr tasks whose reviewable result consists only of managed task meta
 ## Verification
 
 - State: ok
-- Note: Verified null-target acceptance without weakening semantic SHA, freshness, digest, or concrete-details checks.
+- Note: Verified explicit null-target acceptance and rejection of omitted or malformed target identity.
 - Canonical workflow state lives in the task README.
 
 <details>
