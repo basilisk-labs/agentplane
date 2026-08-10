@@ -12,8 +12,8 @@ Created: 2026-08-10T14:11:35.906Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Unsupported declared check: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+- State: ok
+- Note: Verified blocked-result terminal behavior, replay refusal, zero-change trust boundary, resume freshness, typecheck, formatting, and critical suite.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
