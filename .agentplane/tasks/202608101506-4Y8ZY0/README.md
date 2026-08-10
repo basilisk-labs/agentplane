@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -25,7 +25,7 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-10T16:27:59.831Z"
+  updated_at: "2026-08-10T16:32:48.875Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
@@ -176,8 +176,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 7d00386e1104. CLI accepted one state-bound external-agent semantic result."
     commit: "7d00386e1104e6cd2b0e0eccea98434d3bec0ca0"
+  -
+    type: "verify"
+    at: "2026-08-10T16:32:48.875Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-10T16:31:27.229Z"
+doc_updated_at: "2026-08-10T16:32:50.429Z"
 doc_updated_by: "SUPERVISOR"
 description: "The supervisor currently accepts only three-token bun run scripts and rejects valid repository checks such as bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Reuse the existing shell-free argv parser, accept bounded Bun run and test invocations without invoking a shell, preserve fixed policy checks and evidence capture, and prove that task advance no longer creates false implementation-rework cycles for valid Bun tests."
 sections:
@@ -311,6 +317,51 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T16:24:51.341Z, excerpt_hash=sha256:096ad1a48f15c3fef8ee0ada006dd0aaa185399688650edb1eb8d3afd6000260
+
+    Details:
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202608101506-4Y8ZY0/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608101506-4Y8ZY0 declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608101506-4Y8ZY0/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608101506-4Y8ZY0 declared verification
+
+    Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608101506-4Y8ZY0/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608101506-4Y8ZY0 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101506-4Y8ZY0-accept-safe-shell-free-bun-test-checks-in-superv/.agentplane/tasks/202608101506-4Y8ZY0/blueprint/resolved-snapshot.json
+    - old_digest: e9896b989c3ebae1e6efacc43e759bc6c69e5978f2e09383e7e45ae2e30fda89
+    - current_digest: e9896b989c3ebae1e6efacc43e759bc6c69e5978f2e09383e7e45ae2e30fda89
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608101506-4Y8ZY0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608101506-4Y8ZY0
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-10T16:32:48.875Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T16:31:27.229Z, excerpt_hash=sha256:096ad1a48f15c3fef8ee0ada006dd0aaa185399688650edb1eb8d3afd6000260
 
     Details:
 
@@ -501,6 +552,51 @@ Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review i
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T16:24:51.341Z, excerpt_hash=sha256:096ad1a48f15c3fef8ee0ada006dd0aaa185399688650edb1eb8d3afd6000260
+
+Details:
+
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202608101506-4Y8ZY0/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608101506-4Y8ZY0 declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608101506-4Y8ZY0/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608101506-4Y8ZY0 declared verification
+
+Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608101506-4Y8ZY0/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608101506-4Y8ZY0 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101506-4Y8ZY0-accept-safe-shell-free-bun-test-checks-in-superv/.agentplane/tasks/202608101506-4Y8ZY0/blueprint/resolved-snapshot.json
+- old_digest: e9896b989c3ebae1e6efacc43e759bc6c69e5978f2e09383e7e45ae2e30fda89
+- current_digest: e9896b989c3ebae1e6efacc43e759bc6c69e5978f2e09383e7e45ae2e30fda89
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608101506-4Y8ZY0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608101506-4Y8ZY0
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-10T16:32:48.875Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T16:31:27.229Z, excerpt_hash=sha256:096ad1a48f15c3fef8ee0ada006dd0aaa185399688650edb1eb8d3afd6000260
 
 Details:
 
