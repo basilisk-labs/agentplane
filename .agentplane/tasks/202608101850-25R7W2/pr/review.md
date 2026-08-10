@@ -33,11 +33,11 @@ Created: 2026-08-10T18:51:39.548Z
  .../branch/cleanup-merged-provider-receipt.test.ts |   8 +
  .../cleanup-merged-provider-reconciliation.ts      |   1 +
  .../branch/cleanup-merged-targeted-proof.ts        |  29 ++-
- .../branch/cleanup-merged.targeted.test.ts         | 269 ++++++++++++++++++++-
+ .../branch/cleanup-merged.targeted.test.ts         | 227 +++++++++++++++++++--
  .../src/commands/pr/internal/sync-github.ts        |  30 ++-
  .../src/commands/task/close-tail-state.test.ts     |  13 +-
  .../src/commands/task/close-tail-state.ts          |   4 +-
- 8 files changed, 335 insertions(+), 26 deletions(-)
+ 8 files changed, 283 insertions(+), 36 deletions(-)
 ```
 
 </details>

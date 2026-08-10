@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608101850-25R7W2/recover-legacy-merged-cleanup-identity-from-the",
   "created_at": "2026-08-10T18:51:39.548Z",
-  "diffstat_sha256": "sha256:31aff71e4e016b6f50c62fda102d2dfe88b39c600bdbdeeaff32c82ec12d0115",
+  "diffstat_sha256": "sha256:33e24cbafcc3bf4f6a9312f09bb878cc07cd2f3b0e8ae2fc346e581ab02bf9cd",
   "last_verified_at": "2026-08-10T19:46:19.394Z",
   "last_verified_diffstat_sha256": "sha256:31aff71e4e016b6f50c62fda102d2dfe88b39c600bdbdeeaff32c82ec12d0115",
   "pr_number": 4813,
