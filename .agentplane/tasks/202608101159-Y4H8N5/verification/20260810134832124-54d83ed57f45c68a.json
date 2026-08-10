@@ -1,0 +1,15 @@
+{
+  "details": "Command: sh -lc \"test $(git -C .agentplane/tmp/rf05b-integration-base rev-parse --abbrev-ref HEAD) = codex/recovery-mt4fk2-rf05b-main-20260810 && test $(git -C .agentplane/worktrees/base-main-for-XS41ZV rev-parse --abbrev-ref HEAD) = codex/recovery-mt4fk2-xs41zv-main-20260810\"\nResult: pass\nEvidence: both observed recovery worktree branches equal their dedicated expected refs.\nScope: displaced dirty worktree branch ownership.\n\nCommand: sh -lc \"test $(git rev-parse --abbrev-ref HEAD) = main && test $(git rev-parse HEAD) = $(git rev-parse origin/main)\"\nResult: pass\nEvidence: primary checkout is main and local HEAD equals origin/main.\nScope: canonical primary checkout ownership and remote alignment.\n\nCommand: inspect pr-meta/verify-log.ts argv parsing\nResult: pass\nEvidence: each declared verify item is sh plus -lc plus one quoted script argument; shell metacharacters are inside the quoted argv token.\nScope: integration-runner compatibility of task verification commands.",
+  "digest": "sha256:54d83ed57f45c68ab6105f2e895b13ef6dba303ab8be0db0a3dc16d2c58f029b",
+  "implementation_sha": "a732d257eadd01754e31ef8f603e0b0c958e3179",
+  "kind": "task_verification_record",
+  "note": "Verified integration-safe commands assert the observed recovery branches and canonical main state.",
+  "recorded_at": "2026-08-10T13:48:32.124Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Restore canonical primary checkout ownership\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Restore canonical primary checkout ownership\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:dfba55f6771342e65932e99aa576096c01566dacec4e68b8d63f4c1dcca19e94",
+  "task_id": "202608101159-Y4H8N5",
+  "verification_command": "agentplane verify 202608101159-Y4H8N5 --ok --by TESTER",
+  "verifier": "TESTER"
+}

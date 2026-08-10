@@ -1,0 +1,15 @@
+{
+  "details": "Command: inspect task verify argv through pr-meta/verify-log.ts\nResult: fail\nEvidence: unquoted && is rejected by the argv parser before execution.\nScope: branch_pr integration verification execution.\n\nCommand: inspect declared recovery assertions\nResult: fail\nEvidence: commands printed recovery refs and compared a SHA literal to itself instead of checking observed branches and HEAD/origin-main equality.\nScope: correctness of recovery-state acceptance criteria.",
+  "digest": "sha256:a259864190e84aff5dc59637b35bf13754f6027282e87744a8ec8bdb8faaf1ea",
+  "implementation_sha": "a732d257eadd01754e31ef8f603e0b0c958e3179",
+  "kind": "task_verification_record",
+  "note": "PR review requires executable integration checks that assert observed recovery state.",
+  "recorded_at": "2026-08-10T13:48:03.436Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Restore canonical primary checkout ownership\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Restore canonical primary checkout ownership\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:dfba55f6771342e65932e99aa576096c01566dacec4e68b8d63f4c1dcca19e94",
+  "task_id": "202608101159-Y4H8N5",
+  "verification_command": "agentplane verify 202608101159-Y4H8N5 --rework --by REVIEWER",
+  "verifier": "REVIEWER"
+}

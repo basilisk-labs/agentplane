@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 13
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -22,37 +22,37 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-10T13:40:42.111Z"
+  updated_at: "2026-08-10T13:48:32.124Z"
   updated_by: "TESTER"
-  note: "Verified canonical main ownership and byte-preservation of both dirty recovery worktrees."
+  note: "Verified integration-safe commands assert the observed recovery branches and canonical main state."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-10T13:41:25.971Z"
+  updated_at: "2026-08-10T13:49:11.496Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 2 typed finding(s)."
-  evaluated_sha: "0b23bbda7572c2f55735fabea0af8b3e48753ff0"
+  evaluated_sha: "a732d257eadd01754e31ef8f603e0b0c958e3179"
   blueprint_digest: "eb2556bcf3d3d7ec6907851fbb817d505566ba1703aa7332ddc8c7a18780c9db"
   evidence_refs:
-    - ".agentplane/tasks/202608101159-Y4H8N5/quality/20260810-134125712-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608101159-Y4H8N5/quality/20260810-134125712-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608101159-Y4H8N5/quality/objects/sha256/697ea3a3b859db7f92ecd7437224105af309a76018b40ca305bb58622d2862ac.md"
-    - ".agentplane/tasks/202608101159-Y4H8N5/quality/20260810-134125712-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608101159-Y4H8N5/quality/20260810-134125712-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608101159-Y4H8N5/quality/20260810-134125712-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608101159-Y4H8N5/quality/20260810-134911044-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608101159-Y4H8N5/quality/20260810-134911044-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608101159-Y4H8N5/quality/objects/sha256/ed29650d891297bb8c0f55b2b8a67565a398578fb16116b30ea500a728aec4a8.md"
+    - ".agentplane/tasks/202608101159-Y4H8N5/quality/20260810-134911044-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608101159-Y4H8N5/quality/20260810-134911044-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608101159-Y4H8N5/quality/20260810-134911044-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608101159-Y4H8N5/README.md"
     - ".agentplane/tasks/202608101159-Y4H8N5/quality/objects/sha256/0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5.patch"
-    - ".agentplane/tasks/202608101159-Y4H8N5/quality/objects/sha256/2abe4339feb37967cba861412756753e21739d2b0a87995f7b9f03700d0c6736.json"
-    - ".agentplane/tasks/202608101159-Y4H8N5/verification/20260810134042111-65aa01889545722d.json"
+    - ".agentplane/tasks/202608101159-Y4H8N5/quality/objects/sha256/ce629ed017f3813eb1c63c4c9b14f2e5cff736cd579ef07bcb07ee3991d650aa.json"
+    - ".agentplane/tasks/202608101159-Y4H8N5/verification/20260810134832124-54d83ed57f45c68a.json"
     - ".agentplane/tasks/202608101159-Y4H8N5/quality/objects/sha256/73ab16f31bed8264e4c3b195805537945f29e1b45b6bb17ed2ba27ede0804c16.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The primary checkout is attached to main and byte-identical to origin/main at 427ebc45a1e2ad9b12d50a9ad2e89db5d2785fee, with no tracked local changes."
-    - "Both displaced dirty worktrees retain their original tracked/staged diff digests and tracked/untracked counts; only branch ownership changed to dedicated recovery branches."
+    - "Both verification commands are explicit sh -lc argv invocations, so compound checks are accepted by the integration parser while remaining bounded to read-only Git assertions."
+    - "The checks compare observed recovery worktree branches to their exact dedicated refs and compare observed primary HEAD to observed origin/main while requiring the primary branch to be main."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -66,7 +66,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-10T13:42:15.498Z"
+  updated_at: "2026-08-10T13:50:03.974Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -76,8 +76,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "0b23bbda7572c2f55735fabea0af8b3e48753ff0"
-  message: "🔀 Y4H8N5 repo-recovery: merge main for lifecycle verification"
+  hash: "a732d257eadd01754e31ef8f603e0b0c958e3179"
+  message: "🧹 Y4H8N5 repo-recovery: harden integration verification"
 comments:
   -
     author: "INTEGRATOR"
@@ -85,6 +85,12 @@ comments:
   -
     author: "CODER"
     body: "Implementation record: canonical main ownership restored and dirty worktree state preserved with matching pre/post recovery digests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Review rework complete: verify commands now use an allowed sh -lc wrapper and assert exact recovery branches plus live main/origin-main equality."
   -
     author: "INTEGRATOR"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -136,8 +142,36 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "0b23bbda7572c2f55735fabea0af8b3e48753ff0"
+  -
+    type: "verify"
+    at: "2026-08-10T13:48:03.436Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "PR review requires executable integration checks that assert observed recovery state."
+  -
+    type: "status"
+    at: "2026-08-10T13:48:16.103Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Review rework complete: verify commands now use an allowed sh -lc wrapper and assert exact recovery branches plus live main/origin-main equality."
+    commit: "a732d257eadd01754e31ef8f603e0b0c958e3179"
+  -
+    type: "verify"
+    at: "2026-08-10T13:48:32.124Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified integration-safe commands assert the observed recovery branches and canonical main state."
+  -
+    type: "status"
+    at: "2026-08-10T13:50:03.974Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "a732d257eadd01754e31ef8f603e0b0c958e3179"
 doc_version: 3
-doc_updated_at: "2026-08-10T13:42:15.506Z"
+doc_updated_at: "2026-08-10T13:50:04.002Z"
 doc_updated_by: "INTEGRATOR"
 description: "Record and verify the recovery that preserved both dirty qualification worktrees on dedicated recovery branches, freed main, refreshed origin/main, and attached the primary checkout to the exact hosted main head without deleting user state."
 sections:
@@ -281,6 +315,91 @@ sections:
     Result: pass
     Evidence: rf05b remains tracked=36 untracked=3; XS41ZV remains tracked=340 untracked=3; untracked paths remain present.
     Scope: preservation of dirty worktree content while moving main ownership.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101159-Y4H8N5-restore-canonical-primary-checkout-ownership/.agentplane/tasks/202608101159-Y4H8N5/blueprint/resolved-snapshot.json
+    - old_digest: eb2556bcf3d3d7ec6907851fbb817d505566ba1703aa7332ddc8c7a18780c9db
+    - current_digest: eb2556bcf3d3d7ec6907851fbb817d505566ba1703aa7332ddc8c7a18780c9db
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608101159-Y4H8N5
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608101159-Y4H8N5
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-10T13:48:03.436Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: PR review requires executable integration checks that assert observed recovery state.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T13:42:15.506Z, excerpt_hash=sha256:dfba55f6771342e65932e99aa576096c01566dacec4e68b8d63f4c1dcca19e94
+
+    Details:
+
+    Command: inspect task verify argv through pr-meta/verify-log.ts
+    Result: fail
+    Evidence: unquoted && is rejected by the argv parser before execution.
+    Scope: branch_pr integration verification execution.
+
+    Command: inspect declared recovery assertions
+    Result: fail
+    Evidence: commands printed recovery refs and compared a SHA literal to itself instead of checking observed branches and HEAD/origin-main equality.
+    Scope: correctness of recovery-state acceptance criteria.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101159-Y4H8N5-restore-canonical-primary-checkout-ownership/.agentplane/tasks/202608101159-Y4H8N5/blueprint/resolved-snapshot.json
+    - old_digest: eb2556bcf3d3d7ec6907851fbb817d505566ba1703aa7332ddc8c7a18780c9db
+    - current_digest: eb2556bcf3d3d7ec6907851fbb817d505566ba1703aa7332ddc8c7a18780c9db
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608101159-Y4H8N5
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-10T13:48:32.124Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified integration-safe commands assert the observed recovery branches and canonical main state.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T13:48:16.144Z, excerpt_hash=sha256:dfba55f6771342e65932e99aa576096c01566dacec4e68b8d63f4c1dcca19e94
+
+    Details:
+
+    Command: sh -lc "test $(git -C .agentplane/tmp/rf05b-integration-base rev-parse --abbrev-ref HEAD) = codex/recovery-mt4fk2-rf05b-main-20260810 && test $(git -C .agentplane/worktrees/base-main-for-XS41ZV rev-parse --abbrev-ref HEAD) = codex/recovery-mt4fk2-xs41zv-main-20260810"
+    Result: pass
+    Evidence: both observed recovery worktree branches equal their dedicated expected refs.
+    Scope: displaced dirty worktree branch ownership.
+
+    Command: sh -lc "test $(git rev-parse --abbrev-ref HEAD) = main && test $(git rev-parse HEAD) = $(git rev-parse origin/main)"
+    Result: pass
+    Evidence: primary checkout is main and local HEAD equals origin/main.
+    Scope: canonical primary checkout ownership and remote alignment.
+
+    Command: inspect pr-meta/verify-log.ts argv parsing
+    Result: pass
+    Evidence: each declared verify item is sh plus -lc plus one quoted script argument; shell metacharacters are inside the quoted argv token.
+    Scope: integration-runner compatibility of task verification commands.
 
     BlueprintSnapshotRef:
     - state: current
@@ -489,6 +608,91 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-10T13:48:03.436Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: PR review requires executable integration checks that assert observed recovery state.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T13:42:15.506Z, excerpt_hash=sha256:dfba55f6771342e65932e99aa576096c01566dacec4e68b8d63f4c1dcca19e94
+
+Details:
+
+Command: inspect task verify argv through pr-meta/verify-log.ts
+Result: fail
+Evidence: unquoted && is rejected by the argv parser before execution.
+Scope: branch_pr integration verification execution.
+
+Command: inspect declared recovery assertions
+Result: fail
+Evidence: commands printed recovery refs and compared a SHA literal to itself instead of checking observed branches and HEAD/origin-main equality.
+Scope: correctness of recovery-state acceptance criteria.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101159-Y4H8N5-restore-canonical-primary-checkout-ownership/.agentplane/tasks/202608101159-Y4H8N5/blueprint/resolved-snapshot.json
+- old_digest: eb2556bcf3d3d7ec6907851fbb817d505566ba1703aa7332ddc8c7a18780c9db
+- current_digest: eb2556bcf3d3d7ec6907851fbb817d505566ba1703aa7332ddc8c7a18780c9db
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608101159-Y4H8N5
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-10T13:48:32.124Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified integration-safe commands assert the observed recovery branches and canonical main state.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T13:48:16.144Z, excerpt_hash=sha256:dfba55f6771342e65932e99aa576096c01566dacec4e68b8d63f4c1dcca19e94
+
+Details:
+
+Command: sh -lc "test $(git -C .agentplane/tmp/rf05b-integration-base rev-parse --abbrev-ref HEAD) = codex/recovery-mt4fk2-rf05b-main-20260810 && test $(git -C .agentplane/worktrees/base-main-for-XS41ZV rev-parse --abbrev-ref HEAD) = codex/recovery-mt4fk2-xs41zv-main-20260810"
+Result: pass
+Evidence: both observed recovery worktree branches equal their dedicated expected refs.
+Scope: displaced dirty worktree branch ownership.
+
+Command: sh -lc "test $(git rev-parse --abbrev-ref HEAD) = main && test $(git rev-parse HEAD) = $(git rev-parse origin/main)"
+Result: pass
+Evidence: primary checkout is main and local HEAD equals origin/main.
+Scope: canonical primary checkout ownership and remote alignment.
+
+Command: inspect pr-meta/verify-log.ts argv parsing
+Result: pass
+Evidence: each declared verify item is sh plus -lc plus one quoted script argument; shell metacharacters are inside the quoted argv token.
+Scope: integration-runner compatibility of task verification commands.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101159-Y4H8N5-restore-canonical-primary-checkout-ownership/.agentplane/tasks/202608101159-Y4H8N5/blueprint/resolved-snapshot.json
+- old_digest: eb2556bcf3d3d7ec6907851fbb817d505566ba1703aa7332ddc8c7a18780c9db
+- current_digest: eb2556bcf3d3d7ec6907851fbb817d505566ba1703aa7332ddc8c7a18780c9db
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608101159-Y4H8N5
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608101159-Y4H8N5
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -517,4 +721,4 @@ DecisionContextRef:
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-10T13:42:15.498Z`
+- Updated at: `2026-08-10T13:50:03.974Z`

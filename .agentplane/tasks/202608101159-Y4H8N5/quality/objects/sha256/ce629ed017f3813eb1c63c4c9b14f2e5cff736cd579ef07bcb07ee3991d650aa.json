@@ -1,0 +1,27 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "sh -lc \"test $(git -C .agentplane/tmp/rf05b-integration-base rev-parse --abbrev-ref HEAD) = codex/recovery-mt4fk2-rf05b-main-20260810 && test $(git -C .agentplane/worktrees/base-main-for-XS41ZV rev-parse --abbrev-ref HEAD) = codex/recovery-mt4fk2-xs41zv-main-20260810\"",
+    "sh -lc \"test $(git rev-parse --abbrev-ref HEAD) = main && test $(git rev-parse HEAD) = $(git rev-parse origin/main)\""
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-10T13:48:32.124Z",
+    "updated_by": "TESTER",
+    "note": "Verified integration-safe commands assert the observed recovery branches and canonical main state."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608101159-Y4H8N5/verification/20260810134832124-54d83ed57f45c68a.json",
+      "sha256": "sha256:6d27c5ee59f3edadd692091f8d13b5e8b885e3e6b6e3aa44de310ee64f7d6c70"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

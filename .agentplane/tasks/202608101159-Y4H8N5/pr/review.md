@@ -13,7 +13,7 @@ Created: 2026-08-10T12:00:37.483Z
 ## Verification
 
 - State: ok
-- Note: Verified canonical main ownership and byte-preservation of both dirty recovery worktrees.
+- Note: Verified integration-safe commands assert the observed recovery branches and canonical main state.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
