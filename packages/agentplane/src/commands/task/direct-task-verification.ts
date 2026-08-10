@@ -14,8 +14,8 @@ const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.free
 });
 const CHECK_OUTPUT_LIMIT = 4000;
 const SAFE_BUN_SCRIPT = /^[A-Za-z0-9][A-Za-z0-9:._-]*$/u;
+const BUN_UNMATCHED_FILTER_PATTERN = /following filters did not match any test files/iu;
 const BUN_ZERO_TEST_PATTERNS = [
-  /following filters did not match any test files/iu,
   /\bno tests? (?:found|matched|ran|were run)\b/iu,
   /\bran 0 tests?\b/iu,
 ] as const;
@@ -92,9 +92,10 @@ function bunTestReportedZeroTests(opts: {
 }): boolean {
   if (opts.parsed.executable !== "bun" || opts.parsed.args[0] !== "test") return false;
   const output = `${opts.stdout}\n${opts.stderr}`;
-  if (BUN_ZERO_TEST_PATTERNS.some((pattern) => pattern.test(output))) return true;
+  if (BUN_UNMATCHED_FILTER_PATTERN.test(output)) return true;
   const passCounts = [...output.matchAll(/\b(\d+)\s+pass\b/giu)].map((match) => Number(match[1]));
-  return passCounts.length > 0 && !passCounts.some((count) => count > 0);
+  if (passCounts.some((count) => count > 0)) return false;
+  return passCounts.includes(0) || BUN_ZERO_TEST_PATTERNS.some((pattern) => pattern.test(output));
 }
 
 function parseTrustedDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
