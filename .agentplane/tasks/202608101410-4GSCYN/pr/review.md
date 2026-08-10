@@ -6,14 +6,14 @@ Created: 2026-08-10T14:11:35.906Z
 
 - Task: `202608101410-4GSCYN`
 - Title: Stop external-agent replay after a typed blocked result
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608101410-4GSCYN/stop-external-agent-replay-after-a-typed-blocked`
 - Canonical task record: `.agentplane/tasks/202608101410-4GSCYN/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Rework: GitHub review requires retry-safe blocked-result persistence after partial status/commit effects.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,12 +31,13 @@ Created: 2026-08-10T14:11:35.906Z
 ```text
  .agentplane/policy/incidents.md                    |   1 +
  packages/agentplane/assets/policy/incidents.md     |   1 +
- ...un-cli.core.task-advance.blocked-result.test.ts | 293 +++++++++++++++++++++
+ ...un-cli.core.task-advance.blocked-result.test.ts | 461 +++++++++++++++++++++
  .../src/cli/run-cli.core.task-advance.test.ts      |   4 +-
  .../commands/shared/workflow-step-branch-state.ts  |  19 +-
  .../src/commands/shared/workflow-step-branch.ts    |   7 +-
- .../external-agent-implementation-authority.ts     |  87 +++++-
- 7 files changed, 408 insertions(+), 4 deletions(-)
+ .../commands/task/external-agent-blocked-result.ts | 219 ++++++++++
+ .../external-agent-implementation-authority.ts     |  41 +-
+ 8 files changed, 749 insertions(+), 4 deletions(-)
 ```
 
 </details>

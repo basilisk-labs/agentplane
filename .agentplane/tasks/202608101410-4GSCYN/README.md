@@ -2,10 +2,10 @@
 id: "202608101410-4GSCYN"
 title: "Stop external-agent replay after a typed blocked result"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -24,37 +24,22 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-10T17:11:35.468Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
-quality_review:
-  state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-08-10T17:20:23.745Z"
+  state: "needs_rework"
+  updated_at: "2026-08-10T17:38:21.336Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  note: "Rework: GitHub review requires retry-safe blocked-result persistence after partial status/commit effects."
+  attempts: 1
+quality_review:
+  state: "rework"
+  updated_at: "2026-08-10T17:38:21.336Z"
+  updated_by: "EVALUATOR"
+  note: "Rework: GitHub review requires retry-safe blocked-result persistence after partial status/commit effects."
   evaluated_sha: "ccd5dd6b4c31690b0e1adb785eab434dc05da0ac"
   blueprint_digest: "d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c"
   evidence_refs:
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-171533710-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-171533710-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/584301482f81531417e734e0295b91784c2a87782f3fad6f86553b6f3b4ddb8a.md"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-171533710-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-171533710-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-171533710-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608101410-4GSCYN/README.md"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/cc5908dd74b74e58a6b9493fd9fe0b694fe9caac22c857556435d9775bd91941.patch"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/7a1550c144f05279e94416497545c4ba365bd0c607e54e225debc6b4e0d2e7ac.json"
-    - ".agentplane/tasks/202608101410-4GSCYN/verification/20260810171135468-252a9817c03a9517.json"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/0ccfda77d6f1cfdf86c92a8efe75935565ee4ca301ad143fdb7804153736afa7.json"
-    - ".agentplane/policy/dod.code.md"
-    - ".agentplane/policy/dod.core.md"
-    - ".agentplane/policy/security.must.md"
-    - ".agentplane/policy/workflow.branch_pr.md"
-  findings:
-    - "No blocking divergence was found between the approved blocked-result contract and the current implementation or its focused regression coverage."
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101410-4GSCYN-stop-external-agent-replay-after-a-typed-blocked/.agentplane/tasks/202608101410-4GSCYN/blueprint/resolved-snapshot.json"
+  findings: []
 token_usage:
   agent_runs: 6
   input_tokens: null
@@ -77,9 +62,7 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit:
-  hash: "1512cd1c5aa7cbfbb70cb3ca7fe5128e607ee352"
-  message: "🚧 4GSCYN task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -219,8 +202,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "1512cd1c5aa7cbfbb70cb3ca7fe5128e607ee352"
+  -
+    type: "verify"
+    at: "2026-08-10T17:38:21.336Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Rework: GitHub review requires retry-safe blocked-result persistence after partial status/commit effects."
 doc_version: 3
-doc_updated_at: "2026-08-10T17:21:19.826Z"
+doc_updated_at: "2026-08-10T17:38:22.911Z"
 doc_updated_by: "CODER"
 description: "When an external EXECUTOR returns a valid state-bound blocked semantic result, consume that envelope exactly once, persist the blocker as task state and evidence, and return a non-episode boundary. Do not issue another implementation envelope until an operator deliberately resolves the blocker and resumes the task. Preserve completed-result behavior and exact replay idempotency."
 sections:
@@ -609,6 +598,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-10T17:38:21.336Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Rework: GitHub review requires retry-safe blocked-result persistence after partial status/commit effects.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T17:21:19.826Z, excerpt_hash=sha256:86b0656c20c7d0d6524a42fa6cf6d195dbe7409e19e6ff8fadb0bd4d206b8eb2
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101410-4GSCYN-stop-external-agent-replay-after-a-typed-blocked/.agentplane/tasks/202608101410-4GSCYN/blueprint/resolved-snapshot.json
+    - old_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+    - current_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608101410-4GSCYN
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -630,6 +649,10 @@ sections:
     - Observation: Typed blocked results are consumed once, replay is refused, blocked tasks emit no new agent episode, explicit resume issues a fresh exchange, and agent-introduced workspace changes are rejected.
       Impact: The original consumed-envelope replay failure is covered on the current task head.
       Resolution: Proceed to semantic conflict rework against main, preserving the implementation and P16 verifier timeouts.
+
+    - Observation: A transient failure after status persistence or blocker commit can leave an accepted exchange unable to finish idempotently.
+      Impact: Retry may duplicate blocker evidence or strand the supervisor operation.
+      Resolution: Add a deterministic blocker receipt, recover partial persistence without another status transition, and amend an existing single blocker commit after post-commit refresh failure.
 extensions:
   implementation_commit:
     hash: "ccd5dd6b4c31690b0e1adb785eab434dc05da0ac"
@@ -1033,6 +1056,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-10T17:38:21.336Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Rework: GitHub review requires retry-safe blocked-result persistence after partial status/commit effects.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T17:21:19.826Z, excerpt_hash=sha256:86b0656c20c7d0d6524a42fa6cf6d195dbe7409e19e6ff8fadb0bd4d206b8eb2
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101410-4GSCYN-stop-external-agent-replay-after-a-typed-blocked/.agentplane/tasks/202608101410-4GSCYN/blueprint/resolved-snapshot.json
+- old_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+- current_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608101410-4GSCYN
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1058,6 +1111,10 @@ DecisionContextRef:
 - Observation: Typed blocked results are consumed once, replay is refused, blocked tasks emit no new agent episode, explicit resume issues a fresh exchange, and agent-introduced workspace changes are rejected.
   Impact: The original consumed-envelope replay failure is covered on the current task head.
   Resolution: Proceed to semantic conflict rework against main, preserving the implementation and P16 verifier timeouts.
+
+- Observation: A transient failure after status persistence or blocker commit can leave an accepted exchange unable to finish idempotently.
+  Impact: Retry may duplicate blocker evidence or strand the supervisor operation.
+  Resolution: Add a deterministic blocker receipt, recover partial persistence without another status transition, and amend an existing single blocker commit after post-commit refresh failure.
 
 ## Token Usage
 

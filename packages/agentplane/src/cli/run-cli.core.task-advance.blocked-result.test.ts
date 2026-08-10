@@ -14,6 +14,11 @@ import {
 } from "@agentplane/testkit";
 
 import { MAX_AGENT_ACTION_PACKET_BYTES } from "../commands/task/agent-action-packet.js";
+import { blockedResultBody } from "../commands/task/external-agent-blocked-result.js";
+import type {
+  ExternalAgentExchange,
+  ExternalAgentResultEnvelope,
+} from "../commands/task/external-agent-exchange.js";
 import { resolveSupervisorExecutionEpisodePath } from "../commands/shared/supervisor-execution-episode.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
@@ -137,6 +142,32 @@ async function returnAgentResult(
   } finally {
     io.restore();
   }
+}
+
+async function persistBlockedStatusWithoutCommit(opts: {
+  packet: AgentPacket;
+  resultPath: string;
+  root: string;
+}): Promise<void> {
+  if (!opts.packet.exchange) throw new Error("expected an external-agent exchange");
+  const exchange = JSON.parse(
+    await readFile(path.join(opts.packet.exchange.directory, "exchange.json"), "utf8"),
+  ) as ExternalAgentExchange;
+  const envelope = JSON.parse(
+    await readFile(opts.resultPath, "utf8"),
+  ) as ExternalAgentResultEnvelope;
+  await runCliSilent([
+    "task",
+    "set-status",
+    opts.packet.task_id,
+    "BLOCKED",
+    "--author",
+    "SUPERVISOR",
+    "--body",
+    blockedResultBody({ exchange, semantic: envelope.result }),
+    "--root",
+    opts.root,
+  ]);
 }
 
 async function prepareBlockedResultTask(opts: {
@@ -289,5 +320,142 @@ describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
       cwd: taskWorktree,
     });
     expect(headAfterReturn.stdout.trim()).toBe(headBeforeReturn.stdout.trim());
+  });
+
+  it("finishes a partially persisted blocker without duplicating task evidence", async () => {
+    const { taskId, taskWorktree } = await prepareBlockedResultTask({
+      title: "Retry blocker status persistence",
+      plan: "Recover one blocker after status persistence stops before its commit.",
+      slug: "blocked-result-status-retry",
+    });
+    const issued = await readAgentPacket(taskWorktree, taskId);
+    const baselineResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: taskWorktree,
+    });
+    const baseline = baselineResult.stdout.trim();
+    const resultPath = await writeBlockedResult(
+      issued,
+      "The blocker status was persisted before the original commit attempt stopped.",
+    );
+    await persistBlockedStatusWithoutCommit({ packet: issued, resultPath, root: taskWorktree });
+    const readmeBeforeRecovery = await readFile(
+      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    const receiptCountBefore = readmeBeforeRecovery.match(/external-agent-blocker\//gu)?.length;
+
+    const recovered = await returnAgentResult(taskWorktree, taskId, resultPath);
+    expect(recovered.code, recovered.stderr).toBe(0);
+    const readme = await readFile(
+      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(readme.match(/external-agent-blocker\//gu)?.length).toBe(receiptCountBefore);
+    const commitCount = await execFileAsync("git", ["rev-list", "--count", `${baseline}..HEAD`], {
+      cwd: taskWorktree,
+    });
+    expect(commitCount.stdout.trim()).toBe("1");
+    const status = await execFileAsync("git", ["status", "--short"], { cwd: taskWorktree });
+    expect(status.stdout).toBe("");
+  });
+
+  it("amends an existing blocker commit instead of stacking a retry commit", async () => {
+    const { taskId, taskWorktree } = await prepareBlockedResultTask({
+      title: "Retry blocker post-commit refresh",
+      plan: "Recover one blocker when its commit exists but artifact refresh did not finish.",
+      slug: "blocked-result-commit-retry",
+    });
+    const issued = await readAgentPacket(taskWorktree, taskId);
+    const baselineResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: taskWorktree,
+    });
+    const baseline = baselineResult.stdout.trim();
+    const resultPath = await writeBlockedResult(
+      issued,
+      "The blocker commit exists but its post-commit artifact refresh stopped.",
+    );
+    await persistBlockedStatusWithoutCommit({ packet: issued, resultPath, root: taskWorktree });
+    const readmeBeforeRecovery = await readFile(
+      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    const receiptCountBefore = readmeBeforeRecovery.match(/external-agent-blocker\//gu)?.length;
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: taskWorktree });
+    await execFileAsync(
+      "git",
+      ["commit", "-m", `🚧 ${taskId.split("-").at(-1)} task: record external blocker`],
+      { cwd: taskWorktree },
+    );
+
+    const recovered = await returnAgentResult(taskWorktree, taskId, resultPath);
+    expect(recovered.code, recovered.stderr).toBe(0);
+    const commitCount = await execFileAsync("git", ["rev-list", "--count", `${baseline}..HEAD`], {
+      cwd: taskWorktree,
+    });
+    expect(commitCount.stdout.trim()).toBe("1");
+    const readme = await readFile(
+      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(readme.match(/external-agent-blocker\//gu)?.length).toBe(receiptCountBefore);
+    const status = await execFileAsync("git", ["status", "--short"], { cwd: taskWorktree });
+    expect(status.stdout).toBe("");
+  });
+
+  it("rejects a blocked result after external Git history changes", async () => {
+    const { taskId, taskWorktree } = await prepareBlockedResultTask({
+      title: "Reject blocked result history changes",
+      plan: "Reject a blocked result when the external agent created a commit.",
+      slug: "blocked-result-history-tamper",
+    });
+    const issued = await readAgentPacket(taskWorktree, taskId);
+    await writeFile(path.join(taskWorktree, "history-tamper.txt"), "unauthorized commit\n", "utf8");
+    await execFileAsync("git", ["add", "history-tamper.txt"], { cwd: taskWorktree });
+    await execFileAsync("git", ["commit", "-m", "test: external history tamper"], {
+      cwd: taskWorktree,
+    });
+    const resultPath = await writeBlockedResult(
+      issued,
+      "The external agent returned blocked after changing Git history.",
+    );
+
+    const rejected = await returnAgentResult(taskWorktree, taskId, resultPath);
+    expect(rejected.code).not.toBe(0);
+    expect(rejected.stderr).toContain("External agent changed Git history");
+    const readme = await readFile(
+      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(readme).toContain('status: "DOING"');
+    expect(readme).not.toContain("external-agent-blocker/");
+  });
+
+  it("rejects a spoofed blocker commit that contains non-task changes", async () => {
+    const { taskId, taskWorktree } = await prepareBlockedResultTask({
+      title: "Reject spoofed blocker recovery",
+      plan: "Recover only the exact task-local blocker commit effect.",
+      slug: "blocked-result-spoofed-recovery",
+    });
+    const issued = await readAgentPacket(taskWorktree, taskId);
+    const resultPath = await writeBlockedResult(
+      issued,
+      "The blocker receipt exists in a commit that also contains unauthorized source changes.",
+    );
+    await persistBlockedStatusWithoutCommit({ packet: issued, resultPath, root: taskWorktree });
+    await writeFile(path.join(taskWorktree, "spoofed-change.txt"), "must be rejected\n", "utf8");
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`, "spoofed-change.txt"], {
+      cwd: taskWorktree,
+    });
+    await execFileAsync(
+      "git",
+      ["commit", "-m", `🚧 ${taskId.split("-").at(-1)} task: record external blocker`],
+      { cwd: taskWorktree },
+    );
+
+    const rejected = await returnAgentResult(taskWorktree, taskId, resultPath);
+    expect(rejected.code).not.toBe(0);
+    expect(rejected.stderr).toContain(
+      "Git history changed outside the recoverable Agentplane blocker effect",
+    );
   });
 });

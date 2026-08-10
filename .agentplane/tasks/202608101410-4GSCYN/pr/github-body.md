@@ -15,8 +15,8 @@ When an external EXECUTOR returns a valid state-bound blocked semantic result, c
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Rework: GitHub review requires retry-safe blocked-result persistence after partial status/commit effects.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -29,12 +29,13 @@ When an external EXECUTOR returns a valid state-bound blocked semantic result, c
 ```text
  .agentplane/policy/incidents.md                    |   1 +
  packages/agentplane/assets/policy/incidents.md     |   1 +
- ...un-cli.core.task-advance.blocked-result.test.ts | 293 +++++++++++++++++++++
+ ...un-cli.core.task-advance.blocked-result.test.ts | 461 +++++++++++++++++++++
  .../src/cli/run-cli.core.task-advance.test.ts      |   4 +-
  .../commands/shared/workflow-step-branch-state.ts  |  19 +-
  .../src/commands/shared/workflow-step-branch.ts    |   7 +-
- .../external-agent-implementation-authority.ts     |  87 +++++-
- 7 files changed, 408 insertions(+), 4 deletions(-)
+ .../commands/task/external-agent-blocked-result.ts | 219 ++++++++++
+ .../external-agent-implementation-authority.ts     |  41 +-
+ 8 files changed, 749 insertions(+), 4 deletions(-)
 ```
 
 </details>

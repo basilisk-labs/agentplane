@@ -12,6 +12,10 @@ import type {
   ExternalAgentExchange,
   ExternalAgentResultEnvelope,
 } from "./external-agent-exchange.js";
+import {
+  isExternalBlockedResultRecorded,
+  recordExternalBlockedResult,
+} from "./external-agent-blocked-result.js";
 import { recoversRecordedImplementationCommit } from "./external-agent-purpose.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
 import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
@@ -39,62 +43,6 @@ function pathAllowed(value: string, allowed: readonly string[]): boolean {
 
 function implementationSubject(taskId: string): string {
   return `🚧 ${taskId.split("-").at(-1)} task: apply external agent result`;
-}
-
-function blockedResultBody(opts: {
-  role: ExternalAgentExchange["role"];
-  semantic: ExternalAgentResultEnvelope["result"];
-}): string {
-  const recommendation = opts.semantic.blocker?.recommended_action?.trim();
-  return (
-    `Blocked: external ${opts.role} could not complete the scoped implementation. ` +
-    `${opts.semantic.summary.trim()}` +
-    (recommendation ? ` Recommended action: ${recommendation}` : "")
-  );
-}
-
-async function recordExternalBlockedResult(opts: {
-  command: CommandContext;
-  exchange: ExternalAgentExchange;
-  semantic: ExternalAgentResultEnvelope["result"];
-}): Promise<void> {
-  await cmdTaskSetStatus({
-    ctx: opts.command,
-    cwd: opts.exchange.checkout,
-    taskId: opts.exchange.task_id,
-    status: "BLOCKED",
-    author: "SUPERVISOR",
-    body: blockedResultBody({ role: opts.exchange.role, semantic: opts.semantic }),
-    force: false,
-    yes: false,
-    commitFromComment: false,
-    commitAllow: [],
-    commitAutoAllow: false,
-    commitAllowTasks: true,
-    commitRequireClean: false,
-    confirmStatusCommit: false,
-    quiet: true,
-  });
-  const exitCode = await cmdCommit({
-    ctx: opts.command,
-    cwd: opts.exchange.checkout,
-    taskId: opts.exchange.task_id,
-    message: `🚧 ${opts.exchange.task_id.split("-").at(-1)} task: record external blocker`,
-    close: false,
-    allow: [],
-    autoAllow: false,
-    allowTasks: true,
-    allowBase: false,
-    allowPolicy: false,
-    allowConfig: false,
-    allowHooks: false,
-    allowCI: false,
-    requireClean: false,
-    quiet: true,
-    closeUnstageOthers: false,
-    closeCheckOnly: false,
-  });
-  if (exitCode !== 0) throw new Error(`External-agent blocker commit exited ${exitCode}.`);
 }
 
 async function assertRecoverableImplementationCommit(opts: {
@@ -253,24 +201,30 @@ export async function applyExternalImplementationResult(opts: {
   const semantic = opts.envelope.result;
   if (semantic.status !== "completed") {
     if (semantic.status === "blocked" && opts.decision.workflowMode === "branch_pr") {
-      const [head, status] = await Promise.all([
-        readDirectTaskHead(opts.exchange.checkout),
-        readDirectRepositoryStatus(opts.exchange.checkout),
-      ]);
-      const changed = assertExternalImplementationReturnState({
+      const alreadyRecorded = await isExternalBlockedResultRecorded({
+        command: opts.command,
         exchange: opts.exchange,
-        work_order: opts.work_order,
-        current: opts.decision,
-        current_head: head,
-        current_status_lines: status?.lines ?? [],
-        require_changes: false,
       });
-      if (changed.length > 0) {
-        throw new CliError({
-          code: "E_VALIDATION",
-          message:
-            "Blocked implementation result produced workspace changes; restore them or return a completed implementation result.",
+      if (!alreadyRecorded) {
+        const [head, status] = await Promise.all([
+          readDirectTaskHead(opts.exchange.checkout),
+          readDirectRepositoryStatus(opts.exchange.checkout),
+        ]);
+        const changed = assertExternalImplementationReturnState({
+          exchange: opts.exchange,
+          work_order: opts.work_order,
+          current: opts.decision,
+          current_head: head,
+          current_status_lines: status?.lines ?? [],
+          require_changes: false,
         });
+        if (changed.length > 0) {
+          throw new CliError({
+            code: "E_VALIDATION",
+            message:
+              "Blocked implementation result produced workspace changes; restore them or return a completed implementation result.",
+          });
+        }
       }
       await recordExternalBlockedResult({
         command: opts.command,

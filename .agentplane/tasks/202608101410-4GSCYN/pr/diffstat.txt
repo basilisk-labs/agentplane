@@ -1,8 +1,9 @@
  .agentplane/policy/incidents.md                    |   1 +
  packages/agentplane/assets/policy/incidents.md     |   1 +
- ...un-cli.core.task-advance.blocked-result.test.ts | 293 +++++++++++++++++++++
+ ...un-cli.core.task-advance.blocked-result.test.ts | 461 +++++++++++++++++++++
  .../src/cli/run-cli.core.task-advance.test.ts      |   4 +-
  .../commands/shared/workflow-step-branch-state.ts  |  19 +-
  .../src/commands/shared/workflow-step-branch.ts    |   7 +-
- .../external-agent-implementation-authority.ts     |  87 +++++-
- 7 files changed, 408 insertions(+), 4 deletions(-)
+ .../commands/task/external-agent-blocked-result.ts | 219 ++++++++++
+ .../external-agent-implementation-authority.ts     |  41 +-
+ 8 files changed, 749 insertions(+), 4 deletions(-)
