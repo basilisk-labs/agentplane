@@ -249,8 +249,8 @@ describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
     );
 
     const replay = await returnAgentResult(taskWorktree, taskId, resultPath);
-    expect(replay.code).not.toBe(0);
-    expect(replay.stderr).toContain("already consumed");
+    expect(replay.code, replay.stderr).toBe(0);
+    expect(JSON.parse(replay.stdout)).toMatchObject({ action: { kind: "terminal" } });
     expect(await readFile(readmePath, "utf8")).toBe(readmeAfterFirstReturn);
     const replayHead = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: taskWorktree,

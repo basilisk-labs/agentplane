@@ -1,0 +1,133 @@
+---
+id: "202608102112-AY0H1F"
+title: "Repair exactly-once external episode recovery"
+status: "DOING"
+priority: "high"
+owner: "CODER"
+revision: 4
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "lifecycle"
+  - "runner"
+verify: []
+plan_approval:
+  state: "approved"
+  updated_at: "2026-08-10T21:12:48.867Z"
+  updated_by: "ORCHESTRATOR"
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+  attempts: 0
+execution_route:
+  frozen: true
+  reason_codes:
+    - "repository_branch_pr_floor"
+  repository_mode: "branch_pr"
+  requested_mode: "repository"
+  schema_version: 1
+  selected_mode: "branch_pr"
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: implement exactly-once external episode recovery from the reproduced 0.7.5 failure sequence."
+events:
+  -
+    type: "status"
+    at: "2026-08-10T21:13:13.128Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: implement exactly-once external episode recovery from the reproduced 0.7.5 failure sequence."
+doc_version: 3
+doc_updated_at: "2026-08-10T21:13:13.128Z"
+doc_updated_by: "CODER"
+description: "Make task advance consume an external-agent envelope exactly once only after its result is durably applied. Prevent read-only workspace-resolution packets from creating fresh intents, let stale in-flight intents transition to a recoverable terminal state after state-fingerprint drift, issue a fresh replacement transition without replaying old output, and return deterministic recovery instructions without manual journal edits."
+sections:
+  Summary: |-
+    Repair exactly-once external episode recovery
+
+    Make task advance consume an external-agent envelope exactly once only after its result is durably applied. Prevent read-only workspace-resolution packets from creating fresh intents, let stale in-flight intents transition to a recoverable terminal state after state-fingerprint drift, issue a fresh replacement transition without replaying old output, and return deterministic recovery instructions without manual journal edits.
+  Scope: |-
+    - In scope: Make task advance consume an external-agent envelope exactly once only after its result is durably applied. Prevent read-only workspace-resolution packets from creating fresh intents, let stale in-flight intents transition to a recoverable terminal state after state-fingerprint drift, issue a fresh replacement transition without replaying old output, and return deterministic recovery instructions without manual journal edits.
+    - Out of scope: unrelated refactors not required for "Repair exactly-once external episode recovery".
+  Plan: |-
+    Goal: make external-agent task advance exactly-once, recoverable, and deterministic without journal surgery.
+
+    1. Convert the 0.7.5 log and the locally reproduced stuck journal into focused tests: an accepted result must not reissue the same transition, a read-only workspace-resolution packet must not create a fresh intent, and state-fingerprint drift must have a supported recovery path.
+    2. Define explicit journal states and invariants for prepared, issued, result-applied, consumed, stale/failed, and replacement transitions. Persist the result application receipt and terminal transition atomically before reporting success.
+    3. Keep an envelope reusable while result application is incomplete; after durable success, make identical replay idempotently return the stored receipt and reject a conflicting replay.
+    4. When repository state drifts after an issued intent, transition that intent deterministically to stale/failed and allow one fresh replacement transition without requiring manual edits or replaying old output.
+    5. Prevent diagnostic or read-only workspace-resolution packets from opening lifecycle intents. Every emitted packet must state whether it is semantic, diagnostic, or executable and whether a result is expected.
+    6. Make task advance/run return the exact recovery command and reason for every interrupted state, with no ambiguous retry instruction and no reuse of a consumed transition id.
+    7. Run the focused task-advance and supervisor suites, regression tests for duplicate/conflicting result replay and crash boundaries, typecheck, formatting, hotspot checks, and the repository fast selector.
+
+    Success: the original 0.7.5 failure sequence completes or recovers in one deterministic path; no accepted result is lost, no consumed transition is replayed, no stale intent is unrecoverable, and agents never need to edit lifecycle artifacts manually.
+  Verify Steps: |-
+    PLANNER fallback scaffold for "Repair exactly-once external episode recovery". Replace with task-specific acceptance checks when PLANNER context is available.
+
+    1. Review the requested outcome for "Repair exactly-once external episode recovery". Expected: the visible result matches ## Summary and stays inside approved scope.
+    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
+    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "30390d4a2c545984642bcc2e4754582ff5d2316b"
+    version: 1
+id_source: "generated"
+---
+## Summary
+
+Repair exactly-once external episode recovery
+
+Make task advance consume an external-agent envelope exactly once only after its result is durably applied. Prevent read-only workspace-resolution packets from creating fresh intents, let stale in-flight intents transition to a recoverable terminal state after state-fingerprint drift, issue a fresh replacement transition without replaying old output, and return deterministic recovery instructions without manual journal edits.
+
+## Scope
+
+- In scope: Make task advance consume an external-agent envelope exactly once only after its result is durably applied. Prevent read-only workspace-resolution packets from creating fresh intents, let stale in-flight intents transition to a recoverable terminal state after state-fingerprint drift, issue a fresh replacement transition without replaying old output, and return deterministic recovery instructions without manual journal edits.
+- Out of scope: unrelated refactors not required for "Repair exactly-once external episode recovery".
+
+## Plan
+
+Goal: make external-agent task advance exactly-once, recoverable, and deterministic without journal surgery.
+
+1. Convert the 0.7.5 log and the locally reproduced stuck journal into focused tests: an accepted result must not reissue the same transition, a read-only workspace-resolution packet must not create a fresh intent, and state-fingerprint drift must have a supported recovery path.
+2. Define explicit journal states and invariants for prepared, issued, result-applied, consumed, stale/failed, and replacement transitions. Persist the result application receipt and terminal transition atomically before reporting success.
+3. Keep an envelope reusable while result application is incomplete; after durable success, make identical replay idempotently return the stored receipt and reject a conflicting replay.
+4. When repository state drifts after an issued intent, transition that intent deterministically to stale/failed and allow one fresh replacement transition without requiring manual edits or replaying old output.
+5. Prevent diagnostic or read-only workspace-resolution packets from opening lifecycle intents. Every emitted packet must state whether it is semantic, diagnostic, or executable and whether a result is expected.
+6. Make task advance/run return the exact recovery command and reason for every interrupted state, with no ambiguous retry instruction and no reuse of a consumed transition id.
+7. Run the focused task-advance and supervisor suites, regression tests for duplicate/conflicting result replay and crash boundaries, typecheck, formatting, hotspot checks, and the repository fast selector.
+
+Success: the original 0.7.5 failure sequence completes or recovers in one deterministic path; no accepted result is lost, no consumed transition is replayed, no stale intent is unrecoverable, and agents never need to edit lifecycle artifacts manually.
+
+## Verify Steps
+
+PLANNER fallback scaffold for "Repair exactly-once external episode recovery". Replace with task-specific acceptance checks when PLANNER context is available.
+
+1. Review the requested outcome for "Repair exactly-once external episode recovery". Expected: the visible result matches ## Summary and stays inside approved scope.
+2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
+3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings

@@ -25,6 +25,7 @@ import {
   acceptExternalAgentResult,
   issueExternalAgentExchange,
 } from "./external-agent-supervisor.js";
+import { recoverPendingExternalAgentResult } from "./external-agent-supervisor-recovery.js";
 import { executeExternalAgentVerification } from "./external-agent-verification.js";
 import type { TaskAdvanceParsed } from "./advance.spec.js";
 
@@ -74,7 +75,19 @@ export function makeRunTaskAdvanceHandler(deps: {
         taskId: parsed.taskId,
       });
     } else {
-      current = await decide();
+      current =
+        (await recoverPendingExternalAgentResult({
+          command,
+          task_id: parsed.taskId,
+          accept_result: async ({ cwd, result_path }) =>
+            await acceptExternalAgentResult({
+              ctx: { cwd },
+              command,
+              task_id: parsed.taskId,
+              result_path,
+              include_remote: parsed.remote,
+            }),
+        })) ?? (await decide());
     }
     let replacementPrepared = false;
     if (parsed.replacement) {
@@ -265,6 +278,7 @@ export function makeRunTaskAdvanceHandler(deps: {
     const packet = buildAgentActionPacket({
       decision: prepared.route_decision,
       work_order: exchange?.work_order ?? prepared.work_order,
+      ...(exchange ? { transition_id: exchange.exchange.transition_id } : {}),
       ...(exchange
         ? {
             exchange: {

@@ -28,7 +28,8 @@ export type ExternalAgentResultEnvelope = {
 export type ExternalAgentExchange = {
   schema_version: 1;
   kind: "external_agent_exchange";
-  status: "prepared" | "issued" | "accepted" | "consumed";
+  status: "prepared" | "issued" | "result_received" | "accepted" | "consumed";
+  issue_digest_version?: 2;
   task_id: string;
   transition_id: string;
   state_fingerprint: string;
@@ -137,6 +138,14 @@ export async function writeExternalAgentExchange(
 ): Promise<void> {
   await mkdir(path.dirname(filePath), { recursive: true, mode: 0o700 });
   await atomicWriteFile(filePath, `${JSON.stringify(exchange, null, 2)}\n`, "utf8");
+}
+
+export async function writeExternalAgentResult(
+  filePath: string,
+  result: ExternalAgentResultEnvelope,
+): Promise<void> {
+  await mkdir(path.dirname(filePath), { recursive: true, mode: 0o700 });
+  await atomicWriteFile(filePath, `${JSON.stringify(result, null, 2)}\n`, "utf8");
 }
 
 function resultEnvelopeSchema(): Record<string, unknown> {
@@ -274,25 +283,29 @@ export function externalAgentIssueDigest(opts: {
   work_order: AgentWorkOrderV2;
 }): string {
   const exchange = opts.exchange;
+  const identity = {
+    schema_version: exchange.schema_version,
+    kind: exchange.kind,
+    task_id: exchange.task_id,
+    transition_id: exchange.transition_id,
+    state_fingerprint: exchange.state_fingerprint,
+    role: exchange.role,
+    purpose: exchange.purpose,
+    checkout: exchange.checkout,
+    work_order_id: exchange.work_order_id,
+    work_order_ref: exchange.work_order_ref,
+    result_schema_ref: exchange.result_schema_ref,
+    result_ref: exchange.result_ref,
+    evaluator_work_order_ref: exchange.evaluator_work_order_ref,
+    baseline: exchange.baseline,
+    work_order: validateAgentWorkOrderV2(opts.work_order),
+  };
   return sha256(
-    JSON.stringify({
-      schema_version: exchange.schema_version,
-      kind: exchange.kind,
-      task_id: exchange.task_id,
-      transition_id: exchange.transition_id,
-      state_fingerprint: exchange.state_fingerprint,
-      role: exchange.role,
-      purpose: exchange.purpose,
-      checkout: exchange.checkout,
-      work_order_id: exchange.work_order_id,
-      work_order_ref: exchange.work_order_ref,
-      result_schema_ref: exchange.result_schema_ref,
-      result_ref: exchange.result_ref,
-      evaluator_work_order_ref: exchange.evaluator_work_order_ref,
-      baseline: exchange.baseline,
-      created_at: exchange.created_at,
-      work_order: validateAgentWorkOrderV2(opts.work_order),
-    }),
+    JSON.stringify(
+      exchange.issue_digest_version === 2
+        ? { ...identity, issue_digest_version: 2 }
+        : { ...identity, created_at: exchange.created_at },
+    ),
   );
 }
 

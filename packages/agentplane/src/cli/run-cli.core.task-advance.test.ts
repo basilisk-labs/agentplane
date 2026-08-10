@@ -211,7 +211,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     expect(first).toMatchObject({
       schema_version: 1,
       task_id: taskId,
-      transition_id: agentTransitionId("agent.planning"),
+      transition_id: agentTransitionId("agent.planning", first.state_fingerprint),
       action: { kind: "agent_episode" },
       authority: { role: "PLANNER", mutation: "read_only" },
       stop: { reason: "semantic_boundary", resume: "request_fresh_packet" },
@@ -242,7 +242,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     expect(taskAfter).toBe(taskBefore);
   });
 
-  it("keeps a concurrently rejected exchange inert until its journal intent is owned", async () => {
+  it("does not publish a concurrently rejected exchange", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -278,9 +278,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     try {
       const code = await runCli(["task", "advance", taskId, "--agent-json", "--root", root]);
       expect(code).not.toBe(0);
-      expect(io.stderr).toContain(
-        "Another unresolved external-agent episode already owns this task",
-      );
+      expect(io.stderr).toContain("A previous external-agent episode still owns this task");
     } finally {
       io.restore();
     }
@@ -290,16 +288,13 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
       fingerprint.slice("sha256:".length),
       "exchange.json",
     );
-    const rejectedExchange = JSON.parse(
-      await readFile(rejectedExchangePath, "utf8"),
-    ) as ExternalAgentExchange;
-    expect(rejectedExchange.status).toBe("prepared");
+    await expect(readFile(rejectedExchangePath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
     expect(await readFile(path.join(issued.exchange.directory, "exchange.json"), "utf8")).toContain(
       '"status": "issued"',
     );
   });
 
-  it("accepts one bound planning result, advances to approval, and refuses replay", async () => {
+  it("accepts one bound planning result and makes an identical replay idempotent", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -325,8 +320,11 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     ).toContain(plan);
 
     const replay = await returnAgentResult(root, taskId, resultPath);
-    expect(replay.code).not.toBe(0);
-    expect(replay.stderr).toContain("replay is refused");
+    expect(replay.code, replay.stderr).toBe(0);
+    expect(JSON.parse(replay.stdout)).toMatchObject({ action: { kind: "approval_required" } });
+    expect(
+      await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
+    ).toContain(plan);
   });
 
   it("returns an external wait instead of advertising start-ready for incomplete dependencies", async () => {
@@ -380,7 +378,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const packet = await readAgentPacket(root, taskId);
 
     expect(packet).toMatchObject({
-      transition_id: agentTransitionId("wait.dependencies"),
+      transition_id: agentTransitionId("wait.dependencies", packet.state_fingerprint),
       action: { kind: "external_wait" },
       stop: { reason: "external_boundary", resume: "request_fresh_packet" },
     });
@@ -957,7 +955,9 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
         work_order: { state_fingerprint: { digest: string } };
       };
       expect(bundle.work_order.state_fingerprint.digest).toBe(packet.state_fingerprint);
-      expect(agentTransitionId(bundle.route_decision.workflowStep.id)).toBe(packet.transition_id);
+      expect(
+        agentTransitionId(bundle.route_decision.workflowStep.id, packet.state_fingerprint),
+      ).toBe(packet.transition_id);
       expect(await readFile(readmePath, "utf8")).toBe(taskBeforeManagedPreview);
     } finally {
       io.restore();

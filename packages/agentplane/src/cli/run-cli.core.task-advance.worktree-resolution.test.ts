@@ -294,7 +294,9 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
     await createSupervisorEpisodeStore(journalPath).write(priorReady);
 
     const packet = await readAgentPacket(taskWorktree, taskId);
-    expect(packet.transition_id).toBe(agentTransitionId("agent.task_worktree_resolution"));
+    expect(packet.transition_id).toBe(
+      agentTransitionId("agent.task_worktree_resolution", packet.state_fingerprint),
+    );
     const resultPath = await writeCompletedResult(packet);
     if (!packet.exchange) throw new Error("expected task-worktree resolution exchange");
     const exchange = JSON.parse(
@@ -378,7 +380,9 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
     await writeFile(path.join(taskWorktree, "unresolved-local.txt"), "observe only\n", "utf8");
 
     const packet = await readAgentPacket(taskWorktree, taskId);
-    expect(packet.transition_id).toBe(agentTransitionId("agent.task_worktree_resolution"));
+    expect(packet.transition_id).toBe(
+      agentTransitionId("agent.task_worktree_resolution", packet.state_fingerprint),
+    );
     if (!packet.exchange) throw new Error("expected read-only worktree exchange");
     const workOrder = JSON.parse(
       await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),

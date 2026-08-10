@@ -5,6 +5,7 @@ import {
   completeSupervisorExecutionEpisode,
   recoverSupervisorExecutionEpisodeJournal,
   validateSupervisorExecutionEpisodeJournal,
+  type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
 import {
   captureStdIO,
@@ -19,6 +20,11 @@ import {
   createSupervisorEpisodeStore,
   resolveSupervisorExecutionEpisodePath,
 } from "../commands/shared/supervisor-execution-episode.js";
+import {
+  externalAgentResultDigest,
+  validateExternalAgentResultEnvelope,
+  type ExternalAgentExchange,
+} from "../commands/task/external-agent-exchange.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
 
@@ -164,10 +170,13 @@ describe("task advance effect recovery", () => {
         await runCli(["task", "advance", taskId, "--replacement", "--agent-json", "--root", root]),
         replaced.stderr,
       ).toBe(0);
-      expect(JSON.parse(replaced.stdout)).toMatchObject({
+      const replacementPacket = JSON.parse(replaced.stdout) as AgentPacket;
+      expect(replacementPacket).toMatchObject({
         task_id: issued.task_id,
         action: { kind: "agent_episode" },
       });
+      expect(replacementPacket.transition_id).not.toBe(issued.transition_id);
+      expect(replacementPacket.exchange?.directory).not.toBe(issued.exchange?.directory);
     } finally {
       replaced.restore();
     }
@@ -212,6 +221,107 @@ describe("task advance effect recovery", () => {
       expect(io.stderr).toContain("cannot be combined with --result");
     } finally {
       io.restore();
+    }
+  });
+
+  it("automatically applies a durably received result on the next plain advance", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root);
+    const packet = await readAgentPacket(root, taskId);
+    const plan = "1. Resume the original result. 2. Do not ask the agent to repeat it.";
+    const resultPath = await writePlanningResult(packet, plan);
+    if (!packet.exchange) throw new Error("expected an external-agent exchange");
+    const exchangePath = path.join(packet.exchange.directory, "exchange.json");
+    const exchange = JSON.parse(await readFile(exchangePath, "utf8")) as ExternalAgentExchange;
+    const workOrder = JSON.parse(
+      await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
+    ) as AgentWorkOrderV2;
+    const envelope = validateExternalAgentResultEnvelope({
+      raw: JSON.parse(await readFile(resultPath, "utf8")) as unknown,
+      exchange,
+      work_order: workOrder,
+    });
+    await writeFile(
+      exchangePath,
+      `${JSON.stringify(
+        {
+          ...exchange,
+          status: "result_received",
+          result_digest: externalAgentResultDigest(envelope),
+          result: envelope,
+          updated_at: new Date().toISOString(),
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "advance", taskId, "--agent-json", "--root", root]);
+      expect(code, io.stderr).toBe(0);
+      expect(JSON.parse(io.stdout)).toMatchObject({ action: { kind: "approval_required" } });
+    } finally {
+      io.restore();
+    }
+    expect(
+      await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
+    ).toContain(plan);
+    expect(JSON.parse(await readFile(exchangePath, "utf8"))).toMatchObject({ status: "consumed" });
+  });
+
+  it("rejects a conflicting replay after the original result was consumed", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root);
+    const packet = await readAgentPacket(root, taskId);
+    const resultPath = await writePlanningResult(packet, "1. Keep the original result.");
+    const first = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "task",
+          "advance",
+          taskId,
+          "--result",
+          resultPath,
+          "--agent-json",
+          "--root",
+          root,
+        ]),
+        first.stderr,
+      ).toBe(0);
+    } finally {
+      first.restore();
+    }
+    const conflicting = JSON.parse(await readFile(resultPath, "utf8")) as {
+      result: { summary: string };
+    };
+    conflicting.result.summary = "A different replay result.";
+    await writeFile(resultPath, `${JSON.stringify(conflicting, null, 2)}\n`, "utf8");
+    const replay = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "task",
+          "advance",
+          taskId,
+          "--result",
+          resultPath,
+          "--agent-json",
+          "--root",
+          root,
+        ]),
+      ).not.toBe(0);
+      expect(replay.stderr).toContain("different result is already recorded");
+    } finally {
+      replay.restore();
     }
   });
 
