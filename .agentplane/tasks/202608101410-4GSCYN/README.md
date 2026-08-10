@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -56,9 +56,9 @@ quality_review:
   findings:
     - "No blocking divergence was found between the approved blocked-result contract and the current implementation or its focused regression coverage."
 token_usage:
-  agent_runs: 5
+  agent_runs: 6
   input_tokens: null
-  journal_digest: "sha256:ef7d36aeb78fb2d1cac1b397c7c7e8d3e792972ddb5823a239a8905cd3a99520"
+  journal_digest: "sha256:ffb8fa8e25ac2c21f8bd99bee8f191556348ad6e0d7491f6b836d5e5e3388a58"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -68,7 +68,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-10T16:59:04.506Z"
+  updated_at: "2026-08-10T17:21:19.794Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -78,7 +78,7 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "b2b307984f6f921d42629e8c3929b9e14cc394a7"
+  hash: "1512cd1c5aa7cbfbb70cb3ca7fe5128e607ee352"
   message: "🚧 4GSCYN task: record external evaluator result"
 comments:
   -
@@ -99,6 +99,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -208,8 +211,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-10T17:21:19.794Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "1512cd1c5aa7cbfbb70cb3ca7fe5128e607ee352"
 doc_version: 3
-doc_updated_at: "2026-08-10T17:20:23.779Z"
+doc_updated_at: "2026-08-10T17:21:19.826Z"
 doc_updated_by: "CODER"
 description: "When an external EXECUTOR returns a valid state-bound blocked semantic result, consume that envelope exactly once, persist the blocker as task state and evidence, and return a non-episode boundary. Do not issue another implementation envelope until an operator deliberately resolves the blocker and resumes the task. Preserve completed-result behavior and exact replay idempotency."
 sections:
@@ -621,8 +632,8 @@ sections:
       Resolution: Proceed to semantic conflict rework against main, preserving the implementation and P16 verifier timeouts.
 extensions:
   implementation_commit:
-    hash: "832bd4756e0b190343dcc3e8801613c43d0206a9"
-    message: "🧩 4GSCYN task: resolve verifier merge conflict"
+    hash: "ccd5dd6b4c31690b0e1adb785eab434dc05da0ac"
+    message: "🧩 4GSCYN task: satisfy hotspot contract"
   workflow_route_baseline:
     start_head_sha: "3d417620e9a8b333416d25c2cf19b3ccbdbdd1c9"
     version: 1
@@ -1051,12 +1062,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/5` agent runs
+- Completeness: `0/6` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:ef7d36aeb78fb2d1cac1b397c7c7e8d3e792972ddb5823a239a8905cd3a99520`
+- Journal digest: `sha256:ffb8fa8e25ac2c21f8bd99bee8f191556348ad6e0d7491f6b836d5e5e3388a58`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-10T16:59:04.506Z`
+- Updated at: `2026-08-10T17:21:19.794Z`
