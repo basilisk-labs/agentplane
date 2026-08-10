@@ -1,5 +1,7 @@
+import { execFile } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 
 import {
   completeSupervisorExecutionEpisode,
@@ -27,8 +29,11 @@ import {
 } from "../commands/task/external-agent-exchange.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
+import { readRouteFingerprint } from "./run-cli.core.task-advance.testkit.js";
 
 installRunCliIntegrationHarness();
+
+const execFileAsync = promisify(execFile);
 
 type AgentPacket = {
   task_id: string;
@@ -115,6 +120,116 @@ async function writePlanningResult(packet: AgentPacket, summary: string): Promis
 }
 
 describe("task advance effect recovery", () => {
+  it("retires a drifted result-less exchange and issues one exact-key replacement", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root);
+    const issued = await readAgentPacket(root, taskId);
+    if (!issued.exchange) throw new Error("expected an external-agent exchange");
+
+    await writeFile(
+      path.join(root, "concurrent-change.txt"),
+      "changes the route fingerprint\n",
+      "utf8",
+    );
+    await execFileAsync("git", ["add", "concurrent-change.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "change concurrent route fingerprint"], {
+      cwd: root,
+    });
+    await runCliSilent([
+      "task",
+      "comment",
+      taskId,
+      "--author",
+      "TESTER",
+      "--body",
+      "Concurrent route observation.",
+      "--root",
+      root,
+    ]);
+    const fingerprint = await readRouteFingerprint(root, taskId);
+    expect(fingerprint).not.toBe(issued.state_fingerprint);
+
+    const rejected = captureStdIO();
+    try {
+      expect(await runCli(["task", "advance", taskId, "--agent-json", "--root", root])).not.toBe(0);
+      expect(rejected.stderr).toContain("AgentPlane retired it");
+      expect(rejected.stderr).toContain("--replacement");
+    } finally {
+      rejected.restore();
+    }
+
+    const rejectedExchangePath = path.join(
+      path.dirname(issued.exchange.directory),
+      fingerprint.slice("sha256:".length),
+      "exchange.json",
+    );
+    await expect(readFile(rejectedExchangePath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+    expect(
+      JSON.parse(await readFile(path.join(issued.exchange.directory, "exchange.json"), "utf8")),
+    ).toMatchObject({ status: "retired", postcondition_fingerprint: fingerprint });
+
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    const retiredJournal = validateSupervisorExecutionEpisodeJournal(await store.read());
+    const retiredOperation = retiredJournal.operations.at(-1);
+    expect(retiredJournal).toMatchObject({
+      status: "stopped",
+      stop: { reason: "operation_failed" },
+      operations: [expect.objectContaining({ status: "failed" })],
+    });
+
+    const replacementIo = captureStdIO();
+    let replacement: AgentPacket;
+    try {
+      expect(
+        await runCli(["task", "advance", taskId, "--replacement", "--agent-json", "--root", root]),
+        replacementIo.stderr,
+      ).toBe(0);
+      replacement = JSON.parse(replacementIo.stdout) as AgentPacket;
+    } finally {
+      replacementIo.restore();
+    }
+    expect(replacement.transition_id).not.toBe(issued.transition_id);
+    expect(replacement.exchange?.directory).not.toBe(issued.exchange.directory);
+    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
+      status: "running",
+      cursor: { phase: "intent_recorded" },
+      operations: [
+        { status: "failed" },
+        {
+          status: "intent",
+          replacement_of_operation_key: retiredOperation?.operation_key,
+        },
+      ],
+    });
+
+    const lateResultPath = await writePlanningResult(issued, "Late output must stay retired.");
+    const lateResult = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "task",
+          "advance",
+          taskId,
+          "--result",
+          lateResultPath,
+          "--agent-json",
+          "--root",
+          root,
+        ]),
+      ).not.toBe(0);
+      expect(lateResult.stderr).toContain("exchange was retired after state drift");
+    } finally {
+      lateResult.restore();
+    }
+  });
+
   it("rejects replacement when no terminal operation failure exists", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
