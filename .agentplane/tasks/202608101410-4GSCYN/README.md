@@ -1,10 +1,11 @@
 ---
 id: "202608101410-4GSCYN"
 title: "Stop external-agent replay after a typed blocked result"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,20 @@ quality_review:
     - "The focused lifecycle suite covers one-time blocked consumption, exact replay refusal, no agent-run budget growth while blocked, explicit resume freshness, and rejection of agent-introduced workspace changes."
     - "Direct-workflow, completed-result, stale-result, planning, evaluator, workflow projection, typecheck, and critical regression evidence remains passing."
     - "Residual risk: The automatic declared-check classifier still rejects the valid focused bun test command; this is a separate lifecycle defect already captured for the dedicated verifier task in the approved plan."
+token_usage:
+  agent_runs: 4
+  input_tokens: null
+  journal_digest: "sha256:f80b004f370978d9f9fdaaaa951ca67c44d2cedf8719d1c2d0fa12e03ef21bad"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-10T15:00:19.758Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -66,8 +81,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "3b66b944ef0ef743f21acb3a524751736cf60a12"
-  message: "🚧 4GSCYN task: apply external agent result"
+  hash: "522a91e6f546a680d02c73243712e766b58ff190"
+  message: "🚧 4GSCYN task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -81,6 +96,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 3b66b944ef0e. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -150,9 +168,17 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified blocked-result terminal behavior, replay refusal, zero-change trust boundary, resume freshness, typecheck, formatting, and critical suite."
+  -
+    type: "status"
+    at: "2026-08-10T15:00:19.758Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "522a91e6f546a680d02c73243712e766b58ff190"
 doc_version: 3
-doc_updated_at: "2026-08-10T14:50:15.156Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-10T15:00:19.768Z"
+doc_updated_by: "CODER"
 description: "When an external EXECUTOR returns a valid state-bound blocked semantic result, consume that envelope exactly once, persist the blocker as task state and evidence, and return a non-episode boundary. Do not issue another implementation envelope until an operator deliberately resolves the blocker and resumes the task. Preserve completed-result behavior and exact replay idempotency."
 sections:
   Summary: |-
@@ -413,6 +439,9 @@ sections:
       Impact: Automatic verification can create a false implementation-rework cycle despite passing repository tests.
       Resolution: Recorded this run manually from passing local evidence; fix declared-check classification in the dedicated verifier task from the approved plan.
 extensions:
+  implementation_commit:
+    hash: "3b66b944ef0ef743f21acb3a524751736cf60a12"
+    message: "🚧 4GSCYN task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "3d417620e9a8b333416d25c2cf19b3ccbdbdd1c9"
     version: 1
@@ -688,3 +717,16 @@ DecisionContextRef:
 - Observation: The automatic declared-check runner rejects the valid command bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts as unsupported.
   Impact: Automatic verification can create a false implementation-rework cycle despite passing repository tests.
   Resolution: Recorded this run manually from passing local evidence; fix declared-check classification in the dedicated verifier task from the approved plan.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:f80b004f370978d9f9fdaaaa951ca67c44d2cedf8719d1c2d0fa12e03ef21bad`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-10T15:00:19.758Z`
