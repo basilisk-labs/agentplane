@@ -31,7 +31,7 @@ export type RecoverableExternalAgentExchange = {
   work_order: AgentWorkOrderV2;
 };
 
-export function exchangePathsFromWorkOrderRef(workOrderRef: string): ExternalAgentExchangePaths {
+function exchangePathsFromWorkOrderRef(workOrderRef: string): ExternalAgentExchangePaths {
   const directory = path.dirname(workOrderRef);
   return {
     directory,
@@ -43,7 +43,7 @@ export function exchangePathsFromWorkOrderRef(workOrderRef: string): ExternalAge
   };
 }
 
-export async function unresolvedExternalAgentExchange(opts: {
+async function unresolvedExternalAgentExchange(opts: {
   command: CommandContext;
   decision: TaskRouteDecision;
   work_order: AgentWorkOrderV2;
@@ -128,7 +128,7 @@ export async function unresolvedExternalAgentExchange(opts: {
   return { exchange: issuedExchange, paths, work_order: workOrder };
 }
 
-export async function externalAgentReplacementIdentity(opts: {
+async function externalAgentReplacementIdentity(opts: {
   command: CommandContext;
   task_id: string;
   common_git_dir: string;
