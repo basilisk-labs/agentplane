@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608101159-Y4H8N5/restore-canonical-primary-checkout-ownership",
+  "created_at": "2026-08-10T12:00:37.483Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608101159-Y4H8N5",
+  "updated_at": "2026-08-10T12:00:37.483Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
