@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -96,6 +96,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The uncommitted task-worktree change is intentional implementation rework for the failing hosted oversized-test contract. It only deduplicates repeated targeted-cleanup test invocation setup and preserves all scenario assertions."
 events:
   -
     type: "status"
@@ -140,9 +143,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "2c1723f89be6d89390c7c40154c5b67d744d5657"
+  -
+    type: "comment"
+    at: "2026-08-10T20:13:22.844Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The uncommitted task-worktree change is intentional implementation rework for the failing hosted oversized-test contract. It only deduplicates repeated targeted-cleanup test invocation setup and preserves all scenario assertions."
 doc_version: 3
-doc_updated_at: "2026-08-10T19:51:03.522Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-10T20:13:22.872Z"
+doc_updated_by: "SUPERVISOR"
 description: "Allow explicit cleanup of a legacy DONE task branch when old PR metadata lacks pr_number but an exact branch-and-base provider lookup proves a merged PR, its provider head equals the local branch head, its merge commit is on the base branch, and pre-merge closure evidence is present. Preserve rejection for ambiguous, closed, open, mismatched-head, post-merge-drift, or unavailable-provider cases."
 sections:
   Summary: |-
