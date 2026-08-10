@@ -12,8 +12,8 @@ Created: 2026-08-10T14:11:35.906Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: blocked-result lifecycle, replay idempotency, explicit resume, routing, types, lint, formatting, and critical CLI coverage all pass.
+- State: needs_rework
+- Note: Rework: Unsupported declared check: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -4,7 +4,7 @@ title: "Stop external-agent replay after a typed blocked result"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-10T14:37:53.314Z"
-  updated_by: "TESTER"
-  note: "Verified: blocked-result lifecycle, replay idempotency, explicit resume, routing, types, lint, formatting, and critical CLI coverage all pass."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-10T14:46:17.929Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Unsupported declared check: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+  attempts: 1
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
@@ -66,9 +66,7 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit:
-  hash: "3b66b944ef0ef743f21acb3a524751736cf60a12"
-  message: "🚧 4GSCYN task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -126,8 +124,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 3b66b944ef0e. CLI accepted one state-bound external-agent semantic result."
     commit: "3b66b944ef0ef743f21acb3a524751736cf60a12"
+  -
+    type: "verify"
+    at: "2026-08-10T14:46:17.929Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Unsupported declared check: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
 doc_version: 3
-doc_updated_at: "2026-08-10T14:46:01.039Z"
+doc_updated_at: "2026-08-10T14:46:19.332Z"
 doc_updated_by: "SUPERVISOR"
 description: "When an external EXECUTOR returns a valid state-bound blocked semantic result, consume that envelope exactly once, persist the blocker as task state and evidence, and return a non-episode boundary. Do not issue another implementation envelope until an operator deliberately resolves the blocker and resumes the task. Preserve completed-result behavior and exact replay idempotency."
 sections:
@@ -231,6 +235,41 @@ sections:
     Result: pass
     Evidence: changed files have zero lint/format errors and policy routing reports OK.
     Scope: three changed source/test files and gateway routing.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101410-4GSCYN-stop-external-agent-replay-after-a-typed-blocked/.agentplane/tasks/202608101410-4GSCYN/blueprint/resolved-snapshot.json
+    - old_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+    - current_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608101410-4GSCYN
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608101410-4GSCYN
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-10T14:46:17.929Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Unsupported declared check: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T14:46:01.039Z, excerpt_hash=sha256:86b0656c20c7d0d6524a42fa6cf6d195dbe7409e19e6ff8fadb0bd4d206b8eb2
+
+    Details:
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608101410-4GSCYN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608101410-4GSCYN declared verification
 
     BlueprintSnapshotRef:
     - state: current
@@ -379,6 +418,41 @@ Command: focused ESLint, format:changed, and policy routing
 Result: pass
 Evidence: changed files have zero lint/format errors and policy routing reports OK.
 Scope: three changed source/test files and gateway routing.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101410-4GSCYN-stop-external-agent-replay-after-a-typed-blocked/.agentplane/tasks/202608101410-4GSCYN/blueprint/resolved-snapshot.json
+- old_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+- current_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608101410-4GSCYN
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608101410-4GSCYN
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-10T14:46:17.929Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Unsupported declared check: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T14:46:01.039Z, excerpt_hash=sha256:86b0656c20c7d0d6524a42fa6cf6d195dbe7409e19e6ff8fadb0bd4d206b8eb2
+
+Details:
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608101410-4GSCYN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608101410-4GSCYN declared verification
 
 BlueprintSnapshotRef:
 - state: current
