@@ -6,7 +6,7 @@ Created: 2026-08-10T14:11:35.906Z
 
 - Task: `202608101410-4GSCYN`
 - Title: Stop external-agent replay after a typed blocked result
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608101410-4GSCYN/stop-external-agent-replay-after-a-typed-blocked`
 - Canonical task record: `.agentplane/tasks/202608101410-4GSCYN/README.md`
 
