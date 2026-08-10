@@ -6,14 +6,14 @@ Created: 2026-08-10T14:11:35.906Z
 
 - Task: `202608101410-4GSCYN`
 - Title: Stop external-agent replay after a typed blocked result
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608101410-4GSCYN/stop-external-agent-replay-after-a-typed-blocked`
 - Canonical task record: `.agentplane/tasks/202608101410-4GSCYN/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Rework: hosted verify-static found one unused internal export in the retry-safe blocker helper.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

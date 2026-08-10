@@ -2,10 +2,10 @@
 id: "202608101410-4GSCYN"
 title: "Stop external-agent replay after a typed blocked result"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -24,38 +24,22 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-10T17:50:31.755Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
-quality_review:
-  state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-08-10T17:51:32.543Z"
+  state: "needs_rework"
+  updated_at: "2026-08-10T17:59:34.701Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  note: "Rework: hosted verify-static found one unused internal export in the retry-safe blocker helper."
+  attempts: 1
+quality_review:
+  state: "rework"
+  updated_at: "2026-08-10T17:59:34.701Z"
+  updated_by: "EVALUATOR"
+  note: "Rework: hosted verify-static found one unused internal export in the retry-safe blocker helper."
   evaluated_sha: "beab407e2597b158ff1bb344ee76f2391abc54b7"
   blueprint_digest: "d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c"
   evidence_refs:
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-175040295-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-175040295-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/725927b1fac5f8ff6891097ece7a28f6969a18f99c15b5c59bf0150326aa5177.md"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-175040295-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-175040295-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-175040295-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608101410-4GSCYN/README.md"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/add71ab285c7b02ba76034e1e0b081161a453ce54e123dc487d954b047995155.patch"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/4505ffddc08ca5dfe5dbea02cdcd6ff70c9ce061004fa288f7095f966dfd171e.json"
-    - ".agentplane/tasks/202608101410-4GSCYN/verification/20260810175031755-d653433c90245b1c.json"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/0ccfda77d6f1cfdf86c92a8efe75935565ee4ca301ad143fdb7804153736afa7.json"
-    - ".agentplane/policy/dod.code.md"
-    - ".agentplane/policy/dod.core.md"
-    - ".agentplane/policy/security.must.md"
-    - ".agentplane/policy/workflow.branch_pr.md"
-  findings:
-    - "The implementation now covers both partial-effect boundaries identified by review while preserving the one-envelope, one-blocker, one-commit invariant."
-    - "Residual risk: The broader accepted-before-freshness lifecycle defect observed while running this task remains outside P11 and requires its own regression task."
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101410-4GSCYN-stop-external-agent-replay-after-a-typed-blocked/.agentplane/tasks/202608101410-4GSCYN/blueprint/resolved-snapshot.json"
+  findings: []
 token_usage:
   agent_runs: 8
   input_tokens: null
@@ -78,9 +62,7 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit:
-  hash: "d495666428bc8d9eaa686df071b514dbd8a08c2a"
-  message: "🚧 4GSCYN task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -254,8 +236,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "d495666428bc8d9eaa686df071b514dbd8a08c2a"
+  -
+    type: "verify"
+    at: "2026-08-10T17:59:34.701Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Rework: hosted verify-static found one unused internal export in the retry-safe blocker helper."
 doc_version: 3
-doc_updated_at: "2026-08-10T17:51:55.826Z"
+doc_updated_at: "2026-08-10T17:59:36.410Z"
 doc_updated_by: "CODER"
 description: "When an external EXECUTOR returns a valid state-bound blocked semantic result, consume that envelope exactly once, persist the blocker as task state and evidence, and return a non-episode boundary. Do not issue another implementation envelope until an operator deliberately resolves the blocker and resumes the task. Preserve completed-result behavior and exact replay idempotency."
 sections:
@@ -714,6 +702,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-10T17:59:34.701Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Rework: hosted verify-static found one unused internal export in the retry-safe blocker helper.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T17:51:55.826Z, excerpt_hash=sha256:86b0656c20c7d0d6524a42fa6cf6d195dbe7409e19e6ff8fadb0bd4d206b8eb2
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101410-4GSCYN-stop-external-agent-replay-after-a-typed-blocked/.agentplane/tasks/202608101410-4GSCYN/blueprint/resolved-snapshot.json
+    - old_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+    - current_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608101410-4GSCYN
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -739,6 +757,10 @@ sections:
     - Observation: A transient failure after status persistence or blocker commit can leave an accepted exchange unable to finish idempotently.
       Impact: Retry may duplicate blocker evidence or strand the supervisor operation.
       Resolution: Add a deterministic blocker receipt, recover partial persistence without another status transition, and amend an existing single blocker commit after post-commit refresh failure.
+
+    - Observation: Knip reported agentplane CLI total=1/0 for an internal receipt helper exported unnecessarily.
+      Impact: Static CI blocks integration although runtime behavior and tests pass.
+      Resolution: Keep the receipt helper module-private and rerun knip, typecheck, lint, and focused E2E.
 extensions:
   implementation_commit:
     hash: "beab407e2597b158ff1bb344ee76f2391abc54b7"
@@ -1212,6 +1234,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-10T17:59:34.701Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Rework: hosted verify-static found one unused internal export in the retry-safe blocker helper.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T17:51:55.826Z, excerpt_hash=sha256:86b0656c20c7d0d6524a42fa6cf6d195dbe7409e19e6ff8fadb0bd4d206b8eb2
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101410-4GSCYN-stop-external-agent-replay-after-a-typed-blocked/.agentplane/tasks/202608101410-4GSCYN/blueprint/resolved-snapshot.json
+- old_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+- current_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608101410-4GSCYN
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1241,6 +1293,10 @@ DecisionContextRef:
 - Observation: A transient failure after status persistence or blocker commit can leave an accepted exchange unable to finish idempotently.
   Impact: Retry may duplicate blocker evidence or strand the supervisor operation.
   Resolution: Add a deterministic blocker receipt, recover partial persistence without another status transition, and amend an existing single blocker commit after post-commit refresh failure.
+
+- Observation: Knip reported agentplane CLI total=1/0 for an internal receipt helper exported unnecessarily.
+  Impact: Static CI blocks integration although runtime behavior and tests pass.
+  Resolution: Keep the receipt helper module-private and rerun knip, typecheck, lint, and focused E2E.
 
 ## Token Usage
 

@@ -17,7 +17,7 @@ function blockerSubject(taskId: string): string {
   return `🚧 ${taskId.split("-").at(-1)} task: record external blocker`;
 }
 
-export function externalBlockedResultReceipt(exchange: ExternalAgentExchange): string {
+function externalBlockedResultReceipt(exchange: ExternalAgentExchange): string {
   return `Agentplane receipt: external-agent-blocker/${exchange.transition_id}/${exchange.state_fingerprint}.`;
 }
 
