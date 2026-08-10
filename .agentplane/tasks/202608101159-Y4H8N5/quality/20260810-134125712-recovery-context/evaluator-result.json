@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The primary checkout is attached to main and byte-identical to origin/main at 427ebc45a1e2ad9b12d50a9ad2e89db5d2785fee, with no tracked local changes.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101159-Y4H8N5/quality/objects/sha256/0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Both displaced dirty worktrees retain their original tracked/staged diff digests and tracked/untracked counts; only branch ownership changed to dedicated recovery branches.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101159-Y4H8N5/quality/objects/sha256/0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

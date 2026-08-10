@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608101159-Y4H8N5",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-10T13:41:25.971Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "0b23bbda7572c2f55735fabea0af8b3e48753ff0",
+  "blueprint_digest": "eb2556bcf3d3d7ec6907851fbb817d505566ba1703aa7332ddc8c7a18780c9db",
+  "findings": [
+    "The primary checkout is attached to main and byte-identical to origin/main at 427ebc45a1e2ad9b12d50a9ad2e89db5d2785fee, with no tracked local changes.",
+    "Both displaced dirty worktrees retain their original tracked/staged diff digests and tracked/untracked counts; only branch ownership changed to dedicated recovery branches."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608101159-Y4H8N5/quality/objects/sha256/0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

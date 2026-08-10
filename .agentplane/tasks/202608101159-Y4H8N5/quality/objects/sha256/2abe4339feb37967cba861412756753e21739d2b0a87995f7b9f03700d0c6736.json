@@ -1,0 +1,27 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "git -C .agentplane/tmp/rf05b-integration-base rev-parse --abbrev-ref HEAD && git -C .agentplane/worktrees/base-main-for-XS41ZV rev-parse --abbrev-ref HEAD",
+    "git rev-parse --abbrev-ref HEAD && test \"27671e9b8cdec21b1170719a87019f703cec9526\" = \"27671e9b8cdec21b1170719a87019f703cec9526\""
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-10T13:40:42.111Z",
+    "updated_by": "TESTER",
+    "note": "Verified canonical main ownership and byte-preservation of both dirty recovery worktrees."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608101159-Y4H8N5/verification/20260810134042111-65aa01889545722d.json",
+      "sha256": "sha256:6e97ad81774d16d6c5a874632ec30a2109ab2a69abf759ac3b89df6861bd3c62"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
