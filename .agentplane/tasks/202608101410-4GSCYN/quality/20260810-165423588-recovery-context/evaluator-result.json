@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "No blocking implementation finding: a typed blocked branch result is persisted once as task BLOCKED state and projected to a non-agent terminal boundary.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/ac9cba6c1dc968147a835df7cc5c045aa613254dff8b32a11759418e6e3cee8a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The focused lifecycle regression proves exact replay refusal, no duplicate task or Git mutation, stable agent-run usage while blocked, a fresh exchange after explicit resume, and rejection of blocked results that leave workspace changes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/ac9cba6c1dc968147a835df7cc5c045aa613254dff8b32a11759418e6e3cee8a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Current-head evidence passes the declared typecheck and 16-test task-advance suite; evaluator checks also pass all 12 critical CLI chunks and 15 workflow-step projection tests after the P16 merge resolution.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/ac9cba6c1dc968147a835df7cc5c045aa613254dff8b32a11759418e6e3cee8a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The zero-change trust boundary remains strict for completed results while allowing blocked results only when the workspace is unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/ac9cba6c1dc968147a835df7cc5c045aa613254dff8b32a11759418e6e3cee8a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: The automatically promoted verifier incident remains open in this task diff even though P16 fixed it; archive it through a dedicated governance task after P11 integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/ac9cba6c1dc968147a835df7cc5c045aa613254dff8b32a11759418e6e3cee8a.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
