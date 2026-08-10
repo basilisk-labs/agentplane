@@ -149,6 +149,21 @@ describe("direct task verification", () => {
         reason: `Declared bun test check executed zero tests: ${check}`,
       });
     }
+
+    const cwd = await root();
+    mocks.runProcess.mockResolvedValueOnce({
+      exitCode: 0,
+      stdout: "1 pass\n(pass) preserves a captured no tests found diagnostic",
+      stderr: "",
+    });
+    const valid = await runDirectTaskVerification({
+      command: command(cwd),
+      task: { verify: ["bun test real-filter"], task_kind: "code", mutation_scope: "code" },
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+    expect(valid).toMatchObject({ status: "passed", reason: null });
   });
 
   it("runs every declared check without a shell and records durable evidence", async () => {
