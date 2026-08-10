@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -32,30 +32,32 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-10T16:13:51.381Z"
+  updated_at: "2026-08-10T16:29:24.954Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "19da6e260c15c58ad6c5bce41fbc73548a8fca69"
+  note: "EVALUATOR returned rework with 3 typed finding(s)."
+  evaluated_sha: "0300e25fecc7df8554b54678a1e1e71c6c2ab706"
   blueprint_digest: "e9896b989c3ebae1e6efacc43e759bc6c69e5978f2e09383e7e45ae2e30fda89"
   evidence_refs:
-    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-161348390-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-161348390-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/a9f2a363b2f1e975061c48868f66d1a72e288b002fe6df47533f5b042420d5e6.md"
-    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-161348390-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-161348390-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-161348390-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-161348390-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-162809147-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-162809147-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/e43f9898eb717669c8ad765559973ec9649c29367c04aed94d4904633bb5db27.md"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-162809147-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-162809147-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-162809147-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-162809147-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608101506-4Y8ZY0/README.md"
-    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/753e2769f5ffbbe8912400d1a0d1b569ca63dbd062b0d5e89dad6a5b318ff9b6.patch"
-    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/fc3875336fe2204a2f2693aaaccd7a82e3f049e440d87ed8e7c70e51e7c6d3b3.json"
-    - ".agentplane/tasks/202608101506-4Y8ZY0/verification/20260810155341698-b13c1e6ef421f0c7.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/e6ccca892e3c9d1c33ac817d966447e7e01a96a0c33d1a872b3d2f1b401a9c88.patch"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/4f2d8864d9ac9047cd1f345fe0df2a3c372a421a360e0e5c95c9f10c3114d823.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/verification/20260810162759831-0a7b263448979808.json"
     - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/90ab2dd9e61cdb54839a0d6ccc70e595be5e4223b8e083a6ccda2d2c88f81956.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "A supported Bun version may return exit code 0 when a filter matches no tests, allowing declared verification to pass without executing tests."
+    - "The implementation checks generic patterns such as 'no tests found' before inspecting a nonzero pass summary, so ordinary test output can create a false verification failure."
+    - "The exact unmatched-filter marker should remain authoritative even when another filter reports passes, but generic zero-test markers should be ignored when the Bun summary proves at least one passing test."
+    - "Residual risk: Without summary precedence for generic markers, legitimate repository checks can re-enter the same false-rework loop this task is intended to remove."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -164,7 +166,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-10T16:28:01.406Z"
+doc_updated_at: "2026-08-10T16:29:24.985Z"
 doc_updated_by: "CODER"
 description: "The supervisor currently accepts only three-token bun run scripts and rejects valid repository checks such as bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Reuse the existing shell-free argv parser, accept bounded Bun run and test invocations without invoking a shell, preserve fixed policy checks and evidence capture, and prove that task advance no longer creates false implementation-rework cycles for valid Bun tests."
 sections:

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608101506-4Y8ZY0-0313ed65022c2fb148f1863c",
+  "task_id": "202608101506-4Y8ZY0",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Separate the exact unmatched-filter diagnostic from generic zero-test markers. Fail unmatched filters unconditionally; otherwise let a nonzero pass summary prove execution before considering generic zero-test markers, and add the corresponding regression.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "The implementation checks generic patterns such as 'no tests found' before inspecting a nonzero pass summary, so ordinary test output can create a false verification failure.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/e6ccca892e3c9d1c33ac817d966447e7e01a96a0c33d1a872b3d2f1b401a9c88.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "The exact unmatched-filter marker should remain authoritative even when another filter reports passes, but generic zero-test markers should be ignored when the Bun summary proves at least one passing test.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/e6ccca892e3c9d1c33ac817d966447e7e01a96a0c33d1a872b3d2f1b401a9c88.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "Residual risk: Without summary precedence for generic markers, legitimate repository checks can re-enter the same false-rework loop this task is intended to remove.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/e6ccca892e3c9d1c33ac817d966447e7e01a96a0c33d1a872b3d2f1b401a9c88.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-162809147-recovery-context/evaluator-result.json"
+}
