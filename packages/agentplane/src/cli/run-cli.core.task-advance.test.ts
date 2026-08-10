@@ -635,7 +635,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const stale = await returnAgentResult(root, taskId, resultPath);
     expect(stale.code).not.toBe(0);
     expect(stale.stderr).toContain("stale");
-  });
+  }, 30_000);
 
   it("projects the direct runner boundary as the same semantic agent episode", async () => {
     const root = await mkGitRepoRoot();
@@ -744,7 +744,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
       "utf8",
     );
     expect(taskReadme).toContain('status: "DONE"');
-  });
+  }, 30_000);
 
   it("recovers an accepted implementation after the CLI-owned commit was already created", async () => {
     const root = await mkGitRepoRoot();
@@ -797,7 +797,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const evaluatorPacket = JSON.parse(recovered.stdout) as AgentPacket;
     expect(evaluatorPacket.authority.role).toBe("EVALUATOR");
     expect(evaluatorPacket.stop.reason).toBe("semantic_boundary");
-  });
+  }, 30_000);
 
   it("converges branch implementation and evaluator to the protected publication boundary", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -917,7 +917,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const packet = JSON.parse(protectedBoundary.stdout) as AgentPacket;
     expect(["approval_required", "external_wait"]).toContain(packet.action.kind);
     expect(packet.stop.reason).not.toBe("semantic_boundary");
-  });
+  }, 30_000);
 
   it("matches the managed direct-run preview fingerprint and preserves task evidence", async () => {
     const root = await mkGitRepoRoot();

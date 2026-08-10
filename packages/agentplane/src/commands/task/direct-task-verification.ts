@@ -5,6 +5,7 @@ import path from "node:path";
 import type { TaskData } from "../../backends/task-backend.js";
 import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
+import { resolveShellInvocation } from "../shared/pr-meta/verify-log.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
@@ -41,11 +42,36 @@ function tail(value: string): string {
   return value.length <= CHECK_OUTPUT_LIMIT ? value : value.slice(-CHECK_OUTPUT_LIMIT);
 }
 
-export function parseDirectTaskCheck(command: string): { script: string } | null {
-  const tokens = command.trim().split(/\s+/u);
-  if (tokens.length !== 3 || tokens[0] !== "bun" || tokens[1] !== "run") return null;
-  const script = tokens[2] ?? "";
-  return SAFE_BUN_SCRIPT.test(script) ? { script } : null;
+function repositoryBoundArg(value: string): boolean {
+  const candidates = [value];
+  const separator = value.indexOf("=");
+  if (separator !== -1) candidates.push(value.slice(separator + 1));
+  return candidates.every((candidate) => {
+    if (!candidate || candidate.startsWith("-")) return true;
+    const normalized = candidate.replaceAll("\\", "/");
+    return (
+      !path.isAbsolute(candidate) &&
+      !path.win32.isAbsolute(candidate) &&
+      !normalized.split("/").includes("..")
+    );
+  });
+}
+
+export function parseDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
+  let invocation: ReturnType<typeof resolveShellInvocation>;
+  try {
+    invocation = resolveShellInvocation(command);
+  } catch {
+    return null;
+  }
+  if (invocation.command !== "bun") return null;
+  const [subcommand, target] = invocation.args;
+  if (!invocation.args.slice(1).every((argument) => repositoryBoundArg(argument))) return null;
+  if (subcommand === "test") {
+    return { executable: "bun", args: invocation.args, script: null };
+  }
+  if (subcommand !== "run" || !target || !SAFE_BUN_SCRIPT.test(target)) return null;
+  return { executable: "bun", args: invocation.args, script: target };
 }
 
 function directTaskCheckTimeoutMs(script: string | null): number {
@@ -56,7 +82,7 @@ function directTaskCheckTimeoutMs(script: string | null): number {
 
 function parseTrustedDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
   const bun = parseDirectTaskCheck(command);
-  if (bun) return { executable: "bun", args: ["run", bun.script], script: bun.script };
+  if (bun) return bun;
   if (command === "node .agentplane/policy/check-routing.mjs") {
     return {
       executable: "node",
@@ -109,14 +135,16 @@ async function writeCheckArtifact(opts: {
 
 /**
  * Executes only the intentionally narrow task-verify grammar. The CLI never
- * passes arbitrary task text to a shell: each command is a safe `bun run`
- * script or a fixed docs-policy check through the structured process boundary.
+ * passes arbitrary task text to a shell: each command is a repository-bound
+ * `bun run`/`bun test` argv or a fixed docs-policy check through the structured
+ * process boundary.
  */
 export async function runDirectTaskVerification(opts: {
   command: CommandContext;
   task: Pick<TaskData, "verify" | "task_kind" | "mutation_scope">;
   task_id: string;
   cwd: string;
+  run_process?: typeof runProcess;
 }): Promise<DirectTaskVerificationResult> {
   const checks: DirectTaskCheck[] = [];
   const commands = directTaskVerificationCommands(opts.task);
@@ -140,7 +168,7 @@ export async function runDirectTaskVerification(opts: {
     }
     const started = Date.now();
     try {
-      const executed = await runProcess({
+      const executed = await (opts.run_process ?? runProcess)({
         command: parsed.executable,
         args: parsed.args,
         cwd: opts.cwd,

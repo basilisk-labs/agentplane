@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608101506-4Y8ZY0/accept-safe-shell-free-bun-test-checks-in-superv",
+  "created_at": "2026-08-10T15:08:59.810Z",
+  "diffstat_sha256": "sha256:af8d10c03a34147719066b578ce69847a8758a7fefde2adc5144a9e5199064f1",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608101506-4Y8ZY0",
+  "updated_at": "2026-08-10T15:08:59.810Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
