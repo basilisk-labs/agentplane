@@ -1,10 +1,11 @@
 ---
 id: "202608101506-4Y8ZY0"
 title: "Accept safe shell-free Bun test checks in supervised verification"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,20 @@ quality_review:
     - "Verification children receive a sanitized environment, preventing the supervisor's agent-mode variables from changing nested CLI behavior."
     - "Critical tests, typecheck, 21 focused lifecycle/verifier tests, lint, formatting, and git diff --check all pass."
     - "Residual risk: Hosted CI must independently validate the final published PR head."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:c5df226cd14da6d77c9532bf6f94cd5b89d78a81a7b15eff39ca2def901a0668"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-10T15:59:43.930Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -66,8 +81,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "19da6e260c15c58ad6c5bce41fbc73548a8fca69"
-  message: "🚧 4Y8ZY0 task: apply external agent result"
+  hash: "f67e9cc90afc78076277678d9ce6816d0d138d0c"
+  message: "🚧 4Y8ZY0 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -78,6 +93,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 19da6e260c15. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -114,9 +132,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-10T15:59:43.930Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "f67e9cc90afc78076277678d9ce6816d0d138d0c"
 doc_version: 3
-doc_updated_at: "2026-08-10T15:53:44.683Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-10T15:59:43.980Z"
+doc_updated_by: "CODER"
 description: "The supervisor currently accepts only three-token bun run scripts and rejects valid repository checks such as bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Reuse the existing shell-free argv parser, accept bounded Bun run and test invocations without invoking a shell, preserve fixed policy checks and evidence capture, and prove that task advance no longer creates false implementation-rework cycles for valid Bun tests."
 sections:
   Summary: |-
@@ -247,6 +273,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "19da6e260c15c58ad6c5bce41fbc73548a8fca69"
+    message: "🚧 4Y8ZY0 task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "3d417620e9a8b333416d25c2cf19b3ccbdbdd1c9"
     version: 1
@@ -391,3 +420,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:c5df226cd14da6d77c9532bf6f94cd5b89d78a81a7b15eff39ca2def901a0668`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-10T15:59:43.930Z`

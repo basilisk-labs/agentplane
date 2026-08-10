@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:f613b09fff9cef2f8d0bd5dd9001343529cce0cd071684834fcca5e05026b1c3",
   "pr_number": 4812,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4812",
+  "pre_merge_closure": {
+    "basis_commit": "f67e9cc90afc78076277678d9ce6816d0d138d0c",
+    "branch": "task/202608101506-4Y8ZY0/accept-safe-shell-free-bun-test-checks-in-superv",
+    "pr_number": 4812,
+    "recorded_at": "2026-08-10T15:59:44.146Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608101506-4Y8ZY0",
