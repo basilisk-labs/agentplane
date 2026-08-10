@@ -1,0 +1,599 @@
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts b/packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+index 83789c755..8d634df92 100644
+--- a/packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
++++ b/packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
+ import { chmod, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+ import os from "node:os";
+ import path from "node:path";
++import { fileURLToPath } from "node:url";
+ import { promisify } from "node:util";
+ import { describe, expect, it } from "vitest";
+ import { defaultConfig } from "@agentplaneorg/core/config";
+@@ -26,6 +27,12 @@ installRunCliIntegrationHarness();
+ 
+ const execFileAsync = promisify(execFile);
+ const TEST_TIMEOUT_MS = 120_000;
++const bunTestRuntime = (
++  globalThis as typeof globalThis & {
++    Bun?: { jest: (moduleUrl: string) => { setDefaultTimeout: (timeoutMs: number) => void } };
++  }
++).Bun;
++bunTestRuntime?.jest(fileURLToPath(import.meta.url)).setDefaultTimeout(TEST_TIMEOUT_MS);
+ const TEST_WORKFLOW_GITIGNORE =
+   ".agentplane/worktrees\n" +
+   ".agentplane/cache\n" +
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts b/packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts
+index bbcfe6a8c..674b70af4 100644
+--- a/packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts
++++ b/packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts
+@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
+ import { chmod, mkdtemp, readFile, writeFile } from "node:fs/promises";
+ import os from "node:os";
+ import path from "node:path";
++import { fileURLToPath } from "node:url";
+ import { promisify } from "node:util";
+ import { describe, expect, it } from "vitest";
+ import { defaultConfig } from "@agentplaneorg/core/config";
+@@ -29,6 +30,13 @@ import {
+ installRunCliIntegrationHarness();
+ 
+ const execFileAsync = promisify(execFile);
++const TEST_TIMEOUT_MS = 120_000;
++const bunTestRuntime = (
++  globalThis as typeof globalThis & {
++    Bun?: { jest: (moduleUrl: string) => { setDefaultTimeout: (timeoutMs: number) => void } };
++  }
++).Bun;
++bunTestRuntime?.jest(fileURLToPath(import.meta.url)).setDefaultTimeout(TEST_TIMEOUT_MS);
+ const TEST_WORKFLOW_GITIGNORE =
+   ".agentplane/worktrees\n" +
+   ".agentplane/cache\n" +
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts b/packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts
+index e3905d038..92bf53a69 100644
+--- a/packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts
++++ b/packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts
+@@ -162,6 +162,7 @@ export async function observeProviderPr(opts: {
+         gitRoot: opts.gitRoot,
+         branch: opts.branch,
+         baseBranch: opts.baseBranch,
++        requireUnique: true,
+       });
+ }
+ 
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged-targeted-proof.ts b/packages/agentplane/src/commands/branch/cleanup-merged-targeted-proof.ts
+index aa57d2436..10de4e1e6 100644
+--- a/packages/agentplane/src/commands/branch/cleanup-merged-targeted-proof.ts
++++ b/packages/agentplane/src/commands/branch/cleanup-merged-targeted-proof.ts
+@@ -258,9 +258,6 @@ export async function targetedCleanupProof(opts: {
+     prNumber: recordedPrNumber,
+   });
+   if (opts.kind === "task") {
+-    if (recordedPrNumber === null) {
+-      return result(null, "exact task PR identity is unavailable from metadata");
+-    }
+     const strictProviderReceipt = await validateStrictMergedProviderReceipt({
+       gitRoot: opts.gitRoot,
+       baseBranch: opts.baseBranch,
+@@ -269,6 +266,12 @@ export async function targetedCleanupProof(opts: {
+       result: providerResult,
+     });
+     if (strictProviderReceipt.reason || !strictProviderReceipt.receipt) {
++      if (recordedPrNumber === null) {
++        return result(
++          null,
++          strictProviderReceipt.reason ?? "provider merge receipt is unavailable",
++        );
++      }
+       const updateReceipt = await validateProviderUpdateReceipt({
+         gitRoot: opts.gitRoot,
+         baseBranch: opts.baseBranch,
+@@ -307,6 +310,7 @@ export async function targetedCleanupProof(opts: {
+       baseBranch: opts.baseBranch,
+       branch: opts.branch,
+       prNumber: receipt.prNumber,
++      allowProviderRecoveredPrNumber: recordedPrNumber === null,
+     });
+     if (!closureRecorded) {
+       return result(null, "exact pre-merge closure evidence is not recorded on base");
+@@ -322,6 +326,12 @@ export async function targetedCleanupProof(opts: {
+       receipt,
+     });
+     if (reconciliation.proof) {
++      if (recordedPrNumber === null && reconciliation.proof.kind !== "exact_head") {
++        return result(
++          null,
++          "legacy cleanup without a recorded PR number requires the exact provider head",
++        );
++      }
+       return result(
+         reconciliation.proof.kind === "exact_head" ? "provider_merge" : "provider_rebase",
+         null,
+@@ -329,6 +339,19 @@ export async function targetedCleanupProof(opts: {
+       );
+     }
+ 
++    if (recordedPrNumber === null) {
++      if (
++        receipt.providerHeadSha === branchHead &&
++        !(await gitRepositoryHasReplacementRefs(opts.gitRoot))
++      ) {
++        return result("provider_merge", null);
++      }
++      return result(
++        null,
++        "legacy cleanup without a recorded PR number requires the exact provider head",
++      );
++    }
++
+     if (
+       receipt.providerHeadSha === branchHead &&
+       !(await gitRepositoryHasReplacementRefs(opts.gitRoot))
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts b/packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts
+index db8aec213..84cdd8639 100644
+--- a/packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts
++++ b/packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts
+@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
+ import { chmod, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+ import os from "node:os";
+ import path from "node:path";
++import { fileURLToPath } from "node:url";
+ import { promisify } from "node:util";
+ import { describe, expect, it } from "vitest";
+ import { defaultConfig } from "@agentplaneorg/core/config";
+@@ -26,6 +27,12 @@ installRunCliIntegrationHarness();
+ 
+ const execFileAsync = promisify(execFile);
+ const TEST_TIMEOUT_MS = 120_000;
++const bunTestRuntime = (
++  globalThis as typeof globalThis & {
++    Bun?: { jest: (moduleUrl: string) => { setDefaultTimeout: (timeoutMs: number) => void } };
++  }
++).Bun;
++bunTestRuntime?.jest(fileURLToPath(import.meta.url)).setDefaultTimeout(TEST_TIMEOUT_MS);
+ const TEST_WORKFLOW_GITIGNORE =
+   ".agentplane/worktrees\n" +
+   ".agentplane/cache\n" +
+@@ -81,7 +88,11 @@ function markDone(readme: string, commitHash: string): string {
+ }
+ 
+ async function createTargetedFixture(
+-  opts: { directExternalWorktree?: boolean; nestedSiblingWorktree?: boolean } = {},
++  opts: {
++    directExternalWorktree?: boolean;
++    legacyMissingPrNumber?: boolean;
++    nestedSiblingWorktree?: boolean;
++  } = {},
+ ): Promise<TargetedFixture> {
+   const root = await mkGitRepoRootWithBranch("main");
+   await configureGitUser(root);
+@@ -138,9 +149,13 @@ async function createTargetedFixture(
+         task_id: taskId,
+         branch,
+         base: "main",
+-        pr_number: 123,
+-        pr_url: "https://github.com/example/repo/pull/123",
+-        status: "OPEN",
++        ...(opts.legacyMissingPrNumber
++          ? {}
++          : {
++              pr_number: 123,
++              pr_url: "https://github.com/example/repo/pull/123",
++              status: "OPEN",
++            }),
+         created_at: "2026-07-23T00:00:00.000Z",
+         updated_at: "2026-07-23T00:00:00.000Z",
+         last_verified_at: "2026-07-23T00:00:00.000Z",
+@@ -150,7 +165,7 @@ async function createTargetedFixture(
+           branch,
+           basis_commit: scaffoldCommit,
+           recorded_at: "2026-07-23T00:00:00.000Z",
+-          pr_number: 123,
++          ...(opts.legacyMissingPrNumber ? {} : { pr_number: 123 }),
+         },
+       },
+       null,
+@@ -215,25 +230,37 @@ async function createTargetedFixture(
+ }
+ 
+ async function installFakeGh(opts: {
++  additionalBranchPrNumbers?: number[];
+   kind: "found" | "not_found" | "unavailable";
+   fixture: TargetedFixture;
+   headSha?: string;
+   baseRef?: string;
+   mergeCommitSha?: string;
++  prNumber?: number;
++  providerStatus?: "MERGED" | "OPEN" | "CLOSED";
+   providerUpdateBaseSha?: string;
+ }): Promise<string> {
+   const fakeBin = await mkdtemp(path.join(os.tmpdir(), "agentplane-cleanup-gh-"));
+   const scriptPath = path.join(fakeBin, "fake-gh.mjs");
+   const ghPath = path.join(fakeBin, process.platform === "win32" ? "gh.cmd" : "gh");
++  const providerStatus = opts.providerStatus ?? "MERGED";
+   const payload = {
+-    number: 123,
+-    state: "closed",
+-    merged_at: "2026-07-23T00:01:00.000Z",
++    number: opts.prNumber ?? 123,
++    state: providerStatus === "OPEN" ? "open" : "closed",
++    merged_at: providerStatus === "MERGED" ? "2026-07-23T00:01:00.000Z" : null,
+     merge_commit_sha: opts.mergeCommitSha ?? opts.fixture.mergeCommit,
+     html_url: "https://github.com/example/repo/pull/123",
+     head: { ref: opts.fixture.branch, sha: opts.headSha ?? opts.fixture.branchHead },
+     base: { ref: opts.baseRef ?? "main" },
+   };
++  const branchPayloads = [
++    payload,
++    ...(opts.additionalBranchPrNumbers ?? []).map((number) => ({
++      ...payload,
++      number,
++      html_url: `https://github.com/example/repo/pull/${number}`,
++    })),
++  ];
+   const providerUpdatePayload =
+     opts.providerUpdateBaseSha && opts.headSha
+       ? {
+@@ -252,9 +279,18 @@ async function installFakeGh(opts: {
+           )}) { console.log(${JSON.stringify(JSON.stringify(providerUpdatePayload))}); process.exit(0); }`
+         : "",
+       opts.kind === "found"
+-        ? `console.log(${JSON.stringify(JSON.stringify(payload))});`
++        ? `console.log(args[1]?.includes("pulls?") ? ${JSON.stringify(
++            JSON.stringify(branchPayloads),
++          )} : ${JSON.stringify(JSON.stringify(payload))});`
+         : opts.kind === "not_found"
+-          ? `console.log(${JSON.stringify(
++          ? `console.log(args[1]?.includes("pulls?") ? ${JSON.stringify(
++              JSON.stringify([
++                {
++                  ...payload,
++                  head: { ...payload.head, ref: `${payload.head.ref}-different` },
++                },
++              ]),
++            )} : ${JSON.stringify(
+               JSON.stringify({
+                 ...payload,
+                 head: { ...payload.head, ref: `${payload.head.ref}-different` },
+@@ -372,6 +408,219 @@ async function runWithFakeGh(fakeBin: string, argv: string[]) {
+ }
+ 
+ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS }, () => {
++  it("recovers a legacy missing PR number from an exact merged branch-and-base lookup", async () => {
++    const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
++    const fakeBin = await installFakeGh({ kind: "found", fixture });
++
++    const result = await runWithFakeGh(fakeBin, [
++      "cleanup",
++      "merged",
++      "--task-id",
++      fixture.taskId,
++      "--yes",
++      "--root",
++      fixture.root,
++    ]);
++
++    expect(result.code).toBe(0);
++    expect(result.stdout).toContain("proof=provider_merge");
++    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(false);
++    expect(await pathExists(fixture.worktreePath)).toBe(false);
++  });
++
++  it(
++    "keeps legacy cleanup blocked when branch-and-base lookup returns multiple PRs",
++    async () => {
++      const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
++      const fakeBin = await installFakeGh({
++        additionalBranchPrNumbers: [456],
++        kind: "found",
++        fixture,
++      });
++
++      const result = await runWithFakeGh(fakeBin, [
++        "cleanup",
++        "merged",
++        "--task-id",
++        fixture.taskId,
++        "--yes",
++        "--root",
++        fixture.root,
++      ]);
++
++      expect(result.code).toBe(5);
++      expect(result.stderr).toContain("multiple PR records for the exact branch and base");
++      expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
++      expect(await pathExists(fixture.worktreePath)).toBe(true);
++    },
++    TEST_TIMEOUT_MS,
++  );
++
++  it(
++    "keeps legacy cleanup blocked after semantic local head drift",
++    async () => {
++      const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
++      await writeFile(
++        path.join(fixture.worktreePath, "legacy-semantic-tail.txt"),
++        "preserve\n",
++        "utf8",
++      );
++      await commitAll(fixture.worktreePath, `semantic ${fixture.taskId} legacy post-merge tail`);
++      const fakeBin = await installFakeGh({ kind: "found", fixture });
++
++      const result = await runWithFakeGh(fakeBin, [
++        "cleanup",
++        "merged",
++        "--task-id",
++        fixture.taskId,
++        "--yes",
++        "--root",
++        fixture.root,
++      ]);
++
++      expect(result.code).toBe(5);
++      expect(result.stderr).toContain("requires the exact provider head");
++      expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
++      expect(await pathExists(fixture.worktreePath)).toBe(true);
++    },
++    TEST_TIMEOUT_MS,
++  );
++
++  it(
++    "keeps legacy cleanup blocked without exact pre-merge closure evidence",
++    async () => {
++      const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
++      const metaPath = path.join(
++        fixture.root,
++        ".agentplane",
++        "tasks",
++        fixture.taskId,
++        "pr",
++        "meta.json",
++      );
++      const meta = JSON.parse(await readFile(metaPath, "utf8")) as Record<string, unknown>;
++      delete meta.pre_merge_closure;
++      await writeFile(metaPath, `${JSON.stringify(meta, null, 2)}\n`, "utf8");
++      await commitAll(fixture.root, `chore ${fixture.taskId} remove legacy closure fixture`);
++      const fakeBin = await installFakeGh({ kind: "found", fixture });
++
++      const result = await runWithFakeGh(fakeBin, [
++        "cleanup",
++        "merged",
++        "--task-id",
++        fixture.taskId,
++        "--yes",
++        "--root",
++        fixture.root,
++      ]);
++
++      expect(result.code).toBe(5);
++      expect(result.stderr).toContain("exact pre-merge closure marker is unavailable");
++      expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
++      expect(await pathExists(fixture.worktreePath)).toBe(true);
++    },
++    TEST_TIMEOUT_MS,
++  );
++
++  it.each([
++    ["not_found", "provider PR was not found"],
++    ["unavailable", "provider lookup is unavailable"],
++  ] as const)(
++    "keeps legacy cleanup blocked when the exact provider lookup is %s",
++    async (kind, expectedReason) => {
++      const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
++      const fakeBin = await installFakeGh({ kind, fixture });
++
++      const result = await runWithFakeGh(fakeBin, [
++        "cleanup",
++        "merged",
++        "--task-id",
++        fixture.taskId,
++        "--yes",
++        "--root",
++        fixture.root,
++      ]);
++
++      expect(result.code).toBe(5);
++      expect(result.stderr).toContain(expectedReason);
++      expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
++      expect(await pathExists(fixture.worktreePath)).toBe(true);
++    },
++  );
++
++  it.each(["OPEN", "CLOSED"] as const)(
++    "keeps legacy cleanup blocked when the exact provider PR is %s",
++    async (providerStatus) => {
++      const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
++      const fakeBin = await installFakeGh({ kind: "found", fixture, providerStatus });
++
++      const result = await runWithFakeGh(fakeBin, [
++        "cleanup",
++        "merged",
++        "--task-id",
++        fixture.taskId,
++        "--yes",
++        "--root",
++        fixture.root,
++      ]);
++
++      expect(result.code).toBe(5);
++      expect(result.stderr).toContain(`is ${providerStatus.toLowerCase()}, not merged`);
++      expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
++      expect(await pathExists(fixture.worktreePath)).toBe(true);
++    },
++  );
++
++  it("keeps legacy cleanup blocked on provider base or head mismatch", async () => {
++    for (const mismatch of ["base", "head"] as const) {
++      const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
++      const fakeBin = await installFakeGh({
++        kind: "found",
++        fixture,
++        ...(mismatch === "base" ? { baseRef: "release" } : { headSha: fixture.mergeCommit }),
++      });
++
++      const result = await runWithFakeGh(fakeBin, [
++        "cleanup",
++        "merged",
++        "--task-id",
++        fixture.taskId,
++        "--yes",
++        "--root",
++        fixture.root,
++      ]);
++
++      expect(result.code).toBe(5);
++      expect(result.stderr).toContain(
++        mismatch === "base"
++          ? "provider PR was not found for the exact branch and base"
++          : "requires the exact provider head",
++      );
++      expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
++      expect(await pathExists(fixture.worktreePath)).toBe(true);
++    }
++  });
++
++  it("keeps a recorded PR number authoritative when the provider returns another identity", async () => {
++    const fixture = await createTargetedFixture();
++    const fakeBin = await installFakeGh({ kind: "found", fixture, prNumber: 456 });
++
++    const result = await runWithFakeGh(fakeBin, [
++      "cleanup",
++      "merged",
++      "--task-id",
++      fixture.taskId,
++      "--yes",
++      "--root",
++      fixture.root,
++    ]);
++
++    expect(result.code).toBe(5);
++    expect(result.stderr).toContain("provider PR identity mismatch: expected=123 observed=456");
++    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
++    expect(await pathExists(fixture.worktreePath)).toBe(true);
++  });
++
+   it("deletes only the requested rebase-merged task and is idempotent", async () => {
+     const fixture = await createTargetedFixture();
+     const fakeBin = await installFakeGh({ kind: "found", fixture });
+diff --git a/packages/agentplane/src/commands/pr/internal/sync-github.ts b/packages/agentplane/src/commands/pr/internal/sync-github.ts
+index 7631c9c6a..428b4ae0b 100644
+--- a/packages/agentplane/src/commands/pr/internal/sync-github.ts
++++ b/packages/agentplane/src/commands/pr/internal/sync-github.ts
+@@ -243,6 +243,7 @@ export async function observeExistingGithubPrByBranch(opts: {
+   gitRoot: string;
+   branch: string;
+   baseBranch?: string | null;
++  requireUnique?: boolean;
+ }): Promise<GithubPrLookupResult> {
+   const repo = await resolveGithubRepoFromOrigin(opts.gitRoot);
+   if (!repo) {
+@@ -267,17 +268,24 @@ export async function observeExistingGithubPrByBranch(opts: {
+       return { state: "unavailable", reason: "GitHub branch lookup returned a non-array payload" };
+     }
+     if (parsed.length === 0) return { state: "not_found" };
+-    for (const record of parsed) {
+-      const observed = normalizeObservedGithubPr(record);
+-      if (observed) {
+-        return await observeGithubPrByNumberInRepo({
+-          gitRoot: opts.gitRoot,
+-          repo,
+-          prNumber: observed.prNumber,
+-          branch: opts.branch,
+-          baseBranch,
+-        });
+-      }
++    const observedRecords = parsed
++      .map((record) => normalizeObservedGithubPr(record))
++      .filter((record): record is ObservedGithubPr => record !== null);
++    if (opts.requireUnique && observedRecords.length > 1) {
++      return {
++        state: "unavailable",
++        reason: `GitHub branch lookup returned multiple PR records for the exact branch and base: ${observedRecords.length}`,
++      };
++    }
++    const observed = observedRecords[0];
++    if (observed) {
++      return await observeGithubPrByNumberInRepo({
++        gitRoot: opts.gitRoot,
++        repo,
++        prNumber: observed.prNumber,
++        branch: opts.branch,
++        baseBranch,
++      });
+     }
+     return {
+       state: "unavailable",
+diff --git a/packages/agentplane/src/commands/task/close-tail-state.test.ts b/packages/agentplane/src/commands/task/close-tail-state.test.ts
+index c6efbdee7..254ed4af4 100644
+--- a/packages/agentplane/src/commands/task/close-tail-state.test.ts
++++ b/packages/agentplane/src/commands/task/close-tail-state.test.ts
+@@ -136,6 +136,7 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
+       objectType?: string;
+       branch?: string;
+       prNumber?: number;
++      metaPrNumber?: number | null;
+       markerPrNumber?: number | null;
+     } = {},
+   ): void {
+@@ -159,7 +160,7 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
+           schema_version: 1,
+           task_id: "T-1",
+           branch: resolvedBranch,
+-          pr_number: prNumber,
++          ...(opts.metaPrNumber === null ? {} : { pr_number: opts.metaPrNumber ?? prNumber }),
+           created_at: "2026-07-10T00:00:00.000Z",
+           updated_at: "2026-07-10T00:00:00.000Z",
+           pre_merge_closure: {
+@@ -176,6 +177,7 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
+ 
+   async function recorded(
+     overrides: Partial<{
++      allowProviderRecoveredPrNumber: boolean;
+       branch: string;
+       prNumber: number;
+     }> = {},
+@@ -188,6 +190,7 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
+       baseBranch: "main",
+       branch: overrides.branch ?? branch,
+       prNumber: overrides.prNumber ?? 101,
++      allowProviderRecoveredPrNumber: overrides.allowProviderRecoveredPrNumber,
+     });
+   }
+ 
+@@ -206,6 +209,14 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
+     await expect(recorded()).resolves.toBe(true);
+   });
+ 
++  it("accepts a missing legacy metadata PR number only for provider-recovered identity", async () => {
++    mockBaseArtifacts({ metaPrNumber: null, markerPrNumber: null });
++    await expect(recorded()).resolves.toBe(false);
++
++    mockBaseArtifacts({ metaPrNumber: null, markerPrNumber: null });
++    await expect(recorded({ allowProviderRecoveredPrNumber: true })).resolves.toBe(true);
++  });
++
+   it("rejects incomplete or mismatched base evidence", async () => {
+     mockBaseArtifacts({ status: "DOING" });
+     await expect(recorded()).resolves.toBe(false);
+diff --git a/packages/agentplane/src/commands/task/close-tail-state.ts b/packages/agentplane/src/commands/task/close-tail-state.ts
+index 2361036c9..83151dfdf 100644
+--- a/packages/agentplane/src/commands/task/close-tail-state.ts
++++ b/packages/agentplane/src/commands/task/close-tail-state.ts
+@@ -32,6 +32,7 @@ export async function taskPreMergeClosureRecordedOnBase(opts: {
+   baseBranch: string;
+   branch: string;
+   prNumber: number;
++  allowProviderRecoveredPrNumber?: boolean;
+ }): Promise<boolean> {
+   const taskPath = path.posix.join(opts.workflowDir, opts.taskId, "README.md");
+   const metaPath = path.posix.join(opts.workflowDir, opts.taskId, "pr", "meta.json");
+@@ -64,7 +65,8 @@ export async function taskPreMergeClosureRecordedOnBase(opts: {
+       marker.branch === opts.branch &&
+       (marker.prNumber === undefined || marker.prNumber === opts.prNumber) &&
+       meta.branch?.trim() === opts.branch &&
+-      meta.pr_number === opts.prNumber
++      (meta.pr_number === opts.prNumber ||
++        (opts.allowProviderRecoveredPrNumber === true && meta.pr_number === undefined))
+     );
+   } catch {
+     return false;

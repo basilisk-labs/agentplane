@@ -1,0 +1,79 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun test packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-10T19:46:19.394Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608101850-25R7W2/verification/20260810194619394-73c1f07ad244c577.json",
+      "sha256": "sha256:be168f7cd7065ada92572f2f398ba91b8284baa299dcd19097a738d4d90d9fc1"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 23576aa66281029662e811f2aff9e8a6ba11dbf2..d15d591b882d3d0618121becbf2327047e64958f",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 23576aa66281029662e811f2aff9e8a6ba11dbf2..d15d591b882d3d0618121becbf2327047e64958f",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608101850-25R7W2/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608101850-25R7W2/pr/github-body.md",
+          "M\t.agentplane/tasks/202608101850-25R7W2/pr/meta.json",
+          "M\t.agentplane/tasks/202608101850-25R7W2/pr/review.md",
+          "M\tpackages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts",
+          "M\tpackages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts",
+          "M\tpackages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts",
+          "M\tpackages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts",
+          "M\tpackages/agentplane/src/commands/pr/internal/sync-github.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "23576aa66281029662e811f2aff9e8a6ba11dbf2",
+    "implementation_commit": "d15d591b882d3d0618121becbf2327047e64958f",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608101850-25R7W2",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608101850-25R7W2/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

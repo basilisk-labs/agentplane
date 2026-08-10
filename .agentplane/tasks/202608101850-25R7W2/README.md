@@ -4,7 +4,7 @@ title: "Recover legacy merged cleanup identity from the provider"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -28,36 +28,35 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-10T19:13:09.607Z"
+  updated_at: "2026-08-10T19:49:10.452Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 5 typed finding(s)."
-  evaluated_sha: "deee9a3afda80cb7f4b532f96632dc2a6e43d4eb"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "d15d591b882d3d0618121becbf2327047e64958f"
   blueprint_digest: "4c6d7d1bd6cfd331e0afd25e7d4f5f805c1d4cd4c0223e935cb363f5a33e6f82"
   evidence_refs:
-    - ".agentplane/tasks/202608101850-25R7W2/quality/20260810-191019879-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608101850-25R7W2/quality/20260810-191019879-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/4ca49feae606cab2fe3237701f97ff6f4e0af1ded0d7a85245588243295abeef.md"
-    - ".agentplane/tasks/202608101850-25R7W2/quality/20260810-191019879-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608101850-25R7W2/quality/20260810-191019879-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608101850-25R7W2/quality/20260810-191019879-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608101850-25R7W2/quality/20260810-191019879-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608101850-25R7W2/quality/20260810-194650636-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608101850-25R7W2/quality/20260810-194650636-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/079a629bad0909717d8888acc251d306775feb27adb7f7f72c320cf360dc140a.md"
+    - ".agentplane/tasks/202608101850-25R7W2/quality/20260810-194650636-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608101850-25R7W2/quality/20260810-194650636-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608101850-25R7W2/quality/20260810-194650636-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608101850-25R7W2/README.md"
-    - ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/bc56bbed36eeb09837f001bd7bc933c48de9361fbb17b5caa104fc5a8f3e8727.patch"
-    - ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/2a28b7152c82bd6b7a96b57e5ba56e6f689aa805480b1c912befb61ae4db6471.json"
-    - ".agentplane/tasks/202608101850-25R7W2/verification/20260810191011361-103eff6132d9b260.json"
+    - ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/314d567f9a1af2263262a5ecddc90affb3ce24ff35dd6acdd8251da1abdab14e.patch"
+    - ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/2f4d7b16d0d46a41a001688fd1c4f33a2c710c78e3f63d2911b453197ecfca99.json"
+    - ".agentplane/tasks/202608101850-25R7W2/verification/20260810194619394-73c1f07ad244c577.json"
     - ".agentplane/tasks/202608101850-25R7W2/quality/objects/sha256/b661d264dc7b3aa73fe445619628929aae1bf4434136ebd5c29807b06470b102.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "High: the approved contract requires ambiguous provider identity to remain blocked, but the patch accepts the existing branch lookup result without adding a uniqueness condition. The underlying branch lookup may return one record from multiple historical PRs for the same head branch and base, so a missing recorded PR number is not yet replaced by an exact unique identity."
-    - "Medium: the new legacy-specific tests cover not-found, unavailable, OPEN, CLOSED, base mismatch, head mismatch, and recorded-number mismatch, but do not exercise multiple matching PR records, a legacy semantic post-merge tail, or missing legacy closure evidence."
-    - "Medium: frozen verification contains the focused suites and typecheck, but no provider-backed dry-run evidence for the four P02 candidates required by the approved plan."
-    - "Residual risk: A repository with reused task branch names or multiple historical PR records can authorize cleanup from a provider record that was selected by response order rather than unique identity."
-    - "Residual risk: The four concrete P02 cleanup candidates remain unqualified against live provider truth."
+    - "Pass: requireUnique is opt-in at the cleanup provider boundary, so ordinary GitHub branch lookup behavior is unchanged while legacy cleanup rejects multiple valid PR records before selecting an identity."
+    - "Pass: legacy cleanup still requires MERGED provider state, exact base, canonical locally available head and merge objects, merge containment on base, exact local/provider head equality, and closure evidence recorded on base."
+    - "Pass: tests cover successful recovery plus multiple records, not-found, provider unavailable, OPEN, CLOSED, base mismatch, head mismatch, semantic local drift, missing closure evidence, and disagreement with an already recorded PR number."
+    - "Operational follow-up: the four P02 branches still require live provider-backed dry-run qualification before any deletion; this evaluator packet intentionally has no network authority."
+    - "Residual risk: Do not delete any P02 candidate until the updated CLI reports it as a dry-run cleanup candidate against current GitHub truth."
 execution_route:
   frozen: true
   reason_codes:
