@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:c514db0d340eadf55f8f58c39ef3822ea0fde6e5b325388c620fd9e92d05813c",
+  "implementation_sha": "b633b400cdb16bdcb1758108962592d9f1775c5b",
+  "kind": "task_verification_record",
+  "note": "PASS reused after rebase: implementation b633b400c has the exact stable patch-id 6b5ea030de0049fcb030d7808fd42f2ee49ac5af as previously verified af1ff44cd; no code, tests, Verify Steps, or declared inputs changed. Reused the prior exactly-once suites, typecheck, ESLint, changed-format, diff, and hotspot receipts without rerunning them. The pre-existing RF-04 workspace dependency-seed defect remains unrelated.",
+  "recorded_at": "2026-08-10T21:57:24.289Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Repair exactly-once external episode recovery\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Repair exactly-once external episode recovery\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:8922db684fa37dde6d3ed1b685016f3d5b2523e84a98aa8c7fae61403fac0633",
+  "task_id": "202608102112-AY0H1F",
+  "verification_command": "agentplane verify 202608102112-AY0H1F --ok --by TESTER",
+  "verifier": "TESTER"
+}

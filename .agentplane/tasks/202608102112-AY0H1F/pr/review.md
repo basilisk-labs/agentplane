@@ -13,7 +13,7 @@ Created: 2026-08-10T21:13:13.244Z
 ## Verification
 
 - State: ok
-- Note: PASS for implementation af1ff44cd: exactly-once task-advance suites pass (30/30); focused packet and recovery suites pass (26/26); identical consumed replay is idempotent, conflicting replay fails closed, plain advance resumes result_received, ownership conflict creates no phantom exchange, and replacement gets a distinct transition; typecheck, ESLint, changed-format, diff check, and hotspot gates pass. Full critical-cli stopped on the pre-existing RF-04 workspace dependency-seed path defect before reaching changed tests; this is unrelated to the patch.
+- Note: PASS reused after rebase: implementation b633b400c has the exact stable patch-id 6b5ea030de0049fcb030d7808fd42f2ee49ac5af as previously verified af1ff44cd; no code, tests, Verify Steps, or declared inputs changed. Reused the prior exactly-once suites, typecheck, ESLint, changed-format, diff, and hotspot receipts without rerunning them. The pre-existing RF-04 workspace dependency-seed defect remains unrelated.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
