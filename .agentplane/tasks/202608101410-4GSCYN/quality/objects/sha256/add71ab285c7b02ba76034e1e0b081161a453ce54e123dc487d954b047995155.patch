@@ -1,0 +1,857 @@
+diff --git a/.agentplane/policy/incidents.md b/.agentplane/policy/incidents.md
+index 3499a0898..bcacc37a8 100644
+--- a/.agentplane/policy/incidents.md
++++ b/.agentplane/policy/incidents.md
+@@ -1,3 +1,4 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
++- id: INC-20260810-01 | date: 2026-08-10 | scope: task declared-check validation and execution parity | tags: verifier, ux, code, lifecycle, supervisor | match: Unsupported declared check, verifier, ux, code, lifecycle, supervisor, task, declared, check, validation, and, execution, parity, stop, external, agent | failure: Task creation accepted bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts, but automatic TESTER execution later rejected the same command as unsupported and recorded a false needs_rework result. | advice: Recovered with manually recorded structured TESTER evidence; follow up by sharing one validation contract between task verify input and automatic declared-check execution. | rule: Analogous task declared-check validation and execution parity work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608101410-4GSCYN; commit 522a91e6f546 | enforcement: manual | fixability: repo-fixable | state: open
+diff --git a/packages/agentplane/assets/policy/incidents.md b/packages/agentplane/assets/policy/incidents.md
+index 3499a0898..bcacc37a8 100644
+--- a/packages/agentplane/assets/policy/incidents.md
++++ b/packages/agentplane/assets/policy/incidents.md
+@@ -1,3 +1,4 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
++- id: INC-20260810-01 | date: 2026-08-10 | scope: task declared-check validation and execution parity | tags: verifier, ux, code, lifecycle, supervisor | match: Unsupported declared check, verifier, ux, code, lifecycle, supervisor, task, declared, check, validation, and, execution, parity, stop, external, agent | failure: Task creation accepted bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts, but automatic TESTER execution later rejected the same command as unsupported and recorded a false needs_rework result. | advice: Recovered with manually recorded structured TESTER evidence; follow up by sharing one validation contract between task verify input and automatic declared-check execution. | rule: Analogous task declared-check validation and execution parity work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608101410-4GSCYN; commit 522a91e6f546 | enforcement: manual | fixability: repo-fixable | state: open
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+new file mode 100644
+index 000000000..507cb9945
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+@@ -0,0 +1,461 @@
++import { execFile } from "node:child_process";
++import { cp, mkdir, readFile, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++import { describe, expect, it } from "vitest";
++import { validateSupervisorExecutionEpisodeJournal } from "@agentplaneorg/core/schemas";
++
++import {
++  captureStdIO,
++  installRunCliIntegrationHarness,
++  mkGitRepoRootWithBranch,
++  runCliSilent,
++  writeConfig,
++} from "@agentplane/testkit";
++
++import { MAX_AGENT_ACTION_PACKET_BYTES } from "../commands/task/agent-action-packet.js";
++import { blockedResultBody } from "../commands/task/external-agent-blocked-result.js";
++import type {
++  ExternalAgentExchange,
++  ExternalAgentResultEnvelope,
++} from "../commands/task/external-agent-exchange.js";
++import { resolveSupervisorExecutionEpisodePath } from "../commands/shared/supervisor-execution-episode.js";
++import { defaultConfig } from "./core-imports.js";
++import { runCli } from "./run-cli.js";
++
++installRunCliIntegrationHarness();
++
++const execFileAsync = promisify(execFile);
++
++type AgentPacket = {
++  task_id: string;
++  transition_id: string;
++  state_fingerprint: string;
++  action: { kind: string };
++  exchange?: {
++    directory: string;
++    work_order_ref: string;
++    result_ref: string;
++    result_path: string;
++  };
++  stop: { reason: string; resume: string };
++};
++
++async function createTask(root: string, title: string): Promise<string> {
++  const io = captureStdIO();
++  try {
++    const code = await runCli([
++      "task",
++      "new",
++      "--title",
++      title,
++      "--description",
++      "Exercise a typed blocked external-agent result.",
++      "--priority",
++      "med",
++      "--owner",
++      "CODER",
++      "--tag",
++      "code",
++      "--verify",
++      "bun run test:critical",
++      "--root",
++      root,
++    ]);
++    expect(code, io.stderr).toBe(0);
++    return io.stdout.trim();
++  } finally {
++    io.restore();
++  }
++}
++
++async function readAgentPacket(root: string, taskId: string): Promise<AgentPacket> {
++  const io = captureStdIO();
++  try {
++    const code = await runCli(["task", "advance", taskId, "--agent-json", "--root", root]);
++    expect(code, io.stderr).toBe(0);
++    expect(Buffer.byteLength(io.stdout.trim(), "utf8")).toBeLessThanOrEqual(
++      MAX_AGENT_ACTION_PACKET_BYTES,
++    );
++    return JSON.parse(io.stdout) as AgentPacket;
++  } finally {
++    io.restore();
++  }
++}
++
++async function writeBlockedResult(packet: AgentPacket, summary: string): Promise<string> {
++  if (!packet.exchange) throw new Error("expected an external-agent exchange");
++  const workOrder = JSON.parse(
++    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
++  ) as { work_order_id: string; role: string };
++  const resultPath = path.join(packet.exchange.directory, packet.exchange.result_ref);
++  await writeFile(
++    resultPath,
++    `${JSON.stringify(
++      {
++        schema_version: 1,
++        kind: "agent_action_result",
++        task_id: packet.task_id,
++        transition_id: packet.transition_id,
++        state_fingerprint: packet.state_fingerprint,
++        role: workOrder.role,
++        result: {
++          schema_version: 2,
++          kind: "agent_semantic_result",
++          work_order_id: workOrder.work_order_id,
++          status: "blocked",
++          summary,
++          findings: ["The issued authority cannot satisfy the requested effect."],
++          uncertainty: [],
++          blocker: {
++            summary,
++            recommended_action: "Resolve the recorded authority boundary, then resume the task.",
++          },
++        },
++      },
++      null,
++      2,
++    )}\n`,
++    "utf8",
++  );
++  return resultPath;
++}
++
++async function returnAgentResult(
++  root: string,
++  taskId: string,
++  resultPath: string,
++): Promise<{ code: number; stdout: string; stderr: string }> {
++  const io = captureStdIO();
++  try {
++    const code = await runCli([
++      "task",
++      "advance",
++      taskId,
++      "--result",
++      resultPath,
++      "--agent-json",
++      "--root",
++      root,
++    ]);
++    return { code, stdout: io.stdout, stderr: io.stderr };
++  } finally {
++    io.restore();
++  }
++}
++
++async function persistBlockedStatusWithoutCommit(opts: {
++  packet: AgentPacket;
++  resultPath: string;
++  root: string;
++}): Promise<void> {
++  if (!opts.packet.exchange) throw new Error("expected an external-agent exchange");
++  const exchange = JSON.parse(
++    await readFile(path.join(opts.packet.exchange.directory, "exchange.json"), "utf8"),
++  ) as ExternalAgentExchange;
++  const envelope = JSON.parse(
++    await readFile(opts.resultPath, "utf8"),
++  ) as ExternalAgentResultEnvelope;
++  await runCliSilent([
++    "task",
++    "set-status",
++    opts.packet.task_id,
++    "BLOCKED",
++    "--author",
++    "SUPERVISOR",
++    "--body",
++    blockedResultBody({ exchange, semantic: envelope.result }),
++    "--root",
++    opts.root,
++  ]);
++}
++
++async function prepareBlockedResultTask(opts: {
++  title: string;
++  plan: string;
++  slug: string;
++}): Promise<{ taskId: string; taskWorktree: string }> {
++  const root = await mkGitRepoRootWithBranch("main");
++  await cp(
++    path.join(process.cwd(), ".agentplane", "policy"),
++    path.join(root, ".agentplane", "policy"),
++    { recursive: true },
++  );
++  const config = defaultConfig();
++  config.workflow_mode = "branch_pr";
++  await writeConfig(root, config);
++  await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++  const taskId = await createTask(root, opts.title);
++  await runCliSilent([
++    "task",
++    "plan",
++    "set",
++    taskId,
++    "--text",
++    opts.plan,
++    "--updated-by",
++    "ORCHESTRATOR",
++    "--root",
++    root,
++  ]);
++  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++  await execFileAsync("git", ["add", "."], { cwd: root });
++  await execFileAsync("git", ["commit", "-m", `test: seed ${opts.slug} task`], { cwd: root });
++
++  const branch = `task/${taskId}/${opts.slug}`;
++  const taskWorktree = path.join(root, ".agentplane", "worktrees", `${taskId}-${opts.slug}`);
++  await mkdir(path.dirname(taskWorktree), { recursive: true });
++  await execFileAsync("git", ["worktree", "add", "-b", branch, taskWorktree], { cwd: root });
++  return { taskId, taskWorktree };
++}
++
++describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
++  it("consumes a blocked branch implementation once and waits for an explicit resume", async () => {
++    const { taskId, taskWorktree } = await prepareBlockedResultTask({
++      title: "Blocked external branch result",
++      plan: "Attempt one scoped implementation and preserve any typed blocker.",
++      slug: "blocked-external-result",
++    });
++
++    const issued = await readAgentPacket(taskWorktree, taskId);
++    expect(issued.action.kind).toBe("agent_episode");
++    const resultPath = await writeBlockedResult(
++      issued,
++      "The implementation requires authority outside the issued writable roots.",
++    );
++    const firstReturn = await returnAgentResult(taskWorktree, taskId, resultPath);
++    expect(firstReturn.code, firstReturn.stderr).toBe(0);
++    const blockedPacket = JSON.parse(firstReturn.stdout) as AgentPacket;
++    expect(blockedPacket.action.kind).toBe("terminal");
++    expect(blockedPacket.exchange).toBeUndefined();
++    expect(blockedPacket.stop).toEqual({ reason: "terminal", resume: "none" });
++
++    const readmePath = path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md");
++    const readmeAfterFirstReturn = await readFile(readmePath, "utf8");
++    expect(readmeAfterFirstReturn).toContain('status: "BLOCKED"');
++    expect(readmeAfterFirstReturn).toContain(
++      "The implementation requires authority outside the issued writable roots.",
++    );
++    const firstHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: taskWorktree,
++    });
++    const firstHead = firstHeadResult.stdout.trim();
++    const journalPath = await resolveSupervisorExecutionEpisodePath({
++      git_root: taskWorktree,
++      task_id: taskId,
++    });
++    const firstJournal = validateSupervisorExecutionEpisodeJournal(
++      JSON.parse(await readFile(journalPath, "utf8")) as unknown,
++    );
++
++    const replay = await returnAgentResult(taskWorktree, taskId, resultPath);
++    expect(replay.code).not.toBe(0);
++    expect(replay.stderr).toContain("already consumed");
++    expect(await readFile(readmePath, "utf8")).toBe(readmeAfterFirstReturn);
++    const replayHead = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: taskWorktree,
++    });
++    expect(replayHead.stdout.trim()).toBe(firstHead);
++
++    const stillBlocked = await readAgentPacket(taskWorktree, taskId);
++    expect(stillBlocked.action.kind).toBe("terminal");
++    expect(stillBlocked.exchange).toBeUndefined();
++    const blockedJournal = validateSupervisorExecutionEpisodeJournal(
++      JSON.parse(await readFile(journalPath, "utf8")) as unknown,
++    );
++    expect(blockedJournal.usage.agent_runs).toBe(firstJournal.usage.agent_runs);
++
++    await runCliSilent([
++      "task",
++      "set-status",
++      taskId,
++      "DOING",
++      "--author",
++      "CODER",
++      "--body",
++      "Start: resume after the recorded authority boundary was resolved.",
++      "--root",
++      taskWorktree,
++    ]);
++    const resumed = await readAgentPacket(taskWorktree, taskId);
++    expect(resumed.action.kind).toBe("agent_episode");
++    expect(resumed.exchange).toBeDefined();
++    expect(resumed.exchange!.result_path).not.toBe(resultPath);
++    expect(resumed.state_fingerprint).not.toBe(issued.state_fingerprint);
++  });
++
++  it("rejects workspace changes returned with a blocked branch result", async () => {
++    const { taskId, taskWorktree } = await prepareBlockedResultTask({
++      title: "Blocked result with workspace changes",
++      plan: "Reject non-completed semantic results that leave workspace changes.",
++      slug: "blocked-result-tamper",
++    });
++    const issued = await readAgentPacket(taskWorktree, taskId);
++    const headBeforeReturn = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: taskWorktree,
++    });
++    await mkdir(path.join(taskWorktree, "src"), { recursive: true });
++    await writeFile(
++      path.join(taskWorktree, "src", "blocked-tamper.txt"),
++      "must not persist\n",
++      "utf8",
++    );
++    const resultPath = await writeBlockedResult(
++      issued,
++      "The agent is blocked after changing an otherwise allowed source path.",
++    );
++
++    const rejected = await returnAgentResult(taskWorktree, taskId, resultPath);
++    expect(rejected.code).not.toBe(0);
++    expect(rejected.stderr).toContain("Blocked implementation result produced workspace changes");
++    const readme = await readFile(
++      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
++      "utf8",
++    );
++    expect(readme).toContain('status: "DOING"');
++    expect(readme).not.toContain(
++      "The agent is blocked after changing an otherwise allowed source path.",
++    );
++    const headAfterReturn = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: taskWorktree,
++    });
++    expect(headAfterReturn.stdout.trim()).toBe(headBeforeReturn.stdout.trim());
++  });
++
++  it("finishes a partially persisted blocker without duplicating task evidence", async () => {
++    const { taskId, taskWorktree } = await prepareBlockedResultTask({
++      title: "Retry blocker status persistence",
++      plan: "Recover one blocker after status persistence stops before its commit.",
++      slug: "blocked-result-status-retry",
++    });
++    const issued = await readAgentPacket(taskWorktree, taskId);
++    const baselineResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: taskWorktree,
++    });
++    const baseline = baselineResult.stdout.trim();
++    const resultPath = await writeBlockedResult(
++      issued,
++      "The blocker status was persisted before the original commit attempt stopped.",
++    );
++    await persistBlockedStatusWithoutCommit({ packet: issued, resultPath, root: taskWorktree });
++    const readmeBeforeRecovery = await readFile(
++      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
++      "utf8",
++    );
++    const receiptCountBefore = readmeBeforeRecovery.match(/external-agent-blocker\//gu)?.length;
++
++    const recovered = await returnAgentResult(taskWorktree, taskId, resultPath);
++    expect(recovered.code, recovered.stderr).toBe(0);
++    const readme = await readFile(
++      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
++      "utf8",
++    );
++    expect(readme.match(/external-agent-blocker\//gu)?.length).toBe(receiptCountBefore);
++    const commitCount = await execFileAsync("git", ["rev-list", "--count", `${baseline}..HEAD`], {
++      cwd: taskWorktree,
++    });
++    expect(commitCount.stdout.trim()).toBe("1");
++    const status = await execFileAsync("git", ["status", "--short"], { cwd: taskWorktree });
++    expect(status.stdout).toBe("");
++  });
++
++  it("amends an existing blocker commit instead of stacking a retry commit", async () => {
++    const { taskId, taskWorktree } = await prepareBlockedResultTask({
++      title: "Retry blocker post-commit refresh",
++      plan: "Recover one blocker when its commit exists but artifact refresh did not finish.",
++      slug: "blocked-result-commit-retry",
++    });
++    const issued = await readAgentPacket(taskWorktree, taskId);
++    const baselineResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: taskWorktree,
++    });
++    const baseline = baselineResult.stdout.trim();
++    const resultPath = await writeBlockedResult(
++      issued,
++      "The blocker commit exists but its post-commit artifact refresh stopped.",
++    );
++    await persistBlockedStatusWithoutCommit({ packet: issued, resultPath, root: taskWorktree });
++    const readmeBeforeRecovery = await readFile(
++      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
++      "utf8",
++    );
++    const receiptCountBefore = readmeBeforeRecovery.match(/external-agent-blocker\//gu)?.length;
++    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: taskWorktree });
++    await execFileAsync(
++      "git",
++      ["commit", "-m", `🚧 ${taskId.split("-").at(-1)} task: record external blocker`],
++      { cwd: taskWorktree },
++    );
++
++    const recovered = await returnAgentResult(taskWorktree, taskId, resultPath);
++    expect(recovered.code, recovered.stderr).toBe(0);
++    const commitCount = await execFileAsync("git", ["rev-list", "--count", `${baseline}..HEAD`], {
++      cwd: taskWorktree,
++    });
++    expect(commitCount.stdout.trim()).toBe("1");
++    const readme = await readFile(
++      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
++      "utf8",
++    );
++    expect(readme.match(/external-agent-blocker\//gu)?.length).toBe(receiptCountBefore);
++    const status = await execFileAsync("git", ["status", "--short"], { cwd: taskWorktree });
++    expect(status.stdout).toBe("");
++  });
++
++  it("rejects a blocked result after external Git history changes", async () => {
++    const { taskId, taskWorktree } = await prepareBlockedResultTask({
++      title: "Reject blocked result history changes",
++      plan: "Reject a blocked result when the external agent created a commit.",
++      slug: "blocked-result-history-tamper",
++    });
++    const issued = await readAgentPacket(taskWorktree, taskId);
++    await writeFile(path.join(taskWorktree, "history-tamper.txt"), "unauthorized commit\n", "utf8");
++    await execFileAsync("git", ["add", "history-tamper.txt"], { cwd: taskWorktree });
++    await execFileAsync("git", ["commit", "-m", "test: external history tamper"], {
++      cwd: taskWorktree,
++    });
++    const resultPath = await writeBlockedResult(
++      issued,
++      "The external agent returned blocked after changing Git history.",
++    );
++
++    const rejected = await returnAgentResult(taskWorktree, taskId, resultPath);
++    expect(rejected.code).not.toBe(0);
++    expect(rejected.stderr).toContain("External agent changed Git history");
++    const readme = await readFile(
++      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
++      "utf8",
++    );
++    expect(readme).toContain('status: "DOING"');
++    expect(readme).not.toContain("external-agent-blocker/");
++  });
++
++  it("rejects a spoofed blocker commit that contains non-task changes", async () => {
++    const { taskId, taskWorktree } = await prepareBlockedResultTask({
++      title: "Reject spoofed blocker recovery",
++      plan: "Recover only the exact task-local blocker commit effect.",
++      slug: "blocked-result-spoofed-recovery",
++    });
++    const issued = await readAgentPacket(taskWorktree, taskId);
++    const resultPath = await writeBlockedResult(
++      issued,
++      "The blocker receipt exists in a commit that also contains unauthorized source changes.",
++    );
++    await persistBlockedStatusWithoutCommit({ packet: issued, resultPath, root: taskWorktree });
++    await writeFile(path.join(taskWorktree, "spoofed-change.txt"), "must be rejected\n", "utf8");
++    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`, "spoofed-change.txt"], {
++      cwd: taskWorktree,
++    });
++    await execFileAsync(
++      "git",
++      ["commit", "-m", `🚧 ${taskId.split("-").at(-1)} task: record external blocker`],
++      { cwd: taskWorktree },
++    );
++
++    const rejected = await returnAgentResult(taskWorktree, taskId, resultPath);
++    expect(rejected.code).not.toBe(0);
++    expect(rejected.stderr).toContain(
++      "Git history changed outside the recoverable Agentplane blocker effect",
++    );
++  });
++});
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+index dd9f99f1f..854e83bdf 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+@@ -832,7 +832,9 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
+     ]);
+     await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+     await execFileAsync("git", ["add", "."], { cwd: root });
+-    await execFileAsync("git", ["commit", "-m", "test: seed branch external task"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: seed branch external task"], {
++      cwd: root,
++    });
+ 
+     const branch = `task/${taskId}/external-round-trip`;
+     const taskWorktree = path.join(
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-branch-state.ts b/packages/agentplane/src/commands/shared/workflow-step-branch-state.ts
+index 3ad2525c1..d5f00460f 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-branch-state.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-branch-state.ts
+@@ -1,4 +1,21 @@
+-import type { WorkflowRouteState } from "./workflow-step.js";
++import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
++import { terminalStep } from "./workflow-step-factory.js";
++
++export function blockedTaskStep(state: WorkflowRouteState): WorkflowStep {
++  return terminalStep({
++    state,
++    id: "terminal.task_blocked",
++    code: "task_blocked",
++    phase: "task_blocked",
++    checkout: "task_worktree",
++    role: "CODER",
++    outcome: "attention_required",
++    summary:
++      "the task is blocked by a recorded semantic outcome; resolve the blocker and explicitly resume the task before requesting another implementation episode",
++    evidenceMissing: ["blocker_resolution"],
++    selectedBlocker: null,
++  });
++}
+ 
+ export function primaryIncludeTaskIds(state: WorkflowRouteState): readonly string[] {
+   return state.batchOwnership.role === "primary" ? [...state.batchOwnership.includedTaskIds] : [];
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-branch.ts b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+index fc8ba201b..e9a610546 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-branch.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+@@ -1,7 +1,11 @@
+ import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
+ import type { RouteBlocker } from "./route-oracle.js";
+ import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
+-import { preMergeCommit, primaryIncludeTaskIds } from "./workflow-step-branch-state.js";
++import {
++  blockedTaskStep,
++  preMergeCommit,
++  primaryIncludeTaskIds,
++} from "./workflow-step-branch-state.js";
+ import { supersededProviderConflictStep } from "./workflow-step-provider-conflict-superseded.js";
+ import { needsQualityEvidenceRefresh } from "./workflow-step-quality.js";
+ import { integrationQueueStep } from "./workflow-step-integration-queue.js";
+@@ -384,6 +388,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
+       selectedBlocker: null,
+     });
+   }
++  if (status === "BLOCKED") return blockedTaskStep(state);
+   if (state.batchOwnership.role === "included") return includedBatchStep(state);
+   if (!state.prFlow?.branch.name && verifiedIncludedClosureCandidate(state.task)) {
+     return cliOperationStep({
+diff --git a/packages/agentplane/src/commands/task/external-agent-blocked-result.ts b/packages/agentplane/src/commands/task/external-agent-blocked-result.ts
+new file mode 100644
+index 000000000..ff891f4b5
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-blocked-result.ts
+@@ -0,0 +1,219 @@
++import { runProcess } from "@agentplaneorg/core/process";
++
++import { CliError } from "../../shared/errors.js";
++import { cmdCommit } from "../guard/impl/commit.js";
++import { commitRefreshedTaskArtifacts } from "../guard/impl/commit-refresh.js";
++import { refreshBranchPrArtifactsAfterTaskCommit } from "../shared/post-commit-pr-artifacts.js";
++import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
++
++import type {
++  ExternalAgentExchange,
++  ExternalAgentResultEnvelope,
++} from "./external-agent-exchange.js";
++import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
++import { cmdTaskSetStatus } from "./set-status.js";
++
++function blockerSubject(taskId: string): string {
++  return `🚧 ${taskId.split("-").at(-1)} task: record external blocker`;
++}
++
++export function externalBlockedResultReceipt(exchange: ExternalAgentExchange): string {
++  return `Agentplane receipt: external-agent-blocker/${exchange.transition_id}/${exchange.state_fingerprint}.`;
++}
++
++export function blockedResultBody(opts: {
++  exchange: ExternalAgentExchange;
++  semantic: ExternalAgentResultEnvelope["result"];
++}): string {
++  const recommendation = opts.semantic.blocker?.recommended_action?.trim();
++  return (
++    `Blocked: external ${opts.exchange.role} could not complete the scoped implementation. ` +
++    `${opts.semantic.summary.trim()}` +
++    (recommendation ? ` Recommended action: ${recommendation}` : "") +
++    ` ${externalBlockedResultReceipt(opts.exchange)}`
++  );
++}
++
++export async function isExternalBlockedResultRecorded(opts: {
++  command: CommandContext;
++  exchange: ExternalAgentExchange;
++}): Promise<boolean> {
++  const task = await loadTaskFromContext({ ctx: opts.command, taskId: opts.exchange.task_id });
++  const receipt = externalBlockedResultReceipt(opts.exchange);
++  return Boolean(
++    task.status === "BLOCKED" &&
++    (task.comments ?? []).some(
++      (comment) => comment.author === "SUPERVISOR" && comment.body.includes(receipt),
++    ),
++  );
++}
++
++function statusPath(line: string): string {
++  const raw = line.length >= 4 ? line.slice(3).trim() : "";
++  const renamed = raw.includes(" -> ") ? (raw.split(" -> ").at(-1) ?? raw) : raw;
++  return renamed.replaceAll("\\", "/");
++}
++
++function assertRetryWorkspaceState(opts: {
++  exchange: ExternalAgentExchange;
++  status_lines: readonly string[];
++  blocker_commit_exists: boolean;
++}): void {
++  const baseline = new Set(opts.exchange.baseline.changed_paths);
++  const taskPrefix = `.agentplane/tasks/${opts.exchange.task_id}/`;
++  for (const line of baseline) {
++    const committedTaskArtifact =
++      opts.blocker_commit_exists && statusPath(line).startsWith(taskPrefix);
++    if (!committedTaskArtifact && !opts.status_lines.includes(line)) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: "A pre-existing repository change moved while recovering the external blocker.",
++      });
++    }
++  }
++  const escaped = opts.status_lines
++    .filter((line) => !baseline.has(line))
++    .map((line) => statusPath(line))
++    .filter((entry) => entry && !entry.startsWith(taskPrefix));
++  if (escaped.length > 0) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `External blocker recovery found changes outside task evidence: ${escaped.join(", ")}.`,
++    });
++  }
++}
++
++async function assertRecoverableBlockerCommit(opts: {
++  exchange: ExternalAgentExchange;
++  head: string;
++}): Promise<void> {
++  const baseline = opts.exchange.baseline.head;
++  if (!baseline) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "External blocker recovery requires a recorded baseline commit.",
++    });
++  }
++  const [subject, count, changedPaths] = await Promise.all([
++    runProcess({
++      command: "git",
++      args: ["show", "-s", "--format=%s", opts.head],
++      cwd: opts.exchange.checkout,
++      reject: false,
++    }),
++    runProcess({
++      command: "git",
++      args: ["rev-list", "--count", `${baseline}..${opts.head}`],
++      cwd: opts.exchange.checkout,
++      reject: false,
++    }),
++    runProcess({
++      command: "git",
++      args: ["diff", "--name-only", "--diff-filter=ACDMRTUXB", `${baseline}..${opts.head}`],
++      cwd: opts.exchange.checkout,
++      reject: false,
++    }),
++  ]);
++  const taskPrefix = `.agentplane/tasks/${opts.exchange.task_id}/`;
++  const committedPaths = changedPaths.stdout.split("\n").filter(Boolean);
++  if (
++    subject.exitCode !== 0 ||
++    subject.stdout.trim() !== blockerSubject(opts.exchange.task_id) ||
++    count.exitCode !== 0 ||
++    count.stdout.trim() !== "1" ||
++    changedPaths.exitCode !== 0 ||
++    committedPaths.length === 0 ||
++    committedPaths.some((entry) => !entry.replaceAll("\\", "/").startsWith(taskPrefix))
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Git history changed outside the recoverable Agentplane blocker effect.",
++    });
++  }
++}
++
++async function commitExternalBlocker(opts: {
++  command: CommandContext;
++  exchange: ExternalAgentExchange;
++}): Promise<void> {
++  const [head, status] = await Promise.all([
++    readDirectTaskHead(opts.exchange.checkout),
++    readDirectRepositoryStatus(opts.exchange.checkout),
++  ]);
++  assertRetryWorkspaceState({
++    exchange: opts.exchange,
++    status_lines: status?.lines ?? [],
++    blocker_commit_exists: head !== opts.exchange.baseline.head,
++  });
++  if (head !== opts.exchange.baseline.head) {
++    if (!head) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: "External blocker recovery could not resolve the current task head.",
++      });
++    }
++    await assertRecoverableBlockerCommit({ exchange: opts.exchange, head });
++    await refreshBranchPrArtifactsAfterTaskCommit({
++      ctx: opts.command,
++      cwd: opts.exchange.checkout,
++      taskId: opts.exchange.task_id,
++      quiet: true,
++    });
++    opts.command.git.invalidateStatus();
++    await commitRefreshedTaskArtifacts({
++      ctx: opts.command,
++      cwd: opts.exchange.checkout,
++      taskId: opts.exchange.task_id,
++      sourceMessage: blockerSubject(opts.exchange.task_id),
++      quiet: true,
++    });
++    return;
++  }
++  const exitCode = await cmdCommit({
++    ctx: opts.command,
++    cwd: opts.exchange.checkout,
++    taskId: opts.exchange.task_id,
++    message: blockerSubject(opts.exchange.task_id),
++    close: false,
++    allow: [],
++    autoAllow: false,
++    allowTasks: true,
++    allowBase: false,
++    allowPolicy: false,
++    allowConfig: false,
++    allowHooks: false,
++    allowCI: false,
++    requireClean: false,
++    quiet: true,
++    closeUnstageOthers: false,
++    closeCheckOnly: false,
++  });
++  if (exitCode !== 0) throw new Error(`External-agent blocker commit exited ${exitCode}.`);
++}
++
++export async function recordExternalBlockedResult(opts: {
++  command: CommandContext;
++  exchange: ExternalAgentExchange;
++  semantic: ExternalAgentResultEnvelope["result"];
++}): Promise<void> {
++  if (!(await isExternalBlockedResultRecorded(opts))) {
++    await cmdTaskSetStatus({
++      ctx: opts.command,
++      cwd: opts.exchange.checkout,
++      taskId: opts.exchange.task_id,
++      status: "BLOCKED",
++      author: "SUPERVISOR",
++      body: blockedResultBody({ exchange: opts.exchange, semantic: opts.semantic }),
++      force: false,
++      yes: false,
++      commitFromComment: false,
++      commitAllow: [],
++      commitAutoAllow: false,
++      commitAllowTasks: true,
++      commitRequireClean: false,
++      confirmStatusCommit: false,
++      quiet: true,
++    });
++  }
++  await commitExternalBlocker({ command: opts.command, exchange: opts.exchange });
++}
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+index 1611b1e1f..a928fc1cc 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+@@ -12,6 +12,10 @@ import type {
+   ExternalAgentExchange,
+   ExternalAgentResultEnvelope,
+ } from "./external-agent-exchange.js";
++import {
++  isExternalBlockedResultRecorded,
++  recordExternalBlockedResult,
++} from "./external-agent-blocked-result.js";
+ import { recoversRecordedImplementationCommit } from "./external-agent-purpose.js";
+ import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
+ import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
+@@ -84,6 +88,7 @@ function assertExternalImplementationReturnState(opts: {
+   current: TaskRouteDecision;
+   current_head: string | null;
+   current_status_lines: readonly string[];
++  require_changes: boolean;
+ }): string[] {
+   const expected = opts.work_order.state_fingerprint;
+   const current = opts.current.workflowStep.preconditionFingerprint;
+@@ -138,7 +143,7 @@ function assertExternalImplementationReturnState(opts: {
+       message: `External-agent changes escaped semantic authority: ${forbidden.join(", ")}.`,
+     });
+   }
+-  if (changed.length === 0 && !resolvesDirtyWorktree) {
++  if (changed.length === 0 && !resolvesDirtyWorktree && opts.require_changes) {
+     throw new CliError({
+       code: "E_VALIDATION",
+       message: "Completed implementation result produced no supervisor-observed workspace change.",
+@@ -195,6 +200,39 @@ export async function applyExternalImplementationResult(opts: {
+ }): Promise<void> {
+   const semantic = opts.envelope.result;
+   if (semantic.status !== "completed") {
++    if (semantic.status === "blocked" && opts.decision.workflowMode === "branch_pr") {
++      const alreadyRecorded = await isExternalBlockedResultRecorded({
++        command: opts.command,
++        exchange: opts.exchange,
++      });
++      if (!alreadyRecorded) {
++        const [head, status] = await Promise.all([
++          readDirectTaskHead(opts.exchange.checkout),
++          readDirectRepositoryStatus(opts.exchange.checkout),
++        ]);
++        const changed = assertExternalImplementationReturnState({
++          exchange: opts.exchange,
++          work_order: opts.work_order,
++          current: opts.decision,
++          current_head: head,
++          current_status_lines: status?.lines ?? [],
++          require_changes: false,
++        });
++        if (changed.length > 0) {
++          throw new CliError({
++            code: "E_VALIDATION",
++            message:
++              "Blocked implementation result produced workspace changes; restore them or return a completed implementation result.",
++          });
++        }
++      }
++      await recordExternalBlockedResult({
++        command: opts.command,
++        exchange: opts.exchange,
++        semantic,
++      });
++      return;
++    }
+     await cmdTaskComment({
+       ctx: opts.command,
+       cwd: opts.exchange.checkout,
+@@ -235,6 +273,7 @@ export async function applyExternalImplementationResult(opts: {
+       current: opts.decision,
+       current_head: head,
+       current_status_lines: status?.lines ?? [],
++      require_changes: true,
+     });
+     if (observedChangedPaths.length === 0) return;
+     const exitCode = await cmdCommit({
