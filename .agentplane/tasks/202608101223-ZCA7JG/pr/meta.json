@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608101223-ZCA7JG/accept-verification-records-for-metadata-only-br",
+  "created_at": "2026-08-10T12:25:44.479Z",
+  "diffstat_sha256": "sha256:4b920278979e2f43923a5899792d67ad7d888d09d0b0711e84f8304574270793",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608101223-ZCA7JG",
+  "updated_at": "2026-08-10T12:25:44.479Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
