@@ -91,7 +91,6 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
         (typeof opts.task.commit?.hash === "string" ? opts.task.commit.hash : null),
       workflowMode: "branch_pr",
     }).catch(() => null));
-  if (!evaluatedSha) return false;
   const taskRoot = path.join(
     opts.ctx.resolvedProject.gitRoot,
     opts.ctx.config.paths.workflow_dir,

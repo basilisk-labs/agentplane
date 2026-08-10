@@ -2,23 +2,16 @@
   "base": "main",
   "branch": "task/202608101223-ZCA7JG/accept-verification-records-for-metadata-only-br",
   "created_at": "2026-08-10T12:25:44.479Z",
-  "diffstat_sha256": "sha256:d31ea5a9fd4396c3c0e38e33e5210b81c64e6878349536921c4d35fbc1d4417d",
-  "last_verified_at": "2026-08-10T12:45:46.545Z",
+  "diffstat_sha256": "sha256:76e6a3e263152b75dce9cdfd1d4c4a6a4d1c2f26cea81b6bb590137fdca3b46b",
+  "last_verified_at": "2026-08-10T12:57:36.157Z",
   "last_verified_diffstat_sha256": "sha256:d31ea5a9fd4396c3c0e38e33e5210b81c64e6878349536921c4d35fbc1d4417d",
   "pr_number": 4810,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4810",
-  "pre_merge_closure": {
-    "basis_commit": "222c682e2f6ab586ad00e99f894a42715a590499",
-    "branch": "task/202608101223-ZCA7JG/accept-verification-records-for-metadata-only-br",
-    "pr_number": 4810,
-    "recorded_at": "2026-08-10T12:47:21.625Z",
-    "state": "closed_before_merge"
-  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608101223-ZCA7JG",
   "updated_at": "2026-08-10T12:31:59.419Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }
