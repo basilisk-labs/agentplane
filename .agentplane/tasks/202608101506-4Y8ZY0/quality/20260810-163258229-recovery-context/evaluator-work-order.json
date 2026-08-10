@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608101506-4Y8ZY0-d8e38d38d2cc0f0b198313e0",
+  "prepared_at": "2026-08-10T16:32:58.229Z",
+  "task": {
+    "id": "202608101506-4Y8ZY0",
+    "revision": 19,
+    "objective": "Accept safe shell-free Bun test checks in supervised verification\n\nThe supervisor currently accepts only three-token bun run scripts and rejects valid repository checks such as bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Reuse the existing shell-free argv parser, accept bounded Bun run and test invocations without invoking a shell, preserve fixed policy checks and evidence capture, and prove that task advance no longer creates false implementation-rework cycles for valid Bun tests.",
+    "acceptance_criteria": [
+      "bun run test:critical",
+      "bun run typecheck",
+      "bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
+      "- In scope: The supervisor currently accepts only three-token bun run scripts and rejects valid repository checks such as bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Reuse the existing shell-free argv parser, accept bounded Bun run and test invocations without invoking a shell, preserve fixed policy checks and evidence capture, and prove that task advance no longer creates false implementation-rework cycles for valid Bun tests.\n- Out of scope: unrelated refactors not required for \"Accept safe shell-free Bun test checks in supervised verification\".",
+      "Goal: remove false verification rework for valid Bun test commands while preserving the supervisor's no-shell execution boundary.\n\n1. Add a failing regression for the exact reported command shape: bun test <repository test paths>. Assert execution uses executable=bun with argv=[test, ...] and never invokes a shell.\n2. Reuse the repository's existing quoted-argv parser instead of maintaining a second keyword/token-count grammar. Accept only the Bun run and Bun test subcommands in supervised declared checks; preserve the fixed routing and doctor checks.\n3. Permit normal inert argv for those Bun subcommands, including multiple test paths and quoted paths, while rejecting shell metacharacters, environment prefixes, unsupported executables, and unsupported Bun subcommands before process launch.\n4. Preserve timeout selection, output tails, stop-on-first-failure behavior, and durable declared-check evidence.\n5. Add regression coverage for accepted bun test and bun run arguments plus rejected injection/unsupported forms.\n6. Run the focused verifier tests, the task-advance lifecycle suite, typecheck, formatting/lint for changed files, and test:critical.\n\nSuccess: the exact P11 check bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts executes successfully through structured argv and can no longer create a false implementation-rework cycle. No shell is invoked and unsupported command families still fail closed.\n\nScope: packages/agentplane verifier parsing/execution and focused tests only. No natural-language task classification, policy, workflow, or release changes.\n\nRollback: revert the parser integration and its tests; existing three-token bun run behavior remains the fallback.",
+      "1. Run bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts. Expected: bun test with one or more repository paths is parsed into executable bun plus inert argv, quoted arguments remain single argv entries, and runProcess is called without a shell.\n2. Exercise negative parser cases for shell metacharacters, environment prefixes, unsupported executables, and unsupported Bun subcommands. Expected: each is rejected before runProcess is called.\n3. Run the exact P11 command bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts through supervised declared-check execution. Expected: status=passed and durable evidence records the exact command, exit code 0, and output tail.\n4. Run bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Expected: all focused verifier and lifecycle regressions pass.\n5. Run bun run typecheck and bun run test:critical. Expected: both pass.\n6. Run lint, formatting, and git diff --check for changed files. Expected: no findings.\n7. Inspect the final diff. Expected: changes stay inside verifier parsing/execution and focused tests; no shell execution, policy change, workflow change, or unrelated refactor is introduced."
+    ]
+  },
+  "evaluated_sha": "7d00386e1104e6cd2b0e0eccea98434d3bec0ca0",
+  "diff_base_sha": "3d417620e9a8b333416d25c2cf19b3ccbdbdd1c9",
+  "blueprint_digest": "e9896b989c3ebae1e6efacc43e759bc6c69e5978f2e09383e7e45ae2e30fda89",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-163258229-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:4f66348097d2292c5cb7e378b0249c612e0a647feb33e5e6be24ea569defd443",
+    "prompt_path": ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/7f29889c4ce63213e3632725c6a28d9fd8933a1d86c137ffdfbe6ee1d451b669.md",
+    "result_schema_path": ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608101506-4Y8ZY0/README.md",
+      "sha256": "sha256:eb01d3b69cad337d548b5a82404bcf8e853f2f239c42433d76f64ce93ac7f257",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/29e139a59d7ee53506e9cff2e7c6dfa50b9bc7a4cf00d434cbdff1c000f13005.patch",
+      "sha256": "sha256:29e139a59d7ee53506e9cff2e7c6dfa50b9bc7a4cf00d434cbdff1c000f13005",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/ec840361936cad08f6f9c2cd4905d8659fea3e44baa9cfd5fdc52f8cb5a8622a.json",
+      "sha256": "sha256:ec840361936cad08f6f9c2cd4905d8659fea3e44baa9cfd5fdc52f8cb5a8622a",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608101506-4Y8ZY0/verification/20260810163248875-afc16683ab7d623c.json",
+      "sha256": "sha256:5af5ed3689a3837734d8e4c7567bfd34913c0363884e83ee670b141d30d5d678",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/90ab2dd9e61cdb54839a0d6ccc70e595be5e4223b8e083a6ccda2d2c88f81956.json",
+      "sha256": "sha256:90ab2dd9e61cdb54839a0d6ccc70e595be5e4223b8e083a6ccda2d2c88f81956",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import path from "node:path";
 import type { TaskData } from "../../backends/task-backend.js";
 import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
+import { resolveShellInvocation, verificationChildEnv } from "../shared/pr-meta/verify-log.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
@@ -13,6 +14,11 @@ const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.free
 });
 const CHECK_OUTPUT_LIMIT = 4000;
 const SAFE_BUN_SCRIPT = /^[A-Za-z0-9][A-Za-z0-9:._-]*$/u;
+const BUN_UNMATCHED_FILTER_PATTERN = /following filters did not match any test files/iu;
+const BUN_ZERO_TEST_PATTERNS = [
+  /\bno tests? (?:found|matched|ran|were run)\b/iu,
+  /\bran 0 tests?\b/iu,
+] as const;
 const AGENTPLANE_BIN = resolveAgentplaneBinPath();
 
 type DirectTaskCheck = {
@@ -41,11 +47,36 @@ function tail(value: string): string {
   return value.length <= CHECK_OUTPUT_LIMIT ? value : value.slice(-CHECK_OUTPUT_LIMIT);
 }
 
-export function parseDirectTaskCheck(command: string): { script: string } | null {
-  const tokens = command.trim().split(/\s+/u);
-  if (tokens.length !== 3 || tokens[0] !== "bun" || tokens[1] !== "run") return null;
-  const script = tokens[2] ?? "";
-  return SAFE_BUN_SCRIPT.test(script) ? { script } : null;
+function repositoryBoundArg(value: string): boolean {
+  const candidates = [value];
+  const separator = value.indexOf("=");
+  if (separator !== -1) candidates.push(value.slice(separator + 1));
+  return candidates.every((candidate) => {
+    if (!candidate || candidate.startsWith("-")) return true;
+    const normalized = candidate.replaceAll("\\", "/");
+    return (
+      !path.isAbsolute(candidate) &&
+      !path.win32.isAbsolute(candidate) &&
+      !normalized.split("/").includes("..")
+    );
+  });
+}
+
+export function parseDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
+  let invocation: ReturnType<typeof resolveShellInvocation>;
+  try {
+    invocation = resolveShellInvocation(command);
+  } catch {
+    return null;
+  }
+  if (invocation.command !== "bun") return null;
+  const [subcommand, target] = invocation.args;
+  if (!invocation.args.slice(1).every((argument) => repositoryBoundArg(argument))) return null;
+  if (subcommand === "test") {
+    return { executable: "bun", args: invocation.args, script: null };
+  }
+  if (subcommand !== "run" || !target || !SAFE_BUN_SCRIPT.test(target)) return null;
+  return { executable: "bun", args: invocation.args, script: target };
 }
 
 function directTaskCheckTimeoutMs(script: string | null): number {
@@ -54,9 +85,22 @@ function directTaskCheckTimeoutMs(script: string | null): number {
     : (CHECK_TIMEOUT_MS_BY_SCRIPT[script] ?? DEFAULT_CHECK_TIMEOUT_MS);
 }
 
+function bunTestReportedZeroTests(opts: {
+  parsed: ParsedDirectTaskCheck;
+  stdout: string;
+  stderr: string;
+}): boolean {
+  if (opts.parsed.executable !== "bun" || opts.parsed.args[0] !== "test") return false;
+  const output = `${opts.stdout}\n${opts.stderr}`;
+  if (BUN_UNMATCHED_FILTER_PATTERN.test(output)) return true;
+  const passCounts = [...output.matchAll(/\b(\d+)\s+pass\b/giu)].map((match) => Number(match[1]));
+  if (passCounts.some((count) => count > 0)) return false;
+  return passCounts.includes(0) || BUN_ZERO_TEST_PATTERNS.some((pattern) => pattern.test(output));
+}
+
 function parseTrustedDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
   const bun = parseDirectTaskCheck(command);
-  if (bun) return { executable: "bun", args: ["run", bun.script], script: bun.script };
+  if (bun) return bun;
   if (command === "node .agentplane/policy/check-routing.mjs") {
     return {
       executable: "node",
@@ -109,14 +153,16 @@ async function writeCheckArtifact(opts: {
 
 /**
  * Executes only the intentionally narrow task-verify grammar. The CLI never
- * passes arbitrary task text to a shell: each command is a safe `bun run`
- * script or a fixed docs-policy check through the structured process boundary.
+ * passes arbitrary task text to a shell: each command is a repository-bound
+ * `bun run`/`bun test` argv or a fixed docs-policy check through the structured
+ * process boundary.
  */
 export async function runDirectTaskVerification(opts: {
   command: CommandContext;
   task: Pick<TaskData, "verify" | "task_kind" | "mutation_scope">;
   task_id: string;
   cwd: string;
+  run_process?: typeof runProcess;
 }): Promise<DirectTaskVerificationResult> {
   const checks: DirectTaskCheck[] = [];
   const commands = directTaskVerificationCommands(opts.task);
@@ -140,10 +186,11 @@ export async function runDirectTaskVerification(opts: {
     }
     const started = Date.now();
     try {
-      const executed = await runProcess({
+      const executed = await (opts.run_process ?? runProcess)({
         command: parsed.executable,
         args: parsed.args,
         cwd: opts.cwd,
+        env: verificationChildEnv(),
         timeoutMs: directTaskCheckTimeoutMs(parsed.script),
         maxBuffer: 1024 * 1024,
         reject: false,
@@ -161,6 +208,14 @@ export async function runDirectTaskVerification(opts: {
           status: "failed" as const,
           checks,
           reason: `Declared check failed: ${command}`,
+        };
+        return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
+      }
+      if (bunTestReportedZeroTests({ parsed, stdout: executed.stdout, stderr: executed.stderr })) {
+        const result = {
+          status: "failed" as const,
+          checks,
+          reason: `Declared bun test check executed zero tests: ${command}`,
         };
         return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
       }
