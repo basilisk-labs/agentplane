@@ -1,10 +1,11 @@
 ---
 id: "202608102112-AY0H1F"
 title: "Repair exactly-once external episode recovery"
-status: "DOING"
+result_summary: "Merged via PR #4816."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -23,6 +24,20 @@ verification:
   updated_by: "TESTER"
   note: "PASS for implementation a1f0190de: state-machine and all affected task-advance/supervisor suites pass 80/80; drifted running and effect-in-doubt intents become exact-key replaceable failures; CLI retires the old exchange, emits the exact replacement command, issues a distinct successor, and rejects late retired output. Typecheck, knip, ESLint, format, diff, core build, and CLI build pass; hosted CI supplies the full independent rerun."
   attempts: 0
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-10T22:40:58.248Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -32,8 +47,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "a1f0190dec44ba53df238aedfc4839dd8ba9ce1c"
-  message: "🐛 AY0H1F task: retire drifted external intents"
+  hash: "025bd13344267fe13e5faeb3589fa027f238c7cb"
+  message: "🧪 AY0H1F task: isolate drift recovery e2e"
 comments:
   -
     author: "CODER"
@@ -53,6 +68,9 @@ comments:
   -
     author: "CODER"
     body: "Review P1 resolved: a result-less issued intent whose route fingerprint drifts is durably failed, its exchange is retired, and the CLI returns the exact replacement command; late old output is rejected."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4816 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -131,9 +149,17 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS for implementation a1f0190de: state-machine and all affected task-advance/supervisor suites pass 80/80; drifted running and effect-in-doubt intents become exact-key replaceable failures; CLI retires the old exchange, emits the exact replacement command, issues a distinct successor, and rejects late retired output. Typecheck, knip, ESLint, format, diff, core build, and CLI build pass; hosted CI supplies the full independent rerun."
+  -
+    type: "status"
+    at: "2026-08-10T22:40:58.248Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4816 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+    commit: "025bd13344267fe13e5faeb3589fa027f238c7cb"
 doc_version: 3
-doc_updated_at: "2026-08-10T22:26:43.786Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-10T22:40:58.262Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make task advance consume an external-agent envelope exactly once only after its result is durably applied. Prevent read-only workspace-resolution packets from creating fresh intents, let stale in-flight intents transition to a recoverable terminal state after state-fingerprint drift, issue a fresh replacement transition without replaying old output, and return deterministic recovery instructions without manual journal edits."
 sections:
   Summary: |-
@@ -518,3 +544,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-10T22:40:58.248Z`
