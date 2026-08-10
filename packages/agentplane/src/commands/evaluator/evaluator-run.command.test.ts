@@ -876,7 +876,7 @@ describe("evaluator run command", () => {
     );
     await writeFile(
       path.join(root, `.agentplane/tasks/${taskId}/verification/unsupported-schema-record.json`),
-      `${JSON.stringify({ ...supportedRecord, schema_version: 2 })}\n`,
+      `${JSON.stringify({ ...supportedRecord, schema_version: 3 })}\n`,
       "utf8",
     );
 

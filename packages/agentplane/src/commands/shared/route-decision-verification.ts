@@ -7,6 +7,7 @@ import type { RouteBatchOwnership } from "./route-batch-ownership.js";
 import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
 import type { CommandContext } from "./task-backend.js";
 import { hasAcceptedVerificationRecord } from "./task-verification-records.js";
+import type { VerificationRecordAssessment } from "./task-verification-records.js";
 
 function hostedCloseVerificationTarget(
   task: TaskData,
@@ -65,6 +66,7 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
   resume: TaskResumeContext;
   prFlow: PrFlowStatusReport | null;
   batchOwnership: RouteBatchOwnership;
+  onAssessment?: (assessment: VerificationRecordAssessment) => void;
 }): Promise<boolean> {
   const taskIds =
     opts.batchOwnership.role === "none" ? [opts.task.id] : opts.batchOwnership.allTaskIds;
@@ -98,7 +100,7 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
   );
   const requireConcreteCheckDetails =
     opts.task.status === "DONE" || Boolean(opts.task.commit?.hash?.trim());
-  return await hasAcceptedVerificationRecord({
+  const recordOptions: Parameters<typeof hasAcceptedVerificationRecord>[0] = {
     taskRoot,
     task: opts.task,
     evaluatedSha,
@@ -114,5 +116,7 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
       opts.resume.head_sha ??
       null,
     requireConcreteCheckDetails,
-  }).catch(() => false);
+  };
+  if (opts.onAssessment) recordOptions.onAssessment = opts.onAssessment;
+  return await hasAcceptedVerificationRecord(recordOptions).catch(() => false);
 }

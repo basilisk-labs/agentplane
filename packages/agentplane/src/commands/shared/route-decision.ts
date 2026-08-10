@@ -393,7 +393,6 @@ export async function buildTaskRouteDecision(opts: {
     ctx,
     resume,
     task,
-    remoteEnabled,
     onDiagnostic: recordLocalDiagnostic,
   });
   const qualityReviewTargetSha =

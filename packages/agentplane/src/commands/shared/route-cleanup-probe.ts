@@ -10,7 +10,6 @@ export async function resolveDoneCleanupProbe(opts: {
   ctx: CommandContext;
   resume: TaskResumeContext;
   task: TaskData;
-  remoteEnabled: boolean;
   onDiagnostic?: (message: string) => void;
 }): Promise<RouteCleanupProbe> {
   if (
@@ -18,9 +17,6 @@ export async function resolveDoneCleanupProbe(opts: {
     String(opts.task.status).toUpperCase() !== "DONE"
   ) {
     return { state: "not_requested" };
-  }
-  if (!opts.remoteEnabled) {
-    return { state: "unavailable", reason: "remote cleanup proof was not requested" };
   }
   const baseBranch = opts.resume.base_branch?.trim() ?? "";
   if (!baseBranch) return { state: "unavailable", reason: "base branch is unavailable" };

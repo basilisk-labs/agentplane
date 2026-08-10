@@ -184,6 +184,45 @@ describe("commands/workflow", () => {
     expect(record.digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
   });
 
+  it("records pass and a structured finding in one task revision", async () => {
+    const root = await makeRepo();
+    const taskId = "202602050900-V1F4G";
+    await addTask(root, taskId);
+    const { backend: beforeBackend } = await taskBackend.loadTaskBackend({
+      cwd: root,
+      rootOverride: null,
+    });
+    const before = await beforeBackend.getTask(taskId);
+    if (!before) throw new Error("Missing task before verification.");
+
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+    await cmdVerifyParsed({
+      ctx,
+      cwd: root,
+      rootOverride: undefined,
+      taskId,
+      state: "ok",
+      by: "REVIEWER",
+      note: "Pass with one recorded residual finding.",
+      observation: "The lifecycle previously split verification and findings.",
+      impact: "The receipt became stale immediately after a successful check.",
+      resolution: "Persist both outcomes in one guarded mutation.",
+      localOnly: true,
+      quiet: true,
+    });
+
+    const { backend } = await taskBackend.loadTaskBackend({ cwd: root, rootOverride: null });
+    const after = await backend.getTask(taskId);
+    if (!after) throw new Error("Missing task after verification.");
+    expect(after.revision).toBe((before.revision ?? 0) + 1);
+    expect(after.verification?.state).toBe("ok");
+    expect(after.sections?.Findings).toContain(
+      "The lifecycle previously split verification and findings.",
+    );
+    expect(after.sections?.Verification).toContain("VERIFY — ok");
+    expect(after.sections?.Verification).not.toContain("doc_updated_at=");
+  });
+
   it("keeps the final verification state aligned with a durable record during concurrent verifies", async () => {
     const root = await makeRepo();
     const taskId = "202602050900-V1F4E";

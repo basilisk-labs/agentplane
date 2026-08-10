@@ -70,6 +70,7 @@ export type ExecuteTaskVerificationTransitionRequest = {
   doc: string;
   requiredSections: string[];
   maxReworkAttempts?: number;
+  verificationInputDigest?: string | null;
 };
 
 export type TaskVerificationTransitionExecution = TaskTransitionWrite & {
@@ -300,8 +301,8 @@ export function executeTaskVerificationTransitionRequest(
   const docVersion = normalizeTaskDocVersion(opts.task.doc_version);
   const verifyStepsRef = [
     `doc_version=${String(docVersion)}`,
-    `doc_updated_at=${String(opts.task.doc_updated_at ?? "missing")}`,
     `excerpt_hash=sha256:${verifyStepsHash ?? "missing"}`,
+    ...(opts.verificationInputDigest ? [`input_digest=${opts.verificationInputDigest}`] : []),
   ].join(", ");
   const currentAttempts =
     typeof opts.task.verification?.attempts === "number" &&

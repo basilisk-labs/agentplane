@@ -26,10 +26,13 @@ import {
   qualityReworkHasNewVerification,
   verificationReworkHasNewImplementation,
 } from "./route-decision-verification.js";
+import { addVerificationRequiredBlocker } from "./route-decision-verification-blocker.js";
 import {
   filterTaskWorktreeBlockingPaths,
   isTaskArtifactPath,
 } from "./route-decision-worktree-cleanliness.js";
+
+export { addVerificationRequiredBlocker } from "./route-decision-verification-blocker.js";
 
 export function routeGatePriority(code: string): number {
   if (
@@ -281,31 +284,6 @@ export function addTaskWorktreeCleanlinessBlocker(opts: {
   );
 }
 
-export function addVerificationRequiredBlocker(opts: {
-  blockers: RouteBlocker[];
-  task: TaskData;
-  acceptedVerificationRecord?: boolean;
-}): void {
-  const status = String(opts.task.status).toUpperCase();
-  const requiresVerification =
-    status === "DONE" ||
-    (status === "DOING" &&
-      (Boolean(opts.task.commit?.hash?.trim()) || opts.task.verification?.state === "ok"));
-  if (
-    !requiresVerification ||
-    (opts.task.verification?.state === "ok" && opts.acceptedVerificationRecord !== false)
-  ) {
-    return;
-  }
-  addBlocker(
-    opts.blockers,
-    "verification_required",
-    opts.task.verification?.state === "ok"
-      ? "the passing verification record does not cover the current implementation head"
-      : "the recorded task implementation does not have a passing verification record",
-  );
-}
-
 export async function deriveBlockers(opts: {
   ctx: CommandContext;
   task: TaskData;
@@ -346,13 +324,25 @@ export async function deriveBlockers(opts: {
     });
   }
   if (opts.workflowMode === "branch_pr") {
+    let verificationReason: string | null = null;
+    const finalizedDoneTask =
+      normalizedTaskStatus === "DONE" &&
+      opts.prFlow?.pr.state === "MERGED" &&
+      opts.prFlow.closeTail.state === "recorded_on_base";
     addVerificationRequiredBlocker({
       blockers,
       task: opts.task,
       acceptedVerificationRecord:
-        opts.task.verification?.state === "ok"
-          ? await hasAcceptedVerificationForCurrentImplementation(opts)
+        opts.task.verification?.state === "ok" && !finalizedDoneTask
+          ? await hasAcceptedVerificationForCurrentImplementation({
+              ...opts,
+              onAssessment: (assessment) => {
+                verificationReason = assessment.reason;
+              },
+            })
           : undefined,
+      verificationReason,
+      finalizedDoneTask,
     });
   }
   if (opts.workflowMode === "branch_pr") {

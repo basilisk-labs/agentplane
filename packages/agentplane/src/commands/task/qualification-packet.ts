@@ -158,7 +158,7 @@ function parseVerificationRecord(value: unknown, taskId: string): QualificationV
     digest: asString(value.digest) ?? "",
   };
   if (
-    record.schema_version !== 1 ||
+    (record.schema_version !== 1 && record.schema_version !== 2) ||
     record.kind !== "task_verification_record" ||
     record.task_id !== taskId ||
     record.result !== "ok" ||
