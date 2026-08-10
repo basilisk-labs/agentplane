@@ -29,10 +29,12 @@ When an external EXECUTOR returns a valid state-bound blocked semantic result, c
 ```text
  .agentplane/policy/incidents.md                    |   1 +
  packages/agentplane/assets/policy/incidents.md     |   1 +
- .../src/cli/run-cli.core.task-advance.test.ts      | 225 ++++++++++++++++++++-
- .../src/commands/shared/workflow-step-branch.ts    |  15 ++
- .../external-agent-implementation-authority.ts     |  87 +++++++-
- 5 files changed, 327 insertions(+), 2 deletions(-)
+ ...un-cli.core.task-advance.blocked-result.test.ts | 293 +++++++++++++++++++++
+ .../src/cli/run-cli.core.task-advance.test.ts      |   4 +-
+ .../commands/shared/workflow-step-branch-state.ts  |  19 +-
+ .../src/commands/shared/workflow-step-branch.ts    |   7 +-
+ .../external-agent-implementation-authority.ts     |  87 +++++-
+ 7 files changed, 408 insertions(+), 4 deletions(-)
 ```
 
 </details>
