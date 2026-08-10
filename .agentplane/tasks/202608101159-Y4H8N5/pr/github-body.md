@@ -16,7 +16,7 @@ Record and verify the recovery that preserved both dirty qualification worktrees
 ## Verification
 
 - State: ok
-- Note: Canonical checkout recovery verified on the current implementation target.
+- Note: Verified canonical main ownership and byte-preservation of both dirty recovery worktrees.
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -6,14 +6,14 @@ Created: 2026-08-10T12:00:37.483Z
 
 - Task: `202608101159-Y4H8N5`
 - Title: Restore canonical primary checkout ownership
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608101159-Y4H8N5/restore-canonical-primary-checkout-ownership`
 - Canonical task record: `.agentplane/tasks/202608101159-Y4H8N5/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Canonical checkout recovery verified on the current implementation target.
+- Note: Verified canonical main ownership and byte-preservation of both dirty recovery worktrees.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
