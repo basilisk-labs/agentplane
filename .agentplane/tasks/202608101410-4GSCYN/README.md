@@ -4,7 +4,7 @@ title: "Stop external-agent replay after a typed blocked result"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -29,35 +29,34 @@ verification:
   note: "Verified blocked-result terminal behavior, replay refusal, zero-change trust boundary, resume freshness, typecheck, formatting, and critical suite."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-10T14:40:06.741Z"
+  updated_at: "2026-08-10T14:59:34.534Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 4 typed finding(s)."
-  evaluated_sha: "f418c45799e9eba70c561a386682a57b8cce7a26"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "3b66b944ef0ef743f21acb3a524751736cf60a12"
   blueprint_digest: "d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c"
   evidence_refs:
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-143820810-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-143820810-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/15ae17d8a5851661ce0b3970d9ca36090e9e1fafa5cce0b628aabea0da17cdac.md"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-143820810-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-143820810-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-143820810-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-143820810-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-145052408-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-145052408-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/fe1da83debbada67bd62edc470575cdf0f9d725d1901e43747f4d2e87a7716d9.md"
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-145052408-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-145052408-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/20260810-145052408-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608101410-4GSCYN/README.md"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/3f2e6486bcb8fefe73ac994f158421e1dcfee6ba27f12e7d40eb647abecb9474.patch"
-    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/06e34016b25e966b5fc8ea502747ab2cd42bc8de9e0025e9ccd97e94a3beabc8.json"
-    - ".agentplane/tasks/202608101410-4GSCYN/verification/20260810143753314-5534c674a516bc5e.json"
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/fa9de618f129d14f8d81936a0b41668bf4f0772ec9e1b734d6ffcc0fb9a57fb0.patch"
+    - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/fc1f5185f145db5310c45409e7e3a377e60afa8ce82c846d3ded267ddb67f88f.json"
+    - ".agentplane/tasks/202608101410-4GSCYN/verification/20260810145013796-b3f7f3660a609f9a.json"
     - ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/0ccfda77d6f1cfdf86c92a8efe75935565ee4ca301ad143fdb7804153736afa7.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "recordExternalBlockedResult calls task set-status and then cmdCommit with allowTasks=true without first validating the current head, task fingerprint, baseline status, or agent-introduced paths."
-    - "A non-completed agent could alter active-task README or PR metadata and return blocked; the new path can then stage those task artifacts under a trusted supervisor commit."
-    - "The positive lifecycle and replay tests pass, but no negative test mutates task artifacts or workspace content before returning blocked."
-    - "Residual risk: Without a zero-change return check, protected task metadata can cross the external-agent trust boundary inside a supervisor-attributed commit."
+    - "No blocking implementation finding: the previously identified trust-boundary gap is closed before supervisor-owned task mutation."
+    - "The focused lifecycle suite covers one-time blocked consumption, exact replay refusal, no agent-run budget growth while blocked, explicit resume freshness, and rejection of agent-introduced workspace changes."
+    - "Direct-workflow, completed-result, stale-result, planning, evaluator, workflow projection, typecheck, and critical regression evidence remains passing."
+    - "Residual risk: The automatic declared-check classifier still rejects the valid focused bun test command; this is a separate lifecycle defect already captured for the dedicated verifier task in the approved plan."
 execution_route:
   frozen: true
   reason_codes:

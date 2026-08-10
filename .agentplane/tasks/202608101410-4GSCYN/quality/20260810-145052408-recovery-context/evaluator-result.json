@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "No blocking implementation finding: the previously identified trust-boundary gap is closed before supervisor-owned task mutation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/fa9de618f129d14f8d81936a0b41668bf4f0772ec9e1b734d6ffcc0fb9a57fb0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The focused lifecycle suite covers one-time blocked consumption, exact replay refusal, no agent-run budget growth while blocked, explicit resume freshness, and rejection of agent-introduced workspace changes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/fa9de618f129d14f8d81936a0b41668bf4f0772ec9e1b734d6ffcc0fb9a57fb0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Direct-workflow, completed-result, stale-result, planning, evaluator, workflow projection, typecheck, and critical regression evidence remains passing.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/fa9de618f129d14f8d81936a0b41668bf4f0772ec9e1b734d6ffcc0fb9a57fb0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: The automatic declared-check classifier still rejects the valid focused bun test command; this is a separate lifecycle defect already captured for the dedicated verifier task in the approved plan.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608101410-4GSCYN/quality/objects/sha256/fa9de618f129d14f8d81936a0b41668bf4f0772ec9e1b734d6ffcc0fb9a57fb0.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
