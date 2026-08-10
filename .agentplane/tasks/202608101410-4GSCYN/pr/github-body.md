@@ -32,10 +32,10 @@ formatting, and critical CLI coverage all pass.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.task-advance.test.ts      | 153 ++++++++++++++++++++-
+ .../src/cli/run-cli.core.task-advance.test.ts      | 225 ++++++++++++++++++++-
  .../src/commands/shared/workflow-step-branch.ts    |  15 ++
- .../external-agent-implementation-authority.ts     |  64 +++++++++
- 3 files changed, 231 insertions(+), 1 deletion(-)
+ .../external-agent-implementation-authority.ts     |  87 +++++++-
+ 3 files changed, 325 insertions(+), 2 deletions(-)
 ```
 
 </details>

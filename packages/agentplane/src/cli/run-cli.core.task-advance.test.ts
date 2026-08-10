@@ -1070,6 +1070,78 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     expect(resumed.state_fingerprint).not.toBe(issued.state_fingerprint);
   });
 
+  it("rejects workspace changes returned with a blocked branch result", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await cp(
+      path.join(process.cwd(), ".agentplane", "policy"),
+      path.join(root, ".agentplane", "policy"),
+      { recursive: true },
+    );
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const taskId = await createTask(root, "Blocked result with workspace changes");
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Reject non-completed semantic results that leave workspace changes.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed blocked-result tamper task"], {
+      cwd: root,
+    });
+
+    const branch = `task/${taskId}/blocked-result-tamper`;
+    const taskWorktree = path.join(
+      root,
+      ".agentplane",
+      "worktrees",
+      `${taskId}-blocked-result-tamper`,
+    );
+    await mkdir(path.dirname(taskWorktree), { recursive: true });
+    await execFileAsync("git", ["worktree", "add", "-b", branch, taskWorktree], { cwd: root });
+
+    const issued = await readAgentPacket(taskWorktree, taskId);
+    const headBeforeReturn = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: taskWorktree,
+    });
+    await mkdir(path.join(taskWorktree, "src"), { recursive: true });
+    await writeFile(
+      path.join(taskWorktree, "src", "blocked-tamper.txt"),
+      "must not persist\n",
+      "utf8",
+    );
+    const resultPath = await writeBlockedResult(
+      issued,
+      "The agent is blocked after changing an otherwise allowed source path.",
+    );
+
+    const rejected = await returnAgentResult(taskWorktree, taskId, resultPath);
+    expect(rejected.code).not.toBe(0);
+    expect(rejected.stderr).toContain("Blocked implementation result produced workspace changes");
+    const readme = await readFile(
+      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(readme).toContain('status: "DOING"');
+    expect(readme).not.toContain(
+      "The agent is blocked after changing an otherwise allowed source path.",
+    );
+    const headAfterReturn = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: taskWorktree,
+    });
+    expect(headAfterReturn.stdout.trim()).toBe(headBeforeReturn.stdout.trim());
+  });
+
   it("matches the managed direct-run preview fingerprint and preserves task evidence", async () => {
     const root = await mkGitRepoRoot();
     const config = defaultConfig();
