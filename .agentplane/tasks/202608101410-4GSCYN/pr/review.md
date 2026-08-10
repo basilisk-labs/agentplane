@@ -12,8 +12,8 @@ Created: 2026-08-10T14:11:35.906Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: GitHub review requires retry-safe blocked-result persistence after partial status/commit effects.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

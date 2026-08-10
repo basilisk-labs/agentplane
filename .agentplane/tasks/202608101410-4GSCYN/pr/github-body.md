@@ -15,8 +15,8 @@ When an external EXECUTOR returns a valid state-bound blocked semantic result, c
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: GitHub review requires retry-safe blocked-result persistence after partial status/commit effects.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
