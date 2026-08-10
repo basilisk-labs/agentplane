@@ -3,11 +3,15 @@
   "branch": "task/202608101159-Y4H8N5/restore-canonical-primary-checkout-ownership",
   "created_at": "2026-08-10T12:00:37.483Z",
   "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-10T12:16:26.015Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "pr_number": 4809,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4809",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202608101159-Y4H8N5",
-  "updated_at": "2026-08-10T12:00:37.483Z",
+  "updated_at": "2026-08-10T12:12:38.639Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

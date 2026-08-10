@@ -1,0 +1,15 @@
+{
+  "details": "Primary main and origin/main both resolve to 27671e9b8cdec21b1170719a87019f703cec9526. Recovery branches remain at d6f6dc64270c0b5ce8db59d6c30a7a23b7f73d83 with the recorded pre-switch status digests. git diff --check main...HEAD passed. All PR changes are under .agentplane/tasks/202608101159-Y4H8N5/. GitHub PR #4809 head matched local HEAD at verification time.",
+  "digest": "sha256:99cf43fd486adfd041ecebe682e48d15ccdc86c1c698513f8bda0fe1123888b8",
+  "implementation_sha": null,
+  "kind": "task_verification_record",
+  "note": "Verified current task revision: main ownership, recovery-branch preservation digests, scoped PR diff, and hosted PR head all pass.",
+  "recorded_at": "2026-08-10T12:15:15.853Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Restore canonical primary checkout ownership\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Restore canonical primary checkout ownership\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:dfba55f6771342e65932e99aa576096c01566dacec4e68b8d63f4c1dcca19e94",
+  "task_id": "202608101159-Y4H8N5",
+  "verification_command": "agentplane verify 202608101159-Y4H8N5 --ok --by TESTER",
+  "verifier": "TESTER"
+}

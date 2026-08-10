@@ -12,8 +12,8 @@ Created: 2026-08-10T12:00:37.483Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical checkout recovery verified on the current implementation target.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-10T12:00:37.483Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-10T12:00:37.483Z
+- Updated: 2026-08-10T12:12:38.639Z
 - Branch: task/202608101159-Y4H8N5/restore-canonical-primary-checkout-ownership
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
