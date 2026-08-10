@@ -162,6 +162,7 @@ export async function observeProviderPr(opts: {
         gitRoot: opts.gitRoot,
         branch: opts.branch,
         baseBranch: opts.baseBranch,
+        requireUnique: true,
       });
 }
 

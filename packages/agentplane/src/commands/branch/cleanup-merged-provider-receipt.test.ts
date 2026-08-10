@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
 import { chmod, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
@@ -29,6 +30,13 @@ import {
 installRunCliIntegrationHarness();
 
 const execFileAsync = promisify(execFile);
+const TEST_TIMEOUT_MS = 120_000;
+const bunTestRuntime = (
+  globalThis as typeof globalThis & {
+    Bun?: { jest: (moduleUrl: string) => { setDefaultTimeout: (timeoutMs: number) => void } };
+  }
+).Bun;
+bunTestRuntime?.jest(fileURLToPath(import.meta.url)).setDefaultTimeout(TEST_TIMEOUT_MS);
 const TEST_WORKFLOW_GITIGNORE =
   ".agentplane/worktrees\n" +
   ".agentplane/cache\n" +

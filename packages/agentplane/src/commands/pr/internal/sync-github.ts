@@ -243,6 +243,7 @@ export async function observeExistingGithubPrByBranch(opts: {
   gitRoot: string;
   branch: string;
   baseBranch?: string | null;
+  requireUnique?: boolean;
 }): Promise<GithubPrLookupResult> {
   const repo = await resolveGithubRepoFromOrigin(opts.gitRoot);
   if (!repo) {
@@ -267,17 +268,24 @@ export async function observeExistingGithubPrByBranch(opts: {
       return { state: "unavailable", reason: "GitHub branch lookup returned a non-array payload" };
     }
     if (parsed.length === 0) return { state: "not_found" };
-    for (const record of parsed) {
-      const observed = normalizeObservedGithubPr(record);
-      if (observed) {
-        return await observeGithubPrByNumberInRepo({
-          gitRoot: opts.gitRoot,
-          repo,
-          prNumber: observed.prNumber,
-          branch: opts.branch,
-          baseBranch,
-        });
-      }
+    const observedRecords = parsed
+      .map((record) => normalizeObservedGithubPr(record))
+      .filter((record): record is ObservedGithubPr => record !== null);
+    if (opts.requireUnique && observedRecords.length > 1) {
+      return {
+        state: "unavailable",
+        reason: `GitHub branch lookup returned multiple PR records for the exact branch and base: ${observedRecords.length}`,
+      };
+    }
+    const observed = observedRecords[0];
+    if (observed) {
+      return await observeGithubPrByNumberInRepo({
+        gitRoot: opts.gitRoot,
+        repo,
+        prNumber: observed.prNumber,
+        branch: opts.branch,
+        baseBranch,
+      });
     }
     return {
       state: "unavailable",
