@@ -4,7 +4,7 @@ title: "Stop external-agent replay after a typed blocked result"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -24,7 +24,7 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-10T14:47:20.157Z"
+  updated_at: "2026-08-10T14:50:13.796Z"
   updated_by: "TESTER"
   note: "Verified blocked-result terminal behavior, replay refusal, zero-change trust boundary, resume freshness, typecheck, formatting, and critical suite."
   attempts: 0
@@ -145,8 +145,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified blocked-result terminal behavior, replay refusal, zero-change trust boundary, resume freshness, typecheck, formatting, and critical suite."
+  -
+    type: "verify"
+    at: "2026-08-10T14:50:13.796Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified blocked-result terminal behavior, replay refusal, zero-change trust boundary, resume freshness, typecheck, formatting, and critical suite."
 doc_version: 3
-doc_updated_at: "2026-08-10T14:47:21.247Z"
+doc_updated_at: "2026-08-10T14:50:15.156Z"
 doc_updated_by: "SUPERVISOR"
 description: "When an external EXECUTOR returns a valid state-bound blocked semantic result, consume that envelope exactly once, persist the blocker as task state and evidence, and return a non-episode boundary. Do not issue another implementation envelope until an operator deliberately resolves the blocker and resumes the task. Preserve completed-result behavior and exact replay idempotency."
 sections:
@@ -315,6 +321,61 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T14:47:06.316Z, excerpt_hash=sha256:86b0656c20c7d0d6524a42fa6cf6d195dbe7409e19e6ff8fadb0bd4d206b8eb2
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101410-4GSCYN-stop-external-agent-replay-after-a-typed-blocked/.agentplane/tasks/202608101410-4GSCYN/blueprint/resolved-snapshot.json
+    - old_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+    - current_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608101410-4GSCYN
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608101410-4GSCYN
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-10T14:50:13.796Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified blocked-result terminal behavior, replay refusal, zero-change trust boundary, resume freshness, typecheck, formatting, and critical suite.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T14:47:21.247Z, excerpt_hash=sha256:86b0656c20c7d0d6524a42fa6cf6d195dbe7409e19e6ff8fadb0bd4d206b8eb2
+
+    Details:
+
+    Command: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+    Result: pass
+    Evidence: 16 tests passed with 161 assertions, including blocked-result replay and workspace-change rejection
+    Scope: external task-advance lifecycle regression
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: repository TypeScript validation completed without errors
+    Scope: static type safety for the changed implementation
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical CLI chunks passed after canonical framework bootstrap
+    Scope: critical repository regression suite
+
+    Command: bunx eslint packages/agentplane/src/commands/task/external-agent-implementation-authority.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+    Result: pass
+    Evidence: lint completed without findings
+    Scope: changed source and regression test files
+
+    Command: bunx prettier --check packages/agentplane/src/commands/task/external-agent-implementation-authority.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+    Result: pass
+    Evidence: formatting check completed successfully
+    Scope: changed source and regression test files
 
     BlueprintSnapshotRef:
     - state: current
@@ -532,6 +593,61 @@ Attempts: 0
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T14:47:06.316Z, excerpt_hash=sha256:86b0656c20c7d0d6524a42fa6cf6d195dbe7409e19e6ff8fadb0bd4d206b8eb2
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608101410-4GSCYN-stop-external-agent-replay-after-a-typed-blocked/.agentplane/tasks/202608101410-4GSCYN/blueprint/resolved-snapshot.json
+- old_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+- current_digest: d70a135fe341265e5322c09e53a591e05a8451c700eda6cef5f3e3f838a1bd4c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608101410-4GSCYN
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608101410-4GSCYN
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-10T14:50:13.796Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified blocked-result terminal behavior, replay refusal, zero-change trust boundary, resume freshness, typecheck, formatting, and critical suite.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-10T14:47:21.247Z, excerpt_hash=sha256:86b0656c20c7d0d6524a42fa6cf6d195dbe7409e19e6ff8fadb0bd4d206b8eb2
+
+Details:
+
+Command: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+Result: pass
+Evidence: 16 tests passed with 161 assertions, including blocked-result replay and workspace-change rejection
+Scope: external task-advance lifecycle regression
+
+Command: bun run typecheck
+Result: pass
+Evidence: repository TypeScript validation completed without errors
+Scope: static type safety for the changed implementation
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical CLI chunks passed after canonical framework bootstrap
+Scope: critical repository regression suite
+
+Command: bunx eslint packages/agentplane/src/commands/task/external-agent-implementation-authority.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+Result: pass
+Evidence: lint completed without findings
+Scope: changed source and regression test files
+
+Command: bunx prettier --check packages/agentplane/src/commands/task/external-agent-implementation-authority.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+Result: pass
+Evidence: formatting check completed successfully
+Scope: changed source and regression test files
 
 BlueprintSnapshotRef:
 - state: current

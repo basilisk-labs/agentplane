@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\nResult: pass\nEvidence: 16 tests passed with 161 assertions, including blocked-result replay and workspace-change rejection\nScope: external task-advance lifecycle regression\n\nCommand: bun run typecheck\nResult: pass\nEvidence: repository TypeScript validation completed without errors\nScope: static type safety for the changed implementation\n\nCommand: bun run test:critical\nResult: pass\nEvidence: all 12 critical CLI chunks passed after canonical framework bootstrap\nScope: critical repository regression suite\n\nCommand: bunx eslint packages/agentplane/src/commands/task/external-agent-implementation-authority.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\nResult: pass\nEvidence: lint completed without findings\nScope: changed source and regression test files\n\nCommand: bunx prettier --check packages/agentplane/src/commands/task/external-agent-implementation-authority.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts\nResult: pass\nEvidence: formatting check completed successfully\nScope: changed source and regression test files",
+  "digest": "sha256:b3f7f3660a609f9a341b8ac9100f4be1e6faedbe977d006af5eca402bb29acc2",
+  "implementation_sha": "3b66b944ef0ef743f21acb3a524751736cf60a12",
+  "kind": "task_verification_record",
+  "note": "Verified blocked-result terminal behavior, replay refusal, zero-change trust boundary, resume freshness, typecheck, formatting, and critical suite.",
+  "recorded_at": "2026-08-10T14:50:13.796Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused external task-advance regression. Expected: a valid blocked implementation result is consumed once, the task becomes BLOCKED, and the returned packet has no exchange and no agent_episode action.\n2. Replay the same result path. Expected: no duplicate blocker comment, event, status commit, or semantic application is created.\n3. Request a fresh packet while the task remains BLOCKED. Expected: no implementation envelope is issued and agent-run usage does not increase.\n4. Resume the fixture task to DOING and request a packet. Expected: a fresh state-bound exchange is issued; the consumed envelope is not reused.\n5. Run completed, stale, differing-result, direct-workflow, planning, and evaluator regression cases. Expected: existing behavior remains intact.\n6. Run bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts and the relevant workflow-step projection tests.\n7. Run bun run typecheck and bun run test:critical. Expected: all pass.",
+  "scope_digest": "sha256:86b0656c20c7d0d6524a42fa6cf6d195dbe7409e19e6ff8fadb0bd4d206b8eb2",
+  "task_id": "202608101410-4GSCYN",
+  "verification_command": "agentplane verify 202608101410-4GSCYN --ok --by TESTER",
+  "verifier": "TESTER"
+}
