@@ -15,14 +15,14 @@ Persist pass or rework, structured findings, tested input identity, and evidence
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Content-addressed verification reuse and atomic finding persistence passed.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-10T22:44:13.062Z
+- Updated: 2026-08-10T23:41:41.131Z
 - Branch: task/202608102243-1RG86M/make-verification-atomic-and-reusable-across-lif
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

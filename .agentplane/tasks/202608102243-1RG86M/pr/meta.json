@@ -3,11 +3,15 @@
   "branch": "task/202608102243-1RG86M/make-verification-atomic-and-reusable-across-lif",
   "created_at": "2026-08-10T22:44:13.062Z",
   "diffstat_sha256": "sha256:2d5b8a5a93192ef53678cc4b780f8269f50fb9132619a71e9629b724c5203cc3",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-10T23:42:29.826Z",
+  "last_verified_diffstat_sha256": "sha256:2d5b8a5a93192ef53678cc4b780f8269f50fb9132619a71e9629b724c5203cc3",
+  "pr_number": 4818,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4818",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202608102243-1RG86M",
-  "updated_at": "2026-08-10T22:44:13.062Z",
+  "updated_at": "2026-08-10T23:41:41.131Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

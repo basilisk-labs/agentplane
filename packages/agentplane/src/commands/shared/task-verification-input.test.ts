@@ -51,6 +51,20 @@ async function identity(root: string, targetSha: string, verifySteps = "Run test
   return value;
 }
 
+async function directIdentity(root: string, targetSha: string) {
+  const value = await resolveVerificationInputIdentity({
+    gitRoot: root,
+    workflowDir: ".agentplane/tasks",
+    taskIds: [TASK_ID],
+    targetSha,
+    verifySteps: "Run tests.",
+    workflowMode: "direct",
+    environment: ENVIRONMENT,
+  });
+  if (!value) throw new Error("expected direct verification input identity");
+  return value;
+}
+
 async function makeTaskBranch(): Promise<{ root: string; implementationSha: string }> {
   const root = await mkGitRepoRootWithBranch("main");
   await commitPath(root, "package.json", '{"name":"verification-input"}\n', "seed context");
@@ -82,6 +96,36 @@ describe("task verification input identity", () => {
     expect(verificationInputInvalidationReason({ recorded: before, current: after })).toBe(
       "verification_current",
     );
+  });
+
+  it("reuses one direct-mode receipt across lifecycle-only task artifact commits", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const implementationSha = await commitPath(
+      root,
+      "src/feature.ts",
+      "export const feature = true;\n",
+      "implement direct feature",
+    );
+    const before = await directIdentity(root, implementationSha);
+    const lifecycleSha = await commitPath(
+      root,
+      `.agentplane/tasks/${TASK_ID}/README.md`,
+      "direct lifecycle metadata\n",
+      "record direct lifecycle",
+    );
+    const after = await directIdentity(root, lifecycleSha);
+    const unrelatedLifecycleSha = await commitPath(
+      root,
+      ".agentplane/tasks/OTHER/README.md",
+      "unrelated direct lifecycle metadata\n",
+      "record unrelated direct lifecycle",
+    );
+    const afterUnrelatedLifecycle = await directIdentity(root, unrelatedLifecycleSha);
+
+    expect(after.implementation.strategy).toBe("tree");
+    expect(after.digest).toBe(before.digest);
+    expect(afterUnrelatedLifecycle.digest).toBe(before.digest);
+    expect(after.implementation.target_sha).not.toBe(before.implementation.target_sha);
   });
 
   it("reuses one receipt after an identical implementation is rebased", async () => {

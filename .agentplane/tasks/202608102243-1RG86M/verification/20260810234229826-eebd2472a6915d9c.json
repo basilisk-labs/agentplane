@@ -1,0 +1,57 @@
+{
+  "details": "Command: focused verification tests; bun run test:fast; bun run typecheck; bun run lint; bun run format:changed; bun run knip:check; bun run hotspots:check; bun run build; rebuilt CLI route proof\nResult: pass\nEvidence: 3970 full-suite tests and 22 final focused tests passed; all static contracts and builds passed; completed task 202608102112-AY0H1F routes to terminal done after lifecycle-only closeout and idempotent cleanup\nScope: P04 verification identity, atomic persistence, legacy compatibility, qualification/evaluator compatibility, and terminal route convergence",
+  "digest": "sha256:eebd2472a6915d9c2f1ce233f29bcee07d3e768c5fb0750c50951144fe8c5cb8",
+  "implementation_sha": "da142adf38b908cf94136218095f4046a8303f0a",
+  "input": {
+    "context": {
+      "digest": "sha256:d2be8e06bd75acb7aa3935374b7e1f515d5ce3059d777698ef140fec47a89fd3",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        "bun.lock",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/tsconfig.json",
+        "packages/core/package.json",
+        "packages/core/tsconfig.json",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/spec/package.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "tsconfig.json",
+        "website/bun.lock",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:df953ce5b1a29e2add1a9d878ccaf9e1c730a6fb0a070eca2ca45670b8a2b66a",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "implementation": {
+      "base_sha": "1423a4736890404d114c688da49746aa7ca5aaa4",
+      "digest": "sha256:38c72b9e19a8f804844f0f03ea0cff1c8b418ad5e532f27344b14544dba36f61",
+      "strategy": "branch_diff",
+      "target_sha": "da142adf38b908cf94136218095f4046a8303f0a"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 1,
+    "verify_steps_digest": "sha256:20b160e8f5672c5a1676c10b42016b09c08011caf12082bfc4377d2a317e3fb6"
+  },
+  "kind": "task_verification_record",
+  "note": "Content-addressed verification reuse and atomic finding persistence passed.",
+  "recorded_at": "2026-08-10T23:42:29.826Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run the focused verification identity, record, route, transition, durability, and workflow-hook tests. Expected: pass plus structured Finding is one task revision; lifecycle-only commits and identical-patch rebases reuse a receipt; source, Verify Steps, dependency context, and runtime drift return specific invalidation reason codes.\n2. Run `bun run test:fast`. Expected: the complete agentplane, core, recipes, and testkit suite passes with no regression in legacy v1 verification records or qualification/evaluator evidence.\n3. Run `bun run typecheck`, `bun run lint`, `bun run format:changed`, `bun run knip:check`, and `bun run hotspots:check`. Expected: all repository contracts pass without widening baselines or size limits.\n4. Run `bun run build`. Expected: all distributable bundles build successfully.\n5. Execute the rebuilt CLI against completed task 202608102112-AY0H1F after its lifecycle-only closeout drift. Expected: route phase is `done`, no `verification_required` blocker appears, and an idempotent cleanup does not create a command loop.\n6. Inspect an injected task-write failure during verify. Expected: neither a passing verification record nor task verification/Finding state remains partially persisted.",
+  "scope_digest": "sha256:20b160e8f5672c5a1676c10b42016b09c08011caf12082bfc4377d2a317e3fb6",
+  "task_id": "202608102243-1RG86M",
+  "verification_command": "agentplane verify 202608102243-1RG86M --ok --by TESTER",
+  "verifier": "TESTER"
+}

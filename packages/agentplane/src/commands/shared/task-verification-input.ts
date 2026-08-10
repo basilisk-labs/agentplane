@@ -82,22 +82,35 @@ function parseTreeEntries(value: Buffer): { path: string; object: string }[] {
       const header = entry.slice(0, separator).split(" ");
       const object = header[2];
       const filePath = entry.slice(separator + 1);
-      return object && contextPath(filePath) ? [{ path: filePath, object }] : [];
+      return object ? [{ path: filePath, object }] : [];
     })
     .toSorted((left, right) => left.path.localeCompare(right.path));
 }
 
-async function verificationContext(opts: {
+async function trackedTreeEntries(opts: {
   gitRoot: string;
   targetSha: string;
-}): Promise<VerificationInputIdentity["context"]> {
+}): Promise<{ path: string; object: string }[]> {
   const { stdout } = await execFileAsync("git", ["ls-tree", "-r", "-z", opts.targetSha], {
     cwd: opts.gitRoot,
     env: gitEnv(),
     encoding: "buffer",
     maxBuffer: 64 * 1024 * 1024,
   });
-  const entries = parseTreeEntries(stdout);
+  return parseTreeEntries(stdout);
+}
+
+function isWorkflowArtifact(opts: { path: string; workflowDir: string }): boolean {
+  const workflowDir = normalizeWorkflowDir(opts.workflowDir);
+  return opts.path === workflowDir || opts.path.startsWith(`${workflowDir}/`);
+}
+
+async function verificationContext(opts: {
+  gitRoot: string;
+  targetSha: string;
+}): Promise<VerificationInputIdentity["context"]> {
+  const treeEntries = await trackedTreeEntries(opts);
+  const entries = treeEntries.filter((entry) => contextPath(entry.path));
   return {
     digest: sha256(JSON.stringify(canonicalizeJson(entries))),
     paths: entries.map((entry) => entry.path),
@@ -174,10 +187,13 @@ async function implementationIdentity(opts: {
     }
   }
 
-  const tree = await gitRevParse(opts.gitRoot, [`${opts.targetSha}^{tree}`]);
+  const treeEntries = await trackedTreeEntries(opts);
+  const entries = treeEntries.filter(
+    (entry) => !isWorkflowArtifact({ path: entry.path, workflowDir: opts.workflowDir }),
+  );
   return {
     strategy: "tree",
-    digest: sha256(tree.trim()),
+    digest: sha256(JSON.stringify(canonicalizeJson(entries))),
     target_sha: opts.targetSha,
     base_sha: null,
   };
