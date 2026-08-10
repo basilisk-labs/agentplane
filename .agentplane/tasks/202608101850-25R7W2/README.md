@@ -1,10 +1,11 @@
 ---
 id: "202608101850-25R7W2"
 title: "Recover legacy merged cleanup identity from the provider"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,20 @@ quality_review:
     - "Pass: tests cover successful recovery plus multiple records, not-found, provider unavailable, OPEN, CLOSED, base mismatch, head mismatch, semantic local drift, missing closure evidence, and disagreement with an already recorded PR number."
     - "Operational follow-up: the four P02 branches still require live provider-backed dry-run qualification before any deletion; this evaluator packet intentionally has no network authority."
     - "Residual risk: Do not delete any P02 candidate until the updated CLI reports it as a dry-run cleanup candidate against current GitHub truth."
+token_usage:
+  agent_runs: 4
+  input_tokens: null
+  journal_digest: "sha256:03a6bdb4e5196933c6edaffd906e7bd946efe1cd7883dc197599eef17ded042f"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-10T19:51:03.479Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -66,8 +81,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "d15d591b882d3d0618121becbf2327047e64958f"
-  message: "🚧 25R7W2 task: apply external agent result"
+  hash: "2c1723f89be6d89390c7c40154c5b67d744d5657"
+  message: "🚧 25R7W2 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -78,6 +93,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: d15d591b882d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -114,9 +132,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-10T19:51:03.479Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "2c1723f89be6d89390c7c40154c5b67d744d5657"
 doc_version: 3
-doc_updated_at: "2026-08-10T19:46:25.778Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-10T19:51:03.522Z"
+doc_updated_by: "CODER"
 description: "Allow explicit cleanup of a legacy DONE task branch when old PR metadata lacks pr_number but an exact branch-and-base provider lookup proves a merged PR, its provider head equals the local branch head, its merge commit is on the base branch, and pre-merge closure evidence is present. Preserve rejection for ambiguous, closed, open, mismatched-head, post-merge-drift, or unavailable-provider cases."
 sections:
   Summary: |-
@@ -232,6 +258,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "d15d591b882d3d0618121becbf2327047e64958f"
+    message: "🚧 25R7W2 task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "52cca0b0097a5ec4682b90a25b9ba98d7abaef0c"
     version: 1
@@ -361,3 +390,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:03a6bdb4e5196933c6edaffd906e7bd946efe1cd7883dc197599eef17ded042f`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-10T19:51:03.479Z`
