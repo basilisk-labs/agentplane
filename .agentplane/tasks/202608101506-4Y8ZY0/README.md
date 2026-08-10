@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -30,23 +30,24 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-10T15:58:25.546Z"
+  updated_at: "2026-08-10T16:13:51.381Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
   evaluated_sha: "19da6e260c15c58ad6c5bce41fbc73548a8fca69"
   blueprint_digest: "e9896b989c3ebae1e6efacc43e759bc6c69e5978f2e09383e7e45ae2e30fda89"
   evidence_refs:
-    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-155403159-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-155403159-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/cf27d3c0c7131d155d74d4e873d8f33b796488f5cdfea38d318a083dcd16688d.md"
-    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-155403159-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-155403159-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-155403159-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-161348390-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-161348390-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/a9f2a363b2f1e975061c48868f66d1a72e288b002fe6df47533f5b042420d5e6.md"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-161348390-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-161348390-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-161348390-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/20260810-161348390-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608101506-4Y8ZY0/README.md"
     - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/753e2769f5ffbbe8912400d1a0d1b569ca63dbd062b0d5e89dad6a5b318ff9b6.patch"
-    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/57e12ce445f6d9b9a39d7f2ced662e9fc17e9c5bf221027482585f1dd465dd44.json"
+    - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/fc3875336fe2204a2f2693aaaccd7a82e3f049e440d87ed8e7c70e51e7c6d3b3.json"
     - ".agentplane/tasks/202608101506-4Y8ZY0/verification/20260810155341698-b13c1e6ef421f0c7.json"
     - ".agentplane/tasks/202608101506-4Y8ZY0/quality/objects/sha256/90ab2dd9e61cdb54839a0d6ccc70e595be5e4223b8e083a6ccda2d2c88f81956.json"
     - ".agentplane/policy/dod.code.md"
@@ -54,10 +55,7 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The parser reuses the existing quoted-argv resolver and rejects shell metacharacters, environment prefixes, unsupported executables, unsupported Bun subcommands, absolute paths, and parent traversal before process launch."
-    - "Verification children receive a sanitized environment, preventing the supervisor's agent-mode variables from changing nested CLI behavior."
-    - "Critical tests, typecheck, 21 focused lifecycle/verifier tests, lint, formatting, and git diff --check all pass."
-    - "Residual risk: Hosted CI must independently validate the final published PR head."
+    - "A supported Bun version may return exit code 0 when a filter matches no tests, allowing declared verification to pass without executing tests."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -96,6 +94,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Keep the intended evaluator rework artifacts that record the unresolved zero-test verification risk."
 events:
   -
     type: "status"
@@ -140,9 +141,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "f67e9cc90afc78076277678d9ce6816d0d138d0c"
+  -
+    type: "comment"
+    at: "2026-08-10T16:15:32.507Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Keep the intended evaluator rework artifacts that record the unresolved zero-test verification risk."
 doc_version: 3
-doc_updated_at: "2026-08-10T15:59:43.980Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-10T16:15:32.573Z"
+doc_updated_by: "SUPERVISOR"
 description: "The supervisor currently accepts only three-token bun run scripts and rejects valid repository checks such as bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts. Reuse the existing shell-free argv parser, accept bounded Bun run and test invocations without invoking a shell, preserve fixed policy checks and evidence capture, and prove that task advance no longer creates false implementation-rework cycles for valid Bun tests."
 sections:
   Summary: |-
