@@ -1,0 +1,15 @@
+{
+  "details": "Command: git -C /Users/densmirnov/Github/agentplane rev-parse --abbrev-ref HEAD; git -C /Users/densmirnov/Github/agentplane rev-parse HEAD; git -C /Users/densmirnov/Github/agentplane rev-parse origin/main. Result: pass. Evidence: primary checkout branch is main and both local and hosted-tracking heads resolve to 27671e9b8cdec21b1170719a87019f703cec9526. Scope: canonical primary checkout authority. Command: recompute status/diff/index SHA-256 digests for rf05b-integration-base and base-main-for-XS41ZV. Result: pass. Evidence: all six digests exactly match the pre-switch recovery evidence and both branches remain at d6f6dc64270c0b5ce8db59d6c30a7a23b7f73d83. Scope: preservation of dirty recovery worktrees. Command: git diff --check main...HEAD; inspect git diff --name-only main...HEAD. Result: pass. Evidence: no diff errors and every changed path is under .agentplane/tasks/202608101159-Y4H8N5/. Scope: task branch change boundary. Command: gh pr view 4809 --json headRefOid,headRefName,baseRefName,state. Result: pass. Evidence: PR 4809 is open from the expected task branch into main and its observed head matched the local task head during verification. Scope: hosted PR identity.",
+  "digest": "sha256:20338e398b7c99ef485be9ac5344d043afc10cc06c7ddcfc3590a2f8b3f4010e",
+  "implementation_sha": null,
+  "kind": "task_verification_record",
+  "note": "Canonical checkout recovery verified on the current implementation target.",
+  "recorded_at": "2026-08-10T12:16:26.015Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Restore canonical primary checkout ownership\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Restore canonical primary checkout ownership\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:dfba55f6771342e65932e99aa576096c01566dacec4e68b8d63f4c1dcca19e94",
+  "task_id": "202608101159-Y4H8N5",
+  "verification_command": "agentplane verify 202608101159-Y4H8N5 --ok --by TESTER",
+  "verifier": "TESTER"
+}
