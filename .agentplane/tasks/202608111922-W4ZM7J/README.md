@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -29,21 +29,21 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-11T20:22:18.092Z"
+  updated_at: "2026-08-11T20:51:14.353Z"
   updated_by: "HUMAN"
-  note: "The committed change satisfies parser/executor parity and mutation atomicity without hard-coding a product language or package manager."
-  evaluated_sha: "240a672c22598edc1dc7cacdd42421f73d01e194"
+  note: "The W4ZM7J change remains correct on the optimized main base; synchronization introduced no semantic conflict and all parser, mutation, and static checks pass on the merged tree."
+  evaluated_sha: "9b68f75daff0ff59bbbaaea63bd308edd7f75474"
   blueprint_digest: "9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4"
   evidence_refs:
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-202217708-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-202217708-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/a1f4e5c8d2718953e1ba8fc1c5f8acb1f7bb97743489bbf87216d7c32c70a827.md"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-202217708-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-202217708-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-205113932-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-205113932-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/13ce78f7a9bb36aca7f6123cd8d0536420fcaabdf919bb1d267e6a20dbb544f0.md"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-205113932-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-205113932-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608111922-W4ZM7J/README.md"
     - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/2b217bdaaa2210535502a09472ae5bacaf7b6affc49d6050c6d0dd8a160eb768.patch"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/6e716694e6aebbe5adf638d5f01591e61f1a2d1cd25e33f488518dfab43a9fed.json"
-    - ".agentplane/tasks/202608111922-W4ZM7J/verification/20260811202135810-cc799589e3bb89ce.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/017c81c3401b8f9a43ef3241815b0e93e9e964642905d8e64a316dddeb0a4dc9.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/verification/20260811205016130-c105637f635639f7.json"
     - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/559acda9b5852a0eac86146788242df1183cfd1a93800fa00e801d462c45e4da.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
@@ -51,12 +51,10 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
     - "packages/agentplane/src/commands/shared/declared-check.ts"
     - "packages/agentplane/src/commands/shared/declared-check.test.ts"
-    - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
-    - ".agentplane/tasks/202608111922-W4ZM7J/verification"
   findings:
-    - "One shared resolver now owns accepted argv for task persistence, direct supervised execution, and branch integration; the previously divergent validation and execution grammars are removed."
-    - "Mutation coverage proves invalid checks cannot partially create or update tasks across new, add, update, derive, begin, and create, while legacy metadata-only updates remain recoverable."
-    - "Cross-ecosystem commands are accepted by structure and repository boundary rather than keyword classification; shell evaluation, path escape, inline code, package installation, destructive executables, and mutating Git operations fail closed."
+    - "The shared declared-check resolver remains the sole validation and execution grammar after main synchronization."
+    - "Ninety-three parser, executor, and mutation-boundary tests pass on the merged tree, including the original bun path regression and all six persistence entry points."
+    - "The upstream CI refactor changes only verification orchestration and the stabilized concurrency fixture; it does not weaken or bypass W4ZM7J behavior."
 token_usage:
   agent_runs: 1
   input_tokens: null
@@ -129,7 +127,7 @@ events:
     state: "ok"
     note: "Revalidated the merged main and W4ZM7J tree without rerunning unchanged release qualification."
 doc_version: 3
-doc_updated_at: "2026-08-11T20:50:18.894Z"
+doc_updated_at: "2026-08-11T20:51:14.375Z"
 doc_updated_by: "CODER"
 description: "Reject unsupported verification commands at every task mutation boundary using the same deterministic parser later used by automatic TESTER execution. Return an actionable error before persisting task state; preserve repository-bound argv execution without shell evaluation; cover task new, add, update, derive, begin/create adapters, and the previously failing bun test path command."
 sections:
