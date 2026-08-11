@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T20:21:35.810Z"
+  updated_at: "2026-08-11T20:50:16.130Z"
   updated_by: "TESTER"
-  note: "Declared-check mutation and execution parity verified against the committed implementation."
+  note: "Revalidated the merged main and W4ZM7J tree without rerunning unchanged release qualification."
   attempts: 0
 quality_review:
   state: "pass"
@@ -122,8 +122,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "7cdce524c408b745c6c4a77a5f1ca6fe8cf2af19"
+  -
+    type: "verify"
+    at: "2026-08-11T20:50:16.130Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Revalidated the merged main and W4ZM7J tree without rerunning unchanged release qualification."
 doc_version: 3
-doc_updated_at: "2026-08-11T20:23:06.833Z"
+doc_updated_at: "2026-08-11T20:50:18.894Z"
 doc_updated_by: "CODER"
 description: "Reject unsupported verification commands at every task mutation boundary using the same deterministic parser later used by automatic TESTER execution. Return an actionable error before persisting task state; preserve repository-bound argv execution without shell evaluation; cover task new, add, update, derive, begin/create adapters, and the previously failing bun test path command."
 sections:
@@ -182,6 +188,46 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608111922-W4ZM7J
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T20:50:16.130Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Revalidated the merged main and W4ZM7J tree without rerunning unchanged release qualification.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1a0cee901494fda2d3e18238ceaf09922eb12ce9e68936697f1f0dd97a22f63a, input_digest=sha256:3d990d5920761ec8927129e793da7303955dffa997fcda8698a175f2f4f804f4
+
+    Details:
+
+    Command: declared-check and all mutation adapters suite
+    Result: pass
+    Evidence: 93 tests passed with 436 assertions on merge head 9b68f75da.
+    Scope: shared parser, both executors, and new/add/update/derive/begin/create mutation boundaries after main synchronization.
+
+    Command: bun run format:check; bun run typecheck; bun run lint:core
+    Result: pass
+    Evidence: formatting, TypeScript, and ESLint checks all exited successfully on the merged tree.
+    Scope: integration compatibility with optimized main and static quality boundaries.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111922-W4ZM7J-validate-declared-checks-with-the-supervised-exe/.agentplane/tasks/202608111922-W4ZM7J/blueprint/resolved-snapshot.json
+    - old_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+    - current_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608111922-W4ZM7J
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -267,6 +313,46 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608111922-W4ZM7J
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T20:50:16.130Z — VERIFY — ok
+
+By: TESTER
+
+Note: Revalidated the merged main and W4ZM7J tree without rerunning unchanged release qualification.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1a0cee901494fda2d3e18238ceaf09922eb12ce9e68936697f1f0dd97a22f63a, input_digest=sha256:3d990d5920761ec8927129e793da7303955dffa997fcda8698a175f2f4f804f4
+
+Details:
+
+Command: declared-check and all mutation adapters suite
+Result: pass
+Evidence: 93 tests passed with 436 assertions on merge head 9b68f75da.
+Scope: shared parser, both executors, and new/add/update/derive/begin/create mutation boundaries after main synchronization.
+
+Command: bun run format:check; bun run typecheck; bun run lint:core
+Result: pass
+Evidence: formatting, TypeScript, and ESLint checks all exited successfully on the merged tree.
+Scope: integration compatibility with optimized main and static quality boundaries.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111922-W4ZM7J-validate-declared-checks-with-the-supervised-exe/.agentplane/tasks/202608111922-W4ZM7J/blueprint/resolved-snapshot.json
+- old_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+- current_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608111922-W4ZM7J
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

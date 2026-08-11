@@ -1,0 +1,82 @@
+{
+  "details": "Command: declared-check and all mutation adapters suite\nResult: pass\nEvidence: 93 tests passed with 436 assertions on merge head 9b68f75da.\nScope: shared parser, both executors, and new/add/update/derive/begin/create mutation boundaries after main synchronization.\n\nCommand: bun run format:check; bun run typecheck; bun run lint:core\nResult: pass\nEvidence: formatting, TypeScript, and ESLint checks all exited successfully on the merged tree.\nScope: integration compatibility with optimized main and static quality boundaries.",
+  "digest": "sha256:c105637f635639f74a7669f111a4b3557c49ba63d4d51640f4e893466361550d",
+  "implementation_sha": "9b68f75daff0ff59bbbaaea63bd308edd7f75474",
+  "input": {
+    "context": {
+      "digest": "sha256:ea4f4c17dc58dc9dc045271b6c49ca057ba03856300ade05ced8e25139e5b217",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:3d990d5920761ec8927129e793da7303955dffa997fcda8698a175f2f4f804f4",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:9de8acf1b5b59b41abf267822f4e87175c12c46902484290af9908faf55acaa6",
+      "digest": "sha256:64be0dbea18c0101f107ca6ab56cc951d258cb52bfc80fa8c3d71a216655cb99",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "01b10e18dd8575daddc12714a87231dc075d80dc",
+      "digest": "sha256:5b7a15d6ee7557c2cd1370cb80b3e3c531cb0d376f7e2ea4ddc6adf7fd583df3",
+      "strategy": "branch_diff",
+      "target_sha": "9b68f75daff0ff59bbbaaea63bd308edd7f75474"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 2,
+    "verify_steps_digest": "sha256:1a0cee901494fda2d3e18238ceaf09922eb12ce9e68936697f1f0dd97a22f63a"
+  },
+  "kind": "task_verification_record",
+  "note": "Revalidated the merged main and W4ZM7J tree without rerunning unchanged release qualification.",
+  "recorded_at": "2026-08-11T20:50:16.130Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/commands/task/update.unit.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:1a0cee901494fda2d3e18238ceaf09922eb12ce9e68936697f1f0dd97a22f63a",
+  "task_id": "202608111922-W4ZM7J",
+  "verification_command": "agentplane verify 202608111922-W4ZM7J --ok --by TESTER",
+  "verifier": "TESTER"
+}

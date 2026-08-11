@@ -16,7 +16,7 @@ Reject unsupported verification commands at every task mutation boundary using t
 ## Verification
 
 - State: ok
-- Note: Declared-check mutation and execution parity verified against the committed implementation.
+- Note: Revalidated the merged main and W4ZM7J tree without rerunning unchanged release qualification.
 - Canonical workflow state lives in the task README.
 
 <details>
