@@ -1,0 +1,2667 @@
+diff --git a/docs/assets/agentplane-demo.tape b/docs/assets/agentplane-demo.tape
+index 49832994f..54dbbd7b5 100644
+--- a/docs/assets/agentplane-demo.tape
++++ b/docs/assets/agentplane-demo.tape
+@@ -47,7 +47,7 @@ Show
+ 
+ Sleep 700ms
+ 
+-Type 'agentplane init --setup-profile light --workflow direct --backend local --hooks false --recipes none --yes'
++Type 'agentplane init --workflow direct --backend local --hooks false --recipes none --yes'
+ Enter
+ Sleep 2200ms
+ 
+diff --git a/docs/developer/blueprints.mdx b/docs/developer/blueprints.mdx
+index 08c6f2ac3..ed93b2728 100644
+--- a/docs/developer/blueprints.mdx
++++ b/docs/developer/blueprints.mdx
+@@ -118,7 +118,7 @@ Cache and project boundaries:
+ Init integration:
+ 
+ ```bash
+-agentplane init --setup-profile full-harness --blueprints pack:team-baseline --yes
++agentplane init --advanced --blueprints pack:team-baseline --yes
+ ```
+ 
+ Full-harness init may install cached catalog blueprints or packs. Basic/default init keeps using the
+diff --git a/docs/developer/design-principles.mdx b/docs/developer/design-principles.mdx
+index 589c54f93..ebe26d04e 100644
+--- a/docs/developer/design-principles.mdx
++++ b/docs/developer/design-principles.mdx
+@@ -33,7 +33,8 @@ Agent Plane is designed to make agent-driven development predictable and auditab
+ ### 5) Offline-first by default
+ 
+ - No network use unless explicitly required.
+-- Approval requirements can escalate by execution profile, but capabilities do not change.
++- Project settings can require network approval, while force actions always require explicit
++  approval under the single standard process policy.
+ 
+ ### 6) Auditability
+ 
+diff --git a/docs/help/glossary.mdx b/docs/help/glossary.mdx
+index 6d29b07d3..bf468bcfe 100644
+--- a/docs/help/glossary.mdx
++++ b/docs/help/glossary.mdx
+@@ -60,7 +60,8 @@ Pre-commit checks that validate staged files and commit messages.
+ 
+ ## Approval requirement
+ 
+-A policy gate that can require explicit approval for an action such as network access or `--force`, depending on config and execution profile.
++A policy gate that can require explicit approval for an action. Network approval is project
++configurable; `--force` approval is fixed by the standard process policy.
+ 
+ ## Backend
+ 
+diff --git a/docs/user/cli-reference.generated.mdx b/docs/user/cli-reference.generated.mdx
+index 4b8b72423..aace58c8d 100644
+--- a/docs/user/cli-reference.generated.mdx
++++ b/docs/user/cli-reference.generated.mdx
+@@ -2113,33 +2113,21 @@ agentplane mode set branch_pr
+ 
+ ### profile set
+ 
+-Apply setup profile presets to WORKFLOW config.
++Apply the canonical AgentPlane process policy.
+ 
+ Usage:
+ 
+ ```text
+-agentplane profile set <light|normal|full-harness>
++agentplane profile set <standard>
+ ```
+ 
+ Examples:
+ 
+ ```sh
+-agentplane profile set light
++agentplane profile set standard
+ ```
+ 
+-- Apply flexible defaults.
+-
+-```sh
+-agentplane profile set normal
+-```
+-
+-- Apply balanced defaults.
+-
+-```sh
+-agentplane profile set full-harness
+-```
+-
+-- Apply strict defaults.
++- Restore the canonical process policy.
+ 
+ ## Setup
+ 
+@@ -2161,21 +2149,21 @@ Options:
+ - `--quick`: Alias for --init-mode quick. (default=false)
+ - `--advanced`: Alias for --init-mode advanced. (default=false)
+ - `--tool <codex|claude|cursor|windsurf|hermes|multiple|manual>`: AI surface that should read project instructions. Granular --policy-gateway/--ide flags override this mapping. (choices=codex|claude|cursor|windsurf|hermes|multiple|manual)
+-- `--setup-profile <light|normal|full-harness>`: Setup profile preset. Preferred values: light, normal, full-harness. (choices=light|normal|full-harness|developer|vibecoder|manager)
++- `--setup-profile <standard>`: Compatibility alias for the fixed standard process policy. Legacy values are accepted but no longer change behavior. (choices=standard|light|normal|full-harness|developer|vibecoder|manager)
+ - `--policy-gateway <codex|claude>`: Policy gateway file to install (codex -&gt; AGENTS.md, claude -&gt; CLAUDE.md). (choices=codex|claude)
+ - `--ide <none|codex|cursor|windsurf>`: IDE rules integration target (default: codex). (choices=none|codex|cursor|windsurf)
+ - `--workflow <direct|branch_pr>`: Workflow mode (default: direct). (choices=direct|branch_pr)
+ - `--direct-close-dirty-policy <allow-other-task-readmes|strict>`: Direct-mode close behavior when tracked dirt exists outside the active task: allow only other active task READMEs, or block on any unrelated tracked change. (choices=allow-other-task-readmes|strict)
+ - `--backend <local|cloud>`: Task backend (default: local). (choices=local|cloud)
+-- `--hooks <true|false>`: Install managed git hooks (default by setup profile: light=false, normal/full-harness=true).
++- `--hooks <true|false>`: Install managed git hooks (default: true).
+ - `--require-plan-approval <true|false>`: Require explicit plan approval before starting work.
+ - `--require-network-approval <true|false>`: Require explicit approval before any network operation.
+ - `--require-verify-approval <true|false>`: Require explicit approval before recording verification.
+ - `--feedback-github-issues <true|false>`: Opt in to Agentplane GitHub issue prompts for internal Agentplane errors (default: false).
+ - `--feedback-anonymous-cloud <true|false>`: Allow anonymous Agentplane issue intake fallback when GitHub issue publishing is unavailable (default: false).
+-- `--execution-profile <conservative|balanced|aggressive>`: Execution profile preset controlling autonomy, reasoning, and tool budgets. (choices=conservative|balanced|aggressive)
++- `--execution-profile <standard>`: Compatibility alias for the fixed standard execution policy. Legacy values are accepted but ignored. (choices=standard|conservative|balanced|aggressive)
+ - `--evaluator-skepticism <standard|strict|paranoid>`: Evaluator audit skepticism level for Codex runner review prompts. (choices=standard|strict|paranoid)
+-- `--strict-unsafe-confirm <true|false>`: Require strict explicit confirmations for additional unsafe actions.
++- `--strict-unsafe-confirm <true|false>`: Deprecated compatibility option. The standard process policy defines fixed unsafe-action boundaries.
+ - `--recipes <none|id1,id2,...>`: Optional cached recipes to vendor during init (comma-separated), or 'none'.
+ - `--blueprints <none|id1,pack:id2,...>`: Optional cached blueprint catalog entries to install and activate during init (comma-separated), or 'none'. Prefix with blueprint: or pack: to disambiguate.
+ - `--force`: Overwrite init conflicts by deleting existing paths. (default=false)
+@@ -2195,10 +2183,10 @@ agentplane init
+ - Short interactive setup for agent surface and workflow, followed by an explained preview.
+ 
+ ```sh
+-agentplane init --setup-profile light --yes
++agentplane init --yes
+ ```
+ 
+-- Non-interactive setup with flexible defaults.
++- Non-interactive setup with the standard process policy.
+ 
+ ```sh
+ agentplane init --workflow direct --direct-close-dirty-policy allow-other-task-readmes --backend local --hooks true --require-network-approval true --yes
+diff --git a/docs/user/commands.mdx b/docs/user/commands.mdx
+index b3de59636..4064b70b2 100644
+--- a/docs/user/commands.mdx
++++ b/docs/user/commands.mdx
+@@ -55,24 +55,19 @@ If the directory is not a git repository, `agentplane init` initializes git in t
+ Use `agentplane init --dry-run --yes` to preview the setup plan without creating `.git`,
+ `.agentplane`, backups, hooks, or commits. Add `--output json` for a machine-readable plan.
+ 
+-Interactive init now starts with a profile menu:
++Interactive init uses one fixed process policy. It asks only for settings that describe the actual
++project, such as workflow, runner, integrations, hooks, and explicit network approval. The old
++`light`, `normal`, `full-harness`, `conservative`, `balanced`, and `aggressive` names remain accepted
++as patch-level compatibility aliases, but they all resolve to the same standard policy.
+ 
+-- `light`
+-- `normal` (default)
+-- `full-harness`
+-
+-Hooks default by profile:
+-
+-- `light`: disabled
+-- `normal`: enabled
+-- `full-harness`: enabled
+-
+-`execution.profile` is stored in `.agentplane/WORKFLOW.md`.
++Legacy `execution.*` values in `.agentplane/WORKFLOW.md` are normalized on read and removed on the
++next config write. Use task scope and verification contracts for task-specific flexibility rather
++than selecting an autonomy preset.
+ 
+ Non-interactive:
+ 
+ ```bash
+-agentplane init --setup-profile normal --workflow direct --backend local --execution-profile balanced --strict-unsafe-confirm true --hooks true --require-network-approval true --yes
++agentplane init --workflow direct --backend local --hooks true --require-network-approval true --yes
+ agentplane init --dry-run --yes --output json
+ ```
+ 
+@@ -149,7 +144,7 @@ never rewritten by these commands.
+ ```bash
+ agentplane config show
+ agentplane config set workflow_mode branch_pr
+-agentplane profile set normal
++agentplane profile set standard
+ ```
+ 
+ ## Runtime diagnostics
+@@ -512,10 +507,10 @@ Blueprint packs are lightweight catalog entries that expand to multiple blueprin
+ does not own extra runtime behavior by itself; it only groups blueprint ids that should be installed
+ together.
+ 
+-During advanced/full-harness init, cached catalog entries can be installed in one step:
++During advanced init, cached catalog entries can be installed in one step:
+ 
+ ```bash
+-agentplane init --setup-profile full-harness --blueprints pack:team-baseline --yes
++agentplane init --advanced --blueprints pack:team-baseline --yes
+ ```
+ 
+ Use `blueprint:<id>` or `pack:<id>` when a catalog contains overlapping ids.
+diff --git a/docs/user/configuration.mdx b/docs/user/configuration.mdx
+index 09a1b7b77..f3b75fc6c 100644
+--- a/docs/user/configuration.mdx
++++ b/docs/user/configuration.mdx
+@@ -20,6 +20,16 @@ agentplane config show
+ agentplane config set workflow_mode branch_pr
+ ```
+ 
++## Fixed execution policy
++
++Execution policy is not a project tuning surface. AgentPlane normalizes legacy `execution.*` fields
++to one standard runtime policy and rejects attempts to change them through `config set`. This keeps
++lifecycle, force-action approval, stop, and handoff rules stable across projects.
++
++Task flexibility comes from explicit scope, plan, context, verification, workflow, and runner
++settings. Existing profile names are accepted only as migration aliases and do not change runtime
++behavior.
++
+ ## High-impact keys
+ 
+ ### workflow.mode
+@@ -45,7 +55,8 @@ agentplane config set workflow_mode branch_pr
+ - `require_verify`
+ - `require_force`
+ 
+-These keys control approval gates; they do not add or remove CLI capabilities.
++These keys control project approval gates; they do not add or remove CLI capabilities. Explicit
++approval for force actions is fixed by the standard process policy.
+ 
+ ### workspace
+ 
+@@ -93,18 +104,10 @@ Current enforcement should be documented and configured through primary-based ke
+ 
+ ### execution
+ 
+-- `execution.profile`
+-- `execution.reasoning_effort`
+-- `execution.text_verbosity`
+-- `execution.tool_budget`
+-- `execution.stop_conditions`
+-- `execution.handoff_conditions`
+-- `execution.unsafe_actions_requiring_explicit_user_ok`
+-
+-`execution.reasoning_effort` controls depth, not answer length. `medium` is the balanced default;
+-`low` is latency-oriented; `high` and `xhigh` should be reserved for conservative profiles or
+-eval-backed work. `execution.text_verbosity` controls output length/structure in execution profile
+-prompts.
++`execution.*` is a compatibility projection of the fixed standard process policy. Older values are
++validated so malformed legacy config still fails clearly, then normalized to the standard policy.
++They are not writable through `agentplane config set` and must not be used for task-specific
++routing or verification decisions.
+ 
+ ### runner
+ 
+diff --git a/docs/user/setup.mdx b/docs/user/setup.mdx
+index e67f4e1da..565a939e8 100644
+--- a/docs/user/setup.mdx
++++ b/docs/user/setup.mdx
+@@ -176,30 +176,26 @@ See [Local context](local-context) for source refs, privacy boundaries, and veri
+ Local context has its own docs section because it is the reusable knowledge layer for agents, not a
+ subtopic of manual CLI usage.
+ 
+-## Setup profiles
++## Standard process policy
+ 
+-Quick setup uses `Normal`. Advanced setup can select a different preset before reviewing its
+-individual controls:
++AgentPlane uses one process policy for every project. Quick and advanced setup differ only in how
++many real project settings they expose; they do not weaken or strengthen lifecycle discipline.
++Force actions always require explicit approval. Workflow, runner, hooks, integrations, evaluator
++skepticism, and network approval remain independent settings.
+ 
+-- `Light`: solo experiments with minimal enforcement.
+-- `Normal`: default team-safe workflow.
+-- Team Strict: stricter approvals, hooks, and CI-oriented guardrails. In the current CLI this
+-  profile is selected with `full-harness`.
++Old profile names remain compatibility aliases for existing automation. They all apply the same
++standard policy and cannot select a different autonomy, reasoning, verification, or safety tier.
+ 
+ ```bash
+-agentplane profile set light
+-agentplane profile set normal
+-agentplane profile set full-harness
++agentplane profile set standard
+ ```
+ 
+ Non-interactive setup:
+ 
+ ```bash
+ agentplane init \
+-  --setup-profile normal \
+   --workflow direct \
+   --backend local \
+-  --execution-profile balanced \
+   --require-network-approval true \
+   --hooks true \
+   --ide codex \
+diff --git a/packages/agentplane/src/cli/run-cli.core.branch-meta.workflow-profile.test.ts b/packages/agentplane/src/cli/run-cli.core.branch-meta.workflow-profile.test.ts
+index 6d6bef567..961b02e1b 100644
+--- a/packages/agentplane/src/cli/run-cli.core.branch-meta.workflow-profile.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.branch-meta.workflow-profile.test.ts
+@@ -162,18 +162,24 @@ describe("runCli", () => {
+     },
+   );
+ 
+-  it("profile set applies preset defaults to config", async () => {
++  it("profile set normalizes legacy aliases to the standard policy", async () => {
+     const root = await mkGitRepoRoot();
+-    await writeDefaultConfig(root);
++    const config = defaultConfig();
++    config.agents.approvals.require_plan = false;
++    config.agents.approvals.require_network = false;
++    config.agents.approvals.require_verify = false;
++    await writeConfig(root, config);
+     const io = captureStdIO();
+     try {
+       const code = await runCli(["profile", "set", "light", "--root", root]);
+       expect(code).toBe(0);
+-      expect(io.stdout.trim()).toBe("light");
++      expect(io.stdout.trim()).toBe("standard");
++      expect(io.stderr).toContain('Profile "light" is a compatibility alias');
+       const workflowText = await readFile(path.join(root, ".agentplane", "WORKFLOW.md"), "utf8");
+       expect(workflowText).toContain("require_plan: false");
+       expect(workflowText).toContain("require_network: false");
+-      expect(workflowText).toContain("profile: aggressive");
++      expect(workflowText).toContain("require_verify: false");
++      expect(workflowText).toContain("profile: standard");
+     } finally {
+       io.restore();
+     }
+diff --git a/packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts b/packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts
+index 7a7a9ec82..8bf97f1a1 100644
+--- a/packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts
+@@ -386,6 +386,8 @@ describe("runCli", () => {
+         root,
+       ]);
+       expect(code).toBe(0);
++      expect(io.stderr).toContain('Execution profile "conservative" is a compatibility alias');
++      expect(io.stderr).toContain("--strict-unsafe-confirm is a compatibility option");
+     } finally {
+       process.env.PATH = originalPath;
+       io.restore();
+@@ -400,9 +402,9 @@ describe("runCli", () => {
+     expect(config.agents.approvals.require_plan).toBe(true);
+     expect(config.agents.approvals.require_network).toBe(false);
+     expect(config.agents.approvals.require_verify).toBe(true);
+-    expect(config.execution.profile).toBe("conservative");
+-    expect(config.execution.reasoning_effort).toBe("high");
+-    expect(config.execution.unsafe_actions_requiring_explicit_user_ok).toContain(
++    expect(config.execution.profile).toBe("standard");
++    expect(config.execution.reasoning_effort).toBe("medium");
++    expect(config.execution.unsafe_actions_requiring_explicit_user_ok).not.toContain(
+       "Network actions when approvals are disabled.",
+     );
+ 
+diff --git a/packages/agentplane/src/cli/run-cli.core.init.test.ts b/packages/agentplane/src/cli/run-cli.core.init.test.ts
+index 7ed5c841e..c2ab5898a 100644
+--- a/packages/agentplane/src/cli/run-cli.core.init.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.init.test.ts
+@@ -267,7 +267,7 @@ describe("runCli", () => {
+       normalizeSlashes(String((config.tasks_backend as Record<string, unknown>)?.config_path)),
+     ).toBe(".agentplane/backends/local/backend.json");
+     const execution = config.execution as Record<string, unknown>;
+-    expect(execution?.profile).toBe("balanced");
++    expect(execution?.profile).toBe("standard");
+     expect(execution?.reasoning_effort).toBe("medium");
+ 
+     const backendText = await readFile(backendPath, "utf8");
+@@ -299,27 +299,28 @@ describe("runCli", () => {
+     expect(workflowText).not.toContain("packages/**");
+   });
+ 
+-  it("init --setup-profile vibecoder --yes applies compact autonomous defaults", async () => {
++  it("init normalizes a legacy setup profile to the standard defaults", async () => {
+     const root = await mkGitRepoRoot();
+     await configureGitUser(root);
+     const io = captureStdIO();
+     try {
+       const code = await runCli(["init", "--yes", "--setup-profile", "vibecoder", "--root", root]);
+       expect(code).toBe(0);
++      expect(io.stderr).toContain('Setup profile "vibecoder" is a compatibility alias');
+     } finally {
+       io.restore();
+     }
+ 
+     const workflowText = await readFile(path.join(root, ".agentplane", "WORKFLOW.md"), "utf8");
+-    expect(workflowText).toContain("require_plan: false");
+-    expect(workflowText).toContain("require_network: false");
+-    expect(workflowText).toContain("require_verify: false");
+-    expect(workflowText).toContain('profile: "aggressive"');
++    expect(workflowText).toContain("require_plan: true");
++    expect(workflowText).toContain("require_network: true");
++    expect(workflowText).toContain("require_verify: true");
++    expect(workflowText).toContain('profile: "standard"');
+ 
+     const hookShimPath = path.join(root, ".agentplane", "bin", "agentplane");
+     const commitMsgHookPath = path.join(root, ".git", "hooks", "commit-msg");
+-    expect(await pathExists(hookShimPath)).toBe(false);
+-    expect(await pathExists(commitMsgHookPath)).toBe(false);
++    expect(await pathExists(hookShimPath)).toBe(true);
++    expect(await pathExists(commitMsgHookPath)).toBe(true);
+   });
+ 
+   it("init with cached recipes includes materialized recipe files in the install commit", async () => {
+@@ -812,7 +813,7 @@ describe("runCli", () => {
+       };
+       expect(envelope.data?.mode).toBe("quick");
+       expect(envelope.data?.profile).toBe("team");
+-      expect(envelope.data?.internalSetupProfile).toBe("normal");
++      expect(envelope.data?.internalSetupProfile).toBe("standard");
+       expect(envelope.data?.answers).toMatchObject({ policyGateway: "codex", ide: "cursor" });
+     } finally {
+       io.restore();
+diff --git a/packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts b/packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts
+index e94cec06c..a3d57d51a 100644
+--- a/packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts
+@@ -90,12 +90,13 @@ describe("runCli", () => {
+ 
+     const { config } = await loadConfig(path.join(root, ".agentplane"));
+     expect(config.workflow_mode).toBe("direct");
+-    expect(config.agents.approvals.require_network).toBe(false);
+-    expect(config.agents.approvals.require_plan).toBe(false);
+-    expect(config.agents.approvals.require_verify).toBe(false);
++    expect(config.agents.approvals.require_network).toBe(true);
++    expect(config.agents.approvals.require_plan).toBe(true);
++    expect(config.agents.approvals.require_verify).toBe(true);
++    expect(config.execution.profile).toBe("standard");
+   });
+ 
+-  it("init --setup-profile developer applies full-harness defaults in non-tty mode", async () => {
++  it("init normalizes a legacy setup profile to the standard policy", async () => {
+     const root = await mkGitRepoRoot();
+     await configureGitUser(root);
+     const io = captureStdIO();
+@@ -103,6 +104,7 @@ describe("runCli", () => {
+       const code = await runCli(["init", "--root", root, "--setup-profile", "developer"]);
+       expect(code).toBe(0);
+       expect(io.stdout).toContain(".agentplane");
++      expect(io.stderr).toContain('Setup profile "developer" is a compatibility alias');
+     } finally {
+       io.restore();
+     }
+@@ -111,8 +113,8 @@ describe("runCli", () => {
+     expect(config.agents.approvals.require_network).toBe(true);
+     expect(config.agents.approvals.require_plan).toBe(true);
+     expect(config.agents.approvals.require_verify).toBe(true);
+-    expect(config.execution.profile).toBe("conservative");
+-    expect(config.execution.unsafe_actions_requiring_explicit_user_ok).toContain(
++    expect(config.execution.profile).toBe("standard");
++    expect(config.execution.unsafe_actions_requiring_explicit_user_ok).not.toContain(
+       "Network actions when approvals are disabled.",
+     );
+   });
+diff --git a/packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts b/packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts
+index 8fffe0ba4..d4208e364 100644
+--- a/packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts
+@@ -260,6 +260,7 @@ describe("runCli", () => {
+           "--commit",
+           "HEAD",
+           "--force",
++          "--yes",
+           "--root",
+           root,
+         ]);
+@@ -307,7 +308,7 @@ describe("runCli", () => {
+   });
+ 
+   it(
+-    "finish --force requires explicit approval in conservative profile",
++    "finish --force always requires explicit approval",
+     { timeout: BLOCK_FINISH_TIMEOUT_MS },
+     async () => {
+       const root = await mkGitRepoRoot();
+@@ -376,7 +377,7 @@ describe("runCli", () => {
+             "--author",
+             "CODER",
+             "--body",
+-            "Verified: force finish requires explicit approval in conservative profile mode.",
++            "Verified: force finish requires explicit approval under the standard policy.",
+             "--result",
+             "force-finish-check",
+             "--force",
+@@ -399,7 +400,7 @@ describe("runCli", () => {
+             "--author",
+             "CODER",
+             "--body",
+-            "Verified: force finish proceeds with explicit yes approval in conservative profile mode.",
++            "Verified: force finish proceeds with explicit yes approval under the standard policy.",
+             "--result",
+             "force-finish-check",
+             "--commit",
+diff --git a/packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts b/packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts
+index 856f80f39..f0a3f8cd7 100644
+--- a/packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts
+@@ -143,6 +143,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
+         "--body",
+         "Start: force start even though deps are incomplete to bypass readiness check.",
+         "--force",
++        "--yes",
+         "--root",
+         root,
+       ]);
+@@ -152,7 +153,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
+     }
+   });
+ 
+-  it("start --force requires explicit approval in conservative profile", async () => {
++  it("start --force always requires explicit approval", async () => {
+     const root = await mkGitRepoRoot();
+     const cfg = defaultConfig();
+     cfg.execution.profile = "conservative";
+@@ -195,7 +196,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
+           "--author",
+           "CODER",
+           "--body",
+-          "Start: force start should require explicit approval in conservative profile mode.",
++          "Start: force start should require explicit approval under the standard policy.",
+           "--force",
+           "--root",
+           root,
+@@ -216,7 +217,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
+           "--author",
+           "CODER",
+           "--body",
+-          "Start: force start approved explicitly with yes in conservative profile mode.",
++          "Start: force start approved explicitly with yes under the standard policy.",
+           "--force",
+           "--yes",
+           "--root",
+diff --git a/packages/agentplane/src/cli/run-cli.core.test.ts b/packages/agentplane/src/cli/run-cli.core.test.ts
+index 0cc39cb79..4f1919ebe 100644
+--- a/packages/agentplane/src/cli/run-cli.core.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.test.ts
+@@ -358,7 +358,7 @@ describe("runCli", () => {
+     }
+   });
+ 
+-  it("skips update check in conservative profile even when require_network=false", async () => {
++  it("honors explicit network approval settings independently of legacy profile input", async () => {
+     const root = await mkGitRepoRoot();
+     const cfg = defaultConfig();
+     cfg.execution.profile = "conservative";
+@@ -380,7 +380,7 @@ describe("runCli", () => {
+     try {
+       const code = await runCli(["config", "show", "--root", root]);
+       expect(code).toBe(0);
+-      expect(globalThis.fetch).not.toHaveBeenCalled();
++      expect(globalThis.fetch).toHaveBeenCalledTimes(1);
+       expect(io.stderr).not.toContain("Update available");
+     } finally {
+       globalThis.fetch = originalFetch;
+@@ -990,6 +990,26 @@ describe("runCli", () => {
+     }
+   });
+ 
++  it("config set rejects mutable execution policy fields", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const io = captureStdIO();
++    try {
++      const code = await runCli([
++        "config",
++        "set",
++        "execution.reasoning_effort",
++        "low",
++        "--root",
++        root,
++      ]);
++      expect(code).toBe(2);
++      expect(io.stderr).toContain("Execution policy is fixed");
++    } finally {
++      io.restore();
++    }
++  });
++
+   it("autoloads .env without overriding existing variables", async () => {
+     const root = await mkGitRepoRoot();
+     await writeFile(
+diff --git a/packages/agentplane/src/cli/run-cli/commands/config.ts b/packages/agentplane/src/cli/run-cli/commands/config.ts
+index 0e9d09fb3..eddce4772 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/config.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/config.ts
+@@ -1,11 +1,12 @@
+ import path from "node:path";
+ 
+-import { buildExecutionProfile, saveConfig, setByDottedKey } from "@agentplaneorg/core/config";
++import { saveConfig, setByDottedKey } from "@agentplaneorg/core/config";
+ 
+ import { createCliEmitter } from "../../output.js";
+ import { usageError } from "../../spec/errors.js";
+ import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
+ import { ensureActionApproved } from "../../../commands/shared/approval-requirements.js";
++import { buildCanonicalExecutionPolicy } from "../../../runtime/execution-profile/index.js";
+ import type { CommandSessionResolvers } from "../command-catalog/kernel.js";
+ import { wrapCommand } from "./wrap-command.js";
+ 
+@@ -14,7 +15,7 @@ const output = createCliEmitter();
+ type ConfigCommandDeps = Pick<CommandSessionResolvers, "getResolvedProject" | "getLoadedConfig">;
+ 
+ export type ConfigShowResult = {
+-  raw: Awaited<ReturnType<CommandSessionResolvers["getLoadedConfig"]>>["raw"];
++  config: Awaited<ReturnType<CommandSessionResolvers["getLoadedConfig"]>>["config"];
+ };
+ export type ConfigWriteResult = { value: string; workflowPath: string };
+ 
+@@ -35,7 +36,7 @@ async function cmdConfigShow(opts: {
+ }): Promise<ConfigShowResult> {
+   return wrapCommand({ command: "config show", rootOverride: opts.rootOverride }, async () => {
+     const loaded = await opts.deps.getLoadedConfig("config show");
+-    return { raw: loaded.raw };
++    return { config: loaded.config };
+   });
+ }
+ 
+@@ -44,7 +45,7 @@ export function makeRunConfigShowHandler(
+ ): CommandHandler<ConfigShowParsed> {
+   return async (ctx) => {
+     const result = await cmdConfigShow({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, deps });
+-    output.json(result.raw);
++    output.json(result.config);
+     return 0;
+   };
+ }
+@@ -67,6 +68,16 @@ export const configSetSpec: CommandSpec<ConfigSetParsed> = {
+     },
+   ],
+   parse: (raw) => ({ key: String(raw.args.key ?? ""), value: String(raw.args.value ?? "") }),
++  validate: (parsed) => {
++    if (parsed.key === "execution" || parsed.key.startsWith("execution.")) {
++      throw usageError({
++        spec: configSetSpec,
++        command: "config set",
++        message:
++          "Execution policy is fixed. Configure workflow, runner, integrations, or explicit approvals instead.",
++      });
++    }
++  },
+ };
+ 
+ async function cmdConfigSet(opts: {
+@@ -218,57 +229,29 @@ export function makeRunModeSetHandler(deps: ConfigCommandDeps): CommandHandler<M
+ 
+ type ProfileSetParsed = { profile: string };
+ 
+-type ProfilePreset = {
+-  requirePlan: boolean;
+-  requireNetwork: boolean;
+-  requireVerify: boolean;
+-  executionProfile: "conservative" | "balanced" | "aggressive";
+-  strictUnsafeConfirm: boolean;
+-};
+-
+-const PROFILE_PRESETS: Record<"light" | "normal" | "full-harness", ProfilePreset> = {
+-  light: {
+-    requirePlan: false,
+-    requireNetwork: false,
+-    requireVerify: false,
+-    executionProfile: "aggressive",
+-    strictUnsafeConfirm: false,
+-  },
+-  normal: {
+-    requirePlan: true,
+-    requireNetwork: true,
+-    requireVerify: true,
+-    executionProfile: "balanced",
+-    strictUnsafeConfirm: false,
+-  },
+-  "full-harness": {
+-    requirePlan: true,
+-    requireNetwork: true,
+-    requireVerify: true,
+-    executionProfile: "conservative",
+-    strictUnsafeConfirm: true,
+-  },
+-};
+-
+-function normalizeProfile(value: string): "light" | "normal" | "full-harness" | null {
++function normalizeProfile(value: string): "standard" | null {
+   const normalized = value.trim().toLowerCase();
+-  if (normalized === "light" || normalized === "vibecoder") return "light";
+-  if (normalized === "normal" || normalized === "manager") return "normal";
+-  if (normalized === "full-harness" || normalized === "developer" || normalized === "enterprise") {
+-    return "full-harness";
+-  }
++  if (
++    normalized === "standard" ||
++    normalized === "light" ||
++    normalized === "normal" ||
++    normalized === "full-harness" ||
++    normalized === "vibecoder" ||
++    normalized === "manager" ||
++    normalized === "developer" ||
++    normalized === "enterprise"
++  )
++    return "standard";
+   return null;
+ }
+ 
+ export const profileSetSpec: CommandSpec<ProfileSetParsed> = {
+   id: ["profile", "set"],
+   group: "Config",
+-  summary: "Apply setup profile presets to WORKFLOW config.",
+-  args: [{ name: "profile", required: true, valueHint: "<light|normal|full-harness>" }],
++  summary: "Apply the canonical AgentPlane process policy.",
++  args: [{ name: "profile", required: true, valueHint: "<standard>" }],
+   examples: [
+-    { cmd: "agentplane profile set light", why: "Apply flexible defaults." },
+-    { cmd: "agentplane profile set normal", why: "Apply balanced defaults." },
+-    { cmd: "agentplane profile set full-harness", why: "Apply strict defaults." },
++    { cmd: "agentplane profile set standard", why: "Restore the canonical process policy." },
+   ],
+   parse: (raw) => ({ profile: String(raw.args.profile ?? "") }),
+   validate: (p) => {
+@@ -276,7 +259,7 @@ export const profileSetSpec: CommandSpec<ProfileSetParsed> = {
+       throw usageError({
+         spec: profileSetSpec,
+         command: "profile set",
+-        message: `Invalid value for profile: ${p.profile} (expected: light|normal|full-harness)`,
++        message: `Invalid value for profile: ${p.profile} (expected: standard)`,
+       });
+     }
+   },
+@@ -285,7 +268,7 @@ export const profileSetSpec: CommandSpec<ProfileSetParsed> = {
+ async function cmdProfileSet(opts: {
+   cwd: string;
+   rootOverride?: string;
+-  profile: "light" | "normal" | "full-harness";
++  profile: "standard";
+   deps: ConfigCommandDeps;
+ }): Promise<ConfigWriteResult> {
+   return wrapCommand(
+@@ -298,14 +281,8 @@ async function cmdProfileSet(opts: {
+       const resolved = await opts.deps.getResolvedProject("profile set");
+       const loaded = await opts.deps.getLoadedConfig("profile set");
+       const raw = { ...loaded.raw };
+-      const preset = PROFILE_PRESETS[opts.profile];
+-      const execution = buildExecutionProfile(preset.executionProfile, {
+-        strictUnsafeConfirm: preset.strictUnsafeConfirm,
+-      });
++      const execution = buildCanonicalExecutionPolicy();
+ 
+-      setByDottedKey(raw, "agents.approvals.require_plan", String(preset.requirePlan));
+-      setByDottedKey(raw, "agents.approvals.require_network", String(preset.requireNetwork));
+-      setByDottedKey(raw, "agents.approvals.require_verify", String(preset.requireVerify));
+       setByDottedKey(raw, "execution", JSON.stringify(execution));
+ 
+       await saveConfig(resolved.agentplaneDir, raw);
+@@ -324,12 +301,18 @@ export function makeRunProfileSetHandler(
+   deps: ConfigCommandDeps,
+ ): CommandHandler<ProfileSetParsed> {
+   return async (ctx, p) => {
++    const requestedProfile = p.profile.trim().toLowerCase();
+     const result = await cmdProfileSet({
+       cwd: ctx.cwd,
+       rootOverride: ctx.rootOverride,
+       profile: normalizeProfile(p.profile)!,
+       deps,
+     });
++    if (requestedProfile !== "standard") {
++      output.warn(
++        `Profile "${p.profile}" is a compatibility alias; AgentPlane applied the fixed standard policy.`,
++      );
++    }
+     output.line(result.value);
+     return 0;
+   };
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/answers.ts b/packages/agentplane/src/cli/run-cli/commands/init/answers.ts
+index a06d52590..5f6a7f4e9 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/answers.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/answers.ts
+@@ -58,6 +58,7 @@ export type InitAnswers = {
+   executionProfile: ExecutionProfile;
+   evaluatorSkepticism: EvaluatorSkepticismLevel;
+   strictUnsafeConfirm: boolean;
++  compatibilityWarnings?: string[];
+   blueprints: string[];
+   runnerProfile: "codex" | "hermes";
+   decisionReasons: string[];
+@@ -77,7 +78,7 @@ export function assertConfirmed(clack: InitClackPrompts, value: boolean | symbol
+ }
+ 
+ export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
+-  const setupProfilePreset: SetupProfilePreset = flags.setupProfile ?? "normal";
++  const setupProfilePreset: SetupProfilePreset = flags.setupProfile ?? "standard";
+   const preset = setupProfilePresets[setupProfilePreset];
+   return {
+     setupProfile: setupProfilePreset,
+@@ -97,13 +98,14 @@ export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
+     executionProfile: flags.executionProfile ?? preset.defaultExecutionProfile,
+     evaluatorSkepticism: flags.evaluatorSkepticism ?? preset.defaultEvaluatorSkepticism,
+     strictUnsafeConfirm: flags.strictUnsafeConfirm ?? preset.defaultStrictUnsafeConfirm,
++    compatibilityWarnings: [...(flags.compatibilityWarnings ?? [])],
+     blueprints: flags.blueprints ?? INIT_DEFAULTS.blueprints,
+     runnerProfile: resolveRunnerProfileFromFlags(flags, "codex"),
+     decisionReasons: [
+       "Automation mode: non-interactive flags and stable defaults determine every value.",
+       `Agent surface: ${flags.tool ?? "codex default"}; granular gateway and IDE flags override the mapping.`,
+       `Workflow: ${flags.workflow ?? INIT_DEFAULTS.workflow}${flags.workflow ? " selected explicitly" : " is the safe local default"}.`,
+-      `Guardrails: ${setupProfilePreset} profile supplies approval and execution defaults unless overridden.`,
++      "Process policy: standard AgentPlane lifecycle and safety rules apply; explicit project settings remain independent.",
+       `Storage: ${flags.backend ?? INIT_DEFAULTS.backend}${flags.backend ? " selected explicitly" : " keeps task state local by default"}.`,
+     ],
+   };
+@@ -122,7 +124,7 @@ function quickDecisionReasons(opts: {
+     ...opts.repositoryDefaults.decisionReasons,
+     `Agent surface: ${opts.tool}; gateway, IDE integration, and managed-runner defaults are derived from this choice.`,
+     `Workflow: ${opts.workflow}${opts.workflowExplicit ? " selected explicitly" : " selected in this dialog"}.`,
+-    `Guardrails: ${opts.setupProfile} applies a coherent approval, hook, and execution profile.`,
++    "Process policy: standard AgentPlane lifecycle and safety rules apply; explicit project settings remain independent.",
+     `Storage: ${opts.backend}${opts.backend === "local" ? " keeps the project self-contained" : " was selected explicitly"}.`,
+     "Optional recipes and blueprints stay disabled until requested through advanced setup or explicit flags.",
+   ];
+@@ -138,7 +140,7 @@ async function promptQuickAnswers(opts: {
+     "Quick setup",
+     "Choose the agent surface and workflow. AgentPlane will explain the safe defaults before writing files; use Advanced setup to review every control.",
+   );
+-  const setupProfile = opts.flags.setupProfile ?? "normal";
++  const setupProfile = opts.flags.setupProfile ?? "standard";
+   const selectedPreset = setupProfilePresets[setupProfile];
+   const repositoryDefaults = await detectInitRepositoryDefaults(opts.targetRoot);
+   const { tool } = await promptToolStep({
+@@ -184,6 +186,7 @@ async function promptQuickAnswers(opts: {
+     executionProfile: advanced.executionProfile,
+     evaluatorSkepticism: advanced.evaluatorSkepticism,
+     strictUnsafeConfirm: advanced.strictUnsafeConfirm,
++    compatibilityWarnings: [...(opts.flags.compatibilityWarnings ?? [])],
+     blueprints: opts.flags.blueprints ?? INIT_DEFAULTS.blueprints,
+     runnerProfile: toolDefaults.runnerProfile ?? "codex",
+     decisionReasons: quickDecisionReasons({
+@@ -204,10 +207,10 @@ async function promptDetailedAnswers(opts: {
+   initMode: "guided" | "advanced";
+ }): Promise<InitAnswers> {
+   section(opts.clack, "Advanced setup", "Review project policy and integration controls.");
+-  const setup = await promptSetupProfileStep({
++  const setup = promptSetupProfileStep({
+     clack: opts.clack,
+     flags: opts.flags,
+-    defaultProfile: "normal",
++    defaultProfile: "standard",
+   });
+   const selectedPreset = setupProfilePresets[setup.setupProfilePreset];
+   const { tool } = await promptToolStep({ clack: opts.clack, flags: opts.flags });
+@@ -277,7 +280,7 @@ async function promptDetailedAnswers(opts: {
+       `Setup depth: ${opts.initMode} exposes individual policy and integration controls.`,
+       `Agent surface: ${tool}; gateway, IDE, and runner values remain individually reviewable.`,
+       `Workflow: ${workflow.workflow} was confirmed in the detailed setup path.`,
+-      `Guardrails: ${setup.setupProfilePreset} supplied the starting values for approvals and execution.`,
++      "Process policy: standard AgentPlane lifecycle and safety rules apply; explicit project settings remain independent.",
+       `Storage: ${backend.backend} was confirmed in the detailed setup path.`,
+     ],
+   };
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts b/packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts
+index d0f8c7418..3db004e2f 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts
+@@ -4,7 +4,7 @@ import { buildInitPlan, GITHUB_CLI_INIT_RECOMMENDATION } from "./execution.js";
+ import type { InitAnswers } from "./answers.js";
+ 
+ const answers = {
+-  setupProfile: "normal",
++  setupProfile: "standard",
+   setupProfileDescription: "team",
+   policyGateway: "codex",
+   ide: "codex",
+@@ -17,7 +17,7 @@ const answers = {
+   requireVerifyApproval: false,
+   feedbackGithubIssues: false,
+   feedbackAnonymousCloud: false,
+-  executionProfile: "balanced",
++  executionProfile: "standard",
+   evaluatorSkepticism: "strict",
+   strictUnsafeConfirm: false,
+   recipes: [],
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/execution.ts b/packages/agentplane/src/cli/run-cli/commands/init/execution.ts
+index b91462cd8..9277a6a06 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/execution.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/execution.ts
+@@ -1,10 +1,10 @@
+ import path from "node:path";
+ 
+-import { buildExecutionProfile } from "@agentplaneorg/core/config";
+ import { setPinnedBaseBranch } from "@agentplaneorg/core/git";
+ 
+ import { cmdHooksInstall, ensureInitCommit } from "../../../../commands/workflow.js";
+ import { getVersion } from "../../../../meta/version.js";
++import { buildCanonicalExecutionPolicy } from "../../../../runtime/execution-profile/index.js";
+ import { InitAborted, type InitClackPrompts } from "./prompts.js";
+ import type { InitParsed, InitPlan } from "./model.js";
+ import type { InitAnswers } from "./answers.js";
+@@ -45,7 +45,7 @@ export async function maybeConfirmInteractiveApply(opts: {
+   if (!opts.clack) return;
+   previewInstall(opts.clack, [
+     { label: "Target", value: opts.paths.gitRoot },
+-    { label: "Profile", value: opts.answers.setupProfileDescription },
++    { label: "Process policy", value: opts.answers.setupProfileDescription },
+     { label: "Gateway", value: opts.answers.policyGateway },
+     { label: "Workflow", value: opts.answers.workflow },
+     { label: "Runner", value: opts.answers.runnerProfile },
+@@ -146,9 +146,7 @@ export async function applyInitPlan(opts: {
+           requireVerifyApproval: opts.answers.requireVerifyApproval,
+           feedbackGithubIssues: opts.answers.feedbackGithubIssues,
+           feedbackAnonymousCloud: opts.answers.feedbackAnonymousCloud,
+-          execution: buildExecutionProfile(opts.answers.executionProfile, {
+-            strictUnsafeConfirm: opts.answers.strictUnsafeConfirm,
+-          }),
++          execution: buildCanonicalExecutionPolicy(),
+           evaluatorSkepticism: opts.answers.evaluatorSkepticism,
+           runnerProfile: opts.answers.runnerProfile,
+         });
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/init-plan.ts b/packages/agentplane/src/cli/run-cli/commands/init/init-plan.ts
+index a086e0400..76e483bfd 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/init-plan.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/init-plan.ts
+@@ -170,6 +170,7 @@ export function buildInitPlan(opts: {
+   const githubCliInstalled =
+     opts.answers.workflow === "branch_pr" ? (opts.githubCliInstalled ?? null) : null;
+   const warnings = [
++    ...(opts.answers.compatibilityWarnings ?? []),
+     ...(opts.conflicts.length > 0 && !hasConflictStrategy
+       ? ["Conflicts require --backup or --force before apply."]
+       : []),
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/model.ts b/packages/agentplane/src/cli/run-cli/commands/init/model.ts
+index 51d659ca9..a0bff26b7 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/model.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/model.ts
+@@ -5,7 +5,7 @@ import type { PolicyGatewayFlavor } from "../../../../shared/policy-gateway.js";
+ 
+ export type InitIde = "none" | "codex" | "cursor" | "windsurf";
+ 
+-export type SetupProfilePreset = "light" | "normal" | "full-harness";
++export type SetupProfilePreset = "standard";
+ export type InitMode = "quick" | "guided" | "advanced" | "ci";
+ export type UserFacingProfile = "solo" | "team" | "strict" | "custom";
+ export type InitTool =
+@@ -38,6 +38,7 @@ export type InitFlags = {
+   executionProfile?: ExecutionProfile;
+   evaluatorSkepticism?: EvaluatorSkepticismLevel;
+   strictUnsafeConfirm?: boolean;
++  compatibilityWarnings?: string[];
+   recipes?: string[];
+   blueprints?: string[];
+   force?: boolean;
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/modes.ts b/packages/agentplane/src/cli/run-cli/commands/init/modes.ts
+index f6ede75f4..08d4914fe 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/modes.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/modes.ts
+@@ -18,8 +18,7 @@ export function resolveInitMode(opts: { flags: InitParsed; interactive: boolean
+ }
+ 
+ export function setupProfileToUserFacingProfile(profile: SetupProfilePreset): UserFacingProfile {
+-  if (profile === "light") return "solo";
+-  if (profile === "full-harness") return "strict";
++  void profile;
+   return "team";
+ }
+ 
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/orchestrate.ts b/packages/agentplane/src/cli/run-cli/commands/init/orchestrate.ts
+index c35ae69fe..24704dbd7 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/orchestrate.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/orchestrate.ts
+@@ -4,6 +4,7 @@ import { CliError } from "../../../../shared/errors.js";
+ import { mapCoreError } from "../../../error-map.js";
+ import { usageError } from "../../../spec/errors.js";
+ import type { CommandSpec } from "../../../spec/spec.js";
++import { createCliEmitter } from "../../../output.js";
+ 
+ import { resolveInitBaseBranchForInit } from "./base-branch.js";
+ import { ensureGitRoot } from "./git.js";
+@@ -26,6 +27,8 @@ import { outroError, outroSuccess } from "./ui.js";
+ import { resolveInitMode } from "./modes.js";
+ import { FIRST_TASK_COMMAND } from "./init-plan.js";
+ 
++const output = createCliEmitter();
++
+ function shouldRunInteractiveInit(flags: InitParsed): boolean {
+   if (
+     flags.yes ||
+@@ -59,7 +62,7 @@ function renderDryRunPlanText(plan: ReturnType<typeof buildInitPlan>): string {
+     "AgentPlane init plan",
+     `Root: ${plan.root}`,
+     `Mode: ${plan.mode}`,
+-    `Profile: ${plan.profile} (${plan.internalSetupProfile})`,
++    `Process policy: ${plan.internalSetupProfile}`,
+     `Workflow: ${plan.answers.workflow}`,
+     `Runner: ${plan.answers.runnerProfile}`,
+     `Evaluator skepticism: ${plan.answers.evaluatorSkepticism}`,
+@@ -155,6 +158,9 @@ export async function cmdInit(opts: {
+       }
+       return 0;
+     }
++    if (!clack) {
++      for (const warning of plan.warnings) output.warn(warning);
++    }
+     await maybeConfirmInteractiveApply({ clack, flags: opts.flags, answers, paths, plan });
+     await applyInitPlan({
+       cwd: opts.cwd,
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/presets.ts b/packages/agentplane/src/cli/run-cli/commands/init/presets.ts
+index b125590c4..43f589119 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/presets.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/presets.ts
+@@ -1,5 +1,9 @@
++import type { ExecutionProfile } from "@agentplaneorg/core/config";
++
+ import type { InitDefaults, SetupProfilePreset } from "./model.js";
+ 
++const CANONICAL_EXECUTION_PROFILE = "standard" as const;
++
+ export const INIT_DEFAULTS: InitDefaults = {
+   policyGateway: "codex",
+   ide: "codex",
+@@ -13,7 +17,7 @@ export const INIT_DEFAULTS: InitDefaults = {
+   requireVerifyApproval: true,
+   feedbackGithubIssues: false,
+   feedbackAnonymousCloud: false,
+-  executionProfile: "balanced",
++  executionProfile: CANONICAL_EXECUTION_PROFILE,
+   evaluatorSkepticism: "standard",
+   strictUnsafeConfirm: false,
+   blueprints: [],
+@@ -37,24 +41,9 @@ export const setupProfilePresets: Record<
+     defaultRecipes: string[];
+   }
+ > = {
+-  light: {
++  standard: {
+     mode: "compact",
+-    description: "Light profile (maximum flexibility, minimal enforcement, hooks disabled).",
+-    defaultHooks: false,
+-    defaultStrictUnsafeConfirm: false,
+-    defaultRequirePlanApproval: false,
+-    defaultRequireNetworkApproval: false,
+-    defaultRequireVerifyApproval: false,
+-    defaultFeedbackGithubIssues: false,
+-    defaultFeedbackAnonymousCloud: false,
+-    defaultExecutionProfile: "aggressive",
+-    defaultEvaluatorSkepticism: "standard",
+-    defaultRecipes: [],
+-  },
+-  normal: {
+-    mode: "compact",
+-    description:
+-      "Normal profile (balanced defaults and approvals enabled for standard team workflows; hooks enabled).",
++    description: "Standard process policy with task-specific workflow and integration settings.",
+     defaultHooks: true,
+     defaultStrictUnsafeConfirm: false,
+     defaultRequirePlanApproval: true,
+@@ -62,33 +51,38 @@ export const setupProfilePresets: Record<
+     defaultRequireVerifyApproval: true,
+     defaultFeedbackGithubIssues: false,
+     defaultFeedbackAnonymousCloud: false,
+-    defaultExecutionProfile: "balanced",
++    defaultExecutionProfile: CANONICAL_EXECUTION_PROFILE,
+     defaultEvaluatorSkepticism: "standard",
+     defaultRecipes: [],
+   },
+-  "full-harness": {
+-    mode: "full",
+-    description:
+-      "Full Harness profile (strict guardrails, explicit confirmations, conservative execution; hooks enabled).",
+-    defaultHooks: true,
+-    defaultStrictUnsafeConfirm: true,
+-    defaultRequirePlanApproval: true,
+-    defaultRequireNetworkApproval: true,
+-    defaultRequireVerifyApproval: true,
+-    defaultFeedbackGithubIssues: false,
+-    defaultFeedbackAnonymousCloud: false,
+-    defaultExecutionProfile: "conservative",
+-    defaultEvaluatorSkepticism: "strict",
+-    defaultRecipes: [],
+-  },
+ };
+ 
+ export function normalizeSetupProfile(raw: string | undefined): SetupProfilePreset | undefined {
+   if (!raw) return undefined;
+   const value = raw.trim().toLowerCase();
+-  if (value === "developer" || value === "enterprise") return "full-harness";
+-  if (value === "manager") return "normal";
+-  if (value === "vibecoder") return "light";
+-  if (value === "light" || value === "normal" || value === "full-harness") return value;
++  if (
++    value === "standard" ||
++    value === "developer" ||
++    value === "enterprise" ||
++    value === "manager" ||
++    value === "vibecoder" ||
++    value === "light" ||
++    value === "normal" ||
++    value === "full-harness"
++  )
++    return "standard";
++  return undefined;
++}
++
++export function normalizeExecutionProfile(raw: string | undefined): ExecutionProfile | undefined {
++  if (!raw) return undefined;
++  const value = raw.trim().toLowerCase();
++  if (
++    value === "standard" ||
++    value === "conservative" ||
++    value === "balanced" ||
++    value === "aggressive"
++  )
++    return CANONICAL_EXECUTION_PROFILE;
+   return undefined;
+ }
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/spec.ts b/packages/agentplane/src/cli/run-cli/commands/init/spec.ts
+index 5285545d4..33d06e012 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/spec.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/spec.ts
+@@ -1,13 +1,38 @@
+ import type { CommandSpec } from "../../../spec/spec.js";
+ import { usageError } from "../../../spec/errors.js";
+ 
+-import { normalizeSetupProfile } from "./presets.js";
++import { normalizeExecutionProfile, normalizeSetupProfile } from "./presets.js";
+ import {
+   parseBlueprintsSelectionForInit,
+   parseBooleanValueForInit,
+   parseDirectCloseDirtyPolicyForInit,
+   parseRecipesSelectionForInit,
+ } from "./parsers.js";
++
++function profileCompatibilityWarnings(raw: Record<string, unknown>): string[] {
++  const warnings: string[] = [];
++  const setupProfileRaw = typeof raw["setup-profile"] === "string" ? raw["setup-profile"] : "";
++  const executionProfileRaw =
++    typeof raw["execution-profile"] === "string" ? raw["execution-profile"] : "";
++  const setupProfile = setupProfileRaw.trim().toLowerCase();
++  const executionProfile = executionProfileRaw.trim().toLowerCase();
++  if (setupProfile && setupProfile !== "standard") {
++    warnings.push(
++      `Setup profile "${setupProfileRaw}" is a compatibility alias; AgentPlane applied the fixed standard policy.`,
++    );
++  }
++  if (executionProfile && executionProfile !== "standard") {
++    warnings.push(
++      `Execution profile "${executionProfileRaw}" is a compatibility alias; AgentPlane applied the fixed standard policy.`,
++    );
++  }
++  if (raw["strict-unsafe-confirm"] !== undefined) {
++    warnings.push(
++      "--strict-unsafe-confirm is a compatibility option; the standard process policy defines fixed unsafe-action boundaries.",
++    );
++  }
++  return warnings;
++}
+ import type { InitFlags, InitParsed } from "./model.js";
+ 
+ export const initSpec: CommandSpec<InitParsed> = {
+@@ -50,9 +75,10 @@ export const initSpec: CommandSpec<InitParsed> = {
+     {
+       kind: "string",
+       name: "setup-profile",
+-      valueHint: "<light|normal|full-harness>",
+-      choices: ["light", "normal", "full-harness", "developer", "vibecoder", "manager"],
+-      description: "Setup profile preset. Preferred values: light, normal, full-harness.",
++      valueHint: "<standard>",
++      choices: ["standard", "light", "normal", "full-harness", "developer", "vibecoder", "manager"],
++      description:
++        "Compatibility alias for the fixed standard process policy. Legacy values are accepted but no longer change behavior.",
+     },
+     {
+       kind: "string",
+@@ -97,8 +123,7 @@ export const initSpec: CommandSpec<InitParsed> = {
+       kind: "string",
+       name: "hooks",
+       valueHint: "<true|false>",
+-      description:
+-        "Install managed git hooks (default by setup profile: light=false, normal/full-harness=true).",
++      description: "Install managed git hooks (default: true).",
+     },
+     {
+       kind: "string",
+@@ -135,9 +160,10 @@ export const initSpec: CommandSpec<InitParsed> = {
+     {
+       kind: "string",
+       name: "execution-profile",
+-      valueHint: "<conservative|balanced|aggressive>",
+-      choices: ["conservative", "balanced", "aggressive"],
+-      description: "Execution profile preset controlling autonomy, reasoning, and tool budgets.",
++      valueHint: "<standard>",
++      choices: ["standard", "conservative", "balanced", "aggressive"],
++      description:
++        "Compatibility alias for the fixed standard execution policy. Legacy values are accepted but ignored.",
+     },
+     {
+       kind: "string",
+@@ -151,7 +177,8 @@ export const initSpec: CommandSpec<InitParsed> = {
+       kind: "string",
+       name: "strict-unsafe-confirm",
+       valueHint: "<true|false>",
+-      description: "Require strict explicit confirmations for additional unsafe actions.",
++      description:
++        "Deprecated compatibility option. The standard process policy defines fixed unsafe-action boundaries.",
+     },
+     {
+       kind: "string",
+@@ -217,8 +244,8 @@ export const initSpec: CommandSpec<InitParsed> = {
+       why: "Short interactive setup for agent surface and workflow, followed by an explained preview.",
+     },
+     {
+-      cmd: "agentplane init --setup-profile light --yes",
+-      why: "Non-interactive setup with flexible defaults.",
++      cmd: "agentplane init --yes",
++      why: "Non-interactive setup with the standard process policy.",
+     },
+     {
+       cmd: "agentplane init --workflow direct --direct-close-dirty-policy allow-other-task-readmes --backend local --hooks true --require-network-approval true --yes",
+@@ -323,7 +350,9 @@ export const initSpec: CommandSpec<InitParsed> = {
+               "--feedback-anonymous-cloud",
+               feedbackAnonymousCloudRaw,
+             ),
+-      executionProfile: raw.opts["execution-profile"] as InitFlags["executionProfile"],
++      executionProfile: normalizeExecutionProfile(
++        raw.opts["execution-profile"] as string | undefined,
++      ),
+       evaluatorSkepticism: raw.opts["evaluator-skepticism"] as InitFlags["evaluatorSkepticism"],
+       strictUnsafeConfirm:
+         (raw.opts["strict-unsafe-confirm"] as string | undefined) === undefined
+@@ -333,6 +362,7 @@ export const initSpec: CommandSpec<InitParsed> = {
+               "--strict-unsafe-confirm",
+               String(raw.opts["strict-unsafe-confirm"]),
+             ),
++      compatibilityWarnings: profileCompatibilityWarnings(raw.opts),
+       recipes: recipesRaw === undefined ? undefined : parseRecipesSelectionForInit(recipesRaw),
+       blueprints:
+         blueprintsRaw === undefined ? undefined : parseBlueprintsSelectionForInit(blueprintsRaw),
+@@ -354,12 +384,5 @@ export const initSpec: CommandSpec<InitParsed> = {
+         message: "Use either --force or --backup (not both).",
+       });
+     }
+-    if (p.initMode === "quick" && p.setupProfile === "full-harness") {
+-      throw usageError({
+-        spec: initSpec,
+-        command: "init",
+-        message: "--init-mode quick cannot be combined with --setup-profile full-harness.",
+-      });
+-    }
+   },
+ };
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/steps/advanced-settings.ts b/packages/agentplane/src/cli/run-cli/commands/init/steps/advanced-settings.ts
+index 4dda8963e..6775a3162 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/steps/advanced-settings.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/steps/advanced-settings.ts
+@@ -1,4 +1,7 @@
+-import type { EvaluatorSkepticismLevel, ExecutionProfile } from "@agentplaneorg/core/config";
++import {
++  CANONICAL_EXECUTION_PROFILE,
++  type EvaluatorSkepticismLevel,
++} from "@agentplaneorg/core/config";
+ 
+ import type { InitFlags, SetupProfilePreset } from "../model.js";
+ import { setupProfilePresets } from "../presets.js";
+@@ -10,12 +13,6 @@ import type {
+   InitPromptClack,
+ } from "./contracts.js";
+ 
+-const executionProfileOptions: { value: ExecutionProfile; label: string; hint: string }[] = [
+-  { value: "conservative", label: "Conservative", hint: "Lower autonomy and stricter budgets." },
+-  { value: "balanced", label: "Balanced", hint: "Default autonomy and verification posture." },
+-  { value: "aggressive", label: "Aggressive", hint: "Higher autonomy and lighter guardrails." },
+-];
+-
+ const evaluatorSkepticismOptions: {
+   value: EvaluatorSkepticismLevel;
+   label: string;
+@@ -57,19 +54,11 @@ export async function promptAdvancedSettingsStep(opts: {
+     opts.flags.feedbackAnonymousCloud ?? preset.defaultFeedbackAnonymousCloud;
+   let requireNetworkApproval =
+     opts.flags.requireNetworkApproval ?? preset.defaultRequireNetworkApproval;
+-  let executionProfile = opts.flags.executionProfile ?? preset.defaultExecutionProfile;
++  const executionProfile = CANONICAL_EXECUTION_PROFILE;
+   let evaluatorSkepticism = opts.flags.evaluatorSkepticism ?? preset.defaultEvaluatorSkepticism;
+-  let strictUnsafeConfirm = opts.flags.strictUnsafeConfirm ?? preset.defaultStrictUnsafeConfirm;
++  const strictUnsafeConfirm = false;
+ 
+   if (opts.setupProfileMode === "full") {
+-    if (!opts.flags.executionProfile) {
+-      executionProfile = await selectStepValue(opts.clack, {
+-        message: "Execution profile",
+-        options: executionProfileOptions,
+-        initialValue: executionProfile,
+-        cancelMessage: "Execution profile selection cancelled.",
+-      });
+-    }
+     if (!opts.flags.evaluatorSkepticism) {
+       evaluatorSkepticism = await selectStepValue(opts.clack, {
+         message: "Evaluator skepticism",
+@@ -78,13 +67,6 @@ export async function promptAdvancedSettingsStep(opts: {
+         cancelMessage: "Evaluator skepticism selection cancelled.",
+       });
+     }
+-    if (opts.flags.strictUnsafeConfirm === undefined) {
+-      strictUnsafeConfirm = await confirmStepValue(opts.clack, {
+-        message: "Require strict explicit confirmation for extra unsafe actions?",
+-        initialValue: strictUnsafeConfirm,
+-        cancelMessage: "Strict unsafe confirmation selection cancelled.",
+-      });
+-    }
+     if (opts.flags.requireNetworkApproval === undefined) {
+       requireNetworkApproval = await confirmStepValue(opts.clack, {
+         message: "Require explicit approval for network actions?",
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/steps/blueprint-selection.ts b/packages/agentplane/src/cli/run-cli/commands/init/steps/blueprint-selection.ts
+index 48e398dcb..d4a07eb9b 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/steps/blueprint-selection.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/steps/blueprint-selection.ts
+@@ -31,7 +31,8 @@ export async function promptBlueprintSelectionStep(opts: {
+     return { blueprints: [...opts.flags.blueprints] };
+   }
+ 
+-  if (opts.setupProfileMode !== "full" || opts.setupProfilePreset !== "full-harness") {
++  void opts.setupProfilePreset;
++  if (opts.setupProfileMode !== "full") {
+     return { blueprints: [] };
+   }
+ 
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts b/packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts
+index bcf1abbf2..ad77d9eca 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts
+@@ -48,27 +48,15 @@ function resetPromptMocks(): void {
+ }
+ 
+ describe("init prompt steps", () => {
+-  it("collects the happy path for full-harness interactive setup", async () => {
++  it("uses the standard policy without profile prompts", async () => {
+     resetPromptMocks();
+     mocks.selectMock
+-      .mockResolvedValueOnce("full-harness")
+       .mockResolvedValueOnce("claude")
+       .mockResolvedValueOnce("cursor")
+-      .mockResolvedValueOnce("branch_pr")
+-      .mockResolvedValueOnce("cloud")
+-      .mockResolvedValueOnce("aggressive")
+-      .mockResolvedValueOnce("standard");
+-    mocks.confirmMock
+-      .mockResolvedValueOnce(false)
+-      .mockResolvedValueOnce(true)
+-      .mockResolvedValueOnce(true)
+-      .mockResolvedValueOnce(false);
+-    mocks.textMock
+-      .mockResolvedValueOnce("recipe-a, recipe-b")
+-      .mockResolvedValueOnce("pack:enterprise-baseline");
++      .mockResolvedValueOnce("cloud");
+     const prompt = clackMock();
+ 
+-    const setup = await promptSetupProfileStep({ clack: prompt, flags: {} });
++    const setup = promptSetupProfileStep({ clack: prompt, flags: {} });
+     const policy = await promptPolicyGatewayStep({ clack: prompt, flags: {} });
+     const ide = await promptIdeStep({ clack: prompt, flags: {} });
+     const workflow = await promptWorkflowStep({
+@@ -98,11 +86,11 @@ describe("init prompt steps", () => {
+       cachedBlueprints: ["blueprint:analysis-external", "pack:enterprise-baseline"],
+     });
+ 
+-    expect(setup).toEqual({ setupProfilePreset: "full-harness", setupProfileMode: "full" });
++    expect(setup).toEqual({ setupProfilePreset: "standard", setupProfileMode: "compact" });
+     expect(policy).toEqual({ policyGateway: "claude" });
+     expect(ide).toEqual({ ide: "cursor" });
+     expect(workflow).toEqual({
+-      workflow: "branch_pr",
++      workflow: "direct",
+       directCloseDirtyPolicy: "allow_other_task_readmes",
+     });
+     expect(backend).toEqual({ backend: "cloud" });
+@@ -111,14 +99,17 @@ describe("init prompt steps", () => {
+       requirePlanApproval: true,
+       requireNetworkApproval: true,
+       requireVerifyApproval: true,
+-      feedbackGithubIssues: true,
++      feedbackGithubIssues: false,
+       feedbackAnonymousCloud: false,
+-      executionProfile: "aggressive",
++      executionProfile: "standard",
+       evaluatorSkepticism: "standard",
+       strictUnsafeConfirm: false,
+     });
+-    expect(recipes).toEqual({ recipes: ["recipe-a", "recipe-b"] });
+-    expect(blueprints).toEqual({ blueprints: ["pack:enterprise-baseline"] });
++    expect(recipes).toEqual({ recipes: [] });
++    expect(blueprints).toEqual({ blueprints: [] });
++    expect(mocks.selectMock).toHaveBeenCalledTimes(3);
++    expect(mocks.confirmMock).not.toHaveBeenCalled();
++    expect(mocks.textMock).not.toHaveBeenCalled();
+   });
+ 
+   it("keeps the default setup path to depth, agent surface, and workflow decisions", async () => {
+@@ -151,9 +142,10 @@ describe("init prompt steps", () => {
+     resetPromptMocks();
+     const prompt = clackMock();
+ 
+-    await expect(
+-      promptSetupProfileStep({ clack: prompt, flags: { setupProfile: "light" } }),
+-    ).resolves.toEqual({ setupProfilePreset: "light", setupProfileMode: "compact" });
++    expect(promptSetupProfileStep({ clack: prompt, flags: { setupProfile: "standard" } })).toEqual({
++      setupProfilePreset: "standard",
++      setupProfileMode: "compact",
++    });
+     await expect(
+       promptPolicyGatewayStep({ clack: prompt, flags: { policyGateway: "claude" } }),
+     ).resolves.toEqual({ policyGateway: "claude" });
+@@ -177,17 +169,17 @@ describe("init prompt steps", () => {
+       promptAdvancedSettingsStep({
+         clack: prompt,
+         flags: {},
+-        setupProfilePreset: "light",
++        setupProfilePreset: "standard",
+         setupProfileMode: "compact",
+       }),
+     ).resolves.toEqual({
+-      hooks: false,
+-      requirePlanApproval: false,
+-      requireNetworkApproval: false,
+-      requireVerifyApproval: false,
++      hooks: true,
++      requirePlanApproval: true,
++      requireNetworkApproval: true,
++      requireVerifyApproval: true,
+       feedbackGithubIssues: false,
+       feedbackAnonymousCloud: false,
+-      executionProfile: "aggressive",
++      executionProfile: "standard",
+       evaluatorSkepticism: "standard",
+       strictUnsafeConfirm: false,
+     });
+@@ -195,7 +187,7 @@ describe("init prompt steps", () => {
+       promptRecipeSelectionStep({
+         clack: prompt,
+         flags: {},
+-        setupProfilePreset: "light",
++        setupProfilePreset: "standard",
+         setupProfileMode: "compact",
+         cachedRecipes: ["recipe-a"],
+       }),
+@@ -204,7 +196,7 @@ describe("init prompt steps", () => {
+       promptBlueprintSelectionStep({
+         clack: prompt,
+         flags: {},
+-        setupProfilePreset: "light",
++        setupProfilePreset: "standard",
+         setupProfileMode: "compact",
+         cachedBlueprints: ["pack:baseline"],
+       }),
+@@ -235,7 +227,7 @@ describe("init prompt steps", () => {
+       promptRecipeSelectionStep({
+         clack: clackMock(),
+         flags: {},
+-        setupProfilePreset: "full-harness",
++        setupProfilePreset: "standard",
+         setupProfileMode: "full",
+         cachedRecipes: [],
+       }),
+@@ -250,7 +242,7 @@ describe("init prompt steps", () => {
+       promptBlueprintSelectionStep({
+         clack: clackMock(),
+         flags: {},
+-        setupProfilePreset: "full-harness",
++        setupProfilePreset: "standard",
+         setupProfileMode: "full",
+         cachedBlueprints: [],
+       }),
+@@ -271,7 +263,7 @@ describe("init prompt steps", () => {
+       promptRecipeSelectionStep({
+         clack: clackMock(),
+         flags: {},
+-        setupProfilePreset: "full-harness",
++        setupProfilePreset: "standard",
+         setupProfileMode: "full",
+         cachedRecipes: ["recipe-a", "recipe-b"],
+       }),
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/steps/setup-profile.ts b/packages/agentplane/src/cli/run-cli/commands/init/steps/setup-profile.ts
+index e262f7ad9..5c743ed60 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/steps/setup-profile.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/steps/setup-profile.ts
+@@ -1,43 +1,15 @@
+-import { setupProfilePresets } from "../presets.js";
+ import type { InitFlags, SetupProfilePreset } from "../model.js";
+-
+-import { selectStepValue } from "./prompt-utils.js";
+ import type { InitPromptClack, SetupProfileStepAnswers } from "./contracts.js";
+ 
+-const setupProfileOptions: { value: SetupProfilePreset; label: string; hint: string }[] = [
+-  {
+-    value: "light",
+-    label: "Light",
+-    hint: setupProfilePresets.light.description,
+-  },
+-  {
+-    value: "normal",
+-    label: "Normal",
+-    hint: setupProfilePresets.normal.description,
+-  },
+-  {
+-    value: "full-harness",
+-    label: "Full Harness",
+-    hint: setupProfilePresets["full-harness"].description,
+-  },
+-];
+-
+-export async function promptSetupProfileStep(opts: {
++export function promptSetupProfileStep(opts: {
+   clack: InitPromptClack;
+   flags: Pick<InitFlags, "setupProfile">;
+   defaultProfile?: SetupProfilePreset;
+-}): Promise<SetupProfileStepAnswers> {
+-  const setupProfilePreset =
+-    opts.flags.setupProfile ??
+-    (await selectStepValue(opts.clack, {
+-      message: "Setup profile",
+-      options: setupProfileOptions,
+-      initialValue: opts.defaultProfile ?? "normal",
+-      cancelMessage: "Setup profile selection cancelled.",
+-    }));
+-
++}): SetupProfileStepAnswers {
++  void opts;
++  const setupProfilePreset: SetupProfilePreset = "standard";
+   return {
+     setupProfilePreset,
+-    setupProfileMode: setupProfilePresets[setupProfilePreset].mode,
++    setupProfileMode: "compact",
+   };
+ }
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/write-config.ts b/packages/agentplane/src/cli/run-cli/commands/init/write-config.ts
+index b332f0c6b..6158df70f 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/write-config.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/write-config.ts
+@@ -12,7 +12,7 @@ import { getVersion } from "../../../../meta/version.js";
+ import type { InitBackend, InitRunnerProfile } from "./model.js";
+ 
+ type InitExecutionConfig = {
+-  profile: "conservative" | "balanced" | "aggressive";
++  profile: "standard" | "conservative" | "balanced" | "aggressive";
+   reasoning_effort: "low" | "medium" | "high" | "xhigh";
+   text_verbosity: "low" | "medium" | "high";
+   tool_budget: {
+diff --git a/packages/agentplane/src/commands/shared/approval-requirements.test.ts b/packages/agentplane/src/commands/shared/approval-requirements.test.ts
+index b24a4d766..1698770f0 100644
+--- a/packages/agentplane/src/commands/shared/approval-requirements.test.ts
++++ b/packages/agentplane/src/commands/shared/approval-requirements.test.ts
+@@ -18,23 +18,23 @@ describe("approval requirements", () => {
+     });
+   });
+ 
+-  it("does not require force approval by default", () => {
++  it("always requires force approval under the standard policy", () => {
+     const config = defaultConfig();
+     const req = getApprovalRequirements({ config, action: "force_action" });
+-    expect(req.required).toBe(false);
++    expect(req.required).toBe(true);
+     expect(req.action).toMatchObject({
+       id: "force_action",
+       destructive: true,
+     });
+   });
+ 
+-  it("conservative profile escalates network and force approvals", () => {
++  it("does not let a legacy profile escalate independent network approval", () => {
+     const config = defaultConfig();
+     config.execution.profile = "conservative";
+     config.agents.approvals.require_network = false;
+     const networkReq = getApprovalRequirements({ config, action: "backend_sync" });
+     const forceReq = getApprovalRequirements({ config, action: "force_action" });
+-    expect(networkReq.required).toBe(true);
++    expect(networkReq.required).toBe(false);
+     expect(forceReq.required).toBe(true);
+   });
+ 
+diff --git a/packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts b/packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts
+index d1d6270c7..c9d94c452 100644
+--- a/packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts
++++ b/packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts
+@@ -971,6 +971,7 @@ describe("task finish close-tail", () => {
+       commit: "impl-hash",
+       breaking: false,
+       force: true,
++      yes: true,
+       commitFromComment: false,
+       commitAllow: [],
+       commitAutoAllow: false,
+diff --git a/packages/agentplane/src/commands/workflow.maintenance.test.ts b/packages/agentplane/src/commands/workflow.maintenance.test.ts
+index 4ab7028a2..fdd99c7fa 100644
+--- a/packages/agentplane/src/commands/workflow.maintenance.test.ts
++++ b/packages/agentplane/src/commands/workflow.maintenance.test.ts
+@@ -348,6 +348,7 @@ describe("commands/workflow", () => {
+         taskId,
+         overwrite: false,
+         force: true,
++        yes: true,
+         quiet: false,
+       });
+       expect(code).toBe(0);
+diff --git a/packages/agentplane/src/commands/workflow.test.ts b/packages/agentplane/src/commands/workflow.test.ts
+index 70f75dca2..5f2a46420 100644
+--- a/packages/agentplane/src/commands/workflow.test.ts
++++ b/packages/agentplane/src/commands/workflow.test.ts
+@@ -847,6 +847,7 @@ describe("commands/workflow", () => {
+       commitRequireClean: false,
+       confirmStatusCommit: false,
+       force: true,
++      yes: true,
+       quiet: true,
+     });
+     expect(codeStart).toBe(0);
+diff --git a/packages/agentplane/src/runner/context/base-prompts.test.ts b/packages/agentplane/src/runner/context/base-prompts.test.ts
+index acdcdd09f..6c3e910af 100644
+--- a/packages/agentplane/src/runner/context/base-prompts.test.ts
++++ b/packages/agentplane/src/runner/context/base-prompts.test.ts
+@@ -603,7 +603,7 @@ describe("collectRunnerBasePrompts", () => {
+     expect(prompts[2]?.content).not.toContain("Long body");
+   });
+ 
+-  it("inserts execution profile runtime constraints before the owner profile when provided", async () => {
++  it("normalizes legacy execution inputs before inserting runtime constraints", async () => {
+     const root = await makeTempRepo();
+     const config = defaultConfig();
+     config.execution = buildExecutionProfile("conservative");
+@@ -623,13 +623,13 @@ describe("collectRunnerBasePrompts", () => {
+     expect(prompts[1]).toMatchObject({
+       role: "policy",
+       priority: 250,
+-      source: "runtime:execution-profile:conservative",
+-      title: "Execution Profile Runtime (conservative)",
++      source: "runtime:execution-profile:standard",
++      title: "Execution Profile Runtime (standard)",
+     });
+-    expect(prompts[1]?.content).toContain('"reasoning_effort": "high"');
++    expect(prompts[1]?.content).toContain('"reasoning_effort": "medium"');
+     expect(prompts[1]?.content).toContain('"text_verbosity": "medium"');
+     expect(prompts[1]?.content).toContain('"require_force": true');
+-    expect(prompts[1]?.content).toContain('"terminate_grace_ms": 5000');
++    expect(prompts[1]?.content).toContain('"terminate_grace_ms": 1500');
+     expect(prompts[1]?.resolution?.winner.layer).toBe("harness");
+   });
+ 
+diff --git a/packages/agentplane/src/runner/state-fingerprint-projections.test.ts b/packages/agentplane/src/runner/state-fingerprint-projections.test.ts
+index 5a24b245a..7f2bc44ec 100644
+--- a/packages/agentplane/src/runner/state-fingerprint-projections.test.ts
++++ b/packages/agentplane/src/runner/state-fingerprint-projections.test.ts
+@@ -433,11 +433,11 @@ describe("runner state fingerprint production projections", () => {
+     preparedBundle.base_prompts.push({
+       id: "base.execution_profile",
+       role: "policy",
+-      source: "runtime:execution-profile:balanced",
++      source: "runtime:execution-profile:standard",
+       priority: 250,
+       content: `${JSON.stringify(
+         {
+-          profile: "balanced",
++          profile: "standard",
+           reasoning_effort: "medium",
+           approvals: preparedBundle.execution.approvals,
+           stop_conditions: ["blocked"],
+diff --git a/packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts b/packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts
+index 525a5501d..a2137b6c2 100644
+--- a/packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts
++++ b/packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts
+@@ -382,7 +382,7 @@ describe("runner residual Git fingerprint", () => {
+     });
+   });
+ 
+-  it("assigns a force-approval mutation exactly to authority", async () => {
++  it("does not assign an ignored force-approval input to authority", async () => {
+     const fixture = await prepareLocalCase("Residual force approval authority");
+     const config = structuredClone(fixture.ctx.config);
+     config.agents.approvals.require_force = !config.agents.approvals.require_force;
+@@ -391,8 +391,8 @@ describe("runner residual Git fingerprint", () => {
+     await expectExactlyChanged({
+       ctx: fixture.ctx,
+       prepared: fixture.prepared,
+-      component: "authority",
+-      expected_components: ["git", "authority"],
++      component: "git",
++      expected_components: ["git"],
+     });
+   });
+ 
+diff --git a/packages/agentplane/src/runtime/approvals/index.ts b/packages/agentplane/src/runtime/approvals/index.ts
+index 5793b53f1..bc98c2ae2 100644
+--- a/packages/agentplane/src/runtime/approvals/index.ts
++++ b/packages/agentplane/src/runtime/approvals/index.ts
+@@ -1,2 +1,6 @@
+ export type { ApprovalRequirement } from "./model.js";
+-export { ApprovalRuntime, createApprovalRuntime } from "./runtime.js";
++export {
++  ApprovalRuntime,
++  createApprovalRuntime,
++  resolveEffectiveApprovalSettings,
++} from "./runtime.js";
+diff --git a/packages/agentplane/src/runtime/approvals/model.ts b/packages/agentplane/src/runtime/approvals/model.ts
+index 8c6d16b34..49a938dd6 100644
+--- a/packages/agentplane/src/runtime/approvals/model.ts
++++ b/packages/agentplane/src/runtime/approvals/model.ts
+@@ -10,7 +10,7 @@ export type EffectiveApprovalSettings = {
+   require_force: boolean;
+ };
+ 
+-type ApprovalDecisionSource = "none" | "config" | "execution_profile" | "builtin";
++type ApprovalDecisionSource = "none" | "config" | "builtin";
+ 
+ export type ApprovalRequirement = {
+   action: PolicyActionDescriptor;
+diff --git a/packages/agentplane/src/runtime/approvals/runtime.test.ts b/packages/agentplane/src/runtime/approvals/runtime.test.ts
+index 885384de6..c1abbfb83 100644
+--- a/packages/agentplane/src/runtime/approvals/runtime.test.ts
++++ b/packages/agentplane/src/runtime/approvals/runtime.test.ts
+@@ -8,7 +8,7 @@ import { CliError } from "../../shared/errors.js";
+ import { ApprovalRuntime, resolveEffectiveApprovalSettings } from "./runtime.js";
+ 
+ describe("runtime/approvals", () => {
+-  it("resolves effective approvals and applies conservative escalation", () => {
++  it("keeps force approval fixed without profile-based escalation", () => {
+     const config = defaultConfig();
+     config.agents.approvals.require_network = false;
+     config.agents.approvals.require_force = false;
+@@ -16,12 +16,23 @@ describe("runtime/approvals", () => {
+ 
+     expect(resolveEffectiveApprovalSettings(config)).toMatchObject({
+       require_plan: true,
+-      require_network: true,
++      require_network: false,
+       require_verify: true,
+       require_force: true,
+     });
+   });
+ 
++  it("reports force approval as a built-in standard-policy requirement", () => {
++    const config = defaultConfig();
++    config.agents.approvals.require_force = false;
++    const runtime = new ApprovalRuntime({ config });
++
++    expect(runtime.resolve({ action: "force_action" })).toMatchObject({
++      required: true,
++      source: "builtin",
++    });
++  });
++
+   it("classifies network-gated actions through the shared policy runtime", () => {
+     const config = defaultConfig();
+     const runtime = new ApprovalRuntime({ config });
+diff --git a/packages/agentplane/src/runtime/approvals/runtime.ts b/packages/agentplane/src/runtime/approvals/runtime.ts
+index 444a73ec8..bd3160fe0 100644
+--- a/packages/agentplane/src/runtime/approvals/runtime.ts
++++ b/packages/agentplane/src/runtime/approvals/runtime.ts
+@@ -13,7 +13,7 @@ import type {
+ } from "./model.js";
+ 
+ export function resolveEffectiveApprovalSettings(
+-  config: AgentplaneConfig,
++  config: Pick<AgentplaneConfig, "agents" | "execution">,
+ ): EffectiveApprovalSettings {
+   const approvals = config.agents?.approvals as
+     | {
+@@ -27,15 +27,8 @@ export function resolveEffectiveApprovalSettings(
+     require_plan: approvals?.require_plan === true,
+     require_network: approvals?.require_network === true,
+     require_verify: approvals?.require_verify === true,
+-    require_force: approvals?.require_force === true,
++    require_force: true,
+   };
+-  if (config.execution.profile === "conservative") {
+-    return {
+-      ...base,
+-      require_network: true,
+-      require_force: true,
+-    };
+-  }
+   return base;
+ }
+ 
+@@ -55,7 +48,6 @@ function resolveRequirement(opts: {
+   const classification = decision.action;
+   const configuredNetwork = opts.config.agents?.approvals?.require_network === true;
+   const configuredForce = opts.config.agents?.approvals?.require_force === true;
+-  const conservativeProfile = opts.config.execution.profile === "conservative";
+ 
+   switch (classification.approval) {
+     case "network_access": {
+@@ -63,13 +55,7 @@ function resolveRequirement(opts: {
+         action: classification,
+         approvals,
+         required: approvals.require_network === true,
+-        source: approvals.require_network
+-          ? configuredNetwork
+-            ? "config"
+-            : conservativeProfile
+-              ? "execution_profile"
+-              : "none"
+-          : "none",
++        source: approvals.require_network ? (configuredNetwork ? "config" : "none") : "none",
+         reason: "Network access requires explicit approval",
+       };
+     }
+@@ -78,13 +64,7 @@ function resolveRequirement(opts: {
+         action: classification,
+         approvals,
+         required: approvals.require_force === true,
+-        source: approvals.require_force
+-          ? configuredForce
+-            ? "config"
+-            : conservativeProfile
+-              ? "execution_profile"
+-              : "none"
+-          : "none",
++        source: approvals.require_force ? (configuredForce ? "config" : "builtin") : "none",
+         reason: "Force action requires explicit approval",
+       };
+     }
+diff --git a/packages/agentplane/src/runtime/execution-profile/canonical.ts b/packages/agentplane/src/runtime/execution-profile/canonical.ts
+new file mode 100644
+index 000000000..85551eaef
+--- /dev/null
++++ b/packages/agentplane/src/runtime/execution-profile/canonical.ts
+@@ -0,0 +1,9 @@
++import {
++  CANONICAL_EXECUTION_PROFILE,
++  resolveExecutionProfilePreset,
++  type AgentplaneConfig,
++} from "@agentplaneorg/core/config";
++
++export function buildCanonicalExecutionPolicy(): AgentplaneConfig["execution"] {
++  return resolveExecutionProfilePreset(CANONICAL_EXECUTION_PROFILE);
++}
+diff --git a/packages/agentplane/src/runtime/execution-profile/index.ts b/packages/agentplane/src/runtime/execution-profile/index.ts
+index 519f6035d..50175a2a7 100644
+--- a/packages/agentplane/src/runtime/execution-profile/index.ts
++++ b/packages/agentplane/src/runtime/execution-profile/index.ts
+@@ -1,2 +1,3 @@
+ export type { ResolvedExecutionProfileRuntime } from "./model.js";
++export { buildCanonicalExecutionPolicy } from "./canonical.js";
+ export { consumeExecutionProfileBudget, resolveExecutionProfileRuntime } from "./resolve.js";
+diff --git a/packages/agentplane/src/runtime/execution-profile/resolve.test.ts b/packages/agentplane/src/runtime/execution-profile/resolve.test.ts
+index 5ff9294e5..02efd1084 100644
+--- a/packages/agentplane/src/runtime/execution-profile/resolve.test.ts
++++ b/packages/agentplane/src/runtime/execution-profile/resolve.test.ts
+@@ -10,7 +10,7 @@ describe("runtime/execution-profile", () => {
+     const runtime = resolveExecutionProfileRuntime(config);
+ 
+     expect(runtime).toMatchObject({
+-      profile: "balanced",
++      profile: "standard",
+       reasoning_effort: "medium",
+       text_verbosity: "medium",
+       budget: {
+@@ -22,7 +22,7 @@ describe("runtime/execution-profile", () => {
+         require_plan: true,
+         require_network: true,
+         require_verify: true,
+-        require_force: false,
++        require_force: true,
+       },
+     });
+     expect(runtime.stop_conditions.length).toBeGreaterThan(0);
+@@ -30,7 +30,7 @@ describe("runtime/execution-profile", () => {
+     expect(runtime.runner.trace_policy.retention).toBe("keep");
+   });
+ 
+-  it("applies conservative profile overrides to approvals and runner trace/timeout policies", () => {
++  it("ignores mutable legacy execution fields while preserving explicit project policy", () => {
+     const config = defaultConfig();
+     config.execution.profile = "conservative";
+     config.execution.reasoning_effort = "xhigh";
+@@ -43,13 +43,14 @@ describe("runtime/execution-profile", () => {
+ 
+     const runtime = resolveExecutionProfileRuntime(config);
+ 
+-    expect(runtime.reasoning_effort).toBe("xhigh");
+-    expect(runtime.text_verbosity).toBe("high");
+-    expect(runtime.approvals.require_network).toBe(true);
++    expect(runtime.profile).toBe("standard");
++    expect(runtime.reasoning_effort).toBe("medium");
++    expect(runtime.text_verbosity).toBe("medium");
++    expect(runtime.approvals.require_network).toBe(false);
+     expect(runtime.approvals.require_force).toBe(true);
+-    expect(runtime.runner.trace_policy.capture_stderr).toBe(true);
+-    expect(runtime.runner.trace_policy.retention).toBe("keep");
+-    expect(runtime.runner.timeout_policy.terminate_grace_ms).toBe(5000);
++    expect(runtime.runner.trace_policy.capture_stderr).toBe(false);
++    expect(runtime.runner.trace_policy.retention).toBe("remove_on_success");
++    expect(runtime.runner.timeout_policy.terminate_grace_ms).toBe(1000);
+   });
+ 
+   it("counts execution budgets per phase", () => {
+diff --git a/packages/agentplane/src/runtime/execution-profile/resolve.ts b/packages/agentplane/src/runtime/execution-profile/resolve.ts
+index 054fb5375..8c6e99250 100644
+--- a/packages/agentplane/src/runtime/execution-profile/resolve.ts
++++ b/packages/agentplane/src/runtime/execution-profile/resolve.ts
+@@ -1,6 +1,8 @@
+-import { applyExecutionToApprovals, type AgentplaneConfig } from "@agentplaneorg/core/config";
++import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+ 
+ import { resolveRunnerTimeoutPolicy, resolveRunnerTracePolicy } from "../../runner/config.js";
++import { resolveEffectiveApprovalSettings } from "../approvals/index.js";
++import { buildCanonicalExecutionPolicy } from "./canonical.js";
+ 
+ import type {
+   ExecutionBudgetCounter,
+@@ -20,56 +22,34 @@ function toBudgetCounter(limit: number): ExecutionBudgetCounter {
+ function applyProfileToTracePolicy(
+   config: Pick<AgentplaneConfig, "execution" | "runner">,
+ ): ResolvedExecutionProfileRuntime["runner"]["trace_policy"] {
+-  const trace = resolveRunnerTracePolicy(config);
+-  if (config.execution.profile === "conservative") {
+-    return {
+-      ...trace,
+-      capture_stderr: true,
+-      retention: "keep",
+-    };
+-  }
+-  return trace;
++  return resolveRunnerTracePolicy(config);
+ }
+ 
+ function applyProfileToTimeoutPolicy(
+   config: Pick<AgentplaneConfig, "execution" | "runner">,
+ ): ResolvedExecutionProfileRuntime["runner"]["timeout_policy"] {
+-  const timeout = resolveRunnerTimeoutPolicy(config);
+-  if (config.execution.profile === "conservative") {
+-    return {
+-      ...timeout,
+-      terminate_grace_ms: Math.max(timeout.terminate_grace_ms, 5000),
+-    };
+-  }
+-  return timeout;
++  return resolveRunnerTimeoutPolicy(config);
+ }
+ 
+ export function resolveExecutionProfileRuntime(
+   config: Pick<AgentplaneConfig, "agents" | "execution" | "runner">,
+ ): ResolvedExecutionProfileRuntime {
+-  const approvals = applyExecutionToApprovals({
+-    execution: config.execution,
+-    approvals: config.agents?.approvals ?? {
+-      require_plan: false,
+-      require_network: false,
+-      require_verify: false,
+-      require_force: false,
+-    },
+-  });
++  const execution = buildCanonicalExecutionPolicy();
++  const approvals = resolveEffectiveApprovalSettings(config);
+ 
+   return {
+-    profile: config.execution.profile,
+-    reasoning_effort: config.execution.reasoning_effort,
+-    text_verbosity: config.execution.text_verbosity,
++    profile: execution.profile,
++    reasoning_effort: execution.reasoning_effort,
++    text_verbosity: execution.text_verbosity,
+     budget: {
+-      discovery: toBudgetCounter(config.execution.tool_budget.discovery),
+-      implementation: toBudgetCounter(config.execution.tool_budget.implementation),
+-      verification: toBudgetCounter(config.execution.tool_budget.verification),
++      discovery: toBudgetCounter(execution.tool_budget.discovery),
++      implementation: toBudgetCounter(execution.tool_budget.implementation),
++      verification: toBudgetCounter(execution.tool_budget.verification),
+     },
+-    stop_conditions: [...config.execution.stop_conditions],
+-    handoff_conditions: [...config.execution.handoff_conditions],
++    stop_conditions: [...execution.stop_conditions],
++    handoff_conditions: [...execution.handoff_conditions],
+     unsafe_actions_requiring_explicit_user_ok: [
+-      ...config.execution.unsafe_actions_requiring_explicit_user_ok,
++      ...execution.unsafe_actions_requiring_explicit_user_ok,
+     ],
+     approvals,
+     runner: {
+diff --git a/packages/agentplane/src/runtime/explain/resolve.test.ts b/packages/agentplane/src/runtime/explain/resolve.test.ts
+index bb183f6fa..9902cb8fb 100644
+--- a/packages/agentplane/src/runtime/explain/resolve.test.ts
++++ b/packages/agentplane/src/runtime/explain/resolve.test.ts
+@@ -99,7 +99,7 @@ describe("runtime/explain", () => {
+           policy_gateway: [{ id: "policy_gateway", detail: "AGENTS.md" }],
+           approval_requirements: [{ id: "config", detail: ".agentplane/config.json" }],
+           protected_paths: [{ id: "builtin", detail: "defaults" }],
+-          execution: [{ id: "execution_profile", detail: "balanced" }],
++          execution: [{ id: "execution_profile", detail: "standard" }],
+           backend: [{ id: "backend", detail: "local" }],
+         },
+       },
+@@ -190,7 +190,7 @@ describe("runtime/explain", () => {
+           policy_gateway: [{ id: "policy_gateway", detail: "AGENTS.md" }],
+           approval_requirements: [{ id: "config", detail: ".agentplane/config.json" }],
+           protected_paths: [{ id: "builtin", detail: "defaults" }],
+-          execution: [{ id: "execution_profile", detail: "balanced" }],
++          execution: [{ id: "execution_profile", detail: "standard" }],
+           backend: [{ id: "backend", detail: "local" }],
+         },
+       },
+diff --git a/packages/agentplane/src/runtime/harness/resolve.test.ts b/packages/agentplane/src/runtime/harness/resolve.test.ts
+index b15d4a10c..3f3f4780d 100644
+--- a/packages/agentplane/src/runtime/harness/resolve.test.ts
++++ b/packages/agentplane/src/runtime/harness/resolve.test.ts
+@@ -74,7 +74,7 @@ describe("resolveHarnessContract", () => {
+     expect(harness.trace.policy_gateway).toEqual([{ id: "policy_gateway", detail: "AGENTS.md" }]);
+     expect(harness.trace.approval_requirements).toEqual([
+       { id: "config", detail: ".agentplane/config.json" },
+-      { id: "execution_profile", detail: "conservative" },
++      { id: "builtin", detail: "standard process policy" },
+     ]);
+   });
+ 
+diff --git a/packages/agentplane/src/runtime/harness/resolve.ts b/packages/agentplane/src/runtime/harness/resolve.ts
+index 1c97576c5..76c3e9880 100644
+--- a/packages/agentplane/src/runtime/harness/resolve.ts
++++ b/packages/agentplane/src/runtime/harness/resolve.ts
+@@ -1,6 +1,6 @@
+ import path from "node:path";
+ 
+-import { applyExecutionToApprovals, type AgentplaneConfig } from "@agentplaneorg/core/config";
++import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+ import type { ResolvedProject } from "@agentplaneorg/core/project";
+ 
+ import type { TaskBackendCapabilities } from "../../backends/task-backend.js";
+@@ -22,6 +22,7 @@ import type {
+   ResolvedHarnessTrace,
+   ResolvedProtectedPathGroups,
+ } from "./types.js";
++import { resolveEffectiveApprovalSettings } from "../approvals/index.js";
+ 
+ function source(id: HarnessSourceRef["id"], detail: string): HarnessSourceRef {
+   return { id, detail };
+@@ -128,15 +129,7 @@ export async function resolveHarnessContract(opts: {
+     gitRoot: opts.project.gitRoot,
+     fallbackFlavor: opts.fallbackPolicyGatewayFlavor,
+   });
+-  const approvals = applyExecutionToApprovals({
+-    execution: opts.config.execution,
+-    approvals: opts.config.agents?.approvals ?? {
+-      require_plan: false,
+-      require_network: false,
+-      require_verify: false,
+-      require_force: false,
+-    },
+-  });
++  const approvals = resolveEffectiveApprovalSettings(opts.config);
+   const protectedPaths = resolveProtectedPaths({
+     config: opts.config,
+     policyGatewayFileName: policyGateway.fileName,
+@@ -195,7 +188,7 @@ export async function resolveHarnessContract(opts: {
+       policy_gateway: [gatewaySource(policyGateway.fileName)],
+       approval_requirements: mergeSourceRefs(
+         [source("config", ".agentplane/config.json")],
+-        [source("execution_profile", opts.config.execution.profile)],
++        [source("builtin", "standard process policy")],
+       ),
+       protected_paths: protectedPaths.trace,
+       execution: [source("config", ".agentplane/config.json")],
+diff --git a/packages/agentplane/src/runtime/prompt-modules/registry.test.ts b/packages/agentplane/src/runtime/prompt-modules/registry.test.ts
+index af248a249..8951fca95 100644
+--- a/packages/agentplane/src/runtime/prompt-modules/registry.test.ts
++++ b/packages/agentplane/src/runtime/prompt-modules/registry.test.ts
+@@ -39,7 +39,7 @@ function assembleStringModules(modules: PromptModule[]): string {
+ 
+ function sampleExecutionProfile(): ResolvedExecutionProfileRuntime {
+   return {
+-    profile: "balanced",
++    profile: "standard",
+     reasoning_effort: "medium",
+     text_verbosity: "medium",
+     budget: {
+@@ -254,7 +254,7 @@ describe("framework prompt module registry", () => {
+     expect(executionProfile?.content_kind).toBe("json");
+     expect(executionProfile?.provenance.source_kind).toBe("runtime");
+     expect(typeof executionProfile?.content).toBe("string");
+-    expect(executionProfile?.content).toContain('"profile": "balanced"');
++    expect(executionProfile?.content).toContain('"profile": "standard"');
+     expect(executionProfile?.content).toContain('"text_verbosity": "medium"');
+   });
+ });
+diff --git a/packages/agentplane/src/runtime/protocol/resolve.test.ts b/packages/agentplane/src/runtime/protocol/resolve.test.ts
+index a21955833..8b5850342 100644
+--- a/packages/agentplane/src/runtime/protocol/resolve.test.ts
++++ b/packages/agentplane/src/runtime/protocol/resolve.test.ts
+@@ -92,7 +92,7 @@ function buildFrameworkExplainFixture() {
+       policy_gateway: [{ id: "policy_gateway", detail: "AGENTS.md" }],
+       approval_requirements: [{ id: "config", detail: ".agentplane/config.json" }],
+       protected_paths: [{ id: "builtin", detail: "defaults" }],
+-      execution: [{ id: "execution_profile", detail: "balanced" }],
++      execution: [{ id: "execution_profile", detail: "standard" }],
+       backend: [{ id: "backend", detail: "local" }],
+     },
+   };
+diff --git a/packages/core/schemas/config.schema.json b/packages/core/schemas/config.schema.json
+index 6ca5a0ba3..86a1e9cef 100644
+--- a/packages/core/schemas/config.schema.json
++++ b/packages/core/schemas/config.schema.json
+@@ -100,7 +100,7 @@
+     },
+     "execution": {
+       "default": {
+-        "profile": "balanced",
++        "profile": "standard",
+         "reasoning_effort": "medium",
+         "text_verbosity": "medium",
+         "tool_budget": {
+@@ -127,9 +127,9 @@
+       "type": "object",
+       "properties": {
+         "profile": {
+-          "default": "balanced",
++          "default": "standard",
+           "type": "string",
+-          "enum": ["conservative", "balanced", "aggressive"]
++          "enum": ["standard", "conservative", "balanced", "aggressive"]
+         },
+         "reasoning_effort": {
+           "default": "medium",
+diff --git a/packages/core/schemas/workflow.schema.json b/packages/core/schemas/workflow.schema.json
+index a123fbc1a..0157af102 100644
+--- a/packages/core/schemas/workflow.schema.json
++++ b/packages/core/schemas/workflow.schema.json
+@@ -440,9 +440,9 @@
+           "type": "object",
+           "properties": {
+             "profile": {
+-              "default": "balanced",
++              "default": "standard",
+               "type": "string",
+-              "enum": ["conservative", "balanced", "aggressive"]
++              "enum": ["standard", "conservative", "balanced", "aggressive"]
+             },
+             "reasoning_effort": {
+               "default": "medium",
+@@ -1362,9 +1362,9 @@
+           "type": "object",
+           "properties": {
+             "profile": {
+-              "default": "balanced",
++              "default": "standard",
+               "type": "string",
+-              "enum": ["conservative", "balanced", "aggressive"]
++              "enum": ["standard", "conservative", "balanced", "aggressive"]
+             },
+             "reasoning_effort": {
+               "default": "medium",
+diff --git a/packages/core/src/config/config.test.ts b/packages/core/src/config/config.test.ts
+index b989a225b..bd47057db 100644
+--- a/packages/core/src/config/config.test.ts
++++ b/packages/core/src/config/config.test.ts
+@@ -227,7 +227,7 @@ describe("config", () => {
+ 
+   it("default execution profile values are present", () => {
+     const cfg = defaultConfig();
+-    expect(cfg.execution.profile).toBe("balanced");
++    expect(cfg.execution.profile).toBe("standard");
+     expect(cfg.execution.reasoning_effort).toBe("medium");
+     expect(cfg.execution.text_verbosity).toBe("medium");
+     expect(cfg.execution.tool_budget).toEqual({
+@@ -256,15 +256,35 @@ describe("config", () => {
+     expect(cfg.close_commit.direct_dirty_policy).toBe("allow_other_task_readmes");
+   });
+ 
+-  it("accepts xhigh reasoning effort and low text verbosity overrides", () => {
++  it("normalizes mutable legacy execution fields to the standard policy", () => {
+     const cfg = defaultConfig();
+     cfg.execution.reasoning_effort = "xhigh";
+     cfg.execution.text_verbosity = "low";
+ 
+     const validated = validateConfig(cfg);
+ 
+-    expect(validated.execution.reasoning_effort).toBe("xhigh");
+-    expect(validated.execution.text_verbosity).toBe("low");
++    expect(validated.execution.reasoning_effort).toBe("medium");
++    expect(validated.execution.text_verbosity).toBe("medium");
++  });
++
++  it("loads legacy execution profiles without preserving mutable behavior", async () => {
++    const tmp = await mkdtemp(path.join(os.tmpdir(), "agentplane-config-legacy-profile-"));
++    const agentplaneDir = path.join(tmp, ".agentplane");
++    await mkdir(agentplaneDir, { recursive: true });
++    const raw = defaultConfig() as unknown as Record<string, unknown>;
++    raw.execution = {
++      ...(raw.execution as Record<string, unknown>),
++      profile: "aggressive",
++      reasoning_effort: "low",
++      text_verbosity: "low",
++    };
++    await writeFile(path.join(agentplaneDir, "config.json"), JSON.stringify(raw), "utf8");
++
++    const loaded = await loadConfig(agentplaneDir);
++
++    expect(loaded.config.execution.profile).toBe("standard");
++    expect(loaded.config.execution.reasoning_effort).toBe("medium");
++    expect(loaded.raw.execution).toEqual(loaded.config.execution);
+   });
+ 
+   it("default task README contract uses the active v3 sections", () => {
+diff --git a/packages/core/src/config/execution-profile.test.ts b/packages/core/src/config/execution-profile.test.ts
+index b9c5fc871..5e3948963 100644
+--- a/packages/core/src/config/execution-profile.test.ts
++++ b/packages/core/src/config/execution-profile.test.ts
+@@ -8,10 +8,10 @@ import {
+ } from "./execution-profile.js";
+ 
+ describe("execution profile presets", () => {
+-  it("matches schema defaults for balanced profile", () => {
++  it("matches schema defaults for the standard policy", () => {
+     const cfg = defaultConfig();
+-    const balanced = resolveExecutionProfilePreset("balanced");
+-    expect(balanced).toEqual(cfg.execution);
++    const standard = resolveExecutionProfilePreset("standard");
++    expect(standard).toEqual(cfg.execution);
+   });
+ 
+   it("returns a deep clone on each call", () => {
+@@ -19,29 +19,26 @@ describe("execution profile presets", () => {
+     const b = resolveExecutionProfilePreset("conservative");
+     a.tool_budget.discovery = 999;
+     a.stop_conditions[0] = "changed";
+-    expect(b.tool_budget.discovery).toBe(4);
++    expect(b.tool_budget.discovery).toBe(6);
+     expect(b.stop_conditions[0]).not.toBe("changed");
+   });
+ 
+-  it("provides lower reasoning effort and larger implementation budget for aggressive", () => {
+-    const aggressive = resolveExecutionProfilePreset("aggressive");
+-    const conservative = resolveExecutionProfilePreset("conservative");
+-    expect(aggressive.reasoning_effort).toBe("low");
+-    expect(aggressive.text_verbosity).toBe("low");
+-    expect(conservative.text_verbosity).toBe("medium");
+-    expect(aggressive.tool_budget.implementation).toBeGreaterThan(
+-      conservative.tool_budget.implementation,
+-    );
++  it("normalizes every legacy name to the canonical policy", () => {
++    const profiles = ["standard", "conservative", "balanced", "aggressive"] as const;
++    const resolved = profiles.map((profile) => resolveExecutionProfilePreset(profile));
++
++    expect(resolved[0]).toEqual(resolved[1]);
++    expect(resolved[1]).toEqual(resolved[2]);
++    expect(resolved[2]).toEqual(resolved[3]);
++    expect(resolved.every((profile) => profile.profile === "standard")).toBe(true);
+   });
+ 
+-  it("adds strict unsafe confirmation item when requested", () => {
+-    const strict = buildExecutionProfile("balanced", { strictUnsafeConfirm: true });
+-    expect(strict.unsafe_actions_requiring_explicit_user_ok).toContain(
+-      "Network actions when approvals are disabled.",
+-    );
++  it("ignores legacy strict profile overrides", () => {
++    const strict = buildExecutionProfile("standard", { strictUnsafeConfirm: true });
++    expect(strict).toEqual(resolveExecutionProfilePreset("standard"));
+   });
+ 
+-  it("conservative escalates network and force approvals", () => {
++  it("keeps force approval fixed while preserving other explicit approvals", () => {
+     const execution = resolveExecutionProfilePreset("conservative");
+     const effective = applyExecutionToApprovals({
+       execution,
+@@ -52,12 +49,12 @@ describe("execution profile presets", () => {
+         require_force: false,
+       },
+     });
+-    expect(effective.require_network).toBe(true);
++    expect(effective.require_network).toBe(false);
+     expect(effective.require_force).toBe(true);
+   });
+ 
+-  it("balanced keeps baseline approval settings", () => {
+-    const execution = resolveExecutionProfilePreset("balanced");
++  it("standard keeps baseline approval settings", () => {
++    const execution = resolveExecutionProfilePreset("standard");
+     const effective = applyExecutionToApprovals({
+       execution,
+       approvals: {
+@@ -71,7 +68,7 @@ describe("execution profile presets", () => {
+       require_plan: true,
+       require_network: false,
+       require_verify: true,
+-      require_force: false,
++      require_force: true,
+     });
+   });
+ });
+diff --git a/packages/core/src/config/execution-profile.ts b/packages/core/src/config/execution-profile.ts
+index e0fbb1546..7e0a15361 100644
+--- a/packages/core/src/config/execution-profile.ts
++++ b/packages/core/src/config/execution-profile.ts
+@@ -7,100 +7,57 @@ export type ApprovalSettings = {
+   require_force?: boolean;
+ };
+ 
+-export const EXECUTION_PROFILE_PRESETS: Record<ExecutionProfile, AgentplaneConfig["execution"]> = {
+-  conservative: {
+-    profile: "conservative",
+-    reasoning_effort: "high",
+-    text_verbosity: "medium",
+-    tool_budget: {
+-      discovery: 4,
+-      implementation: 8,
+-      verification: 8,
+-    },
+-    stop_conditions: [
+-      "Missing required input blocks correctness.",
+-      "Requested action expands scope or risk beyond approved plan.",
+-      "Verification fails and remediation changes scope.",
+-    ],
+-    handoff_conditions: [
+-      "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
+-      "Task depends_on prerequisites are incomplete.",
+-      "Specialized agent is required.",
+-    ],
+-    unsafe_actions_requiring_explicit_user_ok: [
+-      "Destructive git history operations.",
+-      "Outside-repo read/write.",
+-      "Credential, keychain, or SSH material changes.",
+-      "Network actions when approvals are enabled.",
+-    ],
+-  },
+-  balanced: {
+-    profile: "balanced",
+-    reasoning_effort: "medium",
+-    text_verbosity: "medium",
+-    tool_budget: {
+-      discovery: 6,
+-      implementation: 10,
+-      verification: 6,
+-    },
+-    stop_conditions: [
+-      "Missing required input blocks correctness.",
+-      "Requested action expands scope or risk beyond approved plan.",
+-      "Verification fails and remediation changes scope.",
+-    ],
+-    handoff_conditions: [
+-      "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
+-      "Task depends_on prerequisites are incomplete.",
+-      "Specialized agent is required.",
+-    ],
+-    unsafe_actions_requiring_explicit_user_ok: [
+-      "Destructive git history operations.",
+-      "Outside-repo read/write.",
+-      "Credential, keychain, or SSH material changes.",
+-    ],
+-  },
+-  aggressive: {
+-    profile: "aggressive",
+-    reasoning_effort: "low",
+-    text_verbosity: "low",
+-    tool_budget: {
+-      discovery: 10,
+-      implementation: 16,
+-      verification: 8,
+-    },
+-    stop_conditions: [
+-      "Requested action expands scope or risk beyond approved plan.",
+-      "Verification fails and remediation changes scope.",
+-    ],
+-    handoff_conditions: [
+-      "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
+-      "Specialized agent is required.",
+-    ],
+-    unsafe_actions_requiring_explicit_user_ok: [
+-      "Destructive git history operations.",
+-      "Outside-repo read/write.",
+-      "Credential, keychain, or SSH material changes.",
+-    ],
++export const CANONICAL_EXECUTION_PROFILE: ExecutionProfile = "standard";
++
++const CANONICAL_EXECUTION_POLICY: AgentplaneConfig["execution"] = {
++  profile: CANONICAL_EXECUTION_PROFILE,
++  reasoning_effort: "medium",
++  text_verbosity: "medium",
++  tool_budget: {
++    discovery: 6,
++    implementation: 10,
++    verification: 6,
+   },
++  stop_conditions: [
++    "Missing required input blocks correctness.",
++    "Requested action expands scope or risk beyond approved plan.",
++    "Verification fails and remediation changes scope.",
++  ],
++  handoff_conditions: [
++    "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
++    "Task depends_on prerequisites are incomplete.",
++    "Specialized agent is required.",
++  ],
++  unsafe_actions_requiring_explicit_user_ok: [
++    "Destructive git history operations.",
++    "Outside-repo read/write.",
++    "Credential, keychain, or SSH material changes.",
++  ],
++};
++
++/**
++ * Legacy profile names remain valid config input for patch-level compatibility.
++ * They intentionally resolve to one immutable runtime policy.
++ */
++export const EXECUTION_PROFILE_PRESETS: Record<ExecutionProfile, AgentplaneConfig["execution"]> = {
++  standard: structuredClone(CANONICAL_EXECUTION_POLICY),
++  conservative: structuredClone(CANONICAL_EXECUTION_POLICY),
++  balanced: structuredClone(CANONICAL_EXECUTION_POLICY),
++  aggressive: structuredClone(CANONICAL_EXECUTION_POLICY),
+ };
+ 
+ export function resolveExecutionProfilePreset(
+-  profile: ExecutionProfile,
++  _profile: ExecutionProfile,
+ ): AgentplaneConfig["execution"] {
+-  return structuredClone(EXECUTION_PROFILE_PRESETS[profile]);
++  return structuredClone(CANONICAL_EXECUTION_POLICY);
+ }
+ 
+ export function buildExecutionProfile(
+   profile: ExecutionProfile,
+   opts?: { strictUnsafeConfirm?: boolean },
+ ): AgentplaneConfig["execution"] {
+-  const resolved = resolveExecutionProfilePreset(profile);
+-  if (opts?.strictUnsafeConfirm !== true) return resolved;
+-  const strictItem = "Network actions when approvals are disabled.";
+-  if (!resolved.unsafe_actions_requiring_explicit_user_ok.includes(strictItem)) {
+-    resolved.unsafe_actions_requiring_explicit_user_ok.push(strictItem);
+-  }
+-  return resolved;
++  void opts;
++  return resolveExecutionProfilePreset(profile);
+ }
+ 
+ export function applyExecutionToApprovals(opts: {
+@@ -111,20 +68,9 @@ export function applyExecutionToApprovals(opts: {
+     require_plan: opts.approvals.require_plan === true,
+     require_network: opts.approvals.require_network === true,
+     require_verify: opts.approvals.require_verify === true,
+-    require_force: opts.approvals.require_force === true,
++    require_force: true,
+   };
+ 
+-  if (opts.execution.profile === "conservative") {
+-    return {
+-      ...base,
+-      require_network: true,
+-      require_force: true,
+-    };
+-  }
+-
+-  if (opts.execution.profile === "balanced") {
+-    return base;
+-  }
+-
++  void opts.execution;
+   return base;
+ }
+diff --git a/packages/core/src/config/index.ts b/packages/core/src/config/index.ts
+index 1516b6136..b84ccffec 100644
+--- a/packages/core/src/config/index.ts
++++ b/packages/core/src/config/index.ts
+@@ -58,6 +58,7 @@ export {
+ export {
+   applyExecutionToApprovals,
+   buildExecutionProfile,
++  CANONICAL_EXECUTION_PROFILE,
+   EXECUTION_PROFILE_PRESETS,
+   resolveExecutionProfilePreset,
+   type ApprovalSettings,
+diff --git a/packages/core/src/config/io.ts b/packages/core/src/config/io.ts
+index 1d2cc03c0..621be19dc 100644
+--- a/packages/core/src/config/io.ts
++++ b/packages/core/src/config/io.ts
+@@ -23,6 +23,13 @@ function toErrnoException(err: unknown): NodeJS.ErrnoException | null {
+   return err as NodeJS.ErrnoException;
+ }
+ 
++function withCanonicalExecution(
++  raw: Record<string, unknown>,
++  config: AgentplaneConfig,
++): Record<string, unknown> {
++  return { ...raw, execution: structuredClone(config.execution) };
++}
++
+ export async function loadConfig(agentplaneDir: string): Promise<LoadedConfig> {
+   const workflowPath = path.join(agentplaneDir, "WORKFLOW.md");
+   const legacyConfigPath = path.join(agentplaneDir, "config.json");
+@@ -36,7 +43,7 @@ export async function loadConfig(agentplaneDir: string): Promise<LoadedConfig> {
+         path: workflowRaw.path,
+         exists: true,
+         config: validated,
+-        raw: sanitized.sanitized,
++        raw: withCanonicalExecution(sanitized.sanitized, validated),
+       };
+     }
+   } catch (err) {
+@@ -57,7 +64,10 @@ export async function loadConfig(agentplaneDir: string): Promise<LoadedConfig> {
+       path: legacyConfigPath,
+       exists: true,
+       config: validated,
+-      raw: (sanitized.sanitized ?? parsed) as Record<string, unknown>,
++      raw: withCanonicalExecution(
++        (sanitized.sanitized ?? parsed) as Record<string, unknown>,
++        validated,
++      ),
+     };
+   } catch (err) {
+     const errno = toErrnoException(err);
+@@ -81,8 +91,9 @@ export async function saveConfig(
+   const sanitized = stripDeprecatedConfigKeys(raw);
+   if (sanitized.removed.length > 0) warnDeprecatedConfigKeys(sanitized.removed);
+   const validated = validateConfig(sanitized.sanitized);
++  const canonicalRaw = withCanonicalExecution(sanitized.sanitized, validated);
+   await mkdir(agentplaneDir, { recursive: true });
+-  await writeWorkflowConfigRaw(agentplaneDir, sanitized.sanitized);
++  await writeWorkflowConfigRaw(agentplaneDir, canonicalRaw);
+   await rm(path.join(agentplaneDir, "config.json"), { force: true });
+   return validated;
+ }
+diff --git a/packages/core/src/config/schema.impl.ts b/packages/core/src/config/schema.impl.ts
+index 5a485b0da..5c6016568 100644
+--- a/packages/core/src/config/schema.impl.ts
++++ b/packages/core/src/config/schema.impl.ts
+@@ -21,7 +21,7 @@ const COMMENT_POLICY_DEFAULTS = {
+ };
+ 
+ const EXECUTION_DEFAULTS: {
+-  profile: "balanced";
++  profile: "standard";
+   reasoning_effort: "medium";
+   text_verbosity: "medium";
+   tool_budget: {
+@@ -33,7 +33,7 @@ const EXECUTION_DEFAULTS: {
+   handoff_conditions: string[];
+   unsafe_actions_requiring_explicit_user_ok: string[];
+ } = {
+-  profile: "balanced",
++  profile: "standard",
+   reasoning_effort: "medium",
+   text_verbosity: "medium",
+   tool_budget: {
+@@ -248,7 +248,7 @@ export const AgentplaneConfigSchema = z
+     execution: z
+       .object({
+         profile: z
+-          .enum(["conservative", "balanced", "aggressive"])
++          .enum(["standard", "conservative", "balanced", "aggressive"])
+           .default(EXECUTION_DEFAULTS.profile),
+         reasoning_effort: z
+           .enum(["low", "medium", "high", "xhigh"])
+@@ -548,6 +548,15 @@ export function validateAgentplaneConfig(raw: unknown): AgentplaneConfig {
+     throw new Error("config must be an object");
+   }
+ 
++  parsed.data.execution = {
++    ...EXECUTION_DEFAULTS,
++    tool_budget: { ...EXECUTION_DEFAULTS.tool_budget },
++    stop_conditions: [...EXECUTION_DEFAULTS.stop_conditions],
++    handoff_conditions: [...EXECUTION_DEFAULTS.handoff_conditions],
++    unsafe_actions_requiring_explicit_user_ok: [
++      ...EXECUTION_DEFAULTS.unsafe_actions_requiring_explicit_user_ok,
++    ],
++  };
+   return parsed.data;
+ }
+ 
+diff --git a/packages/core/src/index.ts b/packages/core/src/index.ts
+index 42f3e751d..5ef81a081 100644
+--- a/packages/core/src/index.ts
++++ b/packages/core/src/index.ts
+@@ -295,6 +295,7 @@ export {
+ export {
+   applyExecutionToApprovals,
+   buildExecutionProfile,
++  CANONICAL_EXECUTION_PROFILE,
+   EXECUTION_PROFILE_PRESETS,
+   type ApprovalSettings,
+   resolveExecutionProfilePreset,
+diff --git a/packages/spec/schemas/config.schema.json b/packages/spec/schemas/config.schema.json
+index 6ca5a0ba3..86a1e9cef 100644
+--- a/packages/spec/schemas/config.schema.json
++++ b/packages/spec/schemas/config.schema.json
+@@ -100,7 +100,7 @@
+     },
+     "execution": {
+       "default": {
+-        "profile": "balanced",
++        "profile": "standard",
+         "reasoning_effort": "medium",
+         "text_verbosity": "medium",
+         "tool_budget": {
+@@ -127,9 +127,9 @@
+       "type": "object",
+       "properties": {
+         "profile": {
+-          "default": "balanced",
++          "default": "standard",
+           "type": "string",
+-          "enum": ["conservative", "balanced", "aggressive"]
++          "enum": ["standard", "conservative", "balanced", "aggressive"]
+         },
+         "reasoning_effort": {
+           "default": "medium",
+diff --git a/packages/spec/schemas/workflow.schema.json b/packages/spec/schemas/workflow.schema.json
+index a123fbc1a..0157af102 100644
+--- a/packages/spec/schemas/workflow.schema.json
++++ b/packages/spec/schemas/workflow.schema.json
+@@ -440,9 +440,9 @@
+           "type": "object",
+           "properties": {
+             "profile": {
+-              "default": "balanced",
++              "default": "standard",
+               "type": "string",
+-              "enum": ["conservative", "balanced", "aggressive"]
++              "enum": ["standard", "conservative", "balanced", "aggressive"]
+             },
+             "reasoning_effort": {
+               "default": "medium",
+@@ -1362,9 +1362,9 @@
+           "type": "object",
+           "properties": {
+             "profile": {
+-              "default": "balanced",
++              "default": "standard",
+               "type": "string",
+-              "enum": ["conservative", "balanced", "aggressive"]
++              "enum": ["standard", "conservative", "balanced", "aggressive"]
+             },
+             "reasoning_effort": {
+               "default": "medium",
+diff --git a/schemas/config.schema.json b/schemas/config.schema.json
+index 6ca5a0ba3..86a1e9cef 100644
+--- a/schemas/config.schema.json
++++ b/schemas/config.schema.json
+@@ -100,7 +100,7 @@
+     },
+     "execution": {
+       "default": {
+-        "profile": "balanced",
++        "profile": "standard",
+         "reasoning_effort": "medium",
+         "text_verbosity": "medium",
+         "tool_budget": {
+@@ -127,9 +127,9 @@
+       "type": "object",
+       "properties": {
+         "profile": {
+-          "default": "balanced",
++          "default": "standard",
+           "type": "string",
+-          "enum": ["conservative", "balanced", "aggressive"]
++          "enum": ["standard", "conservative", "balanced", "aggressive"]
+         },
+         "reasoning_effort": {
+           "default": "medium",
+diff --git a/schemas/workflow.schema.json b/schemas/workflow.schema.json
+index a123fbc1a..0157af102 100644
+--- a/schemas/workflow.schema.json
++++ b/schemas/workflow.schema.json
+@@ -440,9 +440,9 @@
+           "type": "object",
+           "properties": {
+             "profile": {
+-              "default": "balanced",
++              "default": "standard",
+               "type": "string",
+-              "enum": ["conservative", "balanced", "aggressive"]
++              "enum": ["standard", "conservative", "balanced", "aggressive"]
+             },
+             "reasoning_effort": {
+               "default": "medium",
+@@ -1362,9 +1362,9 @@
+           "type": "object",
+           "properties": {
+             "profile": {
+-              "default": "balanced",
++              "default": "standard",
+               "type": "string",
+-              "enum": ["conservative", "balanced", "aggressive"]
++              "enum": ["standard", "conservative", "balanced", "aggressive"]
+             },
+             "reasoning_effort": {
+               "default": "medium",
