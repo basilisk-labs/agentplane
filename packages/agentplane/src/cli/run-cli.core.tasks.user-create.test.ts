@@ -118,6 +118,7 @@ describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, () 
           mutation_scope: string;
           blueprint_request: string;
         };
+        inferred_intent: unknown;
         execution_route: { requested_mode: string; selected_mode: string; reason_codes: string[] };
         required_role: string;
         next_command: string;
@@ -130,6 +131,7 @@ describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, () 
         mutation_scope: "code",
         blueprint_request: "code.direct",
       });
+      expect(payload.inferred_intent).toEqual(payload.semantic_intent);
       expect(payload.execution_route).toMatchObject({
         requested_mode: "auto",
         selected_mode: "direct",

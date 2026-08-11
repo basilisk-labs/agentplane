@@ -295,19 +295,22 @@ export function makeRunTaskCreateHandler(
       },
     });
     const nextCommand = `agentplane task advance ${created.task_id} --agent-json`;
+    const semanticIntent = {
+      source: intent.source,
+      code: intent.code,
+      task_kind: intent.taskKind ?? null,
+      mutation_scope: intent.mutationScope,
+      risk_flags: intent.riskFlags,
+      blueprint_request: intent.blueprintRequest ?? null,
+      tags: intent.tags,
+      confirmation_required: intent.confirmation_required,
+    };
     const payload = {
       task_id: created.task_id,
       status: "semantic_input_required" as const,
-      semantic_intent: {
-        source: intent.source,
-        code: intent.code,
-        task_kind: intent.taskKind ?? null,
-        mutation_scope: intent.mutationScope,
-        risk_flags: intent.riskFlags,
-        blueprint_request: intent.blueprintRequest ?? null,
-        tags: intent.tags,
-        confirmation_required: intent.confirmation_required,
-      },
+      semantic_intent: semanticIntent,
+      /** @deprecated Compatibility alias for pre-0.7.6 JSON consumers. */
+      inferred_intent: semanticIntent,
       execution_route: route,
       required_role: "PLANNER" as const,
       next_command: nextCommand,
