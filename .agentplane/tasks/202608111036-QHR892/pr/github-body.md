@@ -27,7 +27,18 @@ Eliminate verification self-staleness and repeated checks caused only by AgentPl
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ docs/user/cli-reference.generated.mdx              |  12 +--
+ ...un-cli.core.route-decision.verification.test.ts | 111 ++++++++++++++++++++-
+ .../commands/shared/task-verification-records.ts   |  15 ++-
+ .../shared/task-verification-records.v2.test.ts    |  18 ++++
+ .../commands/shared/verification-details.test.ts   |  24 ++++-
+ .../src/commands/shared/verification-details.ts    |  59 +++++++----
+ .../src/commands/shared/workflow-step-branch.ts    |  11 ++
+ .../src/commands/task/verify-command-shared.ts     |   3 +-
+ .../src/commands/task/verify-record-execute.ts     |  26 +++++
+ .../src/commands/task/verify-record.unit.test.ts   |  49 +++++++++
+ packages/agentplane/src/commands/verify.spec.ts    |   9 +-
+ 11 files changed, 298 insertions(+), 39 deletions(-)
 ```
 
 </details>
