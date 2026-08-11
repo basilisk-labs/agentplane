@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608111922-W4ZM7J",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T21:17:37.216Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "One shared repository-bound argv parser now governs declared-check persistence and both direct and branch_pr execution; the CI remediation preserves that contract and aligns duplicate validation with the early E_USAGE boundary.",
+  "evaluated_sha": "7703c7a64192b7888a9fc5d0482f3c22fa11d349",
+  "blueprint_digest": "9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4",
+  "findings": [
+    "No blocking semantic mismatch found. Generic repository scripts remain intentionally flexible; runtime supervision and approvals, not keyword allowlists, own their effects."
+  ],
+  "evidence_refs": [
+    "packages/agentplane/src/commands/shared/declared-check.ts",
+    "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts",
+    "packages/agentplane/src/commands/task/direct-task-verification.ts",
+    "packages/agentplane/src/commands/workflow.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "A repository-owned script may itself mutate state; this is an explicit execution-policy boundary and should remain covered by supervised runtime controls."
+  ]
+}

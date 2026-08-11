@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -275,5 +275,62 @@ describe("runCli", () => {
     expect(derivedReadme).not.toContain(
       "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->",
     );
+  });
+
+  it("task derive rejects an unsupported check without creating a derived task", async () => {
+    const root = await writeAndConfigureRoot();
+    const createIo = captureStdIO();
+    let spikeId = "";
+    try {
+      expect(
+        await runCli([
+          "task",
+          "new",
+          "--title",
+          "Source spike",
+          "--description",
+          "Explore first",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "spike",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      spikeId = createIo.stdout.trim();
+    } finally {
+      createIo.restore();
+    }
+
+    const deriveIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "derive",
+        spikeId,
+        "--title",
+        "Rejected implementation",
+        "--description",
+        "Must not persist",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--verify",
+        "rm build",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(deriveIo.stderr).toContain("destructive executable is not allowed: rm");
+    } finally {
+      deriveIo.restore();
+    }
+    expect(await readdir(path.join(root, ".agentplane", "tasks"))).toEqual([spikeId]);
   });
 });

@@ -3,9 +3,9 @@ import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
-import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
-import { resolveShellInvocation, verificationChildEnv } from "../shared/pr-meta/verify-log.js";
+import { parseDeclaredTaskCheck } from "../shared/declared-check.js";
+import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
@@ -13,13 +13,11 @@ const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.free
   "e2e:v0.7.1:gate": 150 * 60_000,
 });
 const CHECK_OUTPUT_LIMIT = 4000;
-const SAFE_BUN_SCRIPT = /^[A-Za-z0-9][A-Za-z0-9:._-]*$/u;
 const BUN_UNMATCHED_FILTER_PATTERN = /following filters did not match any test files/iu;
 const BUN_ZERO_TEST_PATTERNS = [
   /\bno tests? (?:found|matched|ran|were run)\b/iu,
   /\bran 0 tests?\b/iu,
 ] as const;
-const AGENTPLANE_BIN = resolveAgentplaneBinPath();
 
 type DirectTaskCheck = {
   command: string;
@@ -47,36 +45,8 @@ function tail(value: string): string {
   return value.length <= CHECK_OUTPUT_LIMIT ? value : value.slice(-CHECK_OUTPUT_LIMIT);
 }
 
-function repositoryBoundArg(value: string): boolean {
-  const candidates = [value];
-  const separator = value.indexOf("=");
-  if (separator !== -1) candidates.push(value.slice(separator + 1));
-  return candidates.every((candidate) => {
-    if (!candidate || candidate.startsWith("-")) return true;
-    const normalized = candidate.replaceAll("\\", "/");
-    return (
-      !path.isAbsolute(candidate) &&
-      !path.win32.isAbsolute(candidate) &&
-      !normalized.split("/").includes("..")
-    );
-  });
-}
-
 export function parseDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
-  let invocation: ReturnType<typeof resolveShellInvocation>;
-  try {
-    invocation = resolveShellInvocation(command);
-  } catch {
-    return null;
-  }
-  if (invocation.command !== "bun") return null;
-  const [subcommand, target] = invocation.args;
-  if (!invocation.args.slice(1).every((argument) => repositoryBoundArg(argument))) return null;
-  if (subcommand === "test") {
-    return { executable: "bun", args: invocation.args, script: null };
-  }
-  if (subcommand !== "run" || !target || !SAFE_BUN_SCRIPT.test(target)) return null;
-  return { executable: "bun", args: invocation.args, script: target };
+  return parseDeclaredTaskCheck(command);
 }
 
 function directTaskCheckTimeoutMs(script: string | null): number {
@@ -96,24 +66,6 @@ function bunTestReportedZeroTests(opts: {
   const passCounts = [...output.matchAll(/\b(\d+)\s+pass\b/giu)].map((match) => Number(match[1]));
   if (passCounts.some((count) => count > 0)) return false;
   return passCounts.includes(0) || BUN_ZERO_TEST_PATTERNS.some((pattern) => pattern.test(output));
-}
-
-function parseTrustedDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
-  const bun = parseDirectTaskCheck(command);
-  if (bun) return bun;
-  if (command === "node .agentplane/policy/check-routing.mjs") {
-    return {
-      executable: "node",
-      args: [".agentplane/policy/check-routing.mjs"],
-      script: null,
-    };
-  }
-  if (command === "agentplane doctor") {
-    // Re-enter through the active package binary rather than PATH. The
-    // supervised CLI may be launched repo-locally without a global installation.
-    return { executable: process.execPath, args: [AGENTPLANE_BIN, "doctor"], script: null };
-  }
-  return null;
 }
 
 function directTaskVerificationCommands(
@@ -152,10 +104,9 @@ async function writeCheckArtifact(opts: {
 }
 
 /**
- * Executes only the intentionally narrow task-verify grammar. The CLI never
- * passes arbitrary task text to a shell: each command is a repository-bound
- * `bun run`/`bun test` argv or a fixed docs-policy check through the structured
- * process boundary.
+ * Executes the same deterministic task-verify grammar enforced at mutation
+ * boundaries. The CLI never passes task text to a shell: every command is
+ * parsed into repository-bound argv and crosses the structured process boundary.
  */
 export async function runDirectTaskVerification(opts: {
   command: CommandContext;
@@ -175,7 +126,7 @@ export async function runDirectTaskVerification(opts: {
     return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
   }
   for (const command of commands) {
-    const parsed = parseTrustedDirectTaskCheck(command);
+    const parsed = parseDirectTaskCheck(command);
     if (!parsed) {
       const result = {
         status: "unsupported" as const,

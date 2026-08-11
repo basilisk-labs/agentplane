@@ -3,6 +3,7 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { applyTaskCollectionMutation } from "../shared/task-mutation.js";
+import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
 import { dedupeStrings, normalizeTaskStatus, nowIso } from "./shared.js";
 import { defaultTaskDocV3, TASK_DOC_VERSION_V3 } from "./doc-template.js";
 
@@ -30,6 +31,7 @@ export async function cmdTaskAdd(opts: {
     const tags = dedupeStrings(opts.tags);
     const dependsOn = dedupeStrings(opts.dependsOn);
     const verify = dedupeStrings(opts.verify);
+    assertSupportedDeclaredTaskChecks(verify);
     const docUpdatedBy = (opts.commentAuthor ?? "").trim() || opts.owner;
 
     const { tasksToWrite } = await applyTaskCollectionMutation({
@@ -78,6 +80,7 @@ export async function cmdTaskAdd(opts: {
     }
     return 0;
   } catch (err) {
+    if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "task add", root: opts.rootOverride ?? null });
   }
 }

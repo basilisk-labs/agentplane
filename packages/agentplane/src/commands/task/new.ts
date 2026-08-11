@@ -39,6 +39,7 @@ import {
   resolveTaskBlueprintLifecycleSummary,
 } from "./blueprint-summary.js";
 import { resolveTaskExecutionRoute } from "../../runtime/task-routing/index.js";
+import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
 
 export type TaskNewParsed = {
   title: string;
@@ -133,6 +134,7 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
   }
   const dependsOn = dedupeTrimmed(p.dependsOn);
   const verify = dedupeTrimmed(p.verify);
+  assertSupportedDeclaredTaskChecks(verify);
   const taskKind = validateOptionalEnum("task-kind", p.taskKind, TASK_KIND_VALUES);
   const mutationScope = validateOptionalEnum(
     "mutation-scope",

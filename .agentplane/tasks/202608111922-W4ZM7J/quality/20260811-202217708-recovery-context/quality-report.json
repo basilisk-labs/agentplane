@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608111922-W4ZM7J",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T20:22:18.092Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The committed change satisfies parser/executor parity and mutation atomicity without hard-coding a product language or package manager.",
+  "evaluated_sha": "240a672c22598edc1dc7cacdd42421f73d01e194",
+  "blueprint_digest": "9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4",
+  "findings": [
+    "One shared resolver now owns accepted argv for task persistence, direct supervised execution, and branch integration; the previously divergent validation and execution grammars are removed.",
+    "Mutation coverage proves invalid checks cannot partially create or update tasks across new, add, update, derive, begin, and create, while legacy metadata-only updates remain recoverable.",
+    "Cross-ecosystem commands are accepted by structure and repository boundary rather than keyword classification; shell evaluation, path escape, inline code, package installation, destructive executables, and mutating Git operations fail closed."
+  ],
+  "evidence_refs": [
+    "packages/agentplane/src/commands/shared/declared-check.ts",
+    "packages/agentplane/src/commands/shared/declared-check.test.ts",
+    "packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+    ".agentplane/tasks/202608111922-W4ZM7J/verification"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Repository scripts and generic build tools may themselves mutate generated files; the parser guarantees shell-free repository-bound argv, not a process sandbox."
+  ],
+  "residual_risks": [
+    "A project-specific executable can still perform effects allowed by the surrounding runtime; effect isolation remains the responsibility of AgentPlane execution authority and sandboxing."
+  ]
+}

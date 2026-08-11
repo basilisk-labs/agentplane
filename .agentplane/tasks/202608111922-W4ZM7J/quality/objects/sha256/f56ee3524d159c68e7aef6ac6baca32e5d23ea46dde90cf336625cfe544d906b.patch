@@ -1,0 +1,1125 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-guided.test.ts b/packages/agentplane/src/cli/run-cli.core.task-guided.test.ts
+index ad2ac6271..61f9162a9 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-guided.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-guided.test.ts
+@@ -44,6 +44,30 @@ async function recordObservedRunnerReceipt(root: string, taskId: string): Promis
+ }
+ 
+ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
++  it("task begin rejects an unsupported check before semantic planning or persistence", async () => {
++    const root = await mkGitRepoRoot();
++    const io = captureStdIO();
++    try {
++      const code = await runCli([
++        "task",
++        "begin",
++        "Unsafe guided task",
++        "--tag",
++        "code",
++        "--verify",
++        "node -e 'process.exit(0)'",
++        "--json",
++        "--root",
++        root,
++      ]);
++      expect(code).toBe(2);
++      expect(io.stderr).toContain("inline code evaluation is not allowed for node");
++    } finally {
++      io.restore();
++    }
++    await expect(readFile(path.join(root, ".agentplane", "tasks"), "utf8")).rejects.toThrow();
++  });
++
+   it("task begin creates a direct task and stops at semantic planning", async () => {
+     const root = await mkGitRepoRoot();
+     const config = defaultConfig();
+diff --git a/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts b/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts
+index e4ee50947..fd42df519 100644
+--- a/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts
+@@ -216,6 +216,36 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
+     expect(task.frontmatter.verify).toContain("bun run ci");
+   });
+ 
++  it("task new rejects unsupported declared checks without creating a task", async () => {
++    const root = await mkGitRepoRoot();
++    const io = captureStdIO();
++    try {
++      const code = await runCli([
++        "task",
++        "new",
++        "--title",
++        "Unsafe check",
++        "--description",
++        "Must fail before persistence",
++        "--priority",
++        "med",
++        "--owner",
++        "CODER",
++        "--tag",
++        "code",
++        "--verify",
++        "bash -c 'bun test'",
++        "--root",
++        root,
++      ]);
++      expect(code).toBe(2);
++      expect(io.stderr).toContain("Unsupported --verify command 1");
++    } finally {
++      io.restore();
++    }
++    expect(await pathExists(path.join(root, ".agentplane", "tasks"))).toBe(false);
++  });
++
+   it("task new stores structured blueprint intent fields", async () => {
+     const root = await mkGitRepoRoot();
+     const io = captureStdIO();
+@@ -740,4 +770,38 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
+       expect(task.frontmatter.doc_version).toBe(3);
+     }
+   });
++
++  it("task add validates every declared check before creating any explicit id", async () => {
++    const root = await mkGitRepoRoot();
++    const taskIds = ["202601010101-SAFE1", "202601010102-SAFE2"];
++    const io = captureStdIO();
++    try {
++      const code = await runCli([
++        "task",
++        "add",
++        ...taskIds,
++        "--title",
++        "Rejected batch",
++        "--description",
++        "No partial persistence",
++        "--priority",
++        "med",
++        "--owner",
++        "CODER",
++        "--tag",
++        "code",
++        "--verify",
++        "git reset --hard",
++        "--root",
++        root,
++      ]);
++      expect(code).toBe(2);
++      expect(io.stderr).toContain("git subcommand is not allowlisted as read-only");
++    } finally {
++      io.restore();
++    }
++    for (const taskId of taskIds) {
++      expect(await pathExists(path.join(root, ".agentplane", "tasks", taskId))).toBe(false);
++    }
++  });
+ });
+diff --git a/packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts b/packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts
+index 1cc2a6a2d..ff4e67cbe 100644
+--- a/packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts
+@@ -1,4 +1,4 @@
+-import { readFile } from "node:fs/promises";
++import { readdir, readFile } from "node:fs/promises";
+ import path from "node:path";
+ import { describe, expect, it } from "vitest";
+ 
+@@ -276,4 +276,61 @@ describe("runCli", () => {
+       "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->",
+     );
+   });
++
++  it("task derive rejects an unsupported check without creating a derived task", async () => {
++    const root = await writeAndConfigureRoot();
++    const createIo = captureStdIO();
++    let spikeId = "";
++    try {
++      expect(
++        await runCli([
++          "task",
++          "new",
++          "--title",
++          "Source spike",
++          "--description",
++          "Explore first",
++          "--priority",
++          "med",
++          "--owner",
++          "CODER",
++          "--tag",
++          "spike",
++          "--root",
++          root,
++        ]),
++      ).toBe(0);
++      spikeId = createIo.stdout.trim();
++    } finally {
++      createIo.restore();
++    }
++
++    const deriveIo = captureStdIO();
++    try {
++      const code = await runCli([
++        "task",
++        "derive",
++        spikeId,
++        "--title",
++        "Rejected implementation",
++        "--description",
++        "Must not persist",
++        "--priority",
++        "med",
++        "--owner",
++        "CODER",
++        "--tag",
++        "code",
++        "--verify",
++        "rm build",
++        "--root",
++        root,
++      ]);
++      expect(code).toBe(2);
++      expect(deriveIo.stderr).toContain("destructive executable is not allowed: rm");
++    } finally {
++      deriveIo.restore();
++    }
++    expect(await readdir(path.join(root, ".agentplane", "tasks"))).toEqual([spikeId]);
++  });
+ });
+diff --git a/packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts b/packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts
+index 5c5a9f6c9..04887434c 100644
+--- a/packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts
+@@ -87,6 +87,28 @@ async function runSynchronizedCliProcess(opts: {
+ }
+ 
+ describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
++  it("rejects an unsupported check before creating the user-first task", async () => {
++    const root = await mkGitRepoRoot();
++    const io = captureStdIO();
++    try {
++      const code = await runCli([
++        "task",
++        "create",
++        "Validate the product",
++        "--verify",
++        "python -c 'print(1)'",
++        "--json",
++        "--root",
++        root,
++      ]);
++      expect(code).toBe(2);
++      expect(io.stderr).toContain("inline code evaluation is not allowed for python");
++    } finally {
++      io.restore();
++    }
++    await expect(readdir(path.join(root, ".agentplane", "tasks"))).rejects.toThrow();
++  });
++
+   it("persists explicit structured intent and returns one semantic next step", async () => {
+     const root = await mkGitRepoRoot();
+     const io = captureStdIO();
+diff --git a/packages/agentplane/src/commands/shared/declared-check.test.ts b/packages/agentplane/src/commands/shared/declared-check.test.ts
+new file mode 100644
+index 000000000..32240f5a2
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/declared-check.test.ts
+@@ -0,0 +1,53 @@
++import { describe, expect, it } from "vitest";
++
++import {
++  assertSupportedDeclaredTaskChecks,
++  parseDeclaredTaskCheck,
++  resolveDeclaredTaskCheck,
++} from "./declared-check.js";
++
++describe("declared task check contract", () => {
++  it.each([
++    ["bun test packages/agentplane/src/example.test.ts", "bun", ["test"]],
++    ["npm test", "npm", ["test"]],
++    ["pnpm run test:unit", "pnpm", ["run", "test:unit"]],
++    ["python -m pytest tests/unit", "python", ["-m", "pytest"]],
++    ["go test ./...", "go", ["test", "./..."]],
++    ["cargo test --workspace", "cargo", ["test", "--workspace"]],
++    ["./gradlew test", "./gradlew", ["test"]],
++    ["git status --short", "git", ["status", "--short"]],
++    ["bash scripts/check-contract.sh", "bash", ["scripts/check-contract.sh"]],
++  ])("accepts project-native argv: %s", (command, executable, argsPrefix) => {
++    const parsed = parseDeclaredTaskCheck(command);
++    expect(parsed).toMatchObject({ executable });
++    expect(parsed?.args.slice(0, argsPrefix.length)).toEqual(argsPrefix);
++  });
++
++  it.each([
++    "bun test packages/core/src; rm -rf build",
++    "bun test ../outside.test.ts",
++    "node --require=/tmp/escape.cjs scripts/check.mjs",
++    "bash -c 'bun test'",
++    "bash -lc 'bun test'",
++    "node -e 'process.exit(0)'",
++    "node --eval=process.exit(0)",
++    "python -c 'print(1)'",
++    "bun install",
++    "git reset --hard",
++    "git branch scratch",
++    "git -c 'alias.x=!rm tracked-file' x",
++    "env rm tracked-file",
++    "find . -exec rm tracked-file ;",
++    "xargs rm tracked-file",
++    "rm build",
++  ])("rejects shell, escaping, inline-code, or mutating checks: %s", (command) => {
++    expect(resolveDeclaredTaskCheck(command).ok).toBe(false);
++    expect(() => assertSupportedDeclaredTaskChecks([command])).toThrow(/Unsupported --verify/u);
++  });
++
++  it("reports the exact rejected command index before persistence", () => {
++    expect(() =>
++      assertSupportedDeclaredTaskChecks(["npm test", "bash -c 'npm test'", "cargo test"]),
++    ).toThrow(/command 2.*inline shell evaluation/u);
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/declared-check.ts b/packages/agentplane/src/commands/shared/declared-check.ts
+new file mode 100644
+index 000000000..f237bc85f
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/declared-check.ts
+@@ -0,0 +1,352 @@
++import path from "node:path";
++
++import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
++import { CliError } from "../../shared/errors.js";
++
++const SAFE_EXECUTABLE_NAME = /^[A-Za-z0-9][A-Za-z0-9._+-]*$/u;
++const BLOCKED_EXECUTABLES = new Set([
++  "chown",
++  "copy",
++  "cp",
++  "dd",
++  "del",
++  "doas",
++  "erase",
++  "kill",
++  "mkfs",
++  "move",
++  "mv",
++  "pkill",
++  "reboot",
++  "rm",
++  "rmdir",
++  "shutdown",
++  "sudo",
++]);
++const SHELL_EXECUTABLES = new Set(["bash", "dash", "fish", "ksh", "sh", "zsh"]);
++const COMMAND_WRAPPER_EXECUTABLES = new Set([
++  "chroot",
++  "env",
++  "find",
++  "nice",
++  "nohup",
++  "parallel",
++  "runuser",
++  "setsid",
++  "stdbuf",
++  "su",
++  "timeout",
++  "watch",
++  "xargs",
++]);
++const GIT_READ_ONLY_SUBCOMMANDS = new Set([
++  "annotate",
++  "blame",
++  "cat-file",
++  "check-attr",
++  "check-ignore",
++  "check-mailmap",
++  "check-ref-format",
++  "count-objects",
++  "describe",
++  "diff",
++  "diff-files",
++  "diff-index",
++  "diff-tree",
++  "for-each-ref",
++  "grep",
++  "help",
++  "log",
++  "ls-files",
++  "ls-remote",
++  "ls-tree",
++  "merge-base",
++  "merge-tree",
++  "name-rev",
++  "range-diff",
++  "rev-list",
++  "rev-parse",
++  "show",
++  "show-branch",
++  "status",
++  "verify-commit",
++  "verify-pack",
++  "verify-tag",
++  "version",
++  "whatchanged",
++]);
++const INLINE_CODE_FLAGS = new Map<string, ReadonlySet<string>>([
++  ["bun", new Set(["-e", "--eval", "-p", "--print"])],
++  ["deno", new Set(["eval"])],
++  ["node", new Set(["-e", "--eval", "-p", "--print"])],
++  ["perl", new Set(["-e"])],
++  ["python", new Set(["-c"])],
++  ["python3", new Set(["-c"])],
++  ["ruby", new Set(["-e"])],
++]);
++const PACKAGE_MUTATING_SUBCOMMANDS = new Set([
++  "add",
++  "i",
++  "install",
++  "link",
++  "publish",
++  "remove",
++  "rm",
++  "uninstall",
++  "unlink",
++  "update",
++  "upgrade",
++]);
++const AGENTPLANE_BIN = resolveAgentplaneBinPath();
++
++export type CommandInvocation = {
++  command: string;
++  args: string[];
++};
++
++export type ParsedDeclaredTaskCheck = {
++  executable: string;
++  args: string[];
++  script: string | null;
++};
++
++export type DeclaredTaskCheckResolution =
++  | { ok: true; check: ParsedDeclaredTaskCheck }
++  | { ok: false; reason: string };
++
++export function resolveCommandInvocation(command: string): CommandInvocation {
++  const tokens = parseCommandLine(command);
++  const executable = tokens[0];
++  if (!executable) throw new Error("verify command must be non-empty");
++  return { command: executable, args: tokens.slice(1) };
++}
++
++function parseCommandLine(command: string): string[] {
++  const tokens: string[] = [];
++  let current = "";
++  let quote: "'" | '"' | null = null;
++
++  for (let index = 0; index < command.length; index += 1) {
++    const char = command[index] ?? "";
++    if (char === "\0" || char === "\r" || char === "\n") {
++      throw new Error("verify command contains invalid characters");
++    }
++    if (quote) {
++      if (char === quote) quote = null;
++      else if (char === "\\" && quote === '"' && index + 1 < command.length) {
++        index += 1;
++        current += command[index] ?? "";
++      } else current += char;
++      continue;
++    }
++    if (char === "'" || char === '"') {
++      quote = char;
++      continue;
++    }
++    if (char === "\\" && index + 1 < command.length) {
++      index += 1;
++      current += command[index] ?? "";
++      continue;
++    }
++    if (/\s/u.test(char)) {
++      if (current) {
++        tokens.push(current);
++        current = "";
++      }
++      continue;
++    }
++    if ("|&;<>()`$".includes(char)) {
++      throw new Error("verify command must use argv syntax without shell metacharacters");
++    }
++    current += char;
++  }
++  if (quote) throw new Error("verify command contains an unterminated quote");
++  if (current) tokens.push(current);
++  return tokens;
++}
++
++function repositoryBoundArg(value: string): boolean {
++  const candidates = [value];
++  const separator = value.indexOf("=");
++  if (separator !== -1) candidates.push(value.slice(separator + 1));
++  return candidates.every((candidate) => {
++    if (!candidate || candidate.startsWith("-")) return true;
++    const normalized = candidate.replaceAll("\\", "/");
++    return (
++      !path.isAbsolute(candidate) &&
++      !path.win32.isAbsolute(candidate) &&
++      !normalized.split("/").includes("..")
++    );
++  });
++}
++
++function executableBase(executable: string): string {
++  const base = executable.replaceAll("\\", "/").split("/").at(-1)?.toLowerCase() ?? "";
++  return base.replace(/\.(?:bat|cmd|exe)$/u, "");
++}
++
++function validExecutable(executable: string): boolean {
++  if (executable.startsWith("-")) return false;
++  if (executable.includes("/") || executable.includes("\\")) return repositoryBoundArg(executable);
++  return SAFE_EXECUTABLE_NAME.test(executable);
++}
++
++function firstShellScriptArg(args: string[]): string | null {
++  for (let index = 0; index < args.length; index += 1) {
++    const argument = args[index] ?? "";
++    if (argument === "--") return args[index + 1] ?? null;
++    if (!argument.startsWith("-")) return argument;
++  }
++  return null;
++}
++
++function gitSubcommand(args: string[]): string | null {
++  for (let index = 0; index < args.length; index += 1) {
++    const argument = args[index] ?? "";
++    if (["-C", "--git-dir", "--work-tree", "--namespace"].includes(argument)) {
++      index += 1;
++      continue;
++    }
++    if (argument.startsWith("-")) continue;
++    return argument.toLowerCase();
++  }
++  return null;
++}
++
++function packageScript(invocation: CommandInvocation): string | null {
++  const base = executableBase(invocation.command);
++  const [subcommand, target] = invocation.args;
++  if (["bun", "npm", "pnpm", "yarn"].includes(base) && subcommand === "run") {
++    return target ?? null;
++  }
++  if (["npm", "pnpm", "yarn"].includes(base) && subcommand === "test") return "test";
++  return null;
++}
++
++function hasInlineCodeFlag(args: string[], flags: ReadonlySet<string>): boolean {
++  return args.some((argument) =>
++    [...flags].some(
++      (flag) =>
++        argument === flag ||
++        argument.startsWith(`${flag}=`) ||
++        (flag.length === 2 && argument.startsWith(flag) && argument.length > flag.length),
++    ),
++  );
++}
++
++function hasShellCommandFlag(args: string[]): boolean {
++  return args.some(
++    (argument) =>
++      /^--command(?:=|$)/u.test(argument) ||
++      (/^-[^-]+/u.test(argument) && argument.slice(1).includes("c")),
++  );
++}
++
++export function resolveDeclaredTaskCheck(command: string): DeclaredTaskCheckResolution {
++  let invocation: CommandInvocation;
++  try {
++    invocation = resolveCommandInvocation(command);
++  } catch (error) {
++    return { ok: false, reason: error instanceof Error ? error.message : "invalid argv syntax" };
++  }
++  if (!validExecutable(invocation.command)) {
++    return { ok: false, reason: "executable must be a command name or repository-bound path" };
++  }
++  if (!invocation.args.every((argument) => repositoryBoundArg(argument))) {
++    return { ok: false, reason: "arguments must not use absolute paths or parent traversal" };
++  }
++
++  const base = executableBase(invocation.command);
++  if (BLOCKED_EXECUTABLES.has(base)) {
++    return { ok: false, reason: `destructive executable is not allowed: ${base}` };
++  }
++  if (COMMAND_WRAPPER_EXECUTABLES.has(base)) {
++    return { ok: false, reason: `command wrapper or multiplexer is not allowed: ${base}` };
++  }
++  if (base === "cmd") {
++    return { ok: false, reason: "command-shell evaluation is not allowed" };
++  }
++  if (SHELL_EXECUTABLES.has(base)) {
++    if (hasShellCommandFlag(invocation.args)) {
++      return { ok: false, reason: "inline shell evaluation is not allowed" };
++    }
++    const script = firstShellScriptArg(invocation.args);
++    if (!script || !repositoryBoundArg(script)) {
++      return { ok: false, reason: "a shell check must name a repository-bound script file" };
++    }
++  }
++  if (["powershell", "pwsh"].includes(base)) {
++    if (invocation.args.some((argument) => /^-(?:c|command)(?::|=|$)/iu.test(argument))) {
++      return { ok: false, reason: "inline PowerShell evaluation is not allowed" };
++    }
++    const fileFlag = invocation.args.findIndex((argument) => /^-(?:f|file)$/iu.test(argument));
++    const script = fileFlag === -1 ? null : (invocation.args[fileFlag + 1] ?? null);
++    if (!script || !repositoryBoundArg(script)) {
++      return {
++        ok: false,
++        reason: "a PowerShell check must use -File with a repository-bound script",
++      };
++    }
++  }
++  const inlineFlags = INLINE_CODE_FLAGS.get(base);
++  if (inlineFlags && hasInlineCodeFlag(invocation.args, inlineFlags)) {
++    return { ok: false, reason: `inline code evaluation is not allowed for ${base}` };
++  }
++  if (base === "git") {
++    if (
++      invocation.args.some(
++        (argument) => argument === "-c" || argument.startsWith("-c=") || argument.startsWith("--config-env"),
++      )
++    ) {
++      return { ok: false, reason: "git configuration overrides are not allowed" };
++    }
++    const subcommand = gitSubcommand(invocation.args);
++    if (!subcommand) return { ok: false, reason: "git check must name a read-only subcommand" };
++    if (!GIT_READ_ONLY_SUBCOMMANDS.has(subcommand)) {
++      return { ok: false, reason: `git subcommand is not allowlisted as read-only: ${subcommand}` };
++    }
++  }
++  if (
++    ["bun", "npm", "pnpm", "yarn"].includes(base) &&
++    PACKAGE_MUTATING_SUBCOMMANDS.has((invocation.args[0] ?? "").toLowerCase())
++  ) {
++    return {
++      ok: false,
++      reason: `package mutation is not a verification check: ${invocation.args[0]}`,
++    };
++  }
++
++  if (base === "agentplane" && invocation.args.length === 1 && invocation.args[0] === "doctor") {
++    return {
++      ok: true,
++      check: { executable: process.execPath, args: [AGENTPLANE_BIN, "doctor"], script: null },
++    };
++  }
++  return {
++    ok: true,
++    check: {
++      executable: invocation.command,
++      args: invocation.args,
++      script: packageScript(invocation),
++    },
++  };
++}
++
++export function parseDeclaredTaskCheck(command: string): ParsedDeclaredTaskCheck | null {
++  const resolved = resolveDeclaredTaskCheck(command);
++  return resolved.ok ? resolved.check : null;
++}
++
++export function assertSupportedDeclaredTaskChecks(commands: readonly string[]): void {
++  for (const [index, command] of commands.entries()) {
++    const resolved = resolveDeclaredTaskCheck(command);
++    if (resolved.ok) continue;
++    throw new CliError({
++      exitCode: 2,
++      code: "E_USAGE",
++      message:
++        `Unsupported --verify command ${index + 1}: ${JSON.stringify(command)} (${resolved.reason}). ` +
++        "Use one repository-bound argv command without shell operators; invoke the project's test or build tool directly.",
++    });
++  }
++}
+diff --git a/packages/agentplane/src/commands/shared/pr-meta.test.ts b/packages/agentplane/src/commands/shared/pr-meta.test.ts
+index e6e76ef20..7476215bc 100644
+--- a/packages/agentplane/src/commands/shared/pr-meta.test.ts
++++ b/packages/agentplane/src/commands/shared/pr-meta.test.ts
+@@ -135,7 +135,7 @@ describe("pr-meta shell invocations", () => {
+     expect(result).toEqual({ code: 0, output: "ok" });
+   });
+ 
+-  it("starts declared bunx verification commands through the allowlist", async () => {
++  it("starts declared bunx verification commands through the shared argv contract", async () => {
+     const gitProcess = await import("@agentplaneorg/core/process");
+     const stdout = new PassThrough();
+     const stderr = new PassThrough();
+@@ -180,13 +180,15 @@ describe("pr-meta shell invocations", () => {
+     expect(result.output.endsWith("tail")).toBe(true);
+   });
+ 
+-  it("rejects non-allowlisted verify executables before process start", async () => {
++  it("rejects shell-evaluated verify commands before process start", async () => {
+     const gitProcess = await import("@agentplaneorg/core/process");
+     const startProcess = vi.spyOn(gitProcess, "startProcess");
+ 
+-    await expect(runShellCommand("custom-runner --version", process.cwd())).resolves.toEqual({
++    await expect(
++      runShellCommand("bash -c 'custom-runner --version'", process.cwd()),
++    ).resolves.toEqual({
+       code: 1,
+-      output: "verify command executable is not allowed: custom-runner",
++      output: "verify command is not supported: inline shell evaluation is not allowed",
+     });
+     expect(startProcess).not.toHaveBeenCalled();
+   });
+diff --git a/packages/agentplane/src/commands/shared/pr-meta/verify-log.ts b/packages/agentplane/src/commands/shared/pr-meta/verify-log.ts
+index 56b023e19..652e87c3b 100644
+--- a/packages/agentplane/src/commands/shared/pr-meta/verify-log.ts
++++ b/packages/agentplane/src/commands/shared/pr-meta/verify-log.ts
+@@ -3,24 +3,11 @@ import path from "node:path";
+ import type { Readable } from "node:stream";
+ 
+ import { startProcess } from "@agentplaneorg/core/process";
++import { resolveDeclaredTaskCheck } from "../declared-check.js";
++
++export { resolveCommandInvocation as resolveShellInvocation } from "../declared-check.js";
+ 
+ const VERIFY_OUTPUT_TAIL_BYTES = 1024 * 1024;
+-const VERIFY_EXECUTABLES = new Set([
+-  "bash",
+-  "bun",
+-  "bunx",
+-  "cat",
+-  "chmod",
+-  "gh",
+-  "git",
+-  "node",
+-  "npm",
+-  "ps",
+-  "sh",
+-  "tar",
+-  "unzip",
+-  "zip",
+-]);
+ const VERIFY_RUNTIME_ENV_KEYS = [
+   "AGENTPLANE_CLI_ALIAS",
+   "AGENTPLANE_AGENT_MODE",
+@@ -32,74 +19,6 @@ const VERIFY_RUNTIME_ENV_KEYS = [
+   "AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH",
+ ] as const;
+ 
+-type ShellInvocation = {
+-  command: string;
+-  args: string[];
+-};
+-
+-export function resolveShellInvocation(command: string): ShellInvocation {
+-  const tokens = parseCommandLine(command);
+-  const executable = tokens[0];
+-  if (!executable) {
+-    throw new Error("verify command must be non-empty");
+-  }
+-  return { command: executable, args: tokens.slice(1) };
+-}
+-
+-function parseCommandLine(command: string): string[] {
+-  const tokens: string[] = [];
+-  let current = "";
+-  let quote: "'" | '"' | null = null;
+-
+-  for (let index = 0; index < command.length; index += 1) {
+-    const char = command[index] ?? "";
+-    if (char === "\0" || char === "\r" || char === "\n") {
+-      throw new Error("verify command contains invalid characters");
+-    }
+-
+-    if (quote) {
+-      if (char === quote) {
+-        quote = null;
+-      } else if (char === "\\" && quote === '"' && index + 1 < command.length) {
+-        index += 1;
+-        current += command[index] ?? "";
+-      } else {
+-        current += char;
+-      }
+-      continue;
+-    }
+-
+-    if (char === "'" || char === '"') {
+-      quote = char;
+-      continue;
+-    }
+-
+-    if (char === "\\" && index + 1 < command.length) {
+-      index += 1;
+-      current += command[index] ?? "";
+-      continue;
+-    }
+-
+-    if (/\s/u.test(char)) {
+-      if (current) {
+-        tokens.push(current);
+-        current = "";
+-      }
+-      continue;
+-    }
+-
+-    if ("|&;<>()`$".includes(char)) {
+-      throw new Error("verify command must use argv syntax without shell metacharacters");
+-    }
+-
+-    current += char;
+-  }
+-
+-  if (quote) throw new Error("verify command contains an unterminated quote");
+-  if (current) tokens.push(current);
+-  return tokens;
+-}
+-
+ export function verificationChildEnv(source: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
+   const env = { ...source };
+   for (const key of VERIFY_RUNTIME_ENV_KEYS) delete env[key];
+@@ -135,17 +54,18 @@ export async function runShellCommand(
+   code: number;
+   output: string;
+ }> {
+-  const invocation = resolveShellInvocation(command);
+-  if (!VERIFY_EXECUTABLES.has(invocation.command)) {
++  const resolved = resolveDeclaredTaskCheck(command);
++  if (!resolved.ok) {
+     return {
+       code: 1,
+-      output: `verify command executable is not allowed: ${invocation.command}`,
++      output: `verify command is not supported: ${resolved.reason}`,
+     };
+   }
++  const invocation = resolved.check;
+   const env = verificationChildEnv();
+   try {
+     const child = startProcess({
+-      command: invocation.command,
++      command: invocation.executable,
+       args: invocation.args,
+       cwd,
+       env,
+diff --git a/packages/agentplane/src/commands/task/add.ts b/packages/agentplane/src/commands/task/add.ts
+index ee2094232..ee0ddec74 100644
+--- a/packages/agentplane/src/commands/task/add.ts
++++ b/packages/agentplane/src/commands/task/add.ts
+@@ -3,6 +3,7 @@ import { mapBackendError } from "../../cli/error-map.js";
+ import { CliError } from "../../shared/errors.js";
+ import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+ import { applyTaskCollectionMutation } from "../shared/task-mutation.js";
++import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
+ import { dedupeStrings, normalizeTaskStatus, nowIso } from "./shared.js";
+ import { defaultTaskDocV3, TASK_DOC_VERSION_V3 } from "./doc-template.js";
+ 
+@@ -30,6 +31,7 @@ export async function cmdTaskAdd(opts: {
+     const tags = dedupeStrings(opts.tags);
+     const dependsOn = dedupeStrings(opts.dependsOn);
+     const verify = dedupeStrings(opts.verify);
++    assertSupportedDeclaredTaskChecks(verify);
+     const docUpdatedBy = (opts.commentAuthor ?? "").trim() || opts.owner;
+ 
+     const { tasksToWrite } = await applyTaskCollectionMutation({
+@@ -78,6 +80,7 @@ export async function cmdTaskAdd(opts: {
+     }
+     return 0;
+   } catch (err) {
++    if (err instanceof CliError) throw err;
+     throw mapBackendError(err, { command: "task add", root: opts.rootOverride ?? null });
+   }
+ }
+diff --git a/packages/agentplane/src/commands/task/derive.ts b/packages/agentplane/src/commands/task/derive.ts
+index 56dff7e01..b4fa3c117 100644
+--- a/packages/agentplane/src/commands/task/derive.ts
++++ b/packages/agentplane/src/commands/task/derive.ts
+@@ -5,6 +5,7 @@ import { unknownEntityMessage, warnMessage } from "../../cli/output.js";
+ import { CliError } from "../../shared/errors.js";
+ import { buildTaskDocState } from "../../task-doc/state.js";
+ import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
++import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
+ import {
+   buildDefaultVerifyStepsSection,
+   defaultTaskDocV3,
+@@ -40,6 +41,7 @@ export async function cmdTaskDerive(opts: {
+   verify: string[];
+ }): Promise<number> {
+   try {
++    assertSupportedDeclaredTaskChecks(opts.verify);
+     const ctx =
+       opts.ctx ??
+       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+@@ -144,6 +146,7 @@ export async function cmdTaskDerive(opts: {
+     process.stdout.write(`${taskId}\n`);
+     return 0;
+   } catch (err) {
++    if (err instanceof CliError) throw err;
+     throw mapBackendError(err, { command: "task derive", root: opts.rootOverride ?? null });
+   }
+ }
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.test.ts b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+index bb5b33a90..0f240a9cc 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+@@ -37,7 +37,7 @@ afterEach(async () => {
+ });
+ 
+ describe("direct task verification", () => {
+-  it("accepts repository-bound Bun argv without shell syntax", () => {
++  it("accepts project-native repository-bound argv without shell syntax", () => {
+     expect(parseDirectTaskCheck(" bun run test:critical ")).toEqual({
+       executable: "bun",
+       args: ["run", "test:critical"],
+@@ -75,7 +75,18 @@ describe("direct task verification", () => {
+     expect(parseDirectTaskCheck("bun test 'C:\\outside.test.ts'")).toBeNull();
+     expect(parseDirectTaskCheck("TOKEN=value bun test packages/core/src")).toBeNull();
+     expect(parseDirectTaskCheck("bun install")).toBeNull();
+-    expect(parseDirectTaskCheck("npm test")).toBeNull();
++    expect(parseDirectTaskCheck("npm test")).toEqual({
++      executable: "npm",
++      args: ["test"],
++      script: "test",
++    });
++    expect(parseDirectTaskCheck("python -m pytest tests/unit")).toEqual({
++      executable: "python",
++      args: ["-m", "pytest", "tests/unit"],
++      script: null,
++    });
++    expect(parseDirectTaskCheck("bash -c 'bun test'")).toBeNull();
++    expect(parseDirectTaskCheck("git reset --hard")).toBeNull();
+   });
+ 
+   it("runs the reported bun test command as structured argv and records it", async () => {
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.ts b/packages/agentplane/src/commands/task/direct-task-verification.ts
+index 17d4d855b..bade5f61c 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.ts
+@@ -3,9 +3,9 @@ import { mkdir } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+-import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
+ import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
+-import { resolveShellInvocation, verificationChildEnv } from "../shared/pr-meta/verify-log.js";
++import { parseDeclaredTaskCheck } from "../shared/declared-check.js";
++import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ 
+ const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
+@@ -13,13 +13,11 @@ const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.free
+   "e2e:v0.7.1:gate": 150 * 60_000,
+ });
+ const CHECK_OUTPUT_LIMIT = 4000;
+-const SAFE_BUN_SCRIPT = /^[A-Za-z0-9][A-Za-z0-9:._-]*$/u;
+ const BUN_UNMATCHED_FILTER_PATTERN = /following filters did not match any test files/iu;
+ const BUN_ZERO_TEST_PATTERNS = [
+   /\bno tests? (?:found|matched|ran|were run)\b/iu,
+   /\bran 0 tests?\b/iu,
+ ] as const;
+-const AGENTPLANE_BIN = resolveAgentplaneBinPath();
+ 
+ type DirectTaskCheck = {
+   command: string;
+@@ -47,36 +45,8 @@ function tail(value: string): string {
+   return value.length <= CHECK_OUTPUT_LIMIT ? value : value.slice(-CHECK_OUTPUT_LIMIT);
+ }
+ 
+-function repositoryBoundArg(value: string): boolean {
+-  const candidates = [value];
+-  const separator = value.indexOf("=");
+-  if (separator !== -1) candidates.push(value.slice(separator + 1));
+-  return candidates.every((candidate) => {
+-    if (!candidate || candidate.startsWith("-")) return true;
+-    const normalized = candidate.replaceAll("\\", "/");
+-    return (
+-      !path.isAbsolute(candidate) &&
+-      !path.win32.isAbsolute(candidate) &&
+-      !normalized.split("/").includes("..")
+-    );
+-  });
+-}
+-
+ export function parseDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
+-  let invocation: ReturnType<typeof resolveShellInvocation>;
+-  try {
+-    invocation = resolveShellInvocation(command);
+-  } catch {
+-    return null;
+-  }
+-  if (invocation.command !== "bun") return null;
+-  const [subcommand, target] = invocation.args;
+-  if (!invocation.args.slice(1).every((argument) => repositoryBoundArg(argument))) return null;
+-  if (subcommand === "test") {
+-    return { executable: "bun", args: invocation.args, script: null };
+-  }
+-  if (subcommand !== "run" || !target || !SAFE_BUN_SCRIPT.test(target)) return null;
+-  return { executable: "bun", args: invocation.args, script: target };
++  return parseDeclaredTaskCheck(command);
+ }
+ 
+ function directTaskCheckTimeoutMs(script: string | null): number {
+@@ -98,24 +68,6 @@ function bunTestReportedZeroTests(opts: {
+   return passCounts.includes(0) || BUN_ZERO_TEST_PATTERNS.some((pattern) => pattern.test(output));
+ }
+ 
+-function parseTrustedDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
+-  const bun = parseDirectTaskCheck(command);
+-  if (bun) return bun;
+-  if (command === "node .agentplane/policy/check-routing.mjs") {
+-    return {
+-      executable: "node",
+-      args: [".agentplane/policy/check-routing.mjs"],
+-      script: null,
+-    };
+-  }
+-  if (command === "agentplane doctor") {
+-    // Re-enter through the active package binary rather than PATH. The
+-    // supervised CLI may be launched repo-locally without a global installation.
+-    return { executable: process.execPath, args: [AGENTPLANE_BIN, "doctor"], script: null };
+-  }
+-  return null;
+-}
+-
+ function directTaskVerificationCommands(
+   task: Pick<TaskData, "verify" | "task_kind" | "mutation_scope">,
+ ): string[] {
+@@ -152,10 +104,9 @@ async function writeCheckArtifact(opts: {
+ }
+ 
+ /**
+- * Executes only the intentionally narrow task-verify grammar. The CLI never
+- * passes arbitrary task text to a shell: each command is a repository-bound
+- * `bun run`/`bun test` argv or a fixed docs-policy check through the structured
+- * process boundary.
++ * Executes the same deterministic task-verify grammar enforced at mutation
++ * boundaries. The CLI never passes task text to a shell: every command is
++ * parsed into repository-bound argv and crosses the structured process boundary.
+  */
+ export async function runDirectTaskVerification(opts: {
+   command: CommandContext;
+@@ -175,7 +126,7 @@ export async function runDirectTaskVerification(opts: {
+     return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
+   }
+   for (const command of commands) {
+-    const parsed = parseTrustedDirectTaskCheck(command);
++    const parsed = parseDirectTaskCheck(command);
+     if (!parsed) {
+       const result = {
+         status: "unsupported" as const,
+diff --git a/packages/agentplane/src/commands/task/new.ts b/packages/agentplane/src/commands/task/new.ts
+index a0299137b..38524d909 100644
+--- a/packages/agentplane/src/commands/task/new.ts
++++ b/packages/agentplane/src/commands/task/new.ts
+@@ -39,6 +39,7 @@ import {
+   resolveTaskBlueprintLifecycleSummary,
+ } from "./blueprint-summary.js";
+ import { resolveTaskExecutionRoute } from "../../runtime/task-routing/index.js";
++import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
+ 
+ export type TaskNewParsed = {
+   title: string;
+@@ -133,6 +134,7 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
+   }
+   const dependsOn = dedupeTrimmed(p.dependsOn);
+   const verify = dedupeTrimmed(p.verify);
++  assertSupportedDeclaredTaskChecks(verify);
+   const taskKind = validateOptionalEnum("task-kind", p.taskKind, TASK_KIND_VALUES);
+   const mutationScope = validateOptionalEnum(
+     "mutation-scope",
+diff --git a/packages/agentplane/src/commands/task/update.ts b/packages/agentplane/src/commands/task/update.ts
+index e9e6b432d..f64252f23 100644
+--- a/packages/agentplane/src/commands/task/update.ts
++++ b/packages/agentplane/src/commands/task/update.ts
+@@ -3,6 +3,7 @@ import { mapBackendError } from "../../cli/error-map.js";
+ import { createCliEmitter, emitCommandResult, unknownEntityMessage } from "../../cli/output.js";
+ import { CliError } from "../../shared/errors.js";
+ import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
++import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
+ import {
+   dedupeStrings,
+   ensureTaskDependsOnGraphIsAcyclic,
+@@ -97,6 +98,9 @@ export async function cmdTaskUpdate(opts: {
+ 
+     const existingVerify = opts.replaceVerify ? [] : dedupeStrings(toStringArray(next.verify));
+     const mergedVerify = dedupeStrings([...existingVerify, ...opts.verify]);
++    if (opts.replaceVerify || opts.verify.length > 0) {
++      assertSupportedDeclaredTaskChecks(mergedVerify);
++    }
+     next.verify = mergedVerify;
+ 
+     await ctx.taskBackend.writeTask(next);
+diff --git a/packages/agentplane/src/commands/task/update.unit.test.ts b/packages/agentplane/src/commands/task/update.unit.test.ts
+index a305ed74b..557d6fb41 100644
+--- a/packages/agentplane/src/commands/task/update.unit.test.ts
++++ b/packages/agentplane/src/commands/task/update.unit.test.ts
+@@ -80,4 +80,61 @@ describe("task update command (unit)", () => {
+     stdoutWrite.mockRestore();
+     stderrWrite.mockRestore();
+   });
++
++  it("rejects an unsupported verify replacement before writing the task", async () => {
++    const task = mkTask({ verify: ["npm test"] });
++    const writeTask = vi.fn().mockResolvedValue(undefined);
++    const backend: TaskBackend = {
++      id: "mock",
++      listTasks: () => Promise.resolve([]),
++      getTask: () => Promise.resolve(task),
++      writeTask,
++    };
++    const ctx = makeTaskCommandContext({ taskBackend: backend });
++    const { cmdTaskUpdate } = await import("./update.js");
++
++    await expect(
++      cmdTaskUpdate({
++        ctx,
++        cwd: "/repo",
++        taskId: "T-1",
++        tags: [],
++        replaceTags: false,
++        dependsOn: [],
++        replaceDependsOn: false,
++        verify: ["bash -c 'npm test'"],
++        replaceVerify: true,
++      }),
++    ).rejects.toMatchObject({ code: "E_USAGE", exitCode: 2 });
++    expect(writeTask).not.toHaveBeenCalled();
++  });
++
++  it("allows unrelated updates to legacy tasks until verify is explicitly replaced", async () => {
++    const task = mkTask({ verify: ["TOKEN=value npm test"] });
++    const writeTask = vi.fn().mockResolvedValue(undefined);
++    const backend: TaskBackend = {
++      id: "mock",
++      listTasks: () => Promise.resolve([]),
++      getTask: () => Promise.resolve(task),
++      writeTask,
++    };
++    const ctx = makeTaskCommandContext({ taskBackend: backend });
++    const { cmdTaskUpdate } = await import("./update.js");
++
++    await expect(
++      cmdTaskUpdate({
++        ctx,
++        cwd: "/repo",
++        taskId: "T-1",
++        description: "Metadata-only repair",
++        tags: [],
++        replaceTags: false,
++        dependsOn: [],
++        replaceDependsOn: false,
++        verify: [],
++        replaceVerify: false,
++      }),
++    ).resolves.toBe(0);
++    expect(writeTask).toHaveBeenCalledOnce();
++  });
+ });
+diff --git a/packages/agentplane/src/commands/workflow.test.ts b/packages/agentplane/src/commands/workflow.test.ts
+index 8a89e01e1..70f75dca2 100644
+--- a/packages/agentplane/src/commands/workflow.test.ts
++++ b/packages/agentplane/src/commands/workflow.test.ts
+@@ -344,7 +344,7 @@ describe("commands/workflow", () => {
+         commentAuthor: null,
+         commentBody: null,
+       }),
+-    ).rejects.toMatchObject({ code: "E_IO" });
++    ).rejects.toMatchObject({ code: "E_USAGE" });
+   });
+ 
+   it("task add writes tasks via writeTask when writeTasks is missing", async () => {

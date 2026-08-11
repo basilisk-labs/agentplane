@@ -37,7 +37,7 @@ afterEach(async () => {
 });
 
 describe("direct task verification", () => {
-  it("accepts repository-bound Bun argv without shell syntax", () => {
+  it("accepts project-native repository-bound argv without shell syntax", () => {
     expect(parseDirectTaskCheck(" bun run test:critical ")).toEqual({
       executable: "bun",
       args: ["run", "test:critical"],
@@ -75,7 +75,18 @@ describe("direct task verification", () => {
     expect(parseDirectTaskCheck("bun test 'C:\\outside.test.ts'")).toBeNull();
     expect(parseDirectTaskCheck("TOKEN=value bun test packages/core/src")).toBeNull();
     expect(parseDirectTaskCheck("bun install")).toBeNull();
-    expect(parseDirectTaskCheck("npm test")).toBeNull();
+    expect(parseDirectTaskCheck("npm test")).toEqual({
+      executable: "npm",
+      args: ["test"],
+      script: "test",
+    });
+    expect(parseDirectTaskCheck("python -m pytest tests/unit")).toEqual({
+      executable: "python",
+      args: ["-m", "pytest", "tests/unit"],
+      script: null,
+    });
+    expect(parseDirectTaskCheck("bash -c 'bun test'")).toBeNull();
+    expect(parseDirectTaskCheck("git reset --hard")).toBeNull();
   });
 
   it("runs the reported bun test command as structured argv and records it", async () => {

@@ -5,6 +5,7 @@ import { unknownEntityMessage, warnMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { buildTaskDocState } from "../../task-doc/state.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
 import {
   buildDefaultVerifyStepsSection,
   defaultTaskDocV3,
@@ -40,6 +41,7 @@ export async function cmdTaskDerive(opts: {
   verify: string[];
 }): Promise<number> {
   try {
+    assertSupportedDeclaredTaskChecks(opts.verify);
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
@@ -144,6 +146,7 @@ export async function cmdTaskDerive(opts: {
     process.stdout.write(`${taskId}\n`);
     return 0;
   } catch (err) {
+    if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "task derive", root: opts.rootOverride ?? null });
   }
 }

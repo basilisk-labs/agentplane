@@ -80,4 +80,61 @@ describe("task update command (unit)", () => {
     stdoutWrite.mockRestore();
     stderrWrite.mockRestore();
   });
+
+  it("rejects an unsupported verify replacement before writing the task", async () => {
+    const task = mkTask({ verify: ["npm test"] });
+    const writeTask = vi.fn().mockResolvedValue(undefined);
+    const backend: TaskBackend = {
+      id: "mock",
+      listTasks: () => Promise.resolve([]),
+      getTask: () => Promise.resolve(task),
+      writeTask,
+    };
+    const ctx = makeTaskCommandContext({ taskBackend: backend });
+    const { cmdTaskUpdate } = await import("./update.js");
+
+    await expect(
+      cmdTaskUpdate({
+        ctx,
+        cwd: "/repo",
+        taskId: "T-1",
+        tags: [],
+        replaceTags: false,
+        dependsOn: [],
+        replaceDependsOn: false,
+        verify: ["bash -c 'npm test'"],
+        replaceVerify: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE", exitCode: 2 });
+    expect(writeTask).not.toHaveBeenCalled();
+  });
+
+  it("allows unrelated updates to legacy tasks until verify is explicitly replaced", async () => {
+    const task = mkTask({ verify: ["TOKEN=value npm test"] });
+    const writeTask = vi.fn().mockResolvedValue(undefined);
+    const backend: TaskBackend = {
+      id: "mock",
+      listTasks: () => Promise.resolve([]),
+      getTask: () => Promise.resolve(task),
+      writeTask,
+    };
+    const ctx = makeTaskCommandContext({ taskBackend: backend });
+    const { cmdTaskUpdate } = await import("./update.js");
+
+    await expect(
+      cmdTaskUpdate({
+        ctx,
+        cwd: "/repo",
+        taskId: "T-1",
+        description: "Metadata-only repair",
+        tags: [],
+        replaceTags: false,
+        dependsOn: [],
+        replaceDependsOn: false,
+        verify: [],
+        replaceVerify: false,
+      }),
+    ).resolves.toBe(0);
+    expect(writeTask).toHaveBeenCalledOnce();
+  });
 });

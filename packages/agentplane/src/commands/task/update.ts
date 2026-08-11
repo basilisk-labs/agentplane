@@ -3,6 +3,7 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { createCliEmitter, emitCommandResult, unknownEntityMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
 import {
   dedupeStrings,
   ensureTaskDependsOnGraphIsAcyclic,
@@ -97,6 +98,9 @@ export async function cmdTaskUpdate(opts: {
 
     const existingVerify = opts.replaceVerify ? [] : dedupeStrings(toStringArray(next.verify));
     const mergedVerify = dedupeStrings([...existingVerify, ...opts.verify]);
+    if (opts.replaceVerify || opts.verify.length > 0) {
+      assertSupportedDeclaredTaskChecks(mergedVerify);
+    }
     next.verify = mergedVerify;
 
     await ctx.taskBackend.writeTask(next);

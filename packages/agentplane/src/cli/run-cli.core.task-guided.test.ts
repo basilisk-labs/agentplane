@@ -44,6 +44,30 @@ async function recordObservedRunnerReceipt(root: string, taskId: string): Promis
 }
 
 describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
+  it("task begin rejects an unsupported check before semantic planning or persistence", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "begin",
+        "Unsafe guided task",
+        "--tag",
+        "code",
+        "--verify",
+        "node -e 'process.exit(0)'",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("inline code evaluation is not allowed for node");
+    } finally {
+      io.restore();
+    }
+    await expect(readFile(path.join(root, ".agentplane", "tasks"), "utf8")).rejects.toThrow();
+  });
+
   it("task begin creates a direct task and stops at semantic planning", async () => {
     const root = await mkGitRepoRoot();
     const config = defaultConfig();

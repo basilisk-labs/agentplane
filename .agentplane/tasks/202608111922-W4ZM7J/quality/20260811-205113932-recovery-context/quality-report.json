@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608111922-W4ZM7J",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T20:51:14.353Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The W4ZM7J change remains correct on the optimized main base; synchronization introduced no semantic conflict and all parser, mutation, and static checks pass on the merged tree.",
+  "evaluated_sha": "9b68f75daff0ff59bbbaaea63bd308edd7f75474",
+  "blueprint_digest": "9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4",
+  "findings": [
+    "The shared declared-check resolver remains the sole validation and execution grammar after main synchronization.",
+    "Ninety-three parser, executor, and mutation-boundary tests pass on the merged tree, including the original bun path regression and all six persistence entry points.",
+    "The upstream CI refactor changes only verification orchestration and the stabilized concurrency fixture; it does not weaken or bypass W4ZM7J behavior."
+  ],
+  "evidence_refs": [
+    "packages/agentplane/src/commands/shared/declared-check.ts",
+    "packages/agentplane/src/commands/shared/declared-check.test.ts",
+    ".agentplane/tasks/202608111922-W4ZM7J/verification/20260811205016130-c105637f635639f7.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Generic project executables remain subject to the surrounding execution sandbox rather than parser-level semantic inspection."
+  ],
+  "residual_risks": [
+    "A trusted repository script can mutate its own workspace; this is intentionally controlled by execution authority, not a language-specific CLI allowlist."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608111922-W4ZM7J",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T21:30:42.757Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The shared declared-check contract now closes wrapper composition and Git alias/subcommand bypasses without reverting to product-language keyword classification: project-native test/build argv remain accepted, while Git is limited to explicit read-only operations.",
+  "evaluated_sha": "d1a7fbcf680b4d8071e5d6ff7e27e988b84420aa",
+  "blueprint_digest": "9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4",
+  "findings": [
+    "Both P1 review cases are covered directly: env/xargs-style wrappers are rejected and git branch plus git -c alias execution are rejected. No duplicate execution grammar was reintroduced."
+  ],
+  "evidence_refs": [
+    "packages/agentplane/src/commands/shared/declared-check.ts",
+    "packages/agentplane/src/commands/shared/declared-check.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Repository-owned test and build scripts can still have side effects; supervised execution remains the authoritative containment layer for script behavior."
+  ]
+}

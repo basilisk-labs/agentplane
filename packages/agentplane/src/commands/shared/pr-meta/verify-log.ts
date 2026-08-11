@@ -3,24 +3,11 @@ import path from "node:path";
 import type { Readable } from "node:stream";
 
 import { startProcess } from "@agentplaneorg/core/process";
+import { resolveDeclaredTaskCheck } from "../declared-check.js";
+
+export { resolveCommandInvocation as resolveShellInvocation } from "../declared-check.js";
 
 const VERIFY_OUTPUT_TAIL_BYTES = 1024 * 1024;
-const VERIFY_EXECUTABLES = new Set([
-  "bash",
-  "bun",
-  "bunx",
-  "cat",
-  "chmod",
-  "gh",
-  "git",
-  "node",
-  "npm",
-  "ps",
-  "sh",
-  "tar",
-  "unzip",
-  "zip",
-]);
 const VERIFY_RUNTIME_ENV_KEYS = [
   "AGENTPLANE_CLI_ALIAS",
   "AGENTPLANE_AGENT_MODE",
@@ -31,74 +18,6 @@ const VERIFY_RUNTIME_ENV_KEYS = [
   "AGENTPLANE_DEV_AUTO_BOOTSTRAPPED",
   "AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH",
 ] as const;
-
-type ShellInvocation = {
-  command: string;
-  args: string[];
-};
-
-export function resolveShellInvocation(command: string): ShellInvocation {
-  const tokens = parseCommandLine(command);
-  const executable = tokens[0];
-  if (!executable) {
-    throw new Error("verify command must be non-empty");
-  }
-  return { command: executable, args: tokens.slice(1) };
-}
-
-function parseCommandLine(command: string): string[] {
-  const tokens: string[] = [];
-  let current = "";
-  let quote: "'" | '"' | null = null;
-
-  for (let index = 0; index < command.length; index += 1) {
-    const char = command[index] ?? "";
-    if (char === "\0" || char === "\r" || char === "\n") {
-      throw new Error("verify command contains invalid characters");
-    }
-
-    if (quote) {
-      if (char === quote) {
-        quote = null;
-      } else if (char === "\\" && quote === '"' && index + 1 < command.length) {
-        index += 1;
-        current += command[index] ?? "";
-      } else {
-        current += char;
-      }
-      continue;
-    }
-
-    if (char === "'" || char === '"') {
-      quote = char;
-      continue;
-    }
-
-    if (char === "\\" && index + 1 < command.length) {
-      index += 1;
-      current += command[index] ?? "";
-      continue;
-    }
-
-    if (/\s/u.test(char)) {
-      if (current) {
-        tokens.push(current);
-        current = "";
-      }
-      continue;
-    }
-
-    if ("|&;<>()`$".includes(char)) {
-      throw new Error("verify command must use argv syntax without shell metacharacters");
-    }
-
-    current += char;
-  }
-
-  if (quote) throw new Error("verify command contains an unterminated quote");
-  if (current) tokens.push(current);
-  return tokens;
-}
 
 export function verificationChildEnv(source: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
   const env = { ...source };
@@ -135,17 +54,18 @@ export async function runShellCommand(
   code: number;
   output: string;
 }> {
-  const invocation = resolveShellInvocation(command);
-  if (!VERIFY_EXECUTABLES.has(invocation.command)) {
+  const resolved = resolveDeclaredTaskCheck(command);
+  if (!resolved.ok) {
     return {
       code: 1,
-      output: `verify command executable is not allowed: ${invocation.command}`,
+      output: `verify command is not supported: ${resolved.reason}`,
     };
   }
+  const invocation = resolved.check;
   const env = verificationChildEnv();
   try {
     const child = startProcess({
-      command: invocation.command,
+      command: invocation.executable,
       args: invocation.args,
       cwd,
       env,

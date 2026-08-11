@@ -216,6 +216,36 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     expect(task.frontmatter.verify).toContain("bun run ci");
   });
 
+  it("task new rejects unsupported declared checks without creating a task", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Unsafe check",
+        "--description",
+        "Must fail before persistence",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--verify",
+        "bash -c 'bun test'",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Unsupported --verify command 1");
+    } finally {
+      io.restore();
+    }
+    expect(await pathExists(path.join(root, ".agentplane", "tasks"))).toBe(false);
+  });
+
   it("task new stores structured blueprint intent fields", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
@@ -738,6 +768,40 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
       expect(task.frontmatter.id).toBe(taskId);
       expect(task.frontmatter.title).toBe("Added task");
       expect(task.frontmatter.doc_version).toBe(3);
+    }
+  });
+
+  it("task add validates every declared check before creating any explicit id", async () => {
+    const root = await mkGitRepoRoot();
+    const taskIds = ["202601010101-SAFE1", "202601010102-SAFE2"];
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "add",
+        ...taskIds,
+        "--title",
+        "Rejected batch",
+        "--description",
+        "No partial persistence",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--verify",
+        "git reset --hard",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("git subcommand is not allowlisted as read-only");
+    } finally {
+      io.restore();
+    }
+    for (const taskId of taskIds) {
+      expect(await pathExists(path.join(root, ".agentplane", "tasks", taskId))).toBe(false);
     }
   });
 });
