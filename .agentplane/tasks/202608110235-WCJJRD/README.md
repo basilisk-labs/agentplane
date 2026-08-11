@@ -2,10 +2,10 @@
 id: "202608110235-WCJJRD"
 title: "Replace task-create keyword inference with explicit semantic intent"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -74,7 +74,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-11T08:39:31.388Z"
+  updated_at: "2026-08-11T08:59:05.576Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -84,8 +84,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "da72914861a3b6c8db97de035b7ee42b67940c1c"
-  message: "🧪 WCJJRD task: Review explicit intent compatibility surface"
+  hash: "4b8837b6b951f5d295e392d93b5555e2afc6ea3b"
+  message: "🚧 WCJJRD task: Record hosted-gate rework evidence"
 comments:
   -
     author: "CODER"
@@ -102,6 +102,9 @@ comments:
   -
     author: "CODER"
     body: "Hosted rework: record the reviewed compatibility candidate for the intentional task-create CLI surface."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -172,8 +175,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified da72914861a3: explicit intent behavior remains green and both previously failing hosted gate commands now pass locally."
+  -
+    type: "status"
+    at: "2026-08-11T08:59:05.576Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "4b8837b6b951f5d295e392d93b5555e2afc6ea3b"
 doc_version: 3
-doc_updated_at: "2026-08-11T08:58:01.265Z"
+doc_updated_at: "2026-08-11T08:59:05.604Z"
 doc_updated_by: "CODER"
 description: "Remove ordered natural-language keyword classification from task create. The CLI must validate structured task intent supplied by the agent or user, and otherwise create a neutral semantic-intake boundary for PLANNER without guessing task kind, mutation scope, risks, tags, blueprint, or execution route."
 sections:
@@ -465,8 +476,8 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "c7de784fbab8d1f3bc5b6f5c1d8432dddd3e3bb2"
-    message: "🚧 WCJJRD task: preserve task-create JSON compatibility"
+    hash: "da72914861a3b6c8db97de035b7ee42b67940c1c"
+    message: "🧪 WCJJRD task: Review explicit intent compatibility surface"
   workflow_route_baseline:
     start_head_sha: "c8d4ebd0ccd74b5afee77d1b44eb008a810a9bd0"
     version: 1
@@ -784,4 +795,4 @@ DecisionContextRef:
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-11T08:39:31.388Z`
+- Updated at: `2026-08-11T08:59:05.576Z`
