@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "verification_evidence",
+  "task_id": "202608102243-1RG86M",
+  "implementation_sha": "62c6cda5e",
+  "checks": [
+    {
+      "command": "bun run test:fast",
+      "result": "pass",
+      "evidence": "549 test files and 3977 tests passed"
+    },
+    {
+      "command": "bunx vitest run packages/agentplane/src/commands/shared/task-verification-input.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts",
+      "result": "pass",
+      "evidence": "3 test files and 18 tests passed"
+    },
+    {
+      "command": "bun run typecheck",
+      "result": "pass",
+      "evidence": "TypeScript build completed"
+    },
+    {
+      "command": "bunx eslint packages/agentplane/src/commands/shared/task-verification-input.ts packages/agentplane/src/commands/shared/task-verification-input.test.ts packages/agentplane/src/commands/shared/task-verification-records.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts",
+      "result": "pass",
+      "evidence": "No lint findings"
+    },
+    {
+      "command": "bun run build",
+      "result": "pass",
+      "evidence": "All package bundles completed"
+    }
+  ]
+}
