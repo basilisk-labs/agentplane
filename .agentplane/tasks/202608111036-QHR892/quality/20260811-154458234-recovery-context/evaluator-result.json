@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "Structured verification parsing, pre-mutation rejection, precise freshness classification, immediate quality-gate routing, lifecycle-only reuse, and final repository cleanliness are covered by the frozen implementation and verification evidence.",
+      "broken_invariant": "none",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/2e04c5e92ecdf70a9e053706190f702366cac9bb6a44cf6247fb93f3aa03e5a7.patch",
+          "sha256": "sha256:2e04c5e92ecdf70a9e053706190f702366cac9bb6a44cf6247fb93f3aa03e5a7"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/verification/20260811154038939-e94981960208d243.json",
+          "sha256": "sha256:4ffd6481cefad8a079a941e6af580f2668ae244ec546e6c476f95f0bbc57440e"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/README.md",
+          "sha256": "sha256:d1133a13c9d645ca292af52d5ddfad6a3f7c93c38d8042eb19351566c97cf852",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

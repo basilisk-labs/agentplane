@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -32,32 +32,31 @@ verification:
   note: "Exact quality-review transition, conflicting-failure pre-mutation rejection, post-verify route, and clean-worktree evidence are complete; expensive runtime-equivalent receipts remain reusable."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-11T15:34:08.217Z"
+  updated_at: "2026-08-11T15:45:44.324Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "6a2cf7854d8a2145e78a9e38bd6ff2c037f9a73e"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "9c7e50743af99e28d832284c6f425e6379130109"
   blueprint_digest: "7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b"
   evidence_refs:
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-153247737-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-153247737-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/d076b6dacfbee5607788c0ddb63fbf48d16eec757dd856fd3641b1c83107db51.md"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-153247737-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-153247737-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-153247737-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-153247737-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-154458234-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-154458234-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/2f8c70668510e360ccb0dc51387352cb82baf610829daca2f2d20496cde80952.md"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-154458234-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-154458234-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-154458234-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608111036-QHR892/README.md"
-    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/14e6574f9ffe8ea76297ebbf90de9dd5444bd546e60725a5f9a2bf0066f9efc4.patch"
-    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/f329f13321c15efc8f88f006dd8c4cbd9b9c5b0ecbfee7d3c9e5a883b1c274b7.json"
-    - ".agentplane/tasks/202608111036-QHR892/verification/20260811153155281-47d172ef240de214.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/2e04c5e92ecdf70a9e053706190f702366cac9bb6a44cf6247fb93f3aa03e5a7.patch"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/5e422d53ea9559a4fd645c7e3a1ba8896afb399244807b36a1cb4e043f34535a.json"
+    - ".agentplane/tasks/202608111036-QHR892/verification/20260811154038939-e94981960208d243.json"
     - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/8babde3dcd7045f8ca2ec9145f1683be19cb2c338cc01c76dd940c6b1e51de51.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Замороженная проверка не содержит обязательного финального доказательства чистого состояния репозитория."
+    - "Structured verification parsing, pre-mutation rejection, precise freshness classification, immediate quality-gate routing, lifecycle-only reuse, and final repository cleanliness are covered by the frozen implementation and verification evidence."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -182,7 +181,7 @@ events:
     state: "ok"
     note: "Exact quality-review transition, conflicting-failure pre-mutation rejection, post-verify route, and clean-worktree evidence are complete; expensive runtime-equivalent receipts remain reusable."
 doc_version: 3
-doc_updated_at: "2026-08-11T15:40:45.421Z"
+doc_updated_at: "2026-08-11T15:45:44.378Z"
 doc_updated_by: "CODER"
 description: "Eliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command."
 sections:

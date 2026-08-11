@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202608111036-QHR892-7dbda5b3d1afa53bd038f8f5",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-08-11T15:45:00.291Z",
+  "ended_at": "2026-08-11T15:45:43.014Z",
+  "stdout_bytes": 63222,
+  "stderr_bytes": 585,
+  "provider_usage": {
+    "input_tokens": 120284,
+    "output_tokens": 2074,
+    "total_tokens": 122358,
+    "visible_output_tokens": 1625,
+    "reasoning_tokens": 449
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:d1f6be64bd0f2b0d19de07443e8ee4e6e398a2e9c8cbbeba513759e35509886f"
+}
