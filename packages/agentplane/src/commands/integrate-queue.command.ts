@@ -45,6 +45,7 @@ import {
   defaultIntegrationQueueWorker,
   findActiveIntegrationLane,
   hasQueuedIntegrationEntries,
+  normalizeTerminalQueueEntries,
   recoverStaleActiveLane,
   rejectIfQueuedEntryIsStale,
 } from "./integrate-queue-lane.js";
@@ -442,6 +443,14 @@ export function makeRunIntegrateQueueRunNextHandler(
     const startedAt = Date.now();
     const pollIntervalMs = p.pollIntervalMs ?? DEFAULT_QUEUE_POLL_INTERVAL_MS;
     const timeoutMs = p.timeoutMs ?? DEFAULT_QUEUE_WAIT_TIMEOUT_MS;
+
+    await normalizeTerminalQueueEntries({
+      ctx: commandCtx,
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride,
+      gitRoot,
+      quiet: p.quiet,
+    });
 
     do {
       retryAfterGate = false;
