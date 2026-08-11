@@ -200,14 +200,14 @@ jobs:
         if: needs.plan.outputs.package_runtime_core == 'true'
         working-directory: packages/core
         run: |
-          mkdir -p "$RUNNER_TEMP/package-node-runtime"
-          npm pack --json --pack-destination "$RUNNER_TEMP/package-node-runtime"
+          mkdir -p "$RUNNER_TEMP/package-node-runtime/core"
+          npm pack --json --pack-destination "$RUNNER_TEMP/package-node-runtime/core"
       - name: Build and pack recipes
         if: needs.plan.outputs.package_runtime_recipes == 'true'
         working-directory: packages/recipes
         run: |
-          mkdir -p "$RUNNER_TEMP/package-node-runtime"
-          npm pack --json --pack-destination "$RUNNER_TEMP/package-node-runtime"
+          mkdir -p "$RUNNER_TEMP/package-node-runtime/recipes"
+          npm pack --json --pack-destination "$RUNNER_TEMP/package-node-runtime/recipes"
       - name: Use minimum core runtime
         if: needs.plan.outputs.package_runtime_core == 'true'
         uses: actions/setup-node@v6
@@ -218,7 +218,7 @@ jobs:
         run: >-
           node scripts/release/check-package-node-runtime.mjs
           --package-dir packages/core
-          --tarball-dir "$RUNNER_TEMP/package-node-runtime"
+          --tarball-dir "$RUNNER_TEMP/package-node-runtime/core"
       - name: Use current core runtime
         if: needs.plan.outputs.package_runtime_core == 'true'
         uses: actions/setup-node@v6
@@ -229,7 +229,7 @@ jobs:
         run: >-
           node scripts/release/check-package-node-runtime.mjs
           --package-dir packages/core
-          --tarball-dir "$RUNNER_TEMP/package-node-runtime"
+          --tarball-dir "$RUNNER_TEMP/package-node-runtime/core"
       - name: Use minimum recipes runtime
         if: needs.plan.outputs.package_runtime_recipes == 'true'
         uses: actions/setup-node@v6
@@ -240,7 +240,7 @@ jobs:
         run: >-
           node scripts/release/check-package-node-runtime.mjs
           --package-dir packages/recipes
-          --tarball-dir "$RUNNER_TEMP/package-node-runtime"
+          --tarball-dir "$RUNNER_TEMP/package-node-runtime/recipes"
       - name: Use current recipes runtime
         if: needs.plan.outputs.package_runtime_recipes == 'true'
         uses: actions/setup-node@v6
@@ -251,7 +251,7 @@ jobs:
         run: >-
           node scripts/release/check-package-node-runtime.mjs
           --package-dir packages/recipes
-          --tarball-dir "$RUNNER_TEMP/package-node-runtime"
+          --tarball-dir "$RUNNER_TEMP/package-node-runtime/recipes"
 
   verify-static:
     needs: plan

@@ -94,6 +94,8 @@ describe("workflow Node runtime contract", () => {
     expect(commands).toContain("check-package-node-runtime.mjs");
     expect(commands).toContain("--package-dir packages/core");
     expect(commands).toContain("--package-dir packages/recipes");
+    expect(commands).toContain('--tarball-dir "$RUNNER_TEMP/package-node-runtime/core"');
+    expect(commands).toContain('--tarball-dir "$RUNNER_TEMP/package-node-runtime/recipes"');
 
     const aggregateJob = workflow.jobs?.["pr-verification"];
     expect(aggregateJob?.needs).toContain("verify-package-node-runtime");
