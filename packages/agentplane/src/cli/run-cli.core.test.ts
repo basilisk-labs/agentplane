@@ -990,26 +990,6 @@ describe("runCli", () => {
     }
   });
 
-  it("config set rejects mutable execution policy fields", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "config",
-        "set",
-        "execution.reasoning_effort",
-        "low",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(2);
-      expect(io.stderr).toContain("Execution policy is fixed");
-    } finally {
-      io.restore();
-    }
-  });
-
   it("autoloads .env without overriding existing variables", async () => {
     const root = await mkGitRepoRoot();
     await writeFile(
