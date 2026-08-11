@@ -1,10 +1,11 @@
 ---
 id: "202608112213-NWJCBW"
 title: "Replace mutable setup and execution profiles with one canonical policy"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -52,6 +53,20 @@ quality_review:
   findings:
     - "Core validation, config IO, init, runtime approvals, harness, runner policy, and prompt projections converge on the same standard execution policy; no legacy profile changes budgets, traces, timeouts, or safety behavior."
     - "Semantic review found that profile set initially overwrote explicit project approvals; commit dca3d280c removed that coupling and added regression coverage proving plan, network, and verify approvals remain unchanged."
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-11T23:25:16.929Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -61,8 +76,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "2b5503e9435e355bd282f7f98dff6a61baa2e69e"
-  message: "🚧 NWJCBW task: standardize execution policy"
+  hash: "90cd93c7eee01dbbe9c8b9f4ab9d0a8caccf6bc7"
+  message: "✅ NWJCBW task: record semantic quality review"
 comments:
   -
     author: "CODER"
@@ -70,6 +85,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: one canonical standard policy now governs profile-derived runtime behavior; legacy aliases migrate with explicit warnings and cannot weaken or strengthen the process."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -98,8 +116,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS for current implementation dca3d280c: 340 focused tests passed after preserving explicit project approvals; typecheck, build, full lint, formatting, schema, and generated CLI docs contracts pass. Prior overloaded-suite concurrency failures remain independently green."
+  -
+    type: "status"
+    at: "2026-08-11T23:25:16.929Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "90cd93c7eee01dbbe9c8b9f4ab9d0a8caccf6bc7"
 doc_version: 3
-doc_updated_at: "2026-08-11T23:23:28.423Z"
+doc_updated_at: "2026-08-11T23:25:16.939Z"
 doc_updated_by: "CODER"
 description: "Remove profile-driven process variants from init, config, and runtime. New and upgraded projects must resolve to one fixed execution policy while legacy profile inputs migrate compatibly without changing workflow, runner, integrations, or explicit project approvals. Preserve task flexibility by making lifecycle and safety invariants fixed instead of imposing arbitrary autonomy tiers."
 sections:
@@ -230,6 +256,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: "Implementation finding: task creation omitted explicit structured intent and defaulted this code change to the ops.approval blueprint; task 202608112232-3NC7Y4 will replace that guessing boundary with an agent-declared, deterministically enforced execution contract. Verification finding: the monolithic test:fast run completed 4,027 passing tests but oversubscribed concurrent process tests, producing seven isolated timeout/race failures; all seven passed when rerun in their owning files (36/36). The five remaining failures were obsolete force/profile expectations and now pass with the fixed standard-policy contract (74/74). This is retained as input to the final check-efficiency task."
 extensions:
+  implementation_commit:
+    hash: "dca3d280c2a6cf600439dafa647677933143f705"
+    message: "🐛 NWJCBW task: preserve explicit project approvals"
   workflow_route_baseline:
     start_head_sha: "206b349e8dd08051f695d68f8558db94b2e23cb5"
     version: 1
@@ -375,3 +404,16 @@ DecisionContextRef:
 ## Findings
 
 Implementation finding: task creation omitted explicit structured intent and defaulted this code change to the ops.approval blueprint; task 202608112232-3NC7Y4 will replace that guessing boundary with an agent-declared, deterministically enforced execution contract. Verification finding: the monolithic test:fast run completed 4,027 passing tests but oversubscribed concurrent process tests, producing seven isolated timeout/race failures; all seven passed when rerun in their owning files (36/36). The five remaining failures were obsolete force/profile expectations and now pass with the fixed standard-policy contract (74/74). This is retained as input to the final check-efficiency task.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-11T23:25:16.929Z`
