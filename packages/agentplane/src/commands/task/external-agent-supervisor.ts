@@ -57,6 +57,7 @@ import { superviseExternalAgentIssuance } from "./external-agent-supervisor-reco
 import { recordIssuedExternalAgentEpisode } from "./external-agent-supervisor-episode.js";
 import {
   applyExternalPlanningResult,
+  assertExternalPlanningResultApplicable,
   isExternalPlanningResultApplied,
 } from "./external-agent-planning-authority.js";
 import {
@@ -475,6 +476,17 @@ export async function acceptExternalAgentResult(opts: {
       });
     }
     const { journal: issuedJournal, operation } = intent;
+    const checkoutCommand = await loadCommandContext({
+      cwd: exchange.checkout,
+      rootOverride: null,
+    });
+    if (exchange.purpose === "planning") {
+      await assertExternalPlanningResultApplicable({
+        command: checkoutCommand,
+        exchange,
+        envelope,
+      });
+    }
     if (exchange.status === "issued") {
       exchange = {
         ...exchange,
@@ -485,10 +497,6 @@ export async function acceptExternalAgentResult(opts: {
       };
       await writeExternalAgentExchange(paths.exchange, exchange);
     }
-    const checkoutCommand = await loadCommandContext({
-      cwd: exchange.checkout,
-      rootOverride: null,
-    });
     const current = await refreshExternalAgentRoute({
       cwd: exchange.checkout,
       task_id: opts.task_id,

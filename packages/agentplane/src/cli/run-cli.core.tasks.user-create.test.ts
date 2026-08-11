@@ -11,7 +11,6 @@ import {
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
 } from "@agentplane/testkit";
-import { inferUserTaskIntent } from "../commands/task/create.command.js";
 import { runCli } from "./run-cli.js";
 
 installRunCliIntegrationHarness();
@@ -88,7 +87,7 @@ async function runSynchronizedCliProcess(opts: {
 }
 
 describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
-  it("infers bounded code intent and returns one semantic next step", async () => {
+  it("persists explicit structured intent and returns one semantic next step", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
     try {
@@ -96,6 +95,14 @@ describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, () 
         "task",
         "create",
         "Fix the parser edge case",
+        "--task-kind",
+        "code",
+        "--mutation-scope",
+        "code",
+        "--blueprint-request",
+        "code.direct",
+        "--tag",
+        "code",
         "--json",
         "--root",
         root,
@@ -104,23 +111,27 @@ describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, () 
       const payload = JSON.parse(io.stdout) as {
         task_id: string;
         status: string;
-        inferred_intent: {
+        semantic_intent: {
+          source: string;
           code: string;
           task_kind: string;
           mutation_scope: string;
           blueprint_request: string;
         };
+        inferred_intent: unknown;
         execution_route: { requested_mode: string; selected_mode: string; reason_codes: string[] };
         required_role: string;
         next_command: string;
       };
       expect(payload.status).toBe("semantic_input_required");
-      expect(payload.inferred_intent).toMatchObject({
-        code: "bounded_code_change",
+      expect(payload.semantic_intent).toMatchObject({
+        source: "explicit",
+        code: "explicit_structured_intent",
         task_kind: "code",
         mutation_scope: "code",
         blueprint_request: "code.direct",
       });
+      expect(payload.inferred_intent).toEqual(payload.semantic_intent);
       expect(payload.execution_route).toMatchObject({
         requested_mode: "auto",
         selected_mode: "direct",
@@ -143,54 +154,55 @@ describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, () 
     }
   });
 
-  it("requires confirmation and isolation when natural-language intent is unknown", async () => {
+  it("keeps unstructured natural language neutral across languages and wording", async () => {
     const root = await mkGitRepoRoot();
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["task", "create", "Make this better", "--json", "--root", root]);
-      expect(code).toBe(0);
-      const payload = JSON.parse(io.stdout) as {
-        task_id: string;
-        inferred_intent: {
-          code: string;
-          task_kind: string | null;
-          mutation_scope: string;
-          blueprint_request: string | null;
-          confirmation_required: boolean;
-        };
-        execution_route: { selected_mode: string; reason_codes: string[] };
-      };
-      expect(payload.inferred_intent).toEqual(
-        expect.objectContaining({
-          code: "unknown_intent",
-          task_kind: null,
-          mutation_scope: "unknown",
-          blueprint_request: null,
-          confirmation_required: true,
-        }),
-      );
-      expect(payload.execution_route).toMatchObject({
-        selected_mode: "branch_pr",
-        reason_codes: ["mutation_scope_unknown"],
-      });
+    const outcomes = [
+      "Make this better",
+      "Исправь релиз и документацию",
+      "Do not publish; only inspect the parser",
+      "セキュリティ監査を実施する",
+    ];
 
-      const task = await readTask({ cwd: root, rootOverride: root, taskId: payload.task_id });
-      expect(task.frontmatter.task_kind).toBeUndefined();
-      expect(task.frontmatter.mutation_scope).toBe("unknown");
-      expect(task.frontmatter.execution_route).toEqual(
-        expect.objectContaining({
+    for (const outcome of outcomes) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["task", "create", outcome, "--json", "--root", root]);
+        expect(code).toBe(0);
+        const payload = JSON.parse(io.stdout) as {
+          task_id: string;
+          semantic_intent: {
+            source: string;
+            code: string;
+            task_kind: string | null;
+            mutation_scope: string;
+            blueprint_request: string | null;
+            confirmation_required: boolean;
+          };
+          execution_route: { selected_mode: string; reason_codes: string[] };
+        };
+        expect(payload.semantic_intent).toEqual(
+          expect.objectContaining({
+            source: "pending_planner",
+            code: "semantic_intake_pending",
+            task_kind: null,
+            mutation_scope: "unknown",
+            blueprint_request: null,
+            confirmation_required: true,
+          }),
+        );
+        expect(payload.execution_route).toMatchObject({
           selected_mode: "branch_pr",
           reason_codes: ["mutation_scope_unknown"],
-          frozen: true,
-        }),
-      );
-      expect(inferUserTaskIntent("Address ambiguous behavior")).toMatchObject({
-        inference_code: "unknown_intent",
-        mutationScope: "unknown",
-        confirmation_required: true,
-      });
-    } finally {
-      io.restore();
+        });
+
+        const task = await readTask({ cwd: root, rootOverride: root, taskId: payload.task_id });
+        expect(task.frontmatter.task_kind).toBeUndefined();
+        expect(task.frontmatter.mutation_scope).toBe("unknown");
+        expect(task.frontmatter.blueprint_request).toBeUndefined();
+        expect(task.frontmatter.tags).toEqual(["intake"]);
+      } finally {
+        io.restore();
+      }
     }
   });
 
@@ -234,33 +246,52 @@ describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, () 
     }
   });
 
-  it("conservatively isolates complex and release outcomes", async () => {
+  it("uses only caller-supplied semantic fields for high-risk routing", async () => {
     const root = await mkGitRepoRoot();
-    const outcomes = [
-      ["Refactor the task framework", "complex_code_change", "code.branch_pr"],
-      ["Выпусти следующий патч-релиз", "release_intent", "release.strict"],
-      ["Do not publish; only fix the parser", "release_intent", "release.strict"],
-      ["Document the release checklist", "release_intent", "release.strict"],
-    ] as const;
-
-    for (const [outcome, inferenceCode, blueprint] of outcomes) {
-      const io = captureStdIO();
-      try {
-        const code = await runCli(["task", "create", outcome, "--json", "--root", root]);
-        expect(code).toBe(0);
-        const payload = JSON.parse(io.stdout) as {
-          inferred_intent: { code: string; blueprint_request: string };
-          execution_route: { selected_mode: string; reason_codes: string[] };
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "create",
+        "Publish the next patch release",
+        "--task-kind",
+        "release",
+        "--mutation-scope",
+        "release",
+        "--risk",
+        "publish",
+        "--blueprint-request",
+        "release.strict",
+        "--tag",
+        "release",
+        "--route",
+        "direct",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        semantic_intent: {
+          source: string;
+          task_kind: string;
+          mutation_scope: string;
+          risk_flags: string[];
+          blueprint_request: string;
         };
-        expect(payload.inferred_intent).toMatchObject({
-          code: inferenceCode,
-          blueprint_request: blueprint,
-        });
-        expect(payload.execution_route.selected_mode).toBe("branch_pr");
-        expect(payload.execution_route.reason_codes.length).toBeGreaterThan(0);
-      } finally {
-        io.restore();
-      }
+        execution_route: { selected_mode: string; reason_codes: string[] };
+      };
+      expect(payload.semantic_intent).toMatchObject({
+        source: "explicit",
+        task_kind: "release",
+        mutation_scope: "release",
+        risk_flags: ["publish"],
+        blueprint_request: "release.strict",
+      });
+      expect(payload.execution_route.selected_mode).toBe("branch_pr");
+      expect(payload.execution_route.reason_codes).toContain("direct_request_overridden");
+    } finally {
+      io.restore();
     }
   });
 
@@ -270,29 +301,71 @@ describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, () 
     for (const args of [
       ["task", "create", "   ", "--root", root],
       ["task", "create", "Fix the parser", "--route", "sideways", "--root", root],
+      ["task", "create", "Fix the parser", "--task-kind", "code", "--root", root],
+      ["task", "create", "Fix the parser", "--risk", "security", "--root", root],
     ]) {
       const io = captureStdIO();
       try {
         const code = await runCli(args);
         expect(code).toBe(2);
-        expect(io.stderr).toMatch(/outcome|--route/u);
+        expect(io.stderr).toMatch(/outcome|--route|Structured task intent/u);
       } finally {
         io.restore();
       }
     }
 
     const cases = [
-      ["Fix the direct parser path", "direct", "direct", "explicit_direct"],
-      ["Fix the isolated parser path", "branch_pr", "branch_pr", "explicit_branch_pr"],
-      ["Publish the next patch release", "direct", "branch_pr", "direct_request_overridden"],
+      [
+        "Fix the direct parser path",
+        "code",
+        "code",
+        "code.direct",
+        "direct",
+        "direct",
+        "explicit_direct",
+      ],
+      [
+        "Fix the isolated parser path",
+        "code",
+        "code",
+        "code.branch_pr",
+        "branch_pr",
+        "branch_pr",
+        "explicit_branch_pr",
+      ],
+      [
+        "Publish the next patch release",
+        "release",
+        "release",
+        "release.strict",
+        "direct",
+        "branch_pr",
+        "direct_request_overridden",
+      ],
     ] as const;
-    for (const [outcome, requestedRoute, selectedRoute, reason] of cases) {
+    for (const [
+      outcome,
+      taskKind,
+      mutationScope,
+      blueprint,
+      requestedRoute,
+      selectedRoute,
+      reason,
+    ] of cases) {
       const io = captureStdIO();
       try {
         const code = await runCli([
           "task",
           "create",
           outcome,
+          "--task-kind",
+          taskKind,
+          "--mutation-scope",
+          mutationScope,
+          "--blueprint-request",
+          blueprint,
+          "--tag",
+          taskKind,
           "--route",
           requestedRoute,
           "--json",
@@ -370,7 +443,22 @@ describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, () 
 
   it("serializes cross-process exact duplicates and preserves the selected route", async () => {
     const root = await mkGitRepoRoot();
-    const args = ["task", "create", "Fix the concurrent parser path", "--json", "--root", root];
+    const args = [
+      "task",
+      "create",
+      "Fix the concurrent parser path",
+      "--task-kind",
+      "code",
+      "--mutation-scope",
+      "code",
+      "--blueprint-request",
+      "code.direct",
+      "--tag",
+      "code",
+      "--json",
+      "--root",
+      root,
+    ];
     const startAt = Date.now() + 1000;
     const results = await Promise.all([
       runSynchronizedCliProcess({ args, startAt }),

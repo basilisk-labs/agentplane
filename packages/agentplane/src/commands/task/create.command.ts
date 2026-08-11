@@ -18,263 +18,51 @@ export type TaskCreateParsed = {
   owner: string;
   priority: TaskNewParsed["priority"];
   route: UserTaskRoute;
+  tags: string[];
+  taskKind?: TaskNewParsed["taskKind"];
+  mutationScope?: TaskNewParsed["mutationScope"];
+  riskFlags: NonNullable<TaskNewParsed["riskFlags"]>;
+  blueprintRequest?: TaskNewParsed["blueprintRequest"];
   verify: string[];
   allowDuplicate: boolean;
   json: boolean;
 };
 
-export type InferredTaskIntent = Pick<
+export type UserTaskIntent = Pick<
   TaskNewParsed,
-  "taskKind" | "mutationScope" | "riskFlags" | "blueprintRequest" | "tags"
+  "taskKind" | "mutationScope" | "blueprintRequest" | "tags"
 > & {
-  inference_code: string;
-  confirmation_required?: boolean;
+  riskFlags: NonNullable<TaskNewParsed["riskFlags"]>;
+  source: "explicit" | "pending_planner";
+  code: "explicit_structured_intent" | "semantic_intake_pending";
+  confirmation_required: boolean;
 };
 
-const RELEASE_TERMS = ["release", "publish", "version bump", "npm", "релиз", "опубликов", "верси"];
-const OPS_TERMS = [
-  "deploy",
-  "production",
-  "infrastructure",
-  "server",
-  "kubernetes",
-  "docker",
-  "деплой",
-  "продакш",
-  "инфраструктур",
-  "сервер",
-];
-const SECURITY_TERMS = [
-  "security",
-  "credential",
-  "secret",
-  "authentication",
-  "authorization",
-  "безопасност",
-  "секрет",
-  "аутентификац",
-  "авторизац",
-];
-const CONTEXT_TERMS = [
-  "context layer",
-  "context pack",
-  "knowledge base",
-  "контекст",
-  "база знаний",
-];
-const DOCS_TERMS = [
-  "documentation",
-  "readme",
-  "docs",
-  "guide",
-  "документац",
-  "руководств",
-  "инструкц",
-];
-const PERFORMANCE_TERMS = [
-  "performance",
-  "benchmark",
-  "latency",
-  "optimize",
-  "производительн",
-  "бенчмарк",
-  "задержк",
-  "оптимиз",
-];
-const QUALITY_TERMS = [
-  "regression",
-  "test coverage",
-  "quality gate",
-  "регрес",
-  "покрытие тест",
-  "качество",
-];
-const ANALYSIS_TERMS = [
-  "analyze",
-  "analysis",
-  "audit",
-  "review",
-  "research",
-  "сравни",
-  "анализ",
-  "аудит",
-  "ревью",
-  "исслед",
-];
-const COMPLEX_CHANGE_TERMS = [
-  "refactor",
-  "migration",
-  "architecture",
-  "redesign",
-  "breaking",
-  "across packages",
-  "multi-module",
-  "framework",
-  "рефактор",
-  "миграц",
-  "архитект",
-  "переработ",
-  "нескольк",
-  "фреймворк",
-];
-const CODE_CHANGE_WORDS = new Set([
-  "fix",
-  "fixes",
-  "fixed",
-  "fixing",
-  "implement",
-  "implements",
-  "implemented",
-  "implementing",
-  "add",
-  "adds",
-  "added",
-  "adding",
-  "update",
-  "updates",
-  "updated",
-  "updating",
-  "change",
-  "changes",
-  "changed",
-  "changing",
-  "remove",
-  "removes",
-  "removed",
-  "removing",
-  "bug",
-  "bugs",
-  "build",
-  "builds",
-  "built",
-  "building",
-  "create",
-  "creates",
-  "created",
-  "creating",
-]);
-const CODE_CHANGE_STEMS = ["исправ", "почин", "добав", "реализ", "измен", "удал", "баг"];
-
-function containsAny(value: string, terms: readonly string[]): boolean {
-  return terms.some((term) => value.includes(term));
-}
-
-function containsCodeChangeIntent(value: string): boolean {
-  const englishWords = value.match(/[a-z]+/gu) ?? [];
-  return (
-    englishWords.some((word) => CODE_CHANGE_WORDS.has(word)) ||
-    containsAny(value, CODE_CHANGE_STEMS)
-  );
-}
-
-export function inferUserTaskIntent(outcome: string, description?: string): InferredTaskIntent {
-  const text = `${outcome}\n${description ?? ""}`.toLocaleLowerCase();
-
-  if (containsAny(text, RELEASE_TERMS)) {
+export function resolveUserTaskIntent(parsed: TaskCreateParsed): UserTaskIntent {
+  const hasStructuredIntent =
+    parsed.taskKind !== undefined ||
+    parsed.mutationScope !== undefined ||
+    parsed.riskFlags.length > 0 ||
+    parsed.blueprintRequest !== undefined ||
+    parsed.tags.length > 0;
+  if (hasStructuredIntent) {
     return {
-      taskKind: "release",
-      mutationScope: "release",
-      riskFlags: ["publish"],
-      blueprintRequest: "release.strict",
-      tags: ["release"],
-      inference_code: "release_intent",
-    };
-  }
-  if (containsAny(text, OPS_TERMS)) {
-    return {
-      taskKind: "ops",
-      mutationScope: "ops",
-      riskFlags: ["deploy", "external_system"],
-      blueprintRequest: "ops.approval",
-      tags: ["ops"],
-      inference_code: "operations_intent",
-    };
-  }
-  if (containsAny(text, SECURITY_TERMS)) {
-    return {
-      taskKind: "code",
-      mutationScope: "code",
-      riskFlags: ["security"],
-      blueprintRequest: "code.branch_pr",
-      tags: ["code", "security"],
-      inference_code: "security_sensitive_change",
-    };
-  }
-  if (containsAny(text, CONTEXT_TERMS)) {
-    return {
-      taskKind: "context",
-      mutationScope: "context",
-      riskFlags: [],
-      blueprintRequest: "context.assimilation",
-      tags: ["context"],
-      inference_code: "context_intent",
-    };
-  }
-  if (containsAny(text, DOCS_TERMS)) {
-    return {
-      taskKind: "docs",
-      mutationScope: "docs",
-      riskFlags: [],
-      blueprintRequest: "docs.change",
-      tags: ["docs"],
-      inference_code: "documentation_change",
-    };
-  }
-  if (containsAny(text, PERFORMANCE_TERMS)) {
-    return {
-      taskKind: "code",
-      mutationScope: "code",
-      riskFlags: [],
-      blueprintRequest: "performance.benchmark",
-      tags: ["code", "performance"],
-      inference_code: "performance_change",
-    };
-  }
-  if (containsAny(text, QUALITY_TERMS)) {
-    return {
-      taskKind: "code",
-      mutationScope: "code",
-      riskFlags: [],
-      blueprintRequest: "quality.regression",
-      tags: ["code", "test"],
-      inference_code: "quality_change",
-    };
-  }
-  if (containsAny(text, ANALYSIS_TERMS)) {
-    return {
-      taskKind: "analysis",
-      mutationScope: "none",
-      riskFlags: [],
-      blueprintRequest: "analysis.light",
-      tags: ["analysis"],
-      inference_code: "analysis_only",
-    };
-  }
-  if (containsAny(text, COMPLEX_CHANGE_TERMS)) {
-    return {
-      taskKind: "code",
-      mutationScope: "code",
-      riskFlags: [],
-      blueprintRequest: "code.branch_pr",
-      tags: ["code"],
-      inference_code: "complex_code_change",
-    };
-  }
-  if (containsCodeChangeIntent(text)) {
-    return {
-      taskKind: "code",
-      mutationScope: "code",
-      riskFlags: [],
-      blueprintRequest: "code.direct",
-      tags: ["code"],
-      inference_code: "bounded_code_change",
+      taskKind: parsed.taskKind,
+      mutationScope: parsed.mutationScope,
+      riskFlags: parsed.riskFlags,
+      blueprintRequest: parsed.blueprintRequest,
+      tags: parsed.tags.length > 0 ? parsed.tags : ["intake"],
+      source: "explicit",
+      code: "explicit_structured_intent",
+      confirmation_required: false,
     };
   }
   return {
     mutationScope: "unknown",
     riskFlags: [],
     tags: ["intake"],
-    inference_code: "unknown_intent",
+    source: "pending_planner",
+    code: "semantic_intake_pending",
     confirmation_required: true,
   };
 }
@@ -282,9 +70,9 @@ export function inferUserTaskIntent(outcome: string, description?: string): Infe
 export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
   id: ["task", "create"],
   group: "Task",
-  summary: "Create a task from a natural-language outcome and explain its execution route.",
+  summary: "Create a task from an outcome and explicit semantic intent.",
   description:
-    "Infers conservative structured intent, stores an explainable automatic route, and stops at the semantic planning boundary.",
+    "Validates caller-supplied structured intent. Without it, creates a neutral PLANNER intake boundary without classifying title words.",
   args: [{ name: "outcome", required: true, valueHint: "<outcome>" }],
   options: [
     {
@@ -318,6 +106,63 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
     },
     {
       kind: "string",
+      name: "task-kind",
+      valueHint: "<analysis|content|docs|code|release|ops|context>",
+      choices: ["analysis", "content", "docs", "code", "release", "ops", "context"],
+      description: "Structured task kind supplied by the semantic caller.",
+    },
+    {
+      kind: "string",
+      name: "mutation-scope",
+      valueHint: "<none|docs|code|release|ops|context|unknown>",
+      choices: ["none", "docs", "code", "release", "ops", "context", "unknown"],
+      description: "Structured mutation scope supplied by the semantic caller.",
+    },
+    {
+      kind: "string",
+      name: "risk",
+      valueHint: "<risk>",
+      choices: [
+        "network",
+        "credentials",
+        "deploy",
+        "publish",
+        "merge",
+        "security",
+        "external_system",
+      ],
+      repeatable: true,
+      description: "Repeatable structured risk flag supplied by the semantic caller.",
+    },
+    {
+      kind: "string",
+      name: "blueprint-request",
+      valueHint: "<id>",
+      choices: [
+        "analysis.light",
+        "content.light",
+        "docs.change",
+        "code.direct",
+        "code.branch_pr",
+        "performance.benchmark",
+        "quality.regression",
+        "context.assimilation",
+        "context.maximum_assimilation",
+        "post_run.improvement_review",
+        "release.strict",
+        "ops.approval",
+      ],
+      description: "Explicit blueprint request supplied by the semantic caller.",
+    },
+    {
+      kind: "string",
+      name: "tag",
+      valueHint: "<tag>",
+      repeatable: true,
+      description: "Repeatable semantic tag supplied by the caller.",
+    },
+    {
+      kind: "string",
       name: "verify",
       valueHint: "<command>",
       repeatable: true,
@@ -333,12 +178,12 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
   ],
   examples: [
     {
-      cmd: 'agentplane task create "Fix the parser edge case"',
-      why: "Create a bounded task with automatic route selection.",
+      cmd: 'agentplane task create "Fix the parser edge case" --task-kind code --mutation-scope code --blueprint-request code.direct --tag code',
+      why: "Create a task with explicit structured semantic intent.",
     },
     {
-      cmd: 'agentplane task create "Publish the next patch release" --json',
-      why: "Create a high-risk task and return its branch_pr decision as JSON.",
+      cmd: 'agentplane task create "Describe the outcome" --json',
+      why: "Create a neutral intake task for PLANNER classification.",
     },
   ],
   validateRaw: (raw) => {
@@ -350,6 +195,23 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
     if (!owner) {
       throw usageError({ spec: taskCreateSpec, message: "Invalid value for --owner: empty." });
     }
+    const hasAnyStructuredIntent = [
+      raw.opts["task-kind"],
+      raw.opts["mutation-scope"],
+      raw.opts.risk,
+      raw.opts["blueprint-request"],
+      raw.opts.tag,
+    ].some((value) => value !== undefined && (!Array.isArray(value) || value.length > 0));
+    if (
+      hasAnyStructuredIntent &&
+      (typeof raw.opts["task-kind"] !== "string" || typeof raw.opts["mutation-scope"] !== "string")
+    ) {
+      throw usageError({
+        spec: taskCreateSpec,
+        message:
+          "Structured task intent requires both --task-kind and --mutation-scope; otherwise omit all semantic options and let PLANNER classify the intake.",
+      });
+    }
   },
   parse: (raw) => ({
     outcome: String(raw.args.outcome),
@@ -358,6 +220,22 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
     owner: typeof raw.opts.owner === "string" ? String(raw.opts.owner) : "CODER",
     priority: (raw.opts.priority ?? "med") as TaskCreateParsed["priority"],
     route: (raw.opts.route ?? "auto") as UserTaskRoute,
+    tags: Array.isArray(raw.opts.tag) ? (raw.opts.tag as string[]) : [],
+    taskKind:
+      typeof raw.opts["task-kind"] === "string"
+        ? (raw.opts["task-kind"] as TaskNewParsed["taskKind"])
+        : undefined,
+    mutationScope:
+      typeof raw.opts["mutation-scope"] === "string"
+        ? (raw.opts["mutation-scope"] as TaskNewParsed["mutationScope"])
+        : undefined,
+    riskFlags: Array.isArray(raw.opts.risk)
+      ? (raw.opts.risk as NonNullable<TaskNewParsed["riskFlags"]>)
+      : [],
+    blueprintRequest:
+      typeof raw.opts["blueprint-request"] === "string"
+        ? (raw.opts["blueprint-request"] as TaskNewParsed["blueprintRequest"])
+        : undefined,
     verify: Array.isArray(raw.opts.verify) ? (raw.opts.verify as string[]) : [],
     allowDuplicate: raw.opts["allow-duplicate"] === true,
     json: raw.opts.json === true,
@@ -383,7 +261,7 @@ export function makeRunTaskCreateHandler(
     const outcome = parsed.outcome.trim();
     const descriptionOverride = parsed.description?.trim();
     const description = descriptionOverride?.length ? descriptionOverride : outcome;
-    const intent = inferUserTaskIntent(outcome, description);
+    const intent = resolveUserTaskIntent(parsed);
     const route = resolveTaskExecutionRoute({
       config: execution.config,
       requestedMode: parsed.route,
@@ -417,18 +295,22 @@ export function makeRunTaskCreateHandler(
       },
     });
     const nextCommand = `agentplane task advance ${created.task_id} --agent-json`;
+    const semanticIntent = {
+      source: intent.source,
+      code: intent.code,
+      task_kind: intent.taskKind ?? null,
+      mutation_scope: intent.mutationScope,
+      risk_flags: intent.riskFlags,
+      blueprint_request: intent.blueprintRequest ?? null,
+      tags: intent.tags,
+      confirmation_required: intent.confirmation_required,
+    };
     const payload = {
       task_id: created.task_id,
       status: "semantic_input_required" as const,
-      inferred_intent: {
-        code: intent.inference_code,
-        task_kind: intent.taskKind ?? null,
-        mutation_scope: intent.mutationScope,
-        risk_flags: intent.riskFlags,
-        blueprint_request: intent.blueprintRequest ?? null,
-        tags: intent.tags,
-        confirmation_required: intent.confirmation_required === true,
-      },
+      semantic_intent: semanticIntent,
+      /** @deprecated Compatibility alias for pre-0.7.6 JSON consumers. */
+      inferred_intent: semanticIntent,
       execution_route: route,
       required_role: "PLANNER" as const,
       next_command: nextCommand,
@@ -444,12 +326,12 @@ export function makeRunTaskCreateHandler(
           {
             label: "intent",
             value:
-              `${intent.inference_code} kind=${intent.taskKind ?? "unknown"} ` +
+              `${intent.code} source=${intent.source} kind=${intent.taskKind ?? "unknown"} ` +
               `mutation=${intent.mutationScope}`,
           },
           {
             label: "intent_confirmation",
-            value: intent.confirmation_required === true ? "required" : "not_required",
+            value: intent.confirmation_required ? "required" : "not_required",
           },
           {
             label: "route",

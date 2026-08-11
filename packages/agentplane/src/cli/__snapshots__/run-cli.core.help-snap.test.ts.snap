@@ -13,7 +13,7 @@ Commands:
     task active  Select active agent work with next actions, blockers, dependency readiness, and freshness.
     task advance  Return one compact external-agent action from the shared task supervisor state.
     task brief  Print an agent-ready task brief without remote lookups by default.
-    task create  Create a task from a natural-language outcome and explain its execution route.
+    task create  Create a task from an outcome and explicit semantic intent.
     task run  Supervise a direct or branch_pr task through its typed lifecycle.
   Setup:
     init  Initialize agentplane project files under .agentplane/.

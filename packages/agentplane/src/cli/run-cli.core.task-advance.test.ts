@@ -8,6 +8,7 @@ import {
   createSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
   validateSupervisorExecutionEpisodeJournal,
+  type AgentSemanticResultTaskIntent,
   type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
 
@@ -133,6 +134,7 @@ async function writeCompletedResult(
     hidden_assumptions: string[];
     residual_risks: string[];
   },
+  taskIntent?: AgentSemanticResultTaskIntent,
 ): Promise<string> {
   if (!packet.exchange) throw new Error("expected an external-agent exchange");
   const workOrder = JSON.parse(
@@ -157,6 +159,7 @@ async function writeCompletedResult(
           summary,
           findings: review ? ["The frozen diff satisfies the approved task intent."] : [],
           uncertainty: [],
+          ...(taskIntent ? { task_intent: taskIntent } : {}),
           ...(review ? { review } : {}),
         },
       },

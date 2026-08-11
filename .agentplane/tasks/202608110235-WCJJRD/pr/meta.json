@@ -1,0 +1,24 @@
+{
+  "base": "main",
+  "branch": "task/202608110235-WCJJRD/replace-task-create-keyword-inference-with-expli",
+  "created_at": "2026-08-11T02:36:02.480Z",
+  "diffstat_sha256": "sha256:26b1db6bff7d787cf193109bdddb1ce636437c1067914e0dab60902e9329a6d2",
+  "last_verified_at": "2026-08-11T09:55:38.782Z",
+  "last_verified_diffstat_sha256": "sha256:26b1db6bff7d787cf193109bdddb1ce636437c1067914e0dab60902e9329a6d2",
+  "pr_number": 4820,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4820",
+  "pre_merge_closure": {
+    "basis_commit": "c8de8add843509c43b797cb4700ceaad88ca5fac",
+    "branch": "task/202608110235-WCJJRD/replace-task-create-keyword-inference-with-expli",
+    "pr_number": 4820,
+    "recorded_at": "2026-08-11T09:08:45.788Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608110235-WCJJRD",
+  "updated_at": "2026-08-11T02:46:45.806Z",
+  "verify": {
+    "status": "pass"
+  }
+}

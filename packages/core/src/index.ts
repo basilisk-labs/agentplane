@@ -179,6 +179,7 @@ export {
   type AgentSemanticResultKnowledgeRequest,
   type AgentSemanticResultReview,
   type AgentSemanticResultStatus,
+  type AgentSemanticResultTaskIntent,
   KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES,
   KNOWLEDGE_REQUEST_KIND,
   KNOWLEDGE_REQUEST_SCHEMA_VERSION,

@@ -75,6 +75,41 @@ const AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA = z
   })
   .strict();
 
+const AGENT_SEMANTIC_RESULT_TASK_INTENT_ZOD_SCHEMA = z
+  .object({
+    task_kind: z.enum(["analysis", "content", "docs", "code", "release", "ops", "context"]),
+    mutation_scope: z.enum(["none", "docs", "code", "release", "ops", "context"]),
+    risk_flags: z.array(
+      z.enum([
+        "network",
+        "credentials",
+        "deploy",
+        "publish",
+        "merge",
+        "security",
+        "external_system",
+      ]),
+    ),
+    tags: z.array(NON_EMPTY_STRING).min(1),
+    blueprint_request: z
+      .enum([
+        "analysis.light",
+        "content.light",
+        "docs.change",
+        "code.direct",
+        "code.branch_pr",
+        "performance.benchmark",
+        "quality.regression",
+        "context.assimilation",
+        "context.maximum_assimilation",
+        "post_run.improvement_review",
+        "release.strict",
+        "ops.approval",
+      ])
+      .optional(),
+  })
+  .strict();
+
 const AGENT_SEMANTIC_RESULT_BASE_SHAPE = {
   schema_version: z.literal(AGENT_SEMANTIC_RESULT_SCHEMA_VERSION),
   kind: z.literal(AGENT_SEMANTIC_RESULT_KIND),
@@ -82,6 +117,7 @@ const AGENT_SEMANTIC_RESULT_BASE_SHAPE = {
   summary: NON_EMPTY_STRING,
   findings: z.array(z.string()),
   uncertainty: z.array(z.string()),
+  task_intent: AGENT_SEMANTIC_RESULT_TASK_INTENT_ZOD_SCHEMA.optional(),
   claimed_checks: z.array(AGENT_SEMANTIC_RESULT_CLAIMED_CHECK_ZOD_SCHEMA).optional(),
   review: AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA.optional(),
 } as const;
@@ -121,6 +157,9 @@ export type AgentSemanticResultKnowledgeRequest = z.infer<
 >;
 export type AgentSemanticResultClaimedCheck = z.infer<
   typeof AGENT_SEMANTIC_RESULT_CLAIMED_CHECK_ZOD_SCHEMA
+>;
+export type AgentSemanticResultTaskIntent = z.infer<
+  typeof AGENT_SEMANTIC_RESULT_TASK_INTENT_ZOD_SCHEMA
 >;
 export type AgentSemanticResultReview = z.infer<typeof AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA>;
 

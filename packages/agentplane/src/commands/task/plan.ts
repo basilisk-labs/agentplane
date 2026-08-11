@@ -3,7 +3,7 @@ import path from "node:path";
 import { ensureDocSections } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
-import type { PlanApprovalState } from "../../backends/task-backend.js";
+import type { PlanApprovalState, TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import {
@@ -30,6 +30,22 @@ export type TaskPlanSetResult = {
   readmePath: string;
 };
 
+type PlanningTaskFields = Pick<
+  TaskData,
+  "task_kind" | "mutation_scope" | "risk_flags" | "blueprint_request" | "tags" | "execution_route"
+>;
+
+function planningTaskFieldsChanged(
+  current: TaskData,
+  fields: Partial<PlanningTaskFields> | undefined,
+): boolean {
+  if (!fields) return false;
+  return Object.entries(fields).some(
+    ([key, value]) =>
+      JSON.stringify(current[key as keyof PlanningTaskFields]) !== JSON.stringify(value),
+  );
+}
+
 export async function setTaskPlan(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -38,6 +54,7 @@ export async function setTaskPlan(opts: {
   text?: string;
   file?: string;
   updatedBy?: string;
+  taskFields?: Partial<PlanningTaskFields>;
 }): Promise<TaskPlanSetResult> {
   try {
     const { ctx, backend } = await loadPlanBackend({
@@ -103,22 +120,25 @@ export async function setTaskPlan(opts: {
           text,
           requiredSections: config.tasks.doc.required_sections,
         });
-        if (!planChanged && !docChanged && !updatedBy) return null;
+        const taskFieldsChanged = planningTaskFieldsChanged(current, opts.taskFields);
+        if (!planChanged && !docChanged && !updatedBy && !taskFieldsChanged) return null;
+        const taskFields = {
+          ...(opts.taskFields ?? {}),
+          ...(planChanged
+            ? {
+                plan_approval: {
+                  state: "pending" as const,
+                  updated_at: null,
+                  updated_by: null,
+                  note: null,
+                },
+              }
+            : {}),
+        };
         if (!docChanged) {
           return {
             intents: [
-              ...(planChanged
-                ? [
-                    setTaskFieldsIntent({
-                      plan_approval: {
-                        state: "pending",
-                        updated_at: null,
-                        updated_by: null,
-                        note: null,
-                      },
-                    }),
-                  ]
-                : []),
+              ...(planChanged || taskFieldsChanged ? [setTaskFieldsIntent(taskFields)] : []),
               ...(updatedBy ? [touchTaskDocMetaIntent({ updatedBy })] : []),
             ],
           };
@@ -131,18 +151,7 @@ export async function setTaskPlan(opts: {
               requiredSections: config.tasks.doc.required_sections,
               expectedCurrentText: currentPlan,
             }),
-            ...(planChanged
-              ? [
-                  setTaskFieldsIntent({
-                    plan_approval: {
-                      state: "pending",
-                      updated_at: null,
-                      updated_by: null,
-                      note: null,
-                    },
-                  }),
-                ]
-              : []),
+            ...(planChanged || taskFieldsChanged ? [setTaskFieldsIntent(taskFields)] : []),
             ...(updatedBy ? [touchTaskDocMetaIntent({ updatedBy })] : []),
           ],
           writeOptions: {
