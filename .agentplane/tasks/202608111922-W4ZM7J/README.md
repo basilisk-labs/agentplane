@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T20:50:16.130Z"
+  updated_at: "2026-08-11T21:14:29.082Z"
   updated_by: "TESTER"
-  note: "Revalidated the merged main and W4ZM7J tree without rerunning unchanged release qualification."
+  note: "Verified implementation 7703c7a64 after hosted CI remediation."
   attempts: 0
 quality_review:
   state: "pass"
@@ -137,8 +137,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "fb924548c3a5eeade78ee2905cd09de68ed89b16"
+  -
+    type: "verify"
+    at: "2026-08-11T21:14:29.082Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified implementation 7703c7a64 after hosted CI remediation."
 doc_version: 3
-doc_updated_at: "2026-08-11T20:52:13.246Z"
+doc_updated_at: "2026-08-11T21:14:31.440Z"
 doc_updated_by: "CODER"
 description: "Reject unsupported verification commands at every task mutation boundary using the same deterministic parser later used by automatic TESTER execution. Return an actionable error before persisting task state; preserve repository-bound argv execution without shell evaluation; cover task new, add, update, derive, begin/create adapters, and the previously failing bun test path command."
 sections:
@@ -223,6 +229,51 @@ sections:
     Result: pass
     Evidence: formatting, TypeScript, and ESLint checks all exited successfully on the merged tree.
     Scope: integration compatibility with optimized main and static quality boundaries.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111922-W4ZM7J-validate-declared-checks-with-the-supervised-exe/.agentplane/tasks/202608111922-W4ZM7J/blueprint/resolved-snapshot.json
+    - old_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+    - current_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608111922-W4ZM7J
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T21:14:29.082Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified implementation 7703c7a64 after hosted CI remediation.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1a0cee901494fda2d3e18238ceaf09922eb12ce9e68936697f1f0dd97a22f63a, input_digest=sha256:4941289b1fc1467fdd370aa356baa61e7d6124c916c1e49a9bf39096de883cd5
+
+    Details:
+
+    Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/commands/task/update.unit.test.ts
+    Result: pass
+    Evidence: 29 tests passed, 0 failed, 153 assertions
+    Scope: declared-check validation and direct execution contract
+
+    Command: bunx vitest run packages/agentplane/src/commands/workflow.test.ts
+    Result: pass
+    Evidence: 24 tests passed, 0 failed
+    Scope: task creation and duplicate rejection error contract
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: eslint exited 0 after direct re-export change
+    Scope: repository static lint contract
 
     BlueprintSnapshotRef:
     - state: current
@@ -348,6 +399,51 @@ Command: bun run format:check; bun run typecheck; bun run lint:core
 Result: pass
 Evidence: formatting, TypeScript, and ESLint checks all exited successfully on the merged tree.
 Scope: integration compatibility with optimized main and static quality boundaries.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111922-W4ZM7J-validate-declared-checks-with-the-supervised-exe/.agentplane/tasks/202608111922-W4ZM7J/blueprint/resolved-snapshot.json
+- old_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+- current_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608111922-W4ZM7J
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T21:14:29.082Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified implementation 7703c7a64 after hosted CI remediation.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1a0cee901494fda2d3e18238ceaf09922eb12ce9e68936697f1f0dd97a22f63a, input_digest=sha256:4941289b1fc1467fdd370aa356baa61e7d6124c916c1e49a9bf39096de883cd5
+
+Details:
+
+Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/commands/task/update.unit.test.ts
+Result: pass
+Evidence: 29 tests passed, 0 failed, 153 assertions
+Scope: declared-check validation and direct execution contract
+
+Command: bunx vitest run packages/agentplane/src/commands/workflow.test.ts
+Result: pass
+Evidence: 24 tests passed, 0 failed
+Scope: task creation and duplicate rejection error contract
+
+Command: bun run lint:core
+Result: pass
+Evidence: eslint exited 0 after direct re-export change
+Scope: repository static lint contract
 
 BlueprintSnapshotRef:
 - state: current

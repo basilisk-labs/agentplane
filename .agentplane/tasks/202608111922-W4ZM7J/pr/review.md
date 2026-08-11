@@ -13,7 +13,7 @@ Created: 2026-08-11T19:27:21.314Z
 ## Verification
 
 - State: ok
-- Note: Revalidated the merged main and W4ZM7J tree without rerunning unchanged release qualification.
+- Note: Verified implementation 7703c7a64 after hosted CI remediation.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -36,7 +36,7 @@ Created: 2026-08-11T19:27:21.314Z
  .../src/commands/shared/declared-check.test.ts     |  48 ++++
  .../src/commands/shared/declared-check.ts          | 320 +++++++++++++++++++++
  .../agentplane/src/commands/shared/pr-meta.test.ts |  10 +-
- .../src/commands/shared/pr-meta/verify-log.ts      |  94 +-----
+ .../src/commands/shared/pr-meta/verify-log.ts      |  96 +------
  packages/agentplane/src/commands/task/add.ts       |   3 +
  packages/agentplane/src/commands/task/derive.ts    |   3 +
  .../commands/task/direct-task-verification.test.ts |  15 +-
@@ -44,7 +44,8 @@ Created: 2026-08-11T19:27:21.314Z
  packages/agentplane/src/commands/task/new.ts       |   2 +
  packages/agentplane/src/commands/task/update.ts    |   4 +
  .../src/commands/task/update.unit.test.ts          |  57 ++++
- 15 files changed, 638 insertions(+), 150 deletions(-)
+ packages/agentplane/src/commands/workflow.test.ts  |   2 +-
+ 16 files changed, 640 insertions(+), 152 deletions(-)
 ```
 
 </details>

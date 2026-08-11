@@ -2,9 +2,9 @@
   "base": "main",
   "branch": "task/202608111922-W4ZM7J/validate-declared-checks-with-the-supervised-exe",
   "created_at": "2026-08-11T19:27:21.314Z",
-  "diffstat_sha256": "sha256:4cd0265b5c3b02341cd9796526a757e5a14cdecd83bc346fa451d62d51adfd2e",
-  "last_verified_at": "2026-08-11T20:50:16.130Z",
-  "last_verified_diffstat_sha256": "sha256:4cd0265b5c3b02341cd9796526a757e5a14cdecd83bc346fa451d62d51adfd2e",
+  "diffstat_sha256": "sha256:709b3f59ce0ead2ef84888169cbfa922c9cb37bccb940d9ca9c64a979555cdaf",
+  "last_verified_at": "2026-08-11T21:14:29.082Z",
+  "last_verified_diffstat_sha256": "sha256:709b3f59ce0ead2ef84888169cbfa922c9cb37bccb940d9ca9c64a979555cdaf",
   "pr_number": 4825,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4825",
   "pre_merge_closure": {
