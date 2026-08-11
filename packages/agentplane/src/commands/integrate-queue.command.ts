@@ -565,10 +565,11 @@ export function makeRunIntegrateQueueRunNextHandler(
         const handoff =
           (err instanceof CliError && err.code === "E_HANDOFF") ||
           isExternalStateUnavailableError(err);
+        const retryableGate = isRetryableIntegrationGateError(err);
         await completeIntegrationReservation({
           gitRoot,
           entry: integrationEntry,
-          status: handoff ? "handoff" : "rework",
+          status: retryableGate ? "queued" : handoff ? "handoff" : "rework",
           reason: err instanceof Error ? err.message : String(err),
         });
         throw err;

@@ -642,6 +642,28 @@ describe("integrate queue claim publication guard", () => {
     expect(mocks.markQueueEntry).not.toHaveBeenCalled();
   });
 
+  it("requeues hosted-check timeouts before the critical merge section", async () => {
+    const hostedTimeout = new CliError({
+      code: "E_HANDOFF",
+      message: "hosted checks remain pending",
+      context: { reason_code: "hosted_checks_pending" },
+    });
+    mocks.waitForHostedChecks.mockRejectedValue(hostedTimeout);
+    const handler = makeRunIntegrateQueueRunNextHandler(commandContext);
+
+    await expect(
+      handler({ cwd: "/repo", rootOverride: null } as never, runNextParsed({ hosted: true })),
+    ).rejects.toBe(hostedTimeout);
+
+    expect(
+      (mocks.queueState as { entries: { status: string; reason?: string }[] }).entries[0],
+    ).toMatchObject({
+      status: "queued",
+      reason: hostedTimeout.message,
+    });
+    expect(mocks.cmdIntegrate).not.toHaveBeenCalled();
+  });
+
   it("passes queued H1 into integrate and rejects synchronized H1 to H2 movement", async () => {
     mocks.waitForHostedChecks.mockResolvedValue(undefined);
     mocks.cmdIntegrate.mockImplementation(

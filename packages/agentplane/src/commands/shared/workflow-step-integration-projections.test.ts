@@ -212,7 +212,7 @@ describe("WorkflowStep integration projections", () => {
         },
       },
     });
-    for (const status of ["queued", "claimed", "handoff"] as const) {
+    for (const status of ["queued", "claimed"] as const) {
       const activeQueueState = {
         ...queuedState,
         prFlow: {
@@ -242,6 +242,26 @@ describe("WorkflowStep integration projections", () => {
         ],
       });
     }
+
+    const handoffQueueState = {
+      ...queuedState,
+      prFlow: {
+        ...queuedState.prFlow!,
+        queue: {
+          ...queuedState.prFlow!.queue,
+          present: true as const,
+          status: "handoff" as const,
+        },
+      },
+    };
+    expect(reduceRouteState(handoffQueueState)).toMatchObject({
+      kind: "wait",
+      condition: {
+        type: "integration_queue_terminal",
+        taskId: task.id,
+        queueStatus: "handoff",
+      },
+    });
 
     const doneQueueState = {
       ...queuedState,

@@ -1,4 +1,5 @@
 import type { CommandCtx } from "../../cli/spec/spec.js";
+import { CliError } from "../../shared/errors.js";
 import { cmdWorkStart } from "../branch/work-start.js";
 import { cmdCleanupMerged } from "../branch/cleanup-merged.js";
 import { cmdCommit } from "../guard/impl/commit.js";
@@ -47,6 +48,16 @@ function checkoutFor(decision: TaskRouteDecision): string {
     );
   }
   return checkout;
+}
+
+function isCompletedProtectedBaseWorkerCycle(error: unknown): boolean {
+  if (!(error instanceof CliError) || error.code !== "E_HANDOFF") return false;
+  const reasonCode = error.context?.reason_code;
+  if (typeof reasonCode !== "string") return false;
+  return new Set([
+    "protected_base_auto_merge_enabled",
+    "protected_base_github_merge_completed",
+  ]).has(reasonCode);
 }
 
 /**
@@ -201,22 +212,30 @@ export async function executeBranchWorkflowOperation(opts: {
     }
     case "integration.run_next": {
       const handler = makeRunIntegrateQueueRunNextHandler(() => Promise.resolve(command));
-      exitCode = await handler(cliContext, {
-        worker: null,
-        leaseMs: null,
-        pollIntervalMs: null,
-        timeoutMs: null,
-        runVerify: false,
-        dryRun: false,
-        quiet: true,
-        drain: false,
-        wait: true,
-        hosted: true,
-        stablePolls: null,
-        hostedPollIntervalMs: null,
-        hostedTimeoutMs: null,
-        requiredChecks: [],
-      });
+      try {
+        exitCode = await handler(cliContext, {
+          worker: null,
+          leaseMs: null,
+          pollIntervalMs: null,
+          timeoutMs: null,
+          runVerify: false,
+          dryRun: false,
+          quiet: true,
+          drain: false,
+          wait: true,
+          hosted: true,
+          stablePolls: null,
+          hostedPollIntervalMs: null,
+          hostedTimeoutMs: null,
+          requiredChecks: [],
+        });
+      } catch (error) {
+        if (!isCompletedProtectedBaseWorkerCycle(error)) throw error;
+        return succeeded(
+          operation,
+          `completed the foreground worker cycle for ${operation.params.taskId}; provider handoff remains durable`,
+        );
+      }
       return succeeded(
         operation,
         `advanced the serialized integration queue for ${operation.params.taskId}`,
