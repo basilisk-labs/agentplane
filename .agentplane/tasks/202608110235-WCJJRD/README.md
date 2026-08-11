@@ -4,7 +4,7 @@ title: "Replace task-create keyword inference with explicit semantic intent"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -65,7 +65,7 @@ events:
     note: "Implementation committed: task create now accepts explicit structured intent or creates a neutral PLANNER intake without keyword inference."
     commit: "9db650cb39af2db83252ae0c137fbb4552510acb"
 doc_version: 3
-doc_updated_at: "2026-08-11T02:45:57.509Z"
+doc_updated_at: "2026-08-11T02:47:57.607Z"
 doc_updated_by: "CODER"
 description: "Remove ordered natural-language keyword classification from task create. The CLI must validate structured task intent supplied by the agent or user, and otherwise create a neutral semantic-intake boundary for PLANNER without guessing task kind, mutation scope, risks, tags, blueprint, or execution route."
 sections:
@@ -77,14 +77,7 @@ sections:
     - In scope: Remove ordered natural-language keyword classification from task create. The CLI must validate structured task intent supplied by the agent or user, and otherwise create a neutral semantic-intake boundary for PLANNER without guessing task kind, mutation scope, risks, tags, blueprint, or execution route.
     - Out of scope: unrelated refactors not required for "Replace task-create keyword inference with explicit semantic intent".
   Plan: "1. Replace the keyword tables and ordered natural-language classifier in task create with an explicit structured-intent contract matching task new: task kind, mutation scope, risk flags, blueprint request, and tags are data supplied by the calling agent or user. 2. When structured intent is absent, create a neutral intake task whose only next semantic step is PLANNER classification; do not infer code, docs, release, ops, security, context, performance, quality, analysis, route, or tags from title words. 3. Keep deterministic validation in the CLI: reject incompatible structured combinations, validate blueprint and route floors, persist provenance showing whether intent was supplied or remains pending, and render the exact next action. 4. Preserve a simple natural-language task-create entry point and backwards-compatible output fields where they remain truthful; remove claims that intent was inferred. 5. Add regression tests with English, Russian, ambiguous, and adversarial wording proving identical neutral behavior without structured input and exact behavior with structured input. 6. Run focused tests, typecheck, lint, format, full fast tests, and build; record content-addressed evidence before evaluator review and branch_pr integration."
-  Verify Steps: |-
-    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Run `bunx vitest run packages/agentplane/src/commands/task/create.command.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.
-    2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.
-    3. Run `bun run lint:core`. Expected: it succeeds and confirms the requested outcome for this task.
-    4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-    5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+  Verify Steps: "1. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts`. Expected: explicit structured intent persists exactly; unstructured English, Russian, Japanese, negated, and ambiguous outcomes all remain neutral PLANNER intake; help surfaces contain no keyword-inference claim. 2. Run `bun run typecheck` and `bun run lint:core`. Expected: structured option parsing, persisted task fields, and public payload types pass static validation. 3. Run `bun run test:fast`. Expected: the complete regression suite passes with no route, task creation, duplicate locking, or agent handoff regression. 4. Run `bun run format:check`, `bun run knip:check`, `bun run hotspots:check`, and `bun run build`. Expected: formatting, unused-code, size, and package build gates pass. 5. Inspect the final diff. Expected: ordered keyword tables and natural-language classifier code are absent; the CLI only validates caller-supplied semantic fields or emits `semantic_intake_pending`."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -115,13 +108,7 @@ Remove ordered natural-language keyword classification from task create. The CLI
 
 ## Verify Steps
 
-PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Run `bunx vitest run packages/agentplane/src/commands/task/create.command.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.
-2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.
-3. Run `bun run lint:core`. Expected: it succeeds and confirms the requested outcome for this task.
-4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+1. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts`. Expected: explicit structured intent persists exactly; unstructured English, Russian, Japanese, negated, and ambiguous outcomes all remain neutral PLANNER intake; help surfaces contain no keyword-inference claim. 2. Run `bun run typecheck` and `bun run lint:core`. Expected: structured option parsing, persisted task fields, and public payload types pass static validation. 3. Run `bun run test:fast`. Expected: the complete regression suite passes with no route, task creation, duplicate locking, or agent handoff regression. 4. Run `bun run format:check`, `bun run knip:check`, `bun run hotspots:check`, and `bun run build`. Expected: formatting, unused-code, size, and package build gates pass. 5. Inspect the final diff. Expected: ordered keyword tables and natural-language classifier code are absent; the CLI only validates caller-supplied semantic fields or emits `semantic_intake_pending`.
 
 ## Verification
 
