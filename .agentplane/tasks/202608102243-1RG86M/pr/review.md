@@ -13,7 +13,7 @@ Created: 2026-08-10T22:44:13.062Z
 ## Verification
 
 - State: ok
-- Note: Content-addressed verification and terminal convergence pass after direct-mode lifecycle exclusion.
+- Note: Final content-addressed verification and terminal convergence pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -41,12 +41,14 @@ Created: 2026-08-10T22:44:13.062Z
  .../src/commands/shared/task-verification-input.ts | 298 +++++++++++++++++++
  .../commands/shared/task-verification-records.ts   | 309 +++++++++++++++++---
  .../shared/task-verification-records.v2.test.ts    | 181 ++++++++++++
+ .../commands/shared/verification-details.test.ts   |  13 +
+ .../src/commands/shared/verification-details.ts    |   2 +-
  .../src/commands/task/qualification-packet.ts      |   2 +-
  .../task/shared/workflow-transition-service.ts     |   3 +-
  .../src/commands/task/verify-record-execute.ts     | 322 +++++++++++----------
  .../task/verify-record.durability.unit.test.ts     |  44 ++-
  .../src/commands/workflow.verify-hooks.test.ts     |  39 +++
- 17 files changed, 1378 insertions(+), 226 deletions(-)
+ 19 files changed, 1392 insertions(+), 227 deletions(-)
 ```
 
 </details>
