@@ -971,6 +971,7 @@ describe("task finish close-tail", () => {
       commit: "impl-hash",
       breaking: false,
       force: true,
+      yes: true,
       commitFromComment: false,
       commitAllow: [],
       commitAutoAllow: false,

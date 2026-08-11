@@ -227,7 +227,7 @@ describe("config", () => {
 
   it("default execution profile values are present", () => {
     const cfg = defaultConfig();
-    expect(cfg.execution.profile).toBe("balanced");
+    expect(cfg.execution.profile).toBe("standard");
     expect(cfg.execution.reasoning_effort).toBe("medium");
     expect(cfg.execution.text_verbosity).toBe("medium");
     expect(cfg.execution.tool_budget).toEqual({
@@ -256,15 +256,35 @@ describe("config", () => {
     expect(cfg.close_commit.direct_dirty_policy).toBe("allow_other_task_readmes");
   });
 
-  it("accepts xhigh reasoning effort and low text verbosity overrides", () => {
+  it("normalizes mutable legacy execution fields to the standard policy", () => {
     const cfg = defaultConfig();
     cfg.execution.reasoning_effort = "xhigh";
     cfg.execution.text_verbosity = "low";
 
     const validated = validateConfig(cfg);
 
-    expect(validated.execution.reasoning_effort).toBe("xhigh");
-    expect(validated.execution.text_verbosity).toBe("low");
+    expect(validated.execution.reasoning_effort).toBe("medium");
+    expect(validated.execution.text_verbosity).toBe("medium");
+  });
+
+  it("loads legacy execution profiles without preserving mutable behavior", async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), "agentplane-config-legacy-profile-"));
+    const agentplaneDir = path.join(tmp, ".agentplane");
+    await mkdir(agentplaneDir, { recursive: true });
+    const raw = defaultConfig() as unknown as Record<string, unknown>;
+    raw.execution = {
+      ...(raw.execution as Record<string, unknown>),
+      profile: "aggressive",
+      reasoning_effort: "low",
+      text_verbosity: "low",
+    };
+    await writeFile(path.join(agentplaneDir, "config.json"), JSON.stringify(raw), "utf8");
+
+    const loaded = await loadConfig(agentplaneDir);
+
+    expect(loaded.config.execution.profile).toBe("standard");
+    expect(loaded.config.execution.reasoning_effort).toBe("medium");
+    expect(loaded.raw.execution).toEqual(loaded.config.execution);
   });
 
   it("default task README contract uses the active v3 sections", () => {

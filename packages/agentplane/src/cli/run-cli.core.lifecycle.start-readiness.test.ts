@@ -143,6 +143,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
         "--body",
         "Start: force start even though deps are incomplete to bypass readiness check.",
         "--force",
+        "--yes",
         "--root",
         root,
       ]);
@@ -152,7 +153,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
     }
   });
 
-  it("start --force requires explicit approval in conservative profile", async () => {
+  it("start --force always requires explicit approval", async () => {
     const root = await mkGitRepoRoot();
     const cfg = defaultConfig();
     cfg.execution.profile = "conservative";
@@ -195,7 +196,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
           "--author",
           "CODER",
           "--body",
-          "Start: force start should require explicit approval in conservative profile mode.",
+          "Start: force start should require explicit approval under the standard policy.",
           "--force",
           "--root",
           root,
@@ -216,7 +217,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
           "--author",
           "CODER",
           "--body",
-          "Start: force start approved explicitly with yes in conservative profile mode.",
+          "Start: force start approved explicitly with yes under the standard policy.",
           "--force",
           "--yes",
           "--root",

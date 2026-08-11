@@ -12,7 +12,7 @@ import { getVersion } from "../../../../meta/version.js";
 import type { InitBackend, InitRunnerProfile } from "./model.js";
 
 type InitExecutionConfig = {
-  profile: "conservative" | "balanced" | "aggressive";
+  profile: "standard" | "conservative" | "balanced" | "aggressive";
   reasoning_effort: "low" | "medium" | "high" | "xhigh";
   text_verbosity: "low" | "medium" | "high";
   tool_budget: {

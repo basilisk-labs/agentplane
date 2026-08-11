@@ -92,7 +92,7 @@ function buildFrameworkExplainFixture() {
       policy_gateway: [{ id: "policy_gateway", detail: "AGENTS.md" }],
       approval_requirements: [{ id: "config", detail: ".agentplane/config.json" }],
       protected_paths: [{ id: "builtin", detail: "defaults" }],
-      execution: [{ id: "execution_profile", detail: "balanced" }],
+      execution: [{ id: "execution_profile", detail: "standard" }],
       backend: [{ id: "backend", detail: "local" }],
     },
   };

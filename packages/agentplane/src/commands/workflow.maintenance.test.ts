@@ -348,6 +348,7 @@ describe("commands/workflow", () => {
         taskId,
         overwrite: false,
         force: true,
+        yes: true,
         quiet: false,
       });
       expect(code).toBe(0);

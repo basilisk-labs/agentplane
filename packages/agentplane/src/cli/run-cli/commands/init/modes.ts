@@ -18,8 +18,7 @@ export function resolveInitMode(opts: { flags: InitParsed; interactive: boolean 
 }
 
 export function setupProfileToUserFacingProfile(profile: SetupProfilePreset): UserFacingProfile {
-  if (profile === "light") return "solo";
-  if (profile === "full-harness") return "strict";
+  void profile;
   return "team";
 }
 

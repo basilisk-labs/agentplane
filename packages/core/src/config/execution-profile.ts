@@ -7,100 +7,57 @@ export type ApprovalSettings = {
   require_force?: boolean;
 };
 
+export const CANONICAL_EXECUTION_PROFILE: ExecutionProfile = "standard";
+
+const CANONICAL_EXECUTION_POLICY: AgentplaneConfig["execution"] = {
+  profile: CANONICAL_EXECUTION_PROFILE,
+  reasoning_effort: "medium",
+  text_verbosity: "medium",
+  tool_budget: {
+    discovery: 6,
+    implementation: 10,
+    verification: 6,
+  },
+  stop_conditions: [
+    "Missing required input blocks correctness.",
+    "Requested action expands scope or risk beyond approved plan.",
+    "Verification fails and remediation changes scope.",
+  ],
+  handoff_conditions: [
+    "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
+    "Task depends_on prerequisites are incomplete.",
+    "Specialized agent is required.",
+  ],
+  unsafe_actions_requiring_explicit_user_ok: [
+    "Destructive git history operations.",
+    "Outside-repo read/write.",
+    "Credential, keychain, or SSH material changes.",
+  ],
+};
+
+/**
+ * Legacy profile names remain valid config input for patch-level compatibility.
+ * They intentionally resolve to one immutable runtime policy.
+ */
 export const EXECUTION_PROFILE_PRESETS: Record<ExecutionProfile, AgentplaneConfig["execution"]> = {
-  conservative: {
-    profile: "conservative",
-    reasoning_effort: "high",
-    text_verbosity: "medium",
-    tool_budget: {
-      discovery: 4,
-      implementation: 8,
-      verification: 8,
-    },
-    stop_conditions: [
-      "Missing required input blocks correctness.",
-      "Requested action expands scope or risk beyond approved plan.",
-      "Verification fails and remediation changes scope.",
-    ],
-    handoff_conditions: [
-      "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
-      "Task depends_on prerequisites are incomplete.",
-      "Specialized agent is required.",
-    ],
-    unsafe_actions_requiring_explicit_user_ok: [
-      "Destructive git history operations.",
-      "Outside-repo read/write.",
-      "Credential, keychain, or SSH material changes.",
-      "Network actions when approvals are enabled.",
-    ],
-  },
-  balanced: {
-    profile: "balanced",
-    reasoning_effort: "medium",
-    text_verbosity: "medium",
-    tool_budget: {
-      discovery: 6,
-      implementation: 10,
-      verification: 6,
-    },
-    stop_conditions: [
-      "Missing required input blocks correctness.",
-      "Requested action expands scope or risk beyond approved plan.",
-      "Verification fails and remediation changes scope.",
-    ],
-    handoff_conditions: [
-      "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
-      "Task depends_on prerequisites are incomplete.",
-      "Specialized agent is required.",
-    ],
-    unsafe_actions_requiring_explicit_user_ok: [
-      "Destructive git history operations.",
-      "Outside-repo read/write.",
-      "Credential, keychain, or SSH material changes.",
-    ],
-  },
-  aggressive: {
-    profile: "aggressive",
-    reasoning_effort: "low",
-    text_verbosity: "low",
-    tool_budget: {
-      discovery: 10,
-      implementation: 16,
-      verification: 8,
-    },
-    stop_conditions: [
-      "Requested action expands scope or risk beyond approved plan.",
-      "Verification fails and remediation changes scope.",
-    ],
-    handoff_conditions: [
-      "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
-      "Specialized agent is required.",
-    ],
-    unsafe_actions_requiring_explicit_user_ok: [
-      "Destructive git history operations.",
-      "Outside-repo read/write.",
-      "Credential, keychain, or SSH material changes.",
-    ],
-  },
+  standard: structuredClone(CANONICAL_EXECUTION_POLICY),
+  conservative: structuredClone(CANONICAL_EXECUTION_POLICY),
+  balanced: structuredClone(CANONICAL_EXECUTION_POLICY),
+  aggressive: structuredClone(CANONICAL_EXECUTION_POLICY),
 };
 
 export function resolveExecutionProfilePreset(
-  profile: ExecutionProfile,
+  _profile: ExecutionProfile,
 ): AgentplaneConfig["execution"] {
-  return structuredClone(EXECUTION_PROFILE_PRESETS[profile]);
+  return structuredClone(CANONICAL_EXECUTION_POLICY);
 }
 
 export function buildExecutionProfile(
   profile: ExecutionProfile,
   opts?: { strictUnsafeConfirm?: boolean },
 ): AgentplaneConfig["execution"] {
-  const resolved = resolveExecutionProfilePreset(profile);
-  if (opts?.strictUnsafeConfirm !== true) return resolved;
-  const strictItem = "Network actions when approvals are disabled.";
-  if (!resolved.unsafe_actions_requiring_explicit_user_ok.includes(strictItem)) {
-    resolved.unsafe_actions_requiring_explicit_user_ok.push(strictItem);
-  }
-  return resolved;
+  void opts;
+  return resolveExecutionProfilePreset(profile);
 }
 
 export function applyExecutionToApprovals(opts: {
@@ -111,20 +68,9 @@ export function applyExecutionToApprovals(opts: {
     require_plan: opts.approvals.require_plan === true,
     require_network: opts.approvals.require_network === true,
     require_verify: opts.approvals.require_verify === true,
-    require_force: opts.approvals.require_force === true,
+    require_force: true,
   };
 
-  if (opts.execution.profile === "conservative") {
-    return {
-      ...base,
-      require_network: true,
-      require_force: true,
-    };
-  }
-
-  if (opts.execution.profile === "balanced") {
-    return base;
-  }
-
+  void opts.execution;
   return base;
 }

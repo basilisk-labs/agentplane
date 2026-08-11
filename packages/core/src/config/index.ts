@@ -58,6 +58,7 @@ export {
 export {
   applyExecutionToApprovals,
   buildExecutionProfile,
+  CANONICAL_EXECUTION_PROFILE,
   EXECUTION_PROFILE_PRESETS,
   resolveExecutionProfilePreset,
   type ApprovalSettings,

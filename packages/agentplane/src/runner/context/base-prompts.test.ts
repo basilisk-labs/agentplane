@@ -603,7 +603,7 @@ describe("collectRunnerBasePrompts", () => {
     expect(prompts[2]?.content).not.toContain("Long body");
   });
 
-  it("inserts execution profile runtime constraints before the owner profile when provided", async () => {
+  it("normalizes legacy execution inputs before inserting runtime constraints", async () => {
     const root = await makeTempRepo();
     const config = defaultConfig();
     config.execution = buildExecutionProfile("conservative");
@@ -623,13 +623,13 @@ describe("collectRunnerBasePrompts", () => {
     expect(prompts[1]).toMatchObject({
       role: "policy",
       priority: 250,
-      source: "runtime:execution-profile:conservative",
-      title: "Execution Profile Runtime (conservative)",
+      source: "runtime:execution-profile:standard",
+      title: "Execution Profile Runtime (standard)",
     });
-    expect(prompts[1]?.content).toContain('"reasoning_effort": "high"');
+    expect(prompts[1]?.content).toContain('"reasoning_effort": "medium"');
     expect(prompts[1]?.content).toContain('"text_verbosity": "medium"');
     expect(prompts[1]?.content).toContain('"require_force": true');
-    expect(prompts[1]?.content).toContain('"terminate_grace_ms": 5000');
+    expect(prompts[1]?.content).toContain('"terminate_grace_ms": 1500');
     expect(prompts[1]?.resolution?.winner.layer).toBe("harness");
   });
 

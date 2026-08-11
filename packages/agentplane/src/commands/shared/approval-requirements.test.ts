@@ -18,23 +18,23 @@ describe("approval requirements", () => {
     });
   });
 
-  it("does not require force approval by default", () => {
+  it("always requires force approval under the standard policy", () => {
     const config = defaultConfig();
     const req = getApprovalRequirements({ config, action: "force_action" });
-    expect(req.required).toBe(false);
+    expect(req.required).toBe(true);
     expect(req.action).toMatchObject({
       id: "force_action",
       destructive: true,
     });
   });
 
-  it("conservative profile escalates network and force approvals", () => {
+  it("does not let a legacy profile escalate independent network approval", () => {
     const config = defaultConfig();
     config.execution.profile = "conservative";
     config.agents.approvals.require_network = false;
     const networkReq = getApprovalRequirements({ config, action: "backend_sync" });
     const forceReq = getApprovalRequirements({ config, action: "force_action" });
-    expect(networkReq.required).toBe(true);
+    expect(networkReq.required).toBe(false);
     expect(forceReq.required).toBe(true);
   });
 

@@ -74,7 +74,7 @@ describe("resolveHarnessContract", () => {
     expect(harness.trace.policy_gateway).toEqual([{ id: "policy_gateway", detail: "AGENTS.md" }]);
     expect(harness.trace.approval_requirements).toEqual([
       { id: "config", detail: ".agentplane/config.json" },
-      { id: "execution_profile", detail: "conservative" },
+      { id: "builtin", detail: "standard process policy" },
     ]);
   });
 

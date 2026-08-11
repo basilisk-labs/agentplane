@@ -1,6 +1,8 @@
-import { applyExecutionToApprovals, type AgentplaneConfig } from "@agentplaneorg/core/config";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 
 import { resolveRunnerTimeoutPolicy, resolveRunnerTracePolicy } from "../../runner/config.js";
+import { resolveEffectiveApprovalSettings } from "../approvals/index.js";
+import { buildCanonicalExecutionPolicy } from "./canonical.js";
 
 import type {
   ExecutionBudgetCounter,
@@ -20,56 +22,34 @@ function toBudgetCounter(limit: number): ExecutionBudgetCounter {
 function applyProfileToTracePolicy(
   config: Pick<AgentplaneConfig, "execution" | "runner">,
 ): ResolvedExecutionProfileRuntime["runner"]["trace_policy"] {
-  const trace = resolveRunnerTracePolicy(config);
-  if (config.execution.profile === "conservative") {
-    return {
-      ...trace,
-      capture_stderr: true,
-      retention: "keep",
-    };
-  }
-  return trace;
+  return resolveRunnerTracePolicy(config);
 }
 
 function applyProfileToTimeoutPolicy(
   config: Pick<AgentplaneConfig, "execution" | "runner">,
 ): ResolvedExecutionProfileRuntime["runner"]["timeout_policy"] {
-  const timeout = resolveRunnerTimeoutPolicy(config);
-  if (config.execution.profile === "conservative") {
-    return {
-      ...timeout,
-      terminate_grace_ms: Math.max(timeout.terminate_grace_ms, 5000),
-    };
-  }
-  return timeout;
+  return resolveRunnerTimeoutPolicy(config);
 }
 
 export function resolveExecutionProfileRuntime(
   config: Pick<AgentplaneConfig, "agents" | "execution" | "runner">,
 ): ResolvedExecutionProfileRuntime {
-  const approvals = applyExecutionToApprovals({
-    execution: config.execution,
-    approvals: config.agents?.approvals ?? {
-      require_plan: false,
-      require_network: false,
-      require_verify: false,
-      require_force: false,
-    },
-  });
+  const execution = buildCanonicalExecutionPolicy();
+  const approvals = resolveEffectiveApprovalSettings(config);
 
   return {
-    profile: config.execution.profile,
-    reasoning_effort: config.execution.reasoning_effort,
-    text_verbosity: config.execution.text_verbosity,
+    profile: execution.profile,
+    reasoning_effort: execution.reasoning_effort,
+    text_verbosity: execution.text_verbosity,
     budget: {
-      discovery: toBudgetCounter(config.execution.tool_budget.discovery),
-      implementation: toBudgetCounter(config.execution.tool_budget.implementation),
-      verification: toBudgetCounter(config.execution.tool_budget.verification),
+      discovery: toBudgetCounter(execution.tool_budget.discovery),
+      implementation: toBudgetCounter(execution.tool_budget.implementation),
+      verification: toBudgetCounter(execution.tool_budget.verification),
     },
-    stop_conditions: [...config.execution.stop_conditions],
-    handoff_conditions: [...config.execution.handoff_conditions],
+    stop_conditions: [...execution.stop_conditions],
+    handoff_conditions: [...execution.handoff_conditions],
     unsafe_actions_requiring_explicit_user_ok: [
-      ...config.execution.unsafe_actions_requiring_explicit_user_ok,
+      ...execution.unsafe_actions_requiring_explicit_user_ok,
     ],
     approvals,
     runner: {

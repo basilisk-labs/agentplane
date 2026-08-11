@@ -39,7 +39,7 @@ function assembleStringModules(modules: PromptModule[]): string {
 
 function sampleExecutionProfile(): ResolvedExecutionProfileRuntime {
   return {
-    profile: "balanced",
+    profile: "standard",
     reasoning_effort: "medium",
     text_verbosity: "medium",
     budget: {
@@ -254,7 +254,7 @@ describe("framework prompt module registry", () => {
     expect(executionProfile?.content_kind).toBe("json");
     expect(executionProfile?.provenance.source_kind).toBe("runtime");
     expect(typeof executionProfile?.content).toBe("string");
-    expect(executionProfile?.content).toContain('"profile": "balanced"');
+    expect(executionProfile?.content).toContain('"profile": "standard"');
     expect(executionProfile?.content).toContain('"text_verbosity": "medium"');
   });
 });

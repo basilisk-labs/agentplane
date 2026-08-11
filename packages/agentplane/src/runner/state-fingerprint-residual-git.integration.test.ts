@@ -382,7 +382,7 @@ describe("runner residual Git fingerprint", () => {
     });
   });
 
-  it("assigns a force-approval mutation exactly to authority", async () => {
+  it("does not assign an ignored force-approval input to authority", async () => {
     const fixture = await prepareLocalCase("Residual force approval authority");
     const config = structuredClone(fixture.ctx.config);
     config.agents.approvals.require_force = !config.agents.approvals.require_force;
@@ -391,8 +391,8 @@ describe("runner residual Git fingerprint", () => {
     await expectExactlyChanged({
       ctx: fixture.ctx,
       prepared: fixture.prepared,
-      component: "authority",
-      expected_components: ["git", "authority"],
+      component: "git",
+      expected_components: ["git"],
     });
   });
 

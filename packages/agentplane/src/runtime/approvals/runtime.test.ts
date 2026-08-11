@@ -8,7 +8,7 @@ import { CliError } from "../../shared/errors.js";
 import { ApprovalRuntime, resolveEffectiveApprovalSettings } from "./runtime.js";
 
 describe("runtime/approvals", () => {
-  it("resolves effective approvals and applies conservative escalation", () => {
+  it("keeps force approval fixed without profile-based escalation", () => {
     const config = defaultConfig();
     config.agents.approvals.require_network = false;
     config.agents.approvals.require_force = false;
@@ -16,9 +16,20 @@ describe("runtime/approvals", () => {
 
     expect(resolveEffectiveApprovalSettings(config)).toMatchObject({
       require_plan: true,
-      require_network: true,
+      require_network: false,
       require_verify: true,
       require_force: true,
+    });
+  });
+
+  it("reports force approval as a built-in standard-policy requirement", () => {
+    const config = defaultConfig();
+    config.agents.approvals.require_force = false;
+    const runtime = new ApprovalRuntime({ config });
+
+    expect(runtime.resolve({ action: "force_action" })).toMatchObject({
+      required: true,
+      source: "builtin",
     });
   });
 

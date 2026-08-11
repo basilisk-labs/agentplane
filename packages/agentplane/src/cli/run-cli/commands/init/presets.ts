@@ -1,4 +1,8 @@
+import type { ExecutionProfile } from "@agentplaneorg/core/config";
+
 import type { InitDefaults, SetupProfilePreset } from "./model.js";
+
+const CANONICAL_EXECUTION_PROFILE = "standard" as const;
 
 export const INIT_DEFAULTS: InitDefaults = {
   policyGateway: "codex",
@@ -13,7 +17,7 @@ export const INIT_DEFAULTS: InitDefaults = {
   requireVerifyApproval: true,
   feedbackGithubIssues: false,
   feedbackAnonymousCloud: false,
-  executionProfile: "balanced",
+  executionProfile: CANONICAL_EXECUTION_PROFILE,
   evaluatorSkepticism: "standard",
   strictUnsafeConfirm: false,
   blueprints: [],
@@ -37,24 +41,9 @@ export const setupProfilePresets: Record<
     defaultRecipes: string[];
   }
 > = {
-  light: {
+  standard: {
     mode: "compact",
-    description: "Light profile (maximum flexibility, minimal enforcement, hooks disabled).",
-    defaultHooks: false,
-    defaultStrictUnsafeConfirm: false,
-    defaultRequirePlanApproval: false,
-    defaultRequireNetworkApproval: false,
-    defaultRequireVerifyApproval: false,
-    defaultFeedbackGithubIssues: false,
-    defaultFeedbackAnonymousCloud: false,
-    defaultExecutionProfile: "aggressive",
-    defaultEvaluatorSkepticism: "standard",
-    defaultRecipes: [],
-  },
-  normal: {
-    mode: "compact",
-    description:
-      "Normal profile (balanced defaults and approvals enabled for standard team workflows; hooks enabled).",
+    description: "Standard process policy with task-specific workflow and integration settings.",
     defaultHooks: true,
     defaultStrictUnsafeConfirm: false,
     defaultRequirePlanApproval: true,
@@ -62,23 +51,8 @@ export const setupProfilePresets: Record<
     defaultRequireVerifyApproval: true,
     defaultFeedbackGithubIssues: false,
     defaultFeedbackAnonymousCloud: false,
-    defaultExecutionProfile: "balanced",
+    defaultExecutionProfile: CANONICAL_EXECUTION_PROFILE,
     defaultEvaluatorSkepticism: "standard",
-    defaultRecipes: [],
-  },
-  "full-harness": {
-    mode: "full",
-    description:
-      "Full Harness profile (strict guardrails, explicit confirmations, conservative execution; hooks enabled).",
-    defaultHooks: true,
-    defaultStrictUnsafeConfirm: true,
-    defaultRequirePlanApproval: true,
-    defaultRequireNetworkApproval: true,
-    defaultRequireVerifyApproval: true,
-    defaultFeedbackGithubIssues: false,
-    defaultFeedbackAnonymousCloud: false,
-    defaultExecutionProfile: "conservative",
-    defaultEvaluatorSkepticism: "strict",
     defaultRecipes: [],
   },
 };
@@ -86,9 +60,29 @@ export const setupProfilePresets: Record<
 export function normalizeSetupProfile(raw: string | undefined): SetupProfilePreset | undefined {
   if (!raw) return undefined;
   const value = raw.trim().toLowerCase();
-  if (value === "developer" || value === "enterprise") return "full-harness";
-  if (value === "manager") return "normal";
-  if (value === "vibecoder") return "light";
-  if (value === "light" || value === "normal" || value === "full-harness") return value;
+  if (
+    value === "standard" ||
+    value === "developer" ||
+    value === "enterprise" ||
+    value === "manager" ||
+    value === "vibecoder" ||
+    value === "light" ||
+    value === "normal" ||
+    value === "full-harness"
+  )
+    return "standard";
+  return undefined;
+}
+
+export function normalizeExecutionProfile(raw: string | undefined): ExecutionProfile | undefined {
+  if (!raw) return undefined;
+  const value = raw.trim().toLowerCase();
+  if (
+    value === "standard" ||
+    value === "conservative" ||
+    value === "balanced" ||
+    value === "aggressive"
+  )
+    return CANONICAL_EXECUTION_PROFILE;
   return undefined;
 }

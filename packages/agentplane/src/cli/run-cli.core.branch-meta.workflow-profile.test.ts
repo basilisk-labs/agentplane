@@ -162,18 +162,19 @@ describe("runCli", () => {
     },
   );
 
-  it("profile set applies preset defaults to config", async () => {
+  it("profile set normalizes legacy aliases to the standard policy", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const io = captureStdIO();
     try {
       const code = await runCli(["profile", "set", "light", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout.trim()).toBe("light");
+      expect(io.stdout.trim()).toBe("standard");
+      expect(io.stderr).toContain('Profile "light" is a compatibility alias');
       const workflowText = await readFile(path.join(root, ".agentplane", "WORKFLOW.md"), "utf8");
-      expect(workflowText).toContain("require_plan: false");
-      expect(workflowText).toContain("require_network: false");
-      expect(workflowText).toContain("profile: aggressive");
+      expect(workflowText).toContain("require_plan: true");
+      expect(workflowText).toContain("require_network: true");
+      expect(workflowText).toContain("profile: standard");
     } finally {
       io.restore();
     }

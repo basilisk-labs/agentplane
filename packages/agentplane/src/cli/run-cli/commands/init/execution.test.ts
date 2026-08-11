@@ -4,7 +4,7 @@ import { buildInitPlan, GITHUB_CLI_INIT_RECOMMENDATION } from "./execution.js";
 import type { InitAnswers } from "./answers.js";
 
 const answers = {
-  setupProfile: "normal",
+  setupProfile: "standard",
   setupProfileDescription: "team",
   policyGateway: "codex",
   ide: "codex",
@@ -17,7 +17,7 @@ const answers = {
   requireVerifyApproval: false,
   feedbackGithubIssues: false,
   feedbackAnonymousCloud: false,
-  executionProfile: "balanced",
+  executionProfile: "standard",
   evaluatorSkepticism: "strict",
   strictUnsafeConfirm: false,
   recipes: [],

@@ -10,7 +10,7 @@ export type EffectiveApprovalSettings = {
   require_force: boolean;
 };
 
-type ApprovalDecisionSource = "none" | "config" | "execution_profile" | "builtin";
+type ApprovalDecisionSource = "none" | "config" | "builtin";
 
 export type ApprovalRequirement = {
   action: PolicyActionDescriptor;

@@ -1,4 +1,7 @@
-import type { EvaluatorSkepticismLevel, ExecutionProfile } from "@agentplaneorg/core/config";
+import {
+  CANONICAL_EXECUTION_PROFILE,
+  type EvaluatorSkepticismLevel,
+} from "@agentplaneorg/core/config";
 
 import type { InitFlags, SetupProfilePreset } from "../model.js";
 import { setupProfilePresets } from "../presets.js";
@@ -9,12 +12,6 @@ import type {
   InitSetupProfileMode,
   InitPromptClack,
 } from "./contracts.js";
-
-const executionProfileOptions: { value: ExecutionProfile; label: string; hint: string }[] = [
-  { value: "conservative", label: "Conservative", hint: "Lower autonomy and stricter budgets." },
-  { value: "balanced", label: "Balanced", hint: "Default autonomy and verification posture." },
-  { value: "aggressive", label: "Aggressive", hint: "Higher autonomy and lighter guardrails." },
-];
 
 const evaluatorSkepticismOptions: {
   value: EvaluatorSkepticismLevel;
@@ -57,32 +54,17 @@ export async function promptAdvancedSettingsStep(opts: {
     opts.flags.feedbackAnonymousCloud ?? preset.defaultFeedbackAnonymousCloud;
   let requireNetworkApproval =
     opts.flags.requireNetworkApproval ?? preset.defaultRequireNetworkApproval;
-  let executionProfile = opts.flags.executionProfile ?? preset.defaultExecutionProfile;
+  const executionProfile = CANONICAL_EXECUTION_PROFILE;
   let evaluatorSkepticism = opts.flags.evaluatorSkepticism ?? preset.defaultEvaluatorSkepticism;
-  let strictUnsafeConfirm = opts.flags.strictUnsafeConfirm ?? preset.defaultStrictUnsafeConfirm;
+  const strictUnsafeConfirm = false;
 
   if (opts.setupProfileMode === "full") {
-    if (!opts.flags.executionProfile) {
-      executionProfile = await selectStepValue(opts.clack, {
-        message: "Execution profile",
-        options: executionProfileOptions,
-        initialValue: executionProfile,
-        cancelMessage: "Execution profile selection cancelled.",
-      });
-    }
     if (!opts.flags.evaluatorSkepticism) {
       evaluatorSkepticism = await selectStepValue(opts.clack, {
         message: "Evaluator skepticism",
         options: evaluatorSkepticismOptions,
         initialValue: evaluatorSkepticism,
         cancelMessage: "Evaluator skepticism selection cancelled.",
-      });
-    }
-    if (opts.flags.strictUnsafeConfirm === undefined) {
-      strictUnsafeConfirm = await confirmStepValue(opts.clack, {
-        message: "Require strict explicit confirmation for extra unsafe actions?",
-        initialValue: strictUnsafeConfirm,
-        cancelMessage: "Strict unsafe confirmation selection cancelled.",
       });
     }
     if (opts.flags.requireNetworkApproval === undefined) {

@@ -23,6 +23,13 @@ function toErrnoException(err: unknown): NodeJS.ErrnoException | null {
   return err as NodeJS.ErrnoException;
 }
 
+function withCanonicalExecution(
+  raw: Record<string, unknown>,
+  config: AgentplaneConfig,
+): Record<string, unknown> {
+  return { ...raw, execution: structuredClone(config.execution) };
+}
+
 export async function loadConfig(agentplaneDir: string): Promise<LoadedConfig> {
   const workflowPath = path.join(agentplaneDir, "WORKFLOW.md");
   const legacyConfigPath = path.join(agentplaneDir, "config.json");
@@ -36,7 +43,7 @@ export async function loadConfig(agentplaneDir: string): Promise<LoadedConfig> {
         path: workflowRaw.path,
         exists: true,
         config: validated,
-        raw: sanitized.sanitized,
+        raw: withCanonicalExecution(sanitized.sanitized, validated),
       };
     }
   } catch (err) {
@@ -57,7 +64,10 @@ export async function loadConfig(agentplaneDir: string): Promise<LoadedConfig> {
       path: legacyConfigPath,
       exists: true,
       config: validated,
-      raw: (sanitized.sanitized ?? parsed) as Record<string, unknown>,
+      raw: withCanonicalExecution(
+        (sanitized.sanitized ?? parsed) as Record<string, unknown>,
+        validated,
+      ),
     };
   } catch (err) {
     const errno = toErrnoException(err);
@@ -81,8 +91,9 @@ export async function saveConfig(
   const sanitized = stripDeprecatedConfigKeys(raw);
   if (sanitized.removed.length > 0) warnDeprecatedConfigKeys(sanitized.removed);
   const validated = validateConfig(sanitized.sanitized);
+  const canonicalRaw = withCanonicalExecution(sanitized.sanitized, validated);
   await mkdir(agentplaneDir, { recursive: true });
-  await writeWorkflowConfigRaw(agentplaneDir, sanitized.sanitized);
+  await writeWorkflowConfigRaw(agentplaneDir, canonicalRaw);
   await rm(path.join(agentplaneDir, "config.json"), { force: true });
   return validated;
 }
