@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -29,30 +29,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-11T23:24:24.882Z"
+  updated_at: "2026-08-11T23:39:13.368Z"
   updated_by: "HUMAN"
-  note: "The current branch implements one canonical standard execution policy while preserving independent project settings and a deterministic compatibility boundary for legacy profile names."
-  evaluated_sha: "dca3d280c2a6cf600439dafa647677933143f705"
+  note: "Compatibility remediation is exact, reviewable, and regression-protected: it records only the canonical profile CLI/schema mutations already shipped by this task, preserves legacy aliases, pins both workflow schema versions, and updates the planned v0.7.5 surface digest."
+  evaluated_sha: "017d3d3a8a724880ca20a011f1488fb98bb664ee"
   blueprint_digest: "8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61"
   evidence_refs:
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-232424478-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-232424478-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/6e1b90a5887f0f9b54e61282e47a3939c2c65f5032ec1c7ca1a8ad8900f1fbdf.md"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-232424478-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-232424478-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-233912928-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-233912928-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/2097dbc798b124ed836817e02617136006492f55ec47de72c693175ab910813c.md"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-233912928-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-233912928-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608112213-NWJCBW/README.md"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/64ded6605529e500fd282f24a3cf8d6e6dd15019101a2e999ba189e229890b3d.patch"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/a701fd55be97d26eb5216253531cfb184207566398eec908a45b80726a8b6183.json"
-    - ".agentplane/tasks/202608112213-NWJCBW/verification/20260811232327039-bbaccf63f6b7870c.json"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/12b1a6c919a9e848ce159d5b461c25703384a155ffe3159ebd73ae2676e873b3.patch"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/a16ddee5b7a24f642693c8459b1cdbd04d8e342de16e6a8e5a7c2317bafe971a.json"
+    - ".agentplane/tasks/202608112213-NWJCBW/verification/20260811233804982-7832a33f7cdf3f78.json"
     - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/39161dc5db0288e890dd4aad39fa7ee11c43b7fa801ca1b21153c50fac06b56e.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
-    - "packages/core/src/config/execution-profile.ts"
-    - "packages/core/src/config/io.ts"
-    - "packages/agentplane/src/cli/run-cli/commands/config.ts"
+    - "bun run bench:compatibility:check => pass current=324aabe0; bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts => 9/9 pass"
   findings:
-    - "Core validation, config IO, init, runtime approvals, harness, runner policy, and prompt projections converge on the same standard execution policy; no legacy profile changes budgets, traces, timeouts, or safety behavior."
-    - "Semantic review found that profile set initially overwrote explicit project approvals; commit dca3d280c removed that coupling and added regression coverage proving plan, network, and verify approvals remain unchanged."
+    - "No blocking semantic issue found. The checker rejects unapproved command, option, schema-profile, provenance, and release-surface drift; the focused critical suite reconstructs and validates the reviewed surface."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -137,7 +134,7 @@ events:
     state: "ok"
     note: "Compatibility review remediation verified at 017d3d3a8. Prior full product verification remains applicable: excluding generated task lifecycle artifacts, the only post-verification changes are the compatibility candidate, checker, and its regression test."
 doc_version: 3
-doc_updated_at: "2026-08-11T23:38:07.197Z"
+doc_updated_at: "2026-08-11T23:39:13.390Z"
 doc_updated_by: "CODER"
 description: "Remove profile-driven process variants from init, config, and runtime. New and upgraded projects must resolve to one fixed execution policy while legacy profile inputs migrate compatibly without changing workflow, runner, integrations, or explicit project approvals. Preserve task flexibility by making lifecycle and safety invariants fixed instead of imposing arbitrary autonomy tiers."
 sections:
