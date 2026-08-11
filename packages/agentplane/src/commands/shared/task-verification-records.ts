@@ -11,6 +11,7 @@ import {
   resolveVerificationInputIdentity,
   verificationInputDigest,
   verificationInputInvalidationReason,
+  type VerificationEvidenceReference,
   type VerificationInputIdentity,
 } from "./task-verification-input.js";
 import { parseVerificationCheckDetails } from "./verification-details.js";
@@ -21,6 +22,7 @@ export type VerificationRecordTargetContext = {
   taskIds?: readonly string[];
   workflowMode?: "direct" | "branch_pr";
   baseRef?: string | null;
+  evidenceRef?: string | null;
 };
 
 type VerificationRecordAssessmentReason =
@@ -33,6 +35,7 @@ type VerificationRecordAssessmentReason =
   | "verification_steps_changed"
   | "verification_context_changed"
   | "verification_environment_changed"
+  | "verification_evidence_changed"
   | "verification_input_changed"
   | "verification_legacy_unverifiable";
 
@@ -70,14 +73,31 @@ function isSha256(value: unknown): value is `sha256:${string}` {
   return typeof value === "string" && /^sha256:[a-f0-9]{64}$/u.test(value);
 }
 
+function parseEvidenceReferences(value: unknown): VerificationEvidenceReference[] | null {
+  if (!Array.isArray(value)) return null;
+  const references = value.filter((item): item is VerificationEvidenceReference => {
+    if (!item || typeof item !== "object" || Array.isArray(item)) return false;
+    const reference = item as unknown as Record<string, unknown>;
+    return (
+      typeof reference.reference === "string" &&
+      typeof reference.path === "string" &&
+      (reference.fragment === null || typeof reference.fragment === "string") &&
+      ["filesystem", "git", "missing", "unsafe"].includes(String(reference.source)) &&
+      isSha256(reference.digest)
+    );
+  });
+  return references.length === value.length ? references : null;
+}
+
 function parseVerificationInput(value: unknown): VerificationInputIdentity | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const input = value as Record<string, unknown>;
   const implementation = input.implementation;
   const context = input.context;
   const environment = input.environment;
+  const evidence = input.evidence;
   if (
-    input.schema_version !== 1 ||
+    input.schema_version !== 2 ||
     input.kind !== "task_verification_input" ||
     !implementation ||
     typeof implementation !== "object" ||
@@ -87,13 +107,18 @@ function parseVerificationInput(value: unknown): VerificationInputIdentity | nul
     Array.isArray(context) ||
     !environment ||
     typeof environment !== "object" ||
-    Array.isArray(environment)
+    Array.isArray(environment) ||
+    !evidence ||
+    typeof evidence !== "object" ||
+    Array.isArray(evidence)
   ) {
     return null;
   }
   const implementationRecord = implementation as Record<string, unknown>;
   const contextRecord = context as Record<string, unknown>;
   const environmentRecord = environment as Record<string, unknown>;
+  const evidenceRecord = evidence as Record<string, unknown>;
+  const evidenceReferences = parseEvidenceReferences(evidenceRecord.references);
   const runtime = environmentRecord.runtime;
   if (
     (implementationRecord.strategy !== "branch_diff" && implementationRecord.strategy !== "tree") ||
@@ -108,6 +133,25 @@ function parseVerificationInput(value: unknown): VerificationInputIdentity | nul
     !Array.isArray(contextRecord.paths) ||
     !contextRecord.paths.every((item) => typeof item === "string") ||
     !isSha256(environmentRecord.digest) ||
+    !isSha256(evidenceRecord.digest) ||
+    !isSha256(evidenceRecord.details_digest) ||
+    !evidenceReferences ||
+    evidenceRecord.digest !==
+      sha256(
+        JSON.stringify(
+          canonicalizeJson({
+            details_digest: evidenceRecord.details_digest,
+            references: evidenceReferences.map(
+              ({ reference, path: evidencePath, fragment, digest }) => ({
+                reference,
+                path: evidencePath,
+                fragment,
+                digest,
+              }),
+            ),
+          }),
+        ),
+      ) ||
     !runtime ||
     typeof runtime !== "object" ||
     Array.isArray(runtime) ||
@@ -118,6 +162,7 @@ function parseVerificationInput(value: unknown): VerificationInputIdentity | nul
         verifyStepsDigest: String(input.verify_steps_digest),
         contextDigest: String(contextRecord.digest),
         environmentDigest: String(environmentRecord.digest),
+        evidenceDigest: String(evidenceRecord.digest),
       })
   ) {
     return null;
@@ -200,6 +245,8 @@ async function assessCurrentVerification(
       verifySteps: task.sections?.["Verify Steps"] ?? "",
       workflowMode: targetContext.workflowMode ?? "direct",
       baseRef: targetContext.baseRef,
+      verificationDetails: typeof record.details === "string" ? record.details : null,
+      evidenceRef: targetContext.evidenceRef,
     }).catch(() => null);
     if (!currentInput) {
       return rejectedAssessment("verification_invalid_record", {
@@ -395,7 +442,7 @@ export async function hasAcceptedVerificationRecord(opts: {
         record,
         opts.task,
         opts.evaluatedSha,
-        opts.targetContext,
+        { ...opts.targetContext!, evidenceRef: opts.snapshotRef },
         opts.requireConcreteCheckDetails,
       ),
     ),

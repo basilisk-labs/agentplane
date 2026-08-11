@@ -231,6 +231,7 @@ async function recordVerificationResult(opts: {
           targetSha: evaluatedSha,
           verifySteps: verificationScope,
           workflowMode: config.workflow_mode,
+          verificationDetails: opts.details,
         });
         if (
           opts.state === "ok" &&

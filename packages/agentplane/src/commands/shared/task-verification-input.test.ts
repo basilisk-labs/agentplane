@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -36,7 +36,12 @@ async function commitPath(
   return stdout.trim();
 }
 
-async function identity(root: string, targetSha: string, verifySteps = "Run tests.") {
+async function identity(
+  root: string,
+  targetSha: string,
+  verifySteps = "Run tests.",
+  verificationDetails?: string,
+) {
   const value = await resolveVerificationInputIdentity({
     gitRoot: root,
     workflowDir: ".agentplane/tasks",
@@ -46,6 +51,7 @@ async function identity(root: string, targetSha: string, verifySteps = "Run test
     workflowMode: "branch_pr",
     environment: ENVIRONMENT,
     baseRef: "main",
+    verificationDetails,
   });
   if (!value) throw new Error("expected verification input identity");
   return value;
@@ -160,6 +166,105 @@ describe("task verification input identity", () => {
     expect(verificationInputInvalidationReason({ recorded: before, current: stepsChanged })).toBe(
       "verification_steps_changed",
     );
+  });
+
+  it("invalidates the receipt when implementation-significant whitespace changes", async () => {
+    const { root } = await makeTaskBranch();
+    const indentedSha = await commitPath(
+      root,
+      "src/indentation.py",
+      "if True:\n    result = 1\n",
+      "add indented implementation",
+    );
+    const before = await identity(root, indentedSha);
+    const changedSha = await commitPath(
+      root,
+      "src/indentation.py",
+      "if True:\n  result = 1\n",
+      "change significant indentation",
+    );
+    const after = await identity(root, changedSha);
+
+    expect(after.implementation.digest).not.toBe(before.implementation.digest);
+    expect(verificationInputInvalidationReason({ recorded: before, current: after })).toBe(
+      "verification_implementation_changed",
+    );
+  });
+
+  it("invalidates the receipt when a verification-tool configuration changes", async () => {
+    const { root, implementationSha } = await makeTaskBranch();
+    const before = await identity(root, implementationSha);
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await commitPath(root, "knip.json", '{"entry":["src/index.ts"]}\n', "change knip config");
+    await execFileAsync("git", ["checkout", "task/verification-input"], { cwd: root });
+    await execFileAsync("git", ["rebase", "main"], { cwd: root });
+    const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const after = await identity(root, stdout.trim());
+
+    expect(after.context.paths).toContain("knip.json");
+    expect(verificationInputInvalidationReason({ recorded: before, current: after })).toBe(
+      "verification_context_changed",
+    );
+  });
+
+  it("invalidates the receipt when referenced mutable evidence changes", async () => {
+    const { root, implementationSha } = await makeTaskBranch();
+    const evidencePath = ".agentplane/cache/runtime-evidence.json";
+    await mkdir(path.dirname(path.join(root, evidencePath)), { recursive: true });
+    await writeFile(path.join(root, evidencePath), '{"result":"pass"}\n', "utf8");
+    const details = [
+      "Command: bun test",
+      "Result: pass",
+      `Evidence: ${evidencePath}#summary`,
+      "Scope: verification input identity",
+    ].join("\n");
+    const before = await identity(root, implementationSha, "Run tests.", details);
+    await writeFile(path.join(root, evidencePath), '{"result":"replacement"}\n', "utf8");
+    const after = await identity(root, implementationSha, "Run tests.", details);
+
+    expect(before.evidence.references).toEqual([
+      expect.objectContaining({ path: evidencePath, fragment: "summary", source: "filesystem" }),
+    ]);
+    expect(verificationInputInvalidationReason({ recorded: before, current: after })).toBe(
+      "verification_evidence_changed",
+    );
+  });
+
+  it("preserves evidence identity when the same committed artifact is read from Git", async () => {
+    const { root } = await makeTaskBranch();
+    const evidencePath = `.agentplane/tasks/${TASK_ID}/evidence/runtime.json`;
+    const evidenceSha = await commitPath(
+      root,
+      evidencePath,
+      '{"result":"pass"}\n',
+      "record committed evidence",
+    );
+    const details = [
+      "Command: bun test",
+      "Result: pass",
+      `Evidence: ${evidencePath}#summary`,
+      "Scope: committed evidence fallback",
+    ].join("\n");
+    const fromFilesystem = await identity(root, evidenceSha, "Run tests.", details);
+    await unlink(path.join(root, evidencePath));
+    const fromGit = await resolveVerificationInputIdentity({
+      gitRoot: root,
+      workflowDir: ".agentplane/tasks",
+      taskIds: [TASK_ID],
+      targetSha: evidenceSha,
+      verifySteps: "Run tests.",
+      workflowMode: "branch_pr",
+      environment: ENVIRONMENT,
+      baseRef: "main",
+      verificationDetails: details,
+      evidenceRef: evidenceSha,
+    });
+    if (!fromGit) throw new Error("expected Git evidence identity");
+
+    expect(fromFilesystem.evidence.references[0]?.source).toBe("filesystem");
+    expect(fromGit.evidence.references[0]?.source).toBe("git");
+    expect(fromGit.evidence.digest).toBe(fromFilesystem.evidence.digest);
+    expect(fromGit.digest).toBe(fromFilesystem.digest);
   });
 
   it("invalidates the receipt when dependency context or runtime contract changes", async () => {
