@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -61,7 +61,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-11T01:30:23.454Z"
+  updated_at: "2026-08-11T01:44:16.826Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -71,8 +71,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "1d12dd696ec3ea091fea49390972bc11b542b5cb"
-  message: "🚧 3QTGFQ task: record external implementation evidence"
+  hash: "dcff436aeadbf074cd8db29c843dc14baa7b78c9"
+  message: "✅ 3QTGFQ close: refresh verification and evaluator evidence"
 comments:
   -
     author: "CODER"
@@ -83,6 +83,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -125,8 +128,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified foreground queue supervision, stale merged-entry recovery, and parallel worktree ownership at implementation a0cfe7da0."
+  -
+    type: "status"
+    at: "2026-08-11T01:44:16.826Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "dcff436aeadbf074cd8db29c843dc14baa7b78c9"
 doc_version: 3
-doc_updated_at: "2026-08-11T01:42:38.217Z"
+doc_updated_at: "2026-08-11T01:44:16.856Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr task supervision enqueue and then serialize its own integration queue through typed deterministic operations, recover handoffs without semantic rework, and prevent stale base task replicas while preserving parallel per-task worktrees."
 sections:
@@ -293,8 +304,8 @@ sections:
       Resolution: Added exhaustive typed operation wiring, pre-authorized queue-consumption policy, in-process run-next execution, and real parallel-worktree/base-replica regression coverage.
 extensions:
   implementation_commit:
-    hash: "04c1ee1f6cb74c7da7a7f83a0de39e0b0cee4718"
-    message: "🚧 3QTGFQ task: apply external agent result"
+    hash: "a0cfe7da09eae3b06577caa9e7c02cb2c6bfd421"
+    message: "🚧 3QTGFQ task: reconcile merged queue entries before claim"
   workflow_route_baseline:
     start_head_sha: "4677188e875b6a7034f935b382f142e93d7d02e5"
     version: 1
@@ -486,4 +497,4 @@ DecisionContextRef:
 - Provenance: `supervisor_journal/agentplane`
 - Journal digest: `sha256:90eda43765582f18f2d4797a05eca613f69ac87dbfdd9a6f76ca52656db29c1d`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-11T01:30:23.454Z`
+- Updated at: `2026-08-11T01:44:16.826Z`
