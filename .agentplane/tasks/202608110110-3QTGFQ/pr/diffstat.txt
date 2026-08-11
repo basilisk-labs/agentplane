@@ -1,8 +1,9 @@
  .../src/cli/run-cli.core.pr-flow.test.ts           | 112 +++++++++++++++++++++
  .../src/commands/integrate-queue-lane.test.ts      |  19 +++-
  .../src/commands/integrate-queue-lane.ts           |  11 +-
- .../src/commands/integrate-queue.command.test.ts   |  19 +++-
- .../src/commands/integrate-queue.command.ts        |   9 ++
+ .../src/commands/integrate-queue-reservation.ts    |  14 ++-
+ .../src/commands/integrate-queue.command.test.ts   |  41 +++++++-
+ .../src/commands/integrate-queue.command.ts        |  12 ++-
  .../commands/shared/side-effect-authority.test.ts  |   4 +
  .../src/commands/shared/side-effect-authority.ts   |  14 +++
  .../commands/shared/workflow-operation-effects.ts  |   1 +
@@ -10,10 +11,10 @@
  .../workflow-operation-projection.registry.test.ts |   4 +
  .../shared/workflow-operation-projection.ts        |   3 +
  .../src/commands/shared/workflow-postconditions.ts |   7 ++
- .../workflow-step-integration-projections.test.ts  |  46 +++++++--
+ .../workflow-step-integration-projections.test.ts  |  60 ++++++++++-
  .../shared/workflow-step-integration-queue.ts      |  18 +++-
  .../src/commands/shared/workflow-step.ts           |  20 ++++
- .../task/branch-task-supervisor-operations.test.ts |  49 +++++++++
- .../task/branch-task-supervisor-operations.ts      |  25 +++++
+ .../task/branch-task-supervisor-operations.test.ts |  83 +++++++++++++++
+ .../task/branch-task-supervisor-operations.ts      |  44 ++++++++
  .../commands/task/branch-task-supervisor.test.ts   |  15 ++-
- 18 files changed, 347 insertions(+), 30 deletions(-)
+ 19 files changed, 450 insertions(+), 33 deletions(-)
