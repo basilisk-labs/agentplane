@@ -19,9 +19,9 @@ Remove profile-driven process variants from init, config, and runtime. New and u
 - Note:
 
 ```text
-PASS for implementation 2b5503e94. Focused behavior, CLI lifecycle, build, generated artifacts,
-formatting, type and lint contracts passed; overloaded-suite concurrency failures passed in isolated
-reruns.
+PASS for current implementation dca3d280c: 340 focused tests passed after preserving explicit
+project approvals; typecheck, build, full lint, formatting, schema, and generated CLI docs contracts
+pass. Prior overloaded-suite concurrency failures remain independently green.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -41,14 +41,14 @@ reruns.
  docs/user/commands.mdx                             |  27 ++--
  docs/user/configuration.mdx                        |  29 +++--
  docs/user/setup.mdx                                |  20 ++-
- ...n-cli.core.branch-meta.workflow-profile.test.ts |  11 +-
+ ...n-cli.core.branch-meta.workflow-profile.test.ts |  14 ++-
  .../src/cli/run-cli.core.init.branch-pr.test.ts    |   8 +-
  .../agentplane/src/cli/run-cli.core.init.test.ts   |  19 +--
  .../run-cli.core.init.validation-conflicts.test.ts |  14 ++-
  ...un-cli.core.lifecycle.finish-validation.test.ts |   7 +-
  .../run-cli.core.lifecycle.start-readiness.test.ts |   7 +-
  packages/agentplane/src/cli/run-cli.core.test.ts   |  24 +++-
- .../agentplane/src/cli/run-cli/commands/config.ts  |  95 +++++++-------
+ .../agentplane/src/cli/run-cli/commands/config.ts  |  95 ++++++--------
  .../src/cli/run-cli/commands/init/answers.ts       |  17 +--
  .../cli/run-cli/commands/init/execution.test.ts    |   4 +-
  .../src/cli/run-cli/commands/init/execution.ts     |   8 +-
@@ -96,7 +96,7 @@ reruns.
  packages/spec/schemas/workflow.schema.json         |   8 +-
  schemas/config.schema.json                         |   6 +-
  schemas/workflow.schema.json                       |   8 +-
- 63 files changed, 517 insertions(+), 573 deletions(-)
+ 63 files changed, 516 insertions(+), 577 deletions(-)
 ```
 
 </details>

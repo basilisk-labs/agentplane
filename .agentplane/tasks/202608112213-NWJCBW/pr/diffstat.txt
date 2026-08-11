@@ -6,14 +6,14 @@
  docs/user/commands.mdx                             |  27 ++--
  docs/user/configuration.mdx                        |  29 +++--
  docs/user/setup.mdx                                |  20 ++-
- ...n-cli.core.branch-meta.workflow-profile.test.ts |  11 +-
+ ...n-cli.core.branch-meta.workflow-profile.test.ts |  14 ++-
  .../src/cli/run-cli.core.init.branch-pr.test.ts    |   8 +-
  .../agentplane/src/cli/run-cli.core.init.test.ts   |  19 +--
  .../run-cli.core.init.validation-conflicts.test.ts |  14 ++-
  ...un-cli.core.lifecycle.finish-validation.test.ts |   7 +-
  .../run-cli.core.lifecycle.start-readiness.test.ts |   7 +-
  packages/agentplane/src/cli/run-cli.core.test.ts   |  24 +++-
- .../agentplane/src/cli/run-cli/commands/config.ts  |  95 +++++++-------
+ .../agentplane/src/cli/run-cli/commands/config.ts  |  95 ++++++--------
  .../src/cli/run-cli/commands/init/answers.ts       |  17 +--
  .../cli/run-cli/commands/init/execution.test.ts    |   4 +-
  .../src/cli/run-cli/commands/init/execution.ts     |   8 +-
@@ -61,4 +61,4 @@
  packages/spec/schemas/workflow.schema.json         |   8 +-
  schemas/config.schema.json                         |   6 +-
  schemas/workflow.schema.json                       |   8 +-
- 63 files changed, 517 insertions(+), 573 deletions(-)
+ 63 files changed, 516 insertions(+), 577 deletions(-)
