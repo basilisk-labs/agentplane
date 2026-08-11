@@ -1,0 +1,82 @@
+{
+  "details": "Command: `bun run bench:compatibility:check`\nResult: pass.\nEvidence: The approved cumulative candidate matches the exact release-version surface digest 40b3337f28279da20f287cf584b95fafa81383a20abc4e7adc4cf4dce755f459 with 263 commands, 180 arguments, and 849 options.\nScope: Reviewed compatibility candidate, immutable baseline anchor, task-source provenance, and the five new structured task-create options at implementation commit da72914861a3.\n\nCommand: `bun run test:critical`\nResult: pass (12 chunks, 91 tests)\nEvidence: Every critical CLI chunk passed, including compatibility reconstruction, RF-04 replay, exit codes, Git edge cases, protected paths, scope isolation, symlink roots, and trust-boundary ratchets.\nScope: Exact hosted `verify-cli-critical` command at implementation commit da72914861a3.\n\nCommand: `bun run typecheck` and `bun run lint:core`\nResult: pass.\nEvidence: TypeScript and ESLint completed with exit code 0 after the reviewed-candidate update.\nScope: Compatibility checker, critical test, and existing explicit-intent implementation.\n\nCommand: `bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts` and `bun run test:fast`\nResult: pass (focused 4 files and 36 tests; full 549 files and 3983 tests)\nEvidence: Reused results for unchanged production implementation c7de784fbab8; the hosted rework only added compatibility candidate and critical-gate artifacts.\nScope: Explicit structured intent, cross-language neutral planner intake, CLI help, and repository regression behavior.\n\nCommand: `bun run format:check`, `bun run knip:check`, `bun run hotspots:check`, `bun run build`, and `git diff --check`\nResult: pass.\nEvidence: Reused unchanged implementation results plus a fresh diff-integrity check; no whitespace errors or unreviewed compatibility-surface sections remain.\nScope: Formatting, dead-code, source-size, distributable build, and final diff integrity.",
+  "digest": "sha256:74fc73472f7372186add4654e238250132aca88c767677e6c16179b1173729bd",
+  "implementation_sha": "da72914861a3b6c8db97de035b7ee42b67940c1c",
+  "input": {
+    "context": {
+      "digest": "sha256:36fec4cc01483f7dade507195e7c8f954b583a6cefd467466f4cbfb918df42fd",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:4f81db4733e131e5c9850f19d580e25ba547970fd8008aecb5cfa9fc28025457",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:3ab78ae59fb498a7d0a460937e9e881d8f5a8db40ebe1e32dac24ec1e504cf60",
+      "digest": "sha256:ee6b2b4992e55faa9b8b31e56c2269ea9e284716cc1566ecdd9594ce3f34d0e0",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "c8d4ebd0ccd74b5afee77d1b44eb008a810a9bd0",
+      "digest": "sha256:0a0d0237b3c5e5ad47c7393ab9feb9f86f97a53136880cafecd7a7734de99c30",
+      "strategy": "branch_diff",
+      "target_sha": "da72914861a3b6c8db97de035b7ee42b67940c1c"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 2,
+    "verify_steps_digest": "sha256:a592495c95da711ecb80215b6394f03120f4aad2dfdbcaa463af64d31287db66"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified da72914861a3: explicit intent behavior remains green and both previously failing hosted gate commands now pass locally.",
+  "recorded_at": "2026-08-11T08:57:23.448Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts`. Expected: explicit structured intent persists exactly; unstructured English, Russian, Japanese, negated, and ambiguous outcomes all remain neutral PLANNER intake; help surfaces contain no keyword-inference claim. 2. Run `bun run typecheck` and `bun run lint:core`. Expected: structured option parsing, persisted task fields, and public payload types pass static validation. 3. Run `bun run test:fast`. Expected: the complete regression suite passes with no route, task creation, duplicate locking, or agent handoff regression. 4. Run `bun run format:check`, `bun run knip:check`, `bun run hotspots:check`, and `bun run build`. Expected: formatting, unused-code, size, and package build gates pass. 5. Inspect the final diff. Expected: ordered keyword tables and natural-language classifier code are absent; the CLI only validates caller-supplied semantic fields or emits `semantic_intake_pending`.",
+  "scope_digest": "sha256:a592495c95da711ecb80215b6394f03120f4aad2dfdbcaa463af64d31287db66",
+  "task_id": "202608110235-WCJJRD",
+  "verification_command": "agentplane verify 202608110235-WCJJRD --ok --by TESTER",
+  "verifier": "TESTER"
+}

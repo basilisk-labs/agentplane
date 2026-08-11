@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608110235-WCJJRD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T08:58:01.240Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The reworked head preserves the explicit-intent design and now records its intentional public CLI delta in the immutable-baseline compatibility process; both failed hosted commands pass exactly.",
+  "evaluated_sha": "da72914861a3b6c8db97de035b7ee42b67940c1c",
+  "blueprint_digest": "6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944",
+  "findings": [
+    "The compatibility candidate adds only the five caller-supplied task-create semantic options, attributes them to WCJJRD, preserves all prior commands and options, and keeps the deprecated JSON alias outside the structural CLI delta.",
+    "The cumulative release surface is reconstructed exactly at 263 commands, 180 arguments, and 849 options; the v0.6.24 baseline anchor remains unchanged.",
+    "All 12 critical CLI chunks pass, so the reviewed-candidate update does not weaken exit-code, scope, Git-edge, protected-path, symlink, replay, or trust-boundary invariants."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608110235-WCJJRD/verification/20260811085723448-74fc73472f737218.json",
+    "scripts/baselines/v0.7-compatibility-candidate.json",
+    "scripts/checks/check-compatibility-contract-baseline.mjs",
+    "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Future public CLI additions still require an explicit reviewed-candidate update; the CI task should make this required local gate faster and more discoverable."
+  ]
+}

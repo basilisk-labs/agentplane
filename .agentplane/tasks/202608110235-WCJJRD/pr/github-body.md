@@ -19,8 +19,8 @@ Remove ordered natural-language keyword classification from task create. The CLI
 - Note:
 
 ```text
-Verified c7de784fbab8 using unchanged content-addressed evidence; lifecycle metadata did not trigger
-duplicate test execution.
+Verified da72914861a3: explicit intent behavior remains green and both previously failing hosted
+gate commands now pass locally.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -34,9 +34,12 @@ duplicate test execution.
 ```text
  .../run-cli.core.help-snap.test.ts.snap            |   2 +-
  .../src/cli/run-cli.core.tasks.user-create.test.ts | 248 ++++++++-----
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
  .../agentplane/src/commands/task/create.command.ts | 400 ++++++++-------------
  .../agentplane/src/commands/task/task.command.ts   |   4 +-
- 4 files changed, 312 insertions(+), 342 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    | 157 +++++++-
+ .../check-compatibility-contract-baseline.mjs      | 132 ++++++-
+ 7 files changed, 598 insertions(+), 356 deletions(-)
 ```
 
 </details>

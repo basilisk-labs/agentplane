@@ -2,10 +2,10 @@
 id: "202608110235-WCJJRD"
 title: "Replace task-create keyword inference with explicit semantic intent"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -27,40 +27,40 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T08:37:09.532Z"
+  updated_at: "2026-08-11T08:57:23.448Z"
   updated_by: "TESTER"
-  note: "Verified c7de784fbab8 using unchanged content-addressed evidence; lifecycle metadata did not trigger duplicate test execution."
+  note: "Verified da72914861a3: explicit intent behavior remains green and both previously failing hosted gate commands now pass locally."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-11T08:38:12.333Z"
+  updated_at: "2026-08-11T08:58:01.240Z"
   updated_by: "HUMAN"
-  note: "Task creation no longer guesses semantic intent from natural-language keywords; deterministic validation remains in the CLI, while unstructured input is handed to PLANNER and the patch keeps its prior JSON field as a deprecated exact alias."
-  evaluated_sha: "c7de784fbab8d1f3bc5b6f5c1d8432dddd3e3bb2"
+  note: "The reworked head preserves the explicit-intent design and now records its intentional public CLI delta in the immutable-baseline compatibility process; both failed hosted commands pass exactly."
+  evaluated_sha: "da72914861a3b6c8db97de035b7ee42b67940c1c"
   blueprint_digest: "6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944"
   evidence_refs:
-    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-083811948-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-083811948-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/a74c7c43bc0435b16b8cc6c983da42a2dd56c97aa3489c0e91b24b75fb993735.md"
-    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-083811948-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-083811948-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-085800924-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-085800924-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/5cb93a9a5eb0b55773911c4583a9369b1be1823ebb14e94a6fe4c1f3e07c0ae9.md"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-085800924-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-085800924-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608110235-WCJJRD/README.md"
-    - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/2767b19416d0115ba10849463f556a1340ba3e93af9a93e9708028850240d9d8.patch"
-    - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/fb5bd1acf6e7e1788bdeb626d59a0dc984d9becc78223e4a4858f48a582e30c4.json"
-    - ".agentplane/tasks/202608110235-WCJJRD/verification/20260811083709532-bfd9177b3422d30b.json"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/b9b4d4f5c72f6a50effe74f4475beb3843ee8e8cb702ae5b643ed3282b1147f9.patch"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/d7d795f7b02a7b6215c558d00cf7f58e880646f99820130964b752358c3710f5.json"
+    - ".agentplane/tasks/202608110235-WCJJRD/verification/20260811085723448-74fc73472f737218.json"
     - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/401907a8523393cf75cebc6e66ba47c377563c19ea58b2689c0a3bfbe01b846a.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
-    - "packages/agentplane/src/commands/task/create.command.ts"
-    - "packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts"
-    - "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
+    - "scripts/baselines/v0.7-compatibility-candidate.json"
+    - "scripts/checks/check-compatibility-contract-baseline.mjs"
+    - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
   findings:
-    - "The implementation removes ordered keyword tables and routes English, Russian, Japanese, negated, and ambiguous unstructured descriptions to the same semantic_intake_pending boundary."
-    - "Partially supplied structured intent fails closed, while complete caller-supplied task kind and mutation scope persist with explicit provenance and existing branch_pr route floors."
-    - "The new semantic_intent payload is truthful and the deprecated inferred_intent alias preserves patch-level consumers without restoring inference behavior."
+    - "The compatibility candidate adds only the five caller-supplied task-create semantic options, attributes them to WCJJRD, preserves all prior commands and options, and keeps the deprecated JSON alias outside the structural CLI delta."
+    - "The cumulative release surface is reconstructed exactly at 263 commands, 180 arguments, and 849 options; the v0.6.24 baseline anchor remains unchanged."
+    - "All 12 critical CLI chunks pass, so the reviewed-candidate update does not weaken exit-code, scope, Git-edge, protected-path, symlink, replay, or trust-boundary invariants."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -84,8 +84,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "1ba74a77559f3df96ba6806231ca05b47adc74a2"
-  message: "🚧 WCJJRD task: Record final quality evidence"
+  hash: "da72914861a3b6c8db97de035b7ee42b67940c1c"
+  message: "🧪 WCJJRD task: Review explicit intent compatibility surface"
 comments:
   -
     author: "CODER"
@@ -99,6 +99,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Hosted rework: record the reviewed compatibility candidate for the intentional task-create CLI surface."
 events:
   -
     type: "status"
@@ -155,8 +158,22 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "1ba74a77559f3df96ba6806231ca05b47adc74a2"
+  -
+    type: "status"
+    at: "2026-08-11T08:56:42.775Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Hosted rework: record the reviewed compatibility candidate for the intentional task-create CLI surface."
+    commit: "da72914861a3b6c8db97de035b7ee42b67940c1c"
+  -
+    type: "verify"
+    at: "2026-08-11T08:57:23.448Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified da72914861a3: explicit intent behavior remains green and both previously failing hosted gate commands now pass locally."
 doc_version: 3
-doc_updated_at: "2026-08-11T08:39:31.399Z"
+doc_updated_at: "2026-08-11T08:58:01.265Z"
 doc_updated_by: "CODER"
 description: "Remove ordered natural-language keyword classification from task create. The CLI must validate structured task intent supplied by the agent or user, and otherwise create a neutral semantic-intake boundary for PLANNER without guessing task kind, mutation scope, risks, tags, blueprint, or execution route."
 sections:
@@ -366,6 +383,61 @@ sections:
     Result: pass.
     Evidence: No whitespace errors; ordered keyword tables and natural-language classifier are absent; the deprecated JSON `inferred_intent` field remains an exact alias for patch compatibility.
     Scope: Final implementation and test diff at commit c7de784fbab8.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110235-WCJJRD-replace-task-create-keyword-inference-with-expli/.agentplane/tasks/202608110235-WCJJRD/blueprint/resolved-snapshot.json
+    - old_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+    - current_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608110235-WCJJRD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T08:57:23.448Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified da72914861a3: explicit intent behavior remains green and both previously failing hosted gate commands now pass locally.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a592495c95da711ecb80215b6394f03120f4aad2dfdbcaa463af64d31287db66, input_digest=sha256:4f81db4733e131e5c9850f19d580e25ba547970fd8008aecb5cfa9fc28025457
+
+    Details:
+
+    Command: `bun run bench:compatibility:check`
+    Result: pass.
+    Evidence: The approved cumulative candidate matches the exact release-version surface digest 40b3337f28279da20f287cf584b95fafa81383a20abc4e7adc4cf4dce755f459 with 263 commands, 180 arguments, and 849 options.
+    Scope: Reviewed compatibility candidate, immutable baseline anchor, task-source provenance, and the five new structured task-create options at implementation commit da72914861a3.
+
+    Command: `bun run test:critical`
+    Result: pass (12 chunks, 91 tests)
+    Evidence: Every critical CLI chunk passed, including compatibility reconstruction, RF-04 replay, exit codes, Git edge cases, protected paths, scope isolation, symlink roots, and trust-boundary ratchets.
+    Scope: Exact hosted `verify-cli-critical` command at implementation commit da72914861a3.
+
+    Command: `bun run typecheck` and `bun run lint:core`
+    Result: pass.
+    Evidence: TypeScript and ESLint completed with exit code 0 after the reviewed-candidate update.
+    Scope: Compatibility checker, critical test, and existing explicit-intent implementation.
+
+    Command: `bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts` and `bun run test:fast`
+    Result: pass (focused 4 files and 36 tests; full 549 files and 3983 tests)
+    Evidence: Reused results for unchanged production implementation c7de784fbab8; the hosted rework only added compatibility candidate and critical-gate artifacts.
+    Scope: Explicit structured intent, cross-language neutral planner intake, CLI help, and repository regression behavior.
+
+    Command: `bun run format:check`, `bun run knip:check`, `bun run hotspots:check`, `bun run build`, and `git diff --check`
+    Result: pass.
+    Evidence: Reused unchanged implementation results plus a fresh diff-integrity check; no whitespace errors or unreviewed compatibility-surface sections remain.
+    Scope: Formatting, dead-code, source-size, distributable build, and final diff integrity.
 
     BlueprintSnapshotRef:
     - state: current
@@ -617,6 +689,61 @@ Command: `git diff --check` and final implementation diff inspection
 Result: pass.
 Evidence: No whitespace errors; ordered keyword tables and natural-language classifier are absent; the deprecated JSON `inferred_intent` field remains an exact alias for patch compatibility.
 Scope: Final implementation and test diff at commit c7de784fbab8.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110235-WCJJRD-replace-task-create-keyword-inference-with-expli/.agentplane/tasks/202608110235-WCJJRD/blueprint/resolved-snapshot.json
+- old_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+- current_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608110235-WCJJRD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T08:57:23.448Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified da72914861a3: explicit intent behavior remains green and both previously failing hosted gate commands now pass locally.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a592495c95da711ecb80215b6394f03120f4aad2dfdbcaa463af64d31287db66, input_digest=sha256:4f81db4733e131e5c9850f19d580e25ba547970fd8008aecb5cfa9fc28025457
+
+Details:
+
+Command: `bun run bench:compatibility:check`
+Result: pass.
+Evidence: The approved cumulative candidate matches the exact release-version surface digest 40b3337f28279da20f287cf584b95fafa81383a20abc4e7adc4cf4dce755f459 with 263 commands, 180 arguments, and 849 options.
+Scope: Reviewed compatibility candidate, immutable baseline anchor, task-source provenance, and the five new structured task-create options at implementation commit da72914861a3.
+
+Command: `bun run test:critical`
+Result: pass (12 chunks, 91 tests)
+Evidence: Every critical CLI chunk passed, including compatibility reconstruction, RF-04 replay, exit codes, Git edge cases, protected paths, scope isolation, symlink roots, and trust-boundary ratchets.
+Scope: Exact hosted `verify-cli-critical` command at implementation commit da72914861a3.
+
+Command: `bun run typecheck` and `bun run lint:core`
+Result: pass.
+Evidence: TypeScript and ESLint completed with exit code 0 after the reviewed-candidate update.
+Scope: Compatibility checker, critical test, and existing explicit-intent implementation.
+
+Command: `bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts` and `bun run test:fast`
+Result: pass (focused 4 files and 36 tests; full 549 files and 3983 tests)
+Evidence: Reused results for unchanged production implementation c7de784fbab8; the hosted rework only added compatibility candidate and critical-gate artifacts.
+Scope: Explicit structured intent, cross-language neutral planner intake, CLI help, and repository regression behavior.
+
+Command: `bun run format:check`, `bun run knip:check`, `bun run hotspots:check`, `bun run build`, and `git diff --check`
+Result: pass.
+Evidence: Reused unchanged implementation results plus a fresh diff-integrity check; no whitespace errors or unreviewed compatibility-surface sections remain.
+Scope: Formatting, dead-code, source-size, distributable build, and final diff integrity.
 
 BlueprintSnapshotRef:
 - state: current
