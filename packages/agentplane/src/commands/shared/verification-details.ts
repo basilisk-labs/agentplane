@@ -6,6 +6,12 @@ export type VerificationCheckDetail = {
 };
 
 const REQUIRED_FIELDS = ["Command", "Result", "Evidence", "Scope"] as const;
+type RequiredField = (typeof REQUIRED_FIELDS)[number];
+
+// A label is structural only at a line boundary or after the terminal period
+// used by the compatibility inline format. Plain label-shaped text inside a
+// command or evidence value (for example `echo Scope: smoke`) stays data.
+const FIELD_PATTERN = /(?:^|(?:\r?\n)[\t ]*|(?<=\.)[\t ]+)(Command|Result|Evidence|Scope):[\t ]*/gu;
 
 /**
  * Parses the durable, user-facing verification-details format once. Consumers
@@ -14,24 +20,44 @@ const REQUIRED_FIELDS = ["Command", "Result", "Evidence", "Scope"] as const;
  */
 export function parseVerificationCheckDetails(details: unknown): VerificationCheckDetail[] | null {
   if (typeof details !== "string" || !details.trim()) return null;
-  const checks = details.trim().split(/\n\s*\n/gu);
-  const parsed = checks.map((check) => {
-    const fields = new Map(
-      check.split("\n").map((line) => {
-        const [field, ...value] = line.split(":");
-        return [field?.trim(), value.join(":").trim()] as const;
-      }),
-    );
-    if (REQUIRED_FIELDS.some((field) => !fields.get(field))) return null;
-    const resultField = fields.get("Result") ?? "";
-    const resultMatch = /^(pass|fail)(?:\.|\s*;\s*.+|\s+\(.+\))?$/u.exec(resultField);
+  const text = details.trim();
+  const matches = [...text.matchAll(FIELD_PATTERN)];
+  if (matches.length === 0) return null;
+
+  const checks: Map<RequiredField, string>[] = [];
+  let fields: Map<RequiredField, string> | null = null;
+  for (const [index, match] of matches.entries()) {
+    const field = match[1] as RequiredField;
+    if (field === "Command") {
+      if (fields) checks.push(fields);
+      fields = new Map();
+    }
+    if (!fields || fields.has(field)) return null;
+    const valueStart = (match.index ?? 0) + match[0].length;
+    const valueEnd = matches[index + 1]?.index ?? text.length;
+    const value = text.slice(valueStart, valueEnd).trim();
+    if (!value) return null;
+    fields.set(field, value);
+  }
+  if (fields) checks.push(fields);
+  if (
+    checks.length === 0 ||
+    checks.some((check) => REQUIRED_FIELDS.some((field) => !check.get(field)))
+  ) {
+    return null;
+  }
+
+  const parsed: VerificationCheckDetail[] = [];
+  for (const check of checks) {
+    const resultField = check.get("Result") ?? "";
+    const resultMatch = /^(pass|fail)(?:\.|\s*;\s*.+|\s+\(.+\)\.?)?$/u.exec(resultField);
     if (!resultMatch) return null;
-    return {
-      command: fields.get("Command") ?? "",
+    parsed.push({
+      command: check.get("Command") ?? "",
       result: resultMatch[1] as "pass" | "fail",
-      evidence: fields.get("Evidence") ?? "",
-      scope: fields.get("Scope") ?? "",
-    } satisfies VerificationCheckDetail;
-  });
-  return parsed.every((check): check is VerificationCheckDetail => check !== null) ? parsed : null;
+      evidence: check.get("Evidence") ?? "",
+      scope: check.get("Scope") ?? "",
+    });
+  }
+  return parsed;
 }

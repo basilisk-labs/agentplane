@@ -1,0 +1,1 @@
+✅ QHR892 task: Make verification evidence atomic, immediately fresh, and reusable [202608111036-QHR892]

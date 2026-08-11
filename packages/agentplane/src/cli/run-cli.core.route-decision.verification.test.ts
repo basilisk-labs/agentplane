@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -194,7 +194,207 @@ describe("runCli route decision verification freshness", () => {
     ]);
     expect(stale.blockers).toContainEqual({
       code: "verification_required",
-      summary: "the passing verification record does not cover the current implementation head",
+      summary:
+        "the passing verification record does not cover the current verification input (reason_code=verification_implementation_changed)",
     });
+  });
+
+  it("accepts one valid verify result immediately and reuses it across a lifecycle-only commit", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Record verification once and reuse it when only lifecycle evidence changes.",
+      "--updated-by",
+      "PLANNER",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    const branch = `task/${taskId}/single-verification`;
+    await execFileAsync("git", ["checkout", "-b", branch], {
+      cwd: root,
+    });
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: implement the verification freshness regression fixture.",
+      "--root",
+      root,
+    ]);
+    await execFileAsync("git", ["add", "--all"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: prepare verification fixture"], {
+      cwd: root,
+    });
+    await writeFile(path.join(root, "impl.txt"), "verified implementation\n", "utf8");
+    await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: verified implementation"], {
+      cwd: root,
+    });
+    const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    await runCliSilent([
+      "task",
+      "set-status",
+      taskId,
+      "DOING",
+      "--author",
+      "CODER",
+      "--body",
+      "Implementation committed and ready for independent verification evidence.",
+      "--commit",
+      implementationHead.trim(),
+      "--root",
+      root,
+    ]);
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(
+      path.join(prDir, "meta.json"),
+      `${JSON.stringify(
+        {
+          base: "main",
+          branch,
+          created_at: "2026-01-01T00:00:00.000Z",
+          head_sha: implementationHead.trim(),
+          pr_number: 123,
+          pr_url: "https://github.com/example/repo/pull/123",
+          schema_version: 1,
+          status: "OPEN",
+          task_id: taskId,
+          updated_at: "2026-01-01T00:00:00.000Z",
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}/pr/meta.json`], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["commit", "-m", "task: link open PR fixture"], { cwd: root });
+    const rejectedIo = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "verify",
+          taskId,
+          "--ok",
+          "--by",
+          "TESTER",
+          "--note",
+          "Incomplete evidence must not mutate verification state.",
+          "--root",
+          root,
+        ]),
+      ).toBe(3);
+      expect(rejectedIo.stderr).toContain("No verification state was changed");
+    } finally {
+      rejectedIo.restore();
+    }
+    const afterRejected = await runJson<{ blockers: { code: string }[] }>([
+      "task",
+      "status",
+      taskId,
+      "--route",
+      "--json",
+      "--root",
+      root,
+    ]);
+    expect(afterRejected.blockers.map((blocker) => blocker.code)).toContain(
+      "verification_required",
+    );
+    const conflictingIo = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "verify",
+          taskId,
+          "--ok",
+          "--by",
+          "TESTER",
+          "--note",
+          "A failing check cannot produce a passing verification record.",
+          "--details",
+          "Command: failing fixture. Result: fail. Evidence: fixture exited 1. Scope: verification conflict.",
+          "--root",
+          root,
+        ]),
+      ).toBe(3);
+      expect(conflictingIo.stderr).toContain("No verification state was changed");
+    } finally {
+      conflictingIo.restore();
+    }
+    const afterConflicting = await runJson<{ blockers: { code: string }[] }>([
+      "task",
+      "status",
+      taskId,
+      "--route",
+      "--json",
+      "--root",
+      root,
+    ]);
+    expect(afterConflicting.blockers.map((blocker) => blocker.code)).toContain(
+      "verification_required",
+    );
+    await runCliSilent([
+      "verify",
+      taskId,
+      "--ok",
+      "--by",
+      "TESTER",
+      "--note",
+      "Focused verification passed.",
+      "--details",
+      "Command: test fixture. Result: pass. Evidence: implementation fixture is present. Scope: verification freshness.",
+      "--observation",
+      "The committed implementation and verification input match.",
+      "--impact",
+      "The route may reuse this evidence after lifecycle-only changes.",
+      "--resolution",
+      "Keep semantic verification input separate from lifecycle artifacts.",
+      "--root",
+      root,
+    ]);
+
+    const immediate = await runJson<{
+      blockers: { code: string }[];
+      nextAction: { code: string };
+    }>(["task", "status", taskId, "--route", "--json", "--root", root]);
+    expect(immediate.blockers.map((blocker) => blocker.code)).not.toContain(
+      "verification_required",
+    );
+    expect(immediate.nextAction.code).toBe("quality_review_required");
+
+    await execFileAsync("git", ["add", "--all"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: persist verification evidence"], {
+      cwd: root,
+    });
+    const afterLifecycleCommit = await runJson<{ blockers: { code: string }[] }>([
+      "task",
+      "status",
+      taskId,
+      "--route",
+      "--json",
+      "--root",
+      root,
+    ]);
+    expect(afterLifecycleCommit.blockers.map((blocker) => blocker.code)).not.toContain(
+      "verification_required",
+    );
   });
 });

@@ -1,0 +1,824 @@
+---
+id: "202608111036-QHR892"
+title: "Make verification evidence atomic, immediately fresh, and reusable"
+result_summary: "pre-merge closure"
+status: "DONE"
+priority: "high"
+owner: "CODER"
+revision: 27
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "code"
+  - "ux"
+  - "verification"
+task_kind: "code"
+mutation_scope: "code"
+blueprint_request: "code.branch_pr"
+verify:
+  - "bun run test:fast"
+  - "bun run typecheck"
+  - "bun test packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
+plan_approval:
+  state: "approved"
+  updated_at: "2026-08-11T11:22:48.013Z"
+  updated_by: "ORCHESTRATOR"
+  note: null
+verification:
+  state: "ok"
+  updated_at: "2026-08-11T16:09:12.664Z"
+  updated_by: "REVIEWER"
+  note: "Hosted formatting rework is behavior-neutral and complete; focused parser/route tests, typecheck, repository formatting, route, and clean-worktree evidence are current at a7548d1de."
+  attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-11T16:12:14.191Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "a7548d1de89d9ad9d813a1c6fb4734c7b063b3e7"
+  blueprint_digest: "7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b"
+  evidence_refs:
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-161116346-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-161116346-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/01e7a984f1a1e89948bbcb534ecf388a4446f21d9fb1ebe33a4de611b684cfd6.md"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-161116346-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-161116346-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-161116346-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608111036-QHR892/README.md"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/9c425adac7d65e27961136e1d48e24ce1cf38c78fc8d4d6e4b37795d37bc506e.patch"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/52ca1443294d62a9ea2dd2b2059710556b6a8bdc9de6a0f64b8e713de3be547e.json"
+    - ".agentplane/tasks/202608111036-QHR892/verification/20260811160912664-18721049b7e9250b.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/8babde3dcd7045f8ca2ec9145f1683be19cb2c338cc01c76dd940c6b1e51de51.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Structured verification is rejected before mutation when details are absent or contradictory, accepted evidence routes immediately to quality review, and remains reusable after lifecycle-only commits."
+token_usage:
+  agent_runs: 5
+  input_tokens: 806967
+  journal_digest: "sha256:a47202ef0108833c2b0cd85a756602eea6e60c3a14fcbccee46bf4f11aff16e2"
+  observed_agent_runs: 5
+  observed_by: "agentplane"
+  output_tokens: 11436
+  reasoning_tokens: 3261
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "observed"
+  total_tokens: 821664
+  unavailable_reason: null
+  updated_at: "2026-08-11T16:15:34.694Z"
+execution_route:
+  frozen: true
+  reason_codes:
+    - "repository_branch_pr_floor"
+  repository_mode: "branch_pr"
+  requested_mode: "branch_pr"
+  schema_version: 1
+  selected_mode: "branch_pr"
+commit:
+  hash: "a7548d1de89d9ad9d813a1c6fb4734c7b063b3e7"
+  message: "🎨 QHR892 code: format verification parser"
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed: atomic structured verification validation, precise freshness reasons, reusable lifecycle evidence, route regression coverage, and CLI guidance."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Hosted verify-contract required a hotspot-safe extraction and moving pre-mutation coverage into the CLI regression; implementation updated without changing behavior."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+events:
+  -
+    type: "status"
+    at: "2026-08-11T11:23:13.656Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-11T12:12:35.110Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: atomic structured verification validation, precise freshness reasons, reusable lifecycle evidence, route regression coverage, and CLI guidance."
+    commit: "416515219298c6ad2677fd12d6c364f0eae1df00"
+  -
+    type: "verify"
+    at: "2026-08-11T12:23:26.188Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Atomic verification passed; structured evidence is immediately reusable across lifecycle-only commits."
+  -
+    type: "status"
+    at: "2026-08-11T12:30:58.508Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "cd23b83e0c767c48973a62f596a0bf46e4d03d74"
+  -
+    type: "status"
+    at: "2026-08-11T14:21:24.598Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Hosted verify-contract required a hotspot-safe extraction and moving pre-mutation coverage into the CLI regression; implementation updated without changing behavior."
+    commit: "586b7f3400e3700c69b28688fec53f7cb0456213"
+  -
+    type: "verify"
+    at: "2026-08-11T14:25:32.613Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Hosted contract rework passed with affected checks rerun and the unchanged full-suite receipt reused."
+  -
+    type: "status"
+    at: "2026-08-11T14:29:03.411Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "df96cd27c2d1cfada7a853c096d7e5c6742f2c3b"
+  -
+    type: "verify"
+    at: "2026-08-11T14:51:04.568Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Parser boundary review at 313dfa221; the hosted review finding is covered without widening lifecycle scope."
+  -
+    type: "verify"
+    at: "2026-08-11T15:16:29.029Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "All required verification steps passed at implementation SHA 313dfa221 after evaluator rework."
+  -
+    type: "verify"
+    at: "2026-08-11T15:30:15.581Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Exact quality-review route assertion passed; prior full-suite, docs, hotspot, and standalone receipts were reused because 6a2cf7854 changes only the exercised CLI test fixture."
+  -
+    type: "verify"
+    at: "2026-08-11T15:31:55.281Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Post-verify route inspection was added without rerunning unchanged checks; the route has no verification_required blocker and correctly preserves the prior evaluator rework until superseded."
+  -
+    type: "verify"
+    at: "2026-08-11T15:40:38.939Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Exact quality-review transition, conflicting-failure pre-mutation rejection, post-verify route, and clean-worktree evidence are complete; expensive runtime-equivalent receipts remain reusable."
+  -
+    type: "status"
+    at: "2026-08-11T15:52:48.228Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "9c7e50743af99e28d832284c6f425e6379130109"
+  -
+    type: "verify"
+    at: "2026-08-11T16:09:12.664Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Hosted formatting rework is behavior-neutral and complete; focused parser/route tests, typecheck, repository formatting, route, and clean-worktree evidence are current at a7548d1de."
+  -
+    type: "status"
+    at: "2026-08-11T16:15:34.694Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "a7548d1de89d9ad9d813a1c6fb4734c7b063b3e7"
+doc_version: 3
+doc_updated_at: "2026-08-11T16:15:34.768Z"
+doc_updated_by: "CODER"
+description: "Eliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command."
+sections:
+  Summary: |-
+    Make verification evidence atomic, immediately fresh, and reusable
+
+    Eliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command.
+  Scope: |-
+    - In scope: Eliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command.
+    - Out of scope: unrelated refactors not required for "Make verification evidence atomic, immediately fresh, and reusable".
+  Plan: |-
+    1. Reproduce both invalid-pass and self-stale paths in focused route/verification tests.
+    2. Validate concrete Command/Result/Evidence/Scope details before any verification mutation when the route requires them.
+    3. Separate metadata mismatch from missing/changed evidence so next-action explains the real cause.
+    4. Keep verification input based on implementation, Verify Steps, tool context, environment, and evidence; prove lifecycle-only task/PR artifacts reuse the accepted record without rerunning checks.
+    5. Add a CLI-level regression proving one valid verify command immediately advances to quality review.
+    6. Run focused tests, typecheck, and test:fast.
+  Verify Steps: |-
+    1. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts. Expected: parser, freshness classification, and pre-mutation rejection tests pass.
+    2. Run bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Expected: a one-shot passing verification with structured Finding is immediately fresh and remains reusable after a lifecycle-only commit.
+    3. Run bun run typecheck and bun run docs:cli:check. Expected: type safety passes and public CLI guidance matches the generated reference.
+    4. Run bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Expected: the complete fast repository suite passes under bounded local concurrency.
+    5. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs production dependencies from a sanitized package payload. Expected: the resource-intensive standalone dependency fixture passes without contention from the rest of the suite.
+    6. Inspect the final task route after recording all checks in one verify command. Expected: verification_required is absent and the next gate is emitted without rerunning tests.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-11T12:23:26.188Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Atomic verification passed; structured evidence is immediately reusable across lifecycle-only commits.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:9a2e2ab3207227f3658b4f46e5b79c318c1981697b44e75f0025ac81caef7a9c
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane verification-focused files. Result: pass. Evidence: 3 files and 34 tests passed. Scope: parser, pre-mutation validation, and freshness classification. Command: bunx vitest --config vitest.workspace.ts run --project cli-core route-decision verification file. Result: pass. Evidence: 1 file and 3 tests passed. Scope: one-shot Finding, immediate route freshness, lifecycle-only reuse, and remote-truth guard. Command: bun run typecheck and bun run docs:cli:check. Result: pass. Evidence: TypeScript build exited 0 and generated CLI reference was current. Scope: type safety and agent-facing verification guidance. Command: bun run test:fast with maxWorkers 4. Result: pass. Evidence: 549 files and 3988 tests passed. Scope: complete fast repository suite under bounded local concurrency. Command: standalone dependency installation fixture. Result: pass. Evidence: isolated fixture passed in 6.5 seconds. Scope: resource-intensive release packaging path.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+    - old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608111036-QHR892
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T14:25:32.613Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Hosted contract rework passed with affected checks rerun and the unchanged full-suite receipt reused.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:def263511d2a3146dfe6ac54416e47324d090934c00aa5faf2365516399031ca
+
+    Details:
+
+    Command: bun run hotspots:check. Result: pass. Evidence: runtime threshold passed at 599 lines and oversized test baseline returned to 10 entries. Scope: hosted verify-contract failure. Command: bunx vitest --config vitest.workspace.ts run --project cli-core route-decision verification file. Result: pass. Evidence: 1 file and 3 tests passed. Scope: pre-mutation rejection, immediate freshness, lifecycle reuse, and remote truth routing. Command: bunx vitest --config vitest.workspace.ts run --project agentplane verification-focused files. Result: pass. Evidence: 3 files and 33 tests passed. Scope: parser, verification record assessment, and remaining unit contract. Command: bun run typecheck. Result: pass. Evidence: TypeScript build exited 0. Scope: helper extraction and test relocation. Command: review verification receipt sha256:966fb50220b3f330 against diff 30befb09d..586b7f340. Result: pass. Evidence: the prior 549-file 3988-test receipt remains applicable outside the rerun affected route and hotspot surfaces; the rework only extracted one route helper and moved equivalent rejection coverage. Scope: unchanged repository-wide behaviors without repeating unrelated tests.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+    - old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608111036-QHR892
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T14:51:04.568Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Parser boundary review at 313dfa221; the hosted review finding is covered without widening lifecycle scope.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:7186cf9d90a4e844f9eb8640265686661643424ca3f1a78e62088abb1eeddc5f
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (5 files, 43 tests). Evidence: process exited 0 at 313dfa221. Scope: verification parsing and freshness regressions. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at 313dfa221. Scope: TypeScript contracts. Command: bun run hotspots:check. Result: pass. Evidence: thresholds and oversized-test baseline passed at 313dfa221. Scope: repository size contracts.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+    - old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T15:16:29.029Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: All required verification steps passed at implementation SHA 313dfa221 after evaluator rework.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:59e60829eb0a5b408fea4acaa787ea84f34d9a67220ba18a5630a456cb5b58e5
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (5 files, 43 tests). Evidence: process exited 0 at implementation SHA 313dfa221. Scope: verification parsing and freshness regressions. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at implementation SHA 313dfa221. Scope: TypeScript contracts. Command: bun run docs:cli:check. Result: pass. Evidence: generated CLI reference was current at implementation SHA 313dfa221. Scope: public CLI documentation. Command: bun run hotspots:check. Result: pass. Evidence: runtime thresholds and oversized-test baseline passed at implementation SHA 313dfa221. Scope: repository size contracts. Command: bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Result: pass (549 files, 3988 tests). Evidence: process exited 0 in 384.66 seconds at implementation SHA 313dfa221. Scope: complete fast repository suite under bounded concurrency. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs-production-dependencies-from-a-sanitized-package-payload. Result: pass (1 file, 1 test). Evidence: process exited 0 in 97.13 seconds at implementation SHA 313dfa221. Scope: resource-intensive standalone dependency fixture.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+    - old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T15:30:15.581Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Exact quality-review route assertion passed; prior full-suite, docs, hotspot, and standalone receipts were reused because 6a2cf7854 changes only the exercised CLI test fixture.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:4285939a0428982f0397d345574e64f2ddef715e8780758195a43f0ecaea7b96
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (1 file, 3 tests). Evidence: process exited 0 at 6a2cf7854 and asserted nextAction.code equals quality_review_required. Scope: exact post-verification CLI route. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at 6a2cf7854. Scope: TypeScript contracts. Command: bun run docs:cli:check. Result: pass. Evidence: receipt from runtime-equivalent 313dfa221; 6a2cf7854 changes only a test fixture and cannot alter generated CLI documentation. Scope: public CLI documentation. Command: bun run hotspots:check. Result: pass. Evidence: receipt from runtime-equivalent 313dfa221; 6a2cf7854 changes the existing test below its enforced threshold. Scope: repository size contracts. Command: bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Result: pass (549 files, 3988 tests). Evidence: content-equivalent runtime passed in 384.66 seconds at 313dfa221 and the only later test fixture change passed independently at 6a2cf7854. Scope: complete fast repository suite under bounded concurrency. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs-production-dependencies-from-a-sanitized-package-payload. Result: pass (1 file, 1 test). Evidence: runtime-equivalent receipt passed in 97.13 seconds at 313dfa221; later changes are isolated to the route-decision test fixture. Scope: resource-intensive standalone dependency fixture.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+    - old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T15:31:55.281Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Post-verify route inspection was added without rerunning unchanged checks; the route has no verification_required blocker and correctly preserves the prior evaluator rework until superseded.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:195ffffd3b4bb1bee732df69cdbea1b4eb4bd7ba438bedac385d4939dba1fe51
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (1 file, 3 tests). Evidence: process exited 0 at 6a2cf7854 and asserted nextAction.code equals quality_review_required. Scope: exact post-verification CLI route in an isolated branch_pr fixture. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at 6a2cf7854. Scope: TypeScript contracts. Command: bun run docs:cli:check. Result: pass. Evidence: receipt from runtime-equivalent 313dfa221; later changes affect only the route-decision test fixture. Scope: public CLI documentation. Command: bun run hotspots:check. Result: pass. Evidence: receipt from runtime-equivalent 313dfa221; the changed test remains below its enforced threshold. Scope: repository size contracts. Command: bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Result: pass (549 files, 3988 tests). Evidence: content-equivalent runtime passed in 384.66 seconds at 313dfa221 and the only later test fixture change passed independently at 6a2cf7854. Scope: complete fast repository suite under bounded concurrency. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs-production-dependencies-from-a-sanitized-package-payload. Result: pass (1 file, 1 test). Evidence: runtime-equivalent receipt passed in 97.13 seconds at 313dfa221; later changes are isolated to the route-decision test fixture. Scope: resource-intensive standalone dependency fixture. Command: node packages/agentplane/bin/agentplane.js task next-action 202608111036-QHR892 --explain. Result: pass. Evidence: actual clean post-verify route reported phase implementation_rework_required and no verification_required blocker; the previous evaluator rework remained the intentional next gate. Scope: actual task route after a single valid verification record and lifecycle-only evidence commit.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+    - old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T15:40:38.939Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Exact quality-review transition, conflicting-failure pre-mutation rejection, post-verify route, and clean-worktree evidence are complete; expensive runtime-equivalent receipts remain reusable.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:82a4c3757c60427225bbdd4d4f999c0e036745a4ca3a36713803cd908c0fd5ad
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (1 file, 3 tests). Evidence: process exited 0 at 9c7e50743; the E2E asserts exact quality_review_required routing and proves both missing details and Result fail are rejected before verification state changes. Scope: atomic verification CLI route. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at 9c7e50743. Scope: TypeScript contracts. Command: bun run docs:cli:check. Result: pass. Evidence: receipt from runtime-equivalent 313dfa221; later changes affect only the route-decision test fixture. Scope: public CLI documentation. Command: bun run hotspots:check. Result: pass. Evidence: receipt from runtime-equivalent 313dfa221; the changed test remains below its enforced threshold. Scope: repository size contracts. Command: bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Result: pass (549 files, 3988 tests). Evidence: content-equivalent runtime passed in 384.66 seconds at 313dfa221 and every later change is confined to the independently passing route-decision test fixture. Scope: complete fast repository suite under bounded concurrency. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs-production-dependencies-from-a-sanitized-package-payload. Result: pass (1 file, 1 test). Evidence: runtime-equivalent receipt passed in 97.13 seconds at 313dfa221; later changes are isolated to the route-decision test fixture. Scope: resource-intensive standalone dependency fixture. Command: node packages/agentplane/bin/agentplane.js task next-action 202608111036-QHR892 --explain. Result: pass. Evidence: actual clean post-verify route reported phase implementation_rework_required and no verification_required blocker; the previous evaluator rework remained the intentional next gate. Scope: actual task route after valid verification and lifecycle-only evidence commits. Command: git status --short --untracked-files=all. Result: pass. Evidence: command produced no output immediately before this atomic verification write at 9c7e50743. Scope: final tracked and untracked worktree cleanliness before expected task-local verification artifacts are emitted.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+    - old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T16:09:12.664Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Hosted formatting rework is behavior-neutral and complete; focused parser/route tests, typecheck, repository formatting, route, and clean-worktree evidence are current at a7548d1de.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:d223e61464511619a1f097743829a2d87763d5ff7c9a2d32169137b4993576fe
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (2 files, 13 tests). Evidence: process exited 0 at a7548d1de; parser boundaries, exact quality-review routing, and failing-evidence pre-mutation rejection passed. Scope: verification parser and atomic route regressions. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at a7548d1de. Scope: TypeScript contracts. Command: bun run format:check. Result: pass. Evidence: repository-wide Prettier check exited 0 at a7548d1de. Scope: repository formatting contract. Command: bun run docs:cli:check. Result: pass. Evidence: receipt from behavior-equivalent 313dfa221; a7548d1de only applies Prettier to the already-tested parser declaration. Scope: public CLI documentation. Command: bun run hotspots:check. Result: pass. Evidence: receipt from behavior-equivalent 313dfa221; line counts decreased by one at a7548d1de. Scope: repository size contracts. Command: bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Result: pass (549 files, 3988 tests). Evidence: behavior-equivalent runtime passed in 384.66 seconds at 313dfa221; a7548d1de is a Prettier-only rewrite and affected tests pass at the new SHA. Scope: complete fast repository suite under bounded concurrency. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs-production-dependencies-from-a-sanitized-package-payload. Result: pass (1 file, 1 test). Evidence: behavior-equivalent receipt passed in 97.13 seconds at 313dfa221; a7548d1de is formatting-only. Scope: resource-intensive standalone dependency fixture. Command: node packages/agentplane/bin/agentplane.js task next-action 202608111036-QHR892 --explain. Result: pass. Evidence: prior actual clean post-verify route had no verification_required blocker and intentionally preserved evaluator rework until superseded; the exact fixture asserts quality_review_required. Scope: actual and isolated post-verification route evidence. Command: git status --short --untracked-files=all. Result: pass. Evidence: command produced no output immediately before this atomic verification write at a7548d1de. Scope: final tracked and untracked worktree cleanliness before expected task-local verification artifacts are emitted.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+    - old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: |-
+    - Observation: Unbounded full-suite concurrency caused unrelated 30-second and 180-second fixture timeouts, while both fixtures passed independently and the full suite passed with bounded workers.
+      Impact: Developers can lose several minutes rerunning valid checks when resource-heavy fixtures compete inside one local run.
+      Resolution: Use bounded concurrency for this verification and complete CI optimization task 202608102115-7XGP97 before the patch release.
+extensions:
+  implementation_commit:
+    hash: "586b7f3400e3700c69b28688fec53f7cb0456213"
+    message: "🔧 QHR892 code: satisfy hotspot contract"
+  workflow_route_baseline:
+    start_head_sha: "c6f34bc7c9b39e376eb69092cd750356721f0f3d"
+    version: 1
+id_source: "generated"
+---
+## Summary
+
+Make verification evidence atomic, immediately fresh, and reusable
+
+Eliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command.
+
+## Scope
+
+- In scope: Eliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command.
+- Out of scope: unrelated refactors not required for "Make verification evidence atomic, immediately fresh, and reusable".
+
+## Plan
+
+1. Reproduce both invalid-pass and self-stale paths in focused route/verification tests.
+2. Validate concrete Command/Result/Evidence/Scope details before any verification mutation when the route requires them.
+3. Separate metadata mismatch from missing/changed evidence so next-action explains the real cause.
+4. Keep verification input based on implementation, Verify Steps, tool context, environment, and evidence; prove lifecycle-only task/PR artifacts reuse the accepted record without rerunning checks.
+5. Add a CLI-level regression proving one valid verify command immediately advances to quality review.
+6. Run focused tests, typecheck, and test:fast.
+
+## Verify Steps
+
+1. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts. Expected: parser, freshness classification, and pre-mutation rejection tests pass.
+2. Run bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Expected: a one-shot passing verification with structured Finding is immediately fresh and remains reusable after a lifecycle-only commit.
+3. Run bun run typecheck and bun run docs:cli:check. Expected: type safety passes and public CLI guidance matches the generated reference.
+4. Run bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Expected: the complete fast repository suite passes under bounded local concurrency.
+5. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs production dependencies from a sanitized package payload. Expected: the resource-intensive standalone dependency fixture passes without contention from the rest of the suite.
+6. Inspect the final task route after recording all checks in one verify command. Expected: verification_required is absent and the next gate is emitted without rerunning tests.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-11T12:23:26.188Z — VERIFY — ok
+
+By: TESTER
+
+Note: Atomic verification passed; structured evidence is immediately reusable across lifecycle-only commits.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:9a2e2ab3207227f3658b4f46e5b79c318c1981697b44e75f0025ac81caef7a9c
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane verification-focused files. Result: pass. Evidence: 3 files and 34 tests passed. Scope: parser, pre-mutation validation, and freshness classification. Command: bunx vitest --config vitest.workspace.ts run --project cli-core route-decision verification file. Result: pass. Evidence: 1 file and 3 tests passed. Scope: one-shot Finding, immediate route freshness, lifecycle-only reuse, and remote-truth guard. Command: bun run typecheck and bun run docs:cli:check. Result: pass. Evidence: TypeScript build exited 0 and generated CLI reference was current. Scope: type safety and agent-facing verification guidance. Command: bun run test:fast with maxWorkers 4. Result: pass. Evidence: 549 files and 3988 tests passed. Scope: complete fast repository suite under bounded local concurrency. Command: standalone dependency installation fixture. Result: pass. Evidence: isolated fixture passed in 6.5 seconds. Scope: resource-intensive release packaging path.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+- old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608111036-QHR892
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T14:25:32.613Z — VERIFY — ok
+
+By: TESTER
+
+Note: Hosted contract rework passed with affected checks rerun and the unchanged full-suite receipt reused.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:def263511d2a3146dfe6ac54416e47324d090934c00aa5faf2365516399031ca
+
+Details:
+
+Command: bun run hotspots:check. Result: pass. Evidence: runtime threshold passed at 599 lines and oversized test baseline returned to 10 entries. Scope: hosted verify-contract failure. Command: bunx vitest --config vitest.workspace.ts run --project cli-core route-decision verification file. Result: pass. Evidence: 1 file and 3 tests passed. Scope: pre-mutation rejection, immediate freshness, lifecycle reuse, and remote truth routing. Command: bunx vitest --config vitest.workspace.ts run --project agentplane verification-focused files. Result: pass. Evidence: 3 files and 33 tests passed. Scope: parser, verification record assessment, and remaining unit contract. Command: bun run typecheck. Result: pass. Evidence: TypeScript build exited 0. Scope: helper extraction and test relocation. Command: review verification receipt sha256:966fb50220b3f330 against diff 30befb09d..586b7f340. Result: pass. Evidence: the prior 549-file 3988-test receipt remains applicable outside the rerun affected route and hotspot surfaces; the rework only extracted one route helper and moved equivalent rejection coverage. Scope: unchanged repository-wide behaviors without repeating unrelated tests.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+- old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608111036-QHR892
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T14:51:04.568Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Parser boundary review at 313dfa221; the hosted review finding is covered without widening lifecycle scope.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:7186cf9d90a4e844f9eb8640265686661643424ca3f1a78e62088abb1eeddc5f
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (5 files, 43 tests). Evidence: process exited 0 at 313dfa221. Scope: verification parsing and freshness regressions. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at 313dfa221. Scope: TypeScript contracts. Command: bun run hotspots:check. Result: pass. Evidence: thresholds and oversized-test baseline passed at 313dfa221. Scope: repository size contracts.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+- old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T15:16:29.029Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: All required verification steps passed at implementation SHA 313dfa221 after evaluator rework.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:59e60829eb0a5b408fea4acaa787ea84f34d9a67220ba18a5630a456cb5b58e5
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (5 files, 43 tests). Evidence: process exited 0 at implementation SHA 313dfa221. Scope: verification parsing and freshness regressions. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at implementation SHA 313dfa221. Scope: TypeScript contracts. Command: bun run docs:cli:check. Result: pass. Evidence: generated CLI reference was current at implementation SHA 313dfa221. Scope: public CLI documentation. Command: bun run hotspots:check. Result: pass. Evidence: runtime thresholds and oversized-test baseline passed at implementation SHA 313dfa221. Scope: repository size contracts. Command: bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Result: pass (549 files, 3988 tests). Evidence: process exited 0 in 384.66 seconds at implementation SHA 313dfa221. Scope: complete fast repository suite under bounded concurrency. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs-production-dependencies-from-a-sanitized-package-payload. Result: pass (1 file, 1 test). Evidence: process exited 0 in 97.13 seconds at implementation SHA 313dfa221. Scope: resource-intensive standalone dependency fixture.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+- old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T15:30:15.581Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Exact quality-review route assertion passed; prior full-suite, docs, hotspot, and standalone receipts were reused because 6a2cf7854 changes only the exercised CLI test fixture.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:4285939a0428982f0397d345574e64f2ddef715e8780758195a43f0ecaea7b96
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (1 file, 3 tests). Evidence: process exited 0 at 6a2cf7854 and asserted nextAction.code equals quality_review_required. Scope: exact post-verification CLI route. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at 6a2cf7854. Scope: TypeScript contracts. Command: bun run docs:cli:check. Result: pass. Evidence: receipt from runtime-equivalent 313dfa221; 6a2cf7854 changes only a test fixture and cannot alter generated CLI documentation. Scope: public CLI documentation. Command: bun run hotspots:check. Result: pass. Evidence: receipt from runtime-equivalent 313dfa221; 6a2cf7854 changes the existing test below its enforced threshold. Scope: repository size contracts. Command: bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Result: pass (549 files, 3988 tests). Evidence: content-equivalent runtime passed in 384.66 seconds at 313dfa221 and the only later test fixture change passed independently at 6a2cf7854. Scope: complete fast repository suite under bounded concurrency. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs-production-dependencies-from-a-sanitized-package-payload. Result: pass (1 file, 1 test). Evidence: runtime-equivalent receipt passed in 97.13 seconds at 313dfa221; later changes are isolated to the route-decision test fixture. Scope: resource-intensive standalone dependency fixture.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+- old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T15:31:55.281Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Post-verify route inspection was added without rerunning unchanged checks; the route has no verification_required blocker and correctly preserves the prior evaluator rework until superseded.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:195ffffd3b4bb1bee732df69cdbea1b4eb4bd7ba438bedac385d4939dba1fe51
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (1 file, 3 tests). Evidence: process exited 0 at 6a2cf7854 and asserted nextAction.code equals quality_review_required. Scope: exact post-verification CLI route in an isolated branch_pr fixture. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at 6a2cf7854. Scope: TypeScript contracts. Command: bun run docs:cli:check. Result: pass. Evidence: receipt from runtime-equivalent 313dfa221; later changes affect only the route-decision test fixture. Scope: public CLI documentation. Command: bun run hotspots:check. Result: pass. Evidence: receipt from runtime-equivalent 313dfa221; the changed test remains below its enforced threshold. Scope: repository size contracts. Command: bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Result: pass (549 files, 3988 tests). Evidence: content-equivalent runtime passed in 384.66 seconds at 313dfa221 and the only later test fixture change passed independently at 6a2cf7854. Scope: complete fast repository suite under bounded concurrency. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs-production-dependencies-from-a-sanitized-package-payload. Result: pass (1 file, 1 test). Evidence: runtime-equivalent receipt passed in 97.13 seconds at 313dfa221; later changes are isolated to the route-decision test fixture. Scope: resource-intensive standalone dependency fixture. Command: node packages/agentplane/bin/agentplane.js task next-action 202608111036-QHR892 --explain. Result: pass. Evidence: actual clean post-verify route reported phase implementation_rework_required and no verification_required blocker; the previous evaluator rework remained the intentional next gate. Scope: actual task route after a single valid verification record and lifecycle-only evidence commit.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+- old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T15:40:38.939Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Exact quality-review transition, conflicting-failure pre-mutation rejection, post-verify route, and clean-worktree evidence are complete; expensive runtime-equivalent receipts remain reusable.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:82a4c3757c60427225bbdd4d4f999c0e036745a4ca3a36713803cd908c0fd5ad
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (1 file, 3 tests). Evidence: process exited 0 at 9c7e50743; the E2E asserts exact quality_review_required routing and proves both missing details and Result fail are rejected before verification state changes. Scope: atomic verification CLI route. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at 9c7e50743. Scope: TypeScript contracts. Command: bun run docs:cli:check. Result: pass. Evidence: receipt from runtime-equivalent 313dfa221; later changes affect only the route-decision test fixture. Scope: public CLI documentation. Command: bun run hotspots:check. Result: pass. Evidence: receipt from runtime-equivalent 313dfa221; the changed test remains below its enforced threshold. Scope: repository size contracts. Command: bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Result: pass (549 files, 3988 tests). Evidence: content-equivalent runtime passed in 384.66 seconds at 313dfa221 and every later change is confined to the independently passing route-decision test fixture. Scope: complete fast repository suite under bounded concurrency. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs-production-dependencies-from-a-sanitized-package-payload. Result: pass (1 file, 1 test). Evidence: runtime-equivalent receipt passed in 97.13 seconds at 313dfa221; later changes are isolated to the route-decision test fixture. Scope: resource-intensive standalone dependency fixture. Command: node packages/agentplane/bin/agentplane.js task next-action 202608111036-QHR892 --explain. Result: pass. Evidence: actual clean post-verify route reported phase implementation_rework_required and no verification_required blocker; the previous evaluator rework remained the intentional next gate. Scope: actual task route after valid verification and lifecycle-only evidence commits. Command: git status --short --untracked-files=all. Result: pass. Evidence: command produced no output immediately before this atomic verification write at 9c7e50743. Scope: final tracked and untracked worktree cleanliness before expected task-local verification artifacts are emitted.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+- old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T16:09:12.664Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Hosted formatting rework is behavior-neutral and complete; focused parser/route tests, typecheck, repository formatting, route, and clean-worktree evidence are current at a7548d1de.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:d223e61464511619a1f097743829a2d87763d5ff7c9a2d32169137b4993576fe
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (2 files, 13 tests). Evidence: process exited 0 at a7548d1de; parser boundaries, exact quality-review routing, and failing-evidence pre-mutation rejection passed. Scope: verification parser and atomic route regressions. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at a7548d1de. Scope: TypeScript contracts. Command: bun run format:check. Result: pass. Evidence: repository-wide Prettier check exited 0 at a7548d1de. Scope: repository formatting contract. Command: bun run docs:cli:check. Result: pass. Evidence: receipt from behavior-equivalent 313dfa221; a7548d1de only applies Prettier to the already-tested parser declaration. Scope: public CLI documentation. Command: bun run hotspots:check. Result: pass. Evidence: receipt from behavior-equivalent 313dfa221; line counts decreased by one at a7548d1de. Scope: repository size contracts. Command: bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Result: pass (549 files, 3988 tests). Evidence: behavior-equivalent runtime passed in 384.66 seconds at 313dfa221; a7548d1de is a Prettier-only rewrite and affected tests pass at the new SHA. Scope: complete fast repository suite under bounded concurrency. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs-production-dependencies-from-a-sanitized-package-payload. Result: pass (1 file, 1 test). Evidence: behavior-equivalent receipt passed in 97.13 seconds at 313dfa221; a7548d1de is formatting-only. Scope: resource-intensive standalone dependency fixture. Command: node packages/agentplane/bin/agentplane.js task next-action 202608111036-QHR892 --explain. Result: pass. Evidence: prior actual clean post-verify route had no verification_required blocker and intentionally preserved evaluator rework until superseded; the exact fixture asserts quality_review_required. Scope: actual and isolated post-verification route evidence. Command: git status --short --untracked-files=all. Result: pass. Evidence: command produced no output immediately before this atomic verification write at a7548d1de. Scope: final tracked and untracked worktree cleanliness before expected task-local verification artifacts are emitted.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+- old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings
+
+- Observation: Unbounded full-suite concurrency caused unrelated 30-second and 180-second fixture timeouts, while both fixtures passed independently and the full suite passed with bounded workers.
+  Impact: Developers can lose several minutes rerunning valid checks when resource-heavy fixtures compete inside one local run.
+  Resolution: Use bounded concurrency for this verification and complete CI optimization task 202608102115-7XGP97 before the patch release.
+
+## Token Usage
+
+- State: `observed`
+- Completeness: `5/5` agent runs
+- Input tokens: `806967`
+- Output tokens: `11436`
+- Reasoning tokens: `3261`
+- Total tokens: `821664`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:a47202ef0108833c2b0cd85a756602eea6e60c3a14fcbccee46bf4f11aff16e2`
+- Unavailable reason: `none`
+- Updated at: `2026-08-11T16:15:34.694Z`

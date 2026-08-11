@@ -1,0 +1,28 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run test:fast",
+    "bun run typecheck",
+    "bun test packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-11T15:16:29.029Z",
+    "updated_by": "REVIEWER",
+    "note": "All required verification steps passed at implementation SHA 313dfa221 after evaluator rework."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608111036-QHR892/verification/20260811151629029-e146b2f46c0413b6.json",
+      "sha256": "sha256:82ff4e6e9992585a72ecd6d161a3cdb5412ecedbae1983e96c03e610acd8b93f"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

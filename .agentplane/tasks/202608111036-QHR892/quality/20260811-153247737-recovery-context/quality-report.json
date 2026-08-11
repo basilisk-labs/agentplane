@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608111036-QHR892",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T15:34:08.217Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "6a2cf7854d8a2145e78a9e38bd6ff2c037f9a73e",
+  "blueprint_digest": "7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b",
+  "findings": [
+    "Замороженная проверка не содержит обязательного финального доказательства чистого состояния репозитория."
+  ],
+  "evidence_refs": [
+    ".agentplane/policy/dod.core.md",
+    ".agentplane/tasks/202608111036-QHR892/verification/20260811153155281-47d172ef240de214.json"
+  ],
+  "missing_tests": [
+    "Добавить CLI-регрессию, подтверждающую, что `verify --ok` с хотя бы одним структурированным блоком `Result: fail` отклоняется до изменения verification state."
+  ],
+  "hidden_assumptions": [
+    "Предполагается, что репозиторий был чистым до создания замороженных артефактов evaluator episode, однако авторитетные verification evidence этого не фиксируют."
+  ],
+  "residual_risks": [
+    "Зафиксировать разрешенную read-only проверку `git status --short --untracked-files=all`, классифицировать ожидаемые evaluator artifacts отдельно от постороннего drift и включить результат в итоговые verification evidence; также добавить отрицательную проверку конфликтующего `Result: fail`."
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane verification-focused files. Result: pass. Evidence: 3 files and 34 tests passed. Scope: parser, pre-mutation validation, and freshness classification. Command: bunx vitest --config vitest.workspace.ts run --project cli-core route-decision verification file. Result: pass. Evidence: 1 file and 3 tests passed. Scope: one-shot Finding, immediate route freshness, lifecycle-only reuse, and remote-truth guard. Command: bun run typecheck and bun run docs:cli:check. Result: pass. Evidence: TypeScript build exited 0 and generated CLI reference was current. Scope: type safety and agent-facing verification guidance. Command: bun run test:fast with maxWorkers 4. Result: pass. Evidence: 549 files and 3988 tests passed. Scope: complete fast repository suite under bounded local concurrency. Command: standalone dependency installation fixture. Result: pass. Evidence: isolated fixture passed in 6.5 seconds. Scope: resource-intensive release packaging path.",
+  "digest": "sha256:966fb50220b3f330122a96f60754da3c3cd719996a109efc14f4ea4b1bec4ae4",
+  "implementation_sha": "416515219298c6ad2677fd12d6c364f0eae1df00",
+  "input": {
+    "context": {
+      "digest": "sha256:36fec4cc01483f7dade507195e7c8f954b583a6cefd467466f4cbfb918df42fd",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:9a2e2ab3207227f3658b4f46e5b79c318c1981697b44e75f0025ac81caef7a9c",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:dfe88a9a81d5f8e847dc24ff0a5e3207ada3d743048f0565be1f9c5708a1800f",
+      "digest": "sha256:8e0529078a705d62fa32c761c35e95d0a77da7c4f800634b926656f3f4a80f35",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "c6f34bc7c9b39e376eb69092cd750356721f0f3d",
+      "digest": "sha256:aa3f81f7de94b462ecaa0932b5ca7c3cabba21a30e8cfb715c3a540ac64c753b",
+      "strategy": "branch_diff",
+      "target_sha": "416515219298c6ad2677fd12d6c364f0eae1df00"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 2,
+    "verify_steps_digest": "sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530"
+  },
+  "kind": "task_verification_record",
+  "note": "Atomic verification passed; structured evidence is immediately reusable across lifecycle-only commits.",
+  "recorded_at": "2026-08-11T12:23:26.188Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts. Expected: parser, freshness classification, and pre-mutation rejection tests pass.\n2. Run bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Expected: a one-shot passing verification with structured Finding is immediately fresh and remains reusable after a lifecycle-only commit.\n3. Run bun run typecheck and bun run docs:cli:check. Expected: type safety passes and public CLI guidance matches the generated reference.\n4. Run bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Expected: the complete fast repository suite passes under bounded local concurrency.\n5. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs production dependencies from a sanitized package payload. Expected: the resource-intensive standalone dependency fixture passes without contention from the rest of the suite.\n6. Inspect the final task route after recording all checks in one verify command. Expected: verification_required is absent and the next gate is emitted without rerunning tests.",
+  "scope_digest": "sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530",
+  "task_id": "202608111036-QHR892",
+  "verification_command": "agentplane verify 202608111036-QHR892 --ok --by TESTER",
+  "verifier": "TESTER"
+}

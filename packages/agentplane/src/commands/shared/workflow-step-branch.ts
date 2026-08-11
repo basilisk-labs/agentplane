@@ -3,6 +3,7 @@ import type { RouteBlocker } from "./route-oracle.js";
 import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
 import {
   blockedTaskStep,
+  missingPrRemoteRefreshStep,
   preMergeCommit,
   primaryIncludeTaskIds,
 } from "./workflow-step-branch-state.js";
@@ -315,6 +316,9 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
       evidenceMissing: ["proven_merged_cleanup_identity"],
       selectedBlocker: routeBlockerFor(state, "cleanup_blocked"),
     });
+  }
+  if (state.cleanupProbe.state === "already_clean" && state.prFlow === null) {
+    return missingPrRemoteRefreshStep(state);
   }
   if (state.cleanupProbe.state === "already_clean") {
     return terminalStep({

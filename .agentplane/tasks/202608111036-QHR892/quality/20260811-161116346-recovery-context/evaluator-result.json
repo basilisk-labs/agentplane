@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "low",
+      "summary": "Structured verification is rejected before mutation when details are absent or contradictory, accepted evidence routes immediately to quality review, and remains reusable after lifecycle-only commits.",
+      "broken_invariant": "No invariant is broken; the frozen diff and verification record cover the required positive, negative, freshness-classification, and lifecycle-reuse paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/9c425adac7d65e27961136e1d48e24ce1cf38c78fc8d4d6e4b37795d37bc506e.patch",
+          "sha256": "sha256:9c425adac7d65e27961136e1d48e24ce1cf38c78fc8d4d6e4b37795d37bc506e"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/verification/20260811160912664-18721049b7e9250b.json",
+          "sha256": "sha256:806c30ee3a85c4cbf6ff74a8e721c90e0d63e9ce2a2244f887bc8a9aae02c2c4"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/README.md",
+          "sha256": "sha256:64d3cafe79dd8bde6a45d2abd241409f2b2094cf4b28b5b5220fba7fe9df4630",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

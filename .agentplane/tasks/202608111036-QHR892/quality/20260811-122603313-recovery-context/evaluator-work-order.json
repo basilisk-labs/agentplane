@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608111036-QHR892-244fc04ef0a3288e806676b9",
+  "prepared_at": "2026-08-11T12:26:03.313Z",
+  "task": {
+    "id": "202608111036-QHR892",
+    "revision": 8,
+    "objective": "Make verification evidence atomic, immediately fresh, and reusable\n\nEliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command.",
+    "acceptance_criteria": [
+      "bun run test:fast",
+      "bun run typecheck",
+      "bun test packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts",
+      "- In scope: Eliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command.\n- Out of scope: unrelated refactors not required for \"Make verification evidence atomic, immediately fresh, and reusable\".",
+      "1. Reproduce both invalid-pass and self-stale paths in focused route/verification tests.\n2. Validate concrete Command/Result/Evidence/Scope details before any verification mutation when the route requires them.\n3. Separate metadata mismatch from missing/changed evidence so next-action explains the real cause.\n4. Keep verification input based on implementation, Verify Steps, tool context, environment, and evidence; prove lifecycle-only task/PR artifacts reuse the accepted record without rerunning checks.\n5. Add a CLI-level regression proving one valid verify command immediately advances to quality review.\n6. Run focused tests, typecheck, and test:fast.",
+      "1. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts. Expected: parser, freshness classification, and pre-mutation rejection tests pass.\n2. Run bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Expected: a one-shot passing verification with structured Finding is immediately fresh and remains reusable after a lifecycle-only commit.\n3. Run bun run typecheck and bun run docs:cli:check. Expected: type safety passes and public CLI guidance matches the generated reference.\n4. Run bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Expected: the complete fast repository suite passes under bounded local concurrency.\n5. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs production dependencies from a sanitized package payload. Expected: the resource-intensive standalone dependency fixture passes without contention from the rest of the suite.\n6. Inspect the final task route after recording all checks in one verify command. Expected: verification_required is absent and the next gate is emitted without rerunning tests."
+    ]
+  },
+  "evaluated_sha": "416515219298c6ad2677fd12d6c364f0eae1df00",
+  "diff_base_sha": "c6f34bc7c9b39e376eb69092cd750356721f0f3d",
+  "blueprint_digest": "7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608111036-QHR892/quality/20260811-122603313-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:1bb5518ca906d85cf7274ae9395a9389f3704d6f02e533dc03fc453be2433c1e",
+    "prompt_path": ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/777e7be6f6dcb8522469b128846b339841109130b0533d8a9d6bc282d4ea7d86.md",
+    "result_schema_path": ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608111036-QHR892/README.md",
+      "sha256": "sha256:2ec66aa9fb62d66675ea1e3a0a1f1421dcc02056ec367f4cfbfc7004c399866b",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/1221492047e36b8dcff0469ed9725484e22af92ce5642b500ea0e67f7df7bc72.patch",
+      "sha256": "sha256:1221492047e36b8dcff0469ed9725484e22af92ce5642b500ea0e67f7df7bc72",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/006c636c2234bfb302d4bcf1e6e6d5735762ebdaa2cee3e1859b68ec266add99.json",
+      "sha256": "sha256:006c636c2234bfb302d4bcf1e6e6d5735762ebdaa2cee3e1859b68ec266add99",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608111036-QHR892/verification/20260811122326188-966fb50220b3f330.json",
+      "sha256": "sha256:4070592226c3de2433834c148915369c303177527a5ca0f1517990e1884cdc4a",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/8babde3dcd7045f8ca2ec9145f1683be19cb2c338cc01c76dd940c6b1e51de51.json",
+      "sha256": "sha256:8babde3dcd7045f8ca2ec9145f1683be19cb2c338cc01c76dd940c6b1e51de51",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

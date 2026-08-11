@@ -41,12 +41,50 @@ describe("verification details", () => {
       parseVerificationCheckDetails(
         [
           "Command: bun run test:fast",
-          "Result: pass (549 files, 3971 tests)",
+          "Result: pass (549 files, 3971 tests).",
           "Evidence: process exited 0 at the evaluated SHA.",
           "Scope: complete local suite.",
         ].join("\n"),
       )?.[0]?.result,
     ).toBe("pass");
+  });
+
+  it("accepts repeated inline check blocks emitted by shell-safe agent commands", () => {
+    expect(
+      parseVerificationCheckDetails(
+        "Command: bun test. Result: pass. Evidence: 7 tests passed. Scope: focused suite. " +
+          "Command: bun run typecheck. Result: pass. Evidence: exited 0. Scope: types.",
+      ),
+    ).toEqual([
+      {
+        command: "bun test.",
+        result: "pass",
+        evidence: "7 tests passed.",
+        scope: "focused suite.",
+      },
+      {
+        command: "bun run typecheck.",
+        result: "pass",
+        evidence: "exited 0.",
+        scope: "types.",
+      },
+    ]);
+  });
+
+  it("keeps label-shaped text inside inline check values", () => {
+    expect(
+      parseVerificationCheckDetails(
+        'Command: sh -c "echo Scope: smoke". Result: pass. ' +
+          "Evidence: output mentioned Command: without starting a field. Scope: focused.",
+      ),
+    ).toEqual([
+      {
+        command: 'sh -c "echo Scope: smoke".',
+        result: "pass",
+        evidence: "output mentioned Command: without starting a field.",
+        scope: "focused.",
+      },
+    ]);
   });
 
   it.each(["passed", "pass maybe", "failure", "fail open", "pass;"])(

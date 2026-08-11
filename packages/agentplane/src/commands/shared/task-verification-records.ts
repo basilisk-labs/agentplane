@@ -31,6 +31,7 @@ type VerificationRecordAssessmentReason =
   | "verification_missing"
   | "verification_invalid_record"
   | "verification_metadata_changed"
+  | "verification_details_missing"
   | "verification_implementation_changed"
   | "verification_steps_changed"
   | "verification_context_changed"
@@ -196,11 +197,7 @@ function rejectedAssessment(
   };
 }
 
-function recordMetadataMatches(
-  record: Record<string, unknown>,
-  task: TaskData,
-  requireConcreteCheckDetails: boolean,
-): boolean {
+function recordMetadataMatches(record: Record<string, unknown>, task: TaskData): boolean {
   const verification = task.verification;
   return Boolean(
     verification &&
@@ -210,8 +207,7 @@ function recordMetadataMatches(
     record.result === verification.state &&
     record.verifier === verification.updated_by &&
     record.note === verification.note &&
-    hasValidRecordDigest(record) &&
-    (!requireConcreteCheckDetails || hasConcreteCheckDetails(record.details)),
+    hasValidRecordDigest(record),
   );
 }
 
@@ -228,8 +224,11 @@ async function assessCurrentVerification(
     return rejectedAssessment("verification_invalid_record");
   }
   const record = raw as Record<string, unknown>;
-  if (!recordMetadataMatches(record, task, requireConcreteCheckDetails)) {
+  if (!recordMetadataMatches(record, task)) {
     return rejectedAssessment("verification_metadata_changed");
+  }
+  if (requireConcreteCheckDetails && !hasConcreteCheckDetails(record.details)) {
+    return rejectedAssessment("verification_details_missing");
   }
 
   if (record.schema_version === 2) {

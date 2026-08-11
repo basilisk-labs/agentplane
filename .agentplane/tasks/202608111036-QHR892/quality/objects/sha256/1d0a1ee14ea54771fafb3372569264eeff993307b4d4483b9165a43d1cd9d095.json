@@ -1,0 +1,28 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run test:fast",
+    "bun run typecheck",
+    "bun test packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-11T14:25:32.613Z",
+    "updated_by": "TESTER",
+    "note": "Hosted contract rework passed with affected checks rerun and the unchanged full-suite receipt reused."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608111036-QHR892/verification/20260811142532613-5638fa439d087087.json",
+      "sha256": "sha256:604db89bf16c42a2596eea06d9bc33658276b06f89c911f90b350d15a6e107ff"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

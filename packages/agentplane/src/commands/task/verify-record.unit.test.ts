@@ -198,6 +198,7 @@ describe("task verify record (unit)", () => {
         taskId: "T-1",
         by: "A",
         note: "Looks good",
+        details: "Command: focused check\nResult: pass\nEvidence: exited 0\nScope: committed task",
         quiet: false,
       }),
     ).resolves.toBe(0);

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "medium",
+      "summary": "Замороженная проверка не содержит обязательного финального доказательства чистого состояния репозитория.",
+      "broken_invariant": "DoD core требует, чтобы итоговые доказательства включали вывод `git status --short --untracked-files=all`; verification record перечисляет тесты, typecheck, документацию, hotspots, standalone fixture и проверку маршрута, но не эту проверку состояния.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/verification/20260811153155281-47d172ef240de214.json",
+          "sha256": "sha256:e4ea7900c7b7ab75e497f2f72a219a339a77b254b88e33f5d2aae992943f34f4",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Добавить CLI-регрессию, подтверждающую, что `verify --ok` с хотя бы одним структурированным блоком `Result: fail` отклоняется до изменения verification state."
+  ],
+  "hidden_assumptions": [
+    "Предполагается, что репозиторий был чистым до создания замороженных артефактов evaluator episode, однако авторитетные verification evidence этого не фиксируют."
+  ],
+  "recovery_context": "Зафиксировать разрешенную read-only проверку `git status --short --untracked-files=all`, классифицировать ожидаемые evaluator artifacts отдельно от постороннего drift и включить результат в итоговые verification evidence; также добавить отрицательную проверку конфликтующего `Result: fail`."
+}

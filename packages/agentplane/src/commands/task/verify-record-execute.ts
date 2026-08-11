@@ -224,6 +224,32 @@ async function recordVerificationResult(opts: {
           previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
           workflowMode: config.workflow_mode,
         });
+        const parsedDetails = parseVerificationCheckDetails(opts.details);
+        const requiresConcreteDetails =
+          config.workflow_mode === "branch_pr" &&
+          (current.status === "DONE" || Boolean(current.commit?.hash?.trim()));
+        if (opts.state === "ok" && requiresConcreteDetails && parsedDetails === null) {
+          throw new CliError({
+            code: "E_VALIDATION",
+            message:
+              'Passing verification for a committed branch_pr task requires --details with one or more Command, Result, Evidence, and Scope blocks. No verification state was changed. Use --details "Command: <command>\\nResult: pass\\nEvidence: <observed result>\\nScope: <covered behavior>" and repeat each four-field block for additional checks.',
+            context: {
+              task_id: current.id,
+              reason_code: "verification_details_required",
+            },
+          });
+        }
+        if (opts.state === "ok" && parsedDetails?.some((check) => check.result !== "pass")) {
+          throw new CliError({
+            code: "E_VALIDATION",
+            message:
+              "Passing verification cannot contain a check whose structured Result is fail. No verification state was changed.",
+            context: {
+              task_id: current.id,
+              reason_code: "verification_result_conflict",
+            },
+          });
+        }
         const verificationInput = await resolveVerificationInputIdentity({
           gitRoot: resolved.gitRoot,
           workflowDir: config.paths.workflow_dir,

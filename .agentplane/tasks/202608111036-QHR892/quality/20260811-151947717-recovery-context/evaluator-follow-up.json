@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608111036-QHR892-0fe634aabdaae369f7ffe800",
+  "task_id": "202608111036-QHR892",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Strengthen the CLI regression to assert the exact quality-review gate, then include frozen evidence of the required final-route inspection after the single valid verify command.",
+  "findings": [
+    {
+      "id": "RECOVERY-001",
+      "summary": "CLI-регрессия не доказывает немедленный переход именно к quality review: она проверяет лишь отсутствие verification_required и допускает любой другой nextAction.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/README.md",
+          "sha256": "sha256:13ba5d2b0ef97aa1f744d2f4a8066a5f48bfcd0fd7efff1c14c3c7329e569fca",
+          "section": "Plan and Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/bbe6214187cd93bb1d754af8d416ffdbe15938444f2f45af6c595c50cfc0ab51.patch",
+          "sha256": "sha256:bbe6214187cd93bb1d754af8d416ffdbe15938444f2f45af6c595c50cfc0ab51",
+          "lines": "expect(immediate.nextAction.code).not.toBe(\"verification_required\");",
+          "section": "packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
+        }
+      ]
+    },
+    {
+      "id": "RECOVERY-002",
+      "summary": "Замороженная запись проверки не содержит результата обязательной инспекции итогового маршрута после единой команды verify.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/README.md",
+          "sha256": "sha256:13ba5d2b0ef97aa1f744d2f4a8066a5f48bfcd0fd7efff1c14c3c7329e569fca",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/verification/20260811151629029-e146b2f46c0413b6.json",
+          "sha256": "sha256:82ff4e6e9992585a72ecd6d161a3cdb5412ecedbae1983e96c03e610acd8b93f",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "lines": "Verification steps are executed and results recorded.",
+          "section": "DoD: core"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608111036-QHR892/quality/20260811-151947717-recovery-context/evaluator-result.json"
+}

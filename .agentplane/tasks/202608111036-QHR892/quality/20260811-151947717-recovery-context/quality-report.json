@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "202608111036-QHR892",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T15:20:58.744Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "313dfa2210aafad5b6188aeae13318a97f56cdf5",
+  "blueprint_digest": "7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b",
+  "findings": [
+    "CLI-регрессия не доказывает немедленный переход именно к quality review: она проверяет лишь отсутствие verification_required и допускает любой другой nextAction.",
+    "Замороженная запись проверки не содержит результата обязательной инспекции итогового маршрута после единой команды verify."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608111036-QHR892/README.md",
+    ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/bbe6214187cd93bb1d754af8d416ffdbe15938444f2f45af6c595c50cfc0ab51.patch",
+    ".agentplane/tasks/202608111036-QHR892/verification/20260811151629029-e146b2f46c0413b6.json",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [
+    "CLI-level regression asserting the exact quality-review next-action code immediately after a single valid verify command.",
+    "Recorded read-only final-route inspection showing verification_required absent and the quality-review gate selected without rerunning checks."
+  ],
+  "hidden_assumptions": [
+    "Any nextAction other than verification_required is assumed to satisfy the required transition to quality review.",
+    "Passing the route-decision test is assumed to substitute for the separately required inspection of the real final task route."
+  ],
+  "residual_risks": [
+    "Strengthen the CLI regression to assert the exact quality-review gate, then include frozen evidence of the required final-route inspection after the single valid verify command."
+  ]
+}

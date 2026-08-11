@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608111036-QHR892",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T12:26:04.111Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The implementation satisfies the approved verification UX contract: incomplete passing evidence is rejected before mutation, valid inline or multiline evidence becomes current immediately, lifecycle-only commits reuse it, and missing remote truth no longer appears terminal.",
+  "evaluated_sha": "416515219298c6ad2677fd12d6c364f0eae1df00",
+  "blueprint_digest": "7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b",
+  "findings": [
+    "Structured evidence parsing is deterministic and rejects missing fields, ambiguous Result values, and fail results paired with --ok before task state changes.",
+    "CLI-level route coverage proves that a verify command carrying a structured Finding advances directly to quality review and remains current after a lifecycle-only commit."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608111036-QHR892/verification/20260811122326188-966fb50220b3f330.json",
+    "packages/agentplane/src/commands/task/verify-record.unit.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The broader CI scheduler still permits resource-heavy fixtures to contend in unconstrained local runs; task 202608102115-7XGP97 remains mandatory before release."
+  ]
+}

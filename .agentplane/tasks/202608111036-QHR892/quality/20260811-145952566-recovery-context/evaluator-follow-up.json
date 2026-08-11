@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608111036-QHR892-fe518d0ea282fc9ba41525ed",
+  "task_id": "202608111036-QHR892",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "На SHA 313dfa2210aafad5b6188aeae13318a97f56cdf5 выполните и атомарно запишите недостающие обязательные проверки, затем приложите итоговый route-result, подтверждающий отсутствие verification_required и переход к следующему gate.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "Замороженная проверка для evaluated_sha 313dfa2210aafad5b6188aeae13318a97f56cdf5 не содержит обязательных результатов test:fast, docs:cli:check и отдельного ресурсоёмкого теста; текущая запись фиксирует только 5 сфокусированных файлов, typecheck и hotspots:check.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/README.md",
+          "sha256": "sha256:9d248af149100de112e13dfd5493aa4909b09cf99fa9dacd4f20dbcb6adaceae",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/verification/20260811145104568-cdb19553c88b1444.json",
+          "sha256": "sha256:489228f3c13e555b0b94ce6060d50787e2cec302458dd51920f8fa3607782f5f",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/bbe6214187cd93bb1d754af8d416ffdbe15938444f2f45af6c595c50cfc0ab51.patch",
+          "sha256": "sha256:bbe6214187cd93bb1d754af8d416ffdbe15938444f2f45af6c595c50cfc0ab51"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/113926dd729152532bf89ef00a59db78f7cb398b96d1fc222815cda3817d1acd.json",
+          "sha256": "sha256:113926dd729152532bf89ef00a59db78f7cb398b96d1fc222815cda3817d1acd",
+          "section": "runtime_evidence"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "Нет замороженного доказательства инспекции итогового маршрута после записи всех проверок одной командой verify.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/README.md",
+          "sha256": "sha256:9d248af149100de112e13dfd5493aa4909b09cf99fa9dacd4f20dbcb6adaceae",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/113926dd729152532bf89ef00a59db78f7cb398b96d1fc222815cda3817d1acd.json",
+          "sha256": "sha256:113926dd729152532bf89ef00a59db78f7cb398b96d1fc222815cda3817d1acd"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/verification/20260811145104568-cdb19553c88b1444.json",
+          "sha256": "sha256:489228f3c13e555b0b94ce6060d50787e2cec302458dd51920f8fa3607782f5f",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608111036-QHR892/quality/20260811-145952566-recovery-context/evaluator-result.json"
+}

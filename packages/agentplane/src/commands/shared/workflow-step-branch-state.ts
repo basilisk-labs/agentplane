@@ -1,5 +1,5 @@
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
-import { terminalStep } from "./workflow-step-factory.js";
+import { cliOperationStep, terminalStep } from "./workflow-step-factory.js";
 
 export function blockedTaskStep(state: WorkflowRouteState): WorkflowStep {
   return terminalStep({
@@ -23,4 +23,16 @@ export function primaryIncludeTaskIds(state: WorkflowRouteState): readonly strin
 
 export function preMergeCommit(state: WorkflowRouteState): string | null {
   return state.prFlow?.branch.headSha ?? null;
+}
+
+export function missingPrRemoteRefreshStep(state: WorkflowRouteState): WorkflowStep {
+  return cliOperationStep({
+    state,
+    operationId: "route.remote.refresh",
+    params: { taskId: state.task.id },
+    code: "refresh_remote_route",
+    summary:
+      "load provider truth before treating a branch_pr task with no local branch or PR record as complete",
+    selectedBlocker: null,
+  });
 }
