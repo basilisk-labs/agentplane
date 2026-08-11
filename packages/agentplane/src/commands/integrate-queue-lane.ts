@@ -4,7 +4,7 @@ import { gitDiffNames } from "@agentplaneorg/core/git";
 
 import { createCliEmitter } from "../cli/output.js";
 import { CliError } from "../shared/errors.js";
-import { loadBackendTask, type CommandContext } from "./shared/task-backend.js";
+import type { CommandContext } from "./shared/task-backend.js";
 import { gitBranchUpstream, gitRevParse } from "./shared/git-ops.js";
 import { resolvePrFlowStatus } from "./pr/flow-status.js";
 import { isProviderHeadUnavailableError, requireOpenGithubPrAtHead } from "./pr/provider-head.js";
@@ -236,15 +236,6 @@ export async function normalizeTerminalQueueEntries(opts: {
   }[] = [];
 
   for (const entry of candidates) {
-    const loaded = await loadBackendTask({
-      ctx: opts.ctx,
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-      taskId: entry.task_id,
-    }).catch(() => null);
-    if (loaded?.task.status !== "DONE" && entry.status !== "handoff") {
-      continue;
-    }
     const report = await resolvePrFlowStatus({
       ctx: opts.ctx,
       cwd: opts.cwd,

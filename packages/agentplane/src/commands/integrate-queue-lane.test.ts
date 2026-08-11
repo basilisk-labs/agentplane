@@ -230,7 +230,7 @@ describe("integration queue terminal recovery", () => {
     });
   });
 
-  it("does not normalize a pre-merge DONE task while its provider PR is open", async () => {
+  it("does not normalize an active queued entry while its provider PR is open", async () => {
     const root = await makeQueueRoot();
     mocks.resolvePrFlowStatus.mockResolvedValue(openReport);
 
@@ -244,6 +244,23 @@ describe("integration queue terminal recovery", () => {
     const queue = await readIntegrationQueue(root);
     expect(queue.entries[0]?.status).toBe("queued");
     expect(mocks.resolvePrFlowStatus).toHaveBeenCalledOnce();
+  });
+
+  it("normalizes a merged queued entry even when local task state is stale", async () => {
+    const root = await makeQueueRoot();
+    mocks.resolvePrFlowStatus.mockResolvedValue(completedReport);
+
+    await normalizeTerminalQueueEntries({
+      ctx: {} as CommandContext,
+      cwd: root,
+      gitRoot: root,
+      quiet: true,
+    });
+
+    const queue = await readIntegrationQueue(root);
+    expect(queue.entries[0]?.status).toBe("done");
+    expect(mocks.resolvePrFlowStatus).toHaveBeenCalledOnce();
+    expect(mocks.loadBackendTask).not.toHaveBeenCalled();
   });
 
   it("returns a typed read-only list result without provider normalization", async () => {

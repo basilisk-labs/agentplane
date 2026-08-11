@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
   loadBackendTask: vi.fn(),
   claimNextQueuedEntry: vi.fn(),
   markQueueEntry: vi.fn(),
+  normalizeTerminalQueueEntries: vi.fn(),
   rejectIfQueuedEntryIsStale: vi.fn(),
   rejectIfQueuedEntryPublicationIsStale: vi.fn(),
   prepareIntegrate: vi.fn(),
@@ -57,7 +58,7 @@ vi.mock("./integrate-queue-lane.js", () => ({
   defaultIntegrationQueueWorker: () => "worker",
   findActiveIntegrationLane: vi.fn(),
   hasQueuedIntegrationEntries: vi.fn(),
-  normalizeTerminalQueueEntries: vi.fn(),
+  normalizeTerminalQueueEntries: mocks.normalizeTerminalQueueEntries,
   recoverStaleActiveLane: vi.fn(),
   rejectIfQueuedEntryIsStale: mocks.rejectIfQueuedEntryIsStale,
   rejectIfQueuedEntryPublicationIsStale: mocks.rejectIfQueuedEntryPublicationIsStale,
@@ -195,6 +196,7 @@ describe("integrate queue claim publication guard", () => {
     });
     mocks.claimNextQueuedEntry.mockReturnValue({ state, entry });
     mocks.rejectIfQueuedEntryIsStale.mockResolvedValue(null);
+    mocks.normalizeTerminalQueueEntries.mockResolvedValue(undefined);
     mocks.rejectIfQueuedEntryPublicationIsStale.mockImplementation(() => {
       expect(mocks.inMutex).toBe(false);
       return Promise.resolve(null);
@@ -534,6 +536,13 @@ describe("integrate queue claim publication guard", () => {
       }),
     ).resolves.toBe(0);
 
+    expect(mocks.normalizeTerminalQueueEntries).toHaveBeenCalledWith({
+      ctx: expect.anything(),
+      cwd: "/repo",
+      rootOverride: null,
+      gitRoot: "/repo",
+      quiet: true,
+    });
     expect(mocks.rejectIfQueuedEntryPublicationIsStale).toHaveBeenCalledTimes(2);
     expect(mocks.cmdIntegrate).toHaveBeenCalledWith(
       expect.objectContaining({
