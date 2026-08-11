@@ -1,0 +1,82 @@
+{
+  "details": "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (1 file, 3 tests). Evidence: process exited 0 at 6a2cf7854 and asserted nextAction.code equals quality_review_required. Scope: exact post-verification CLI route. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at 6a2cf7854. Scope: TypeScript contracts. Command: bun run docs:cli:check. Result: pass. Evidence: receipt from runtime-equivalent 313dfa221; 6a2cf7854 changes only a test fixture and cannot alter generated CLI documentation. Scope: public CLI documentation. Command: bun run hotspots:check. Result: pass. Evidence: receipt from runtime-equivalent 313dfa221; 6a2cf7854 changes the existing test below its enforced threshold. Scope: repository size contracts. Command: bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Result: pass (549 files, 3988 tests). Evidence: content-equivalent runtime passed in 384.66 seconds at 313dfa221 and the only later test fixture change passed independently at 6a2cf7854. Scope: complete fast repository suite under bounded concurrency. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs-production-dependencies-from-a-sanitized-package-payload. Result: pass (1 file, 1 test). Evidence: runtime-equivalent receipt passed in 97.13 seconds at 313dfa221; later changes are isolated to the route-decision test fixture. Scope: resource-intensive standalone dependency fixture.",
+  "digest": "sha256:89ed2059cd86c3203bfc02dfdd9bb048b615b45ac7ebeb5315f4b32f577e3f3d",
+  "implementation_sha": "6a2cf7854d8a2145e78a9e38bd6ff2c037f9a73e",
+  "input": {
+    "context": {
+      "digest": "sha256:36fec4cc01483f7dade507195e7c8f954b583a6cefd467466f4cbfb918df42fd",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:4285939a0428982f0397d345574e64f2ddef715e8780758195a43f0ecaea7b96",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:66a61d3a728da0cbb897d2be12da4c540b40928e3be19c056dcdaca5ebf4b7b4",
+      "digest": "sha256:6ee300482627fc2d25e7ebafffbb3205e87c38210871c806037aa7bd01f2cd1e",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "c6f34bc7c9b39e376eb69092cd750356721f0f3d",
+      "digest": "sha256:650cbc9ccfca34cb988512bcdabe9354bdfaf7aa4b94144674291d552b338919",
+      "strategy": "branch_diff",
+      "target_sha": "6a2cf7854d8a2145e78a9e38bd6ff2c037f9a73e"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 2,
+    "verify_steps_digest": "sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530"
+  },
+  "kind": "task_verification_record",
+  "note": "Exact quality-review route assertion passed; prior full-suite, docs, hotspot, and standalone receipts were reused because 6a2cf7854 changes only the exercised CLI test fixture.",
+  "recorded_at": "2026-08-11T15:30:15.581Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts. Expected: parser, freshness classification, and pre-mutation rejection tests pass.\n2. Run bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Expected: a one-shot passing verification with structured Finding is immediately fresh and remains reusable after a lifecycle-only commit.\n3. Run bun run typecheck and bun run docs:cli:check. Expected: type safety passes and public CLI guidance matches the generated reference.\n4. Run bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Expected: the complete fast repository suite passes under bounded local concurrency.\n5. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs production dependencies from a sanitized package payload. Expected: the resource-intensive standalone dependency fixture passes without contention from the rest of the suite.\n6. Inspect the final task route after recording all checks in one verify command. Expected: verification_required is absent and the next gate is emitted without rerunning tests.",
+  "scope_digest": "sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530",
+  "task_id": "202608111036-QHR892",
+  "verification_command": "agentplane verify 202608111036-QHR892 --ok --by REVIEWER",
+  "verifier": "REVIEWER"
+}
