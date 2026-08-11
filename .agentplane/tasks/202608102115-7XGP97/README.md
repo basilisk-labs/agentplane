@@ -1,10 +1,11 @@
 ---
 id: "202608102115-7XGP97"
 title: "Refactor GitHub verification so the single required PR verification aggregate covers every relevant development gate while reducing full-route latency and runner usage"
-status: "DOING"
+result_summary: "Merged via PR #4824."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -32,6 +33,20 @@ verification:
   updated_by: null
   note: null
   attempts: 0
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-11T20:30:35.360Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -40,11 +55,16 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "95308cce1419451193d18ce55c4b1e18a3a3ace5"
+  message: "Merge pull request #4824 from basilisk-labs/task/202608102115-7XGP97/refactor-github-verification-so-the-single-requi"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4824 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -53,9 +73,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-11T20:30:35.360Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4824 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+    commit: "95308cce1419451193d18ce55c4b1e18a3a3ace5"
 doc_version: 3
-doc_updated_at: "2026-08-11T16:52:05.487Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-11T20:30:35.369Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement the approved CI audit recommendations on current main: make docs, dependency review, workflow lint, and stabilized CodeQL part of fail-closed merge verification; replace binary routing with tested per-capability outputs; avoid irrelevant Windows, package-runtime, coverage, and docs jobs; reduce full-route fan-out and repeated setup/build work; reuse canonical docs and release qualification workflows; remove stale CodeQL workflow registration/configuration drift; preserve exact-SHA release evidence and post-merge safety. Keep unknown paths fail-closed and provide before/after timing evidence without weakening coverage."
 sections:
   Summary: |-
@@ -132,3 +160,16 @@ PLANNER fallback scaffold for "Refactor GitHub verification so the single requir
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-11T20:30:35.360Z`
