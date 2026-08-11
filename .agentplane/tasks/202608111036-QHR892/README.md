@@ -2,10 +2,10 @@
 id: "202608111036-QHR892"
 title: "Make verification evidence atomic, immediately fresh, and reusable"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -82,8 +82,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "cd23b83e0c767c48973a62f596a0bf46e4d03d74"
-  message: "🧾 QHR892 task: link hosted PR"
+  hash: "586b7f3400e3700c69b28688fec53f7cb0456213"
+  message: "🔧 QHR892 code: satisfy hotspot contract"
 comments:
   -
     author: "CODER"
@@ -94,6 +94,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Hosted verify-contract required a hotspot-safe extraction and moving pre-mutation coverage into the CLI regression; implementation updated without changing behavior."
 events:
   -
     type: "status"
@@ -124,8 +127,16 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "cd23b83e0c767c48973a62f596a0bf46e4d03d74"
+  -
+    type: "status"
+    at: "2026-08-11T14:21:24.598Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Hosted verify-contract required a hotspot-safe extraction and moving pre-mutation coverage into the CLI regression; implementation updated without changing behavior."
+    commit: "586b7f3400e3700c69b28688fec53f7cb0456213"
 doc_version: 3
-doc_updated_at: "2026-08-11T12:30:58.518Z"
+doc_updated_at: "2026-08-11T14:21:24.647Z"
 doc_updated_by: "CODER"
 description: "Eliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command."
 sections:
