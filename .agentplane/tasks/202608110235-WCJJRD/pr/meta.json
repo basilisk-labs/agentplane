@@ -8,10 +8,10 @@
   "pr_number": 4820,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4820",
   "pre_merge_closure": {
-    "basis_commit": "4b8837b6b951f5d295e392d93b5555e2afc6ea3b",
+    "basis_commit": "c8de8add843509c43b797cb4700ceaad88ca5fac",
     "branch": "task/202608110235-WCJJRD/replace-task-create-keyword-inference-with-expli",
     "pr_number": 4820,
-    "recorded_at": "2026-08-11T08:59:05.639Z",
+    "recorded_at": "2026-08-11T09:08:45.788Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

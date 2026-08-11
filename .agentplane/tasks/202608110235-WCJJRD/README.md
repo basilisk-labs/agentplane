@@ -2,10 +2,10 @@
 id: "202608110235-WCJJRD"
 title: "Replace task-create keyword inference with explicit semantic intent"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -74,7 +74,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-11T08:59:05.576Z"
+  updated_at: "2026-08-11T09:08:45.721Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -84,8 +84,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "0cca190046749f1bb43c39bce2cb98c9eb11a240"
-  message: "📚 WCJJRD task: Regenerate explicit intent CLI reference"
+  hash: "c8de8add843509c43b797cb4700ceaad88ca5fac"
+  message: "🚧 WCJJRD task: Record final documentation evidence"
 comments:
   -
     author: "CODER"
@@ -108,6 +108,9 @@ comments:
   -
     author: "CODER"
     body: "Hosted rework: regenerate the public CLI reference after adding explicit task-create options."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -200,8 +203,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified 0cca19004674: the generated CLI reference is exact; unchanged explicit-intent and compatibility evidence remains reusable."
+  -
+    type: "status"
+    at: "2026-08-11T09:08:45.721Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "c8de8add843509c43b797cb4700ceaad88ca5fac"
 doc_version: 3
-doc_updated_at: "2026-08-11T09:07:40.823Z"
+doc_updated_at: "2026-08-11T09:08:45.750Z"
 doc_updated_by: "CODER"
 description: "Remove ordered natural-language keyword classification from task create. The CLI must validate structured task intent supplied by the agent or user, and otherwise create a neutral semantic-intake boundary for PLANNER without guessing task kind, mutation scope, risks, tags, blueprint, or execution route."
 sections:
@@ -548,8 +559,8 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "da72914861a3b6c8db97de035b7ee42b67940c1c"
-    message: "🧪 WCJJRD task: Review explicit intent compatibility surface"
+    hash: "0cca190046749f1bb43c39bce2cb98c9eb11a240"
+    message: "📚 WCJJRD task: Regenerate explicit intent CLI reference"
   workflow_route_baseline:
     start_head_sha: "c8d4ebd0ccd74b5afee77d1b44eb008a810a9bd0"
     version: 1
@@ -922,4 +933,4 @@ DecisionContextRef:
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-11T08:59:05.576Z`
+- Updated at: `2026-08-11T09:08:45.721Z`
