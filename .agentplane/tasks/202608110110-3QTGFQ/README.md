@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -19,7 +19,7 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T01:51:03.407Z"
+  updated_at: "2026-08-11T01:55:59.348Z"
   updated_by: "TESTER"
   note: "Verified the CI lint correction at 573f88809; production behavior is unchanged and prior full-suite evidence remains applicable."
   attempts: 0
@@ -140,8 +140,20 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified the CI lint correction at 573f88809; production behavior is unchanged and prior full-suite evidence remains applicable."
+  -
+    type: "verify"
+    at: "2026-08-11T01:55:12.158Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified the CI lint correction at 573f88809; production behavior is unchanged and prior full-suite evidence remains applicable."
+  -
+    type: "verify"
+    at: "2026-08-11T01:55:59.348Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified the CI lint correction at 573f88809; production behavior is unchanged and prior full-suite evidence remains applicable."
 doc_version: 3
-doc_updated_at: "2026-08-11T01:51:20.906Z"
+doc_updated_at: "2026-08-11T01:56:01.629Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr task supervision enqueue and then serialize its own integration queue through typed deterministic operations, recover handoffs without semantic rework, and prevent stale base task replicas while preserving parallel per-task worktrees."
 sections:
@@ -325,6 +337,106 @@ sections:
     Scope: Complete production behavior and regression suite.
 
     Reused evidence: typecheck, format, knip baseline, hotspot thresholds, and build at a0cfe7da0
+    Result: pass.
+    Evidence: No production, configuration, dependency, or build input changed after those checks.
+    Scope: Static architecture and packaging.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110110-3QTGFQ-advance-the-integration-queue-in-the-foreground/.agentplane/tasks/202608110110-3QTGFQ/blueprint/resolved-snapshot.json
+    - old_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+    - current_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608110110-3QTGFQ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T01:55:12.158Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified the CI lint correction at 573f88809; production behavior is unchanged and prior full-suite evidence remains applicable.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4f23b4bc1923b5ab7fb8043edbb9863bb7710c459d6f8f9fa554dcc91b163f, input_digest=sha256:540e5ef20fc2d6b285330e0d1178451a4c9ded95fcd4b965aea1ac727a9a5abe
+
+    Details:
+
+    Command: bun run lint:core
+    Result: pass.
+    Evidence: GitHub-reported no-unsafe-assignment at integrate-queue.command.test.ts:540 is removed; ESLint exited 0 at 573f88809.
+    Scope: Complete packages/scripts core lint surface.
+
+    Command: bun vitest run packages/agentplane/src/commands/integrate-queue.command.test.ts packages/agentplane/src/commands/integrate-queue-lane.test.ts
+    Result: pass (2 files, 32 tests).
+    Evidence: Queue normalization and run-next tests exited 0 at 573f88809.
+    Scope: Test-only typed assertion change.
+
+    Command: bun run test:fast (content-addressed reuse from a0cfe7da0)
+    Result: pass (549 files, 3979 tests).
+    Evidence: Production source is byte-identical between a0cfe7da0 and 573f88809; only a test assertion was typed.
+    Scope: Complete production behavior and regression suite.
+
+    Command: typecheck, format, knip baseline, hotspot thresholds, and build (content-addressed reuse from a0cfe7da0)
+    Result: pass.
+    Evidence: No production, configuration, dependency, or build input changed after those checks.
+    Scope: Static architecture and packaging.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110110-3QTGFQ-advance-the-integration-queue-in-the-foreground/.agentplane/tasks/202608110110-3QTGFQ/blueprint/resolved-snapshot.json
+    - old_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+    - current_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608110110-3QTGFQ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T01:55:59.348Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified the CI lint correction at 573f88809; production behavior is unchanged and prior full-suite evidence remains applicable.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4f23b4bc1923b5ab7fb8043edbb9863bb7710c459d6f8f9fa554dcc91b163f, input_digest=sha256:d747110265ee38230706e7b48c64acea767d4a808c6d88b92c089ba3a338b7c0
+
+    Details:
+
+    Command: bun run lint:core
+    Result: pass.
+    Evidence: GitHub-reported no-unsafe-assignment at integrate-queue.command.test.ts:540 is removed; ESLint exited 0 at 573f88809.
+    Scope: Complete packages/scripts core lint surface.
+
+    Command: bun vitest run packages/agentplane/src/commands/integrate-queue.command.test.ts packages/agentplane/src/commands/integrate-queue-lane.test.ts
+    Result: pass (2 files, 32 tests)
+    Evidence: Queue normalization and run-next tests exited 0 at 573f88809.
+    Scope: Test-only typed assertion change.
+
+    Command: bun run test:fast (content-addressed reuse from a0cfe7da0)
+    Result: pass (549 files, 3979 tests)
+    Evidence: Production source is byte-identical between a0cfe7da0 and 573f88809; only a test assertion was typed.
+    Scope: Complete production behavior and regression suite.
+
+    Command: typecheck, format, knip baseline, hotspot thresholds, and build (content-addressed reuse from a0cfe7da0)
     Result: pass.
     Evidence: No production, configuration, dependency, or build input changed after those checks.
     Scope: Static architecture and packaging.
@@ -554,6 +666,106 @@ Evidence: Production source is byte-identical between a0cfe7da0 and 573f88809; o
 Scope: Complete production behavior and regression suite.
 
 Reused evidence: typecheck, format, knip baseline, hotspot thresholds, and build at a0cfe7da0
+Result: pass.
+Evidence: No production, configuration, dependency, or build input changed after those checks.
+Scope: Static architecture and packaging.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110110-3QTGFQ-advance-the-integration-queue-in-the-foreground/.agentplane/tasks/202608110110-3QTGFQ/blueprint/resolved-snapshot.json
+- old_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+- current_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608110110-3QTGFQ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T01:55:12.158Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified the CI lint correction at 573f88809; production behavior is unchanged and prior full-suite evidence remains applicable.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4f23b4bc1923b5ab7fb8043edbb9863bb7710c459d6f8f9fa554dcc91b163f, input_digest=sha256:540e5ef20fc2d6b285330e0d1178451a4c9ded95fcd4b965aea1ac727a9a5abe
+
+Details:
+
+Command: bun run lint:core
+Result: pass.
+Evidence: GitHub-reported no-unsafe-assignment at integrate-queue.command.test.ts:540 is removed; ESLint exited 0 at 573f88809.
+Scope: Complete packages/scripts core lint surface.
+
+Command: bun vitest run packages/agentplane/src/commands/integrate-queue.command.test.ts packages/agentplane/src/commands/integrate-queue-lane.test.ts
+Result: pass (2 files, 32 tests).
+Evidence: Queue normalization and run-next tests exited 0 at 573f88809.
+Scope: Test-only typed assertion change.
+
+Command: bun run test:fast (content-addressed reuse from a0cfe7da0)
+Result: pass (549 files, 3979 tests).
+Evidence: Production source is byte-identical between a0cfe7da0 and 573f88809; only a test assertion was typed.
+Scope: Complete production behavior and regression suite.
+
+Command: typecheck, format, knip baseline, hotspot thresholds, and build (content-addressed reuse from a0cfe7da0)
+Result: pass.
+Evidence: No production, configuration, dependency, or build input changed after those checks.
+Scope: Static architecture and packaging.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110110-3QTGFQ-advance-the-integration-queue-in-the-foreground/.agentplane/tasks/202608110110-3QTGFQ/blueprint/resolved-snapshot.json
+- old_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+- current_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608110110-3QTGFQ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T01:55:59.348Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified the CI lint correction at 573f88809; production behavior is unchanged and prior full-suite evidence remains applicable.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4f23b4bc1923b5ab7fb8043edbb9863bb7710c459d6f8f9fa554dcc91b163f, input_digest=sha256:d747110265ee38230706e7b48c64acea767d4a808c6d88b92c089ba3a338b7c0
+
+Details:
+
+Command: bun run lint:core
+Result: pass.
+Evidence: GitHub-reported no-unsafe-assignment at integrate-queue.command.test.ts:540 is removed; ESLint exited 0 at 573f88809.
+Scope: Complete packages/scripts core lint surface.
+
+Command: bun vitest run packages/agentplane/src/commands/integrate-queue.command.test.ts packages/agentplane/src/commands/integrate-queue-lane.test.ts
+Result: pass (2 files, 32 tests)
+Evidence: Queue normalization and run-next tests exited 0 at 573f88809.
+Scope: Test-only typed assertion change.
+
+Command: bun run test:fast (content-addressed reuse from a0cfe7da0)
+Result: pass (549 files, 3979 tests)
+Evidence: Production source is byte-identical between a0cfe7da0 and 573f88809; only a test assertion was typed.
+Scope: Complete production behavior and regression suite.
+
+Command: typecheck, format, knip baseline, hotspot thresholds, and build (content-addressed reuse from a0cfe7da0)
 Result: pass.
 Evidence: No production, configuration, dependency, or build input changed after those checks.
 Scope: Static architecture and packaging.
