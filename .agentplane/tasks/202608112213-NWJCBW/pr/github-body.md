@@ -19,9 +19,9 @@ Remove profile-driven process variants from init, config, and runtime. New and u
 - Note:
 
 ```text
-PASS for current implementation dca3d280c: 340 focused tests passed after preserving explicit
-project approvals; typecheck, build, full lint, formatting, schema, and generated CLI docs contracts
-pass. Prior overloaded-suite concurrency failures remain independently green.
+Compatibility review remediation verified at 017d3d3a8. Prior full product verification remains
+applicable: excluding generated task lifecycle artifacts, the only post-verification changes are the
+compatibility candidate, checker, and its regression test.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -48,6 +48,7 @@ pass. Prior overloaded-suite concurrency failures remain independently green.
  ...un-cli.core.lifecycle.finish-validation.test.ts |   7 +-
  .../run-cli.core.lifecycle.start-readiness.test.ts |   7 +-
  packages/agentplane/src/cli/run-cli.core.test.ts   |  24 +++-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  10 +-
  .../agentplane/src/cli/run-cli/commands/config.ts  |  95 ++++++--------
  .../src/cli/run-cli/commands/init/answers.ts       |  17 +--
  .../cli/run-cli/commands/init/execution.test.ts    |   4 +-
@@ -96,7 +97,9 @@ pass. Prior overloaded-suite concurrency failures remain independently green.
  packages/spec/schemas/workflow.schema.json         |   8 +-
  schemas/config.schema.json                         |   6 +-
  schemas/workflow.schema.json                       |   8 +-
- 63 files changed, 516 insertions(+), 577 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    | 101 +++++++++++++--
+ .../check-compatibility-contract-baseline.mjs      | 110 ++++++++++++++--
+ 66 files changed, 712 insertions(+), 602 deletions(-)
 ```
 
 </details>

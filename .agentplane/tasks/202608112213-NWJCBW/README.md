@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T23:23:27.039Z"
+  updated_at: "2026-08-11T23:38:04.982Z"
   updated_by: "TESTER"
-  note: "PASS for current implementation dca3d280c: 340 focused tests passed after preserving explicit project approvals; typecheck, build, full lint, formatting, schema, and generated CLI docs contracts pass. Prior overloaded-suite concurrency failures remain independently green."
+  note: "Compatibility review remediation verified at 017d3d3a8. Prior full product verification remains applicable: excluding generated task lifecycle artifacts, the only post-verification changes are the compatibility candidate, checker, and its regression test."
   attempts: 0
 quality_review:
   state: "pass"
@@ -124,8 +124,20 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "90cd93c7eee01dbbe9c8b9f4ab9d0a8caccf6bc7"
+  -
+    type: "verify"
+    at: "2026-08-11T23:37:36.442Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Compatibility review remediation verified at 017d3d3a8. Prior full product verification remains applicable because only compatibility review artifacts and their regression test changed."
+  -
+    type: "verify"
+    at: "2026-08-11T23:38:04.982Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Compatibility review remediation verified at 017d3d3a8. Prior full product verification remains applicable: excluding generated task lifecycle artifacts, the only post-verification changes are the compatibility candidate, checker, and its regression test."
 doc_version: 3
-doc_updated_at: "2026-08-11T23:25:16.939Z"
+doc_updated_at: "2026-08-11T23:38:07.197Z"
 doc_updated_by: "CODER"
 description: "Remove profile-driven process variants from init, config, and runtime. New and upgraded projects must resolve to one fixed execution policy while legacy profile inputs migrate compatibly without changing workflow, runner, integrations, or explicit project approvals. Preserve task flexibility by making lifecycle and safety invariants fixed instead of imposing arbitrary autonomy tiers."
 sections:
@@ -250,11 +262,120 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-11T23:37:36.442Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Compatibility review remediation verified at 017d3d3a8. Prior full product verification remains applicable because only compatibility review artifacts and their regression test changed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1729a9a771942d9da42f2a6d1ee52a4a4172d3cb503a0913402e59118d69b9ba, input_digest=sha256:3c5f129f5f89f1acecfce10d542769f1df5b404a4b056cfd2550ff06a472971b
+
+    Details:
+
+    Command: bun run bench:compatibility:check
+    Result: pass
+    Evidence: compatibility contract baseline OK current=324aabe0f0296740ae6c2b309ca94694997a13bc7210cf48f9ce4b221899f691 candidate=approved release_version
+    Scope: exact reviewed compatibility surface and planned v0.7.5 version delta
+
+    Command: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+    Result: pass
+    Evidence: 9 passed, 0 failed, 107 assertions
+    Scope: compatibility ratchet, release reconstruction, mutation rejection, and efficiency anchors
+
+    Command: bun x eslint scripts/checks/check-compatibility-contract-baseline.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts && bun x prettier --check scripts/baselines/v0.7-compatibility-candidate.json scripts/checks/check-compatibility-contract-baseline.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts && git diff --check
+    Result: pass
+    Evidence: ESLint clean; all matched files use Prettier; no whitespace errors
+    Scope: static quality of the compatibility remediation
+
+    Command: git diff --name-only dca3d280c 017d3d3a8
+    Result: pass
+    Evidence: only the critical compatibility test, reviewed candidate, and compatibility checker changed after the previously verified product implementation
+    Scope: reuse boundary for prior full profile, CLI, typecheck, lint, build, schema, docs, and focused test evidence
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112213-NWJCBW-replace-mutable-setup-and-execution-profiles-wit/.agentplane/tasks/202608112213-NWJCBW/blueprint/resolved-snapshot.json
+    - old_digest: 8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61
+    - current_digest: 8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608112213-NWJCBW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T23:38:04.982Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Compatibility review remediation verified at 017d3d3a8. Prior full product verification remains applicable: excluding generated task lifecycle artifacts, the only post-verification changes are the compatibility candidate, checker, and its regression test.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1729a9a771942d9da42f2a6d1ee52a4a4172d3cb503a0913402e59118d69b9ba, input_digest=sha256:4048802e59ce8855b4e69ed8179413c7bda20d8feabb95eedd8b666e353ebc56
+
+    Details:
+
+    Command: bun run bench:compatibility:check
+    Result: pass
+    Evidence: compatibility contract baseline OK current=324aabe0f0296740ae6c2b309ca94694997a13bc7210cf48f9ce4b221899f691 candidate=approved release_version
+    Scope: exact reviewed compatibility surface and planned v0.7.5 version delta
+
+    Command: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+    Result: pass
+    Evidence: 9 passed, 0 failed, 107 assertions
+    Scope: compatibility ratchet, release reconstruction, mutation rejection, and efficiency anchors
+
+    Command: bun x eslint scripts/checks/check-compatibility-contract-baseline.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts && bun x prettier --check scripts/baselines/v0.7-compatibility-candidate.json scripts/checks/check-compatibility-contract-baseline.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts && git diff --check
+    Result: pass
+    Evidence: ESLint clean; all matched files use Prettier; no whitespace errors
+    Scope: static quality of the compatibility remediation
+
+    Command: git diff --name-only dca3d280c 017d3d3a8 -- . excluding .agentplane/tasks/202608112213-NWJCBW/**
+    Result: pass
+    Evidence: packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts; scripts/baselines/v0.7-compatibility-candidate.json; scripts/checks/check-compatibility-contract-baseline.mjs
+    Scope: reuse boundary for prior full profile, CLI, typecheck, lint, build, schema, docs, and focused test evidence; generated lifecycle artifacts are explicitly excluded
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112213-NWJCBW-replace-mutable-setup-and-execution-profiles-wit/.agentplane/tasks/202608112213-NWJCBW/blueprint/resolved-snapshot.json
+    - old_digest: 8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61
+    - current_digest: 8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608112213-NWJCBW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: "Implementation finding: task creation omitted explicit structured intent and defaulted this code change to the ops.approval blueprint; task 202608112232-3NC7Y4 will replace that guessing boundary with an agent-declared, deterministically enforced execution contract. Verification finding: the monolithic test:fast run completed 4,027 passing tests but oversubscribed concurrent process tests, producing seven isolated timeout/race failures; all seven passed when rerun in their owning files (36/36). The five remaining failures were obsolete force/profile expectations and now pass with the fixed standard-policy contract (74/74). This is retained as input to the final check-efficiency task."
+  Findings: |-
+    Implementation finding: task creation omitted explicit structured intent and defaulted this code change to the ops.approval blueprint; task 202608112232-3NC7Y4 will replace that guessing boundary with an agent-declared, deterministically enforced execution contract. Verification finding: the monolithic test:fast run completed 4,027 passing tests but oversubscribed concurrent process tests, producing seven isolated timeout/race failures; all seven passed when rerun in their owning files (36/36). The five remaining failures were obsolete force/profile expectations and now pass with the fixed standard-policy contract (74/74). This is retained as input to the final check-efficiency task.
+
+    - Observation: Hosted verify-contract failure identified an unreviewed compatibility surface update for canonical profile CLI and workflow schema changes.
+      Impact: Without a reviewed candidate, CI correctly blocked the PR despite passing product tests.
+      Resolution: Recorded exact CLI mutations, legacy aliases, canonical workflow schema values, provenance, and planned release surface digest; added checker assertions and regression expectations.
+
+    - Observation: Hosted verify-contract failure identified an unreviewed compatibility surface update for canonical profile CLI and workflow schema changes.
+      Impact: Without a reviewed candidate, CI correctly blocked the PR despite passing product tests.
+      Resolution: Recorded exact CLI mutations, legacy aliases, canonical workflow schema values, provenance, and planned release surface digest; added checker assertions and regression expectations.
 extensions:
   implementation_commit:
     hash: "dca3d280c2a6cf600439dafa647677933143f705"
@@ -394,6 +515,106 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-11T23:37:36.442Z — VERIFY — ok
+
+By: TESTER
+
+Note: Compatibility review remediation verified at 017d3d3a8. Prior full product verification remains applicable because only compatibility review artifacts and their regression test changed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1729a9a771942d9da42f2a6d1ee52a4a4172d3cb503a0913402e59118d69b9ba, input_digest=sha256:3c5f129f5f89f1acecfce10d542769f1df5b404a4b056cfd2550ff06a472971b
+
+Details:
+
+Command: bun run bench:compatibility:check
+Result: pass
+Evidence: compatibility contract baseline OK current=324aabe0f0296740ae6c2b309ca94694997a13bc7210cf48f9ce4b221899f691 candidate=approved release_version
+Scope: exact reviewed compatibility surface and planned v0.7.5 version delta
+
+Command: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+Result: pass
+Evidence: 9 passed, 0 failed, 107 assertions
+Scope: compatibility ratchet, release reconstruction, mutation rejection, and efficiency anchors
+
+Command: bun x eslint scripts/checks/check-compatibility-contract-baseline.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts && bun x prettier --check scripts/baselines/v0.7-compatibility-candidate.json scripts/checks/check-compatibility-contract-baseline.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts && git diff --check
+Result: pass
+Evidence: ESLint clean; all matched files use Prettier; no whitespace errors
+Scope: static quality of the compatibility remediation
+
+Command: git diff --name-only dca3d280c 017d3d3a8
+Result: pass
+Evidence: only the critical compatibility test, reviewed candidate, and compatibility checker changed after the previously verified product implementation
+Scope: reuse boundary for prior full profile, CLI, typecheck, lint, build, schema, docs, and focused test evidence
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112213-NWJCBW-replace-mutable-setup-and-execution-profiles-wit/.agentplane/tasks/202608112213-NWJCBW/blueprint/resolved-snapshot.json
+- old_digest: 8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61
+- current_digest: 8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608112213-NWJCBW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T23:38:04.982Z — VERIFY — ok
+
+By: TESTER
+
+Note: Compatibility review remediation verified at 017d3d3a8. Prior full product verification remains applicable: excluding generated task lifecycle artifacts, the only post-verification changes are the compatibility candidate, checker, and its regression test.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1729a9a771942d9da42f2a6d1ee52a4a4172d3cb503a0913402e59118d69b9ba, input_digest=sha256:4048802e59ce8855b4e69ed8179413c7bda20d8feabb95eedd8b666e353ebc56
+
+Details:
+
+Command: bun run bench:compatibility:check
+Result: pass
+Evidence: compatibility contract baseline OK current=324aabe0f0296740ae6c2b309ca94694997a13bc7210cf48f9ce4b221899f691 candidate=approved release_version
+Scope: exact reviewed compatibility surface and planned v0.7.5 version delta
+
+Command: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+Result: pass
+Evidence: 9 passed, 0 failed, 107 assertions
+Scope: compatibility ratchet, release reconstruction, mutation rejection, and efficiency anchors
+
+Command: bun x eslint scripts/checks/check-compatibility-contract-baseline.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts && bun x prettier --check scripts/baselines/v0.7-compatibility-candidate.json scripts/checks/check-compatibility-contract-baseline.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts && git diff --check
+Result: pass
+Evidence: ESLint clean; all matched files use Prettier; no whitespace errors
+Scope: static quality of the compatibility remediation
+
+Command: git diff --name-only dca3d280c 017d3d3a8 -- . excluding .agentplane/tasks/202608112213-NWJCBW/**
+Result: pass
+Evidence: packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts; scripts/baselines/v0.7-compatibility-candidate.json; scripts/checks/check-compatibility-contract-baseline.mjs
+Scope: reuse boundary for prior full profile, CLI, typecheck, lint, build, schema, docs, and focused test evidence; generated lifecycle artifacts are explicitly excluded
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112213-NWJCBW-replace-mutable-setup-and-execution-profiles-wit/.agentplane/tasks/202608112213-NWJCBW/blueprint/resolved-snapshot.json
+- old_digest: 8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61
+- current_digest: 8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608112213-NWJCBW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -404,6 +625,14 @@ DecisionContextRef:
 ## Findings
 
 Implementation finding: task creation omitted explicit structured intent and defaulted this code change to the ops.approval blueprint; task 202608112232-3NC7Y4 will replace that guessing boundary with an agent-declared, deterministically enforced execution contract. Verification finding: the monolithic test:fast run completed 4,027 passing tests but oversubscribed concurrent process tests, producing seven isolated timeout/race failures; all seven passed when rerun in their owning files (36/36). The five remaining failures were obsolete force/profile expectations and now pass with the fixed standard-policy contract (74/74). This is retained as input to the final check-efficiency task.
+
+- Observation: Hosted verify-contract failure identified an unreviewed compatibility surface update for canonical profile CLI and workflow schema changes.
+  Impact: Without a reviewed candidate, CI correctly blocked the PR despite passing product tests.
+  Resolution: Recorded exact CLI mutations, legacy aliases, canonical workflow schema values, provenance, and planned release surface digest; added checker assertions and regression expectations.
+
+- Observation: Hosted verify-contract failure identified an unreviewed compatibility surface update for canonical profile CLI and workflow schema changes.
+  Impact: Without a reviewed candidate, CI correctly blocked the PR despite passing product tests.
+  Resolution: Recorded exact CLI mutations, legacy aliases, canonical workflow schema values, provenance, and planned release surface digest; added checker assertions and regression expectations.
 
 ## Token Usage
 
