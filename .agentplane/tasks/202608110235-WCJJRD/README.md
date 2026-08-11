@@ -1,10 +1,11 @@
 ---
 id: "202608110235-WCJJRD"
 title: "Replace task-create keyword inference with explicit semantic intent"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -60,6 +61,20 @@ quality_review:
     - "The implementation removes ordered keyword tables and routes English, Russian, Japanese, negated, and ambiguous unstructured descriptions to the same semantic_intake_pending boundary."
     - "Partially supplied structured intent fails closed, while complete caller-supplied task kind and mutation scope persist with explicit provenance and existing branch_pr route floors."
     - "The new semantic_intent payload is truthful and the deprecated inferred_intent alias preserves patch-level consumers without restoring inference behavior."
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-11T08:39:31.388Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -69,8 +84,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "c7de784fbab8d1f3bc5b6f5c1d8432dddd3e3bb2"
-  message: "🚧 WCJJRD task: preserve task-create JSON compatibility"
+  hash: "1ba74a77559f3df96ba6806231ca05b47adc74a2"
+  message: "🚧 WCJJRD task: Record final quality evidence"
 comments:
   -
     author: "CODER"
@@ -81,6 +96,9 @@ comments:
   -
     author: "CODER"
     body: "Compatibility adjustment committed: retain deprecated JSON inferred_intent as an exact alias of semantic_intent."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -129,8 +147,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified c7de784fbab8 using unchanged content-addressed evidence; lifecycle metadata did not trigger duplicate test execution."
+  -
+    type: "status"
+    at: "2026-08-11T08:39:31.388Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "1ba74a77559f3df96ba6806231ca05b47adc74a2"
 doc_version: 3
-doc_updated_at: "2026-08-11T08:37:10.955Z"
+doc_updated_at: "2026-08-11T08:39:31.399Z"
 doc_updated_by: "CODER"
 description: "Remove ordered natural-language keyword classification from task create. The CLI must validate structured task intent supplied by the agent or user, and otherwise create a neutral semantic-intake boundary for PLANNER without guessing task kind, mutation scope, risks, tags, blueprint, or execution route."
 sections:
@@ -366,6 +392,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "c7de784fbab8d1f3bc5b6f5c1d8432dddd3e3bb2"
+    message: "🚧 WCJJRD task: preserve task-create JSON compatibility"
   workflow_route_baseline:
     start_head_sha: "c8d4ebd0ccd74b5afee77d1b44eb008a810a9bd0"
     version: 1
@@ -616,3 +645,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-11T08:39:31.388Z`
