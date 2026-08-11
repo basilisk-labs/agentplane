@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T01:55:59.348Z"
+  updated_at: "2026-08-11T02:20:37.383Z"
   updated_by: "TESTER"
-  note: "Verified the CI lint correction at 573f88809; production behavior is unchanged and prior full-suite evidence remains applicable."
+  note: "Foreground queue recovery verified at 4f552f312: temporary provider gates requeue safely and protected-base completion handoffs finish the worker cycle without false failures."
   attempts: 0
 quality_review:
   state: "pass"
@@ -163,8 +163,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "6b2b59ebe6d6999654b50dfb6b31bf48e84c4718"
+  -
+    type: "verify"
+    at: "2026-08-11T02:20:37.383Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Foreground queue recovery verified at 4f552f312: temporary provider gates requeue safely and protected-base completion handoffs finish the worker cycle without false failures."
 doc_version: 3
-doc_updated_at: "2026-08-11T01:57:38.404Z"
+doc_updated_at: "2026-08-11T02:20:39.753Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr task supervision enqueue and then serialize its own integration queue through typed deterministic operations, recover handoffs without semantic rework, and prevent stale base task replicas while preserving parallel per-task worktrees."
 sections:
@@ -451,6 +457,56 @@ sections:
     Result: pass.
     Evidence: No production, configuration, dependency, or build input changed after those checks.
     Scope: Static architecture and packaging.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110110-3QTGFQ-advance-the-integration-queue-in-the-foreground/.agentplane/tasks/202608110110-3QTGFQ/blueprint/resolved-snapshot.json
+    - old_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+    - current_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608110110-3QTGFQ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T02:20:37.383Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Foreground queue recovery verified at 4f552f312: temporary provider gates requeue safely and protected-base completion handoffs finish the worker cycle without false failures.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4f23b4bc1923b5ab7fb8043edbb9863bb7710c459d6f8f9fa554dcc91b163f, input_digest=sha256:cbbf06ff815d6e99cd4ebf42d52b1c086d1ba33449cb5563fb84c6e6187ee388
+
+    Details:
+
+    Command: bun run test:fast
+    Result: pass (549 files, 3983 tests)
+    Evidence: Process exited 0 at implementation 4f552f3128af05f795cefd98ab5c085c3cafd11c.
+    Scope: Complete agentplane, core, recipes, and testkit suite.
+
+    Command: bun vitest run packages/agentplane/src/commands/integrate-queue.command.test.ts packages/agentplane/src/commands/shared/workflow-step-integration-projections.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/integrate-queue-reservation.worktree.test.ts
+    Result: pass (4 files, 31 tests)
+    Evidence: Retryable provider gates, protected-base completion handoffs, workflow projection, and queue reservation scenarios exited 0.
+    Scope: Foreground queue recovery and provider-owned handoff behavior.
+
+    Command: bun run typecheck && bun run lint:core
+    Result: pass.
+    Evidence: TypeScript and complete core lint surfaces exited 0 at 4f552f3128af05f795cefd98ab5c085c3cafd11c.
+    Scope: Static contracts for changed source and tests.
+
+    Command: bun run format:check && bun run knip:check && bun run hotspots:check && bun run build
+    Result: pass.
+    Evidence: Formatting, unused-code baseline, hotspot thresholds, and distributable bundles exited 0.
+    Scope: Repository architecture and packaging contracts.
 
     BlueprintSnapshotRef:
     - state: current
@@ -780,6 +836,56 @@ Command: typecheck, format, knip baseline, hotspot thresholds, and build (conten
 Result: pass.
 Evidence: No production, configuration, dependency, or build input changed after those checks.
 Scope: Static architecture and packaging.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110110-3QTGFQ-advance-the-integration-queue-in-the-foreground/.agentplane/tasks/202608110110-3QTGFQ/blueprint/resolved-snapshot.json
+- old_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+- current_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608110110-3QTGFQ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T02:20:37.383Z — VERIFY — ok
+
+By: TESTER
+
+Note: Foreground queue recovery verified at 4f552f312: temporary provider gates requeue safely and protected-base completion handoffs finish the worker cycle without false failures.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4f23b4bc1923b5ab7fb8043edbb9863bb7710c459d6f8f9fa554dcc91b163f, input_digest=sha256:cbbf06ff815d6e99cd4ebf42d52b1c086d1ba33449cb5563fb84c6e6187ee388
+
+Details:
+
+Command: bun run test:fast
+Result: pass (549 files, 3983 tests)
+Evidence: Process exited 0 at implementation 4f552f3128af05f795cefd98ab5c085c3cafd11c.
+Scope: Complete agentplane, core, recipes, and testkit suite.
+
+Command: bun vitest run packages/agentplane/src/commands/integrate-queue.command.test.ts packages/agentplane/src/commands/shared/workflow-step-integration-projections.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/integrate-queue-reservation.worktree.test.ts
+Result: pass (4 files, 31 tests)
+Evidence: Retryable provider gates, protected-base completion handoffs, workflow projection, and queue reservation scenarios exited 0.
+Scope: Foreground queue recovery and provider-owned handoff behavior.
+
+Command: bun run typecheck && bun run lint:core
+Result: pass.
+Evidence: TypeScript and complete core lint surfaces exited 0 at 4f552f3128af05f795cefd98ab5c085c3cafd11c.
+Scope: Static contracts for changed source and tests.
+
+Command: bun run format:check && bun run knip:check && bun run hotspots:check && bun run build
+Result: pass.
+Evidence: Formatting, unused-code baseline, hotspot thresholds, and distributable bundles exited 0.
+Scope: Repository architecture and packaging contracts.
 
 BlueprintSnapshotRef:
 - state: current
