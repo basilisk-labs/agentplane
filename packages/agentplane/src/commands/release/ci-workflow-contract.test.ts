@@ -1,127 +1,100 @@
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
 const CI_WORKFLOW_PATH = path.resolve(process.cwd(), ".github/workflows/ci.yml");
+const DOCS_WORKFLOW_PATH = path.resolve(process.cwd(), ".github/workflows/docs-ci.yml");
+const WORKFLOW_LINT_PATH = path.resolve(process.cwd(), ".github/workflows/workflows-lint.yml");
+const DEPENDENCY_REVIEW_PATH = path.resolve(
+  process.cwd(),
+  ".github/workflows/dependency-review.yml",
+);
 const PREPUBLISH_WORKFLOW_PATH = path.resolve(process.cwd(), ".github/workflows/prepublish.yml");
 const PATH_FILTERS_PATH = path.resolve(process.cwd(), ".github/path-filters.yml");
 
 describe("Core CI workflow contract", () => {
-  it("keeps the release-ready manifest job wired to the green release-relevant gates", async () => {
+  it("routes every relevant capability through one fail-closed PR aggregate", async () => {
     const workflow = await readFile(CI_WORKFLOW_PATH, "utf8");
 
-    expect(workflow).toContain("workflow_dispatch:");
+    expect(workflow).toContain("node scripts/checks/plan-github-ci.mjs");
+    for (const output of [
+      "docs",
+      "dependency_review",
+      "workflow_lint",
+      "windows",
+      "coverage",
+      "cli_critical",
+      "package_runtime_core",
+      "package_runtime_recipes",
+      "security",
+      "codeql_languages",
+      "expected_jobs",
+      "executing_jobs_count",
+      "plan_json",
+    ]) {
+      expect(workflow).toContain(`${output}: \${{ steps.plan.outputs.${output} }}`);
+    }
+    expect(workflow).toContain("verify-tests:");
+    expect(workflow).toContain("run: bun run test:fast:ci");
+    expect(workflow).toContain("verify-docs:");
+    expect(workflow).toContain("verify-security:");
+    expect(workflow).not.toContain("verify-unit:");
+    expect(workflow).not.toContain("verify-cli-critical:");
+    expect(workflow).not.toContain("verify-workflow:");
+    expect(workflow).not.toContain("verify-coverage:");
+    expect(workflow).toContain("actions/dependency-review-action@v5");
+    expect(workflow).toContain("github/codeql-action/init@v4");
+    expect(workflow).toContain("github/codeql-action/analyze@v4");
+    expect(workflow).toContain("config-file: ./.github/codeql/codeql-config.yml");
+    expect(workflow).toContain("name: PR verification");
+    expect(workflow).toContain("AGENTPLANE_CI_PLAN_JSON: ${{ needs.plan.outputs.plan_json }}");
+    expect(workflow).toContain('"verify-security":"${{ needs.verify-security.result }}"');
+    expect(workflow).toContain("run: node scripts/checks/evaluate-github-ci.mjs");
+  });
+
+  it("keeps exact-SHA release evidence and release-ready dependencies current", async () => {
+    const workflow = await readFile(CI_WORKFLOW_PATH, "utf8");
+
     expect(workflow).toContain(
       'description: "Exact Git commit SHA to validate for release recovery (preferred over ref)"',
     );
-    expect(workflow).toContain('default: "main"');
-    expect(workflow).toContain("AGENTPLANE_CI_REF:");
     expect(workflow).toContain("AGENTPLANE_RELEASE_RECOVERY_SHA:");
-    expect(workflow).toContain("ref: ${{ env.AGENTPLANE_CI_REF }}");
-    expect(workflow).toContain("core: ${{ steps.plan.outputs.core }}");
-    expect(workflow).toContain('echo "core=true"');
-    expect(workflow).toContain("node scripts/checks/plan-github-ci.mjs");
-    expect(workflow).toContain("needs.plan.outputs.core == 'true' &&");
-    expect(workflow).toContain(
-      "!(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '')",
-    );
     expect(workflow).toContain("recovery-validate:");
-    expect(workflow).toContain(
-      "if: github.event_name == 'workflow_dispatch' && github.event.inputs.sha != ''",
-    );
-    expect(workflow).toContain("Release parity (check)");
-    expect(workflow).toContain("Release incidents (check)");
-    expect(workflow).toContain("Build packages (dist + manifests)");
-    expect(workflow).toContain("release-ready:");
+    expect(workflow).toContain("if: needs.plan.outputs.exact_sha_recovery == 'true'");
     expect(workflow).toContain("name: Release-ready manifest");
-    expect(workflow).toContain("needs:");
-    expect(workflow).toContain("- plan");
-    expect(workflow).toContain("- verify-routed");
-    expect(workflow).toContain("- verify-contract");
-    expect(workflow).toContain("- verify-static");
-    expect(workflow).toContain("- verify-unit");
-    expect(workflow).toContain("- verify-cli-critical");
-    expect(workflow).toContain("- verify-workflow");
-    expect(workflow).toContain("- verify-coverage");
-    expect(workflow).toContain("- test-windows");
-    expect(workflow).toContain("- recovery-validate");
-    expect(workflow).toContain("pr-verification:");
-    expect(workflow).toContain("name: PR verification");
-    expect(workflow).toContain(
-      'if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.sha }}" ]; then',
-    );
-    expect(workflow).toContain('echo "selector_kind=recovery"');
-    expect(workflow).toContain("Resolve release-ready target");
-    expect(workflow).toContain("github.event_name == 'workflow_dispatch' &&");
-    expect(workflow).toContain("github.event.inputs.sha != '' &&");
-    expect(workflow).toContain("needs.recovery-validate.result == 'success'");
-    expect(workflow).toContain(
-      "!(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&",
-    );
-    expect(workflow).toContain("github.event_name == 'pull_request' &&");
-    expect(workflow).toContain("startsWith(github.head_ref, 'release/')");
-    expect(workflow).toContain("github.event_name == 'push' &&");
-    expect(workflow).toContain("github.ref == 'refs/heads/main'");
-    expect(workflow).toContain("needs.plan.outputs.core == 'true' &&");
-    expect(workflow).toContain("needs.verify-routed.result == 'success'");
-    expect(workflow).toContain("needs.verify-contract.result == 'success' &&");
-    expect(workflow).toContain("needs.verify-static.result == 'success' &&");
-    expect(workflow).toContain("needs.verify-unit.result == 'success' &&");
-    expect(workflow).toContain("needs.verify-cli-critical.result == 'success' &&");
-    expect(workflow).toContain("needs.verify-workflow.result == 'success' &&");
-    expect(workflow).toContain("needs.verify-coverage.result == 'success' &&");
-    expect(workflow).toContain("needs.test-windows.result == 'success'");
-    expect(workflow).toContain("needs.plan.outputs.core != 'true'");
+    expect(workflow).toContain("needs.plan.outputs.release_ready == 'true'");
+    expect(workflow).toContain("needs.verify-tests.result == 'success'");
+    expect(workflow).toContain("needs.verify-security.result == 'success'");
+    expect(workflow).toContain("needs.verify-docs.result == 'success'");
     expect(workflow).toContain("node scripts/manifest.mjs release-ready");
-    expect(workflow).toContain("[ -f scripts/check-release-incidents.mjs ]");
-    expect(workflow).toContain("node scripts/check-release-incidents.mjs");
-    expect(workflow).toContain("target ref predates scripts/check-release-incidents.mjs");
-    expect(workflow).toContain("--out .agentplane/.release/ready/release-ready.json");
     expect(workflow).toContain('--sha "${{ steps.target.outputs.sha }}"');
-    expect(workflow).toContain('--ref "${AGENTPLANE_CI_REF}"');
-    expect(workflow).toContain("--check-registry");
-    expect(workflow).toContain("if: steps.manifest.outputs.ready == 'true'");
-    expect(workflow).toContain("actions/upload-artifact@v7");
-    expect(workflow).toContain("name: release-ready");
-    expect(workflow).toContain("path: .agentplane/.release/ready/release-ready.json");
     expect(workflow).toContain("name: release-ready-${{ steps.target.outputs.sha }}");
   });
 
-  it("runs core PR checks for mixed code/docs diffs while excluding task-artifact-only diffs", async () => {
-    const ciWorkflow = await readFile(CI_WORKFLOW_PATH, "utf8");
+  it("removes duplicate PR workflows while retaining canonical post-merge and manual surfaces", async () => {
+    const docsWorkflow = await readFile(DOCS_WORKFLOW_PATH, "utf8");
+    const workflowLint = await readFile(WORKFLOW_LINT_PATH, "utf8");
+
+    expect(docsWorkflow).not.toContain("pull_request:");
+    expect(docsWorkflow).toContain("push:");
+    expect(docsWorkflow).toContain("run: bun run docs:site:check");
+    expect(workflowLint).not.toContain("pull_request:");
+    expect(workflowLint).not.toContain("push:");
+    expect(workflowLint).toContain("workflow_dispatch:");
+    await expect(access(DEPENDENCY_REVIEW_PATH)).rejects.toThrow();
+  });
+
+  it("preserves the prepublish path contract independently from PR routing", async () => {
     const prepublishWorkflow = await readFile(PREPUBLISH_WORKFLOW_PATH, "utf8");
     const filters = await readFile(PATH_FILTERS_PATH, "utf8");
-    const planner = await readFile(
-      path.resolve(process.cwd(), "scripts/checks/plan-github-ci.mjs"),
-      "utf8",
-    );
 
-    expect(ciWorkflow).toContain("node scripts/checks/plan-github-ci.mjs");
-    expect(ciWorkflow).toContain("needs.plan.outputs.core == 'true'");
-    expect(ciWorkflow).toContain("needs.plan.outputs.core != 'true'");
-    expect(ciWorkflow).not.toContain("needs.changes.outputs.core");
-    expect(ciWorkflow).not.toContain("dorny/paths-filter");
-    expect(planner).toContain("CORE_INCLUDE_PATTERNS");
-    expect(planner).toContain("CORE_EXCLUDE_PATTERNS");
-    expect(planner).toContain('appendOutput("core", coreRelevant ? "true" : "false")');
-    expect(planner).toContain(String.raw`/^\.agentplane\//u`);
-    expect(planner).toContain(String.raw`/^\.agentplane\/tasks\//u`);
-    expect(planner).toContain(String.raw`/^\.github\/workflows\//u`);
-    expect(planner).toContain(String.raw`/^\.github\/path-filters\.yml$/u`);
     expect(prepublishWorkflow).toContain("filters: .github/path-filters.yml");
     expect(prepublishWorkflow).toContain("predicate-quantifier: every");
+    expect(prepublishWorkflow).toContain("run: bun run test:fast:ci");
+    expect(prepublishWorkflow).toContain('AGENTPLANE_RUN_NETWORK_PACKAGING_TESTS: "1"');
     expect(filters).toContain(".agentplane/**");
     expect(filters).toContain("!.agentplane/tasks/**");
     expect(filters).toContain(".github/workflows/**");
-    expect(filters).toContain(".github/path-filters.yml");
-  });
-
-  it("still emits a release-ready manifest on push main when heavy gates were skipped", async () => {
-    const workflow = await readFile(CI_WORKFLOW_PATH, "utf8");
-
-    expect(workflow).toContain(
-      "(\n              needs.plan.outputs.core == 'true' &&\n              needs.verify-package-node-runtime.result == 'success' &&\n              (\n                needs.verify-routed.result == 'success' ||\n                (\n                  needs.verify-contract.result == 'success' &&\n                  needs.verify-static.result == 'success' &&\n                  needs.verify-unit.result == 'success' &&\n                  needs.verify-cli-critical.result == 'success' &&\n                  needs.verify-workflow.result == 'success' &&\n                  needs.verify-coverage.result == 'success' &&\n                  needs.test-windows.result == 'success'\n                )\n              )\n            ) ||\n            needs.plan.outputs.core != 'true'",
-    );
   });
 });

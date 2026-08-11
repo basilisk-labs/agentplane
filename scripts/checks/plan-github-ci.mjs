@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { appendFileSync, readFileSync } from "node:fs";
 
-import { buildLocalCiExecutionPlan } from "../lib/local-ci-selection.mjs";
+import { buildGithubCiCapabilityPlan } from "../lib/github-ci-capabilities.mjs";
 
 function runGit(args) {
   return execFileSync("git", args, {
@@ -19,36 +19,6 @@ function readEventPayload() {
 
 function isZeroSha(value) {
   return /^0+$/u.test(String(value ?? ""));
-}
-
-const CORE_INCLUDE_PATTERNS = [
-  /^packages\//u,
-  /^schemas\//u,
-  /^scripts\//u,
-  /^\.agentplane\//u,
-  /^package\.json$/u,
-  /^bun\.lock$/u,
-  /^tsconfig[^/]*\.json$/u,
-  /^eslint\.config\.cjs$/u,
-  /^vitest\.config\.ts$/u,
-  /^\.github\/workflows\//u,
-  /^\.github\/path-filters\.yml$/u,
-];
-
-const CORE_EXCLUDE_PATTERNS = [
-  /^scripts\/generate-website-docs\.mjs$/u,
-  /^scripts\/check-design-language\.mjs$/u,
-  /^\.agentplane\/tasks\//u,
-];
-
-function isCoreRelevantFile(filePath) {
-  if (CORE_EXCLUDE_PATTERNS.some((pattern) => pattern.test(filePath))) return false;
-  return CORE_INCLUDE_PATTERNS.some((pattern) => pattern.test(filePath));
-}
-
-function isCoreRelevantChange(changedFiles) {
-  if (changedFiles.length === 0) return true;
-  return changedFiles.some((filePath) => isCoreRelevantFile(filePath));
 }
 
 function listChangedFiles() {
@@ -84,26 +54,55 @@ function appendOutput(name, value) {
 }
 
 const changedFiles = listChangedFiles();
-const executionPlan = buildLocalCiExecutionPlan({ mode: "fast", changedFiles });
-const selector = executionPlan.selector;
-const coreRelevant = isCoreRelevantChange(changedFiles);
+const event = readEventPayload();
+const eventName = process.env.GITHUB_EVENT_NAME ?? "";
+const exactShaRecovery =
+  eventName === "workflow_dispatch" &&
+  Boolean(process.env.AGENTPLANE_RELEASE_RECOVERY_SHA || event.inputs?.sha);
+const plan = buildGithubCiCapabilityPlan({
+  changedFiles,
+  eventName,
+  headRef: process.env.GITHUB_HEAD_REF ?? event.pull_request?.head?.ref ?? "",
+  ref: process.env.GITHUB_REF ?? "",
+  exactShaRecovery,
+});
+const capabilities = plan.capabilities;
 
-appendOutput("core", coreRelevant ? "true" : "false");
-appendOutput("route", executionPlan.route);
-appendOutput("selector_kind", selector.kind);
-appendOutput("bucket", selector.bucket ?? "");
-appendOutput("buckets", Array.isArray(selector.buckets) ? selector.buckets.join(",") : "");
+appendOutput("core", capabilities.core ? "true" : "false");
+appendOutput("route", plan.route);
+appendOutput("selector_kind", plan.selector_kind);
+appendOutput("bucket", plan.bucket);
+appendOutput("buckets", plan.buckets.join(","));
 appendOutput(
   "needs_recipes_inventory",
-  executionPlan.prerequisites?.recipesInventory === true ? "true" : "false",
+  plan.local_execution_plan.prerequisites?.recipesInventory === true ? "true" : "false",
 );
 appendOutput(
   "needs_workflow_lint",
-  executionPlan.prerequisites?.workflowLint === true ? "true" : "false",
+  plan.local_execution_plan.prerequisites?.workflowLint === true ? "true" : "false",
 );
-appendOutput("changed_files", executionPlan.changed_files.join("\n"));
-appendOutput("changed_files_count", String(executionPlan.changed_files.length));
+for (const [name, enabled] of Object.entries(capabilities)) {
+  appendOutput(name, enabled ? "true" : "false");
+}
+appendOutput(
+  "package_runtime",
+  capabilities.package_runtime_core || capabilities.package_runtime_recipes ? "true" : "false",
+);
+appendOutput(
+  "security",
+  capabilities.dependency_review || capabilities.codeql_javascript || capabilities.codeql_actions
+    ? "true"
+    : "false",
+);
+appendOutput("codeql_languages", plan.codeql_languages.join(","));
+appendOutput("release_ready", plan.release_ready ? "true" : "false");
+appendOutput("exact_sha_recovery", plan.exact_sha_recovery ? "true" : "false");
+appendOutput("changed_files", plan.changed_files.join("\n"));
+appendOutput("changed_files_count", String(plan.changed_files_count));
+appendOutput("expected_jobs", plan.expected_jobs.join(","));
+appendOutput("executing_jobs_count", String(plan.executing_jobs_count));
+const aggregatePlan = { ...plan };
+delete aggregatePlan.local_execution_plan;
+appendOutput("plan_json", JSON.stringify(aggregatePlan));
 
-process.stdout.write(
-  `${JSON.stringify({ ...executionPlan, core_relevant: coreRelevant }, null, 2)}\n`,
-);
+process.stdout.write(`${JSON.stringify(plan, null, 2)}\n`);

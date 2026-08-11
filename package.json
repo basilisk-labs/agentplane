@@ -15,6 +15,7 @@
     "typecheck": "node scripts/checks/run-typescript-build.mjs",
     "test": "bun run test:fast",
     "test:fast": "vitest --config vitest.workspace.ts run --project agentplane --project core --project recipes --project testkit",
+    "test:fast:ci": "node scripts/checks/run-fast-ci-tests.mjs",
     "test:project": "vitest --config vitest.workspace.ts run --project",
     "test:precommit": "node scripts/checks/run-vitest-suite.mjs precommit",
     "test:critical": "node scripts/checks/run-vitest-suite.mjs critical-cli",

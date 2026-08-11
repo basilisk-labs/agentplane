@@ -1,18 +1,6 @@
 name: Docs CI
 
 on:
-  pull_request:
-    paths:
-      - "website/**"
-      - "docs/**"
-      - "DESIGN.md"
-      - "scripts/generate-website-docs.mjs"
-      - "scripts/check-design-language.mjs"
-      - "scripts/check-docs-ia.mjs"
-      - "packages/**"
-      - "package.json"
-      - "bun.lock"
-      - ".github/workflows/docs-ci.yml"
   push:
     branches:
       - main
@@ -64,16 +52,8 @@ jobs:
         run: bun install --frozen-lockfile --ignore-scripts
       - name: Install website dependencies
         run: bun install --cwd website --frozen-lockfile --ignore-scripts
-      - name: Generate docs from code
-        run: bun run docs:site:generate
-      - name: Typecheck website
-        run: bun run docs:site:typecheck
-      - name: Validate documentation information architecture
-        run: bun run docs:ia:check
-      - name: Build website
-        run: bun run docs:site:build
-      - name: Validate design language constraints
-        run: bun run docs:site:check:design
+      - name: Validate and build documentation
+        run: bun run docs:site:check
       - name: Setup Pages
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/configure-pages@v6

@@ -37,6 +37,22 @@ jobs:
       buckets: ${{ steps.plan.outputs.buckets }}
       needs_recipes_inventory: ${{ steps.plan.outputs.needs_recipes_inventory }}
       needs_workflow_lint: ${{ steps.plan.outputs.needs_workflow_lint }}
+      docs: ${{ steps.plan.outputs.docs }}
+      dependency_review: ${{ steps.plan.outputs.dependency_review }}
+      workflow_lint: ${{ steps.plan.outputs.workflow_lint }}
+      windows: ${{ steps.plan.outputs.windows }}
+      coverage: ${{ steps.plan.outputs.coverage }}
+      cli_critical: ${{ steps.plan.outputs.cli_critical }}
+      package_runtime: ${{ steps.plan.outputs.package_runtime }}
+      package_runtime_core: ${{ steps.plan.outputs.package_runtime_core }}
+      package_runtime_recipes: ${{ steps.plan.outputs.package_runtime_recipes }}
+      security: ${{ steps.plan.outputs.security }}
+      codeql_languages: ${{ steps.plan.outputs.codeql_languages }}
+      release_ready: ${{ steps.plan.outputs.release_ready }}
+      exact_sha_recovery: ${{ steps.plan.outputs.exact_sha_recovery }}
+      expected_jobs: ${{ steps.plan.outputs.expected_jobs }}
+      executing_jobs_count: ${{ steps.plan.outputs.executing_jobs_count }}
+      plan_json: ${{ steps.plan.outputs.plan_json }}
       changed_files: ${{ steps.plan.outputs.changed_files }}
       changed_files_count: ${{ steps.plan.outputs.changed_files_count }}
     steps:
@@ -49,29 +65,12 @@ jobs:
           node-version: "24"
       - name: Plan PR verification route
         id: plan
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.sha }}" ]; then
-            {
-              echo "route=full-fast"
-              echo "core=true"
-              echo "selector_kind=recovery"
-              echo "bucket=recovery"
-              echo "buckets=recovery"
-              echo "needs_recipes_inventory=true"
-              echo "needs_workflow_lint=false"
-              echo "changed_files="
-              echo "changed_files_count=0"
-            } >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          node scripts/checks/plan-github-ci.mjs
+        run: node scripts/checks/plan-github-ci.mjs
 
   verify-routed:
     needs: plan
     if: >-
-      (needs.plan.outputs.core == 'true' ||
-        (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
-      !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
+      needs.plan.outputs.core == 'true' &&
       needs.plan.outputs.route != 'full-fast'
     runs-on: ubuntu-24.04
     steps:
@@ -115,9 +114,7 @@ jobs:
   verify-contract:
     needs: plan
     if: >-
-      (needs.plan.outputs.core == 'true' ||
-        (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
-      !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
+      needs.plan.outputs.core == 'true' &&
       needs.plan.outputs.route == 'full-fast'
     runs-on: ubuntu-24.04
     steps:
@@ -131,6 +128,9 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
+      - name: Install actionlint
+        if: needs.plan.outputs.workflow_lint == 'true'
+        run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
       - name: Cache Bun artifacts
         uses: actions/cache@v5
         with:
@@ -141,6 +141,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bun-
       - run: bun install --frozen-lockfile --ignore-scripts
+      - name: Install website dependencies
+        if: needs.plan.outputs.docs == 'true'
+        run: bun install --cwd website --frozen-lockfile --ignore-scripts
       - name: Format (check)
         run: bun run format:check
       - name: Schemas (check)
@@ -160,34 +163,27 @@ jobs:
           bun run --filter=@agentplaneorg/core build
           bun run --filter=agentplane build
           bun run --filter=@agentplane/testkit build
+      - name: AgentPlane workflow contract
+        run: |
+          node packages/agentplane/bin/agentplane.js workflow build --validate --dry-run
+          node packages/agentplane/bin/agentplane.js workflow build --validate
+          node packages/agentplane/bin/agentplane.js doctor
       - name: CLI docs (generated reference check)
         run: bun run docs:cli:check
       - name: Hotspot Threshold (check)
         run: bun run hotspots:check
+      - name: Docs site contract
+        if: needs.plan.outputs.docs == 'true'
+        run: bun run docs:site:check
+      - name: Workflow lint and command contract
+        if: needs.plan.outputs.workflow_lint == 'true'
+        run: bun run workflows:lint
 
   verify-package-node-runtime:
-    name: Package runtime (${{ matrix.package_name }}, Node ${{ matrix.node_version }})
+    name: Package runtime
     needs: plan
-    if: >-
-      needs.plan.outputs.core == 'true' &&
-      !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '')
+    if: needs.plan.outputs.package_runtime == 'true'
     runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - package_name: core
-            package_dir: packages/core
-            node_version: "20.5.0"
-          - package_name: core
-            package_dir: packages/core
-            node_version: "24"
-          - package_name: recipes
-            package_dir: packages/recipes
-            node_version: "20.0.0"
-          - package_name: recipes
-            package_dir: packages/recipes
-            node_version: "24"
     steps:
       - uses: actions/checkout@v6
         with:
@@ -200,27 +196,67 @@ jobs:
         with:
           node-version: "24"
       - run: bun install --frozen-lockfile --ignore-scripts
-      - name: Build and pack ${{ matrix.package_name }}
-        working-directory: ${{ matrix.package_dir }}
+      - name: Build and pack core
+        if: needs.plan.outputs.package_runtime_core == 'true'
+        working-directory: packages/core
         run: |
           mkdir -p "$RUNNER_TEMP/package-node-runtime"
           npm pack --json --pack-destination "$RUNNER_TEMP/package-node-runtime"
-      - name: Use declared package runtime
+      - name: Build and pack recipes
+        if: needs.plan.outputs.package_runtime_recipes == 'true'
+        working-directory: packages/recipes
+        run: |
+          mkdir -p "$RUNNER_TEMP/package-node-runtime"
+          npm pack --json --pack-destination "$RUNNER_TEMP/package-node-runtime"
+      - name: Use minimum core runtime
+        if: needs.plan.outputs.package_runtime_core == 'true'
         uses: actions/setup-node@v6
         with:
-          node-version: ${{ matrix.node_version }}
-      - name: Install packed artifact and exercise public API
+          node-version: "20.5.0"
+      - name: Exercise core public API on Node 20.5
+        if: needs.plan.outputs.package_runtime_core == 'true'
         run: >-
           node scripts/release/check-package-node-runtime.mjs
-          --package-dir ${{ matrix.package_dir }}
+          --package-dir packages/core
+          --tarball-dir "$RUNNER_TEMP/package-node-runtime"
+      - name: Use current core runtime
+        if: needs.plan.outputs.package_runtime_core == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - name: Exercise core public API on Node 24
+        if: needs.plan.outputs.package_runtime_core == 'true'
+        run: >-
+          node scripts/release/check-package-node-runtime.mjs
+          --package-dir packages/core
+          --tarball-dir "$RUNNER_TEMP/package-node-runtime"
+      - name: Use minimum recipes runtime
+        if: needs.plan.outputs.package_runtime_recipes == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20.0.0"
+      - name: Exercise recipes public API on Node 20
+        if: needs.plan.outputs.package_runtime_recipes == 'true'
+        run: >-
+          node scripts/release/check-package-node-runtime.mjs
+          --package-dir packages/recipes
+          --tarball-dir "$RUNNER_TEMP/package-node-runtime"
+      - name: Use current recipes runtime
+        if: needs.plan.outputs.package_runtime_recipes == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - name: Exercise recipes public API on Node 24
+        if: needs.plan.outputs.package_runtime_recipes == 'true'
+        run: >-
+          node scripts/release/check-package-node-runtime.mjs
+          --package-dir packages/recipes
           --tarball-dir "$RUNNER_TEMP/package-node-runtime"
 
   verify-static:
     needs: plan
     if: >-
-      (needs.plan.outputs.core == 'true' ||
-        (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
-      !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
+      needs.plan.outputs.core == 'true' &&
       needs.plan.outputs.route == 'full-fast'
     runs-on: ubuntu-24.04
     steps:
@@ -256,57 +292,18 @@ jobs:
       - name: Dead code baseline (blocking)
         run: bun run knip:check
 
-  verify-unit:
+  verify-tests:
     needs: plan
     if: >-
-      (needs.plan.outputs.core == 'true' ||
-        (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
-      !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
+      needs.plan.outputs.core == 'true' &&
       needs.plan.outputs.route == 'full-fast'
     runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ env.AGENTPLANE_CI_REF }}
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: "1.3.6"
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-      - name: Cache Bun artifacts
-        uses: actions/cache@v5
-        with:
-          path: |
-            ~/.bun/install/cache
-            ~/.cache/bun
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
-      - run: bun install --frozen-lockfile --ignore-scripts
-      - name: Build packages (dist + manifests)
-        run: |
-          bun run --filter=@agentplaneorg/core build
-          bun run --filter=agentplane build
-          bun run --filter=@agentplane/testkit build
-          bun run --filter=@agentplaneorg/recipes build
-      - name: Unit Tests (Fast)
-        run: bun run test:fast
-        env:
-          # Ensure tests that create git commits do not rely on global git config in CI.
-          GIT_AUTHOR_NAME: agentplane-ci
-          GIT_AUTHOR_EMAIL: agentplane-ci@example.com
-          GIT_COMMITTER_NAME: agentplane-ci
-          GIT_COMMITTER_EMAIL: agentplane-ci@example.com
-
-  verify-cli-critical:
-    needs: plan
-    if: >-
-      (needs.plan.outputs.core == 'true' ||
-        (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
-      !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
-      needs.plan.outputs.route == 'full-fast'
-    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GIT_AUTHOR_NAME: agentplane-ci
+      GIT_AUTHOR_EMAIL: agentplane-ci@example.com
+      GIT_COMMITTER_NAME: agentplane-ci
+      GIT_COMMITTER_EMAIL: agentplane-ci@example.com
     steps:
       - uses: actions/checkout@v6
         with:
@@ -333,105 +330,23 @@ jobs:
           bun run --filter=@agentplaneorg/core build
           bun run --filter=agentplane build
           bun run --filter=@agentplane/testkit build
+          bun run --filter=@agentplaneorg/recipes build
+      - name: Unit Tests (Fast)
+        run: bun run test:fast:ci
       - name: CLI E2E (Critical)
+        if: needs.plan.outputs.cli_critical == 'true'
         timeout-minutes: 10
         run: bun run test:critical
-        env:
-          GIT_AUTHOR_NAME: agentplane-ci
-          GIT_AUTHOR_EMAIL: agentplane-ci@example.com
-          GIT_COMMITTER_NAME: agentplane-ci
-          GIT_COMMITTER_EMAIL: agentplane-ci@example.com
-
-  verify-workflow:
-    needs: plan
-    if: >-
-      (needs.plan.outputs.core == 'true' ||
-        (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
-      !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
-      needs.plan.outputs.route == 'full-fast'
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ env.AGENTPLANE_CI_REF }}
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: "1.3.6"
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-      - name: Cache Bun artifacts
-        uses: actions/cache@v5
-        with:
-          path: |
-            ~/.bun/install/cache
-            ~/.cache/bun
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
-      - run: bun install --frozen-lockfile --ignore-scripts
-      - name: Build packages (dist + manifests)
-        run: |
-          bun run --filter=@agentplaneorg/core build
-          bun run --filter=agentplane build
-          bun run --filter=@agentplane/testkit build
-          bun run --filter=@agentplaneorg/recipes build
-      - name: Workflow contract gate
-        run: |
-          if [ "${AGENTPLANE_WORKFLOW_ENFORCEMENT:-on}" = "off" ]; then
-            echo "workflow gate skipped: AGENTPLANE_WORKFLOW_ENFORCEMENT=off"
-            exit 0
-          fi
-          node packages/agentplane/bin/agentplane.js workflow build --validate --dry-run
-          node packages/agentplane/bin/agentplane.js workflow build --validate
-          node packages/agentplane/bin/agentplane.js doctor
-
-  verify-coverage:
-    needs: plan
-    if: >-
-      (needs.plan.outputs.core == 'true' ||
-        (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
-      !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
-      needs.plan.outputs.route == 'full-fast'
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ env.AGENTPLANE_CI_REF }}
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: "1.3.6"
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-      - name: Cache Bun artifacts
-        uses: actions/cache@v5
-        with:
-          path: |
-            ~/.bun/install/cache
-            ~/.cache/bun
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
-      - run: bun install --frozen-lockfile --ignore-scripts
-      - name: Build packages (dist + manifests)
-        run: |
-          bun run --filter=@agentplaneorg/core build
-          bun run --filter=agentplane build
-          bun run --filter=@agentplane/testkit build
-          bun run --filter=@agentplaneorg/recipes build
       - name: Workflow/Harness Coverage (guard)
+        if: needs.plan.outputs.coverage == 'true'
         run: bun run coverage:workflow-suite
       - name: Significant File Coverage (guard)
+        if: needs.plan.outputs.coverage == 'true'
         run: bun run coverage:significant-suite
 
   test-windows:
     needs: plan
-    if: >-
-      (needs.plan.outputs.core == 'true' ||
-        (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
-      !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
-      needs.plan.outputs.route == 'full-fast'
+    if: needs.plan.outputs.windows == 'true'
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
@@ -473,8 +388,67 @@ jobs:
           GIT_COMMITTER_NAME: agentplane-ci
           GIT_COMMITTER_EMAIL: agentplane-ci@example.com
 
+  verify-docs:
+    needs: plan
+    if: needs.plan.outputs.docs == 'true' && needs.plan.outputs.route != 'full-fast'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ env.AGENTPLANE_CI_REF }}
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.6"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - name: Cache Bun artifacts
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.bun/install/cache
+            ~/.cache/bun
+          key: ${{ runner.os }}-docs-bun-${{ hashFiles('bun.lock', 'website/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-docs-bun-
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - run: bun install --cwd website --frozen-lockfile --ignore-scripts
+      - name: Docs site contract
+        run: bun run docs:site:check
+
+  verify-security:
+    needs: plan
+    if: needs.plan.outputs.security == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ env.AGENTPLANE_CI_REF }}
+          fetch-depth: 0
+      - name: Review dependency changes
+        if: needs.plan.outputs.dependency_review == 'true'
+        uses: actions/dependency-review-action@v5
+        with:
+          fail-on-severity: high
+          retry-on-snapshot-warnings: true
+      - name: Initialize CodeQL
+        if: needs.plan.outputs.codeql_languages != ''
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ needs.plan.outputs.codeql_languages }}
+          config-file: ./.github/codeql/codeql-config.yml
+      - name: Analyze source and workflow code
+        if: needs.plan.outputs.codeql_languages != ''
+        uses: github/codeql-action/analyze@v4
+
   recovery-validate:
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.sha != ''
+    needs: plan
+    if: needs.plan.outputs.exact_sha_recovery == 'true'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
@@ -512,54 +486,35 @@ jobs:
       - verify-contract
       - verify-package-node-runtime
       - verify-static
-      - verify-unit
-      - verify-cli-critical
-      - verify-workflow
-      - verify-coverage
+      - verify-tests
+      - verify-docs
+      - verify-security
       - test-windows
       - recovery-validate
     if: >-
       always() &&
+      needs.plan.outputs.release_ready == 'true' &&
       (
         (
-          github.event_name == 'workflow_dispatch' &&
-          github.event.inputs.sha != '' &&
+          needs.plan.outputs.exact_sha_recovery == 'true' &&
           needs.recovery-validate.result == 'success'
         ) ||
         (
-          !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&
+          needs.plan.outputs.exact_sha_recovery != 'true' &&
           (
+            needs.plan.outputs.core != 'true' ||
+            (needs.plan.outputs.route != 'full-fast' && needs.verify-routed.result == 'success') ||
             (
-              github.event_name == 'pull_request' &&
-              (
-                startsWith(github.head_ref, 'release/') ||
-                contains(github.head_ref, '/release-')
-              )
-            ) ||
-            (
-              github.event_name == 'push' &&
-              github.ref == 'refs/heads/main'
+              needs.plan.outputs.route == 'full-fast' &&
+              needs.verify-contract.result == 'success' &&
+              needs.verify-static.result == 'success' &&
+              needs.verify-tests.result == 'success'
             )
           ) &&
-          (
-            (
-              needs.plan.outputs.core == 'true' &&
-              needs.verify-package-node-runtime.result == 'success' &&
-              (
-                needs.verify-routed.result == 'success' ||
-                (
-                  needs.verify-contract.result == 'success' &&
-                  needs.verify-static.result == 'success' &&
-                  needs.verify-unit.result == 'success' &&
-                  needs.verify-cli-critical.result == 'success' &&
-                  needs.verify-workflow.result == 'success' &&
-                  needs.verify-coverage.result == 'success' &&
-                  needs.test-windows.result == 'success'
-                )
-              )
-            ) ||
-            needs.plan.outputs.core != 'true'
-          )
+          (needs.plan.outputs.package_runtime != 'true' || needs.verify-package-node-runtime.result == 'success') &&
+          (needs.plan.outputs.docs != 'true' || needs.plan.outputs.route == 'full-fast' || needs.verify-docs.result == 'success') &&
+          (needs.plan.outputs.security != 'true' || needs.verify-security.result == 'success') &&
+          (needs.plan.outputs.windows != 'true' || needs.test-windows.result == 'success')
         )
       )
     runs-on: ubuntu-24.04
@@ -624,94 +579,24 @@ jobs:
       - verify-contract
       - verify-package-node-runtime
       - verify-static
-      - verify-unit
-      - verify-cli-critical
-      - verify-workflow
-      - verify-coverage
+      - verify-tests
+      - verify-docs
+      - verify-security
       - test-windows
       - recovery-validate
       - release-ready
     if: always()
     runs-on: ubuntu-24.04
     steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ env.AGENTPLANE_CI_REF }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
       - name: Evaluate aggregate verification
-        shell: bash
         env:
-          HEAD_REF: ${{ github.head_ref }}
-        run: |
-          set -euo pipefail
-          echo "core=${{ needs.plan.outputs.core }}"
-          echo "route=${{ needs.plan.outputs.route }}"
-          echo "selector_kind=${{ needs.plan.outputs.selector_kind }}"
-          echo "bucket=${{ needs.plan.outputs.bucket }}"
-          echo "buckets=${{ needs.plan.outputs.buckets }}"
-          echo "changed_files_count=${{ needs.plan.outputs.changed_files_count }}"
-          echo "verify-routed=${{ needs.verify-routed.result }}"
-          echo "verify-contract=${{ needs.verify-contract.result }}"
-          echo "verify-package-node-runtime=${{ needs.verify-package-node-runtime.result }}"
-          echo "verify-static=${{ needs.verify-static.result }}"
-          echo "verify-unit=${{ needs.verify-unit.result }}"
-          echo "verify-cli-critical=${{ needs.verify-cli-critical.result }}"
-          echo "verify-workflow=${{ needs.verify-workflow.result }}"
-          echo "verify-coverage=${{ needs.verify-coverage.result }}"
-          echo "test-windows=${{ needs.test-windows.result }}"
-          echo "recovery-validate=${{ needs.recovery-validate.result }}"
-          echo "release-ready=${{ needs.release-ready.result }}"
-          {
-            echo "## PR verification route"
-            echo
-            echo "- core: ${{ needs.plan.outputs.core }}"
-            echo "- route: ${{ needs.plan.outputs.route }}"
-            echo "- selector: ${{ needs.plan.outputs.selector_kind }}"
-            echo "- bucket: ${{ needs.plan.outputs.bucket }}"
-            echo "- buckets: ${{ needs.plan.outputs.buckets }}"
-            echo "- changed files: ${{ needs.plan.outputs.changed_files_count }}"
-            echo
-            echo "## Job results"
-            echo
-            echo "- verify-routed: ${{ needs.verify-routed.result }}"
-            echo "- verify-contract: ${{ needs.verify-contract.result }}"
-            echo "- verify-package-node-runtime: ${{ needs.verify-package-node-runtime.result }}"
-            echo "- verify-static: ${{ needs.verify-static.result }}"
-            echo "- verify-unit: ${{ needs.verify-unit.result }}"
-            echo "- verify-cli-critical: ${{ needs.verify-cli-critical.result }}"
-            echo "- verify-workflow: ${{ needs.verify-workflow.result }}"
-            echo "- verify-coverage: ${{ needs.verify-coverage.result }}"
-            echo "- test-windows: ${{ needs.test-windows.result }}"
-            echo "- recovery-validate: ${{ needs.recovery-validate.result }}"
-            echo "- release-ready: ${{ needs.release-ready.result }}"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.sha }}" ]; then
-            [ "${{ needs.recovery-validate.result }}" = "success" ]
-            [ "${{ needs.release-ready.result }}" = "success" ]
-            exit 0
-          fi
-
-          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            [ "${{ needs.release-ready.result }}" = "success" ]
-          fi
-
-          case "${HEAD_REF}" in
-            release/*|*/release-*)
-              [ "${{ needs.release-ready.result }}" = "success" ]
-              ;;
-          esac
-
-          if [ "${{ needs.plan.outputs.core }}" != "true" ]; then
-            exit 0
-          fi
-
-          [ "${{ needs.verify-package-node-runtime.result }}" = "success" ]
-
-          if [ "${{ needs.verify-routed.result }}" = "success" ]; then
-            exit 0
-          fi
-
-          [ "${{ needs.verify-contract.result }}" = "success" ]
-          [ "${{ needs.verify-static.result }}" = "success" ]
-          [ "${{ needs.verify-unit.result }}" = "success" ]
-          [ "${{ needs.verify-cli-critical.result }}" = "success" ]
-          [ "${{ needs.verify-workflow.result }}" = "success" ]
-          [ "${{ needs.verify-coverage.result }}" = "success" ]
-          [ "${{ needs.test-windows.result }}" = "success" ]
+          AGENTPLANE_CI_PLAN_JSON: ${{ needs.plan.outputs.plan_json }}
+          AGENTPLANE_CI_RESULTS_JSON: >-
+            {"plan":"${{ needs.plan.result }}","verify-routed":"${{ needs.verify-routed.result }}","verify-contract":"${{ needs.verify-contract.result }}","verify-package-node-runtime":"${{ needs.verify-package-node-runtime.result }}","verify-static":"${{ needs.verify-static.result }}","verify-tests":"${{ needs.verify-tests.result }}","verify-docs":"${{ needs.verify-docs.result }}","verify-security":"${{ needs.verify-security.result }}","test-windows":"${{ needs.test-windows.result }}","recovery-validate":"${{ needs.recovery-validate.result }}","release-ready":"${{ needs.release-ready.result }}"}
+        run: node scripts/checks/evaluate-github-ci.mjs

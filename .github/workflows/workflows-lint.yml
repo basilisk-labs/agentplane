@@ -1,16 +1,6 @@
 name: Workflows Lint
 
 on:
-  pull_request:
-    paths:
-      - ".github/workflows/**"
-      - ".github/actionlint.yaml"
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/**"
-      - ".github/actionlint.yaml"
   workflow_dispatch:
 
 permissions:
