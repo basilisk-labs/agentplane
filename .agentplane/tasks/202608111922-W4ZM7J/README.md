@@ -4,7 +4,7 @@ title: "Validate declared checks with the supervised execution grammar"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +33,16 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "240a672c22598edc1dc7cacdd42421f73d01e194"
+  message: "🚧 W4ZM7J task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 240a672c2259. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -46,9 +51,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-11T20:17:36.989Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 240a672c2259. CLI accepted one state-bound external-agent semantic result."
+    commit: "240a672c22598edc1dc7cacdd42421f73d01e194"
 doc_version: 3
-doc_updated_at: "2026-08-11T19:27:21.059Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-11T20:17:36.989Z"
+doc_updated_by: "SUPERVISOR"
 description: "Reject unsupported verification commands at every task mutation boundary using the same deterministic parser later used by automatic TESTER execution. Return an actionable error before persisting task state; preserve repository-bound argv execution without shell evaluation; cover task new, add, update, derive, begin/create adapters, and the previously failing bun test path command."
 sections:
   Summary: |-
