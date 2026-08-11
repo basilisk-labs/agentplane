@@ -187,7 +187,12 @@ export function buildGithubCiCapabilityPlan({
   const releaseReady = exactShaRecovery || releaseRef || releaseMainPush;
   const localPlan = buildLocalCiExecutionPlan({ mode: "fast", changedFiles: files });
   const forceFull =
-    exactShaRecovery || releaseRef || releaseMainPush || routingSensitive || unknown || missingScope;
+    exactShaRecovery ||
+    releaseRef ||
+    releaseMainPush ||
+    routingSensitive ||
+    unknown ||
+    missingScope;
   const route = exactShaRecovery ? "recovery" : forceFull ? "full-fast" : localPlan.route;
   const failClosedFull = releaseRef || routingSensitive || unknown || missingScope;
   const core = onlyTaskArtifacts ? false : failClosedFull || isCoreRelevant(files);
