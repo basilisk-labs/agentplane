@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -27,9 +27,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T09:07:05.505Z"
-  updated_by: "TESTER"
-  note: "Verified 0cca19004674: the generated CLI reference is exact; unchanged explicit-intent and compatibility evidence remains reusable."
+  updated_at: "2026-08-11T09:43:15.757Z"
+  updated_by: "REVIEWER"
+  note: "Final review fix verified at 28f67445f."
   attempts: 0
 quality_review:
   state: "pass"
@@ -84,8 +84,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "c8de8add843509c43b797cb4700ceaad88ca5fac"
-  message: "🚧 WCJJRD task: Record final documentation evidence"
+  hash: "28f67445f1ad3c3866f74a8770d84ad16cd10f0f"
+  message: "🚧 WCJJRD task: persist planner task intent safely"
 comments:
   -
     author: "CODER"
@@ -111,6 +111,12 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Review fix: persist typed PLANNER task_intent, reject incomplete results before envelope consumption, and atomically apply the plan, intent, and recalculated route."
+  -
+    author: "CODER"
+    body: "Final review-fix implementation commit after test-module split: 28f67445f."
 events:
   -
     type: "status"
@@ -211,8 +217,36 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "c8de8add843509c43b797cb4700ceaad88ca5fac"
+  -
+    type: "status"
+    at: "2026-08-11T09:34:14.277Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Review fix: persist typed PLANNER task_intent, reject incomplete results before envelope consumption, and atomically apply the plan, intent, and recalculated route."
+    commit: "dfd105028d195dc68d2645c42489501edf3cf7d3"
+  -
+    type: "verify"
+    at: "2026-08-11T09:34:25.711Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Planner intent persistence and envelope recovery verified at dfd105028."
+  -
+    type: "status"
+    at: "2026-08-11T09:43:13.516Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Final review-fix implementation commit after test-module split: 28f67445f."
+    commit: "28f67445f1ad3c3866f74a8770d84ad16cd10f0f"
+  -
+    type: "verify"
+    at: "2026-08-11T09:43:15.757Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Final review fix verified at 28f67445f."
 doc_version: 3
-doc_updated_at: "2026-08-11T09:08:45.750Z"
+doc_updated_at: "2026-08-11T09:43:17.980Z"
 doc_updated_by: "CODER"
 description: "Remove ordered natural-language keyword classification from task create. The CLI must validate structured task intent supplied by the agent or user, and otherwise create a neutral semantic-intake boundary for PLANNER without guessing task kind, mutation scope, risks, tags, blueprint, or execution route."
 sections:
@@ -532,6 +566,70 @@ sections:
     Result: pass.
     Evidence: Reused unchanged production implementation results: 549 files and 3983 tests in the full suite, plus 4 focused files and 36 tests and all static/build gates.
     Scope: Explicit structured intent, cross-language planner intake, repository regressions, and build integrity.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110235-WCJJRD-replace-task-create-keyword-inference-with-expli/.agentplane/tasks/202608110235-WCJJRD/blueprint/resolved-snapshot.json
+    - old_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+    - current_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608110235-WCJJRD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T09:34:25.711Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Planner intent persistence and envelope recovery verified at dfd105028.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a592495c95da711ecb80215b6394f03120f4aad2dfdbcaa463af64d31287db66, input_digest=sha256:5b150c2bb86564f01d0fbac94537eca8cf7012b7fbf351ce6dfa2530a6b18590
+
+    Details:
+
+    pass (implementation dfd105028; test:fast 549 files, 3984 tests; typecheck, lint, format, schemas, build pass)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110235-WCJJRD-replace-task-create-keyword-inference-with-expli/.agentplane/tasks/202608110235-WCJJRD/blueprint/resolved-snapshot.json
+    - old_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+    - current_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608110235-WCJJRD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T09:43:15.757Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Final review fix verified at 28f67445f.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a592495c95da711ecb80215b6394f03120f4aad2dfdbcaa463af64d31287db66, input_digest=sha256:05c2ff1ce54a4c63235f4cfba0f7ca08769951aa524ed37f2896d261b76c3c64
+
+    Details:
+
+    pass (implementation 28f67445f; test:fast 549 files, 3984 tests; focused planner-envelope flow, typecheck, lint, format, schemas, build, knip, hotspots pass)
 
     BlueprintSnapshotRef:
     - state: current
@@ -893,6 +991,70 @@ Command: `bun run test:fast`, focused task-create tests, `bun run format:check`,
 Result: pass.
 Evidence: Reused unchanged production implementation results: 549 files and 3983 tests in the full suite, plus 4 focused files and 36 tests and all static/build gates.
 Scope: Explicit structured intent, cross-language planner intake, repository regressions, and build integrity.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110235-WCJJRD-replace-task-create-keyword-inference-with-expli/.agentplane/tasks/202608110235-WCJJRD/blueprint/resolved-snapshot.json
+- old_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+- current_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608110235-WCJJRD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T09:34:25.711Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Planner intent persistence and envelope recovery verified at dfd105028.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a592495c95da711ecb80215b6394f03120f4aad2dfdbcaa463af64d31287db66, input_digest=sha256:5b150c2bb86564f01d0fbac94537eca8cf7012b7fbf351ce6dfa2530a6b18590
+
+Details:
+
+pass (implementation dfd105028; test:fast 549 files, 3984 tests; typecheck, lint, format, schemas, build pass)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110235-WCJJRD-replace-task-create-keyword-inference-with-expli/.agentplane/tasks/202608110235-WCJJRD/blueprint/resolved-snapshot.json
+- old_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+- current_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608110235-WCJJRD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T09:43:15.757Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Final review fix verified at 28f67445f.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a592495c95da711ecb80215b6394f03120f4aad2dfdbcaa463af64d31287db66, input_digest=sha256:05c2ff1ce54a4c63235f4cfba0f7ca08769951aa524ed37f2896d261b76c3c64
+
+Details:
+
+pass (implementation 28f67445f; test:fast 549 files, 3984 tests; focused planner-envelope flow, typecheck, lint, format, schemas, build, knip, hotspots pass)
 
 BlueprintSnapshotRef:
 - state: current
