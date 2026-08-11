@@ -12,8 +12,8 @@ Created: 2026-08-11T11:23:13.777Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Atomic verification passed; structured evidence is immediately reusable across lifecycle-only commits.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-11T11:23:13.777Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-11T11:23:13.777Z
+- Updated: 2026-08-11T12:18:29.240Z
 - Branch: task/202608111036-QHR892/make-verification-evidence-atomic-immediately-fr
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

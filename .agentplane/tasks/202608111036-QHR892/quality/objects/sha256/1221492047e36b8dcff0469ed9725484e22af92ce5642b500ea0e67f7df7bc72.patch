@@ -1,0 +1,545 @@
+diff --git a/docs/user/cli-reference.generated.mdx b/docs/user/cli-reference.generated.mdx
+index 80b53a6db..4b8b72423 100644
+--- a/docs/user/cli-reference.generated.mdx
++++ b/docs/user/cli-reference.generated.mdx
+@@ -1001,7 +1001,7 @@ Options:
+ - `--by <id>`: Verifier id. (required)
+ - `--note <text>`: Short verification note.
+ - `--note-file <path>`: Read the verification note from a file path (mutually exclusive with --note).
+-- `--details <text>`: Optional details text (mutually exclusive with --file).
++- `--details <text>`: Verification check blocks using Command, Result, Evidence, and Scope fields; required for a passing committed branch_pr task and mutually exclusive with --file.
+ - `--file <path>`: Optional details file path (mutually exclusive with --details).
+ - `--quiet`: Suppress normal output (still prints errors). (default=false)
+ - `--collect-incidents`: After recording verification, collect promotable findings into incidents.md immediately. (default=false)
+@@ -1041,7 +1041,7 @@ Options:
+ - `--by <id>`: Verifier id. (required)
+ - `--note <text>`: Short verification note.
+ - `--note-file <path>`: Read the verification note from a file path (mutually exclusive with --note).
+-- `--details <text>`: Optional details text (mutually exclusive with --file).
++- `--details <text>`: Verification check blocks using Command, Result, Evidence, and Scope fields; required for a passing committed branch_pr task and mutually exclusive with --file.
+ - `--file <path>`: Optional details file path (mutually exclusive with --details).
+ - `--quiet`: Suppress normal output (still prints errors). (default=false)
+ - `--collect-incidents`: After recording verification, collect promotable findings into incidents.md immediately. (default=false)
+@@ -1266,7 +1266,7 @@ Options:
+ - `--by <id>`: Verifier id (e.g. REVIEWER). (required)
+ - `--note <text>`: Short note describing the verification outcome.
+ - `--note-file <path>`: Read the verification note from a file path (mutually exclusive with --note).
+-- `--details <text>`: Optional free-form details (mutually exclusive with --file).
++- `--details <text>`: Verification check blocks using Command, Result, Evidence, and Scope fields; required for a passing committed branch_pr task and mutually exclusive with --file.
+ - `--file <path>`: Read details from a file path (mutually exclusive with --details).
+ - `--collect-incidents`: After recording verification, collect promotable findings into incidents.md immediately. (default=false)
+ - `--quiet`: Suppress output. (default=false)
+@@ -1286,10 +1286,10 @@ Options:
+ Examples:
+ 
+ ```sh
+-agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --quiet
++agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --details "Command: bun run test:fast. Result: pass. Evidence: exited 0. Scope: repository test suite." --quiet
+ ```
+ 
+-- Record an OK verification outcome.
++- Record a committed branch_pr OK outcome with reusable structured evidence.
+ 
+ ```sh
+ agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note-file ./verify-note.txt
+@@ -1298,7 +1298,7 @@ agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note-file ./verify-no
+ - Record an OK verification outcome using a file-backed note.
+ 
+ ```sh
+-agentplane verify 202602030608-F1Q8AB --rework --by REVIEWER --note "Needs changes" --details "Missing tests"
++agentplane verify 202602030608-F1Q8AB --rework --by REVIEWER --note "Needs changes" --details "Command: bun run test:fast. Result: fail. Evidence: one regression failed. Scope: repository test suite."
+ ```
+ 
+ - Record a needs-rework outcome with details.
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts
+index 771b6009d..0a12dd98e 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts
+@@ -194,7 +194,116 @@ describe("runCli route decision verification freshness", () => {
+     ]);
+     expect(stale.blockers).toContainEqual({
+       code: "verification_required",
+-      summary: "the passing verification record does not cover the current implementation head",
++      summary:
++        "the passing verification record does not cover the current verification input (reason_code=verification_implementation_changed)",
+     });
+   });
++
++  it("accepts one valid verify result immediately and reuses it across a lifecycle-only commit", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++
++    const taskId = await createBranchPrTask(root);
++    await runCliSilent([
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      "Record verification once and reuse it when only lifecycle evidence changes.",
++      "--updated-by",
++      "PLANNER",
++      "--root",
++      root,
++    ]);
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/single-verification`], {
++      cwd: root,
++    });
++    await runCliSilent([
++      "task",
++      "start-ready",
++      taskId,
++      "--author",
++      "CODER",
++      "--body",
++      "Start: implement the verification freshness regression fixture.",
++      "--root",
++      root,
++    ]);
++    await execFileAsync("git", ["add", "--all"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "task: prepare verification fixture"], {
++      cwd: root,
++    });
++    await writeFile(path.join(root, "impl.txt"), "verified implementation\n", "utf8");
++    await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "feat: verified implementation"], {
++      cwd: root,
++    });
++    const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    await runCliSilent([
++      "task",
++      "set-status",
++      taskId,
++      "DOING",
++      "--author",
++      "CODER",
++      "--body",
++      "Implementation committed and ready for independent verification evidence.",
++      "--commit",
++      implementationHead.trim(),
++      "--root",
++      root,
++    ]);
++    await runCliSilent([
++      "verify",
++      taskId,
++      "--ok",
++      "--by",
++      "TESTER",
++      "--note",
++      "Focused verification passed.",
++      "--details",
++      "Command: test fixture. Result: pass. Evidence: implementation fixture is present. Scope: verification freshness.",
++      "--observation",
++      "The committed implementation and verification input match.",
++      "--impact",
++      "The route may reuse this evidence after lifecycle-only changes.",
++      "--resolution",
++      "Keep semantic verification input separate from lifecycle artifacts.",
++      "--root",
++      root,
++    ]);
++
++    const immediate = await runJson<{
++      blockers: { code: string }[];
++      nextAction: { code: string };
++    }>(["task", "status", taskId, "--route", "--json", "--root", root]);
++    expect(immediate.blockers.map((blocker) => blocker.code)).not.toContain(
++      "verification_required",
++    );
++    expect(immediate.nextAction.code).not.toBe("verification_required");
++
++    await execFileAsync("git", ["add", "--all"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "task: persist verification evidence"], {
++      cwd: root,
++    });
++    const afterLifecycleCommit = await runJson<{ blockers: { code: string }[] }>([
++      "task",
++      "status",
++      taskId,
++      "--route",
++      "--json",
++      "--root",
++      root,
++    ]);
++    expect(afterLifecycleCommit.blockers.map((blocker) => blocker.code)).not.toContain(
++      "verification_required",
++    );
++  });
+ });
+diff --git a/packages/agentplane/src/commands/shared/task-verification-records.ts b/packages/agentplane/src/commands/shared/task-verification-records.ts
+index 453e0efd7..12e1efddd 100644
+--- a/packages/agentplane/src/commands/shared/task-verification-records.ts
++++ b/packages/agentplane/src/commands/shared/task-verification-records.ts
+@@ -31,6 +31,7 @@ type VerificationRecordAssessmentReason =
+   | "verification_missing"
+   | "verification_invalid_record"
+   | "verification_metadata_changed"
++  | "verification_details_missing"
+   | "verification_implementation_changed"
+   | "verification_steps_changed"
+   | "verification_context_changed"
+@@ -196,11 +197,7 @@ function rejectedAssessment(
+   };
+ }
+ 
+-function recordMetadataMatches(
+-  record: Record<string, unknown>,
+-  task: TaskData,
+-  requireConcreteCheckDetails: boolean,
+-): boolean {
++function recordMetadataMatches(record: Record<string, unknown>, task: TaskData): boolean {
+   const verification = task.verification;
+   return Boolean(
+     verification &&
+@@ -210,8 +207,7 @@ function recordMetadataMatches(
+     record.result === verification.state &&
+     record.verifier === verification.updated_by &&
+     record.note === verification.note &&
+-    hasValidRecordDigest(record) &&
+-    (!requireConcreteCheckDetails || hasConcreteCheckDetails(record.details)),
++    hasValidRecordDigest(record),
+   );
+ }
+ 
+@@ -228,9 +224,12 @@ async function assessCurrentVerification(
+     return rejectedAssessment("verification_invalid_record");
+   }
+   const record = raw as Record<string, unknown>;
+-  if (!recordMetadataMatches(record, task, requireConcreteCheckDetails)) {
++  if (!recordMetadataMatches(record, task)) {
+     return rejectedAssessment("verification_metadata_changed");
+   }
++  if (requireConcreteCheckDetails && !hasConcreteCheckDetails(record.details)) {
++    return rejectedAssessment("verification_details_missing");
++  }
+ 
+   if (record.schema_version === 2) {
+     const recordedInput = parseVerificationInput(record.input);
+diff --git a/packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts b/packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts
+index baf4e0c4c..f8cc4c964 100644
+--- a/packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts
++++ b/packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts
+@@ -186,6 +186,24 @@ describe("content-addressed verification records", () => {
+     });
+   });
+ 
++  it("reports missing structured check details separately from task metadata drift", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    await commitPath(root, "package.json", '{"name":"verification-v2"}\n', "seed context");
++    await execFileAsync("git", ["checkout", "-b", "task/verification-v2"], { cwd: root });
++    const implementationSha = await commitPath(
++      root,
++      "src/feature.ts",
++      "export const feature = true;\n",
++      "implement feature",
++    );
++    await writeRecord(root, implementationSha, "Verification passed without structured details.");
++
++    await expect(assess(root, task(), implementationSha)).resolves.toMatchObject({
++      accepted: false,
++      reason: "verification_details_missing",
++    });
++  });
++
+   it("rejects a record after its referenced mutable evidence is replaced", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     await commitPath(root, "package.json", '{"name":"verification-v2"}\n', "seed context");
+diff --git a/packages/agentplane/src/commands/shared/verification-details.test.ts b/packages/agentplane/src/commands/shared/verification-details.test.ts
+index b5ee47050..cfe8b64ff 100644
+--- a/packages/agentplane/src/commands/shared/verification-details.test.ts
++++ b/packages/agentplane/src/commands/shared/verification-details.test.ts
+@@ -41,7 +41,7 @@ describe("verification details", () => {
+       parseVerificationCheckDetails(
+         [
+           "Command: bun run test:fast",
+-          "Result: pass (549 files, 3971 tests)",
++          "Result: pass (549 files, 3971 tests).",
+           "Evidence: process exited 0 at the evaluated SHA.",
+           "Scope: complete local suite.",
+         ].join("\n"),
+@@ -49,6 +49,28 @@ describe("verification details", () => {
+     ).toBe("pass");
+   });
+ 
++  it("accepts repeated inline check blocks emitted by shell-safe agent commands", () => {
++    expect(
++      parseVerificationCheckDetails(
++        "Command: bun test. Result: pass. Evidence: 7 tests passed. Scope: focused suite. " +
++          "Command: bun run typecheck. Result: pass. Evidence: exited 0. Scope: types.",
++      ),
++    ).toEqual([
++      {
++        command: "bun test.",
++        result: "pass",
++        evidence: "7 tests passed.",
++        scope: "focused suite.",
++      },
++      {
++        command: "bun run typecheck.",
++        result: "pass",
++        evidence: "exited 0.",
++        scope: "types.",
++      },
++    ]);
++  });
++
+   it.each(["passed", "pass maybe", "failure", "fail open", "pass;"])(
+     "rejects an ambiguous result value: %s",
+     (result) => {
+diff --git a/packages/agentplane/src/commands/shared/verification-details.ts b/packages/agentplane/src/commands/shared/verification-details.ts
+index 04a188f0c..5cfc285c5 100644
+--- a/packages/agentplane/src/commands/shared/verification-details.ts
++++ b/packages/agentplane/src/commands/shared/verification-details.ts
+@@ -6,6 +6,9 @@ export type VerificationCheckDetail = {
+ };
+ 
+ const REQUIRED_FIELDS = ["Command", "Result", "Evidence", "Scope"] as const;
++type RequiredField = (typeof REQUIRED_FIELDS)[number];
++
++const FIELD_PATTERN = /(?:^|\s)(Command|Result|Evidence|Scope):\s*/gu;
+ 
+ /**
+  * Parses the durable, user-facing verification-details format once. Consumers
+@@ -14,24 +17,44 @@ const REQUIRED_FIELDS = ["Command", "Result", "Evidence", "Scope"] as const;
+  */
+ export function parseVerificationCheckDetails(details: unknown): VerificationCheckDetail[] | null {
+   if (typeof details !== "string" || !details.trim()) return null;
+-  const checks = details.trim().split(/\n\s*\n/gu);
+-  const parsed = checks.map((check) => {
+-    const fields = new Map(
+-      check.split("\n").map((line) => {
+-        const [field, ...value] = line.split(":");
+-        return [field?.trim(), value.join(":").trim()] as const;
+-      }),
+-    );
+-    if (REQUIRED_FIELDS.some((field) => !fields.get(field))) return null;
+-    const resultField = fields.get("Result") ?? "";
+-    const resultMatch = /^(pass|fail)(?:\.|\s*;\s*.+|\s+\(.+\))?$/u.exec(resultField);
++  const text = details.trim();
++  const matches = [...text.matchAll(FIELD_PATTERN)];
++  if (matches.length === 0) return null;
++
++  const checks: Map<RequiredField, string>[] = [];
++  let fields: Map<RequiredField, string> | null = null;
++  for (const [index, match] of matches.entries()) {
++    const field = match[1] as RequiredField;
++    if (field === "Command") {
++      if (fields) checks.push(fields);
++      fields = new Map();
++    }
++    if (!fields || fields.has(field)) return null;
++    const valueStart = (match.index ?? 0) + match[0].length;
++    const valueEnd = matches[index + 1]?.index ?? text.length;
++    const value = text.slice(valueStart, valueEnd).trim();
++    if (!value) return null;
++    fields.set(field, value);
++  }
++  if (fields) checks.push(fields);
++  if (
++    checks.length === 0 ||
++    checks.some((check) => REQUIRED_FIELDS.some((field) => !check.get(field)))
++  ) {
++    return null;
++  }
++
++  const parsed: VerificationCheckDetail[] = [];
++  for (const check of checks) {
++    const resultField = check.get("Result") ?? "";
++    const resultMatch = /^(pass|fail)(?:\.|\s*;\s*.+|\s+\(.+\)\.?)?$/u.exec(resultField);
+     if (!resultMatch) return null;
+-    return {
+-      command: fields.get("Command") ?? "",
++    parsed.push({
++      command: check.get("Command") ?? "",
+       result: resultMatch[1] as "pass" | "fail",
+-      evidence: fields.get("Evidence") ?? "",
+-      scope: fields.get("Scope") ?? "",
+-    } satisfies VerificationCheckDetail;
+-  });
+-  return parsed.every((check): check is VerificationCheckDetail => check !== null) ? parsed : null;
++      evidence: check.get("Evidence") ?? "",
++      scope: check.get("Scope") ?? "",
++    });
++  }
++  return parsed;
+ }
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-branch.ts b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+index e9a610546..635c4c854 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-branch.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+@@ -316,6 +316,17 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
+       selectedBlocker: routeBlockerFor(state, "cleanup_blocked"),
+     });
+   }
++  if (state.cleanupProbe.state === "already_clean" && state.prFlow === null) {
++    return cliOperationStep({
++      state,
++      operationId: "route.remote.refresh",
++      params: { taskId: id },
++      code: "refresh_remote_route",
++      summary:
++        "load provider truth before treating a branch_pr task with no local branch or PR record as complete",
++      selectedBlocker: null,
++    });
++  }
+   if (state.cleanupProbe.state === "already_clean") {
+     return terminalStep({
+       state,
+diff --git a/packages/agentplane/src/commands/task/verify-command-shared.ts b/packages/agentplane/src/commands/task/verify-command-shared.ts
+index cddf86b42..9aeaf020f 100644
+--- a/packages/agentplane/src/commands/task/verify-command-shared.ts
++++ b/packages/agentplane/src/commands/task/verify-command-shared.ts
+@@ -150,7 +150,8 @@ const verifyCommonOptions: readonly OptionSpec[] = [
+     kind: "string",
+     name: "details",
+     valueHint: "<text>",
+-    description: "Optional details text (mutually exclusive with --file).",
++    description:
++      "Verification check blocks using Command, Result, Evidence, and Scope fields; required for a passing committed branch_pr task and mutually exclusive with --file.",
+   },
+   {
+     kind: "string",
+diff --git a/packages/agentplane/src/commands/task/verify-record-execute.ts b/packages/agentplane/src/commands/task/verify-record-execute.ts
+index 0b5c32eea..c0d0922b1 100644
+--- a/packages/agentplane/src/commands/task/verify-record-execute.ts
++++ b/packages/agentplane/src/commands/task/verify-record-execute.ts
+@@ -224,6 +224,32 @@ async function recordVerificationResult(opts: {
+           previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
+           workflowMode: config.workflow_mode,
+         });
++        const parsedDetails = parseVerificationCheckDetails(opts.details);
++        const requiresConcreteDetails =
++          config.workflow_mode === "branch_pr" &&
++          (current.status === "DONE" || Boolean(current.commit?.hash?.trim()));
++        if (opts.state === "ok" && requiresConcreteDetails && parsedDetails === null) {
++          throw new CliError({
++            code: "E_VALIDATION",
++            message:
++              'Passing verification for a committed branch_pr task requires --details with one or more Command, Result, Evidence, and Scope blocks. No verification state was changed. Use --details "Command: <command>\\nResult: pass\\nEvidence: <observed result>\\nScope: <covered behavior>" and repeat each four-field block for additional checks.',
++            context: {
++              task_id: current.id,
++              reason_code: "verification_details_required",
++            },
++          });
++        }
++        if (opts.state === "ok" && parsedDetails?.some((check) => check.result !== "pass")) {
++          throw new CliError({
++            code: "E_VALIDATION",
++            message:
++              "Passing verification cannot contain a check whose structured Result is fail. No verification state was changed.",
++            context: {
++              task_id: current.id,
++              reason_code: "verification_result_conflict",
++            },
++          });
++        }
+         const verificationInput = await resolveVerificationInputIdentity({
+           gitRoot: resolved.gitRoot,
+           workflowDir: config.paths.workflow_dir,
+diff --git a/packages/agentplane/src/commands/task/verify-record.unit.test.ts b/packages/agentplane/src/commands/task/verify-record.unit.test.ts
+index 40ff6420d..030e39ffd 100644
+--- a/packages/agentplane/src/commands/task/verify-record.unit.test.ts
++++ b/packages/agentplane/src/commands/task/verify-record.unit.test.ts
+@@ -198,6 +198,7 @@ describe("task verify record (unit)", () => {
+         taskId: "T-1",
+         by: "A",
+         note: "Looks good",
++        details: "Command: focused check\nResult: pass\nEvidence: exited 0\nScope: committed task",
+         quiet: false,
+       }),
+     ).resolves.toBe(0);
+@@ -211,6 +212,54 @@ describe("task verify record (unit)", () => {
+     writeSpy.mockRestore();
+   });
+ 
++  it("rejects incomplete pass evidence for a committed branch_pr task before mutation", async () => {
++    const writeTask = vi.fn<(task: TaskData) => Promise<void>>(() => Promise.resolve());
++    const backend = makeWriteThroughBackend({
++      writeTask,
++      getTaskDoc: () =>
++        Promise.resolve(
++          [
++            "## Summary",
++            "x",
++            "",
++            "## Verify Steps",
++            "Run the focused check. Expected: pass.",
++            "",
++            "## Verification",
++            "<!-- BEGIN VERIFICATION RESULTS -->",
++            "<!-- END VERIFICATION RESULTS -->",
++          ].join("\n"),
++        ),
++    });
++    const ctx = mkCtx({ taskBackend: backend, backend });
++    ctx.config.workflow_mode = "branch_pr";
++    mocks.loadTaskFromContext.mockResolvedValue(
++      mkTask({
++        status: "DOING",
++        commit: { hash: "abc", message: "implementation" },
++        doc: undefined,
++        doc_version: 3,
++      }),
++    );
++
++    const { cmdTaskVerifyOk } = await import("./verify-record.js");
++    await expect(
++      cmdTaskVerifyOk({
++        ctx,
++        cwd: "/repo",
++        taskId: "T-1",
++        by: "TESTER",
++        note: "Looks good",
++        quiet: true,
++      }),
++    ).rejects.toMatchObject({
++      code: "E_VALIDATION",
++      context: { reason_code: "verification_details_required" },
++    });
++    expect(writeTask).not.toHaveBeenCalled();
++    expect(mocks.writeJsonStableIfChanged).not.toHaveBeenCalled();
++  });
++
+   it("cmdTaskVerifyOk validates note sources and mutually exclusive details/file", async () => {
+     const { cmdTaskVerifyOk } = await import("./verify-record.js");
+ 
+diff --git a/packages/agentplane/src/commands/verify.spec.ts b/packages/agentplane/src/commands/verify.spec.ts
+index feeab4376..98c10dc65 100644
+--- a/packages/agentplane/src/commands/verify.spec.ts
++++ b/packages/agentplane/src/commands/verify.spec.ts
+@@ -66,7 +66,8 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
+       kind: "string",
+       name: "details",
+       valueHint: "<text>",
+-      description: "Optional free-form details (mutually exclusive with --file).",
++      description:
++        "Verification check blocks using Command, Result, Evidence, and Scope fields; required for a passing committed branch_pr task and mutually exclusive with --file.",
+     },
+     {
+       kind: "string",
+@@ -86,15 +87,15 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
+   ],
+   examples: [
+     {
+-      cmd: 'agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --quiet',
+-      why: "Record an OK verification outcome.",
++      cmd: 'agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --details "Command: bun run test:fast. Result: pass. Evidence: exited 0. Scope: repository test suite." --quiet',
++      why: "Record a committed branch_pr OK outcome with reusable structured evidence.",
+     },
+     {
+       cmd: "agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note-file ./verify-note.txt",
+       why: "Record an OK verification outcome using a file-backed note.",
+     },
+     {
+-      cmd: 'agentplane verify 202602030608-F1Q8AB --rework --by REVIEWER --note "Needs changes" --details "Missing tests"',
++      cmd: 'agentplane verify 202602030608-F1Q8AB --rework --by REVIEWER --note "Needs changes" --details "Command: bun run test:fast. Result: fail. Evidence: one regression failed. Scope: repository test suite."',
+       why: "Record a needs-rework outcome with details.",
+     },
+     {
