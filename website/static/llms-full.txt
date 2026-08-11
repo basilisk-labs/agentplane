@@ -483,30 +483,26 @@ See [Local context](local-context) for source refs, privacy boundaries, and veri
 Local context has its own docs section because it is the reusable knowledge layer for agents, not a
 subtopic of manual CLI usage.
 
-## Setup profiles
+## Standard process policy
 
-Quick setup uses `Normal`. Advanced setup can select a different preset before reviewing its
-individual controls:
+AgentPlane uses one process policy for every project. Quick and advanced setup differ only in how
+many real project settings they expose; they do not weaken or strengthen lifecycle discipline.
+Force actions always require explicit approval. Workflow, runner, hooks, integrations, evaluator
+skepticism, and network approval remain independent settings.
 
-- `Light`: solo experiments with minimal enforcement.
-- `Normal`: default team-safe workflow.
-- Team Strict: stricter approvals, hooks, and CI-oriented guardrails. In the current CLI this
-  profile is selected with `full-harness`.
+Old profile names remain compatibility aliases for existing automation. They all apply the same
+standard policy and cannot select a different autonomy, reasoning, verification, or safety tier.
 
 ```bash
-agentplane profile set light
-agentplane profile set normal
-agentplane profile set full-harness
+agentplane profile set standard
 ```
 
 Non-interactive setup:
 
 ```bash
 agentplane init \
-  --setup-profile normal \
   --workflow direct \
   --backend local \
-  --execution-profile balanced \
   --require-network-approval true \
   --hooks true \
   --ide codex \
@@ -896,24 +892,19 @@ If the directory is not a git repository, `agentplane init` initializes git in t
 Use `agentplane init --dry-run --yes` to preview the setup plan without creating `.git`,
 `.agentplane`, backups, hooks, or commits. Add `--output json` for a machine-readable plan.
 
-Interactive init now starts with a profile menu:
+Interactive init uses one fixed process policy. It asks only for settings that describe the actual
+project, such as workflow, runner, integrations, hooks, and explicit network approval. The old
+`light`, `normal`, `full-harness`, `conservative`, `balanced`, and `aggressive` names remain accepted
+as patch-level compatibility aliases, but they all resolve to the same standard policy.
 
-- `light`
-- `normal` (default)
-- `full-harness`
-
-Hooks default by profile:
-
-- `light`: disabled
-- `normal`: enabled
-- `full-harness`: enabled
-
-`execution.profile` is stored in `.agentplane/WORKFLOW.md`.
+Legacy `execution.*` values in `.agentplane/WORKFLOW.md` are normalized on read and removed on the
+next config write. Use task scope and verification contracts for task-specific flexibility rather
+than selecting an autonomy preset.
 
 Non-interactive:
 
 ```bash
-agentplane init --setup-profile normal --workflow direct --backend local --execution-profile balanced --strict-unsafe-confirm true --hooks true --require-network-approval true --yes
+agentplane init --workflow direct --backend local --hooks true --require-network-approval true --yes
 agentplane init --dry-run --yes --output json
 ```
 
@@ -990,7 +981,7 @@ never rewritten by these commands.
 ```bash
 agentplane config show
 agentplane config set workflow_mode branch_pr
-agentplane profile set normal
+agentplane profile set standard
 ```
 
 ## Runtime diagnostics
@@ -1353,10 +1344,10 @@ Blueprint packs are lightweight catalog entries that expand to multiple blueprin
 does not own extra runtime behavior by itself; it only groups blueprint ids that should be installed
 together.
 
-During advanced/full-harness init, cached catalog entries can be installed in one step:
+During advanced init, cached catalog entries can be installed in one step:
 
 ```bash
-agentplane init --setup-profile full-harness --blueprints pack:team-baseline --yes
+agentplane init --advanced --blueprints pack:team-baseline --yes
 ```
 
 Use `blueprint:<id>` or `pack:<id>` when a catalog contains overlapping ids.
