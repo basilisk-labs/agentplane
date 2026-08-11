@@ -214,8 +214,27 @@ function packageSeeds(repoRoot, packageRelative) {
   return result;
 }
 
+function workspacePackageRoots(checkoutRoot) {
+  const packagesRoot = path.join(checkoutRoot, "packages");
+  const stats = lstatSync(packagesRoot, { throwIfNoEntry: false });
+  if (!stats?.isDirectory()) return [];
+  return readdirSync(packagesRoot, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => path.join(packagesRoot, entry.name))
+    .filter((packageRoot) =>
+      lstatSync(path.join(packageRoot, "package.json"), { throwIfNoEntry: false })?.isFile(),
+    )
+    .map((packageRoot) => path.resolve(realpathSync(packageRoot)));
+}
+
 export function replayDependencySeeds(repoRoot) {
   const root = path.resolve(repoRoot);
+  const modulesRoot = path.resolve(realpathSync(path.join(root, "node_modules")));
+  const sharedCheckoutRoot = path.dirname(modulesRoot);
+  const workspaceRoots = [
+    ...workspacePackageRoots(root),
+    ...(sharedCheckoutRoot === root ? [] : workspacePackageRoots(sharedCheckoutRoot)),
+  ];
   const candidates = [
     { label: "node_modules/tsup", path: path.join(root, "node_modules/tsup") },
     { label: "node_modules/typescript", path: path.join(root, "node_modules/typescript") },
@@ -231,7 +250,7 @@ export function replayDependencySeeds(repoRoot) {
     .filter((seed) => {
       if (workspaceSeeds.has(seed.label)) return false;
       const real = path.resolve(realpathSync(seed.path));
-      return !real.startsWith(`${root}${path.sep}packages${path.sep}`);
+      return !workspaceRoots.some((workspaceRoot) => isInside(workspaceRoot, real));
     })
     .toSorted((left, right) => left.label.localeCompare(right.label));
 }

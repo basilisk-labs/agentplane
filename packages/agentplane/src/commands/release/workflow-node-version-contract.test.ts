@@ -18,6 +18,7 @@ const DEPCRUISE_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/checks/run-de
 type WorkflowStep = {
   name?: string;
   uses?: string;
+  env?: Record<string, unknown>;
   with?: Record<string, unknown>;
   run?: string;
 };
@@ -25,11 +26,6 @@ type WorkflowStep = {
 type WorkflowJob = {
   needs?: string[];
   steps?: WorkflowStep[];
-  strategy?: {
-    matrix?: {
-      include?: Record<string, unknown>[];
-    };
-  };
 };
 
 type WorkflowDocument = {
@@ -67,7 +63,7 @@ describe("workflow Node runtime contract", () => {
           const label = `${workflowPath} jobs.${jobId}.steps[${stepIndex}]`;
           const nodeVersion = step.with?.["node-version"];
           if (workflowPath === CI_WORKFLOW_PATH && jobId === "verify-package-node-runtime") {
-            expect(["24", "${{ matrix.node_version }}"], label).toContain(nodeVersion);
+            expect(["20.0.0", "20.5.0", "24"], label).toContain(nodeVersion);
           } else {
             expect(nodeVersion, label).toBe("24");
           }
@@ -88,55 +84,34 @@ describe("workflow Node runtime contract", () => {
 
     const workflow = parseYaml(await readFile(CI_WORKFLOW_PATH, "utf8")) as WorkflowDocument;
     const compatibilityJob = workflow.jobs?.["verify-package-node-runtime"];
-    expect(compatibilityJob?.strategy?.matrix?.include).toEqual([
-      {
-        package_name: "core",
-        package_dir: "packages/core",
-        node_version: "20.5.0",
-      },
-      {
-        package_name: "core",
-        package_dir: "packages/core",
-        node_version: "24",
-      },
-      {
-        package_name: "recipes",
-        package_dir: "packages/recipes",
-        node_version: "20.0.0",
-      },
-      {
-        package_name: "recipes",
-        package_dir: "packages/recipes",
-        node_version: "24",
-      },
-    ]);
+    expect(compatibilityJob?.needs).toBe("plan");
     const setupNodeVersions = (compatibilityJob?.steps ?? [])
       .filter((step) => step.uses?.startsWith("actions/setup-node@"))
       .map((step) => step.with?.["node-version"]);
-    expect(setupNodeVersions).toEqual(["24", "${{ matrix.node_version }}"]);
+    expect(setupNodeVersions).toEqual(["24", "20.5.0", "24", "20.0.0", "24"]);
     const commands = (compatibilityJob?.steps ?? []).map((step) => step.run ?? "").join("\n");
     expect(commands).toContain("npm pack --json");
     expect(commands).toContain("check-package-node-runtime.mjs");
+    expect(commands).toContain("--package-dir packages/core");
+    expect(commands).toContain("--package-dir packages/recipes");
+    expect(commands).toContain('--tarball-dir "$RUNNER_TEMP/package-node-runtime/core"');
+    expect(commands).toContain('--tarball-dir "$RUNNER_TEMP/package-node-runtime/recipes"');
 
     const aggregateJob = workflow.jobs?.["pr-verification"];
     expect(aggregateJob?.needs).toContain("verify-package-node-runtime");
     const aggregateRun =
       aggregateJob?.steps?.find((step) => step.name === "Evaluate aggregate verification")?.run ??
       "";
-    const coreBypassIndex = aggregateRun.indexOf(
-      'if [ "${{ needs.plan.outputs.core }}" != "true" ]; then',
-    );
-    const packageRuntimeGateIndex = aggregateRun.indexOf(
-      '[ "${{ needs.verify-package-node-runtime.result }}" = "success" ]',
-    );
-    const routedEarlyExitIndex = aggregateRun.indexOf(
-      'if [ "${{ needs.verify-routed.result }}" = "success" ]; then',
-    );
-    expect(coreBypassIndex).toBeGreaterThanOrEqual(0);
-    expect(packageRuntimeGateIndex).toBeGreaterThan(coreBypassIndex);
-    expect(routedEarlyExitIndex).toBeGreaterThan(packageRuntimeGateIndex);
-    expect(aggregateRun).toContain(
-      'echo "- verify-package-node-runtime: ${{ needs.verify-package-node-runtime.result }}"',
+    expect(aggregateRun).toBe("node scripts/checks/evaluate-github-ci.mjs");
+    const aggregateEnv =
+      aggregateJob?.steps?.find((step) => step.name === "Evaluate aggregate verification") ?? {};
+    expect(aggregateEnv).toMatchObject({
+      env: {
+        AGENTPLANE_CI_PLAN_JSON: "${{ needs.plan.outputs.plan_json }}",
+      },
+    });
+    expect(String(aggregateEnv.env?.AGENTPLANE_CI_RESULTS_JSON)).toContain(
+      '"verify-package-node-runtime":"${{ needs.verify-package-node-runtime.result }}"',
     );
 
     const depcruiseScript = await readFile(DEPCRUISE_SCRIPT_PATH, "utf8");

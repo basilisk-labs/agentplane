@@ -1,0 +1,11 @@
+name: AgentPlane source and workflow analysis
+
+queries:
+  - uses: security-extended
+
+paths-ignore:
+  - ".agentplane/**"
+  - "**/dist/**"
+  - "**/coverage/**"
+  - "scripts/bench/agent-efficiency-replay-evidence/**"
+  - "scripts/bench/agent-efficiency-replay-envelopes/**"

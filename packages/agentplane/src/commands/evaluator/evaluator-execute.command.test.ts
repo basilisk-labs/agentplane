@@ -224,6 +224,16 @@ async function runCliInSeparateProcess(opts: {
   });
 }
 
+async function waitForFileText(filePath: string, expected: string): Promise<void> {
+  const deadline = Date.now() + 5000;
+  while (Date.now() < deadline) {
+    const text = await readFile(filePath, "utf8").catch(() => "");
+    if (text.includes(expected)) return;
+    await new Promise<void>((resolve) => setTimeout(resolve, 20));
+  }
+  throw new Error(`Timed out waiting for ${JSON.stringify(expected)} in ${filePath}`);
+}
+
 describe("evaluator execute supervisor episode", () => {
   it("persists one bounded EVALUATOR episode and applies its durable result", async () => {
     const root = await mkGitRepoRoot();
@@ -944,21 +954,29 @@ describe("evaluator execute supervisor episode", () => {
     await writeFile(invocationLog, "", "utf8");
     const childEnv = {
       AGENTPLANE_FAKE_CODEX_INVOCATIONS: invocationLog,
-      AGENTPLANE_FAKE_CODEX_DELAY_MS: "100",
+      AGENTPLANE_FAKE_CODEX_DELAY_MS: "2000",
     };
-    const executions = await Promise.all(
-      [1, 2].map(() =>
-        runCliInSeparateProcess({
-          root,
-          taskId,
-          fakeBin,
-          executeArgs: ["--replacement"],
-          env: childEnv,
-        }),
-      ),
-    );
+    const winner = runCliInSeparateProcess({
+      root,
+      taskId,
+      fakeBin,
+      executeArgs: ["--replacement"],
+      env: childEnv,
+    });
+    await waitForFileText(invocationLog, "provider-started\n");
+    const loser = runCliInSeparateProcess({
+      root,
+      taskId,
+      fakeBin,
+      executeArgs: ["--replacement"],
+      env: childEnv,
+    });
+    const executions = await Promise.all([winner, loser]);
 
-    expect(executions.map((execution) => execution.code).toSorted()).toEqual([0, 2]);
+    expect(
+      executions.map((execution) => execution.code).toSorted(),
+      JSON.stringify(executions),
+    ).toEqual([0, 2]);
     const invocationContents = await readFile(invocationLog, "utf8");
     const invocationLines = invocationContents.trim().split("\n");
     expect(invocationLines).toEqual(["provider-started"]);
