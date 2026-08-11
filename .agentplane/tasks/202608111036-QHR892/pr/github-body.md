@@ -19,8 +19,8 @@ Eliminate verification self-staleness and repeated checks caused only by AgentPl
 - Note:
 
 ```text
-Exact quality-review route assertion passed; prior full-suite, docs, hotspot, and standalone
-receipts were reused because 6a2cf7854 changes only the exercised CLI test fixture.
+Post-verify route inspection was added without rerunning unchanged checks; the route has no
+verification_required blocker and correctly preserves the prior evaluator rework until superseded.
 ```
 - Canonical workflow state lives in the task README.
 
