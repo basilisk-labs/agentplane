@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -30,33 +30,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-11T00:02:59.454Z"
+  updated_at: "2026-08-11T00:08:36.524Z"
   updated_by: "HUMAN"
-  note: "Content-addressed verification is atomic at task-state boundary, reusable across lifecycle-only drift, conservative for legacy records, and terminal after hosted close."
-  evaluated_sha: "e3a351ab0dbf4bb6d2296ec79cb1a70cb78ddb26"
+  note: "Final content tree preserves the reviewed verification implementation and adds only the mirrored pre-release CI incident required for 7XGP97."
+  evaluated_sha: "09c137cb1be297a8f7601966946d82fed3892b88"
   blueprint_digest: "3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963"
   evidence_refs:
-    - ".agentplane/tasks/202608102243-1RG86M/quality/20260811-000258940-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608102243-1RG86M/quality/20260811-000258940-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608102243-1RG86M/quality/objects/sha256/cd8ee59f24893060ecb6eab9b5789750e5c5d60ae969a8c59d2490579d0efd65.md"
-    - ".agentplane/tasks/202608102243-1RG86M/quality/20260811-000258940-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608102243-1RG86M/quality/20260811-000258940-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608102243-1RG86M/quality/20260811-000836124-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608102243-1RG86M/quality/20260811-000836124-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608102243-1RG86M/quality/objects/sha256/0383d419db8db7a43e286304e8fecf47facf73d30f1c07c2783b9c39f3e5246b.md"
+    - ".agentplane/tasks/202608102243-1RG86M/quality/20260811-000836124-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608102243-1RG86M/quality/20260811-000836124-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608102243-1RG86M/README.md"
-    - ".agentplane/tasks/202608102243-1RG86M/quality/objects/sha256/5521d4a94cc9a4f3d25dd6c120d43e110e4b9d2f336558474180e10e391a644d.patch"
-    - ".agentplane/tasks/202608102243-1RG86M/quality/objects/sha256/c3199602415dbda99a5fef69ffb184ab880d456d5527695834c4f9f119739358.json"
-    - ".agentplane/tasks/202608102243-1RG86M/verification/20260811000105206-c2f99c3715bc7227.json"
+    - ".agentplane/tasks/202608102243-1RG86M/quality/objects/sha256/e23cfd3885919425cb9d844d100899c818972f865d24f811a77cbdb8c7c792a1.patch"
+    - ".agentplane/tasks/202608102243-1RG86M/quality/objects/sha256/77e30c0262f0984c7a85fdbea21206c1cda8a5f129fc88ccd0060bf90a81bc6a.json"
+    - ".agentplane/tasks/202608102243-1RG86M/verification/20260811000741457-721bfb0ef350c4d2.json"
     - ".agentplane/tasks/202608102243-1RG86M/quality/objects/sha256/c5d1e46519c5845e0727845e8138f843fb901c242c4429ca3bcbf4774de8ea8b.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
-    - "packages/agentplane/src/commands/shared/task-verification-input.test.ts: lifecycle, rebase, source, Verify Steps, context, and runtime identity cases"
-    - "packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts: v2 acceptance and invalidation"
-    - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts: injected write failure rollback"
-    - "bun run test:fast: 549 files and 3972 tests passed"
-    - "PR #4818 and live route probe for completed task 202608102112-AY0H1F"
+    - "verification record .agentplane/tasks/202608102243-1RG86M/verification/20260811000741457-721bfb0ef350c4d2.json"
+    - "bun run test:fast: 549 files and 3972 tests on unchanged runtime implementation"
+    - "node .agentplane/policy/check-routing.mjs and bun run agents:check: pass on final policy tree"
+    - "bun run build: pass on final tree 09c137cb1be297a8f7601966946d82fed3892b88"
+    - "PR #4818 final runtime and policy diff"
   findings:
-    - "No blocking correctness defect remains after excluding all direct-mode lifecycle task artifacts and accepting bounded typed result counts."
+    - "No blocking defect: runtime diff is unchanged from the 3972-test review; the final policy-only delta passed routing, agent-template parity, and bundle build."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -163,7 +163,7 @@ events:
     state: "ok"
     note: "Final tree verified with scoped reuse after pre-release CI incident registration."
 doc_version: 3
-doc_updated_at: "2026-08-11T00:07:43.952Z"
+doc_updated_at: "2026-08-11T00:08:36.547Z"
 doc_updated_by: "CODER"
 description: "Persist pass or rework, structured findings, tested input identity, and evidence references in one atomic verification transaction. Define freshness from content-addressed implementation and verification inputs rather than task README revision or lifecycle-only commits; reuse receipts after rebases or metadata-only changes when the relevant patch and declared inputs are identical; invalidate them when code, Verify Steps, configuration, dependencies, environment contract, or evidence changes. DONE tasks must remain terminal and must not route back to verification. Provide deterministic CLI reasons for reuse or invalidation and regression coverage for the ordering defect reproduced in AgentPlane 0.7.5."
 sections:
