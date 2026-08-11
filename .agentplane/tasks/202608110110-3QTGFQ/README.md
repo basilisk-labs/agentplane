@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -19,34 +19,35 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T01:28:56.492Z"
+  updated_at: "2026-08-11T01:42:04.356Z"
   updated_by: "TESTER"
-  note: "Verified foreground queue supervision and parallel worktree ownership at implementation 04c1ee1f6cb7."
+  note: "Verified foreground queue supervision, stale merged-entry recovery, and parallel worktree ownership at implementation a0cfe7da0."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-11T01:29:41.158Z"
+  updated_at: "2026-08-11T01:42:38.197Z"
   updated_by: "HUMAN"
-  note: "Foreground queue advancement is a bounded deterministic continuation of the existing authority-gated enqueue operation. It reuses the queue mutex, lease, exact-head validation, hosted-check gate, and handoff recovery rather than creating a second integration path."
-  evaluated_sha: "04c1ee1f6cb74c7da7a7f83a0de39e0b0cee4718"
+  note: "The foreground queue operation is typed, authority-bounded, mutex-protected, and now reconciles already-merged stale queue entries before claiming the next task."
+  evaluated_sha: "a0cfe7da09eae3b06577caa9e7c02cb2c6bfd421"
   blueprint_digest: "1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b"
   evidence_refs:
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-012940817-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-012940817-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/70d745fe5f8abdafcc65b04aa8f2275474bc88505f35148e7d690f0672775626.md"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-012940817-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-012940817-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-014237891-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-014237891-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/e5cb4c23030e9bf5c9d82aaaf4bbb6a1cbba6d9b82e1acaf2cd48802fb874497.md"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-014237891-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-014237891-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608110110-3QTGFQ/README.md"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/279c7156a1f12ef120295a2e9150ce60e8b804953daed4ad14484230935d9f28.patch"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/309e823e1514e444e6e4c79acde309a67425fc4475b28eb46261df2279a2ceb5.json"
-    - ".agentplane/tasks/202608110110-3QTGFQ/verification/20260811012856492-b993191ce76b3757.json"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/3b0800ac86093f17e4d9547aa407754e0c6f1a165d5395fe0ea20ae359ecb47c.patch"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/b9bf38b7f15dd857b0e9a0023ea677ac78d719617b8ed350788c1c2be304e1a7.json"
+    - ".agentplane/tasks/202608110110-3QTGFQ/verification/20260811014204356-89c7882ecf64f607.json"
     - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/06bbf483effbb4b2e3bc1f6176380d9728a74d011cef05d430fd68c36043477a.json"
-    - "packages/agentplane/src/commands/shared/workflow-step-integration-queue.ts"
-    - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
-    - "packages/agentplane/src/commands/integrate-queue.command.test.ts"
+    - "bun run test:fast: 549 files, 3979 tests passed at a0cfe7da0"
+    - "integrate-queue-lane.test.ts: merged queued entry normalizes without local task-state dependency"
+    - "typecheck, format, lint, knip baseline, hotspot thresholds, and build passed"
   findings:
-    - "The route now advances matching queued, claimed, and handoff states; done remains a provider-truth wait and rework remains semantic rework. runVerify=false avoids duplicating a content-addressed verification already bound to the queued head."
+    - "Provider truth is consulted for every nonterminal queue entry before run-next claims local state, preventing a removed post-merge branch from blocking later integrations."
+    - "Parallel tasks retain independent worktrees while duplicate worktrees for the same task remain rejected."
 token_usage:
   agent_runs: 1
   input_tokens: null
@@ -118,8 +119,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "1d12dd696ec3ea091fea49390972bc11b542b5cb"
+  -
+    type: "verify"
+    at: "2026-08-11T01:42:04.356Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified foreground queue supervision, stale merged-entry recovery, and parallel worktree ownership at implementation a0cfe7da0."
 doc_version: 3
-doc_updated_at: "2026-08-11T01:30:23.464Z"
+doc_updated_at: "2026-08-11T01:42:38.217Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr task supervision enqueue and then serialize its own integration queue through typed deterministic operations, recover handoffs without semantic rework, and prevent stale base task replicas while preserving parallel per-task worktrees."
 sections:
@@ -220,6 +227,56 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608110110-3QTGFQ
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T01:42:04.356Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified foreground queue supervision, stale merged-entry recovery, and parallel worktree ownership at implementation a0cfe7da0.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4f23b4bc1923b5ab7fb8043edbb9863bb7710c459d6f8f9fa554dcc91b163f, input_digest=sha256:f6d1f48d709df3452e7137c31ea5688aef9f2957ae6ceebf4d60fd4da1d2996b
+
+    Details:
+
+    Command: bun run test:fast
+    Result: pass (549 files, 3979 tests)
+    Evidence: Process exited 0 at implementation a0cfe7da0; includes merged-entry normalization and foreground queue supervision.
+    Scope: Complete agentplane, core, recipes, and testkit suite.
+
+    Command: bun vitest run packages/agentplane/src/commands/integrate-queue-lane.test.ts packages/agentplane/src/commands/integrate-queue.command.test.ts packages/agentplane/src/commands/integrate-queue-reservation.worktree.test.ts
+    Result: pass (3 files, 34 tests)
+    Evidence: Reproduces a merged queued PR with stale local task state and proves normalization before claim.
+    Scope: Terminal provider reconciliation, claim publication, mutex and worktree safety.
+
+    Command: bun run typecheck && bun run format:check && bun run lint
+    Result: pass.
+    Evidence: TypeScript, formatting, and lint checks exited 0.
+    Scope: Static contracts.
+
+    Command: bun run knip:check && bun run hotspots:check && bun run build
+    Result: pass.
+    Evidence: Baselines, size thresholds, and distributable bundles exited 0.
+    Scope: Architecture and packaging.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110110-3QTGFQ-advance-the-integration-queue-in-the-foreground/.agentplane/tasks/202608110110-3QTGFQ/blueprint/resolved-snapshot.json
+    - old_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+    - current_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608110110-3QTGFQ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -349,6 +406,56 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608110110-3QTGFQ
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T01:42:04.356Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified foreground queue supervision, stale merged-entry recovery, and parallel worktree ownership at implementation a0cfe7da0.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4f23b4bc1923b5ab7fb8043edbb9863bb7710c459d6f8f9fa554dcc91b163f, input_digest=sha256:f6d1f48d709df3452e7137c31ea5688aef9f2957ae6ceebf4d60fd4da1d2996b
+
+Details:
+
+Command: bun run test:fast
+Result: pass (549 files, 3979 tests)
+Evidence: Process exited 0 at implementation a0cfe7da0; includes merged-entry normalization and foreground queue supervision.
+Scope: Complete agentplane, core, recipes, and testkit suite.
+
+Command: bun vitest run packages/agentplane/src/commands/integrate-queue-lane.test.ts packages/agentplane/src/commands/integrate-queue.command.test.ts packages/agentplane/src/commands/integrate-queue-reservation.worktree.test.ts
+Result: pass (3 files, 34 tests)
+Evidence: Reproduces a merged queued PR with stale local task state and proves normalization before claim.
+Scope: Terminal provider reconciliation, claim publication, mutex and worktree safety.
+
+Command: bun run typecheck && bun run format:check && bun run lint
+Result: pass.
+Evidence: TypeScript, formatting, and lint checks exited 0.
+Scope: Static contracts.
+
+Command: bun run knip:check && bun run hotspots:check && bun run build
+Result: pass.
+Evidence: Baselines, size thresholds, and distributable bundles exited 0.
+Scope: Architecture and packaging.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110110-3QTGFQ-advance-the-integration-queue-in-the-foreground/.agentplane/tasks/202608110110-3QTGFQ/blueprint/resolved-snapshot.json
+- old_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+- current_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608110110-3QTGFQ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

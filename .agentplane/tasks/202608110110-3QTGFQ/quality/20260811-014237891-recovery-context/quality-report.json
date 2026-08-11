@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608110110-3QTGFQ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T01:42:38.197Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The foreground queue operation is typed, authority-bounded, mutex-protected, and now reconciles already-merged stale queue entries before claiming the next task.",
+  "evaluated_sha": "a0cfe7da09eae3b06577caa9e7c02cb2c6bfd421",
+  "blueprint_digest": "1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b",
+  "findings": [
+    "Provider truth is consulted for every nonterminal queue entry before run-next claims local state, preventing a removed post-merge branch from blocking later integrations.",
+    "Parallel tasks retain independent worktrees while duplicate worktrees for the same task remain rejected."
+  ],
+  "evidence_refs": [
+    "bun run test:fast: 549 files, 3979 tests passed at a0cfe7da0",
+    "integrate-queue-lane.test.ts: merged queued entry normalizes without local task-state dependency",
+    "typecheck, format, lint, knip baseline, hotspot thresholds, and build passed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The self-hosted supervisor-to-queue transition must still be exercised after this implementation is merged into main; the current integration run provides that acceptance proof."
+  ]
+}
