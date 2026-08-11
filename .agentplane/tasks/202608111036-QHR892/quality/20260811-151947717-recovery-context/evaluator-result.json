@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RECOVERY-001",
+      "severity": "high",
+      "summary": "CLI-регрессия не доказывает немедленный переход именно к quality review: она проверяет лишь отсутствие verification_required и допускает любой другой nextAction.",
+      "broken_invariant": "Критерий приемки требует доказать, что одна валидная команда verify немедленно переводит маршрут к следующему quality-review gate.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/README.md",
+          "sha256": "sha256:13ba5d2b0ef97aa1f744d2f4a8066a5f48bfcd0fd7efff1c14c3c7329e569fca",
+          "section": "Plan and Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/bbe6214187cd93bb1d754af8d416ffdbe15938444f2f45af6c595c50cfc0ab51.patch",
+          "sha256": "sha256:bbe6214187cd93bb1d754af8d416ffdbe15938444f2f45af6c595c50cfc0ab51",
+          "lines": "expect(immediate.nextAction.code).not.toBe(\"verification_required\");",
+          "section": "packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
+        }
+      ]
+    },
+    {
+      "id": "RECOVERY-002",
+      "severity": "medium",
+      "summary": "Замороженная запись проверки не содержит результата обязательной инспекции итогового маршрута после единой команды verify.",
+      "broken_invariant": "Verify Step 6 требует зафиксировать, что verification_required отсутствует и следующий gate выдан без повторного запуска тестов; обязательные Verify Steps должны быть выполнены и записаны.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/README.md",
+          "sha256": "sha256:13ba5d2b0ef97aa1f744d2f4a8066a5f48bfcd0fd7efff1c14c3c7329e569fca",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/verification/20260811151629029-e146b2f46c0413b6.json",
+          "sha256": "sha256:82ff4e6e9992585a72ecd6d161a3cdb5412ecedbae1983e96c03e610acd8b93f",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "lines": "Verification steps are executed and results recorded.",
+          "section": "DoD: core"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "CLI-level regression asserting the exact quality-review next-action code immediately after a single valid verify command.",
+    "Recorded read-only final-route inspection showing verification_required absent and the quality-review gate selected without rerunning checks."
+  ],
+  "hidden_assumptions": [
+    "Any nextAction other than verification_required is assumed to satisfy the required transition to quality review.",
+    "Passing the route-decision test is assumed to substitute for the separately required inspection of the real final task route."
+  ],
+  "recovery_context": "Strengthen the CLI regression to assert the exact quality-review gate, then include frozen evidence of the required final-route inspection after the single valid verify command."
+}
