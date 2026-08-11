@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -34,33 +34,30 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-11T09:07:40.800Z"
+  updated_at: "2026-08-11T09:53:37.677Z"
   updated_by: "HUMAN"
-  note: "The final head now aligns implementation, reviewed compatibility surface, critical tests, and generated public documentation; the second hosted failure was a stale generated reference rather than a behavior defect."
-  evaluated_sha: "0cca190046749f1bb43c39bce2cb98c9eb11a240"
+  note: "Typed PLANNER intent is persisted before route continuation without consuming invalid envelopes."
+  evaluated_sha: "28f67445f1ad3c3866f74a8770d84ad16cd10f0f"
   blueprint_digest: "6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944"
   evidence_refs:
-    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-090740490-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-090740490-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/1620cc3437e2a8011ce86c024bb87d62a7896edb4d92ed8cd38068e3a0e51bba.md"
-    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-090740490-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-090740490-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-095337349-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-095337349-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/4c9c5ec89ba4c41c6906e97c69c709baaed4db59eaef479759443651ebf98121.md"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-095337349-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-095337349-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608110235-WCJJRD/README.md"
-    - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/fbe9bc7166ea3df3405a91bc8299a57de9352da0630a503917d0126ec43cbf4b.patch"
-    - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/482a96e80a1f7cb3a8d8961da2bf8d25b09a07632d3b947cc296915889b21ba8.json"
-    - ".agentplane/tasks/202608110235-WCJJRD/verification/20260811090705505-fbc202a7956f3249.json"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/489da316412ac2da9edbecd1063e785ce4a383be075d8ce71d3e71bf427e29d2.patch"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/692cf31be6f2e4b23d7179cfd509070c3480518059473193aad2615cdffaacd3.json"
     - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/401907a8523393cf75cebc6e66ba47c377563c19ea58b2689c0a3bfbe01b846a.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
-    - "docs/user/cli-reference.generated.mdx"
-    - "scripts/baselines/v0.7-compatibility-candidate.json"
-    - "packages/agentplane/src/commands/task/create.command.ts"
+    - "bun run test:fast: 549 files, 3984 tests passed"
+    - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+    - "bun run typecheck; bun run lint:core; bun run hotspots:check; bun run schemas:check"
   findings:
-    - "The generated task-create reference exposes all structured semantic options and describes neutral planner intake without restoring keyword inference."
-    - "The documentation-only descendant preserves the exact approved release compatibility digest and the 12-chunk critical result, so no duplicate execution of unchanged gates was necessary."
-    - "The two hosted failures were addressed at their actual contracts: reviewed compatibility provenance first, generated CLI documentation second."
+    - "Neutral multilingual intake stays unclassified until PLANNER returns typed task_intent; plan, intent, and route are then committed atomically."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -246,7 +243,7 @@ events:
     state: "ok"
     note: "Final review fix verified at 28f67445f."
 doc_version: 3
-doc_updated_at: "2026-08-11T09:43:17.980Z"
+doc_updated_at: "2026-08-11T09:53:37.699Z"
 doc_updated_by: "CODER"
 description: "Remove ordered natural-language keyword classification from task create. The CLI must validate structured task intent supplied by the agent or user, and otherwise create a neutral semantic-intake boundary for PLANNER without guessing task kind, mutation scope, risks, tags, blueprint, or execution route."
 sections:

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608110235-WCJJRD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T09:53:37.677Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Typed PLANNER intent is persisted before route continuation without consuming invalid envelopes.",
+  "evaluated_sha": "28f67445f1ad3c3866f74a8770d84ad16cd10f0f",
+  "blueprint_digest": "6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944",
+  "findings": [
+    "Neutral multilingual intake stays unclassified until PLANNER returns typed task_intent; plan, intent, and route are then committed atomically."
+  ],
+  "evidence_refs": [
+    "bun run test:fast: 549 files, 3984 tests passed",
+    "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts",
+    "bun run typecheck; bun run lint:core; bun run hotspots:check; bun run schemas:check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
