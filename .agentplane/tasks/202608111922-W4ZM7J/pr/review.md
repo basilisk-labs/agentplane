@@ -6,14 +6,14 @@ Created: 2026-08-11T19:27:21.314Z
 
 - Task: `202608111922-W4ZM7J`
 - Title: Validate declared checks with the supervised execution grammar
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608111922-W4ZM7J/validate-declared-checks-with-the-supervised-exe`
 - Canonical task record: `.agentplane/tasks/202608111922-W4ZM7J/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Declared-check mutation and execution parity verified against the committed implementation.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-11T19:27:21.314Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-11T19:27:21.314Z
+- Updated: 2026-08-11T20:20:31.084Z
 - Branch: task/202608111922-W4ZM7J/validate-declared-checks-with-the-supervised-exe
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

@@ -15,14 +15,14 @@ Reject unsupported verification commands at every task mutation boundary using t
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Declared-check mutation and execution parity verified against the committed implementation.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-11T19:27:21.314Z
+- Updated: 2026-08-11T20:20:31.084Z
 - Branch: task/202608111922-W4ZM7J/validate-declared-checks-with-the-supervised-exe
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

@@ -1,10 +1,11 @@
 ---
 id: "202608111922-W4ZM7J"
 title: "Validate declared checks with the supervised execution grammar"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,11 +21,56 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-11T20:21:35.810Z"
+  updated_by: "TESTER"
+  note: "Declared-check mutation and execution parity verified against the committed implementation."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-08-11T20:22:18.092Z"
+  updated_by: "HUMAN"
+  note: "The committed change satisfies parser/executor parity and mutation atomicity without hard-coding a product language or package manager."
+  evaluated_sha: "240a672c22598edc1dc7cacdd42421f73d01e194"
+  blueprint_digest: "9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4"
+  evidence_refs:
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-202217708-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-202217708-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/a1f4e5c8d2718953e1ba8fc1c5f8acb1f7bb97743489bbf87216d7c32c70a827.md"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-202217708-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-202217708-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/README.md"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/2b217bdaaa2210535502a09472ae5bacaf7b6affc49d6050c6d0dd8a160eb768.patch"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/6e716694e6aebbe5adf638d5f01591e61f1a2d1cd25e33f488518dfab43a9fed.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/verification/20260811202135810-cc799589e3bb89ce.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/559acda9b5852a0eac86146788242df1183cfd1a93800fa00e801d462c45e4da.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - "packages/agentplane/src/commands/shared/declared-check.ts"
+    - "packages/agentplane/src/commands/shared/declared-check.test.ts"
+    - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+    - ".agentplane/tasks/202608111922-W4ZM7J/verification"
+  findings:
+    - "One shared resolver now owns accepted argv for task persistence, direct supervised execution, and branch integration; the previously divergent validation and execution grammars are removed."
+    - "Mutation coverage proves invalid checks cannot partially create or update tasks across new, add, update, derive, begin, and create, while legacy metadata-only updates remain recoverable."
+    - "Cross-ecosystem commands are accepted by structure and repository boundary rather than keyword classification; shell evaluation, path escape, inline code, package installation, destructive executables, and mutating Git operations fail closed."
+token_usage:
+  agent_runs: 1
+  input_tokens: null
+  journal_digest: "sha256:af2921d2c54ba16356be575bbdeb7b6d8a6bd05b0f05b4374affe3e3521c5483"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-11T20:23:06.822Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -34,8 +80,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "240a672c22598edc1dc7cacdd42421f73d01e194"
-  message: "🚧 W4ZM7J task: apply external agent result"
+  hash: "7cdce524c408b745c6c4a77a5f1ca6fe8cf2af19"
+  message: "🚧 W4ZM7J task: record external implementation evidence"
 comments:
   -
     author: "CODER"
@@ -43,6 +89,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 240a672c2259. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -59,9 +108,23 @@ events:
     to: "DOING"
     note: "Implementation committed: 240a672c2259. CLI accepted one state-bound external-agent semantic result."
     commit: "240a672c22598edc1dc7cacdd42421f73d01e194"
+  -
+    type: "verify"
+    at: "2026-08-11T20:21:35.810Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Declared-check mutation and execution parity verified against the committed implementation."
+  -
+    type: "status"
+    at: "2026-08-11T20:23:06.822Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "7cdce524c408b745c6c4a77a5f1ca6fe8cf2af19"
 doc_version: 3
-doc_updated_at: "2026-08-11T20:17:36.989Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-11T20:23:06.833Z"
+doc_updated_by: "CODER"
 description: "Reject unsupported verification commands at every task mutation boundary using the same deterministic parser later used by automatic TESTER execution. Return an actionable error before persisting task state; preserve repository-bound argv execution without shell evaluation; cover task new, add, update, derive, begin/create adapters, and the previously failing bun test path command."
 sections:
   Summary: |-
@@ -80,12 +143,60 @@ sections:
     3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-11T20:21:35.810Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Declared-check mutation and execution parity verified against the committed implementation.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1a0cee901494fda2d3e18238ceaf09922eb12ce9e68936697f1f0dd97a22f63a, input_digest=sha256:9c05ed7d074054bb57917cdde57c4242c508de4a197ca10cc29965734cda6005
+
+    Details:
+
+    Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/commands/task/update.unit.test.ts
+    Result: pass
+    Evidence: 29 tests passed with 153 assertions.
+    Scope: exact declared command, direct execution, task new/add, and update persistence boundary.
+
+    Command: declared-check and all mutation adapters suite
+    Result: pass
+    Evidence: 90 tests passed with 430 assertions.
+    Scope: shared parser, branch and direct executors, new/add/update/derive/begin/create, legacy metadata-only update compatibility.
+
+    Command: bun run typecheck; bun run lint:core; bun run format:check; bun run arch:check
+    Result: pass
+    Evidence: all four repository quality checks exited successfully.
+    Scope: type safety, lint, formatting, and dependency boundaries.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111922-W4ZM7J-validate-declared-checks-with-the-supervised-exe/.agentplane/tasks/202608111922-W4ZM7J/blueprint/resolved-snapshot.json
+    - old_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+    - current_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608111922-W4ZM7J
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608111922-W4ZM7J
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "240a672c22598edc1dc7cacdd42421f73d01e194"
+    message: "🚧 W4ZM7J task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "2069221001f334aa7538042998166dae60919499"
     version: 1
@@ -117,6 +228,51 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-11T20:21:35.810Z — VERIFY — ok
+
+By: TESTER
+
+Note: Declared-check mutation and execution parity verified against the committed implementation.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1a0cee901494fda2d3e18238ceaf09922eb12ce9e68936697f1f0dd97a22f63a, input_digest=sha256:9c05ed7d074054bb57917cdde57c4242c508de4a197ca10cc29965734cda6005
+
+Details:
+
+Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/commands/task/update.unit.test.ts
+Result: pass
+Evidence: 29 tests passed with 153 assertions.
+Scope: exact declared command, direct execution, task new/add, and update persistence boundary.
+
+Command: declared-check and all mutation adapters suite
+Result: pass
+Evidence: 90 tests passed with 430 assertions.
+Scope: shared parser, branch and direct executors, new/add/update/derive/begin/create, legacy metadata-only update compatibility.
+
+Command: bun run typecheck; bun run lint:core; bun run format:check; bun run arch:check
+Result: pass
+Evidence: all four repository quality checks exited successfully.
+Scope: type safety, lint, formatting, and dependency boundaries.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111922-W4ZM7J-validate-declared-checks-with-the-supervised-exe/.agentplane/tasks/202608111922-W4ZM7J/blueprint/resolved-snapshot.json
+- old_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+- current_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608111922-W4ZM7J
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608111922-W4ZM7J
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -125,3 +281,16 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/1` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:af2921d2c54ba16356be575bbdeb7b6d8a6bd05b0f05b4374affe3e3521c5483`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-11T20:23:06.822Z`

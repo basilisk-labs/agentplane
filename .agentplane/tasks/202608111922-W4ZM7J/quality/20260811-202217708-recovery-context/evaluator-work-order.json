@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608111922-W4ZM7J-9d125232d74ced424e80c67e",
+  "prepared_at": "2026-08-11T20:22:17.708Z",
+  "task": {
+    "id": "202608111922-W4ZM7J",
+    "revision": 6,
+    "objective": "Validate declared checks with the supervised execution grammar\n\nReject unsupported verification commands at every task mutation boundary using the same deterministic parser later used by automatic TESTER execution. Return an actionable error before persisting task state; preserve repository-bound argv execution without shell evaluation; cover task new, add, update, derive, begin/create adapters, and the previously failing bun test path command.",
+    "acceptance_criteria": [
+      "bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/commands/task/update.unit.test.ts",
+      "- In scope: Reject unsupported verification commands at every task mutation boundary using the same deterministic parser later used by automatic TESTER execution. Return an actionable error before persisting task state; preserve repository-bound argv execution without shell evaluation; cover task new, add, update, derive, begin/create adapters, and the previously failing bun test path command.\n- Out of scope: unrelated refactors not required for \"Validate declared checks with the supervised execution grammar\".",
+      "1. Inventory every command that can persist or replace task verify entries and the automatic TESTER execution path. 2. Extract one deterministic, repository-bound declared-check parser and validator that returns the exact argv accepted by execution. 3. Apply that validator before writes in task new, add, update, derive, begin, and create adapters without shell evaluation. 4. Preserve supported bun test path filters, safe bun run scripts, and fixed built-in policy checks; reject unsupported or escaping arguments with an actionable validation error. 5. Add mutation-boundary tests proving invalid checks leave no task changes and the original bun test path command is accepted and executable. 6. Add parity tests proving every accepted command is parseable by supervised TESTER and every rejected command is blocked before persistence. 7. Run the focused declared-check and task mutation suites, typecheck, formatting checks, and the critical CLI route.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/commands/task/update.unit.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "240a672c22598edc1dc7cacdd42421f73d01e194",
+  "diff_base_sha": "2069221001f334aa7538042998166dae60919499",
+  "blueprint_digest": "9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-202217708-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:5cf541c23ed8a4f75e7b496a95a5cf917089e6e57bd88968c10728f1716ab83f",
+    "prompt_path": ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/a1f4e5c8d2718953e1ba8fc1c5f8acb1f7bb97743489bbf87216d7c32c70a827.md",
+    "result_schema_path": ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608111922-W4ZM7J/README.md",
+      "sha256": "sha256:f037e612978fc5989aff6337bb69c1fb9997de4b00b9903597819bb2fbec86f4",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/2b217bdaaa2210535502a09472ae5bacaf7b6affc49d6050c6d0dd8a160eb768.patch",
+      "sha256": "sha256:2b217bdaaa2210535502a09472ae5bacaf7b6affc49d6050c6d0dd8a160eb768",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/6e716694e6aebbe5adf638d5f01591e61f1a2d1cd25e33f488518dfab43a9fed.json",
+      "sha256": "sha256:6e716694e6aebbe5adf638d5f01591e61f1a2d1cd25e33f488518dfab43a9fed",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608111922-W4ZM7J/verification/20260811202135810-cc799589e3bb89ce.json",
+      "sha256": "sha256:96e81d6b4ce0628b726a9e4214790ec442d746d01e043eacd1d001406f81bea6",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/559acda9b5852a0eac86146788242df1183cfd1a93800fa00e801d462c45e4da.json",
+      "sha256": "sha256:559acda9b5852a0eac86146788242df1183cfd1a93800fa00e801d462c45e4da",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

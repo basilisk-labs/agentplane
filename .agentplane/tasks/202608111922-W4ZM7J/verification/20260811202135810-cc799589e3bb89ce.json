@@ -1,0 +1,82 @@
+{
+  "details": "Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/commands/task/update.unit.test.ts\nResult: pass\nEvidence: 29 tests passed with 153 assertions.\nScope: exact declared command, direct execution, task new/add, and update persistence boundary.\n\nCommand: declared-check and all mutation adapters suite\nResult: pass\nEvidence: 90 tests passed with 430 assertions.\nScope: shared parser, branch and direct executors, new/add/update/derive/begin/create, legacy metadata-only update compatibility.\n\nCommand: bun run typecheck; bun run lint:core; bun run format:check; bun run arch:check\nResult: pass\nEvidence: all four repository quality checks exited successfully.\nScope: type safety, lint, formatting, and dependency boundaries.",
+  "digest": "sha256:cc799589e3bb89cebf9cf0b5d5f8f0ed0ed4ea503b789fe607f2d616e5aa6c79",
+  "implementation_sha": "240a672c22598edc1dc7cacdd42421f73d01e194",
+  "input": {
+    "context": {
+      "digest": "sha256:36fec4cc01483f7dade507195e7c8f954b583a6cefd467466f4cbfb918df42fd",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:9c05ed7d074054bb57917cdde57c4242c508de4a197ca10cc29965734cda6005",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:ab8a3c7693644206164c2fc74a69721c9ec08e73328338995af80a1f99f0c147",
+      "digest": "sha256:63c2a578262f0a9feea0b53725ed50faf8799afd70a35ce5d339010cf7439786",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "2069221001f334aa7538042998166dae60919499",
+      "digest": "sha256:5b7a15d6ee7557c2cd1370cb80b3e3c531cb0d376f7e2ea4ddc6adf7fd583df3",
+      "strategy": "branch_diff",
+      "target_sha": "240a672c22598edc1dc7cacdd42421f73d01e194"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 2,
+    "verify_steps_digest": "sha256:1a0cee901494fda2d3e18238ceaf09922eb12ce9e68936697f1f0dd97a22f63a"
+  },
+  "kind": "task_verification_record",
+  "note": "Declared-check mutation and execution parity verified against the committed implementation.",
+  "recorded_at": "2026-08-11T20:21:35.810Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/commands/task/update.unit.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:1a0cee901494fda2d3e18238ceaf09922eb12ce9e68936697f1f0dd97a22f63a",
+  "task_id": "202608111922-W4ZM7J",
+  "verification_command": "agentplane verify 202608111922-W4ZM7J --ok --by TESTER",
+  "verifier": "TESTER"
+}
