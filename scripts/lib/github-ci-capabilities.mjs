@@ -58,6 +58,11 @@ const RECIPES_RUNTIME_PATTERNS = [
   /^agentplane-recipes$/u,
 ];
 const SHARED_RUNTIME_PATTERNS = [/^package\.json$/u, /^bun\.lock$/u];
+const RELEASE_PACKAGE_MANIFESTS = new Set([
+  "packages/agentplane/package.json",
+  "packages/core/package.json",
+  "packages/recipes/package.json",
+]);
 const WINDOWS_PATTERNS = [
   ...SHARED_RUNTIME_PATTERNS,
   /^packages\/core\//u,
@@ -121,6 +126,10 @@ function isReleaseRef(headRef) {
   return /^release\//u.test(headRef) || /\/release-/u.test(headRef);
 }
 
+function isReleasePackageSet(files) {
+  return [...RELEASE_PACKAGE_MANIFESTS].every((filePath) => files.includes(filePath));
+}
+
 function asUniqueSorted(files) {
   return [...new Set(files.map((value) => value.trim()).filter(Boolean))].toSorted((a, b) =>
     a.localeCompare(b),
@@ -161,6 +170,7 @@ export function buildGithubCiCapabilityPlan({
   changedFiles,
   eventName = "pull_request",
   headRef = "",
+  ref = "",
   exactShaRecovery = false,
 }) {
   const files = asUniqueSorted(changedFiles);
@@ -172,9 +182,12 @@ export function buildGithubCiCapabilityPlan({
   const unknown = effectiveFiles.length > 0 && !allMatch(effectiveFiles, KNOWN_PATH_PATTERNS);
   const routingSensitive = anyMatch(effectiveFiles, ROUTING_SENSITIVE_PATTERNS);
   const releaseRef = isReleaseRef(headRef);
-  const releaseReady = exactShaRecovery || releaseRef;
+  const releaseMainPush =
+    eventName === "push" && ref === "refs/heads/main" && isReleasePackageSet(effectiveFiles);
+  const releaseReady = exactShaRecovery || releaseRef || releaseMainPush;
   const localPlan = buildLocalCiExecutionPlan({ mode: "fast", changedFiles: files });
-  const forceFull = exactShaRecovery || releaseRef || routingSensitive || unknown || missingScope;
+  const forceFull =
+    exactShaRecovery || releaseRef || releaseMainPush || routingSensitive || unknown || missingScope;
   const route = exactShaRecovery ? "recovery" : forceFull ? "full-fast" : localPlan.route;
   const failClosedFull = releaseRef || routingSensitive || unknown || missingScope;
   const core = onlyTaskArtifacts ? false : failClosedFull || isCoreRelevant(files);

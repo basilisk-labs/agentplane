@@ -148,6 +148,23 @@ describe("GitHub CI capability planning", () => {
     expect(result.expected_jobs).not.toContain("release-ready");
   });
 
+  it("restores release-ready evidence for a release package set merged to main", () => {
+    const result = buildGithubCiCapabilityPlan({
+      changedFiles: [
+        "packages/agentplane/package.json",
+        "packages/core/package.json",
+        "packages/recipes/package.json",
+        "packages/testkit/package.json",
+      ],
+      eventName: "push",
+      ref: "refs/heads/main",
+    });
+
+    expect(result.route).toBe("full-fast");
+    expect(result.release_ready).toBe(true);
+    expect(result.expected_jobs).toContain("release-ready");
+  });
+
   it("fails closed when GitHub cannot provide a changed-file scope", () => {
     const result = plan([]);
 
