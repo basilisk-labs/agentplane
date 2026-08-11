@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608110110-3QTGFQ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T01:29:41.158Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Foreground queue advancement is a bounded deterministic continuation of the existing authority-gated enqueue operation. It reuses the queue mutex, lease, exact-head validation, hosted-check gate, and handoff recovery rather than creating a second integration path.",
+  "evaluated_sha": "04c1ee1f6cb74c7da7a7f83a0de39e0b0cee4718",
+  "blueprint_digest": "1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b",
+  "findings": [
+    "The route now advances matching queued, claimed, and handoff states; done remains a provider-truth wait and rework remains semantic rework. runVerify=false avoids duplicating a content-addressed verification already bound to the queued head."
+  ],
+  "evidence_refs": [
+    "packages/agentplane/src/commands/shared/workflow-step-integration-queue.ts",
+    "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts",
+    "packages/agentplane/src/commands/integrate-queue.command.test.ts"
+  ],
+  "missing_tests": [
+    "No missing unit or integration-level test in approved scope."
+  ],
+  "hidden_assumptions": [
+    "A queue entry is produced by the normal authority-gated enqueue route or by an explicit operator recovery command; run-next never accepts a raw branch."
+  ],
+  "residual_risks": [
+    "Self-hosted live execution of the newly added operation cannot occur until this implementation is merged into main; the approved realistic E2E phase must exercise it before release."
+  ]
+}

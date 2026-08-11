@@ -1,0 +1,82 @@
+{
+  "details": null,
+  "digest": "sha256:118b189bff0c5489d04995195d7f2b46a26c73ffb28b886d19c6386e190455a9",
+  "implementation_sha": "04c1ee1f6cb74c7da7a7f83a0de39e0b0cee4718",
+  "input": {
+    "context": {
+      "digest": "sha256:36fec4cc01483f7dade507195e7c8f954b583a6cefd467466f4cbfb918df42fd",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:1c4cb4530dbaee3cf79154bbdd469155a348a5f3ed24b17222e2298b184ce1ef",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "digest": "sha256:25867726d44b0fe3a60ac5af1aa644bf76d64a502703986223f1e6b3ae189416",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "4677188e875b6a7034f935b382f142e93d7d02e5",
+      "digest": "sha256:e013276dab1f04de676410113e18a8a26760a0f414e12f8e6183327cdecfe81d",
+      "strategy": "branch_diff",
+      "target_sha": "04c1ee1f6cb74c7da7a7f83a0de39e0b0cee4718"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 2,
+    "verify_steps_digest": "sha256:6b4f23b4bc1923b5ab7fb8043edbb9863bb7710c459d6f8f9fa554dcc91b163f"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified foreground queue supervision and parallel worktree ownership: 3978 full-suite tests plus focused route, authority, queue recovery, typecheck, lint, Knip, hotspot, format, and build gates passed.",
+  "recorded_at": "2026-08-11T01:27:15.459Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Advance the integration queue in the foreground supervisor\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Advance the integration queue in the foreground supervisor\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:6b4f23b4bc1923b5ab7fb8043edbb9863bb7710c459d6f8f9fa554dcc91b163f",
+  "task_id": "202608110110-3QTGFQ",
+  "verification_command": "agentplane verify 202608110110-3QTGFQ --ok --by TESTER",
+  "verifier": "TESTER"
+}

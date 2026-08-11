@@ -1,0 +1,90 @@
+{
+  "details": "Command: bun run test:fast\nResult: pass (549 files, 3978 tests)\nEvidence: Process exited 0 at implementation 04c1ee1f6cb74c7da7a7f83a0de39e0b0cee4718.\nScope: Complete agentplane, core, recipes, and testkit suite.\n\nCommand: bunx vitest run focused queue and workflow tests\nResult: pass (9 files, 121 tests)\nEvidence: Typed workflow, supervisor, queue reservation/recovery, and parallel-worktree scenarios exited 0.\nScope: Queue foreground advancement, contention, handoff recovery, authority, and worktree ownership.\n\nCommand: bun run typecheck && bun run format:changed && bunx eslint changed-files\nResult: pass.\nEvidence: TypeScript, formatting, and changed-file lint commands exited 0.\nScope: Static contracts for all 14 changed source and test files.\n\nCommand: bun run knip:check && bun run hotspots:check && bun run build\nResult: pass.\nEvidence: Unused-code baseline, hotspot thresholds, and distributable bundle build exited 0.\nScope: Repository architecture and packaging contracts.",
+  "digest": "sha256:b993191ce76b37573b333a53dfb9dcd7ebd0928a07365de1a1c98dc9532dc889",
+  "implementation_sha": "04c1ee1f6cb74c7da7a7f83a0de39e0b0cee4718",
+  "input": {
+    "context": {
+      "digest": "sha256:36fec4cc01483f7dade507195e7c8f954b583a6cefd467466f4cbfb918df42fd",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:b7158c15bc295fd43fb10c934bda436986fec7e10fe2d377bb571225afb67285",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:949c1312f41410b069b90a6637ef599ce9ba74357013b6ad02586f1f3d349f32",
+      "digest": "sha256:acd83492c8ed36478cb13010fa5296c4a1dd1fe06d0fb7ae229582a4a1111af5",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "reservation/recovery",
+          "reference": "reservation/recovery",
+          "source": "missing"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "4677188e875b6a7034f935b382f142e93d7d02e5",
+      "digest": "sha256:e013276dab1f04de676410113e18a8a26760a0f414e12f8e6183327cdecfe81d",
+      "strategy": "branch_diff",
+      "target_sha": "04c1ee1f6cb74c7da7a7f83a0de39e0b0cee4718"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 2,
+    "verify_steps_digest": "sha256:6b4f23b4bc1923b5ab7fb8043edbb9863bb7710c459d6f8f9fa554dcc91b163f"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified foreground queue supervision and parallel worktree ownership at implementation 04c1ee1f6cb7.",
+  "recorded_at": "2026-08-11T01:28:56.492Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Advance the integration queue in the foreground supervisor\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Advance the integration queue in the foreground supervisor\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:6b4f23b4bc1923b5ab7fb8043edbb9863bb7710c459d6f8f9fa554dcc91b163f",
+  "task_id": "202608110110-3QTGFQ",
+  "verification_command": "agentplane verify 202608110110-3QTGFQ --ok --by TESTER",
+  "verifier": "TESTER"
+}

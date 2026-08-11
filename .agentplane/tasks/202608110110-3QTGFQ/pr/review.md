@@ -6,14 +6,14 @@ Created: 2026-08-11T01:10:43.816Z
 
 - Task: `202608110110-3QTGFQ`
 - Title: Advance the integration queue in the foreground supervisor
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608110110-3QTGFQ/advance-the-integration-queue-in-the-foreground`
 - Canonical task record: `.agentplane/tasks/202608110110-3QTGFQ/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified foreground queue supervision and parallel worktree ownership at implementation 04c1ee1f6cb7.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-11T01:10:43.816Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-11T01:10:43.816Z
+- Updated: 2026-08-11T01:26:23.793Z
 - Branch: task/202608110110-3QTGFQ/advance-the-integration-queue-in-the-foreground
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
