@@ -32,8 +32,8 @@ const VERIFICATION_RESULTS_BEGIN = "<!-- BEGIN VERIFICATION RESULTS -->";
 export const RUNNER_TASK_CONTEXT_BUDGETS = {
   required_section_max_bytes: 65_536,
   required_sections_total_max_bytes: 262_144,
-  optional_section_max_bytes: 3072,
-  optional_sections_total_max_bytes: 20_480,
+  section_max_bytes: 3072,
+  sections_total_max_bytes: 20_480,
   comments_max_count: 20,
   comment_body_max_bytes: 1024,
   comments_total_max_bytes: 12_288,
@@ -171,8 +171,7 @@ function compactSections(opts: {
   const originalEntries = [...requiredEntries, ...optionalEntries];
   let remainingRequiredBudget: number =
     RUNNER_TASK_CONTEXT_BUDGETS.required_sections_total_max_bytes;
-  let remainingOptionalBudget: number =
-    RUNNER_TASK_CONTEXT_BUDGETS.optional_sections_total_max_bytes;
+  let remainingOptionalBudget: number = RUNNER_TASK_CONTEXT_BUDGETS.sections_total_max_bytes;
   let truncated = false;
   const omissions: TaskEpisodeOmissionReceipt[] = [
     ...missing.map((section) => ({
@@ -223,7 +222,7 @@ function compactSections(opts: {
       continue;
     }
     const allowedBytes = Math.min(
-      RUNNER_TASK_CONTEXT_BUDGETS.optional_section_max_bytes,
+      RUNNER_TASK_CONTEXT_BUDGETS.section_max_bytes,
       remainingOptionalBudget,
     );
     const nextText = textBytes > allowedBytes ? truncateUtf8(entry.text, allowedBytes) : entry.text;
