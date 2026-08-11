@@ -34,6 +34,11 @@ describe("declared task check contract", () => {
     "python -c 'print(1)'",
     "bun install",
     "git reset --hard",
+    "git branch scratch",
+    "git -c 'alias.x=!rm tracked-file' x",
+    "env rm tracked-file",
+    "find . -exec rm tracked-file ;",
+    "xargs rm tracked-file",
     "rm build",
   ])("rejects shell, escaping, inline-code, or mutating checks: %s", (command) => {
     expect(resolveDeclaredTaskCheck(command).ok).toBe(false);

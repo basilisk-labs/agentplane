@@ -796,7 +796,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("mutating git subcommand is not allowed");
+      expect(io.stderr).toContain("git subcommand is not allowlisted as read-only");
     } finally {
       io.restore();
     }

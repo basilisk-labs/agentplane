@@ -24,34 +24,56 @@ const BLOCKED_EXECUTABLES = new Set([
   "sudo",
 ]);
 const SHELL_EXECUTABLES = new Set(["bash", "dash", "fish", "ksh", "sh", "zsh"]);
-const GIT_MUTATING_SUBCOMMANDS = new Set([
-  "add",
-  "am",
-  "apply",
-  "bisect",
-  "checkout",
-  "cherry-pick",
-  "clean",
-  "clone",
-  "commit",
-  "fetch",
-  "gc",
-  "init",
-  "merge",
-  "mv",
-  "pull",
-  "push",
-  "rebase",
-  "remote",
-  "reset",
-  "restore",
-  "revert",
-  "rm",
-  "stash",
-  "submodule",
-  "switch",
-  "tag",
-  "worktree",
+const COMMAND_WRAPPER_EXECUTABLES = new Set([
+  "chroot",
+  "env",
+  "find",
+  "nice",
+  "nohup",
+  "parallel",
+  "runuser",
+  "setsid",
+  "stdbuf",
+  "su",
+  "timeout",
+  "watch",
+  "xargs",
+]);
+const GIT_READ_ONLY_SUBCOMMANDS = new Set([
+  "annotate",
+  "blame",
+  "cat-file",
+  "check-attr",
+  "check-ignore",
+  "check-mailmap",
+  "check-ref-format",
+  "count-objects",
+  "describe",
+  "diff",
+  "diff-files",
+  "diff-index",
+  "diff-tree",
+  "for-each-ref",
+  "grep",
+  "help",
+  "log",
+  "ls-files",
+  "ls-remote",
+  "ls-tree",
+  "merge-base",
+  "merge-tree",
+  "name-rev",
+  "range-diff",
+  "rev-list",
+  "rev-parse",
+  "show",
+  "show-branch",
+  "status",
+  "verify-commit",
+  "verify-pack",
+  "verify-tag",
+  "version",
+  "whatchanged",
 ]);
 const INLINE_CODE_FLAGS = new Map<string, ReadonlySet<string>>([
   ["bun", new Set(["-e", "--eval", "-p", "--print"])],
@@ -181,7 +203,7 @@ function firstShellScriptArg(args: string[]): string | null {
 function gitSubcommand(args: string[]): string | null {
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index] ?? "";
-    if (["-C", "-c", "--git-dir", "--work-tree", "--namespace"].includes(argument)) {
+    if (["-C", "--git-dir", "--work-tree", "--namespace"].includes(argument)) {
       index += 1;
       continue;
     }
@@ -238,6 +260,9 @@ export function resolveDeclaredTaskCheck(command: string): DeclaredTaskCheckReso
   if (BLOCKED_EXECUTABLES.has(base)) {
     return { ok: false, reason: `destructive executable is not allowed: ${base}` };
   }
+  if (COMMAND_WRAPPER_EXECUTABLES.has(base)) {
+    return { ok: false, reason: `command wrapper or multiplexer is not allowed: ${base}` };
+  }
   if (base === "cmd") {
     return { ok: false, reason: "command-shell evaluation is not allowed" };
   }
@@ -268,10 +293,17 @@ export function resolveDeclaredTaskCheck(command: string): DeclaredTaskCheckReso
     return { ok: false, reason: `inline code evaluation is not allowed for ${base}` };
   }
   if (base === "git") {
+    if (
+      invocation.args.some(
+        (argument) => argument === "-c" || argument.startsWith("-c=") || argument.startsWith("--config-env"),
+      )
+    ) {
+      return { ok: false, reason: "git configuration overrides are not allowed" };
+    }
     const subcommand = gitSubcommand(invocation.args);
     if (!subcommand) return { ok: false, reason: "git check must name a read-only subcommand" };
-    if (GIT_MUTATING_SUBCOMMANDS.has(subcommand)) {
-      return { ok: false, reason: `mutating git subcommand is not allowed: ${subcommand}` };
+    if (!GIT_READ_ONLY_SUBCOMMANDS.has(subcommand)) {
+      return { ok: false, reason: `git subcommand is not allowlisted as read-only: ${subcommand}` };
     }
   }
   if (
