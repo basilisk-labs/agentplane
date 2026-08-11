@@ -35,6 +35,61 @@
             "type": "string"
           }
         },
+        "task_intent": {
+          "type": "object",
+          "properties": {
+            "task_kind": {
+              "type": "string",
+              "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
+            },
+            "mutation_scope": {
+              "type": "string",
+              "enum": ["none", "docs", "code", "release", "ops", "context"]
+            },
+            "risk_flags": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "network",
+                  "credentials",
+                  "deploy",
+                  "publish",
+                  "merge",
+                  "security",
+                  "external_system"
+                ]
+              }
+            },
+            "tags": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "blueprint_request": {
+              "type": "string",
+              "enum": [
+                "analysis.light",
+                "content.light",
+                "docs.change",
+                "code.direct",
+                "code.branch_pr",
+                "performance.benchmark",
+                "quality.regression",
+                "context.assimilation",
+                "context.maximum_assimilation",
+                "post_run.improvement_review",
+                "release.strict",
+                "ops.approval"
+              ]
+            }
+          },
+          "required": ["task_kind", "mutation_scope", "risk_flags", "tags"],
+          "additionalProperties": false
+        },
         "claimed_checks": {
           "type": "array",
           "items": {
@@ -195,6 +250,61 @@
             "type": "string"
           }
         },
+        "task_intent": {
+          "type": "object",
+          "properties": {
+            "task_kind": {
+              "type": "string",
+              "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
+            },
+            "mutation_scope": {
+              "type": "string",
+              "enum": ["none", "docs", "code", "release", "ops", "context"]
+            },
+            "risk_flags": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "network",
+                  "credentials",
+                  "deploy",
+                  "publish",
+                  "merge",
+                  "security",
+                  "external_system"
+                ]
+              }
+            },
+            "tags": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "blueprint_request": {
+              "type": "string",
+              "enum": [
+                "analysis.light",
+                "content.light",
+                "docs.change",
+                "code.direct",
+                "code.branch_pr",
+                "performance.benchmark",
+                "quality.regression",
+                "context.assimilation",
+                "context.maximum_assimilation",
+                "post_run.improvement_review",
+                "release.strict",
+                "ops.approval"
+              ]
+            }
+          },
+          "required": ["task_kind", "mutation_scope", "risk_flags", "tags"],
+          "additionalProperties": false
+        },
         "claimed_checks": {
           "type": "array",
           "items": {
@@ -354,6 +464,61 @@
           "items": {
             "type": "string"
           }
+        },
+        "task_intent": {
+          "type": "object",
+          "properties": {
+            "task_kind": {
+              "type": "string",
+              "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
+            },
+            "mutation_scope": {
+              "type": "string",
+              "enum": ["none", "docs", "code", "release", "ops", "context"]
+            },
+            "risk_flags": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "network",
+                  "credentials",
+                  "deploy",
+                  "publish",
+                  "merge",
+                  "security",
+                  "external_system"
+                ]
+              }
+            },
+            "tags": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "blueprint_request": {
+              "type": "string",
+              "enum": [
+                "analysis.light",
+                "content.light",
+                "docs.change",
+                "code.direct",
+                "code.branch_pr",
+                "performance.benchmark",
+                "quality.regression",
+                "context.assimilation",
+                "context.maximum_assimilation",
+                "post_run.improvement_review",
+                "release.strict",
+                "ops.approval"
+              ]
+            }
+          },
+          "required": ["task_kind", "mutation_scope", "risk_flags", "tags"],
+          "additionalProperties": false
         },
         "claimed_checks": {
           "type": "array",

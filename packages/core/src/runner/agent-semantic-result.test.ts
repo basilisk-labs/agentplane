@@ -99,6 +99,38 @@ describe("agent semantic result contract", () => {
     ).toEqual([]);
   });
 
+  it("accepts typed planner intent without natural-language classification", () => {
+    expect(
+      validateAgentSemanticResult({
+        ...AGENT_SEMANTIC_RESULT_V2_VALID_FIXTURE,
+        task_intent: {
+          task_kind: "code",
+          mutation_scope: "code",
+          risk_flags: ["security"],
+          tags: ["cli", "parser"],
+          blueprint_request: "code.branch_pr",
+        },
+      }).task_intent,
+    ).toEqual({
+      task_kind: "code",
+      mutation_scope: "code",
+      risk_flags: ["security"],
+      tags: ["cli", "parser"],
+      blueprint_request: "code.branch_pr",
+    });
+    expect(
+      listAgentSemanticResultSchemaErrors({
+        ...AGENT_SEMANTIC_RESULT_V2_VALID_FIXTURE,
+        task_intent: {
+          task_kind: "code",
+          mutation_scope: "unknown",
+          risk_flags: [],
+          tags: [],
+        },
+      }),
+    ).not.toEqual([]);
+  });
+
   it.each([
     ["provenance", "agent_reported"],
     ["exit_code", 0],
