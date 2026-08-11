@@ -369,6 +369,9 @@ async function installProductionDependencies(repoRoot, packageRoot, skipInstall)
   const env = {
     ...process.env,
     NPM_CONFIG_CACHE: path.join(repoRoot, ".agentplane", ".npm-cache"),
+    NPM_CONFIG_FETCH_RETRIES: process.env.NPM_CONFIG_FETCH_RETRIES ?? "1",
+    NPM_CONFIG_FETCH_TIMEOUT: process.env.NPM_CONFIG_FETCH_TIMEOUT ?? "30000",
+    NPM_CONFIG_PREFER_OFFLINE: process.env.NPM_CONFIG_PREFER_OFFLINE ?? "true",
   };
   run(
     "npm",

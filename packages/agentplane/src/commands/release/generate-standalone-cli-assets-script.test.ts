@@ -11,6 +11,8 @@ const execFileAsync = promisify(execFile);
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/generate-standalone-cli-assets.mjs");
 const SMOKE_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/smoke-standalone-cli-artifact.mjs");
 const STANDALONE_ASSET_TEST_TIMEOUT_MS = 180_000;
+const NETWORK_STANDALONE_ASSET_TEST_TIMEOUT_MS = 300_000;
+const networkIt = process.env.AGENTPLANE_RUN_NETWORK_PACKAGING_TESTS === "1" ? it : it.skip;
 const tempRoots: string[] = [];
 
 async function makeTempRoot() {
@@ -202,7 +204,7 @@ describe("generate-standalone-cli-assets script", () => {
     STANDALONE_ASSET_TEST_TIMEOUT_MS,
   );
 
-  it(
+  networkIt(
     "installs production dependencies from a sanitized package payload",
     async () => {
       const root = await makeTempRoot();
@@ -253,7 +255,7 @@ describe("generate-standalone-cli-assets script", () => {
       expect(packageJson.devDependencies).toBeUndefined();
       expect(packageJson.scripts).toBeUndefined();
     },
-    STANDALONE_ASSET_TEST_TIMEOUT_MS,
+    NETWORK_STANDALONE_ASSET_TEST_TIMEOUT_MS,
   );
 
   it(
