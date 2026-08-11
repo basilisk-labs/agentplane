@@ -606,9 +606,9 @@ agentplane task comment 202602030608-F1Q8AB --author CODER --body "Investigated 
 
 ### task create
 
-Create a task from a natural-language outcome and explain its execution route.
+Create a task from an outcome and explicit semantic intent.
 
-Infers conservative structured intent, stores an explainable automatic route, and stops at the semantic planning boundary.
+Validates caller-supplied structured intent. Without it, creates a neutral PLANNER intake boundary without classifying title words.
 
 Usage:
 
@@ -622,6 +622,11 @@ Options:
 - `--owner <id>`: Task owner id. (default=CODER)
 - `--priority <low|normal|med|high>`: Task priority. (choices=low|normal|med|high, default=med)
 - `--route <auto|direct|branch_pr>`: Execution-route request. auto is conservative and explainable. (choices=auto|direct|branch_pr, default=auto)
+- `--task-kind <analysis|content|docs|code|release|ops|context>`: Structured task kind supplied by the semantic caller. (choices=analysis|content|docs|code|release|ops|context)
+- `--mutation-scope <none|docs|code|release|ops|context|unknown>`: Structured mutation scope supplied by the semantic caller. (choices=none|docs|code|release|ops|context|unknown)
+- `--risk <risk>`: Repeatable structured risk flag supplied by the semantic caller. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
+- `--blueprint-request <id>`: Explicit blueprint request supplied by the semantic caller. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|context.maximum_assimilation|post_run.improvement_review|release.strict|ops.approval)
+- `--tag <tag>`: Repeatable semantic tag supplied by the caller. (repeatable)
 - `--verify <command>`: Repeatable. Seed an explicit verification command. (repeatable)
 - `--allow-duplicate`: Allow an exact duplicate of an open task. (default=false)
 - `--json`: Emit JSON. (default=false)
@@ -629,16 +634,16 @@ Options:
 Examples:
 
 ```sh
-agentplane task create "Fix the parser edge case"
+agentplane task create "Fix the parser edge case" --task-kind code --mutation-scope code --blueprint-request code.direct --tag code
 ```
 
-- Create a bounded task with automatic route selection.
+- Create a task with explicit structured semantic intent.
 
 ```sh
-agentplane task create "Publish the next patch release" --json
+agentplane task create "Describe the outcome" --json
 ```
 
-- Create a high-risk task and return its branch_pr decision as JSON.
+- Create a neutral intake task for PLANNER classification.
 
 ### task doc set
 
