@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -220,7 +220,8 @@ describe("runCli route decision verification freshness", () => {
       root,
     ]);
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
-    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/single-verification`], {
+    const branch = `task/${taskId}/single-verification`;
+    await execFileAsync("git", ["checkout", "-b", branch], {
       cwd: root,
     });
     await runCliSilent([
@@ -260,6 +261,32 @@ describe("runCli route decision verification freshness", () => {
       "--root",
       root,
     ]);
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(
+      path.join(prDir, "meta.json"),
+      `${JSON.stringify(
+        {
+          base: "main",
+          branch,
+          created_at: "2026-01-01T00:00:00.000Z",
+          head_sha: implementationHead.trim(),
+          pr_number: 123,
+          pr_url: "https://github.com/example/repo/pull/123",
+          schema_version: 1,
+          status: "OPEN",
+          task_id: taskId,
+          updated_at: "2026-01-01T00:00:00.000Z",
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}/pr/meta.json`], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["commit", "-m", "task: link open PR fixture"], { cwd: root });
     const rejectedIo = captureStdIO();
     try {
       expect(
@@ -318,7 +345,7 @@ describe("runCli route decision verification freshness", () => {
     expect(immediate.blockers.map((blocker) => blocker.code)).not.toContain(
       "verification_required",
     );
-    expect(immediate.nextAction.code).not.toBe("verification_required");
+    expect(immediate.nextAction.code).toBe("quality_review_required");
 
     await execFileAsync("git", ["add", "--all"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "task: persist verification evidence"], {
