@@ -8,10 +8,10 @@
   "pr_number": 4819,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4819",
   "pre_merge_closure": {
-    "basis_commit": "dcff436aeadbf074cd8db29c843dc14baa7b78c9",
+    "basis_commit": "6b2b59ebe6d6999654b50dfb6b31bf48e84c4718",
     "branch": "task/202608110110-3QTGFQ/advance-the-integration-queue-in-the-foreground",
     "pr_number": 4819,
-    "recorded_at": "2026-08-11T01:44:16.889Z",
+    "recorded_at": "2026-08-11T01:57:38.440Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
