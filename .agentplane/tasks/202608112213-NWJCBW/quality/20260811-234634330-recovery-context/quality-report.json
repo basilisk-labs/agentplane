@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608112213-NWJCBW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T23:46:34.863Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The hotspot remediation is a behavior-preserving test split: the exact execution-policy rejection assertion moved from the 1046-line aggregate file to a dedicated cli-core test, the oversized baseline was not raised, and runtime code and compatibility surfaces are unchanged.",
+  "evaluated_sha": "6d74e0fe8fd606da181097bc7badf55007970055",
+  "blueprint_digest": "8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61",
+  "findings": [
+    "No blocking issue found. The original aggregate suite and new focused test pass together; test inventory discovers the new file; hotspot and compatibility ratchets pass."
+  ],
+  "evidence_refs": [
+    "bun test run-cli.core.test.ts run-cli.core.config-policy.test.ts => 44/44 pass; bun run hotspots:check => pass at 1046-line baseline; compatibility current=324aabe0 approved"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The aggregate core test remains exactly at its historical limit and should be split further by the final check-efficiency task, not by weakening its baseline."
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608112213-NWJCBW-0d594572207967a21d9d2a0f",
+  "prepared_at": "2026-08-11T23:46:34.330Z",
+  "task": {
+    "id": "202608112213-NWJCBW",
+    "revision": 17,
+    "objective": "Replace mutable setup and execution profiles with one canonical policy\n\nRemove profile-driven process variants from init, config, and runtime. New and upgraded projects must resolve to one fixed execution policy while legacy profile inputs migrate compatibly without changing workflow, runner, integrations, or explicit project approvals. Preserve task flexibility by making lifecycle and safety invariants fixed instead of imposing arbitrary autonomy tiers.",
+    "acceptance_criteria": [
+      "- In scope: Remove profile-driven process variants from init, config, and runtime. New and upgraded projects must resolve to one fixed execution policy while legacy profile inputs migrate compatibly without changing workflow, runner, integrations, or explicit project approvals. Preserve task flexibility by making lifecycle and safety invariants fixed instead of imposing arbitrary autonomy tiers.\n- Out of scope: unrelated refactors not required for \"Replace mutable setup and execution profiles with one canonical policy\".",
+      "1. Define one canonical execution policy in core configuration. Preserve a legacy-input compatibility boundary for conservative, balanced, aggressive, light, normal, full-harness, and historical aliases, but normalize all of them to the same runtime behavior.\n2. Remove profile selection from interactive init and public command help. Keep workflow, runner, hooks, integrations, and explicit approvals as independent project settings; make deprecated profile flags deterministic compatibility aliases with a visible migration notice.\n3. Replace profile-dependent runtime branches with the canonical policy, keeping lifecycle and safety invariants fixed and removing arbitrary autonomy tier behavior.\n4. Make config readback and writes canonical so users cannot switch process behavior through profile values; retain lossless unrelated WORKFLOW fields.\n5. Update generated schemas, public documentation, fixtures, and tests. Cover fresh init, legacy config load, deprecated CLI input, config mutation rejection/no-op behavior, and runtime equivalence.\n6. Verify focused core/config, init/config CLI, runtime execution-context, prompt projection, schema generation, formatting, and type/lint checks. Record any intentionally retained compatibility surface and residual risk.",
+      "1. Run focused core configuration and runtime profile tests. Expected: fresh defaults and every legacy profile input resolve to the same canonical execution policy, with no profile-specific approvals, trace, timeout, or budget behavior.\n2. Run focused init and config CLI tests. Expected: interactive init exposes no setup or execution profile choice; deprecated profile flags are accepted only for compatibility and cannot select weaker or stricter process behavior; independent workflow, runner, hooks, integrations, and explicit approvals remain configurable.\n3. Regenerate and validate published config and CLI schema/docs artifacts. Expected: current public surfaces document one canonical policy, legacy inputs are marked compatibility-only, and generated artifacts match runtime sources.\n4. Run formatting, type checking, lint, and the relevant AgentPlane test shard. Expected: all pass with no unintended tracked or unreviewed untracked changes in the task checkout."
+    ]
+  },
+  "evaluated_sha": "6d74e0fe8fd606da181097bc7badf55007970055",
+  "diff_base_sha": "206b349e8dd08051f695d68f8558db94b2e23cb5",
+  "blueprint_digest": "8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-234634330-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:2013550c9e718ea041e2d253abfe2f63d9c4ed8b2ccbd6fb546919bf94ef9d18",
+    "prompt_path": ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/d6690e7e0a7659d5db1aa1b95445dfd180a2844ddd2606e331810f2f63a68448.md",
+    "result_schema_path": ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608112213-NWJCBW/README.md",
+      "sha256": "sha256:88cfd1be8042848595f0af58a2066c28425f53d6889581b6b4f7b38ddde44d7c",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/be41f95a182f331aeab8d3cb1157a40ceea17bf16ca22900b3e91fa228b6d25c.patch",
+      "sha256": "sha256:be41f95a182f331aeab8d3cb1157a40ceea17bf16ca22900b3e91fa228b6d25c",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/fc7a1c1ef696f77a0bdf31d9ff6ae6c1963fd498cc2c3687cb4f83cad9f6bcd2.json",
+      "sha256": "sha256:fc7a1c1ef696f77a0bdf31d9ff6ae6c1963fd498cc2c3687cb4f83cad9f6bcd2",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608112213-NWJCBW/verification/20260811234613834-c6ecaf89660b868c.json",
+      "sha256": "sha256:06f6278fa8b0c5f129e0974d02107b4cfb2bc6d83a6f732d1fe30f5014ff2c2a",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/39161dc5db0288e890dd4aad39fa7ee11c43b7fa801ca1b21153c50fac06b56e.json",
+      "sha256": "sha256:39161dc5db0288e890dd4aad39fa7ee11c43b7fa801ca1b21153c50fac06b56e",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}
