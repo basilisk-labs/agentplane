@@ -1,0 +1,82 @@
+{
+  "details": "Command: bun run test:fast\nResult: pass (549 files, 3979 tests)\nEvidence: Process exited 0 at implementation a0cfe7da0; includes merged-entry normalization and foreground queue supervision.\nScope: Complete agentplane, core, recipes, and testkit suite.\n\nCommand: bun vitest run packages/agentplane/src/commands/integrate-queue-lane.test.ts packages/agentplane/src/commands/integrate-queue.command.test.ts packages/agentplane/src/commands/integrate-queue-reservation.worktree.test.ts\nResult: pass (3 files, 34 tests)\nEvidence: Reproduces a merged queued PR with stale local task state and proves normalization before claim.\nScope: Terminal provider reconciliation, claim publication, mutex and worktree safety.\n\nCommand: bun run typecheck && bun run format:check && bun run lint\nResult: pass.\nEvidence: TypeScript, formatting, and lint checks exited 0.\nScope: Static contracts.\n\nCommand: bun run knip:check && bun run hotspots:check && bun run build\nResult: pass.\nEvidence: Baselines, size thresholds, and distributable bundles exited 0.\nScope: Architecture and packaging.",
+  "digest": "sha256:89c7882ecf64f607d69474d0eb07f3a825398f210882d7c3226bd793d2895c8f",
+  "implementation_sha": "a0cfe7da09eae3b06577caa9e7c02cb2c6bfd421",
+  "input": {
+    "context": {
+      "digest": "sha256:36fec4cc01483f7dade507195e7c8f954b583a6cefd467466f4cbfb918df42fd",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:f6d1f48d709df3452e7137c31ea5688aef9f2957ae6ceebf4d60fd4da1d2996b",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:52977ce3f846a762da244bc7315938814a1bd4e5028a7e417a51fac8978a6cc0",
+      "digest": "sha256:19c690535e5cb2e53f33f0330599f0bdb9905da97c044601b1a63e9b25576089",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "4677188e875b6a7034f935b382f142e93d7d02e5",
+      "digest": "sha256:25a1d97084389d99cfc6ec99836150d7e1545e5d92da71bd52d87dc12c434f65",
+      "strategy": "branch_diff",
+      "target_sha": "a0cfe7da09eae3b06577caa9e7c02cb2c6bfd421"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 2,
+    "verify_steps_digest": "sha256:6b4f23b4bc1923b5ab7fb8043edbb9863bb7710c459d6f8f9fa554dcc91b163f"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified foreground queue supervision, stale merged-entry recovery, and parallel worktree ownership at implementation a0cfe7da0.",
+  "recorded_at": "2026-08-11T01:42:04.356Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Advance the integration queue in the foreground supervisor\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Advance the integration queue in the foreground supervisor\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:6b4f23b4bc1923b5ab7fb8043edbb9863bb7710c459d6f8f9fa554dcc91b163f",
+  "task_id": "202608110110-3QTGFQ",
+  "verification_command": "agentplane verify 202608110110-3QTGFQ --ok --by TESTER",
+  "verifier": "TESTER"
+}
