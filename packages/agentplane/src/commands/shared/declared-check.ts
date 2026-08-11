@@ -295,7 +295,8 @@ export function resolveDeclaredTaskCheck(command: string): DeclaredTaskCheckReso
   if (base === "git") {
     if (
       invocation.args.some(
-        (argument) => argument === "-c" || argument.startsWith("-c=") || argument.startsWith("--config-env"),
+        (argument) =>
+          argument === "-c" || argument.startsWith("-c=") || argument.startsWith("--config-env"),
       )
     ) {
       return { ok: false, reason: "git configuration overrides are not allowed" };
