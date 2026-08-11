@@ -29,7 +29,11 @@ Created: 2026-08-11T02:36:02.480Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../run-cli.core.help-snap.test.ts.snap            |   2 +-
+ .../src/cli/run-cli.core.tasks.user-create.test.ts | 246 ++++++++-----
+ .../agentplane/src/commands/task/create.command.ts | 385 +++++++--------------
+ .../agentplane/src/commands/task/task.command.ts   |   4 +-
+ 4 files changed, 301 insertions(+), 336 deletions(-)
 ```
 
 </details>
