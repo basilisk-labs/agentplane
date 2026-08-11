@@ -15,14 +15,20 @@ Remove profile-driven process variants from init, config, and runtime. New and u
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+PASS for implementation 2b5503e94. Focused behavior, CLI lifecycle, build, generated artifacts,
+formatting, type and lint contracts passed; overloaded-suite concurrency failures passed in isolated
+reruns.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-11T22:15:13.771Z
+- Updated: 2026-08-11T23:17:09.262Z
 - Branch: task/202608112213-NWJCBW/replace-mutable-setup-and-execution-profiles-wit
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
