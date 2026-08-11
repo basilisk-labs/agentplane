@@ -4,7 +4,7 @@ title: "Replace task-create keyword inference with explicit semantic intent"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T02:48:19.636Z"
+  updated_at: "2026-08-11T08:34:09.304Z"
   updated_by: "TESTER"
-  note: "Explicit semantic task intent verified: CLI classification is independent of natural-language keywords, and missing intent deterministically routes to neutral PLANNER intake."
+  note: "Verified explicit structured intent and neutral planner intake at c7de784fbab8; all focused, full regression, static, and build gates pass."
   attempts: 0
 execution_route:
   frozen: true
@@ -70,8 +70,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Explicit semantic task intent verified: CLI classification is independent of natural-language keywords, and missing intent deterministically routes to neutral PLANNER intake."
+  -
+    type: "verify"
+    at: "2026-08-11T08:34:09.304Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified explicit structured intent and neutral planner intake at c7de784fbab8; all focused, full regression, static, and build gates pass."
 doc_version: 3
-doc_updated_at: "2026-08-11T02:48:20.891Z"
+doc_updated_at: "2026-08-11T08:34:10.573Z"
 doc_updated_by: "CODER"
 description: "Remove ordered natural-language keyword classification from task create. The CLI must validate structured task intent supplied by the agent or user, and otherwise create a neutral semantic-intake boundary for PLANNER without guessing task kind, mutation scope, risks, tags, blueprint, or execution route."
 sections:
@@ -116,6 +122,61 @@ sections:
     Result: pass.
     Evidence: Formatting, unused-code baseline, hotspot thresholds, and distributable bundle build exited 0.
     Scope: Repository architecture and packaging contracts.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110235-WCJJRD-replace-task-create-keyword-inference-with-expli/.agentplane/tasks/202608110235-WCJJRD/blueprint/resolved-snapshot.json
+    - old_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+    - current_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608110235-WCJJRD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T08:34:09.304Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified explicit structured intent and neutral planner intake at c7de784fbab8; all focused, full regression, static, and build gates pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a592495c95da711ecb80215b6394f03120f4aad2dfdbcaa463af64d31287db66, input_digest=sha256:94f149cb17f249ab9701aeb7dc0effe93125f058c44892f287447fb3fe5d0184
+
+    Details:
+
+    Command: `bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts`
+    Result: pass (4 files, 36 tests).
+    Evidence: Explicit structured intent persists exactly; unstructured English, Russian, Japanese, negated, and ambiguous descriptions remain neutral planner intake; help snapshots contain no inference claim.
+    Scope: Focused task-create CLI, help, and documentation contracts at implementation commit c7de784fbab8.
+
+    Command: `bun run typecheck` and `bun run lint:core`
+    Result: pass.
+    Evidence: TypeScript validation and core lint completed with exit code 0 after the compatibility alias change.
+    Scope: Public payload types, structured option parsing, persistence, and core source lint at implementation commit c7de784fbab8.
+
+    Command: `bun run test:fast`
+    Result: pass (549 files, 3983 tests).
+    Evidence: The complete fast regression suite passed after the compatibility alias change.
+    Scope: Repository regression coverage including routes, task creation, duplicate locking, and handoff behavior at implementation commit c7de784fbab8.
+
+    Command: `bun run format:check`, `bun run knip:check`, `bun run hotspots:check`, and `bun run build`
+    Result: pass.
+    Evidence: Prettier, unused-code baseline, hotspot thresholds, and package build completed with exit code 0.
+    Scope: Formatting, dead-code, source-size, and distributable build gates at implementation commit c7de784fbab8.
+
+    Command: `git diff --check` and final implementation diff inspection
+    Result: pass.
+    Evidence: No whitespace errors; ordered keyword tables and the natural-language classifier are absent; only caller-supplied structured semantic fields are validated, otherwise `semantic_intake_pending` is emitted. The deprecated JSON `inferred_intent` field is retained as an exact alias for patch compatibility.
+    Scope: Final implementation and test diff at commit c7de784fbab8.
 
     BlueprintSnapshotRef:
     - state: current
@@ -199,6 +260,61 @@ Command: bun run format:check && bun run knip:check && bun run hotspots:check &&
 Result: pass.
 Evidence: Formatting, unused-code baseline, hotspot thresholds, and distributable bundle build exited 0.
 Scope: Repository architecture and packaging contracts.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110235-WCJJRD-replace-task-create-keyword-inference-with-expli/.agentplane/tasks/202608110235-WCJJRD/blueprint/resolved-snapshot.json
+- old_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+- current_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608110235-WCJJRD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T08:34:09.304Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified explicit structured intent and neutral planner intake at c7de784fbab8; all focused, full regression, static, and build gates pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a592495c95da711ecb80215b6394f03120f4aad2dfdbcaa463af64d31287db66, input_digest=sha256:94f149cb17f249ab9701aeb7dc0effe93125f058c44892f287447fb3fe5d0184
+
+Details:
+
+Command: `bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts`
+Result: pass (4 files, 36 tests).
+Evidence: Explicit structured intent persists exactly; unstructured English, Russian, Japanese, negated, and ambiguous descriptions remain neutral planner intake; help snapshots contain no inference claim.
+Scope: Focused task-create CLI, help, and documentation contracts at implementation commit c7de784fbab8.
+
+Command: `bun run typecheck` and `bun run lint:core`
+Result: pass.
+Evidence: TypeScript validation and core lint completed with exit code 0 after the compatibility alias change.
+Scope: Public payload types, structured option parsing, persistence, and core source lint at implementation commit c7de784fbab8.
+
+Command: `bun run test:fast`
+Result: pass (549 files, 3983 tests).
+Evidence: The complete fast regression suite passed after the compatibility alias change.
+Scope: Repository regression coverage including routes, task creation, duplicate locking, and handoff behavior at implementation commit c7de784fbab8.
+
+Command: `bun run format:check`, `bun run knip:check`, `bun run hotspots:check`, and `bun run build`
+Result: pass.
+Evidence: Prettier, unused-code baseline, hotspot thresholds, and package build completed with exit code 0.
+Scope: Formatting, dead-code, source-size, and distributable build gates at implementation commit c7de784fbab8.
+
+Command: `git diff --check` and final implementation diff inspection
+Result: pass.
+Evidence: No whitespace errors; ordered keyword tables and the natural-language classifier are absent; only caller-supplied structured semantic fields are validated, otherwise `semantic_intake_pending` is emitted. The deprecated JSON `inferred_intent` field is retained as an exact alias for patch compatibility.
+Scope: Final implementation and test diff at commit c7de784fbab8.
 
 BlueprintSnapshotRef:
 - state: current

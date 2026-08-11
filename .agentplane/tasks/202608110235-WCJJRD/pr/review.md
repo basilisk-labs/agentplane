@@ -13,7 +13,7 @@ Created: 2026-08-11T02:36:02.480Z
 ## Verification
 
 - State: ok
-- Note: Explicit semantic task intent verified: CLI classification is independent of natural-language keywords, and missing intent deterministically routes to neutral PLANNER intake.
+- Note: Verified explicit structured intent and neutral planner intake at c7de784fbab8; all focused, full regression, static, and build gates pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,10 +30,10 @@ Created: 2026-08-11T02:36:02.480Z
 
 ```text
  .../run-cli.core.help-snap.test.ts.snap            |   2 +-
- .../src/cli/run-cli.core.tasks.user-create.test.ts | 246 ++++++++-----
- .../agentplane/src/commands/task/create.command.ts | 385 +++++++--------------
+ .../src/cli/run-cli.core.tasks.user-create.test.ts | 248 ++++++++-----
+ .../agentplane/src/commands/task/create.command.ts | 400 ++++++++-------------
  .../agentplane/src/commands/task/task.command.ts   |   4 +-
- 4 files changed, 301 insertions(+), 336 deletions(-)
+ 4 files changed, 312 insertions(+), 342 deletions(-)
 ```
 
 </details>

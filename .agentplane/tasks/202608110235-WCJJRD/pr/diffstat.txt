@@ -1,5 +1,5 @@
  .../run-cli.core.help-snap.test.ts.snap            |   2 +-
- .../src/cli/run-cli.core.tasks.user-create.test.ts | 246 ++++++++-----
- .../agentplane/src/commands/task/create.command.ts | 385 +++++++--------------
+ .../src/cli/run-cli.core.tasks.user-create.test.ts | 248 ++++++++-----
+ .../agentplane/src/commands/task/create.command.ts | 400 ++++++++-------------
  .../agentplane/src/commands/task/task.command.ts   |   4 +-
- 4 files changed, 301 insertions(+), 336 deletions(-)
+ 4 files changed, 312 insertions(+), 342 deletions(-)
