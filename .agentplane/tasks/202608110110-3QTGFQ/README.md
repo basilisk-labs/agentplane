@@ -4,7 +4,7 @@ title: "Advance the integration queue in the foreground supervisor"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -30,11 +30,16 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "04c1ee1f6cb74c7da7a7f83a0de39e0b0cee4718"
+  message: "🚧 3QTGFQ task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 04c1ee1f6cb7. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -43,9 +48,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-11T01:23:31.957Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 04c1ee1f6cb7. CLI accepted one state-bound external-agent semantic result."
+    commit: "04c1ee1f6cb74c7da7a7f83a0de39e0b0cee4718"
 doc_version: 3
-doc_updated_at: "2026-08-11T01:10:43.736Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-11T01:23:31.957Z"
+doc_updated_by: "SUPERVISOR"
 description: "Make branch_pr task supervision enqueue and then serialize its own integration queue through typed deterministic operations, recover handoffs without semantic rework, and prevent stale base task replicas while preserving parallel per-task worktrees."
 sections:
   Summary: |-
