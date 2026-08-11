@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -34,29 +34,29 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-11T15:45:44.324Z"
+  updated_at: "2026-08-11T16:12:14.191Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "9c7e50743af99e28d832284c6f425e6379130109"
+  evaluated_sha: "a7548d1de89d9ad9d813a1c6fb4734c7b063b3e7"
   blueprint_digest: "7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b"
   evidence_refs:
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-154458234-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-154458234-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/2f8c70668510e360ccb0dc51387352cb82baf610829daca2f2d20496cde80952.md"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-154458234-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-154458234-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-154458234-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-161116346-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-161116346-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/01e7a984f1a1e89948bbcb534ecf388a4446f21d9fb1ebe33a4de611b684cfd6.md"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-161116346-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-161116346-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-161116346-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608111036-QHR892/README.md"
-    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/2e04c5e92ecdf70a9e053706190f702366cac9bb6a44cf6247fb93f3aa03e5a7.patch"
-    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/5e422d53ea9559a4fd645c7e3a1ba8896afb399244807b36a1cb4e043f34535a.json"
-    - ".agentplane/tasks/202608111036-QHR892/verification/20260811154038939-e94981960208d243.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/9c425adac7d65e27961136e1d48e24ce1cf38c78fc8d4d6e4b37795d37bc506e.patch"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/52ca1443294d62a9ea2dd2b2059710556b6a8bdc9de6a0f64b8e713de3be547e.json"
+    - ".agentplane/tasks/202608111036-QHR892/verification/20260811160912664-18721049b7e9250b.json"
     - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/8babde3dcd7045f8ca2ec9145f1683be19cb2c338cc01c76dd940c6b1e51de51.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Structured verification parsing, pre-mutation rejection, precise freshness classification, immediate quality-gate routing, lifecycle-only reuse, and final repository cleanliness are covered by the frozen implementation and verification evidence."
+    - "Structured verification is rejected before mutation when details are absent or contradictory, accepted evidence routes immediately to quality review, and remains reusable after lifecycle-only commits."
 token_usage:
   agent_runs: 4
   input_tokens: 690969
@@ -198,7 +198,7 @@ events:
     state: "ok"
     note: "Hosted formatting rework is behavior-neutral and complete; focused parser/route tests, typecheck, repository formatting, route, and clean-worktree evidence are current at a7548d1de."
 doc_version: 3
-doc_updated_at: "2026-08-11T16:09:30.119Z"
+doc_updated_at: "2026-08-11T16:12:14.250Z"
 doc_updated_by: "CODER"
 description: "Eliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command."
 sections:
