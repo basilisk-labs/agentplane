@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -63,7 +63,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-11T23:25:16.929Z"
+  updated_at: "2026-08-11T23:40:00.746Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -73,8 +73,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "90cd93c7eee01dbbe9c8b9f4ab9d0a8caccf6bc7"
-  message: "✅ NWJCBW task: record semantic quality review"
+  hash: "3711cb03b8474b2e78d4f7dc27e3dcecb665a378"
+  message: "✅ NWJCBW task: record compatibility review"
 comments:
   -
     author: "CODER"
@@ -85,6 +85,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -133,8 +136,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Compatibility review remediation verified at 017d3d3a8. Prior full product verification remains applicable: excluding generated task lifecycle artifacts, the only post-verification changes are the compatibility candidate, checker, and its regression test."
+  -
+    type: "status"
+    at: "2026-08-11T23:40:00.746Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "3711cb03b8474b2e78d4f7dc27e3dcecb665a378"
 doc_version: 3
-doc_updated_at: "2026-08-11T23:39:13.390Z"
+doc_updated_at: "2026-08-11T23:40:00.775Z"
 doc_updated_by: "CODER"
 description: "Remove profile-driven process variants from init, config, and runtime. New and upgraded projects must resolve to one fixed execution policy while legacy profile inputs migrate compatibly without changing workflow, runner, integrations, or explicit project approvals. Preserve task flexibility by making lifecycle and safety invariants fixed instead of imposing arbitrary autonomy tiers."
 sections:
@@ -375,8 +386,8 @@ sections:
       Resolution: Recorded exact CLI mutations, legacy aliases, canonical workflow schema values, provenance, and planned release surface digest; added checker assertions and regression expectations.
 extensions:
   implementation_commit:
-    hash: "dca3d280c2a6cf600439dafa647677933143f705"
-    message: "🐛 NWJCBW task: preserve explicit project approvals"
+    hash: "017d3d3a8a724880ca20a011f1488fb98bb664ee"
+    message: "🧪 NWJCBW task: review compatibility surface"
   workflow_route_baseline:
     start_head_sha: "206b349e8dd08051f695d68f8558db94b2e23cb5"
     version: 1
@@ -642,4 +653,4 @@ Implementation finding: task creation omitted explicit structured intent and def
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-11T23:25:16.929Z`
+- Updated at: `2026-08-11T23:40:00.746Z`
