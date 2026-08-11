@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -66,7 +66,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-11T00:09:46.193Z"
+  updated_at: "2026-08-11T00:55:58.628Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -76,8 +76,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "24a71d74a1350ce7983f70de3923a592d1de64f8"
-  message: "🔍 1RG86M task: record final quality review"
+  hash: "8d047f7057df8b5a0e71532ff3b38dc7e6aa312f"
+  message: "🔍 1RG86M task: review verification evidence"
 comments:
   -
     author: "CODER"
@@ -94,6 +94,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -175,8 +178,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Review fixes verified: whitespace, tool context, and mutable evidence are bound to verification identity."
+  -
+    type: "status"
+    at: "2026-08-11T00:55:58.628Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "8d047f7057df8b5a0e71532ff3b38dc7e6aa312f"
 doc_version: 3
-doc_updated_at: "2026-08-11T00:54:45.221Z"
+doc_updated_at: "2026-08-11T00:55:58.657Z"
 doc_updated_by: "CODER"
 description: "Persist pass or rework, structured findings, tested input identity, and evidence references in one atomic verification transaction. Define freshness from content-addressed implementation and verification inputs rather than task README revision or lifecycle-only commits; reuse receipts after rebases or metadata-only changes when the relevant patch and declared inputs are identical; invalidate them when code, Verify Steps, configuration, dependencies, environment contract, or evidence changes. DONE tasks must remain terminal and must not route back to verification. Provide deterministic CLI reasons for reuse or invalidation and regression coverage for the ordering defect reproduced in AgentPlane 0.7.5."
 sections:
@@ -454,8 +465,8 @@ sections:
       IncidentMatch: RF-04 dependency seed resolves outside node_modules
 extensions:
   implementation_commit:
-    hash: "09c137cb1be297a8f7601966946d82fed3892b88"
-    message: "📝 1RG86M task: register pre-release CI finding"
+    hash: "62c6cda5ec1189337d20c8209bc61ca9396de109"
+    message: "🐛 1RG86M task: bind verification evidence"
   workflow_route_baseline:
     start_head_sha: "1423a4736890404d114c688da49746aa7ca5aaa4"
     version: 1
@@ -758,4 +769,4 @@ DecisionContextRef:
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-11T00:09:46.193Z`
+- Updated at: `2026-08-11T00:55:58.628Z`

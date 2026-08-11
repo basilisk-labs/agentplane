@@ -8,10 +8,10 @@
   "pr_number": 4818,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4818",
   "pre_merge_closure": {
-    "basis_commit": "24a71d74a1350ce7983f70de3923a592d1de64f8",
+    "basis_commit": "8d047f7057df8b5a0e71532ff3b38dc7e6aa312f",
     "branch": "task/202608102243-1RG86M/make-verification-atomic-and-reusable-across-lif",
     "pr_number": 4818,
-    "recorded_at": "2026-08-11T00:09:46.259Z",
+    "recorded_at": "2026-08-11T00:55:58.692Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
