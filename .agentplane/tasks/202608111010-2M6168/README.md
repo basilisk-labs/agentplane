@@ -1,10 +1,11 @@
 ---
 id: "202608111010-2M6168"
 title: "Make task episode plans lossless and language-neutral"
-status: "DOING"
+result_summary: "Merged via PR #4821."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -29,6 +30,20 @@ verification:
   updated_by: null
   note: null
   attempts: 0
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-11T10:32:32.799Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -38,8 +53,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "931302565dd84e0381e7d4b2cb827563c9eb525e"
-  message: "🚧 2M6168 task: preserve required plan context"
+  hash: "2221df170259486812cc20ed57e210482fc38378"
+  message: "Merge pull request #4821 from basilisk-labs/task/202608111010-2M6168/make-task-episode-plans-lossless-and-language-ne"
 comments:
   -
     author: "CODER"
@@ -47,6 +62,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: required task sections now use a language-neutral 64 KiB per-section ceiling with a separate aggregate budget; optional context remains compacted. Focused tests, typecheck, and test:fast pass."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4821 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -63,9 +81,17 @@ events:
     to: "DOING"
     note: "Implementation committed: required task sections now use a language-neutral 64 KiB per-section ceiling with a separate aggregate budget; optional context remains compacted. Focused tests, typecheck, and test:fast pass."
     commit: "931302565dd84e0381e7d4b2cb827563c9eb525e"
+  -
+    type: "status"
+    at: "2026-08-11T10:32:32.799Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4821 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+    commit: "2221df170259486812cc20ed57e210482fc38378"
 doc_version: 3
-doc_updated_at: "2026-08-11T10:14:20.573Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-11T10:32:32.810Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent valid user-authored Plan sections from blocking task brief, next-action, or advance. Preserve the task-selected language, keep full Plan content authoritative, and compact only optional context without mutating lifecycle state."
 sections:
   Summary: |-
@@ -140,3 +166,16 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-11T10:32:32.799Z`
