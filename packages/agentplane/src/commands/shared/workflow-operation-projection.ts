@@ -37,6 +37,9 @@ function operationArgv(operation: WorkflowOperation): string[] {
         operation.params.branch,
       ];
     }
+    case "integration.run_next": {
+      return ["agentplane", "integrate", "queue", "run-next", "--wait", "--hosted", "--quiet"];
+    }
     case "pr.artifacts.update":
     case "pr.sync_or_verify": {
       return [

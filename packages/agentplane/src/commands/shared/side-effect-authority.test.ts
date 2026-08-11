@@ -144,6 +144,10 @@ describe("side-effect authority", () => {
       class: "external_high_risk",
       requiresAuthority: true,
     });
+    expect(WORKFLOW_OPERATION_AUTHORITY_POLICY["integration.run_next"]).toMatchObject({
+      class: "external_pre_authorized",
+      requiresAuthority: false,
+    });
     for (const operationId of [
       "pr.artifacts.update",
       "pr.sync_or_verify",

@@ -2,6 +2,7 @@ type WorkflowPostconditionId =
   | "base_checkout_synced"
   | "hosted_close_pr_open"
   | "included_batch_closure_reconciled"
+  | "integration_queue_worker_cycle_completed"
   | "integration_queue_contains_task"
   | "pr_artifacts_current"
   | "provider_state_observed"
@@ -78,6 +79,12 @@ export const POSTCONDITION = {
     id: "integration_queue_contains_task",
     subject: "task",
     expected: "integration queue contains the exact task branch head",
+  },
+  integrationQueueWorkerCycleCompleted: {
+    id: "integration_queue_worker_cycle_completed",
+    subject: "route",
+    expected:
+      "one serialized integration queue worker cycle completed or re-observed the active lane",
   },
   hostedCloseOpen: {
     id: "hosted_close_pr_open",

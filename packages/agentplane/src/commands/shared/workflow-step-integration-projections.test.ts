@@ -212,16 +212,48 @@ describe("WorkflowStep integration projections", () => {
         },
       },
     });
-    const queuedStep = reduceRouteState(queuedState);
+    for (const status of ["queued", "claimed", "handoff"] as const) {
+      const activeQueueState = {
+        ...queuedState,
+        prFlow: {
+          ...queuedState.prFlow!,
+          queue: { ...queuedState.prFlow!.queue, present: true as const, status },
+        },
+      };
+      const queueStep = reduceRouteState(activeQueueState);
+      const packet = executionPacket({ state: activeQueueState, step: queueStep });
 
-    expect(queuedStep).toMatchObject({
+      expect(queueStep).toMatchObject({
+        kind: "cli_operation",
+        operation: { id: "integration.run_next", params: { taskId: task.id } },
+      });
+      expect(packet).toMatchObject({
+        recommendedRole: "INTEGRATOR",
+        authoritativeCheckout: "base_checkout",
+        safeToMutate: true,
+        exactArgv: [
+          "agentplane",
+          "integrate",
+          "queue",
+          "run-next",
+          "--wait",
+          "--hosted",
+          "--quiet",
+        ],
+      });
+    }
+
+    const doneQueueState = {
+      ...queuedState,
+      prFlow: {
+        ...queuedState.prFlow!,
+        queue: { ...queuedState.prFlow!.queue, present: true as const, status: "done" as const },
+      },
+    };
+    expect(reduceRouteState(doneQueueState)).toMatchObject({
       id: "wait.integration_queue",
       kind: "wait",
-      condition: {
-        type: "integration_queue_terminal",
-        taskId: task.id,
-        queueStatus: "queued",
-      },
+      condition: { queueStatus: "done" },
     });
 
     const staleQueueStep = reduceRouteState({

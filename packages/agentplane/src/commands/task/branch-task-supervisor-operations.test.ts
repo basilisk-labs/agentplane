@@ -7,6 +7,7 @@ import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operati
 
 const mocks = vi.hoisted(() => ({
   cmdFinish: vi.fn(),
+  runNext: vi.fn(),
   loadCommandContext: vi.fn(),
   loadTaskFromContext: vi.fn(),
 }));
@@ -18,6 +19,12 @@ vi.mock("../shared/task-backend.js", () => ({
 
 vi.mock("./finish-command.js", () => ({
   cmdFinish: mocks.cmdFinish,
+}));
+
+vi.mock("../integrate-queue.command.js", () => ({
+  makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler: vi.fn(),
+  makeRunIntegrateQueueEnqueueHandler: vi.fn(),
+  makeRunIntegrateQueueRunNextHandler: () => mocks.runNext,
 }));
 
 function preMergeCloseOperation(): Extract<WorkflowOperation, { id: "task.pre_merge_close" }> {
@@ -58,6 +65,19 @@ function routeDecision(operation: WorkflowOperation): TaskRouteDecision {
   } as unknown as TaskRouteDecision;
 }
 
+function runNextOperation(): Extract<WorkflowOperation, { id: "integration.run_next" }> {
+  return {
+    id: "integration.run_next",
+    type: "integration_run_next",
+    params: { taskId: "202607221852-71SCSW" },
+    preconditionFingerprint: preMergeCloseOperation().preconditionFingerprint,
+    authorityRef: "route:test",
+    idempotencyKey: "integration.run_next:test",
+    expectedPostconditions: [],
+    triggersGitHooks: false,
+  };
+}
+
 describe("branch task supervisor operations", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -69,6 +89,7 @@ describe("branch task supervisor operations", () => {
       execution_route: { selected_mode: "branch_pr" },
     });
     mocks.cmdFinish.mockResolvedValue(0);
+    mocks.runNext.mockResolvedValue(0);
   });
 
   it("lets finish resolve the reviewed implementation behind a task-artifact head", async () => {
@@ -88,5 +109,33 @@ describe("branch task supervisor operations", () => {
       taskIds: ["202607221852-71SCSW"],
     });
     expect(options).not.toHaveProperty("implementationCommit");
+  });
+
+  it("runs one hosted foreground queue cycle without repeating local verification", async () => {
+    const operation = runNextOperation();
+
+    const result = await executeBranchWorkflowOperation({
+      decision: routeDecision(operation),
+      operation,
+    });
+
+    expect(result.status).toBe("succeeded");
+    expect(mocks.runNext).toHaveBeenCalledOnce();
+    expect(mocks.runNext.mock.calls[0]?.[1]).toEqual({
+      worker: null,
+      leaseMs: null,
+      pollIntervalMs: null,
+      timeoutMs: null,
+      runVerify: false,
+      dryRun: false,
+      quiet: true,
+      drain: false,
+      wait: true,
+      hosted: true,
+      stablePolls: null,
+      hostedPollIntervalMs: null,
+      hostedTimeoutMs: null,
+      requiredChecks: [],
+    });
   });
 });

@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608110110-3QTGFQ/advance-the-integration-queue-in-the-foreground",
+  "created_at": "2026-08-11T01:10:43.816Z",
+  "diffstat_sha256": "sha256:4a85a423d83b5a3381eb851398b96ed7b502db8353befdfc4d9cb83de62c32ac",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608110110-3QTGFQ",
+  "updated_at": "2026-08-11T01:10:43.816Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
