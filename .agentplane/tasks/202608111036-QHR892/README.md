@@ -2,10 +2,10 @@
 id: "202608111036-QHR892"
 title: "Make verification evidence atomic, immediately fresh, and reusable"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -27,38 +27,38 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T12:23:26.188Z"
+  updated_at: "2026-08-11T14:25:32.613Z"
   updated_by: "TESTER"
-  note: "Atomic verification passed; structured evidence is immediately reusable across lifecycle-only commits."
+  note: "Hosted contract rework passed with affected checks rerun and the unchanged full-suite receipt reused."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-11T12:26:04.111Z"
+  updated_at: "2026-08-11T14:28:12.594Z"
   updated_by: "HUMAN"
-  note: "The implementation satisfies the approved verification UX contract: incomplete passing evidence is rejected before mutation, valid inline or multiline evidence becomes current immediately, lifecycle-only commits reuse it, and missing remote truth no longer appears terminal."
-  evaluated_sha: "416515219298c6ad2677fd12d6c364f0eae1df00"
+  note: "The hosted-contract rework preserves the accepted verification behavior while restoring both runtime and test hotspot budgets; affected route, verification, type, and contract checks are current for 586b7f340."
+  evaluated_sha: "586b7f3400e3700c69b28688fec53f7cb0456213"
   blueprint_digest: "7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b"
   evidence_refs:
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-122603313-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-122603313-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/777e7be6f6dcb8522469b128846b339841109130b0533d8a9d6bc282d4ea7d86.md"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-122603313-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-122603313-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-142811962-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-142811962-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/355f7abe40635a957c363cc64293bfbd5a152da259be74fc325c640a47578b79.md"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-142811962-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-142811962-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608111036-QHR892/README.md"
-    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/1221492047e36b8dcff0469ed9725484e22af92ce5642b500ea0e67f7df7bc72.patch"
-    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/006c636c2234bfb302d4bcf1e6e6d5735762ebdaa2cee3e1859b68ec266add99.json"
-    - ".agentplane/tasks/202608111036-QHR892/verification/20260811122326188-966fb50220b3f330.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/13c17a5c5b3df98c00d3f482a5b956a243aa1014ad3395fd0a84b50aa70b80bb.patch"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/1d0a1ee14ea54771fafb3372569264eeff993307b4d4483b9165a43d1cd9d095.json"
+    - ".agentplane/tasks/202608111036-QHR892/verification/20260811142532613-5638fa439d087087.json"
     - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/8babde3dcd7045f8ca2ec9145f1683be19cb2c338cc01c76dd940c6b1e51de51.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
-    - "packages/agentplane/src/commands/task/verify-record.unit.test.ts"
     - "packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
+    - "packages/agentplane/src/commands/shared/workflow-step-branch-state.ts"
   findings:
-    - "Structured evidence parsing is deterministic and rejects missing fields, ambiguous Result values, and fail results paired with --ok before task state changes."
-    - "CLI-level route coverage proves that a verify command carrying a structured Finding advances directly to quality review and remains current after a lifecycle-only commit."
+    - "The remote-refresh route helper is extracted into the existing branch-state module, reducing workflow-step-branch.ts below the 600-line hard limit without changing its decision order."
+    - "Pre-mutation rejection remains covered at CLI level, where both the visible error and unchanged verification_required route are asserted, while the unit file returns below the oversized-test baseline."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -72,7 +72,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-11T12:30:58.508Z"
+  updated_at: "2026-08-11T14:29:03.411Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -82,8 +82,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "586b7f3400e3700c69b28688fec53f7cb0456213"
-  message: "🔧 QHR892 code: satisfy hotspot contract"
+  hash: "df96cd27c2d1cfada7a853c096d7e5c6742f2c3b"
+  message: "🧾 QHR892 task: record hosted contract rework"
 comments:
   -
     author: "CODER"
@@ -97,6 +97,9 @@ comments:
   -
     author: "CODER"
     body: "Hosted verify-contract required a hotspot-safe extraction and moving pre-mutation coverage into the CLI regression; implementation updated without changing behavior."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -135,8 +138,22 @@ events:
     to: "DOING"
     note: "Hosted verify-contract required a hotspot-safe extraction and moving pre-mutation coverage into the CLI regression; implementation updated without changing behavior."
     commit: "586b7f3400e3700c69b28688fec53f7cb0456213"
+  -
+    type: "verify"
+    at: "2026-08-11T14:25:32.613Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Hosted contract rework passed with affected checks rerun and the unchanged full-suite receipt reused."
+  -
+    type: "status"
+    at: "2026-08-11T14:29:03.411Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "df96cd27c2d1cfada7a853c096d7e5c6742f2c3b"
 doc_version: 3
-doc_updated_at: "2026-08-11T14:21:24.647Z"
+doc_updated_at: "2026-08-11T14:29:03.442Z"
 doc_updated_by: "CODER"
 description: "Eliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command."
 sections:
@@ -195,6 +212,38 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-11T14:25:32.613Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Hosted contract rework passed with affected checks rerun and the unchanged full-suite receipt reused.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:def263511d2a3146dfe6ac54416e47324d090934c00aa5faf2365516399031ca
+
+    Details:
+
+    Command: bun run hotspots:check. Result: pass. Evidence: runtime threshold passed at 599 lines and oversized test baseline returned to 10 entries. Scope: hosted verify-contract failure. Command: bunx vitest --config vitest.workspace.ts run --project cli-core route-decision verification file. Result: pass. Evidence: 1 file and 3 tests passed. Scope: pre-mutation rejection, immediate freshness, lifecycle reuse, and remote truth routing. Command: bunx vitest --config vitest.workspace.ts run --project agentplane verification-focused files. Result: pass. Evidence: 3 files and 33 tests passed. Scope: parser, verification record assessment, and remaining unit contract. Command: bun run typecheck. Result: pass. Evidence: TypeScript build exited 0. Scope: helper extraction and test relocation. Command: review verification receipt sha256:966fb50220b3f330 against diff 30befb09d..586b7f340. Result: pass. Evidence: the prior 549-file 3988-test receipt remains applicable outside the rerun affected route and hotspot surfaces; the rework only extracted one route helper and moved equivalent rejection coverage. Scope: unchanged repository-wide behaviors without repeating unrelated tests.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+    - old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608111036-QHR892
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -205,8 +254,8 @@ sections:
       Resolution: Use bounded concurrency for this verification and complete CI optimization task 202608102115-7XGP97 before the patch release.
 extensions:
   implementation_commit:
-    hash: "416515219298c6ad2677fd12d6c364f0eae1df00"
-    message: "🚧 QHR892 task: make verification evidence reusable"
+    hash: "586b7f3400e3700c69b28688fec53f7cb0456213"
+    message: "🔧 QHR892 code: satisfy hotspot contract"
   workflow_route_baseline:
     start_head_sha: "c6f34bc7c9b39e376eb69092cd750356721f0f3d"
     version: 1
@@ -276,6 +325,38 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-11T14:25:32.613Z — VERIFY — ok
+
+By: TESTER
+
+Note: Hosted contract rework passed with affected checks rerun and the unchanged full-suite receipt reused.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:def263511d2a3146dfe6ac54416e47324d090934c00aa5faf2365516399031ca
+
+Details:
+
+Command: bun run hotspots:check. Result: pass. Evidence: runtime threshold passed at 599 lines and oversized test baseline returned to 10 entries. Scope: hosted verify-contract failure. Command: bunx vitest --config vitest.workspace.ts run --project cli-core route-decision verification file. Result: pass. Evidence: 1 file and 3 tests passed. Scope: pre-mutation rejection, immediate freshness, lifecycle reuse, and remote truth routing. Command: bunx vitest --config vitest.workspace.ts run --project agentplane verification-focused files. Result: pass. Evidence: 3 files and 33 tests passed. Scope: parser, verification record assessment, and remaining unit contract. Command: bun run typecheck. Result: pass. Evidence: TypeScript build exited 0. Scope: helper extraction and test relocation. Command: review verification receipt sha256:966fb50220b3f330 against diff 30befb09d..586b7f340. Result: pass. Evidence: the prior 549-file 3988-test receipt remains applicable outside the rerun affected route and hotspot surfaces; the rework only extracted one route helper and moved equivalent rejection coverage. Scope: unchanged repository-wide behaviors without repeating unrelated tests.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+- old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608111036-QHR892
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -300,4 +381,4 @@ DecisionContextRef:
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-11T12:30:58.508Z`
+- Updated at: `2026-08-11T14:29:03.411Z`
