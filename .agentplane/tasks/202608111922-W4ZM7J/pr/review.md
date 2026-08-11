@@ -13,7 +13,7 @@ Created: 2026-08-11T19:27:21.314Z
 ## Verification
 
 - State: ok
-- Note: Verified implementation d1a7fbcf6 after resolving both P1 review findings.
+- Note: Verified formatting-only implementation 656f84c44 by evidence reuse; no executable or assertion semantics changed from tested parent d1a7fbcf6.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -34,7 +34,7 @@ Created: 2026-08-11T19:27:21.314Z
  .../cli/run-cli.core.tasks.scaffold-derive.test.ts |  59 +++-
  .../src/cli/run-cli.core.tasks.user-create.test.ts |  22 ++
  .../src/commands/shared/declared-check.test.ts     |  53 ++++
- .../src/commands/shared/declared-check.ts          | 352 +++++++++++++++++++++
+ .../src/commands/shared/declared-check.ts          | 353 +++++++++++++++++++++
  .../agentplane/src/commands/shared/pr-meta.test.ts |  10 +-
  .../src/commands/shared/pr-meta/verify-log.ts      |  96 +-----
  packages/agentplane/src/commands/task/add.ts       |   3 +
@@ -45,7 +45,7 @@ Created: 2026-08-11T19:27:21.314Z
  packages/agentplane/src/commands/task/update.ts    |   4 +
  .../src/commands/task/update.unit.test.ts          |  57 ++++
  packages/agentplane/src/commands/workflow.test.ts  |   2 +-
- 16 files changed, 677 insertions(+), 152 deletions(-)
+ 16 files changed, 678 insertions(+), 152 deletions(-)
 ```
 
 </details>

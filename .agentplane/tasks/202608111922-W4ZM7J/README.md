@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T21:30:01.270Z"
+  updated_at: "2026-08-11T21:42:10.006Z"
   updated_by: "TESTER"
-  note: "Verified implementation d1a7fbcf6 after resolving both P1 review findings."
+  note: "Verified formatting-only implementation 656f84c44 by evidence reuse; no executable or assertion semantics changed from tested parent d1a7fbcf6."
   attempts: 0
 quality_review:
   state: "pass"
@@ -170,8 +170,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "7a3839cafce167e47d14f4e73ddac38941e5b4ec"
+  -
+    type: "verify"
+    at: "2026-08-11T21:42:10.006Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified formatting-only implementation 656f84c44 by evidence reuse; no executable or assertion semantics changed from tested parent d1a7fbcf6."
 doc_version: 3
-doc_updated_at: "2026-08-11T21:31:46.320Z"
+doc_updated_at: "2026-08-11T21:42:22.748Z"
 doc_updated_by: "CODER"
 description: "Reject unsupported verification commands at every task mutation boundary using the same deterministic parser later used by automatic TESTER execution. Return an actionable error before persisting task state; preserve repository-bound argv execution without shell evaluation; cover task new, add, update, derive, begin/create adapters, and the previously failing bun test path command."
 sections:
@@ -341,6 +347,46 @@ sections:
     Result: pass
     Evidence: eslint exited 0
     Scope: repository static lint contract
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111922-W4ZM7J-validate-declared-checks-with-the-supervised-exe/.agentplane/tasks/202608111922-W4ZM7J/blueprint/resolved-snapshot.json
+    - old_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+    - current_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608111922-W4ZM7J
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T21:42:10.006Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified formatting-only implementation 656f84c44 by evidence reuse; no executable or assertion semantics changed from tested parent d1a7fbcf6.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1a0cee901494fda2d3e18238ceaf09922eb12ce9e68936697f1f0dd97a22f63a, input_digest=sha256:c118933500f6fa746ea904b4382d15bdb07088d5fe61eae2347d33238af652ed
+
+    Details:
+
+    Command: bunx prettier packages/agentplane/src/commands/shared/declared-check.ts --check
+    Result: pass
+    Evidence: Prettier reported all matched files use code style; diff from d1a7fbcf6 changes only line wrapping
+    Scope: formatting-only delta at 656f84c44
+
+    Command: bunx vitest run six declared-check contract suites (recorded for parent d1a7fbcf6)
+    Result: pass
+    Evidence: immutable parent evidence records 102 tests passed; 656f84c44 changes no tokens or behavior
+    Scope: reused semantic verification for unchanged declared-check guard
 
     BlueprintSnapshotRef:
     - state: current
@@ -551,6 +597,46 @@ Command: bun run lint:core
 Result: pass
 Evidence: eslint exited 0
 Scope: repository static lint contract
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111922-W4ZM7J-validate-declared-checks-with-the-supervised-exe/.agentplane/tasks/202608111922-W4ZM7J/blueprint/resolved-snapshot.json
+- old_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+- current_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608111922-W4ZM7J
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T21:42:10.006Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified formatting-only implementation 656f84c44 by evidence reuse; no executable or assertion semantics changed from tested parent d1a7fbcf6.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1a0cee901494fda2d3e18238ceaf09922eb12ce9e68936697f1f0dd97a22f63a, input_digest=sha256:c118933500f6fa746ea904b4382d15bdb07088d5fe61eae2347d33238af652ed
+
+Details:
+
+Command: bunx prettier packages/agentplane/src/commands/shared/declared-check.ts --check
+Result: pass
+Evidence: Prettier reported all matched files use code style; diff from d1a7fbcf6 changes only line wrapping
+Scope: formatting-only delta at 656f84c44
+
+Command: bunx vitest run six declared-check contract suites (recorded for parent d1a7fbcf6)
+Result: pass
+Evidence: immutable parent evidence records 102 tests passed; 656f84c44 changes no tokens or behavior
+Scope: reused semantic verification for unchanged declared-check guard
 
 BlueprintSnapshotRef:
 - state: current
