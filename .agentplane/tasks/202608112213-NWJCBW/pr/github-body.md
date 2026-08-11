@@ -19,9 +19,8 @@ Remove profile-driven process variants from init, config, and runtime. New and u
 - Note:
 
 ```text
-Compatibility review remediation verified at 017d3d3a8. Prior full product verification remains
-applicable: excluding generated task lifecycle artifacts, the only post-verification changes are the
-compatibility candidate, checker, and its regression test.
+Hotspot remediation verified at 6d74e0fe8: moved the unchanged config-policy assertion out of the
+oversized core test without raising the baseline or changing runtime code.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -42,12 +41,13 @@ compatibility candidate, checker, and its regression test.
  docs/user/configuration.mdx                        |  29 +++--
  docs/user/setup.mdx                                |  20 ++-
  ...n-cli.core.branch-meta.workflow-profile.test.ts |  14 ++-
+ .../src/cli/run-cli.core.config-policy.test.ts     |  34 +++++
  .../src/cli/run-cli.core.init.branch-pr.test.ts    |   8 +-
  .../agentplane/src/cli/run-cli.core.init.test.ts   |  19 +--
  .../run-cli.core.init.validation-conflicts.test.ts |  14 ++-
  ...un-cli.core.lifecycle.finish-validation.test.ts |   7 +-
  .../run-cli.core.lifecycle.start-readiness.test.ts |   7 +-
- packages/agentplane/src/cli/run-cli.core.test.ts   |  24 +++-
+ packages/agentplane/src/cli/run-cli.core.test.ts   |   4 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |  10 +-
  .../agentplane/src/cli/run-cli/commands/config.ts  |  95 ++++++--------
  .../src/cli/run-cli/commands/init/answers.ts       |  17 +--
@@ -99,7 +99,7 @@ compatibility candidate, checker, and its regression test.
  schemas/workflow.schema.json                       |   8 +-
  .../baselines/v0.7-compatibility-candidate.json    | 101 +++++++++++++--
  .../check-compatibility-contract-baseline.mjs      | 110 ++++++++++++++--
- 66 files changed, 712 insertions(+), 602 deletions(-)
+ 67 files changed, 726 insertions(+), 602 deletions(-)
 ```
 
 </details>
