@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608102243-1RG86M-026227c516437245e9b284e9",
+  "prepared_at": "2026-08-11T00:54:44.717Z",
+  "task": {
+    "id": "202608102243-1RG86M",
+    "revision": 17,
+    "objective": "Make verification atomic and reusable across lifecycle-only drift\n\nPersist pass or rework, structured findings, tested input identity, and evidence references in one atomic verification transaction. Define freshness from content-addressed implementation and verification inputs rather than task README revision or lifecycle-only commits; reuse receipts after rebases or metadata-only changes when the relevant patch and declared inputs are identical; invalidate them when code, Verify Steps, configuration, dependencies, environment contract, or evidence changes. DONE tasks must remain terminal and must not route back to verification. Provide deterministic CLI reasons for reuse or invalidation and regression coverage for the ordering defect reproduced in AgentPlane 0.7.5.",
+    "acceptance_criteria": [
+      "bun run hotspots:check",
+      "bun run lint",
+      "bun run test:fast",
+      "bun run typecheck",
+      "- In scope: Persist pass or rework, structured findings, tested input identity, and evidence references in one atomic verification transaction. Define freshness from content-addressed implementation and verification inputs rather than task README revision or lifecycle-only commits; reuse receipts after rebases or metadata-only changes when the relevant patch and declared inputs are identical; invalidate them when code, Verify Steps, configuration, dependencies, environment contract, or evidence changes. DONE tasks must remain terminal and must not route back to verification. Provide deterministic CLI reasons for reuse or invalidation and regression coverage for the ordering defect reproduced in AgentPlane 0.7.5.\n- Out of scope: unrelated refactors not required for \"Make verification atomic and reusable across lifecycle-only drift\".",
+      "1. Model a VerificationInput identity that hashes only evidence-relevant inputs: implementation tree or stable patch identity, declared Verify Steps, applicable config and dependency lock state, toolchain or environment contract, and supplied evidence. Exclude task status comments, timestamps, verification prose, PR metadata, close-tail commits, and other lifecycle-only artifacts. Preserve explicit invalidation reasons for every included component.\n2. Replace the split verify ordering with one transaction: validate all arguments and findings first, build the complete verification record in memory, write its immutable receipt, and update task verification state, structured Findings, references, and revision atomically. A failed write must leave no partial pass or partial finding.\n3. Make receipt reuse deterministic. Accept a prior successful receipt after rebase, merge, or lifecycle-only commits when the VerificationInput digest is unchanged; return a reuse decision with the original evidence reference. Reject reuse when implementation content, Verify Steps, dependency or configuration inputs, environment contract, or evidence identity changes. Never infer semantic equivalence with keywords or an LLM.\n4. Make routing consume the new receipt identity. A current receipt satisfies verification even if task README revision or HEAD changes only through AgentPlane-owned lifecycle artifacts. A DONE task is terminal regardless of later metadata revisions and cannot route back to agent.verification. Emit compact machine-readable reason codes and a human explanation for current, reusable, invalidated, or legacy-unverifiable records.\n5. Migrate conservatively. Continue reading existing verification artifacts, classify them as current only when their legacy references can prove the same relevant inputs, otherwise request one new verification without corrupting task truth. Do not rewrite history or silently bless ambiguous receipts.\n6. Add focused state-machine, persistence, CLI, and route regression tests for: pass plus structured finding in one call; injected write failure with no partial state; lifecycle comment after pass; verification artifact commit after pass; identical-patch rebase reuse; real source, Verify Steps, config, lockfile, and environment drift invalidation; and DONE remaining terminal. Include the exact 0.7.5 ordering sequence from the user log.\n7. Run focused tests first, then typecheck, lint, format, hotspot and full fast verification. Record observed reuse versus rerun behavior and stop for re-approval only if the design must weaken a verification input or modify unrelated release or queue semantics.",
+      "1. Run the focused verification identity, record, route, transition, durability, and workflow-hook tests. Expected: pass plus structured Finding is one task revision; lifecycle-only commits and identical-patch rebases reuse a receipt; source, Verify Steps, dependency context, and runtime drift return specific invalidation reason codes.\n2. Run `bun run test:fast`. Expected: the complete agentplane, core, recipes, and testkit suite passes with no regression in legacy v1 verification records or qualification/evaluator evidence.\n3. Run `bun run typecheck`, `bun run lint`, `bun run format:changed`, `bun run knip:check`, and `bun run hotspots:check`. Expected: all repository contracts pass without widening baselines or size limits.\n4. Run `bun run build`. Expected: all distributable bundles build successfully.\n5. Execute the rebuilt CLI against completed task 202608102112-AY0H1F after its lifecycle-only closeout drift. Expected: route phase is `done`, no `verification_required` blocker appears, and an idempotent cleanup does not create a command loop.\n6. Inspect an injected task-write failure during verify. Expected: neither a passing verification record nor task verification/Finding state remains partially persisted."
+    ]
+  },
+  "evaluated_sha": "62c6cda5ec1189337d20c8209bc61ca9396de109",
+  "diff_base_sha": "1423a4736890404d114c688da49746aa7ca5aaa4",
+  "blueprint_digest": "3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608102243-1RG86M/quality/20260811-005444717-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:f2157e04bac2c423f325f9e668b149a3e0124a2e5ac4d762a311b12c144a0320",
+    "prompt_path": ".agentplane/tasks/202608102243-1RG86M/quality/objects/sha256/a8c35d18412a040eb1eca4e790a92b4937ad085365c99ff84e854552211f86de.md",
+    "result_schema_path": ".agentplane/tasks/202608102243-1RG86M/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608102243-1RG86M/README.md",
+      "sha256": "sha256:44105ac513d2d3629eb92a80bfcccbd95d77be2082f5dfba73347d8f511d91f7",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608102243-1RG86M/quality/objects/sha256/db3cef4da3775e5c88131216e6550bdc1ef13b8370c9ddb1395b89af2a0b30cd.patch",
+      "sha256": "sha256:db3cef4da3775e5c88131216e6550bdc1ef13b8370c9ddb1395b89af2a0b30cd",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608102243-1RG86M/quality/objects/sha256/6ba3cb3a85b3712acb8ef2bf24c0255066c05f0c65b115748e921b14b013a1c8.json",
+      "sha256": "sha256:6ba3cb3a85b3712acb8ef2bf24c0255066c05f0c65b115748e921b14b013a1c8",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608102243-1RG86M/verification/20260811005337867-3c14bc236d5d040f.json",
+      "sha256": "sha256:05aa7679740122dbfc61c80659c8a9a714e1c62480a1a97be9fffa9d7c108585",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608102243-1RG86M/quality/objects/sha256/c5d1e46519c5845e0727845e8138f843fb901c242c4429ca3bcbf4774de8ea8b.json",
+      "sha256": "sha256:c5d1e46519c5845e0727845e8138f843fb901c242c4429ca3bcbf4774de8ea8b",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
