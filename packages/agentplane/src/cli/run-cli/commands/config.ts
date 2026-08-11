@@ -229,12 +229,6 @@ export function makeRunModeSetHandler(deps: ConfigCommandDeps): CommandHandler<M
 
 type ProfileSetParsed = { profile: string };
 
-const CANONICAL_PROFILE = {
-  requirePlan: true,
-  requireNetwork: true,
-  requireVerify: true,
-};
-
 function normalizeProfile(value: string): "standard" | null {
   const normalized = value.trim().toLowerCase();
   if (
@@ -287,12 +281,8 @@ async function cmdProfileSet(opts: {
       const resolved = await opts.deps.getResolvedProject("profile set");
       const loaded = await opts.deps.getLoadedConfig("profile set");
       const raw = { ...loaded.raw };
-      const preset = CANONICAL_PROFILE;
       const execution = buildCanonicalExecutionPolicy();
 
-      setByDottedKey(raw, "agents.approvals.require_plan", String(preset.requirePlan));
-      setByDottedKey(raw, "agents.approvals.require_network", String(preset.requireNetwork));
-      setByDottedKey(raw, "agents.approvals.require_verify", String(preset.requireVerify));
       setByDottedKey(raw, "execution", JSON.stringify(execution));
 
       await saveConfig(resolved.agentplaneDir, raw);
