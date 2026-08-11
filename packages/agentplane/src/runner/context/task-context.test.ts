@@ -238,7 +238,52 @@ describe("assembleRunnerTaskContext", () => {
     );
   });
 
-  it("fails with a structured issue instead of truncating a required section", async () => {
+  it("preserves a multilingual required Plan above the former 3072-byte limit", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeLocalBackendConfig(root);
+    const task = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "Multilingual plan budget fixture",
+      description: "Exercise lossless required-section transport.",
+      owner: "CODER",
+      priority: "high",
+      tags: ["runner"],
+      dependsOn: [],
+      verify: [],
+    });
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    ctx.config.tasks.doc.required_sections = ["Plan"];
+    const loaded = await loadTaskFromContext({ ctx, taskId: task.id });
+    const plan = Array.from(
+      { length: 120 },
+      () => "Шаг: preserve the complete user decision.",
+    ).join("\n");
+    expect(Buffer.byteLength(plan, "utf8")).toBeGreaterThan(3072);
+    const sections = { ...(loaded.sections ?? {}), Plan: plan };
+    await ctx.taskBackend.writeTask({
+      ...loaded,
+      doc: renderTaskDocFromSections(sections),
+      sections,
+    });
+
+    const assembled = await assembleRunnerTaskContext({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: task.id,
+    });
+
+    expect(assembled.task.narrative.sections[0]).toEqual({
+      name: "Plan",
+      text: plan,
+      required: true,
+    });
+    expect(assembled.task.compaction.sections.truncated).toBe(false);
+  });
+
+  it("fails with a structured issue instead of truncating a required section above 64 KiB", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await writeLocalBackendConfig(root);
@@ -256,7 +301,7 @@ describe("assembleRunnerTaskContext", () => {
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
     ctx.config.tasks.doc.required_sections = ["Summary"];
     const loaded = await loadTaskFromContext({ ctx, taskId: task.id });
-    const sections = { ...(loaded.sections ?? {}), Summary: "required ".repeat(500) };
+    const sections = { ...(loaded.sections ?? {}), Summary: "required ".repeat(8000) };
     await ctx.taskBackend.writeTask({
       ...loaded,
       doc: renderTaskDocFromSections(sections),
@@ -270,6 +315,7 @@ describe("assembleRunnerTaskContext", () => {
       context: {
         reason_code: "task_episode_required_section_exceeds_budget",
         section: "Summary",
+        allowed_bytes: RUNNER_TASK_CONTEXT_BUDGETS.required_section_max_bytes,
       },
     });
   });
