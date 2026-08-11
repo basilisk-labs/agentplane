@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -27,9 +27,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T14:25:32.613Z"
-  updated_by: "TESTER"
-  note: "Hosted contract rework passed with affected checks rerun and the unchanged full-suite receipt reused."
+  updated_at: "2026-08-11T14:51:04.568Z"
+  updated_by: "REVIEWER"
+  note: "Parser boundary review at 313dfa221; the hosted review finding is covered without widening lifecycle scope."
   attempts: 0
 quality_review:
   state: "pass"
@@ -152,8 +152,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "df96cd27c2d1cfada7a853c096d7e5c6742f2c3b"
+  -
+    type: "verify"
+    at: "2026-08-11T14:51:04.568Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Parser boundary review at 313dfa221; the hosted review finding is covered without widening lifecycle scope."
 doc_version: 3
-doc_updated_at: "2026-08-11T14:29:03.442Z"
+doc_updated_at: "2026-08-11T14:51:07.511Z"
 doc_updated_by: "CODER"
 description: "Eliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command."
 sections:
@@ -238,6 +244,38 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608111036-QHR892
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T14:51:04.568Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Parser boundary review at 313dfa221; the hosted review finding is covered without widening lifecycle scope.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:7186cf9d90a4e844f9eb8640265686661643424ca3f1a78e62088abb1eeddc5f
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (5 files, 43 tests). Evidence: process exited 0 at 313dfa221. Scope: verification parsing and freshness regressions. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at 313dfa221. Scope: TypeScript contracts. Command: bun run hotspots:check. Result: pass. Evidence: thresholds and oversized-test baseline passed at 313dfa221. Scope: repository size contracts.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+    - old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -351,6 +389,38 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608111036-QHR892
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T14:51:04.568Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Parser boundary review at 313dfa221; the hosted review finding is covered without widening lifecycle scope.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:7186cf9d90a4e844f9eb8640265686661643424ca3f1a78e62088abb1eeddc5f
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (5 files, 43 tests). Evidence: process exited 0 at 313dfa221. Scope: verification parsing and freshness regressions. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at 313dfa221. Scope: TypeScript contracts. Command: bun run hotspots:check. Result: pass. Evidence: thresholds and oversized-test baseline passed at 313dfa221. Scope: repository size contracts.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+- old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

@@ -16,7 +16,7 @@ Eliminate verification self-staleness and repeated checks caused only by AgentPl
 ## Verification
 
 - State: ok
-- Note: Hosted contract rework passed with affected checks rerun and the unchanged full-suite receipt reused.
+- Note: Parser boundary review at 313dfa221; the hosted review finding is covered without widening lifecycle scope.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -31,15 +31,15 @@ Eliminate verification self-staleness and repeated checks caused only by AgentPl
  ...un-cli.core.route-decision.verification.test.ts | 142 ++++++++++++++++++++-
  .../commands/shared/task-verification-records.ts   |  15 +--
  .../shared/task-verification-records.v2.test.ts    |  18 +++
- .../commands/shared/verification-details.test.ts   |  24 +++-
- .../src/commands/shared/verification-details.ts    |  59 ++++++---
+ .../commands/shared/verification-details.test.ts   |  40 +++++-
+ .../src/commands/shared/verification-details.ts    |  63 ++++++---
  .../commands/shared/workflow-step-branch-state.ts  |  14 +-
  .../src/commands/shared/workflow-step-branch.ts    |   4 +
  .../src/commands/task/verify-command-shared.ts     |   3 +-
  .../src/commands/task/verify-record-execute.ts     |  26 ++++
  .../src/commands/task/verify-record.unit.test.ts   |   1 +
  packages/agentplane/src/commands/verify.spec.ts    |   9 +-
- 12 files changed, 287 insertions(+), 40 deletions(-)
+ 12 files changed, 307 insertions(+), 40 deletions(-)
 ```
 
 </details>
