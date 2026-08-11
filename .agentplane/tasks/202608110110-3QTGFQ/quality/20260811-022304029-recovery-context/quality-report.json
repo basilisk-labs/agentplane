@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608110110-3QTGFQ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T02:23:04.409Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Foreground integration supervision now advances deterministic queue operations, preserves provider-owned handoffs, and recovers temporary provider gates without weakening exact-head, lease, or mutex constraints.",
+  "evaluated_sha": "4f552f3128af05f795cefd98ab5c085c3cafd11c",
+  "blueprint_digest": "1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b",
+  "findings": [
+    "Expected protected-base E_HANDOFF outcomes are narrowly allowlisted by reason code; unknown handoffs still fail the supervisor cycle.",
+    "Pending or unavailable hosted checks and review-thread reads requeue the exact reservation instead of leaving a non-claimable handoff record.",
+    "Different tasks remain eligible for parallel worktrees while duplicate worktrees for the same active task are rejected."
+  ],
+  "evidence_refs": [
+    "implementation 4f552f3128af05f795cefd98ab5c085c3cafd11c",
+    "bun run test:fast: 549 files and 3983 tests passed",
+    "focused queue and supervisor regression suite: 4 files and 31 tests passed",
+    "typecheck, lint:core, format:check, knip:check, hotspots:check, and build passed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Provider reason codes remain the stable contract for distinguishing completed protected-base cycles from unexpected handoffs."
+  ],
+  "residual_risks": [
+    "GitHub infrastructure failures still require explicit retry classification; task 202608102115-7XGP97 covers CI latency and retry ergonomics before release."
+  ]
+}

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -26,26 +26,30 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-11T01:51:20.885Z"
+  updated_at: "2026-08-11T02:23:04.409Z"
   updated_by: "HUMAN"
-  note: "CI lint failure was isolated to a test-only unsafe matcher; the typed assertion preserves behavior and now passes the exact hosted lint command."
-  evaluated_sha: "573f88809e982f6ca23d8d436fb3ae4868837b4b"
+  note: "Foreground integration supervision now advances deterministic queue operations, preserves provider-owned handoffs, and recovers temporary provider gates without weakening exact-head, lease, or mutex constraints."
+  evaluated_sha: "4f552f3128af05f795cefd98ab5c085c3cafd11c"
   blueprint_digest: "1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b"
   evidence_refs:
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-015120621-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-015120621-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/80345b5a9e2576a6e62311ba724c1514dee0c28e1c841190a64ab80ecdd00469.md"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-015120621-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-015120621-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-022304029-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-022304029-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/422378ecf67d70cc09b53a356abd622a893a830f20e0187fc0e2734a8af1529d.md"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-022304029-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-022304029-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608110110-3QTGFQ/README.md"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/bc57177aa86e746301fa4fcded7eb2a531ab408371492972cd3f36d1b6b9d5ba.patch"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/cb1177c9873bf7a2a8b464cc9e568119a621b157ed66f1fc5b80af0ca5dedcad.json"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/a523ef07ba8d9fc0e77209f6f5c6a36f358252bf0279c1e4ab3ddc88a556129b.patch"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/eb15f8247ea013a5420004f7ee90222e05b460017891a8c9844eb269a294609d.json"
+    - ".agentplane/tasks/202608110110-3QTGFQ/verification/20260811022037383-81731587fb45eca8.json"
     - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/06bbf483effbb4b2e3bc1f6176380d9728a74d011cef05d430fd68c36043477a.json"
-    - "bun run lint:core passed at 573f88809"
-    - "2 focused queue test files, 32 tests passed at 573f88809"
-    - "production diff a0cfe7da0..573f88809 is empty; full-suite evidence from a0cfe7da0 remains applicable"
+    - "implementation 4f552f3128af05f795cefd98ab5c085c3cafd11c"
+    - "bun run test:fast: 549 files and 3983 tests passed"
+    - "focused queue and supervisor regression suite: 4 files and 31 tests passed"
+    - "typecheck, lint:core, format:check, knip:check, hotspots:check, and build passed"
   findings:
-    - "No production source changed after the 3979-test full-suite pass; targeted queue tests and full core lint cover the only changed test assertion."
+    - "Expected protected-base E_HANDOFF outcomes are narrowly allowlisted by reason code; unknown handoffs still fail the supervisor cycle."
+    - "Pending or unavailable hosted checks and review-thread reads requeue the exact reservation instead of leaving a non-claimable handoff record."
+    - "Different tasks remain eligible for parallel worktrees while duplicate worktrees for the same active task are rejected."
 token_usage:
   agent_runs: 1
   input_tokens: null
@@ -170,7 +174,7 @@ events:
     state: "ok"
     note: "Foreground queue recovery verified at 4f552f312: temporary provider gates requeue safely and protected-base completion handoffs finish the worker cycle without false failures."
 doc_version: 3
-doc_updated_at: "2026-08-11T02:20:39.753Z"
+doc_updated_at: "2026-08-11T02:23:04.431Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr task supervision enqueue and then serialize its own integration queue through typed deterministic operations, recover handoffs without semantic rework, and prevent stale base task replicas while preserving parallel per-task worktrees."
 sections:
