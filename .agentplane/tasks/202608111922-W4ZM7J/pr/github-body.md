@@ -16,7 +16,7 @@ Reject unsupported verification commands at every task mutation boundary using t
 ## Verification
 
 - State: ok
-- Note: Verified implementation 7703c7a64 after hosted CI remediation.
+- Note: Verified implementation d1a7fbcf6 after resolving both P1 review findings.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,13 +28,13 @@ Reject unsupported verification commands at every task mutation boundary using t
 
 ```text
  .../src/cli/run-cli.core.task-guided.test.ts       |  24 ++
- .../src/cli/run-cli.core.tasks.create.test.ts      |  64 +++++
+ .../src/cli/run-cli.core.tasks.create.test.ts      |  64 ++++
  .../cli/run-cli.core.tasks.scaffold-derive.test.ts |  59 +++-
  .../src/cli/run-cli.core.tasks.user-create.test.ts |  22 ++
- .../src/commands/shared/declared-check.test.ts     |  48 ++++
- .../src/commands/shared/declared-check.ts          | 320 +++++++++++++++++++++
+ .../src/commands/shared/declared-check.test.ts     |  53 ++++
+ .../src/commands/shared/declared-check.ts          | 352 +++++++++++++++++++++
  .../agentplane/src/commands/shared/pr-meta.test.ts |  10 +-
- .../src/commands/shared/pr-meta/verify-log.ts      |  96 +------
+ .../src/commands/shared/pr-meta/verify-log.ts      |  96 +-----
  packages/agentplane/src/commands/task/add.ts       |   3 +
  packages/agentplane/src/commands/task/derive.ts    |   3 +
  .../commands/task/direct-task-verification.test.ts |  15 +-
@@ -43,7 +43,7 @@ Reject unsupported verification commands at every task mutation boundary using t
  packages/agentplane/src/commands/task/update.ts    |   4 +
  .../src/commands/task/update.unit.test.ts          |  57 ++++
  packages/agentplane/src/commands/workflow.test.ts  |   2 +-
- 16 files changed, 640 insertions(+), 152 deletions(-)
+ 16 files changed, 677 insertions(+), 152 deletions(-)
 ```
 
 </details>

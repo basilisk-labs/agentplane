@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T21:14:29.082Z"
+  updated_at: "2026-08-11T21:30:01.270Z"
   updated_by: "TESTER"
-  note: "Verified implementation 7703c7a64 after hosted CI remediation."
+  note: "Verified implementation d1a7fbcf6 after resolving both P1 review findings."
   attempts: 0
 quality_review:
   state: "pass"
@@ -154,8 +154,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "570c16098c17c9a6fbab99135dd5ff884d4b7227"
+  -
+    type: "verify"
+    at: "2026-08-11T21:30:01.270Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified implementation d1a7fbcf6 after resolving both P1 review findings."
 doc_version: 3
-doc_updated_at: "2026-08-11T21:18:33.499Z"
+doc_updated_at: "2026-08-11T21:30:03.591Z"
 doc_updated_by: "CODER"
 description: "Reject unsupported verification commands at every task mutation boundary using the same deterministic parser later used by automatic TESTER execution. Return an actionable error before persisting task state; preserve repository-bound argv execution without shell evaluation; cover task new, add, update, derive, begin/create adapters, and the previously failing bun test path command."
 sections:
@@ -284,6 +290,46 @@ sections:
     Command: bun run lint:core
     Result: pass
     Evidence: eslint exited 0 after direct re-export change
+    Scope: repository static lint contract
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111922-W4ZM7J-validate-declared-checks-with-the-supervised-exe/.agentplane/tasks/202608111922-W4ZM7J/blueprint/resolved-snapshot.json
+    - old_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+    - current_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608111922-W4ZM7J
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T21:30:01.270Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified implementation d1a7fbcf6 after resolving both P1 review findings.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1a0cee901494fda2d3e18238ceaf09922eb12ce9e68936697f1f0dd97a22f63a, input_digest=sha256:3d4bc291af35889c6fa48e68191d083c367f010557202cee09f4a68ef6f78645
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts
+    Result: pass
+    Evidence: 102 tests passed across 6 files; wrapper bypasses, Git allowlist, persistence, and both executors covered
+    Scope: declared-check safety and shared execution contract
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: eslint exited 0
     Scope: repository static lint contract
 
     BlueprintSnapshotRef:
@@ -454,6 +500,46 @@ Scope: task creation and duplicate rejection error contract
 Command: bun run lint:core
 Result: pass
 Evidence: eslint exited 0 after direct re-export change
+Scope: repository static lint contract
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111922-W4ZM7J-validate-declared-checks-with-the-supervised-exe/.agentplane/tasks/202608111922-W4ZM7J/blueprint/resolved-snapshot.json
+- old_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+- current_digest: 9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608111922-W4ZM7J
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T21:30:01.270Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified implementation d1a7fbcf6 after resolving both P1 review findings.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1a0cee901494fda2d3e18238ceaf09922eb12ce9e68936697f1f0dd97a22f63a, input_digest=sha256:3d4bc291af35889c6fa48e68191d083c367f010557202cee09f4a68ef6f78645
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/workflow.test.ts
+Result: pass
+Evidence: 102 tests passed across 6 files; wrapper bypasses, Git allowlist, persistence, and both executors covered
+Scope: declared-check safety and shared execution contract
+
+Command: bun run lint:core
+Result: pass
+Evidence: eslint exited 0
 Scope: repository static lint contract
 
 BlueprintSnapshotRef:
