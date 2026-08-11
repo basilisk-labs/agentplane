@@ -16,7 +16,7 @@ Eliminate verification self-staleness and repeated checks caused only by AgentPl
 ## Verification
 
 - State: ok
-- Note: Parser boundary review at 313dfa221; the hosted review finding is covered without widening lifecycle scope.
+- Note: All required verification steps passed at implementation SHA 313dfa221 after evaluator rework.
 - Canonical workflow state lives in the task README.
 
 <details>

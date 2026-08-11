@@ -13,7 +13,7 @@ Created: 2026-08-11T11:23:13.777Z
 ## Verification
 
 - State: ok
-- Note: Parser boundary review at 313dfa221; the hosted review finding is covered without widening lifecycle scope.
+- Note: All required verification steps passed at implementation SHA 313dfa221 after evaluator rework.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

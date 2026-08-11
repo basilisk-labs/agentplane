@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -27,9 +27,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T14:51:04.568Z"
+  updated_at: "2026-08-11T15:16:29.029Z"
   updated_by: "REVIEWER"
-  note: "Parser boundary review at 313dfa221; the hosted review finding is covered without widening lifecycle scope."
+  note: "All required verification steps passed at implementation SHA 313dfa221 after evaluator rework."
   attempts: 0
 quality_review:
   state: "rework"
@@ -158,8 +158,14 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Parser boundary review at 313dfa221; the hosted review finding is covered without widening lifecycle scope."
+  -
+    type: "verify"
+    at: "2026-08-11T15:16:29.029Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "All required verification steps passed at implementation SHA 313dfa221 after evaluator rework."
 doc_version: 3
-doc_updated_at: "2026-08-11T15:01:29.015Z"
+doc_updated_at: "2026-08-11T15:16:32.097Z"
 doc_updated_by: "CODER"
 description: "Eliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command."
 sections:
@@ -262,6 +268,38 @@ sections:
     Details:
 
     Command: bunx vitest run packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (5 files, 43 tests). Evidence: process exited 0 at 313dfa221. Scope: verification parsing and freshness regressions. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at 313dfa221. Scope: TypeScript contracts. Command: bun run hotspots:check. Result: pass. Evidence: thresholds and oversized-test baseline passed at 313dfa221. Scope: repository size contracts.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+    - old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T15:16:29.029Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: All required verification steps passed at implementation SHA 313dfa221 after evaluator rework.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:59e60829eb0a5b408fea4acaa787ea84f34d9a67220ba18a5630a456cb5b58e5
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (5 files, 43 tests). Evidence: process exited 0 at implementation SHA 313dfa221. Scope: verification parsing and freshness regressions. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at implementation SHA 313dfa221. Scope: TypeScript contracts. Command: bun run docs:cli:check. Result: pass. Evidence: generated CLI reference was current at implementation SHA 313dfa221. Scope: public CLI documentation. Command: bun run hotspots:check. Result: pass. Evidence: runtime thresholds and oversized-test baseline passed at implementation SHA 313dfa221. Scope: repository size contracts. Command: bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Result: pass (549 files, 3988 tests). Evidence: process exited 0 in 384.66 seconds at implementation SHA 313dfa221. Scope: complete fast repository suite under bounded concurrency. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs-production-dependencies-from-a-sanitized-package-payload. Result: pass (1 file, 1 test). Evidence: process exited 0 in 97.13 seconds at implementation SHA 313dfa221. Scope: resource-intensive standalone dependency fixture.
 
     BlueprintSnapshotRef:
     - state: current
@@ -407,6 +445,38 @@ VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd
 Details:
 
 Command: bunx vitest run packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (5 files, 43 tests). Evidence: process exited 0 at 313dfa221. Scope: verification parsing and freshness regressions. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at 313dfa221. Scope: TypeScript contracts. Command: bun run hotspots:check. Result: pass. Evidence: thresholds and oversized-test baseline passed at 313dfa221. Scope: repository size contracts.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608111036-QHR892-make-verification-evidence-atomic-immediately-fr/.agentplane/tasks/202608111036-QHR892/blueprint/resolved-snapshot.json
+- old_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- current_digest: 7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608111036-QHR892
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T15:16:29.029Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: All required verification steps passed at implementation SHA 313dfa221 after evaluator rework.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0c05715b3aad59ebed7b4ef2809fd82ede57bae89ac8f5f873e1a20062055530, input_digest=sha256:59e60829eb0a5b408fea4acaa787ea84f34d9a67220ba18a5630a456cb5b58e5
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/shared/verification-details.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts. Result: pass (5 files, 43 tests). Evidence: process exited 0 at implementation SHA 313dfa221. Scope: verification parsing and freshness regressions. Command: bun run typecheck. Result: pass. Evidence: process exited 0 at implementation SHA 313dfa221. Scope: TypeScript contracts. Command: bun run docs:cli:check. Result: pass. Evidence: generated CLI reference was current at implementation SHA 313dfa221. Scope: public CLI documentation. Command: bun run hotspots:check. Result: pass. Evidence: runtime thresholds and oversized-test baseline passed at implementation SHA 313dfa221. Scope: repository size contracts. Command: bun run test:fast -- --maxWorkers=4 --exclude packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts. Result: pass (549 files, 3988 tests). Evidence: process exited 0 in 384.66 seconds at implementation SHA 313dfa221. Scope: complete fast repository suite under bounded concurrency. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts -t installs-production-dependencies-from-a-sanitized-package-payload. Result: pass (1 file, 1 test). Evidence: process exited 0 in 97.13 seconds at implementation SHA 313dfa221. Scope: resource-intensive standalone dependency fixture.
 
 BlueprintSnapshotRef:
 - state: current
