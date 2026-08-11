@@ -16,7 +16,7 @@ Persist pass or rework, structured findings, tested input identity, and evidence
 ## Verification
 
 - State: ok
-- Note: Final content-addressed verification and terminal convergence pass.
+- Note: Final tree verified with scoped reuse after pre-release CI incident registration.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,6 +27,8 @@ Persist pass or rework, structured findings, tested input identity, and evidence
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |   1 +
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  .../evaluator/evaluator-run.command.test.ts        |   2 +-
  .../commands/shared/route-cleanup-probe.test.ts    |  79 +++++
  .../src/commands/shared/route-cleanup-probe.ts     |   4 -
@@ -46,7 +48,7 @@ Persist pass or rework, structured findings, tested input identity, and evidence
  .../src/commands/task/verify-record-execute.ts     | 322 +++++++++++----------
  .../task/verify-record.durability.unit.test.ts     |  44 ++-
  .../src/commands/workflow.verify-hooks.test.ts     |  39 +++
- 19 files changed, 1392 insertions(+), 227 deletions(-)
+ 21 files changed, 1394 insertions(+), 227 deletions(-)
 ```
 
 </details>

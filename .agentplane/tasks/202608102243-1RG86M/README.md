@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -23,9 +23,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T00:01:05.206Z"
+  updated_at: "2026-08-11T00:07:41.457Z"
   updated_by: "TESTER"
-  note: "Final content-addressed verification and terminal convergence pass."
+  note: "Final tree verified with scoped reuse after pre-release CI incident registration."
   attempts: 0
 quality_review:
   state: "pass"
@@ -156,8 +156,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "f5b12ec62dc09dab7dc67cf6226a64f2d1378534"
+  -
+    type: "verify"
+    at: "2026-08-11T00:07:41.457Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Final tree verified with scoped reuse after pre-release CI incident registration."
 doc_version: 3
-doc_updated_at: "2026-08-11T00:03:51.601Z"
+doc_updated_at: "2026-08-11T00:07:43.952Z"
 doc_updated_by: "CODER"
 description: "Persist pass or rework, structured findings, tested input identity, and evidence references in one atomic verification transaction. Define freshness from content-addressed implementation and verification inputs rather than task README revision or lifecycle-only commits; reuse receipts after rebases or metadata-only changes when the relevant patch and declared inputs are identical; invalidate them when code, Verify Steps, configuration, dependencies, environment contract, or evidence changes. DONE tasks must remain terminal and must not route back to verification. Provide deterministic CLI reasons for reuse or invalidation and regression coverage for the ordering defect reproduced in AgentPlane 0.7.5."
 sections:
@@ -314,6 +320,51 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608102243-1RG86M
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T00:07:41.457Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Final tree verified with scoped reuse after pre-release CI incident registration.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:20b160e8f5672c5a1676c10b42016b09c08011caf12082bfc4377d2a317e3fb6, input_digest=sha256:0c2006ea8b7d65031627e50ea07b1e10664f51eb59d62134c6c061c454126c5d
+
+    Details:
+
+    Command: bun run test:fast
+    Result: pass
+    Evidence: 549 files and 3972 tests passed on unchanged runtime implementation e3a351ab0dbf4bb6d2296ec79cb1a70cb78ddb26
+    Scope: complete runtime regression suite reused because subsequent diff is policy incident registration only
+
+    Command: node .agentplane/policy/check-routing.mjs && bun run agents:check
+    Result: pass
+    Evidence: final policy tree 09c137cb1be297a8f7601966946d82fed3892b88 passed routing and generated-agent parity
+    Scope: newly changed incident policy and mirrored packaged asset
+
+    Command: bun run build
+    Result: pass
+    Evidence: all distributable bundles built from final tree 09c137cb1be297a8f7601966946d82fed3892b88
+    Scope: final distributable tree including packaged incident registry
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608102243-1RG86M-make-verification-atomic-and-reusable-across-lif/.agentplane/tasks/202608102243-1RG86M/blueprint/resolved-snapshot.json
+    - old_digest: 3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963
+    - current_digest: 3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608102243-1RG86M
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -504,6 +555,51 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608102243-1RG86M
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T00:07:41.457Z — VERIFY — ok
+
+By: TESTER
+
+Note: Final tree verified with scoped reuse after pre-release CI incident registration.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:20b160e8f5672c5a1676c10b42016b09c08011caf12082bfc4377d2a317e3fb6, input_digest=sha256:0c2006ea8b7d65031627e50ea07b1e10664f51eb59d62134c6c061c454126c5d
+
+Details:
+
+Command: bun run test:fast
+Result: pass
+Evidence: 549 files and 3972 tests passed on unchanged runtime implementation e3a351ab0dbf4bb6d2296ec79cb1a70cb78ddb26
+Scope: complete runtime regression suite reused because subsequent diff is policy incident registration only
+
+Command: node .agentplane/policy/check-routing.mjs && bun run agents:check
+Result: pass
+Evidence: final policy tree 09c137cb1be297a8f7601966946d82fed3892b88 passed routing and generated-agent parity
+Scope: newly changed incident policy and mirrored packaged asset
+
+Command: bun run build
+Result: pass
+Evidence: all distributable bundles built from final tree 09c137cb1be297a8f7601966946d82fed3892b88
+Scope: final distributable tree including packaged incident registry
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608102243-1RG86M-make-verification-atomic-and-reusable-across-lif/.agentplane/tasks/202608102243-1RG86M/blueprint/resolved-snapshot.json
+- old_digest: 3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963
+- current_digest: 3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608102243-1RG86M
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

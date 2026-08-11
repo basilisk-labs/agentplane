@@ -6,14 +6,14 @@ Created: 2026-08-10T22:44:13.062Z
 
 - Task: `202608102243-1RG86M`
 - Title: Make verification atomic and reusable across lifecycle-only drift
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608102243-1RG86M/make-verification-atomic-and-reusable-across-lif`
 - Canonical task record: `.agentplane/tasks/202608102243-1RG86M/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Final content-addressed verification and terminal convergence pass.
+- Note: Final tree verified with scoped reuse after pre-release CI incident registration.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,6 +29,8 @@ Created: 2026-08-10T22:44:13.062Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |   1 +
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  .../evaluator/evaluator-run.command.test.ts        |   2 +-
  .../commands/shared/route-cleanup-probe.test.ts    |  79 +++++
  .../src/commands/shared/route-cleanup-probe.ts     |   4 -
@@ -48,7 +50,7 @@ Created: 2026-08-10T22:44:13.062Z
  .../src/commands/task/verify-record-execute.ts     | 322 +++++++++++----------
  .../task/verify-record.durability.unit.test.ts     |  44 ++-
  .../src/commands/workflow.verify-hooks.test.ts     |  39 +++
- 19 files changed, 1392 insertions(+), 227 deletions(-)
+ 21 files changed, 1394 insertions(+), 227 deletions(-)
 ```
 
 </details>
