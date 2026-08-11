@@ -4,7 +4,7 @@ title: "Make verification evidence atomic, immediately fresh, and reusable"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +38,16 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "416515219298c6ad2677fd12d6c364f0eae1df00"
+  message: "🚧 QHR892 task: make verification evidence reusable"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed: atomic structured verification validation, precise freshness reasons, reusable lifecycle evidence, route regression coverage, and CLI guidance."
 events:
   -
     type: "status"
@@ -51,8 +56,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-11T12:12:35.110Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: atomic structured verification validation, precise freshness reasons, reusable lifecycle evidence, route regression coverage, and CLI guidance."
+    commit: "416515219298c6ad2677fd12d6c364f0eae1df00"
 doc_version: 3
-doc_updated_at: "2026-08-11T12:07:12.652Z"
+doc_updated_at: "2026-08-11T12:12:35.110Z"
 doc_updated_by: "CODER"
 description: "Eliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command."
 sections:
