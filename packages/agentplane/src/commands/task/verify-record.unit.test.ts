@@ -212,54 +212,6 @@ describe("task verify record (unit)", () => {
     writeSpy.mockRestore();
   });
 
-  it("rejects incomplete pass evidence for a committed branch_pr task before mutation", async () => {
-    const writeTask = vi.fn<(task: TaskData) => Promise<void>>(() => Promise.resolve());
-    const backend = makeWriteThroughBackend({
-      writeTask,
-      getTaskDoc: () =>
-        Promise.resolve(
-          [
-            "## Summary",
-            "x",
-            "",
-            "## Verify Steps",
-            "Run the focused check. Expected: pass.",
-            "",
-            "## Verification",
-            "<!-- BEGIN VERIFICATION RESULTS -->",
-            "<!-- END VERIFICATION RESULTS -->",
-          ].join("\n"),
-        ),
-    });
-    const ctx = mkCtx({ taskBackend: backend, backend });
-    ctx.config.workflow_mode = "branch_pr";
-    mocks.loadTaskFromContext.mockResolvedValue(
-      mkTask({
-        status: "DOING",
-        commit: { hash: "abc", message: "implementation" },
-        doc: undefined,
-        doc_version: 3,
-      }),
-    );
-
-    const { cmdTaskVerifyOk } = await import("./verify-record.js");
-    await expect(
-      cmdTaskVerifyOk({
-        ctx,
-        cwd: "/repo",
-        taskId: "T-1",
-        by: "TESTER",
-        note: "Looks good",
-        quiet: true,
-      }),
-    ).rejects.toMatchObject({
-      code: "E_VALIDATION",
-      context: { reason_code: "verification_details_required" },
-    });
-    expect(writeTask).not.toHaveBeenCalled();
-    expect(mocks.writeJsonStableIfChanged).not.toHaveBeenCalled();
-  });
-
   it("cmdTaskVerifyOk validates note sources and mutually exclusive details/file", async () => {
     const { cmdTaskVerifyOk } = await import("./verify-record.js");
 

@@ -260,6 +260,37 @@ describe("runCli route decision verification freshness", () => {
       "--root",
       root,
     ]);
+    const rejectedIo = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "verify",
+          taskId,
+          "--ok",
+          "--by",
+          "TESTER",
+          "--note",
+          "Incomplete evidence must not mutate verification state.",
+          "--root",
+          root,
+        ]),
+      ).toBe(3);
+      expect(rejectedIo.stderr).toContain("No verification state was changed");
+    } finally {
+      rejectedIo.restore();
+    }
+    const afterRejected = await runJson<{ blockers: { code: string }[] }>([
+      "task",
+      "status",
+      taskId,
+      "--route",
+      "--json",
+      "--root",
+      root,
+    ]);
+    expect(afterRejected.blockers.map((blocker) => blocker.code)).toContain(
+      "verification_required",
+    );
     await runCliSilent([
       "verify",
       taskId,
