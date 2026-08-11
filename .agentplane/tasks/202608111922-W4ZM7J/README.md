@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -29,32 +29,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-11T20:51:14.353Z"
+  updated_at: "2026-08-11T21:17:37.216Z"
   updated_by: "HUMAN"
-  note: "The W4ZM7J change remains correct on the optimized main base; synchronization introduced no semantic conflict and all parser, mutation, and static checks pass on the merged tree."
-  evaluated_sha: "9b68f75daff0ff59bbbaaea63bd308edd7f75474"
+  note: "One shared repository-bound argv parser now governs declared-check persistence and both direct and branch_pr execution; the CI remediation preserves that contract and aligns duplicate validation with the early E_USAGE boundary."
+  evaluated_sha: "7703c7a64192b7888a9fc5d0482f3c22fa11d349"
   blueprint_digest: "9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4"
   evidence_refs:
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-205113932-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-205113932-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/13ce78f7a9bb36aca7f6123cd8d0536420fcaabdf919bb1d267e6a20dbb544f0.md"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-205113932-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-205113932-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-211736800-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-211736800-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/8999ccd511cf2dc3a70918fb793b6293fc9eb6a4afba82a083a367f89b02aeed.md"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-211736800-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-211736800-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608111922-W4ZM7J/README.md"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/2b217bdaaa2210535502a09472ae5bacaf7b6affc49d6050c6d0dd8a160eb768.patch"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/017c81c3401b8f9a43ef3241815b0e93e9e964642905d8e64a316dddeb0a4dc9.json"
-    - ".agentplane/tasks/202608111922-W4ZM7J/verification/20260811205016130-c105637f635639f7.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/7b9ca317dd9a12e3e7a81281d4b04fc6b96a3ee1cc6b8e829e9c1886caf13496.patch"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/6e08e941aba7b568770cf778ab32796b124f1edcbfb0d67ed25ea8311f20718a.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/verification/20260811211429082-491e89cb67bf0183.json"
     - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/559acda9b5852a0eac86146788242df1183cfd1a93800fa00e801d462c45e4da.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
     - "packages/agentplane/src/commands/shared/declared-check.ts"
-    - "packages/agentplane/src/commands/shared/declared-check.test.ts"
+    - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
+    - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+    - "packages/agentplane/src/commands/workflow.test.ts"
   findings:
-    - "The shared declared-check resolver remains the sole validation and execution grammar after main synchronization."
-    - "Ninety-three parser, executor, and mutation-boundary tests pass on the merged tree, including the original bun path regression and all six persistence entry points."
-    - "The upstream CI refactor changes only verification orchestration and the stabilized concurrency fixture; it does not weaken or bypass W4ZM7J behavior."
+    - "No blocking semantic mismatch found. Generic repository scripts remain intentionally flexible; runtime supervision and approvals, not keyword allowlists, own their effects."
 token_usage:
   agent_runs: 1
   input_tokens: null
@@ -144,7 +144,7 @@ events:
     state: "ok"
     note: "Verified implementation 7703c7a64 after hosted CI remediation."
 doc_version: 3
-doc_updated_at: "2026-08-11T21:14:31.440Z"
+doc_updated_at: "2026-08-11T21:17:37.240Z"
 doc_updated_by: "CODER"
 description: "Reject unsupported verification commands at every task mutation boundary using the same deterministic parser later used by automatic TESTER execution. Return an actionable error before persisting task state; preserve repository-bound argv execution without shell evaluation; cover task new, add, update, derive, begin/create adapters, and the previously failing bun test path command."
 sections:
