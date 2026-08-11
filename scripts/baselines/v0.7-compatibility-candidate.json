@@ -33,7 +33,8 @@
     "202608061646-WCARQG",
     "202608061646-30TKV4",
     "202608062023-V3WHE9",
-    "202608080805-KPWPAV"
+    "202608080805-KPWPAV",
+    "202608110235-WCJJRD"
   ],
   "base": {
     "baseline_id": "agentplane.compatibility.v0.6.24",
@@ -42,9 +43,9 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "c8a5d33a5456fb03103ac540ce00eb0c70a1480426a0eb5517f98881f7293e4e",
+    "surface_sha256": "f1b4d63936ce9a7cd726c0cc133d65d8df49f16e1d84394e5c4f1f554a0f11ce",
     "section_digests": {
-      "cli_topology": "9487daa3fe64990ef0d69326ee154ec5975e3c6b942667735ebcf4c464ce50b2",
+      "cli_topology": "2266d1c7b93ec63f79f6a89f2105cdee5a295f4819508ad9fdc53233a6d40a6b",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
@@ -87,7 +88,7 @@
     "section": "package_manifests",
     "from_sha256": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
     "to_sha256": "68d85075ead827909740cafc59eba72dc94c7e9a2e754d16bea85041ab875f53",
-    "surface_sha256": "f1379cce442003ca31438a391fab68497f2c1559645f17e655cbc8a7daef13ee",
+    "surface_sha256": "40b3337f28279da20f287cf584b95fafa81383a20abc4e7adc4cf4dce755f459",
     "allowed_json_paths": [
       "$.package_manifests[0].dependencies.@agentplaneorg/core",
       "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -437,16 +438,17 @@
         "202608061646-WCARQG",
         "202608061646-30TKV4",
         "202608062023-V3WHE9",
-        "202608080805-KPWPAV"
+        "202608080805-KPWPAV",
+        "202608110235-WCJJRD"
       ],
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "9487daa3fe64990ef0d69326ee154ec5975e3c6b942667735ebcf4c464ce50b2",
+      "to_sha256": "2266d1c7b93ec63f79f6a89f2105cdee5a295f4819508ad9fdc53233a6d40a6b",
       "classification": "additive_with_visibility_simplification",
-      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with an execution preview, explainable per-task workflow routing, compatibility retirement diagnostics, and safe local evidence statistics, compaction, and garbage collection; promotes the managed task runner; and moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces without removing commands or options.",
+      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, compatibility retirement diagnostics, and safe local evidence statistics, compaction, and garbage collection; promotes the managed task runner; and moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces without removing commands or options.",
       "evidence": {
         "command_count": { "from": 243, "to": 263 },
         "positional_count": { "from": 165, "to": 180 },
-        "option_count": { "from": 767, "to": 844 },
+        "option_count": { "from": 767, "to": 849 },
         "added_commands": [
           "context supervise-task",
           "doctor legacy",
@@ -899,6 +901,58 @@
                 "valueHint": "<auto|direct|branch_pr>",
                 "default": "auto",
                 "choices": ["auto", "direct", "branch_pr"]
+              },
+              {
+                "name": "task-kind",
+                "kind": "string",
+                "valueHint": "<analysis|content|docs|code|release|ops|context>",
+                "choices": ["analysis", "content", "docs", "code", "release", "ops", "context"]
+              },
+              {
+                "name": "mutation-scope",
+                "kind": "string",
+                "valueHint": "<none|docs|code|release|ops|context|unknown>",
+                "choices": ["none", "docs", "code", "release", "ops", "context", "unknown"]
+              },
+              {
+                "name": "risk",
+                "kind": "string",
+                "valueHint": "<risk>",
+                "choices": [
+                  "network",
+                  "credentials",
+                  "deploy",
+                  "publish",
+                  "merge",
+                  "security",
+                  "external_system"
+                ],
+                "repeatable": true
+              },
+              {
+                "name": "blueprint-request",
+                "kind": "string",
+                "valueHint": "<id>",
+                "choices": [
+                  "analysis.light",
+                  "content.light",
+                  "docs.change",
+                  "code.direct",
+                  "code.branch_pr",
+                  "performance.benchmark",
+                  "quality.regression",
+                  "context.assimilation",
+                  "context.maximum_assimilation",
+                  "post_run.improvement_review",
+                  "release.strict",
+                  "ops.approval"
+                ]
+              },
+              {
+                "name": "tag",
+                "kind": "string",
+                "valueHint": "<tag>",
+                "repeatable": true
               },
               {
                 "name": "verify",
@@ -1563,6 +1617,26 @@
           },
           {
             "command": "task create",
+            "name": "blueprint-request",
+            "kind": "string",
+            "valueHint": "<id>",
+            "choices": [
+              "analysis.light",
+              "content.light",
+              "docs.change",
+              "code.direct",
+              "code.branch_pr",
+              "performance.benchmark",
+              "quality.regression",
+              "context.assimilation",
+              "context.maximum_assimilation",
+              "post_run.improvement_review",
+              "release.strict",
+              "ops.approval"
+            ]
+          },
+          {
+            "command": "task create",
             "name": "description",
             "kind": "string",
             "valueHint": "<text>"
@@ -1573,6 +1647,13 @@
             "kind": "boolean",
             "valueHint": null,
             "default": false
+          },
+          {
+            "command": "task create",
+            "name": "mutation-scope",
+            "kind": "string",
+            "valueHint": "<none|docs|code|release|ops|context|unknown>",
+            "choices": ["none", "docs", "code", "release", "ops", "context", "unknown"]
           },
           {
             "command": "task create",
@@ -1591,11 +1672,41 @@
           },
           {
             "command": "task create",
+            "name": "risk",
+            "kind": "string",
+            "valueHint": "<risk>",
+            "choices": [
+              "network",
+              "credentials",
+              "deploy",
+              "publish",
+              "merge",
+              "security",
+              "external_system"
+            ],
+            "repeatable": true
+          },
+          {
+            "command": "task create",
             "name": "route",
             "kind": "string",
             "valueHint": "<auto|direct|branch_pr>",
             "default": "auto",
             "choices": ["auto", "direct", "branch_pr"]
+          },
+          {
+            "command": "task create",
+            "name": "tag",
+            "kind": "string",
+            "valueHint": "<tag>",
+            "repeatable": true
+          },
+          {
+            "command": "task create",
+            "name": "task-kind",
+            "kind": "string",
+            "valueHint": "<analysis|content|docs|code|release|ops|context>",
+            "choices": ["analysis", "content", "docs", "code", "release", "ops", "context"]
           },
           {
             "command": "task create",
@@ -2180,6 +2291,12 @@
           {
             "kind": "option",
             "command": "task create",
+            "name": "blueprint-request",
+            "source_task": "202608110235-WCJJRD"
+          },
+          {
+            "kind": "option",
+            "command": "task create",
             "name": "description",
             "source_task": "202608061646-30TKV4"
           },
@@ -2188,6 +2305,12 @@
             "command": "task create",
             "name": "json",
             "source_task": "202608061646-30TKV4"
+          },
+          {
+            "kind": "option",
+            "command": "task create",
+            "name": "mutation-scope",
+            "source_task": "202608110235-WCJJRD"
           },
           {
             "kind": "option",
@@ -2204,8 +2327,26 @@
           {
             "kind": "option",
             "command": "task create",
+            "name": "risk",
+            "source_task": "202608110235-WCJJRD"
+          },
+          {
+            "kind": "option",
+            "command": "task create",
             "name": "route",
             "source_task": "202608061646-30TKV4"
+          },
+          {
+            "kind": "option",
+            "command": "task create",
+            "name": "tag",
+            "source_task": "202608110235-WCJJRD"
+          },
+          {
+            "kind": "option",
+            "command": "task create",
+            "name": "task-kind",
+            "source_task": "202608110235-WCJJRD"
           },
           {
             "kind": "option",
