@@ -87,6 +87,28 @@ async function runSynchronizedCliProcess(opts: {
 }
 
 describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
+  it("rejects an unsupported check before creating the user-first task", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "create",
+        "Validate the product",
+        "--verify",
+        "python -c 'print(1)'",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("inline code evaluation is not allowed for python");
+    } finally {
+      io.restore();
+    }
+    await expect(readdir(path.join(root, ".agentplane", "tasks"))).rejects.toThrow();
+  });
+
   it("persists explicit structured intent and returns one semantic next step", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();

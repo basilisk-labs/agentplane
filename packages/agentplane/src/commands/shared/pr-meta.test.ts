@@ -135,7 +135,7 @@ describe("pr-meta shell invocations", () => {
     expect(result).toEqual({ code: 0, output: "ok" });
   });
 
-  it("starts declared bunx verification commands through the allowlist", async () => {
+  it("starts declared bunx verification commands through the shared argv contract", async () => {
     const gitProcess = await import("@agentplaneorg/core/process");
     const stdout = new PassThrough();
     const stderr = new PassThrough();
@@ -180,13 +180,15 @@ describe("pr-meta shell invocations", () => {
     expect(result.output.endsWith("tail")).toBe(true);
   });
 
-  it("rejects non-allowlisted verify executables before process start", async () => {
+  it("rejects shell-evaluated verify commands before process start", async () => {
     const gitProcess = await import("@agentplaneorg/core/process");
     const startProcess = vi.spyOn(gitProcess, "startProcess");
 
-    await expect(runShellCommand("custom-runner --version", process.cwd())).resolves.toEqual({
+    await expect(
+      runShellCommand("bash -c 'custom-runner --version'", process.cwd()),
+    ).resolves.toEqual({
       code: 1,
-      output: "verify command executable is not allowed: custom-runner",
+      output: "verify command is not supported: inline shell evaluation is not allowed",
     });
     expect(startProcess).not.toHaveBeenCalled();
   });
