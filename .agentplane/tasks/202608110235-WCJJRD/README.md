@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -27,9 +27,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T09:43:15.757Z"
+  updated_at: "2026-08-11T09:54:21.483Z"
   updated_by: "REVIEWER"
-  note: "Final review fix verified at 28f67445f."
+  note: "Final verification after quality review; implementation remains 28f67445f."
   attempts: 0
 quality_review:
   state: "pass"
@@ -242,8 +242,14 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Final review fix verified at 28f67445f."
+  -
+    type: "verify"
+    at: "2026-08-11T09:54:21.483Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Final verification after quality review; implementation remains 28f67445f."
 doc_version: 3
-doc_updated_at: "2026-08-11T09:53:37.699Z"
+doc_updated_at: "2026-08-11T09:54:23.950Z"
 doc_updated_by: "CODER"
 description: "Remove ordered natural-language keyword classification from task create. The CLI must validate structured task intent supplied by the agent or user, and otherwise create a neutral semantic-intake boundary for PLANNER without guessing task kind, mutation scope, risks, tags, blueprint, or execution route."
 sections:
@@ -627,6 +633,38 @@ sections:
     Details:
 
     pass (implementation 28f67445f; test:fast 549 files, 3984 tests; focused planner-envelope flow, typecheck, lint, format, schemas, build, knip, hotspots pass)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110235-WCJJRD-replace-task-create-keyword-inference-with-expli/.agentplane/tasks/202608110235-WCJJRD/blueprint/resolved-snapshot.json
+    - old_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+    - current_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608110235-WCJJRD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T09:54:21.483Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Final verification after quality review; implementation remains 28f67445f.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a592495c95da711ecb80215b6394f03120f4aad2dfdbcaa463af64d31287db66, input_digest=sha256:868673a12bddbaf72c82a42794cd440cd263d565f4e67e6c581567e0228ea839
+
+    Details:
+
+    pass (implementation 28f67445f; evidence unchanged: test:fast 549 files, 3984 tests; hosted checks 17 passed)
 
     BlueprintSnapshotRef:
     - state: current
@@ -1052,6 +1090,38 @@ VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a592495c95da711ecb80215b6394f
 Details:
 
 pass (implementation 28f67445f; test:fast 549 files, 3984 tests; focused planner-envelope flow, typecheck, lint, format, schemas, build, knip, hotspots pass)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110235-WCJJRD-replace-task-create-keyword-inference-with-expli/.agentplane/tasks/202608110235-WCJJRD/blueprint/resolved-snapshot.json
+- old_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+- current_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608110235-WCJJRD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T09:54:21.483Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Final verification after quality review; implementation remains 28f67445f.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a592495c95da711ecb80215b6394f03120f4aad2dfdbcaa463af64d31287db66, input_digest=sha256:868673a12bddbaf72c82a42794cd440cd263d565f4e67e6c581567e0228ea839
+
+Details:
+
+pass (implementation 28f67445f; evidence unchanged: test:fast 549 files, 3984 tests; hosted checks 17 passed)
 
 BlueprintSnapshotRef:
 - state: current

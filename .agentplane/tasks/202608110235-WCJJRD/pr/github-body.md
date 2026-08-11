@@ -16,7 +16,7 @@ Remove ordered natural-language keyword classification from task create. The CLI
 ## Verification
 
 - State: ok
-- Note: Final review fix verified at 28f67445f.
+- Note: Final verification after quality review; implementation remains 28f67445f.
 - Canonical workflow state lives in the task README.
 
 <details>
