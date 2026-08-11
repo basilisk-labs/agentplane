@@ -522,6 +522,118 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
   );
 
   it(
+    "work start allows one dedicated worktree for each of multiple parallel tasks",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+      await seedRepoLocalBinArtifacts(root);
+      await seedRepoLocalNodeModules(root);
+      await seedRepoLocalCorePackage(root);
+      await seedRepoLocalDistArtifacts(root);
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+      const createTask = async (title: string): Promise<string> => {
+        const io = captureStdIO();
+        try {
+          expect(
+            await runCli([
+              "task",
+              "new",
+              "--title",
+              title,
+              "--description",
+              `${title} uses its own parallel worktree.`,
+              "--priority",
+              "med",
+              "--owner",
+              "CODER",
+              "--tag",
+              "workflow",
+              "--root",
+              root,
+            ]),
+          ).toBe(0);
+          return io.stdout.trim();
+        } finally {
+          io.restore();
+        }
+      };
+
+      const firstTask = await createTask("Parallel task one");
+      await approveTaskPlan(root, firstTask);
+      await runCliSilent([
+        "work",
+        "start",
+        firstTask,
+        "--agent",
+        "CODER",
+        "--slug",
+        "parallel-one",
+        "--worktree",
+        "--root",
+        root,
+      ]);
+
+      const secondTask = await createTask("Parallel task two");
+      await approveTaskPlan(root, secondTask);
+      await runCliSilent([
+        "work",
+        "start",
+        secondTask,
+        "--agent",
+        "CODER",
+        "--slug",
+        "parallel-two",
+        "--worktree",
+        "--root",
+        root,
+      ]);
+
+      const firstWorktree = path.join(
+        root,
+        ".agentplane",
+        "worktrees",
+        `${firstTask}-parallel-one`,
+      );
+      const secondWorktree = path.join(
+        root,
+        ".agentplane",
+        "worktrees",
+        `${secondTask}-parallel-two`,
+      );
+      const { stdout } = await execFileAsync("git", ["worktree", "list", "--porcelain"], {
+        cwd: root,
+      });
+
+      expect(stdout).toContain(firstWorktree);
+      expect(stdout).toContain(secondWorktree);
+      expect(
+        await pathExists(path.join(root, ".agentplane", "tasks", firstTask, "README.md")),
+      ).toBe(false);
+      expect(
+        await pathExists(path.join(root, ".agentplane", "tasks", secondTask, "README.md")),
+      ).toBe(false);
+      expect(
+        await pathExists(path.join(firstWorktree, ".agentplane", "tasks", firstTask, "README.md")),
+      ).toBe(true);
+      expect(
+        await pathExists(
+          path.join(secondWorktree, ".agentplane", "tasks", secondTask, "README.md"),
+        ),
+      ).toBe(true);
+    },
+    WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
+  );
+
+  it(
     "work start rejects a base branch that is behind its upstream tracking ref",
     async () => {
       const root = await mkGitRepoRootWithBranch("main");

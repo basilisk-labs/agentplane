@@ -18,6 +18,7 @@ type SideEffectClass =
   | "local_reversible"
   | "external_reversible"
   | "external_high_risk"
+  | "external_pre_authorized"
   | "semantic_decision";
 
 type AuthorityRequirement = {
@@ -45,6 +46,18 @@ const EXTERNAL_HIGH_RISK: AuthorityRequirement = {
 };
 
 /**
+ * The queue entry is itself an exact, durable integration authorization: it
+ * can only be created by the authority-gated integration.enqueue operation.
+ * Consuming that entry is deterministic execution of the existing authority,
+ * not a second high-risk decision.
+ */
+const EXTERNAL_PRE_AUTHORIZED: AuthorityRequirement = {
+  class: "external_pre_authorized",
+  policyRule: "workflow.external_pre_authorized_queue",
+  requiresAuthority: false,
+};
+
+/**
  * One exhaustive policy table makes a newly added formal operation fail closed
  * until it is deliberately classified here.
  */
@@ -67,6 +80,7 @@ export const WORKFLOW_OPERATION_AUTHORITY_POLICY = {
   "route.remote.refresh": EXTERNAL_REVERSIBLE,
   "task.pre_merge_close": EXTERNAL_HIGH_RISK,
   "integration.enqueue": EXTERNAL_HIGH_RISK,
+  "integration.run_next": EXTERNAL_PRE_AUTHORIZED,
   "task.hosted_close.open": EXTERNAL_REVERSIBLE,
   // The protected merge and task completion have already been recorded before
   // this route. `cleanup merged --finalize` only fast-forwards the local base

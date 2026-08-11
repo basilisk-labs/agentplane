@@ -5,6 +5,7 @@ import { cmdCommit } from "../guard/impl/commit.js";
 import {
   makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler,
   makeRunIntegrateQueueEnqueueHandler,
+  makeRunIntegrateQueueRunNextHandler,
 } from "../integrate-queue.command.js";
 import { resolvePrFlowStatus } from "../pr/flow-status.js";
 import { cmdPrOpen } from "../pr/open.js";
@@ -195,6 +196,30 @@ export async function executeBranchWorkflowOperation(opts: {
       return succeeded(
         operation,
         `enqueued exact task branch head for ${operation.params.taskId}`,
+        exitCode,
+      );
+    }
+    case "integration.run_next": {
+      const handler = makeRunIntegrateQueueRunNextHandler(() => Promise.resolve(command));
+      exitCode = await handler(cliContext, {
+        worker: null,
+        leaseMs: null,
+        pollIntervalMs: null,
+        timeoutMs: null,
+        runVerify: false,
+        dryRun: false,
+        quiet: true,
+        drain: false,
+        wait: true,
+        hosted: true,
+        stablePolls: null,
+        hostedPollIntervalMs: null,
+        hostedTimeoutMs: null,
+        requiredChecks: [],
+      });
+      return succeeded(
+        operation,
+        `advanced the serialized integration queue for ${operation.params.taskId}`,
         exitCode,
       );
     }

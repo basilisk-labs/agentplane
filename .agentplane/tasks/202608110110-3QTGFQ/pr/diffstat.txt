@@ -1,0 +1,15 @@
+ .../src/cli/run-cli.core.pr-flow.test.ts           | 112 +++++++++++++++++++++
+ .../commands/shared/side-effect-authority.test.ts  |   4 +
+ .../src/commands/shared/side-effect-authority.ts   |  14 +++
+ .../commands/shared/workflow-operation-effects.ts  |   1 +
+ .../commands/shared/workflow-operation-prefix.ts   |   1 +
+ .../workflow-operation-projection.registry.test.ts |   4 +
+ .../shared/workflow-operation-projection.ts        |   3 +
+ .../src/commands/shared/workflow-postconditions.ts |   7 ++
+ .../workflow-step-integration-projections.test.ts  |  46 +++++++--
+ .../shared/workflow-step-integration-queue.ts      |  18 +++-
+ .../src/commands/shared/workflow-step.ts           |  20 ++++
+ .../task/branch-task-supervisor-operations.test.ts |  49 +++++++++
+ .../task/branch-task-supervisor-operations.ts      |  25 +++++
+ .../commands/task/branch-task-supervisor.test.ts   |  15 ++-
+ 14 files changed, 304 insertions(+), 15 deletions(-)

@@ -46,6 +46,7 @@ type WorkflowOperationType =
   | "hosted_close_prepare"
   | "integration_legacy_conflict_adoption"
   | "integration_enqueue"
+  | "integration_run_next"
   | "pr_sync"
   | "provider_refresh"
   | "runner_follow"
@@ -61,6 +62,7 @@ export type WorkflowOperationId =
   | "batch.reconcile_included"
   | "integration.adopt_legacy_protected_conflict"
   | "integration.enqueue"
+  | "integration.run_next"
   | "pr.artifacts.update"
   | "pr.head.publish"
   | "pr.open"
@@ -88,6 +90,7 @@ export type WorkflowOperationParams = {
     expectedAdoptionToken: string;
   };
   "integration.enqueue": { taskId: string; branch: string };
+  "integration.run_next": { taskId: string };
   "pr.artifacts.update": { taskId: string; includeTaskIds: readonly string[] };
   "pr.head.publish": {
     taskId: string;
@@ -341,6 +344,23 @@ export const WORKFLOW_OPERATION_REGISTRY = {
     ],
     triggersGitHooks: false,
     verificationCandidate: "agentplane pr check <task-id>",
+    needsVerificationRecord: false,
+  },
+  "integration.run_next": {
+    type: "integration_run_next",
+    phase: "integration_queue_foreground",
+    checkout: "base_checkout",
+    role: "INTEGRATOR",
+    expectedPostconditions: [
+      POSTCONDITION.integrationQueueWorkerCycleCompleted,
+      POSTCONDITION.routeRecomputed,
+    ],
+    mustNot: [
+      "do not integrate a branch directly; run-next may consume only a queue entry created by the authority-gated enqueue operation",
+      "do not run semantic verification again when the exact queued head already has a reusable verification record and hosted checks",
+    ],
+    triggersGitHooks: false,
+    verificationCandidate: "agentplane integrate queue doctor --json",
     needsVerificationRecord: false,
   },
   "integration.adopt_legacy_protected_conflict": {

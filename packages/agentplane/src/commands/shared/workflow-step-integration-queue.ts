@@ -46,6 +46,18 @@ function integrationQueueWaitStep(
   };
 }
 
+function integrationQueueRunNextStep(state: WorkflowRouteState): WorkflowStep {
+  return cliOperationStep({
+    state,
+    operationId: "integration.run_next",
+    params: { taskId: state.task.id },
+    code: "advance_integration_queue",
+    summary:
+      "advance the serialized integration queue in the foreground and recompute provider truth",
+    selectedBlocker: null,
+  });
+}
+
 function queueMatchesCurrentRoute(state: WorkflowRouteState): boolean {
   const flow = state.prFlow;
   const queue = flow?.queue;
@@ -78,11 +90,11 @@ export function integrationQueueStep(
       });
     }
     const identityMatches = queueMatchesCurrentRoute(state);
-    if (queue.status === "claimed" || queue.status === "handoff") {
-      return integrationQueueWaitStep(state, queue.status);
-    }
     if (identityMatches) {
       if (queue.status === "rework") return implementationReworkStep(state);
+      if (queue.status === "queued" || queue.status === "claimed" || queue.status === "handoff") {
+        return integrationQueueRunNextStep(state);
+      }
       return integrationQueueWaitStep(state, queue.status);
     }
   }

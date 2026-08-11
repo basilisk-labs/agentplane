@@ -86,6 +86,10 @@ describe("Workflow operation projection registry", () => {
         params: { taskId, branch: taskBranch },
         argv: ["agentplane", "integrate", "queue", "enqueue", taskId, "--branch", taskBranch],
       },
+      "integration.run_next": {
+        params: { taskId },
+        argv: ["agentplane", "integrate", "queue", "run-next", "--wait", "--hosted", "--quiet"],
+      },
       "pr.artifacts.update": {
         params: { taskId, includeTaskIds: ["INCLUDED"] },
         argv: ["agentplane", "pr", "update", taskId, "--include-task", "INCLUDED"],

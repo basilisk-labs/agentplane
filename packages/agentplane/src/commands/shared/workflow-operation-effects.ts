@@ -26,6 +26,7 @@ export const WORKFLOW_OPERATION_EFFECTS = {
   "route.remote.refresh": "read_only",
   "task.pre_merge_close": "mutating",
   "integration.enqueue": "mutating",
+  "integration.run_next": "mutating",
   "task.hosted_close.open": "mutating",
   "task.hosted_close.finalize": "mutating",
   "task.worktree.cleanup": "mutating",

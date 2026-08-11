@@ -568,7 +568,7 @@ describe("branch_pr task supervisor", () => {
     });
   });
 
-  it("runs semantic roles, opens one PR, enqueues one exact head, then stops on provider wait", async () => {
+  it("runs semantic roles, opens one PR, enqueues one exact head, and advances its queue", async () => {
     const root = await mkGitRepoRoot();
     const decisions = [
       agentDecision(1, "implementation"),
@@ -576,26 +576,28 @@ describe("branch_pr task supervisor", () => {
       agentDecision(3, "quality_review"),
       cliDecision(4, "pr.open", { taskId, author: "CODER", includeTaskIds: [] }),
       cliDecision(5, "integration.enqueue", { taskId, branch }),
-      stopDecision(6, "wait"),
+      cliDecision(6, "integration.run_next", { taskId }),
+      stopDecision(7, "terminal"),
     ];
     const calls: string[] = [];
     const result = await superviseBranchTaskRunWithPorts(sequencePorts(root, decisions, calls));
 
-    expect(result.status).toBe("stopped");
-    expect(result.stop?.code).toBe("wait_required");
+    expect(result.status).toBe("finalized");
+    expect(result.stop).toBeNull();
     expect(calls).toEqual([
       "agent.implementation",
       "agent.verification",
       "agent.quality_review",
       "pr.open",
       "integration.enqueue",
+      "integration.run_next",
     ]);
     expect(result.executor).toMatchObject({
       implementation_commit: "a".repeat(40),
       semantic_status: "completed",
     });
     expect(result.metrics.executor_lifecycle_event_delta).toBe(0);
-    expect(result.operation_receipts).toHaveLength(2);
+    expect(result.operation_receipts).toHaveLength(3);
     expect(result.operation_receipts[0]).toMatchObject({
       operation_id: "pr.open",
       provider: { state: "OPEN", pr_number: 4702 },
@@ -604,6 +606,9 @@ describe("branch_pr task supervisor", () => {
       operation_id: "integration.enqueue",
       branch,
       task_head_sha: String(6).padStart(40, "0"),
+    });
+    expect(result.operation_receipts[2]).toMatchObject({
+      operation_id: "integration.run_next",
     });
   });
 
