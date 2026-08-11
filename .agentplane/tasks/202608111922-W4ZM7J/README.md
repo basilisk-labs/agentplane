@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -68,7 +68,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-11T20:52:13.217Z"
+  updated_at: "2026-08-11T21:18:33.468Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -78,8 +78,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "fb924548c3a5eeade78ee2905cd09de68ed89b16"
-  message: "✅ W4ZM7J task: record synchronized quality review"
+  hash: "570c16098c17c9a6fbab99135dd5ff884d4b7227"
+  message: "✅ W4ZM7J task: record CI remediation review"
 comments:
   -
     author: "CODER"
@@ -90,6 +90,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -143,8 +146,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified implementation 7703c7a64 after hosted CI remediation."
+  -
+    type: "status"
+    at: "2026-08-11T21:18:33.468Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "570c16098c17c9a6fbab99135dd5ff884d4b7227"
 doc_version: 3
-doc_updated_at: "2026-08-11T21:17:37.240Z"
+doc_updated_at: "2026-08-11T21:18:33.499Z"
 doc_updated_by: "CODER"
 description: "Reject unsupported verification commands at every task mutation boundary using the same deterministic parser later used by automatic TESTER execution. Return an actionable error before persisting task state; preserve repository-bound argv execution without shell evaluation; cover task new, add, update, derive, begin/create adapters, and the previously failing bun test path command."
 sections:
@@ -301,8 +312,8 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "9b68f75daff0ff59bbbaaea63bd308edd7f75474"
-    message: "🔀 W4ZM7J task: synchronize optimized main"
+    hash: "7703c7a64192b7888a9fc5d0482f3c22fa11d349"
+    message: "🐛 W4ZM7J task: align CI contracts"
   workflow_route_baseline:
     start_head_sha: "2069221001f334aa7538042998166dae60919499"
     version: 1
@@ -484,4 +495,4 @@ DecisionContextRef:
 - Provenance: `supervisor_journal/agentplane`
 - Journal digest: `sha256:af2921d2c54ba16356be575bbdeb7b6d8a6bd05b0f05b4374affe3e3521c5483`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-11T20:52:13.217Z`
+- Updated at: `2026-08-11T21:18:33.468Z`
