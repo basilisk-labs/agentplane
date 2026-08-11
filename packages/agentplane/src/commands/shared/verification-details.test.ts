@@ -71,6 +71,22 @@ describe("verification details", () => {
     ]);
   });
 
+  it("keeps label-shaped text inside inline check values", () => {
+    expect(
+      parseVerificationCheckDetails(
+        'Command: sh -c "echo Scope: smoke". Result: pass. ' +
+          "Evidence: output mentioned Command: without starting a field. Scope: focused.",
+      ),
+    ).toEqual([
+      {
+        command: 'sh -c "echo Scope: smoke".',
+        result: "pass",
+        evidence: "output mentioned Command: without starting a field.",
+        scope: "focused.",
+      },
+    ]);
+  });
+
   it.each(["passed", "pass maybe", "failure", "fail open", "pass;"])(
     "rejects an ambiguous result value: %s",
     (result) => {

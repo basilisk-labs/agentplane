@@ -8,7 +8,11 @@ export type VerificationCheckDetail = {
 const REQUIRED_FIELDS = ["Command", "Result", "Evidence", "Scope"] as const;
 type RequiredField = (typeof REQUIRED_FIELDS)[number];
 
-const FIELD_PATTERN = /(?:^|\s)(Command|Result|Evidence|Scope):\s*/gu;
+// A label is structural only at a line boundary or after the terminal period
+// used by the compatibility inline format. Plain label-shaped text inside a
+// command or evidence value (for example `echo Scope: smoke`) stays data.
+const FIELD_PATTERN =
+  /(?:^|(?:\r?\n)[\t ]*|(?<=\.)[\t ]+)(Command|Result|Evidence|Scope):[\t ]*/gu;
 
 /**
  * Parses the durable, user-facing verification-details format once. Consumers
