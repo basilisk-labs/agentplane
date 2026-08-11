@@ -8,10 +8,10 @@
   "pr_number": 4825,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4825",
   "pre_merge_closure": {
-    "basis_commit": "7cdce524c408b745c6c4a77a5f1ca6fe8cf2af19",
+    "basis_commit": "fb924548c3a5eeade78ee2905cd09de68ed89b16",
     "branch": "task/202608111922-W4ZM7J/validate-declared-checks-with-the-supervised-exe",
     "pr_number": 4825,
-    "recorded_at": "2026-08-11T20:23:06.888Z",
+    "recorded_at": "2026-08-11T20:52:13.281Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
