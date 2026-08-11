@@ -109,11 +109,13 @@ describe("route task-worktree blockers", () => {
       blockers: staleBlockers,
       task,
       acceptedVerificationRecord: false,
+      verificationReason: "verification_implementation_changed",
     });
     expect(staleBlockers).toEqual([
       {
         code: "verification_required",
-        summary: "the passing verification record does not cover the current implementation head",
+        summary:
+          "the passing verification record does not cover the current verification input (reason_code=verification_implementation_changed)",
       },
     ]);
 
@@ -124,6 +126,36 @@ describe("route task-worktree blockers", () => {
       acceptedVerificationRecord: true,
     });
     expect(freshBlockers).toEqual([]);
+  });
+
+  it("keeps a merged and close-tail-finalized DONE task terminal after lifecycle drift", () => {
+    const blockers: RouteBlocker[] = [];
+    addVerificationRequiredBlocker({
+      blockers,
+      task: {
+        id: "T-1",
+        title: "Task",
+        description: "Task",
+        status: "DONE",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: [],
+        verify: ["bun test"],
+        verification: {
+          state: "ok",
+          attempts: 0,
+          updated_at: "2026-08-10T00:00:00.000Z",
+          updated_by: "TESTER",
+          note: "Verified before lifecycle closeout.",
+        },
+      },
+      acceptedVerificationRecord: false,
+      verificationReason: "verification_implementation_changed",
+      finalizedDoneTask: true,
+    });
+
+    expect(blockers).toEqual([]);
   });
 
   it("invalidates stale verification before the active task records its final commit", () => {

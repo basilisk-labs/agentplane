@@ -1,0 +1,57 @@
+{
+  "details": "Command: bun run test:fast\nResult: pass\nEvidence: 549 files and 3972 tests passed on unchanged runtime implementation e3a351ab0dbf4bb6d2296ec79cb1a70cb78ddb26\nScope: complete runtime regression suite reused because subsequent diff is policy incident registration only\n\nCommand: node .agentplane/policy/check-routing.mjs && bun run agents:check\nResult: pass\nEvidence: final policy tree 09c137cb1be297a8f7601966946d82fed3892b88 passed routing and generated-agent parity\nScope: newly changed incident policy and mirrored packaged asset\n\nCommand: bun run build\nResult: pass\nEvidence: all distributable bundles built from final tree 09c137cb1be297a8f7601966946d82fed3892b88\nScope: final distributable tree including packaged incident registry",
+  "digest": "sha256:721bfb0ef350c4d2c3ed4d862255720385dc85e70a2c51da7d92724fb1160775",
+  "implementation_sha": "09c137cb1be297a8f7601966946d82fed3892b88",
+  "input": {
+    "context": {
+      "digest": "sha256:d2be8e06bd75acb7aa3935374b7e1f515d5ce3059d777698ef140fec47a89fd3",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        "bun.lock",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/tsconfig.json",
+        "packages/core/package.json",
+        "packages/core/tsconfig.json",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/spec/package.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "tsconfig.json",
+        "website/bun.lock",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:0c2006ea8b7d65031627e50ea07b1e10664f51eb59d62134c6c061c454126c5d",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "implementation": {
+      "base_sha": "1423a4736890404d114c688da49746aa7ca5aaa4",
+      "digest": "sha256:0c58f7a4602378d90d718c9a361ceeb4e32b2fe846db20ff904108013d51883f",
+      "strategy": "branch_diff",
+      "target_sha": "09c137cb1be297a8f7601966946d82fed3892b88"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 1,
+    "verify_steps_digest": "sha256:20b160e8f5672c5a1676c10b42016b09c08011caf12082bfc4377d2a317e3fb6"
+  },
+  "kind": "task_verification_record",
+  "note": "Final tree verified with scoped reuse after pre-release CI incident registration.",
+  "recorded_at": "2026-08-11T00:07:41.457Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run the focused verification identity, record, route, transition, durability, and workflow-hook tests. Expected: pass plus structured Finding is one task revision; lifecycle-only commits and identical-patch rebases reuse a receipt; source, Verify Steps, dependency context, and runtime drift return specific invalidation reason codes.\n2. Run `bun run test:fast`. Expected: the complete agentplane, core, recipes, and testkit suite passes with no regression in legacy v1 verification records or qualification/evaluator evidence.\n3. Run `bun run typecheck`, `bun run lint`, `bun run format:changed`, `bun run knip:check`, and `bun run hotspots:check`. Expected: all repository contracts pass without widening baselines or size limits.\n4. Run `bun run build`. Expected: all distributable bundles build successfully.\n5. Execute the rebuilt CLI against completed task 202608102112-AY0H1F after its lifecycle-only closeout drift. Expected: route phase is `done`, no `verification_required` blocker appears, and an idempotent cleanup does not create a command loop.\n6. Inspect an injected task-write failure during verify. Expected: neither a passing verification record nor task verification/Finding state remains partially persisted.",
+  "scope_digest": "sha256:20b160e8f5672c5a1676c10b42016b09c08011caf12082bfc4377d2a317e3fb6",
+  "task_id": "202608102243-1RG86M",
+  "verification_command": "agentplane verify 202608102243-1RG86M --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202608102243-1RG86M",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T00:08:36.524Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Final content tree preserves the reviewed verification implementation and adds only the mirrored pre-release CI incident required for 7XGP97.",
+  "evaluated_sha": "09c137cb1be297a8f7601966946d82fed3892b88",
+  "blueprint_digest": "3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963",
+  "findings": [
+    "No blocking defect: runtime diff is unchanged from the 3972-test review; the final policy-only delta passed routing, agent-template parity, and bundle build."
+  ],
+  "evidence_refs": [
+    "verification record .agentplane/tasks/202608102243-1RG86M/verification/20260811000741457-721bfb0ef350c4d2.json",
+    "bun run test:fast: 549 files and 3972 tests on unchanged runtime implementation",
+    "node .agentplane/policy/check-routing.mjs and bun run agents:check: pass on final policy tree",
+    "bun run build: pass on final tree 09c137cb1be297a8f7601966946d82fed3892b88",
+    "PR #4818 final runtime and policy diff"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "RF-04 registered-worktree harness repair and CI latency measurement remain mandatory in 202608102115-7XGP97 before release."
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "details": "Command: bun run test:fast\nResult: pass (549 files, 3977 tests)\nEvidence: .agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#full-suite\nScope: complete AgentPlane runtime suite after review fixes\n\nCommand: bunx vitest run packages/agentplane/src/commands/shared/task-verification-input.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts\nResult: pass (3 files, 18 tests)\nEvidence: .agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#targeted-suite\nScope: whitespace, tool-config, mutable-evidence, Git-fallback, and record-assessment regressions\n\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#typecheck\nScope: repository TypeScript contract\n\nCommand: bunx eslint packages/agentplane/src/commands/shared/task-verification-input.ts packages/agentplane/src/commands/shared/task-verification-input.test.ts packages/agentplane/src/commands/shared/task-verification-records.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts\nResult: pass\nEvidence: .agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#lint\nScope: changed verification implementation and tests\n\nCommand: bun run build\nResult: pass\nEvidence: .agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#build\nScope: all package bundles",
+  "digest": "sha256:3c14bc236d5d040f6f3160a4256133e77d3147897938aeea3a1aa49ba6b92824",
+  "implementation_sha": "62c6cda5ec1189337d20c8209bc61ca9396de109",
+  "input": {
+    "context": {
+      "digest": "sha256:36fec4cc01483f7dade507195e7c8f954b583a6cefd467466f4cbfb918df42fd",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:51b755a990f90c11924f06dfebf309bdae49da18672f720618ee7fa778e170dd",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:3edb1afa74f87da4b6b336fe84590262f62b5b78ecf6a521a2ee951e173b414e",
+      "digest": "sha256:d4b70dd44f5a308b82924ca9f305c87a83553db12d4bba3856e282d736448b83",
+      "references": [
+        {
+          "digest": "sha256:842ccbf4bd08366981f9ae2dee02087cd9537a8041f676a76f04562234b6f6f5",
+          "fragment": "build",
+          "path": ".agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json",
+          "reference": ".agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#build",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:842ccbf4bd08366981f9ae2dee02087cd9537a8041f676a76f04562234b6f6f5",
+          "fragment": "full-suite",
+          "path": ".agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json",
+          "reference": ".agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#full-suite",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:842ccbf4bd08366981f9ae2dee02087cd9537a8041f676a76f04562234b6f6f5",
+          "fragment": "lint",
+          "path": ".agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json",
+          "reference": ".agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#lint",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:842ccbf4bd08366981f9ae2dee02087cd9537a8041f676a76f04562234b6f6f5",
+          "fragment": "targeted-suite",
+          "path": ".agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json",
+          "reference": ".agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#targeted-suite",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:842ccbf4bd08366981f9ae2dee02087cd9537a8041f676a76f04562234b6f6f5",
+          "fragment": "typecheck",
+          "path": ".agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json",
+          "reference": ".agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#typecheck",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "1423a4736890404d114c688da49746aa7ca5aaa4",
+      "digest": "sha256:3691cee173082bd9b2df2a44b56625ae829245b09df69346e4b08cad47d06b9d",
+      "strategy": "branch_diff",
+      "target_sha": "62c6cda5ec1189337d20c8209bc61ca9396de109"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 2,
+    "verify_steps_digest": "sha256:20b160e8f5672c5a1676c10b42016b09c08011caf12082bfc4377d2a317e3fb6"
+  },
+  "kind": "task_verification_record",
+  "note": "Review fixes verified: whitespace, tool context, and mutable evidence are bound to verification identity.",
+  "recorded_at": "2026-08-11T00:53:37.867Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run the focused verification identity, record, route, transition, durability, and workflow-hook tests. Expected: pass plus structured Finding is one task revision; lifecycle-only commits and identical-patch rebases reuse a receipt; source, Verify Steps, dependency context, and runtime drift return specific invalidation reason codes.\n2. Run `bun run test:fast`. Expected: the complete agentplane, core, recipes, and testkit suite passes with no regression in legacy v1 verification records or qualification/evaluator evidence.\n3. Run `bun run typecheck`, `bun run lint`, `bun run format:changed`, `bun run knip:check`, and `bun run hotspots:check`. Expected: all repository contracts pass without widening baselines or size limits.\n4. Run `bun run build`. Expected: all distributable bundles build successfully.\n5. Execute the rebuilt CLI against completed task 202608102112-AY0H1F after its lifecycle-only closeout drift. Expected: route phase is `done`, no `verification_required` blocker appears, and an idempotent cleanup does not create a command loop.\n6. Inspect an injected task-write failure during verify. Expected: neither a passing verification record nor task verification/Finding state remains partially persisted.",
+  "scope_digest": "sha256:20b160e8f5672c5a1676c10b42016b09c08011caf12082bfc4377d2a317e3fb6",
+  "task_id": "202608102243-1RG86M",
+  "verification_command": "agentplane verify 202608102243-1RG86M --ok --by TESTER",
+  "verifier": "TESTER"
+}

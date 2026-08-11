@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile } from "node:fs/promises";
+import { mkdir, readFile, rm } from "node:fs/promises";
 import path from "node:path";
 
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
@@ -28,6 +28,7 @@ import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
+import { resolveVerificationInputIdentity } from "../shared/task-verification-input.js";
 
 import { buildStructuredFindingMutationPlan } from "./findings.js";
 import {
@@ -185,164 +186,184 @@ async function recordVerificationResult(opts: {
   }
 
   const at = nowIso();
-  await applyTaskMutation({
-    ctx,
-    taskId: opts.taskId,
-    policyAction: "task_verify",
-    phase: "verify",
-    build: async (current) => {
-      const doc =
-        (typeof current.doc === "string" ? current.doc : "") ||
-        (await backend.getTaskDoc!(current.id));
-      assertVerifyStepsFilled({
-        taskId: current.id,
-        sectionText: extractDocSection(doc, "Verify Steps"),
-        action: "record verification",
-        guidance: "fill it before running `agentplane verify ...`",
-      });
-      const verificationScope = extractDocSection(doc, "Verify Steps")?.trim() ?? "";
-      const batchTaskIds = normalizeBranchPrBatchTaskIds(current, current.id);
-      const qualificationDependencies = isQualificationTask(current)
-        ? await resolveQualificationDependencyLeaves({
-            taskId: current.id,
-            loadTask: (taskId) => ctx.taskBackend.getTask(taskId),
-          })
-        : null;
-      const qualityReviewTaskIds = qualificationDependencies
-        ? [...new Set([...batchTaskIds, ...qualificationDependencies.dependencyTaskIds])]
-        : batchTaskIds;
-      const evaluatedSha = await resolveQualityReviewTargetSha({
-        gitRoot: resolved.gitRoot,
-        workflowDir: config.paths.workflow_dir,
-        taskId: current.id,
-        taskIds: qualityReviewTaskIds,
-        lifecycleTaskIds: batchTaskIds,
-        previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
-        workflowMode: config.workflow_mode,
-      });
-      if (
-        opts.state === "ok" &&
-        isQualificationTask(current) &&
-        parseVerificationCheckDetails(opts.details) === null
-      ) {
-        throw new CliError({
-          code: "E_VALIDATION",
-          message:
-            "Qualification verification requires structured --details with Command, Result, Evidence, and Scope for every check.",
+  let verificationPath: string | null = null;
+  let verificationRecordCreated = false;
+  try {
+    await applyTaskMutation({
+      ctx,
+      taskId: opts.taskId,
+      policyAction: "task_verify",
+      phase: "verify",
+      build: async (current) => {
+        const doc =
+          (typeof current.doc === "string" ? current.doc : "") ||
+          (await backend.getTaskDoc!(current.id));
+        assertVerifyStepsFilled({
+          taskId: current.id,
+          sectionText: extractDocSection(doc, "Verify Steps"),
+          action: "record verification",
+          guidance: "fill it before running `agentplane verify ...`",
         });
-      }
-      const record = {
-        schema_version: 1,
-        kind: "task_verification_record",
-        task_id: opts.taskId,
-        recorded_at: at,
-        verification_command: verificationCommand({
-          command: opts.command,
-          taskId: opts.taskId,
-          state: opts.state,
-          by: opts.by,
-        }),
-        result: opts.state,
-        verifier: opts.by,
-        note: opts.note,
-        details: opts.details?.trim() ?? null,
-        implementation_sha: evaluatedSha,
-        scope: verificationScope,
-        scope_digest: sha256(verificationScope),
-      };
-      const digest = sha256(JSON.stringify(canonicalizeJson(record)));
-      const verificationDir = path.join(
-        resolved.gitRoot,
-        config.paths.workflow_dir,
-        opts.taskId,
-        "verification",
-      );
-      await mkdir(verificationDir, { recursive: true });
-      const verificationPath = path.join(verificationDir, verificationRecordName(at, digest));
-      await writeJsonStableIfChanged(verificationPath, {
-        ...record,
-        digest,
-      });
-      if (opts.state === "ok" && isQualificationTask(current)) {
-        await writeQualificationPacket({
-          ctx,
-          task: current,
-          recordPath: verificationPath,
-          recordedAt: at,
+        const verificationScope = extractDocSection(doc, "Verify Steps")?.trim() ?? "";
+        const batchTaskIds = normalizeBranchPrBatchTaskIds(current, current.id);
+        const qualificationDependencies = isQualificationTask(current)
+          ? await resolveQualificationDependencyLeaves({
+              taskId: current.id,
+              loadTask: (taskId) => ctx.taskBackend.getTask(taskId),
+            })
+          : null;
+        const qualityReviewTaskIds = qualificationDependencies
+          ? [...new Set([...batchTaskIds, ...qualificationDependencies.dependencyTaskIds])]
+          : batchTaskIds;
+        const evaluatedSha = await resolveQualityReviewTargetSha({
+          gitRoot: resolved.gitRoot,
+          workflowDir: config.paths.workflow_dir,
+          taskId: current.id,
+          taskIds: qualityReviewTaskIds,
+          lifecycleTaskIds: batchTaskIds,
+          previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
+          workflowMode: config.workflow_mode,
         });
-      }
-
-      const execution = executeTaskVerificationTransitionRequest({
-        task: current,
-        at,
-        by: opts.by,
-        note: opts.note,
-        state: opts.state,
-        details: await appendDecisionContextReference(
-          await appendBlueprintSnapshotReference(opts.details, { ctx, task: current }),
-          {
-            ctx,
-            cwd: opts.cwd,
-            rootOverride: opts.rootOverride,
-            taskId: current.id,
-          },
-        ),
-        doc,
-        requiredSections: config.tasks.doc.required_sections,
-        maxReworkAttempts: config.evaluator?.max_rework_attempts,
-      });
-      const intents = [...execution.intents];
-      if (opts.by === "EVALUATOR") {
-        const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx, task: current }).catch(
-          () => null,
-        );
-        const readmePath = path.join(
+        const verificationInput = await resolveVerificationInputIdentity({
+          gitRoot: resolved.gitRoot,
+          workflowDir: config.paths.workflow_dir,
+          taskIds: qualityReviewTaskIds,
+          targetSha: evaluatedSha,
+          verifySteps: verificationScope,
+          workflowMode: config.workflow_mode,
+          verificationDetails: opts.details,
+        });
+        if (
+          opts.state === "ok" &&
+          isQualificationTask(current) &&
+          parseVerificationCheckDetails(opts.details) === null
+        ) {
+          throw new CliError({
+            code: "E_VALIDATION",
+            message:
+              "Qualification verification requires structured --details with Command, Result, Evidence, and Scope for every check.",
+          });
+        }
+        const findingPlan = opts.finding
+          ? buildStructuredFindingMutationPlan({
+              current,
+              config,
+              observation: opts.finding.observation,
+              impact: opts.finding.impact,
+              resolution: opts.finding.resolution,
+              promote: opts.finding.promote === true,
+              external: opts.finding.external === true,
+              fixability: opts.finding.repoFixable ? "repo-fixable" : null,
+              incidentScope: opts.finding.incidentScope,
+              incidentTags: opts.finding.incidentTags ?? [],
+              incidentMatch: opts.finding.incidentMatch ?? [],
+              incidentAdvice: opts.finding.incidentAdvice,
+              incidentRule: opts.finding.incidentRule,
+            })
+          : null;
+        const record = {
+          schema_version: verificationInput ? 2 : 1,
+          kind: "task_verification_record",
+          task_id: opts.taskId,
+          recorded_at: at,
+          verification_command: verificationCommand({
+            command: opts.command,
+            taskId: opts.taskId,
+            state: opts.state,
+            by: opts.by,
+          }),
+          result: opts.state,
+          verifier: opts.by,
+          note: opts.note,
+          details: opts.details?.trim() ?? null,
+          implementation_sha: evaluatedSha,
+          scope: verificationScope,
+          scope_digest: sha256(verificationScope),
+          ...(verificationInput ? { input: verificationInput } : {}),
+        };
+        const digest = sha256(JSON.stringify(canonicalizeJson(record)));
+        const verificationDir = path.join(
           resolved.gitRoot,
           config.paths.workflow_dir,
-          current.id,
-          "README.md",
+          opts.taskId,
+          "verification",
         );
-        intents.push(
-          setTaskFieldsIntent({
-            quality_review: {
-              state: verificationStateToQualityReviewState(
-                execution.nextTask.verification?.state ?? opts.state,
-              ),
-              updated_at: at,
-              updated_by: opts.by,
-              note: opts.note,
-              evaluated_sha: evaluatedSha,
-              blueprint_digest: snapshot?.current.digest ?? null,
-              evidence_refs: [
-                path.relative(resolved.gitRoot, readmePath),
-                ...(snapshot?.path ? [snapshot.path] : []),
-              ],
-              findings: opts.details ? [opts.details] : [],
-            },
-          }),
-        );
-      }
-      if (opts.finding) {
-        const findingPlan = buildStructuredFindingMutationPlan({
-          current,
-          config,
-          observation: opts.finding.observation,
-          impact: opts.finding.impact,
-          resolution: opts.finding.resolution,
-          promote: opts.finding.promote === true,
-          external: opts.finding.external === true,
-          fixability: opts.finding.repoFixable ? "repo-fixable" : null,
-          incidentScope: opts.finding.incidentScope,
-          incidentTags: opts.finding.incidentTags ?? [],
-          incidentMatch: opts.finding.incidentMatch ?? [],
-          incidentAdvice: opts.finding.incidentAdvice,
-          incidentRule: opts.finding.incidentRule,
+        await mkdir(verificationDir, { recursive: true });
+        verificationPath = path.join(verificationDir, verificationRecordName(at, digest));
+        verificationRecordCreated = await writeJsonStableIfChanged(verificationPath, {
+          ...record,
+          digest,
         });
+        if (opts.state === "ok" && isQualificationTask(current)) {
+          await writeQualificationPacket({
+            ctx,
+            task: current,
+            recordPath: verificationPath,
+            recordedAt: at,
+          });
+        }
+
+        const execution = executeTaskVerificationTransitionRequest({
+          task: current,
+          at,
+          by: opts.by,
+          note: opts.note,
+          state: opts.state,
+          details: await appendDecisionContextReference(
+            await appendBlueprintSnapshotReference(opts.details, { ctx, task: current }),
+            {
+              ctx,
+              cwd: opts.cwd,
+              rootOverride: opts.rootOverride,
+              taskId: current.id,
+            },
+          ),
+          doc,
+          requiredSections: config.tasks.doc.required_sections,
+          maxReworkAttempts: config.evaluator?.max_rework_attempts,
+          verificationInputDigest: verificationInput?.digest ?? null,
+        });
+        const intents = [...execution.intents];
+        if (opts.by === "EVALUATOR") {
+          const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx, task: current }).catch(
+            () => null,
+          );
+          const readmePath = path.join(
+            resolved.gitRoot,
+            config.paths.workflow_dir,
+            current.id,
+            "README.md",
+          );
+          intents.push(
+            setTaskFieldsIntent({
+              quality_review: {
+                state: verificationStateToQualityReviewState(
+                  execution.nextTask.verification?.state ?? opts.state,
+                ),
+                updated_at: at,
+                updated_by: opts.by,
+                note: opts.note,
+                evaluated_sha: evaluatedSha,
+                blueprint_digest: snapshot?.current.digest ?? null,
+                evidence_refs: [
+                  path.relative(resolved.gitRoot, readmePath),
+                  ...(snapshot?.path ? [snapshot.path] : []),
+                ],
+                findings: opts.details ? [opts.details] : [],
+              },
+            }),
+          );
+        }
         if (findingPlan) intents.push(...findingPlan.intents);
-      }
-      return { intents };
-    },
-  });
+        return { intents };
+      },
+    });
+  } catch (error) {
+    if (verificationPath && verificationRecordCreated) {
+      await rm(verificationPath, { force: true }).catch(() => null);
+    }
+    throw error;
+  }
 
   if (config.workflow_mode === "branch_pr") {
     const syncResult = await ensurePrArtifactsSynced({

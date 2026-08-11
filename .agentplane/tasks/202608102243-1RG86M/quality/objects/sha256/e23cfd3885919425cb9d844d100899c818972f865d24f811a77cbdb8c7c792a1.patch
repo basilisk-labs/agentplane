@@ -1,0 +1,2001 @@
+diff --git a/.agentplane/policy/incidents.md b/.agentplane/policy/incidents.md
+index bcacc37a8..6fa916e53 100644
+--- a/.agentplane/policy/incidents.md
++++ b/.agentplane/policy/incidents.md
+@@ -2,3 +2,4 @@
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+ - id: INC-20260810-01 | date: 2026-08-10 | scope: task declared-check validation and execution parity | tags: verifier, ux, code, lifecycle, supervisor | match: Unsupported declared check, verifier, ux, code, lifecycle, supervisor, task, declared, check, validation, and, execution, parity, stop, external, agent | failure: Task creation accepted bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts, but automatic TESTER execution later rejected the same command as unsupported and recorded a false needs_rework result. | advice: Recovered with manually recorded structured TESTER evidence; follow up by sharing one validation contract between task verify input and automatic declared-check execution. | rule: Analogous task declared-check validation and execution parity work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608101410-4GSCYN; commit 522a91e6f546 | enforcement: manual | fixability: repo-fixable | state: open
++- id: INC-20260811-01 | date: 2026-08-11 | scope: ci-shared-worktree | tags: ci, performance, code | match: RF-04 dependency seed resolves outside node_modules, ci, performance, code, shared, worktree, make, verification, atomic, and, reusable, across, lifecycle, only, drift, persist | failure: The broad pre-push RF-04 critical chunk rejects a shared-worktree workspace symlink as an external dependency seed. | advice: Fix and measure the shared-worktree CI harness under task 202608102115-7XGP97 before the patch release; P04 hosted verification remains fail-closed. | rule: Analogous ci-shared-worktree work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608102243-1RG86M; commit f5b12ec62dc0 | enforcement: manual | fixability: repo-fixable | state: open
+diff --git a/packages/agentplane/assets/policy/incidents.md b/packages/agentplane/assets/policy/incidents.md
+index bcacc37a8..6fa916e53 100644
+--- a/packages/agentplane/assets/policy/incidents.md
++++ b/packages/agentplane/assets/policy/incidents.md
+@@ -2,3 +2,4 @@
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+ - id: INC-20260810-01 | date: 2026-08-10 | scope: task declared-check validation and execution parity | tags: verifier, ux, code, lifecycle, supervisor | match: Unsupported declared check, verifier, ux, code, lifecycle, supervisor, task, declared, check, validation, and, execution, parity, stop, external, agent | failure: Task creation accepted bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts, but automatic TESTER execution later rejected the same command as unsupported and recorded a false needs_rework result. | advice: Recovered with manually recorded structured TESTER evidence; follow up by sharing one validation contract between task verify input and automatic declared-check execution. | rule: Analogous task declared-check validation and execution parity work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608101410-4GSCYN; commit 522a91e6f546 | enforcement: manual | fixability: repo-fixable | state: open
++- id: INC-20260811-01 | date: 2026-08-11 | scope: ci-shared-worktree | tags: ci, performance, code | match: RF-04 dependency seed resolves outside node_modules, ci, performance, code, shared, worktree, make, verification, atomic, and, reusable, across, lifecycle, only, drift, persist | failure: The broad pre-push RF-04 critical chunk rejects a shared-worktree workspace symlink as an external dependency seed. | advice: Fix and measure the shared-worktree CI harness under task 202608102115-7XGP97 before the patch release; P04 hosted verification remains fail-closed. | rule: Analogous ci-shared-worktree work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608102243-1RG86M; commit f5b12ec62dc0 | enforcement: manual | fixability: repo-fixable | state: open
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+index 3ff4711ab..5cf24a2ae 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+@@ -876,7 +876,7 @@ describe("evaluator run command", () => {
+     );
+     await writeFile(
+       path.join(root, `.agentplane/tasks/${taskId}/verification/unsupported-schema-record.json`),
+-      `${JSON.stringify({ ...supportedRecord, schema_version: 2 })}\n`,
++      `${JSON.stringify({ ...supportedRecord, schema_version: 3 })}\n`,
+       "utf8",
+     );
+ 
+diff --git a/packages/agentplane/src/commands/shared/route-cleanup-probe.test.ts b/packages/agentplane/src/commands/shared/route-cleanup-probe.test.ts
+new file mode 100644
+index 000000000..e9a4124b9
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/route-cleanup-probe.test.ts
+@@ -0,0 +1,79 @@
++import { describe, expect, it, vi } from "vitest";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import type { TaskResumeContext } from "../task/handoff.shared.js";
++import type { CommandContext } from "./task-backend.js";
++
++const mocks = vi.hoisted(() => ({
++  resolveCleanupPlan: vi.fn(),
++  gitRevParse: vi.fn(),
++}));
++
++vi.mock("../branch/cleanup-merged-proof.js", () => ({
++  resolveCleanupPlan: mocks.resolveCleanupPlan,
++}));
++
++vi.mock("@agentplaneorg/core/git", () => ({
++  gitRevParse: mocks.gitRevParse,
++}));
++
++import { resolveDoneCleanupProbe } from "./route-cleanup-probe.js";
++
++const task = {
++  id: "202608102112-AY0H1F",
++  title: "Completed task",
++  description: "Completed task",
++  status: "DONE",
++  priority: "high",
++  owner: "CODER",
++  depends_on: [],
++  tags: ["code"],
++  verify: ["bun test"],
++} satisfies TaskData;
++
++const resume = {
++  task_id: task.id,
++  task_status: "DONE",
++  branch: "main",
++  base_branch: "main",
++  head_sha: "a".repeat(40),
++  workspace_root: "/repo",
++  pr_branch: null,
++  latest_handoff: null,
++  runner: {
++    run_id: null,
++    status: null,
++    heartbeat_at: null,
++    state_path: null,
++    trace_path: null,
++    next_action: "run",
++    next_command: `agentplane task run ${task.id}`,
++    resume_command: `agentplane task run ${task.id}`,
++    retry_command: null,
++  },
++} satisfies TaskResumeContext;
++
++describe("DONE cleanup route probe", () => {
++  it("proves local terminal cleanup without requiring a remote provider query", async () => {
++    mocks.resolveCleanupPlan.mockResolvedValue({
++      candidates: [],
++      blocked: [],
++      matchedTaskIds: new Set<string>(),
++    });
++    mocks.gitRevParse.mockResolvedValue("a".repeat(40));
++
++    await expect(
++      resolveDoneCleanupProbe({
++        ctx: {
++          config: {
++            workflow_mode: "branch_pr",
++            paths: { workflow_dir: ".agentplane/tasks" },
++          },
++          resolvedProject: { gitRoot: "/repo" },
++        } as CommandContext,
++        resume,
++        task,
++      }),
++    ).resolves.toEqual({ state: "already_clean", baseSynchronized: true });
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/route-cleanup-probe.ts b/packages/agentplane/src/commands/shared/route-cleanup-probe.ts
+index fcb8d262a..038326d43 100644
+--- a/packages/agentplane/src/commands/shared/route-cleanup-probe.ts
++++ b/packages/agentplane/src/commands/shared/route-cleanup-probe.ts
+@@ -10,7 +10,6 @@ export async function resolveDoneCleanupProbe(opts: {
+   ctx: CommandContext;
+   resume: TaskResumeContext;
+   task: TaskData;
+-  remoteEnabled: boolean;
+   onDiagnostic?: (message: string) => void;
+ }): Promise<RouteCleanupProbe> {
+   if (
+@@ -19,9 +18,6 @@ export async function resolveDoneCleanupProbe(opts: {
+   ) {
+     return { state: "not_requested" };
+   }
+-  if (!opts.remoteEnabled) {
+-    return { state: "unavailable", reason: "remote cleanup proof was not requested" };
+-  }
+   const baseBranch = opts.resume.base_branch?.trim() ?? "";
+   if (!baseBranch) return { state: "unavailable", reason: "base branch is unavailable" };
+   try {
+diff --git a/packages/agentplane/src/commands/shared/route-decision-blockers.ts b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+index 9726a616b..d00040608 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-blockers.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+@@ -26,11 +26,14 @@ import {
+   qualityReworkHasNewVerification,
+   verificationReworkHasNewImplementation,
+ } from "./route-decision-verification.js";
++import { addVerificationRequiredBlocker } from "./route-decision-verification-blocker.js";
+ import {
+   filterTaskWorktreeBlockingPaths,
+   isTaskArtifactPath,
+ } from "./route-decision-worktree-cleanliness.js";
+ 
++export { addVerificationRequiredBlocker } from "./route-decision-verification-blocker.js";
++
+ export function routeGatePriority(code: string): number {
+   if (
+     code === "plan_not_approved" ||
+@@ -281,31 +284,6 @@ export function addTaskWorktreeCleanlinessBlocker(opts: {
+   );
+ }
+ 
+-export function addVerificationRequiredBlocker(opts: {
+-  blockers: RouteBlocker[];
+-  task: TaskData;
+-  acceptedVerificationRecord?: boolean;
+-}): void {
+-  const status = String(opts.task.status).toUpperCase();
+-  const requiresVerification =
+-    status === "DONE" ||
+-    (status === "DOING" &&
+-      (Boolean(opts.task.commit?.hash?.trim()) || opts.task.verification?.state === "ok"));
+-  if (
+-    !requiresVerification ||
+-    (opts.task.verification?.state === "ok" && opts.acceptedVerificationRecord !== false)
+-  ) {
+-    return;
+-  }
+-  addBlocker(
+-    opts.blockers,
+-    "verification_required",
+-    opts.task.verification?.state === "ok"
+-      ? "the passing verification record does not cover the current implementation head"
+-      : "the recorded task implementation does not have a passing verification record",
+-  );
+-}
+-
+ export async function deriveBlockers(opts: {
+   ctx: CommandContext;
+   task: TaskData;
+@@ -346,13 +324,25 @@ export async function deriveBlockers(opts: {
+     });
+   }
+   if (opts.workflowMode === "branch_pr") {
++    let verificationReason: string | null = null;
++    const finalizedDoneTask =
++      normalizedTaskStatus === "DONE" &&
++      opts.prFlow?.pr.state === "MERGED" &&
++      opts.prFlow.closeTail.state === "recorded_on_base";
+     addVerificationRequiredBlocker({
+       blockers,
+       task: opts.task,
+       acceptedVerificationRecord:
+-        opts.task.verification?.state === "ok"
+-          ? await hasAcceptedVerificationForCurrentImplementation(opts)
++        opts.task.verification?.state === "ok" && !finalizedDoneTask
++          ? await hasAcceptedVerificationForCurrentImplementation({
++              ...opts,
++              onAssessment: (assessment) => {
++                verificationReason = assessment.reason;
++              },
++            })
+           : undefined,
++      verificationReason,
++      finalizedDoneTask,
+     });
+   }
+   if (opts.workflowMode === "branch_pr") {
+diff --git a/packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts b/packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts
+index 082d80e39..70b48c938 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts
+@@ -109,11 +109,13 @@ describe("route task-worktree blockers", () => {
+       blockers: staleBlockers,
+       task,
+       acceptedVerificationRecord: false,
++      verificationReason: "verification_implementation_changed",
+     });
+     expect(staleBlockers).toEqual([
+       {
+         code: "verification_required",
+-        summary: "the passing verification record does not cover the current implementation head",
++        summary:
++          "the passing verification record does not cover the current verification input (reason_code=verification_implementation_changed)",
+       },
+     ]);
+ 
+@@ -126,6 +128,36 @@ describe("route task-worktree blockers", () => {
+     expect(freshBlockers).toEqual([]);
+   });
+ 
++  it("keeps a merged and close-tail-finalized DONE task terminal after lifecycle drift", () => {
++    const blockers: RouteBlocker[] = [];
++    addVerificationRequiredBlocker({
++      blockers,
++      task: {
++        id: "T-1",
++        title: "Task",
++        description: "Task",
++        status: "DONE",
++        priority: "med",
++        owner: "CODER",
++        depends_on: [],
++        tags: [],
++        verify: ["bun test"],
++        verification: {
++          state: "ok",
++          attempts: 0,
++          updated_at: "2026-08-10T00:00:00.000Z",
++          updated_by: "TESTER",
++          note: "Verified before lifecycle closeout.",
++        },
++      },
++      acceptedVerificationRecord: false,
++      verificationReason: "verification_implementation_changed",
++      finalizedDoneTask: true,
++    });
++
++    expect(blockers).toEqual([]);
++  });
++
+   it("invalidates stale verification before the active task records its final commit", () => {
+     const blockers: RouteBlocker[] = [];
+     addVerificationRequiredBlocker({
+diff --git a/packages/agentplane/src/commands/shared/route-decision-verification-blocker.ts b/packages/agentplane/src/commands/shared/route-decision-verification-blocker.ts
+new file mode 100644
+index 000000000..ea6874496
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/route-decision-verification-blocker.ts
+@@ -0,0 +1,33 @@
++import type { TaskData } from "../../backends/task-backend.js";
++import type { RouteBlocker } from "./route-oracle.js";
++
++export function addVerificationRequiredBlocker(opts: {
++  blockers: RouteBlocker[];
++  task: TaskData;
++  acceptedVerificationRecord?: boolean;
++  verificationReason?: string | null;
++  finalizedDoneTask?: boolean;
++}): void {
++  if (opts.finalizedDoneTask === true) return;
++  const status = String(opts.task.status).toUpperCase();
++  const requiresVerification =
++    status === "DONE" ||
++    (status === "DOING" &&
++      (Boolean(opts.task.commit?.hash?.trim()) || opts.task.verification?.state === "ok"));
++  if (
++    !requiresVerification ||
++    (opts.task.verification?.state === "ok" && opts.acceptedVerificationRecord !== false)
++  ) {
++    return;
++  }
++  if (opts.blockers.some((blocker) => blocker.code === "verification_required")) return;
++  opts.blockers.push({
++    code: "verification_required",
++    summary:
++      opts.task.verification?.state === "ok"
++        ? opts.verificationReason
++          ? `the passing verification record does not cover the current verification input (reason_code=${opts.verificationReason})`
++          : "the passing verification record does not cover the current implementation head"
++        : "the recorded task implementation does not have a passing verification record",
++  });
++}
+diff --git a/packages/agentplane/src/commands/shared/route-decision-verification.ts b/packages/agentplane/src/commands/shared/route-decision-verification.ts
+index 847abc20e..01966ae54 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-verification.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-verification.ts
+@@ -7,6 +7,7 @@ import type { RouteBatchOwnership } from "./route-batch-ownership.js";
+ import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
+ import type { CommandContext } from "./task-backend.js";
+ import { hasAcceptedVerificationRecord } from "./task-verification-records.js";
++import type { VerificationRecordAssessment } from "./task-verification-records.js";
+ 
+ function hostedCloseVerificationTarget(
+   task: TaskData,
+@@ -65,6 +66,7 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
+   resume: TaskResumeContext;
+   prFlow: PrFlowStatusReport | null;
+   batchOwnership: RouteBatchOwnership;
++  onAssessment?: (assessment: VerificationRecordAssessment) => void;
+ }): Promise<boolean> {
+   const taskIds =
+     opts.batchOwnership.role === "none" ? [opts.task.id] : opts.batchOwnership.allTaskIds;
+@@ -98,7 +100,7 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
+   );
+   const requireConcreteCheckDetails =
+     opts.task.status === "DONE" || Boolean(opts.task.commit?.hash?.trim());
+-  return await hasAcceptedVerificationRecord({
++  const recordOptions: Parameters<typeof hasAcceptedVerificationRecord>[0] = {
+     taskRoot,
+     task: opts.task,
+     evaluatedSha,
+@@ -114,5 +116,7 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
+       opts.resume.head_sha ??
+       null,
+     requireConcreteCheckDetails,
+-  }).catch(() => false);
++  };
++  if (opts.onAssessment) recordOptions.onAssessment = opts.onAssessment;
++  return await hasAcceptedVerificationRecord(recordOptions).catch(() => false);
+ }
+diff --git a/packages/agentplane/src/commands/shared/route-decision.ts b/packages/agentplane/src/commands/shared/route-decision.ts
+index f0ce2e35e..13a517921 100644
+--- a/packages/agentplane/src/commands/shared/route-decision.ts
++++ b/packages/agentplane/src/commands/shared/route-decision.ts
+@@ -393,7 +393,6 @@ export async function buildTaskRouteDecision(opts: {
+     ctx,
+     resume,
+     task,
+-    remoteEnabled,
+     onDiagnostic: recordLocalDiagnostic,
+   });
+   const qualityReviewTargetSha =
+diff --git a/packages/agentplane/src/commands/shared/task-verification-input.test.ts b/packages/agentplane/src/commands/shared/task-verification-input.test.ts
+new file mode 100644
+index 000000000..79b30901c
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/task-verification-input.test.ts
+@@ -0,0 +1,201 @@
++import { execFile } from "node:child_process";
++import { mkdir, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++
++import { mkGitRepoRootWithBranch } from "@agentplane/testkit";
++import { describe, expect, it } from "vitest";
++
++import {
++  resolveVerificationInputIdentity,
++  verificationInputInvalidationReason,
++  type VerificationEnvironment,
++} from "./task-verification-input.js";
++
++const execFileAsync = promisify(execFile);
++const TASK_ID = "202608102243-1RG86M";
++const ENVIRONMENT: VerificationEnvironment = {
++  platform: "test",
++  architecture: "test",
++  node_major: "24",
++  bun_major: "1",
++};
++
++async function commitPath(
++  root: string,
++  relPath: string,
++  content: string,
++  message: string,
++): Promise<string> {
++  const target = path.join(root, relPath);
++  await mkdir(path.dirname(target), { recursive: true });
++  await writeFile(target, content, "utf8");
++  await execFileAsync("git", ["add", "--", relPath], { cwd: root });
++  await execFileAsync("git", ["commit", "-m", message], { cwd: root });
++  const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
++  return stdout.trim();
++}
++
++async function identity(root: string, targetSha: string, verifySteps = "Run tests.") {
++  const value = await resolveVerificationInputIdentity({
++    gitRoot: root,
++    workflowDir: ".agentplane/tasks",
++    taskIds: [TASK_ID],
++    targetSha,
++    verifySteps,
++    workflowMode: "branch_pr",
++    environment: ENVIRONMENT,
++    baseRef: "main",
++  });
++  if (!value) throw new Error("expected verification input identity");
++  return value;
++}
++
++async function directIdentity(root: string, targetSha: string) {
++  const value = await resolveVerificationInputIdentity({
++    gitRoot: root,
++    workflowDir: ".agentplane/tasks",
++    taskIds: [TASK_ID],
++    targetSha,
++    verifySteps: "Run tests.",
++    workflowMode: "direct",
++    environment: ENVIRONMENT,
++  });
++  if (!value) throw new Error("expected direct verification input identity");
++  return value;
++}
++
++async function makeTaskBranch(): Promise<{ root: string; implementationSha: string }> {
++  const root = await mkGitRepoRootWithBranch("main");
++  await commitPath(root, "package.json", '{"name":"verification-input"}\n', "seed context");
++  await execFileAsync("git", ["checkout", "-b", "task/verification-input"], { cwd: root });
++  const implementationSha = await commitPath(
++    root,
++    "src/feature.ts",
++    "export const feature = true;\n",
++    "implement feature",
++  );
++  return { root, implementationSha };
++}
++
++describe("task verification input identity", () => {
++  it("reuses one receipt across lifecycle-only task artifact commits", async () => {
++    const { root, implementationSha } = await makeTaskBranch();
++    const before = await identity(root, implementationSha);
++    const lifecycleSha = await commitPath(
++      root,
++      `.agentplane/tasks/${TASK_ID}/README.md`,
++      "verification lifecycle metadata\n",
++      "record verification metadata",
++    );
++    const after = await identity(root, lifecycleSha);
++
++    expect(after.digest).toBe(before.digest);
++    expect(after.implementation.digest).toBe(before.implementation.digest);
++    expect(after.implementation.target_sha).not.toBe(before.implementation.target_sha);
++    expect(verificationInputInvalidationReason({ recorded: before, current: after })).toBe(
++      "verification_current",
++    );
++  });
++
++  it("reuses one direct-mode receipt across lifecycle-only task artifact commits", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const implementationSha = await commitPath(
++      root,
++      "src/feature.ts",
++      "export const feature = true;\n",
++      "implement direct feature",
++    );
++    const before = await directIdentity(root, implementationSha);
++    const lifecycleSha = await commitPath(
++      root,
++      `.agentplane/tasks/${TASK_ID}/README.md`,
++      "direct lifecycle metadata\n",
++      "record direct lifecycle",
++    );
++    const after = await directIdentity(root, lifecycleSha);
++    const unrelatedLifecycleSha = await commitPath(
++      root,
++      ".agentplane/tasks/OTHER/README.md",
++      "unrelated direct lifecycle metadata\n",
++      "record unrelated direct lifecycle",
++    );
++    const afterUnrelatedLifecycle = await directIdentity(root, unrelatedLifecycleSha);
++
++    expect(after.implementation.strategy).toBe("tree");
++    expect(after.digest).toBe(before.digest);
++    expect(afterUnrelatedLifecycle.digest).toBe(before.digest);
++    expect(after.implementation.target_sha).not.toBe(before.implementation.target_sha);
++  });
++
++  it("reuses one receipt after an identical implementation is rebased", async () => {
++    const { root, implementationSha } = await makeTaskBranch();
++    const before = await identity(root, implementationSha);
++    await execFileAsync("git", ["checkout", "main"], { cwd: root });
++    await commitPath(root, "docs/base.md", "unrelated base change\n", "advance base");
++    await execFileAsync("git", ["checkout", "task/verification-input"], { cwd: root });
++    await execFileAsync("git", ["rebase", "main"], { cwd: root });
++    const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
++    const after = await identity(root, stdout.trim());
++
++    expect(after.implementation.target_sha).not.toBe(before.implementation.target_sha);
++    expect(after.digest).toBe(before.digest);
++  });
++
++  it("invalidates the receipt for source or Verify Steps changes", async () => {
++    const { root, implementationSha } = await makeTaskBranch();
++    const before = await identity(root, implementationSha);
++    const sourceSha = await commitPath(
++      root,
++      "src/feature.ts",
++      "export const feature = false;\n",
++      "change feature",
++    );
++    const sourceChanged = await identity(root, sourceSha);
++    const stepsChanged = await identity(root, implementationSha, "Run tests and lint.");
++
++    expect(verificationInputInvalidationReason({ recorded: before, current: sourceChanged })).toBe(
++      "verification_implementation_changed",
++    );
++    expect(verificationInputInvalidationReason({ recorded: before, current: stepsChanged })).toBe(
++      "verification_steps_changed",
++    );
++  });
++
++  it("invalidates the receipt when dependency context or runtime contract changes", async () => {
++    const { root, implementationSha } = await makeTaskBranch();
++    const before = await identity(root, implementationSha);
++    await execFileAsync("git", ["checkout", "main"], { cwd: root });
++    await commitPath(
++      root,
++      "package.json",
++      '{"name":"verification-input","dependencies":{"x":"1"}}\n',
++      "change dependency context",
++    );
++    await execFileAsync("git", ["checkout", "task/verification-input"], { cwd: root });
++    await execFileAsync("git", ["rebase", "main"], { cwd: root });
++    const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
++    const contextChanged = await identity(root, stdout.trim());
++    const environmentChanged = await resolveVerificationInputIdentity({
++      gitRoot: root,
++      workflowDir: ".agentplane/tasks",
++      taskIds: [TASK_ID],
++      targetSha: stdout.trim(),
++      verifySteps: "Run tests.",
++      workflowMode: "branch_pr",
++      environment: { ...ENVIRONMENT, node_major: "25" },
++      baseRef: "main",
++    });
++    if (!environmentChanged) throw new Error("expected environment identity");
++
++    expect(verificationInputInvalidationReason({ recorded: before, current: contextChanged })).toBe(
++      "verification_context_changed",
++    );
++    expect(
++      verificationInputInvalidationReason({
++        recorded: contextChanged,
++        current: environmentChanged,
++      }),
++    ).toBe("verification_environment_changed");
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/task-verification-input.ts b/packages/agentplane/src/commands/shared/task-verification-input.ts
+new file mode 100644
+index 000000000..343c0ad27
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/task-verification-input.ts
+@@ -0,0 +1,298 @@
++import { createHash } from "node:crypto";
++
++import { gitEnv, gitRevParse, resolveBaseBranch } from "@agentplaneorg/core/git";
++import { execFileAsync, runProcess } from "@agentplaneorg/core/process";
++import { canonicalizeJson } from "@agentplaneorg/core/tasks";
++
++const VERIFICATION_CONTEXT_BASENAMES = new Set([
++  ".node-version",
++  ".nvmrc",
++  ".tool-versions",
++  "bun.lock",
++  "bun.lockb",
++  "bunfig.toml",
++  "Cargo.lock",
++  "Cargo.toml",
++  "deno.json",
++  "deno.jsonc",
++  "go.mod",
++  "go.sum",
++  "mise.toml",
++  "package-lock.json",
++  "package.json",
++  "pnpm-lock.yaml",
++  "poetry.lock",
++  "pyproject.toml",
++  "requirements.txt",
++  "tsconfig.json",
++  "uv.lock",
++  "yarn.lock",
++]);
++
++export type VerificationEnvironment = {
++  platform: string;
++  architecture: string;
++  node_major: string;
++  bun_major: string | null;
++};
++
++export type VerificationInputIdentity = {
++  schema_version: 1;
++  kind: "task_verification_input";
++  implementation: {
++    strategy: "branch_diff" | "tree";
++    digest: `sha256:${string}`;
++    target_sha: string;
++    base_sha: string | null;
++  };
++  verify_steps_digest: `sha256:${string}`;
++  context: {
++    digest: `sha256:${string}`;
++    paths: string[];
++  };
++  environment: {
++    digest: `sha256:${string}`;
++    runtime: VerificationEnvironment;
++  };
++  digest: `sha256:${string}`;
++};
++
++function sha256(value: string | Buffer): `sha256:${string}` {
++  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
++}
++
++function normalizeWorkflowDir(value: string): string {
++  return value.replaceAll("\\", "/").replaceAll(/\/+$/gu, "");
++}
++
++function contextPath(name: string): boolean {
++  if (name === ".agentplane/WORKFLOW.md") return true;
++  const basename = name.slice(name.lastIndexOf("/") + 1);
++  return VERIFICATION_CONTEXT_BASENAMES.has(basename);
++}
++
++function parseTreeEntries(value: Buffer): { path: string; object: string }[] {
++  return value
++    .toString("utf8")
++    .split("\0")
++    .filter(Boolean)
++    .flatMap((entry) => {
++      const separator = entry.indexOf("\t");
++      if (separator === -1) return [];
++      const header = entry.slice(0, separator).split(" ");
++      const object = header[2];
++      const filePath = entry.slice(separator + 1);
++      return object ? [{ path: filePath, object }] : [];
++    })
++    .toSorted((left, right) => left.path.localeCompare(right.path));
++}
++
++async function trackedTreeEntries(opts: {
++  gitRoot: string;
++  targetSha: string;
++}): Promise<{ path: string; object: string }[]> {
++  const { stdout } = await execFileAsync("git", ["ls-tree", "-r", "-z", opts.targetSha], {
++    cwd: opts.gitRoot,
++    env: gitEnv(),
++    encoding: "buffer",
++    maxBuffer: 64 * 1024 * 1024,
++  });
++  return parseTreeEntries(stdout);
++}
++
++function isWorkflowArtifact(opts: { path: string; workflowDir: string }): boolean {
++  const workflowDir = normalizeWorkflowDir(opts.workflowDir);
++  return opts.path === workflowDir || opts.path.startsWith(`${workflowDir}/`);
++}
++
++async function verificationContext(opts: {
++  gitRoot: string;
++  targetSha: string;
++}): Promise<VerificationInputIdentity["context"]> {
++  const treeEntries = await trackedTreeEntries(opts);
++  const entries = treeEntries.filter((entry) => contextPath(entry.path));
++  return {
++    digest: sha256(JSON.stringify(canonicalizeJson(entries))),
++    paths: entries.map((entry) => entry.path),
++  };
++}
++
++async function implementationIdentity(opts: {
++  gitRoot: string;
++  workflowDir: string;
++  taskIds: readonly string[];
++  targetSha: string;
++  workflowMode: "direct" | "branch_pr";
++  baseRef?: string | null;
++}): Promise<VerificationInputIdentity["implementation"]> {
++  if (opts.workflowMode === "branch_pr") {
++    const base =
++      opts.baseRef ??
++      (await resolveBaseBranch({
++        cwd: opts.gitRoot,
++        rootOverride: opts.gitRoot,
++        cliBaseOpt: null,
++        mode: "branch_pr",
++      }).catch(() => null));
++    const baseSha = base
++      ? await gitRevParse(opts.gitRoot, [`${base}^{commit}`]).catch(() => null)
++      : null;
++    if (baseSha) {
++      const { stdout: mergeBase } = await execFileAsync(
++        "git",
++        ["merge-base", baseSha, opts.targetSha],
++        { cwd: opts.gitRoot, env: gitEnv() },
++      );
++      const workflowDir = normalizeWorkflowDir(opts.workflowDir);
++      const exclusions = [...new Set(opts.taskIds)].map(
++        (taskId) => `:(exclude)${workflowDir}/${taskId}/**`,
++      );
++      const { stdout } = await execFileAsync(
++        "git",
++        [
++          "diff",
++          "--binary",
++          "--full-index",
++          "--no-ext-diff",
++          mergeBase.trim(),
++          opts.targetSha,
++          "--",
++          ".",
++          ...exclusions,
++        ],
++        {
++          cwd: opts.gitRoot,
++          env: gitEnv(),
++          encoding: "buffer",
++          maxBuffer: 64 * 1024 * 1024,
++        },
++      );
++      const patchIdentity = await runProcess({
++        command: "git",
++        args: ["patch-id", "--stable"],
++        cwd: opts.gitRoot,
++        env: gitEnv(),
++        input: stdout,
++        maxBuffer: 64 * 1024 * 1024,
++      });
++      if (patchIdentity.exitCode !== 0) {
++        throw new Error(`git patch-id failed: ${String(patchIdentity.stderr).trim()}`);
++      }
++      return {
++        strategy: "branch_diff",
++        digest: sha256(String(patchIdentity.stdout).trim()),
++        target_sha: opts.targetSha,
++        base_sha: baseSha,
++      };
++    }
++  }
++
++  const treeEntries = await trackedTreeEntries(opts);
++  const entries = treeEntries.filter(
++    (entry) => !isWorkflowArtifact({ path: entry.path, workflowDir: opts.workflowDir }),
++  );
++  return {
++    strategy: "tree",
++    digest: sha256(JSON.stringify(canonicalizeJson(entries))),
++    target_sha: opts.targetSha,
++    base_sha: null,
++  };
++}
++
++function currentVerificationEnvironment(): VerificationEnvironment {
++  return {
++    platform: process.platform,
++    architecture: process.arch,
++    node_major: process.versions.node.split(".")[0] ?? process.versions.node,
++    bun_major: process.versions.bun?.split(".")[0] ?? null,
++  };
++}
++
++export function verificationInputDigest(opts: {
++  implementationDigest: string;
++  verifyStepsDigest: string;
++  contextDigest: string;
++  environmentDigest: string;
++}): `sha256:${string}` {
++  return sha256(
++    JSON.stringify(
++      canonicalizeJson({
++        implementation_digest: opts.implementationDigest,
++        verify_steps_digest: opts.verifyStepsDigest,
++        context_digest: opts.contextDigest,
++        environment_digest: opts.environmentDigest,
++      }),
++    ),
++  );
++}
++
++export async function resolveVerificationInputIdentity(opts: {
++  gitRoot: string;
++  workflowDir: string;
++  taskIds: readonly string[];
++  targetSha: string | null;
++  verifySteps: string;
++  workflowMode: "direct" | "branch_pr";
++  environment?: VerificationEnvironment;
++  baseRef?: string | null;
++}): Promise<VerificationInputIdentity | null> {
++  if (!opts.targetSha || !/^[0-9a-f]{40,64}$/u.test(opts.targetSha)) return null;
++  const [implementation, context] = await Promise.all([
++    implementationIdentity({
++      gitRoot: opts.gitRoot,
++      workflowDir: opts.workflowDir,
++      taskIds: opts.taskIds,
++      targetSha: opts.targetSha,
++      workflowMode: opts.workflowMode,
++      baseRef: opts.baseRef,
++    }),
++    verificationContext({ gitRoot: opts.gitRoot, targetSha: opts.targetSha }),
++  ]);
++  const runtime = opts.environment ?? currentVerificationEnvironment();
++  const environment = {
++    digest: sha256(JSON.stringify(canonicalizeJson(runtime))),
++    runtime,
++  };
++  const verifyStepsDigest = sha256(opts.verifySteps.trim());
++  const digest = verificationInputDigest({
++    implementationDigest: implementation.digest,
++    verifyStepsDigest,
++    contextDigest: context.digest,
++    environmentDigest: environment.digest,
++  });
++  return {
++    schema_version: 1,
++    kind: "task_verification_input",
++    implementation,
++    verify_steps_digest: verifyStepsDigest,
++    context,
++    environment,
++    digest,
++  };
++}
++
++export function verificationInputInvalidationReason(opts: {
++  recorded: VerificationInputIdentity;
++  current: VerificationInputIdentity;
++}):
++  | "verification_current"
++  | "verification_implementation_changed"
++  | "verification_steps_changed"
++  | "verification_context_changed"
++  | "verification_environment_changed"
++  | "verification_input_changed" {
++  if (opts.recorded.digest === opts.current.digest) return "verification_current";
++  if (opts.recorded.implementation.digest !== opts.current.implementation.digest) {
++    return "verification_implementation_changed";
++  }
++  if (opts.recorded.verify_steps_digest !== opts.current.verify_steps_digest) {
++    return "verification_steps_changed";
++  }
++  if (opts.recorded.context.digest !== opts.current.context.digest) {
++    return "verification_context_changed";
++  }
++  if (opts.recorded.environment.digest !== opts.current.environment.digest) {
++    return "verification_environment_changed";
++  }
++  return "verification_input_changed";
++}
+diff --git a/packages/agentplane/src/commands/shared/task-verification-records.ts b/packages/agentplane/src/commands/shared/task-verification-records.ts
+index e9ac183e1..3e59896e3 100644
+--- a/packages/agentplane/src/commands/shared/task-verification-records.ts
++++ b/packages/agentplane/src/commands/shared/task-verification-records.ts
+@@ -7,6 +7,12 @@ import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+ import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
++import {
++  resolveVerificationInputIdentity,
++  verificationInputDigest,
++  verificationInputInvalidationReason,
++  type VerificationInputIdentity,
++} from "./task-verification-input.js";
+ import { parseVerificationCheckDetails } from "./verification-details.js";
+ 
+ export type VerificationRecordTargetContext = {
+@@ -14,6 +20,28 @@ export type VerificationRecordTargetContext = {
+   workflowDir: string;
+   taskIds?: readonly string[];
+   workflowMode?: "direct" | "branch_pr";
++  baseRef?: string | null;
++};
++
++type VerificationRecordAssessmentReason =
++  | "verification_current"
++  | "verification_reused_equivalent_input"
++  | "verification_missing"
++  | "verification_invalid_record"
++  | "verification_metadata_changed"
++  | "verification_implementation_changed"
++  | "verification_steps_changed"
++  | "verification_context_changed"
++  | "verification_environment_changed"
++  | "verification_input_changed"
++  | "verification_legacy_unverifiable";
++
++export type VerificationRecordAssessment = {
++  accepted: boolean;
++  reason: VerificationRecordAssessmentReason;
++  recordPath: string | null;
++  recordedInputDigest: string | null;
++  currentInputDigest: string | null;
+ };
+ 
+ function sha256(value: string): `sha256:${string}` {
+@@ -38,37 +66,187 @@ function hasValidRecordDigest(record: Record<string, unknown>): boolean {
+   );
+ }
+ 
+-async function matchesCurrentVerification(
++function isSha256(value: unknown): value is `sha256:${string}` {
++  return typeof value === "string" && /^sha256:[a-f0-9]{64}$/u.test(value);
++}
++
++function parseVerificationInput(value: unknown): VerificationInputIdentity | null {
++  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
++  const input = value as Record<string, unknown>;
++  const implementation = input.implementation;
++  const context = input.context;
++  const environment = input.environment;
++  if (
++    input.schema_version !== 1 ||
++    input.kind !== "task_verification_input" ||
++    !implementation ||
++    typeof implementation !== "object" ||
++    Array.isArray(implementation) ||
++    !context ||
++    typeof context !== "object" ||
++    Array.isArray(context) ||
++    !environment ||
++    typeof environment !== "object" ||
++    Array.isArray(environment)
++  ) {
++    return null;
++  }
++  const implementationRecord = implementation as Record<string, unknown>;
++  const contextRecord = context as Record<string, unknown>;
++  const environmentRecord = environment as Record<string, unknown>;
++  const runtime = environmentRecord.runtime;
++  if (
++    (implementationRecord.strategy !== "branch_diff" && implementationRecord.strategy !== "tree") ||
++    !isSha256(implementationRecord.digest) ||
++    typeof implementationRecord.target_sha !== "string" ||
++    !/^[0-9a-f]{40,64}$/u.test(implementationRecord.target_sha) ||
++    (implementationRecord.base_sha !== null &&
++      (typeof implementationRecord.base_sha !== "string" ||
++        !/^[0-9a-f]{40,64}$/u.test(implementationRecord.base_sha))) ||
++    !isSha256(input.verify_steps_digest) ||
++    !isSha256(contextRecord.digest) ||
++    !Array.isArray(contextRecord.paths) ||
++    !contextRecord.paths.every((item) => typeof item === "string") ||
++    !isSha256(environmentRecord.digest) ||
++    !runtime ||
++    typeof runtime !== "object" ||
++    Array.isArray(runtime) ||
++    !isSha256(input.digest) ||
++    input.digest !==
++      verificationInputDigest({
++        implementationDigest: String(implementationRecord.digest),
++        verifyStepsDigest: String(input.verify_steps_digest),
++        contextDigest: String(contextRecord.digest),
++        environmentDigest: String(environmentRecord.digest),
++      })
++  ) {
++    return null;
++  }
++  const runtimeRecord = runtime as Record<string, unknown>;
++  if (
++    typeof runtimeRecord.platform !== "string" ||
++    typeof runtimeRecord.architecture !== "string" ||
++    typeof runtimeRecord.node_major !== "string" ||
++    (runtimeRecord.bun_major !== null && typeof runtimeRecord.bun_major !== "string")
++  ) {
++    return null;
++  }
++  return input as unknown as VerificationInputIdentity;
++}
++
++function rejectedAssessment(
++  reason: VerificationRecordAssessmentReason,
++  opts: {
++    recordPath?: string | null;
++    recordedInputDigest?: string | null;
++    currentInputDigest?: string | null;
++  } = {},
++): VerificationRecordAssessment {
++  return {
++    accepted: false,
++    reason,
++    recordPath: opts.recordPath ?? null,
++    recordedInputDigest: opts.recordedInputDigest ?? null,
++    currentInputDigest: opts.currentInputDigest ?? null,
++  };
++}
++
++function recordMetadataMatches(
++  record: Record<string, unknown>,
++  task: TaskData,
++  requireConcreteCheckDetails: boolean,
++): boolean {
++  const verification = task.verification;
++  return Boolean(
++    verification &&
++    record.kind === "task_verification_record" &&
++    record.task_id === task.id &&
++    record.recorded_at === verification.updated_at &&
++    record.result === verification.state &&
++    record.verifier === verification.updated_by &&
++    record.note === verification.note &&
++    hasValidRecordDigest(record) &&
++    (!requireConcreteCheckDetails || hasConcreteCheckDetails(record.details)),
++  );
++}
++
++async function assessCurrentVerification(
+   raw: unknown,
+   task: TaskData,
+   evaluatedSha: string | null,
+   targetContext?: VerificationRecordTargetContext,
+   requireConcreteCheckDetails = true,
+-): Promise<boolean> {
++): Promise<VerificationRecordAssessment> {
+   const verification = task.verification;
+   const scopeDigest = verifyStepsDigest(task);
+   if (!raw || typeof raw !== "object" || Array.isArray(raw) || !verification) {
+-    return false;
++    return rejectedAssessment("verification_invalid_record");
+   }
+   const record = raw as Record<string, unknown>;
+-  if (
+-    record.schema_version !== 1 ||
+-    record.kind !== "task_verification_record" ||
+-    record.task_id !== task.id ||
+-    record.recorded_at !== verification.updated_at ||
+-    record.result !== verification.state ||
+-    record.verifier !== verification.updated_by ||
+-    record.note !== verification.note ||
+-    record.scope_digest !== scopeDigest ||
+-    !hasValidRecordDigest(record) ||
+-    (requireConcreteCheckDetails && !hasConcreteCheckDetails(record.details))
+-  ) {
+-    return false;
++  if (!recordMetadataMatches(record, task, requireConcreteCheckDetails)) {
++    return rejectedAssessment("verification_metadata_changed");
++  }
++
++  if (record.schema_version === 2) {
++    const recordedInput = parseVerificationInput(record.input);
++    if (!recordedInput || !targetContext || !evaluatedSha) {
++      return rejectedAssessment("verification_invalid_record");
++    }
++    const currentInput = await resolveVerificationInputIdentity({
++      gitRoot: targetContext.gitRoot,
++      workflowDir: targetContext.workflowDir,
++      taskIds: targetContext.taskIds ?? [task.id],
++      targetSha: evaluatedSha,
++      verifySteps: task.sections?.["Verify Steps"] ?? "",
++      workflowMode: targetContext.workflowMode ?? "direct",
++      baseRef: targetContext.baseRef,
++    }).catch(() => null);
++    if (!currentInput) {
++      return rejectedAssessment("verification_invalid_record", {
++        recordedInputDigest: recordedInput.digest,
++      });
++    }
++    if (recordedInput.digest === currentInput.digest) {
++      return {
++        accepted: true,
++        reason:
++          recordedInput.implementation.target_sha === currentInput.implementation.target_sha
++            ? "verification_current"
++            : "verification_reused_equivalent_input",
++        recordPath: null,
++        recordedInputDigest: recordedInput.digest,
++        currentInputDigest: currentInput.digest,
++      };
++    }
++    return rejectedAssessment(
++      verificationInputInvalidationReason({ recorded: recordedInput, current: currentInput }),
++      {
++        recordedInputDigest: recordedInput.digest,
++        currentInputDigest: currentInput.digest,
++      },
++    );
++  }
++
++  if (record.schema_version !== 1) {
++    return rejectedAssessment("verification_invalid_record");
++  }
++  if (record.scope_digest !== scopeDigest) {
++    return rejectedAssessment("verification_metadata_changed");
++  }
++  if (evaluatedSha === null) {
++    return record.implementation_sha === null
++      ? {
++          accepted: true,
++          reason: "verification_current",
++          recordPath: null,
++          recordedInputDigest: null,
++          currentInputDigest: null,
++        }
++      : rejectedAssessment("verification_legacy_unverifiable");
+   }
+-  if (evaluatedSha === null) return record.implementation_sha === null;
+   const implementationSha =
+     typeof record.implementation_sha === "string" ? record.implementation_sha : null;
+-  return (
++  const accepted =
+     implementationSha === evaluatedSha ||
+     (implementationSha !== null &&
+       targetContext !== undefined &&
+@@ -80,27 +258,36 @@ async function matchesCurrentVerification(
+         headSha: implementationSha,
+         previousEvaluatedSha: evaluatedSha,
+         workflowMode: targetContext.workflowMode,
+-      })) === evaluatedSha)
+-  );
++      })) === evaluatedSha);
++  return accepted
++    ? {
++        accepted: true,
++        reason: "verification_current",
++        recordPath: null,
++        recordedInputDigest: null,
++        currentInputDigest: null,
++      }
++    : rejectedAssessment("verification_legacy_unverifiable");
+ }
+ 
+-async function isAcceptedVerificationRecord(
++async function assessVerificationRecord(
+   filePath: string,
+   task: TaskData,
+   evaluatedSha: string | null,
+   targetContext?: VerificationRecordTargetContext,
+   requireConcreteCheckDetails = true,
+-): Promise<boolean> {
++): Promise<VerificationRecordAssessment> {
+   try {
+-    return await matchesCurrentVerification(
++    const assessment = await assessCurrentVerification(
+       JSON.parse(await readFile(filePath, "utf8")),
+       task,
+       evaluatedSha,
+       targetContext,
+       requireConcreteCheckDetails,
+     );
++    return { ...assessment, recordPath: filePath };
+   } catch {
+-    return false;
++    return rejectedAssessment("verification_invalid_record", { recordPath: filePath });
+   }
+ }
+ 
+@@ -120,7 +307,7 @@ export async function verificationRecordPaths(
+     const accepted = await Promise.all(
+       candidates.map(async (filePath) => ({
+         filePath,
+-        accepted: await isAcceptedVerificationRecord(
++        assessment: await assessVerificationRecord(
+           filePath,
+           task,
+           evaluatedSha,
+@@ -129,7 +316,7 @@ export async function verificationRecordPaths(
+         ),
+       })),
+     );
+-    return accepted.filter((entry) => entry.accepted).map((entry) => entry.filePath);
++    return accepted.filter((entry) => entry.assessment.accepted).map((entry) => entry.filePath);
+   } catch (error) {
+     if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return [];
+     throw error;
+@@ -185,15 +372,17 @@ export async function hasAcceptedVerificationRecord(opts: {
+   targetContext?: VerificationRecordTargetContext;
+   snapshotRef?: string | null;
+   requireConcreteCheckDetails?: boolean;
++  onAssessment?: (assessment: VerificationRecordAssessment) => void;
+ }): Promise<boolean> {
+-  const localRecords = await verificationRecordPaths(
+-    opts.taskRoot,
+-    opts.task,
+-    opts.evaluatedSha,
+-    opts.targetContext,
+-    opts.requireConcreteCheckDetails,
+-  );
+-  if (localRecords.length > 0) return true;
++  const localAssessment = await assessLocalVerificationRecords({
++    taskRoot: opts.taskRoot,
++    task: opts.task,
++    evaluatedSha: opts.evaluatedSha,
++    targetContext: opts.targetContext,
++    requireConcreteCheckDetails: opts.requireConcreteCheckDetails,
++  });
++  opts.onAssessment?.(localAssessment);
++  if (localAssessment.accepted) return true;
+   if (!opts.snapshotRef || !opts.targetContext) return false;
+   const snapshotRecords = await verificationRecordsFromGitSnapshot({
+     gitRoot: opts.targetContext.gitRoot,
+@@ -202,7 +391,7 @@ export async function hasAcceptedVerificationRecord(opts: {
+   });
+   const accepted = await Promise.all(
+     snapshotRecords.map((record) =>
+-      matchesCurrentVerification(
++      assessCurrentVerification(
+         record,
+         opts.task,
+         opts.evaluatedSha,
+@@ -211,5 +400,53 @@ export async function hasAcceptedVerificationRecord(opts: {
+       ),
+     ),
+   );
+-  return accepted.some(Boolean);
++  const snapshotAssessment = accepted.find((assessment) => assessment.accepted);
++  if (snapshotAssessment) {
++    opts.onAssessment?.(snapshotAssessment);
++    return true;
++  }
++  return false;
++}
++
++export async function assessLocalVerificationRecords(opts: {
++  taskRoot: string;
++  task: TaskData;
++  evaluatedSha: string | null;
++  targetContext?: VerificationRecordTargetContext;
++  requireConcreteCheckDetails?: boolean;
++}): Promise<VerificationRecordAssessment> {
++  let entries;
++  try {
++    const directoryEntries = await readdir(path.join(opts.taskRoot, "verification"), {
++      withFileTypes: true,
++    });
++    entries = directoryEntries
++      .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
++      .map((entry) => path.join(opts.taskRoot, "verification", entry.name))
++      .toSorted()
++      .toReversed();
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") {
++      return rejectedAssessment("verification_missing");
++    }
++    throw error;
++  }
++  if (entries.length === 0) return rejectedAssessment("verification_missing");
++  const assessments = await Promise.all(
++    entries.map((filePath) =>
++      assessVerificationRecord(
++        filePath,
++        opts.task,
++        opts.evaluatedSha,
++        opts.targetContext,
++        opts.requireConcreteCheckDetails,
++      ),
++    ),
++  );
++  return (
++    assessments.find((assessment) => assessment.accepted) ??
++    assessments.find((assessment) => assessment.reason !== "verification_metadata_changed") ??
++    assessments[0] ??
++    rejectedAssessment("verification_missing")
++  );
+ }
+diff --git a/packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts b/packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts
+new file mode 100644
+index 000000000..7be3c3dc0
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts
+@@ -0,0 +1,181 @@
++import { createHash } from "node:crypto";
++import { execFile } from "node:child_process";
++import { mkdir, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++
++import { canonicalizeJson } from "@agentplaneorg/core/tasks";
++import { mkGitRepoRootWithBranch } from "@agentplane/testkit";
++import { describe, expect, it } from "vitest";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import { resolveVerificationInputIdentity } from "./task-verification-input.js";
++import { assessLocalVerificationRecords } from "./task-verification-records.js";
++
++const execFileAsync = promisify(execFile);
++const TASK_ID = "T-V2";
++const RECORDED_AT = "2026-08-10T00:00:00.000Z";
++const VERIFY_STEPS = "Run focused verification. Expected: pass.";
++
++function sha256(value: string): `sha256:${string}` {
++  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
++}
++
++async function commitPath(
++  root: string,
++  relPath: string,
++  content: string,
++  message: string,
++): Promise<string> {
++  const target = path.join(root, relPath);
++  await mkdir(path.dirname(target), { recursive: true });
++  await writeFile(target, content, "utf8");
++  await execFileAsync("git", ["add", "--", relPath], { cwd: root });
++  await execFileAsync("git", ["commit", "-m", message], { cwd: root });
++  const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
++  return stdout.trim();
++}
++
++function task(verifySteps = VERIFY_STEPS): TaskData {
++  return {
++    id: TASK_ID,
++    title: "Verification v2",
++    description: "Verification v2",
++    status: "DOING",
++    priority: "med",
++    owner: "CODER",
++    depends_on: [],
++    tags: ["code"],
++    verify: ["bun test"],
++    verification: {
++      state: "ok",
++      attempts: 0,
++      updated_at: RECORDED_AT,
++      updated_by: "TESTER",
++      note: "Verified content-addressed input.",
++    },
++    sections: { "Verify Steps": verifySteps },
++  };
++}
++
++async function writeRecord(root: string, implementationSha: string): Promise<string> {
++  const verificationInput = await resolveVerificationInputIdentity({
++    gitRoot: root,
++    workflowDir: ".agentplane/tasks",
++    taskIds: [TASK_ID],
++    targetSha: implementationSha,
++    verifySteps: VERIFY_STEPS,
++    workflowMode: "branch_pr",
++    baseRef: "main",
++    environment: {
++      platform: process.platform,
++      architecture: process.arch,
++      node_major: process.versions.node.split(".")[0] ?? process.versions.node,
++      bun_major: process.versions.bun?.split(".")[0] ?? null,
++    },
++  });
++  if (!verificationInput) throw new Error("expected verification input");
++  const record = {
++    schema_version: 2,
++    kind: "task_verification_record",
++    task_id: TASK_ID,
++    recorded_at: RECORDED_AT,
++    verification_command: `agentplane verify ${TASK_ID} --ok --by TESTER`,
++    result: "ok",
++    verifier: "TESTER",
++    note: "Verified content-addressed input.",
++    details: "Command: bun test\nResult: pass\nEvidence: focused tests passed\nScope: v2 receipt",
++    implementation_sha: implementationSha,
++    scope: VERIFY_STEPS,
++    scope_digest: sha256(VERIFY_STEPS),
++    input: verificationInput,
++  };
++  const recordPath = path.join(root, ".agentplane", "tasks", TASK_ID, "verification", "v2.json");
++  await mkdir(path.dirname(recordPath), { recursive: true });
++  await writeFile(
++    recordPath,
++    `${JSON.stringify({
++      ...record,
++      digest: sha256(JSON.stringify(canonicalizeJson(record))),
++    })}\n`,
++    "utf8",
++  );
++  return recordPath;
++}
++
++async function assess(root: string, currentTask: TaskData, evaluatedSha: string) {
++  return await assessLocalVerificationRecords({
++    taskRoot: path.join(root, ".agentplane", "tasks", TASK_ID),
++    task: currentTask,
++    evaluatedSha,
++    targetContext: {
++      gitRoot: root,
++      workflowDir: ".agentplane/tasks",
++      taskIds: [TASK_ID],
++      workflowMode: "branch_pr",
++      baseRef: "main",
++    },
++  });
++}
++
++describe("content-addressed verification records", () => {
++  it("reports current, reusable lifecycle drift, and real implementation invalidation", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    await commitPath(root, "package.json", '{"name":"verification-v2"}\n', "seed context");
++    await execFileAsync("git", ["checkout", "-b", "task/verification-v2"], { cwd: root });
++    const implementationSha = await commitPath(
++      root,
++      "src/feature.ts",
++      "export const feature = true;\n",
++      "implement feature",
++    );
++    await writeRecord(root, implementationSha);
++
++    await expect(assess(root, task(), implementationSha)).resolves.toMatchObject({
++      accepted: true,
++      reason: "verification_current",
++    });
++
++    const lifecycleSha = await commitPath(
++      root,
++      `.agentplane/tasks/${TASK_ID}/README.md`,
++      "lifecycle-only change\n",
++      "record lifecycle",
++    );
++    await expect(assess(root, task(), lifecycleSha)).resolves.toMatchObject({
++      accepted: true,
++      reason: "verification_reused_equivalent_input",
++    });
++
++    const changedSha = await commitPath(
++      root,
++      "src/feature.ts",
++      "export const feature = false;\n",
++      "change implementation",
++    );
++    await expect(assess(root, task(), changedSha)).resolves.toMatchObject({
++      accepted: false,
++      reason: "verification_implementation_changed",
++    });
++  });
++
++  it("reports Verify Steps drift without rerunning Git heuristics", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    await commitPath(root, "package.json", '{"name":"verification-v2"}\n', "seed context");
++    await execFileAsync("git", ["checkout", "-b", "task/verification-v2"], { cwd: root });
++    const implementationSha = await commitPath(
++      root,
++      "src/feature.ts",
++      "export const feature = true;\n",
++      "implement feature",
++    );
++    await writeRecord(root, implementationSha);
++
++    await expect(
++      assess(root, task("Run focused verification and lint. Expected: pass."), implementationSha),
++    ).resolves.toMatchObject({
++      accepted: false,
++      reason: "verification_steps_changed",
++    });
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/verification-details.test.ts b/packages/agentplane/src/commands/shared/verification-details.test.ts
+index 1fd59b9e9..b5ee47050 100644
+--- a/packages/agentplane/src/commands/shared/verification-details.test.ts
++++ b/packages/agentplane/src/commands/shared/verification-details.test.ts
+@@ -36,6 +36,19 @@ describe("verification details", () => {
+     ]);
+   });
+ 
++  it("accepts parenthesized result counts after the typed outcome", () => {
++    expect(
++      parseVerificationCheckDetails(
++        [
++          "Command: bun run test:fast",
++          "Result: pass (549 files, 3971 tests)",
++          "Evidence: process exited 0 at the evaluated SHA.",
++          "Scope: complete local suite.",
++        ].join("\n"),
++      )?.[0]?.result,
++    ).toBe("pass");
++  });
++
+   it.each(["passed", "pass maybe", "failure", "fail open", "pass;"])(
+     "rejects an ambiguous result value: %s",
+     (result) => {
+diff --git a/packages/agentplane/src/commands/shared/verification-details.ts b/packages/agentplane/src/commands/shared/verification-details.ts
+index 81cc0bcdf..04a188f0c 100644
+--- a/packages/agentplane/src/commands/shared/verification-details.ts
++++ b/packages/agentplane/src/commands/shared/verification-details.ts
+@@ -24,7 +24,7 @@ export function parseVerificationCheckDetails(details: unknown): VerificationChe
+     );
+     if (REQUIRED_FIELDS.some((field) => !fields.get(field))) return null;
+     const resultField = fields.get("Result") ?? "";
+-    const resultMatch = /^(pass|fail)(?:\.|\s*;\s*.+)?$/u.exec(resultField);
++    const resultMatch = /^(pass|fail)(?:\.|\s*;\s*.+|\s+\(.+\))?$/u.exec(resultField);
+     if (!resultMatch) return null;
+     return {
+       command: fields.get("Command") ?? "",
+diff --git a/packages/agentplane/src/commands/task/qualification-packet.ts b/packages/agentplane/src/commands/task/qualification-packet.ts
+index 43c784d6d..916e00120 100644
+--- a/packages/agentplane/src/commands/task/qualification-packet.ts
++++ b/packages/agentplane/src/commands/task/qualification-packet.ts
+@@ -158,7 +158,7 @@ function parseVerificationRecord(value: unknown, taskId: string): QualificationV
+     digest: asString(value.digest) ?? "",
+   };
+   if (
+-    record.schema_version !== 1 ||
++    (record.schema_version !== 1 && record.schema_version !== 2) ||
+     record.kind !== "task_verification_record" ||
+     record.task_id !== taskId ||
+     record.result !== "ok" ||
+diff --git a/packages/agentplane/src/commands/task/shared/workflow-transition-service.ts b/packages/agentplane/src/commands/task/shared/workflow-transition-service.ts
+index 5edd6bf05..5e8ba0ad0 100644
+--- a/packages/agentplane/src/commands/task/shared/workflow-transition-service.ts
++++ b/packages/agentplane/src/commands/task/shared/workflow-transition-service.ts
+@@ -70,6 +70,7 @@ export type ExecuteTaskVerificationTransitionRequest = {
+   doc: string;
+   requiredSections: string[];
+   maxReworkAttempts?: number;
++  verificationInputDigest?: string | null;
+ };
+ 
+ export type TaskVerificationTransitionExecution = TaskTransitionWrite & {
+@@ -300,8 +301,8 @@ export function executeTaskVerificationTransitionRequest(
+   const docVersion = normalizeTaskDocVersion(opts.task.doc_version);
+   const verifyStepsRef = [
+     `doc_version=${String(docVersion)}`,
+-    `doc_updated_at=${String(opts.task.doc_updated_at ?? "missing")}`,
+     `excerpt_hash=sha256:${verifyStepsHash ?? "missing"}`,
++    ...(opts.verificationInputDigest ? [`input_digest=${opts.verificationInputDigest}`] : []),
+   ].join(", ");
+   const currentAttempts =
+     typeof opts.task.verification?.attempts === "number" &&
+diff --git a/packages/agentplane/src/commands/task/verify-record-execute.ts b/packages/agentplane/src/commands/task/verify-record-execute.ts
+index 692abebdd..24ec39875 100644
+--- a/packages/agentplane/src/commands/task/verify-record-execute.ts
++++ b/packages/agentplane/src/commands/task/verify-record-execute.ts
+@@ -1,5 +1,5 @@
+ import { createHash } from "node:crypto";
+-import { mkdir, readFile } from "node:fs/promises";
++import { mkdir, readFile, rm } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+@@ -28,6 +28,7 @@ import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
+ import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+ import { applyTaskMutation } from "../shared/task-mutation.js";
+ import { setTaskFieldsIntent } from "../shared/task-store.js";
++import { resolveVerificationInputIdentity } from "../shared/task-verification-input.js";
+ 
+ import { buildStructuredFindingMutationPlan } from "./findings.js";
+ import {
+@@ -185,164 +186,183 @@ async function recordVerificationResult(opts: {
+   }
+ 
+   const at = nowIso();
+-  await applyTaskMutation({
+-    ctx,
+-    taskId: opts.taskId,
+-    policyAction: "task_verify",
+-    phase: "verify",
+-    build: async (current) => {
+-      const doc =
+-        (typeof current.doc === "string" ? current.doc : "") ||
+-        (await backend.getTaskDoc!(current.id));
+-      assertVerifyStepsFilled({
+-        taskId: current.id,
+-        sectionText: extractDocSection(doc, "Verify Steps"),
+-        action: "record verification",
+-        guidance: "fill it before running `agentplane verify ...`",
+-      });
+-      const verificationScope = extractDocSection(doc, "Verify Steps")?.trim() ?? "";
+-      const batchTaskIds = normalizeBranchPrBatchTaskIds(current, current.id);
+-      const qualificationDependencies = isQualificationTask(current)
+-        ? await resolveQualificationDependencyLeaves({
+-            taskId: current.id,
+-            loadTask: (taskId) => ctx.taskBackend.getTask(taskId),
+-          })
+-        : null;
+-      const qualityReviewTaskIds = qualificationDependencies
+-        ? [...new Set([...batchTaskIds, ...qualificationDependencies.dependencyTaskIds])]
+-        : batchTaskIds;
+-      const evaluatedSha = await resolveQualityReviewTargetSha({
+-        gitRoot: resolved.gitRoot,
+-        workflowDir: config.paths.workflow_dir,
+-        taskId: current.id,
+-        taskIds: qualityReviewTaskIds,
+-        lifecycleTaskIds: batchTaskIds,
+-        previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
+-        workflowMode: config.workflow_mode,
+-      });
+-      if (
+-        opts.state === "ok" &&
+-        isQualificationTask(current) &&
+-        parseVerificationCheckDetails(opts.details) === null
+-      ) {
+-        throw new CliError({
+-          code: "E_VALIDATION",
+-          message:
+-            "Qualification verification requires structured --details with Command, Result, Evidence, and Scope for every check.",
++  let verificationPath: string | null = null;
++  let verificationRecordCreated = false;
++  try {
++    await applyTaskMutation({
++      ctx,
++      taskId: opts.taskId,
++      policyAction: "task_verify",
++      phase: "verify",
++      build: async (current) => {
++        const doc =
++          (typeof current.doc === "string" ? current.doc : "") ||
++          (await backend.getTaskDoc!(current.id));
++        assertVerifyStepsFilled({
++          taskId: current.id,
++          sectionText: extractDocSection(doc, "Verify Steps"),
++          action: "record verification",
++          guidance: "fill it before running `agentplane verify ...`",
+         });
+-      }
+-      const record = {
+-        schema_version: 1,
+-        kind: "task_verification_record",
+-        task_id: opts.taskId,
+-        recorded_at: at,
+-        verification_command: verificationCommand({
+-          command: opts.command,
+-          taskId: opts.taskId,
+-          state: opts.state,
+-          by: opts.by,
+-        }),
+-        result: opts.state,
+-        verifier: opts.by,
+-        note: opts.note,
+-        details: opts.details?.trim() ?? null,
+-        implementation_sha: evaluatedSha,
+-        scope: verificationScope,
+-        scope_digest: sha256(verificationScope),
+-      };
+-      const digest = sha256(JSON.stringify(canonicalizeJson(record)));
+-      const verificationDir = path.join(
+-        resolved.gitRoot,
+-        config.paths.workflow_dir,
+-        opts.taskId,
+-        "verification",
+-      );
+-      await mkdir(verificationDir, { recursive: true });
+-      const verificationPath = path.join(verificationDir, verificationRecordName(at, digest));
+-      await writeJsonStableIfChanged(verificationPath, {
+-        ...record,
+-        digest,
+-      });
+-      if (opts.state === "ok" && isQualificationTask(current)) {
+-        await writeQualificationPacket({
+-          ctx,
+-          task: current,
+-          recordPath: verificationPath,
+-          recordedAt: at,
++        const verificationScope = extractDocSection(doc, "Verify Steps")?.trim() ?? "";
++        const batchTaskIds = normalizeBranchPrBatchTaskIds(current, current.id);
++        const qualificationDependencies = isQualificationTask(current)
++          ? await resolveQualificationDependencyLeaves({
++              taskId: current.id,
++              loadTask: (taskId) => ctx.taskBackend.getTask(taskId),
++            })
++          : null;
++        const qualityReviewTaskIds = qualificationDependencies
++          ? [...new Set([...batchTaskIds, ...qualificationDependencies.dependencyTaskIds])]
++          : batchTaskIds;
++        const evaluatedSha = await resolveQualityReviewTargetSha({
++          gitRoot: resolved.gitRoot,
++          workflowDir: config.paths.workflow_dir,
++          taskId: current.id,
++          taskIds: qualityReviewTaskIds,
++          lifecycleTaskIds: batchTaskIds,
++          previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
++          workflowMode: config.workflow_mode,
+         });
+-      }
+-
+-      const execution = executeTaskVerificationTransitionRequest({
+-        task: current,
+-        at,
+-        by: opts.by,
+-        note: opts.note,
+-        state: opts.state,
+-        details: await appendDecisionContextReference(
+-          await appendBlueprintSnapshotReference(opts.details, { ctx, task: current }),
+-          {
+-            ctx,
+-            cwd: opts.cwd,
+-            rootOverride: opts.rootOverride,
+-            taskId: current.id,
+-          },
+-        ),
+-        doc,
+-        requiredSections: config.tasks.doc.required_sections,
+-        maxReworkAttempts: config.evaluator?.max_rework_attempts,
+-      });
+-      const intents = [...execution.intents];
+-      if (opts.by === "EVALUATOR") {
+-        const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx, task: current }).catch(
+-          () => null,
+-        );
+-        const readmePath = path.join(
++        const verificationInput = await resolveVerificationInputIdentity({
++          gitRoot: resolved.gitRoot,
++          workflowDir: config.paths.workflow_dir,
++          taskIds: qualityReviewTaskIds,
++          targetSha: evaluatedSha,
++          verifySteps: verificationScope,
++          workflowMode: config.workflow_mode,
++        });
++        if (
++          opts.state === "ok" &&
++          isQualificationTask(current) &&
++          parseVerificationCheckDetails(opts.details) === null
++        ) {
++          throw new CliError({
++            code: "E_VALIDATION",
++            message:
++              "Qualification verification requires structured --details with Command, Result, Evidence, and Scope for every check.",
++          });
++        }
++        const findingPlan = opts.finding
++          ? buildStructuredFindingMutationPlan({
++              current,
++              config,
++              observation: opts.finding.observation,
++              impact: opts.finding.impact,
++              resolution: opts.finding.resolution,
++              promote: opts.finding.promote === true,
++              external: opts.finding.external === true,
++              fixability: opts.finding.repoFixable ? "repo-fixable" : null,
++              incidentScope: opts.finding.incidentScope,
++              incidentTags: opts.finding.incidentTags ?? [],
++              incidentMatch: opts.finding.incidentMatch ?? [],
++              incidentAdvice: opts.finding.incidentAdvice,
++              incidentRule: opts.finding.incidentRule,
++            })
++          : null;
++        const record = {
++          schema_version: verificationInput ? 2 : 1,
++          kind: "task_verification_record",
++          task_id: opts.taskId,
++          recorded_at: at,
++          verification_command: verificationCommand({
++            command: opts.command,
++            taskId: opts.taskId,
++            state: opts.state,
++            by: opts.by,
++          }),
++          result: opts.state,
++          verifier: opts.by,
++          note: opts.note,
++          details: opts.details?.trim() ?? null,
++          implementation_sha: evaluatedSha,
++          scope: verificationScope,
++          scope_digest: sha256(verificationScope),
++          ...(verificationInput ? { input: verificationInput } : {}),
++        };
++        const digest = sha256(JSON.stringify(canonicalizeJson(record)));
++        const verificationDir = path.join(
+           resolved.gitRoot,
+           config.paths.workflow_dir,
+-          current.id,
+-          "README.md",
++          opts.taskId,
++          "verification",
+         );
+-        intents.push(
+-          setTaskFieldsIntent({
+-            quality_review: {
+-              state: verificationStateToQualityReviewState(
+-                execution.nextTask.verification?.state ?? opts.state,
+-              ),
+-              updated_at: at,
+-              updated_by: opts.by,
+-              note: opts.note,
+-              evaluated_sha: evaluatedSha,
+-              blueprint_digest: snapshot?.current.digest ?? null,
+-              evidence_refs: [
+-                path.relative(resolved.gitRoot, readmePath),
+-                ...(snapshot?.path ? [snapshot.path] : []),
+-              ],
+-              findings: opts.details ? [opts.details] : [],
++        await mkdir(verificationDir, { recursive: true });
++        verificationPath = path.join(verificationDir, verificationRecordName(at, digest));
++        verificationRecordCreated = await writeJsonStableIfChanged(verificationPath, {
++          ...record,
++          digest,
++        });
++        if (opts.state === "ok" && isQualificationTask(current)) {
++          await writeQualificationPacket({
++            ctx,
++            task: current,
++            recordPath: verificationPath,
++            recordedAt: at,
++          });
++        }
++
++        const execution = executeTaskVerificationTransitionRequest({
++          task: current,
++          at,
++          by: opts.by,
++          note: opts.note,
++          state: opts.state,
++          details: await appendDecisionContextReference(
++            await appendBlueprintSnapshotReference(opts.details, { ctx, task: current }),
++            {
++              ctx,
++              cwd: opts.cwd,
++              rootOverride: opts.rootOverride,
++              taskId: current.id,
+             },
+-          }),
+-        );
+-      }
+-      if (opts.finding) {
+-        const findingPlan = buildStructuredFindingMutationPlan({
+-          current,
+-          config,
+-          observation: opts.finding.observation,
+-          impact: opts.finding.impact,
+-          resolution: opts.finding.resolution,
+-          promote: opts.finding.promote === true,
+-          external: opts.finding.external === true,
+-          fixability: opts.finding.repoFixable ? "repo-fixable" : null,
+-          incidentScope: opts.finding.incidentScope,
+-          incidentTags: opts.finding.incidentTags ?? [],
+-          incidentMatch: opts.finding.incidentMatch ?? [],
+-          incidentAdvice: opts.finding.incidentAdvice,
+-          incidentRule: opts.finding.incidentRule,
++          ),
++          doc,
++          requiredSections: config.tasks.doc.required_sections,
++          maxReworkAttempts: config.evaluator?.max_rework_attempts,
++          verificationInputDigest: verificationInput?.digest ?? null,
+         });
++        const intents = [...execution.intents];
++        if (opts.by === "EVALUATOR") {
++          const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx, task: current }).catch(
++            () => null,
++          );
++          const readmePath = path.join(
++            resolved.gitRoot,
++            config.paths.workflow_dir,
++            current.id,
++            "README.md",
++          );
++          intents.push(
++            setTaskFieldsIntent({
++              quality_review: {
++                state: verificationStateToQualityReviewState(
++                  execution.nextTask.verification?.state ?? opts.state,
++                ),
++                updated_at: at,
++                updated_by: opts.by,
++                note: opts.note,
++                evaluated_sha: evaluatedSha,
++                blueprint_digest: snapshot?.current.digest ?? null,
++                evidence_refs: [
++                  path.relative(resolved.gitRoot, readmePath),
++                  ...(snapshot?.path ? [snapshot.path] : []),
++                ],
++                findings: opts.details ? [opts.details] : [],
++              },
++            }),
++          );
++        }
+         if (findingPlan) intents.push(...findingPlan.intents);
+-      }
+-      return { intents };
+-    },
+-  });
++        return { intents };
++      },
++    });
++  } catch (error) {
++    if (verificationPath && verificationRecordCreated) {
++      await rm(verificationPath, { force: true }).catch(() => null);
++    }
++    throw error;
++  }
+ 
+   if (config.workflow_mode === "branch_pr") {
+     const syncResult = await ensurePrArtifactsSynced({
+diff --git a/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts b/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
+index cc0774d15..9dbf1811b 100644
+--- a/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
++++ b/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
+@@ -1,10 +1,11 @@
+-import { readdir } from "node:fs/promises";
++import { mkdir, readdir, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+ import * as taskBackend from "../../backends/task-backend.js";
+ import { cmdTaskAdd } from "../workflow.js";
+ import { loadCommandContext } from "../shared/task-backend.js";
++import * as taskMutation from "../shared/task-mutation.js";
+ import { cmdVerifyParsed } from "./verify-record.js";
+ import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
+ 
+@@ -76,4 +77,45 @@ describe("task verification durability", () => {
+       readdir(path.join(root, ".agentplane", "tasks", taskId, "verification")),
+     ).resolves.toEqual([]);
+   });
++
++  it("removes an uncommitted record when the guarded task mutation fails", async () => {
++    const root = await makeRepo();
++    const taskId = "202602050900-V1F4G";
++    await addTask(root, taskId);
++    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
++    const current = await ctx.taskBackend.getTask(taskId);
++    if (!current) throw new Error("missing task fixture");
++    mocks.writeJsonStableIfChanged.mockImplementationOnce(async (filePath, value) => {
++      const resolvedPath = String(filePath);
++      await mkdir(path.dirname(resolvedPath), { recursive: true });
++      await writeFile(resolvedPath, `${JSON.stringify(value)}\n`, "utf8");
++      return true;
++    });
++    const mutation = vi
++      .spyOn(taskMutation, "applyTaskMutation")
++      .mockImplementationOnce(async (options) => {
++        await options.build(current);
++        throw new Error("task write failed");
++      });
++
++    await expect(
++      cmdVerifyParsed({
++        ctx,
++        cwd: root,
++        rootOverride: undefined,
++        taskId,
++        state: "ok",
++        by: "REVIEWER",
++        note: "Looks good",
++        quiet: true,
++      }),
++    ).rejects.toThrow("task write failed");
++
++    await expect(
++      readdir(path.join(root, ".agentplane", "tasks", taskId, "verification")),
++    ).resolves.toEqual([]);
++    const task = await ctx.taskBackend.getTask(taskId);
++    expect(task?.verification?.state).toBe("pending");
++    mutation.mockRestore();
++  });
+ });
+diff --git a/packages/agentplane/src/commands/workflow.verify-hooks.test.ts b/packages/agentplane/src/commands/workflow.verify-hooks.test.ts
+index 02ca5ca40..9f0db3742 100644
+--- a/packages/agentplane/src/commands/workflow.verify-hooks.test.ts
++++ b/packages/agentplane/src/commands/workflow.verify-hooks.test.ts
+@@ -184,6 +184,45 @@ describe("commands/workflow", () => {
+     expect(record.digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
+   });
+ 
++  it("records pass and a structured finding in one task revision", async () => {
++    const root = await makeRepo();
++    const taskId = "202602050900-V1F4G";
++    await addTask(root, taskId);
++    const { backend: beforeBackend } = await taskBackend.loadTaskBackend({
++      cwd: root,
++      rootOverride: null,
++    });
++    const before = await beforeBackend.getTask(taskId);
++    if (!before) throw new Error("Missing task before verification.");
++
++    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
++    await cmdVerifyParsed({
++      ctx,
++      cwd: root,
++      rootOverride: undefined,
++      taskId,
++      state: "ok",
++      by: "REVIEWER",
++      note: "Pass with one recorded residual finding.",
++      observation: "The lifecycle previously split verification and findings.",
++      impact: "The receipt became stale immediately after a successful check.",
++      resolution: "Persist both outcomes in one guarded mutation.",
++      localOnly: true,
++      quiet: true,
++    });
++
++    const { backend } = await taskBackend.loadTaskBackend({ cwd: root, rootOverride: null });
++    const after = await backend.getTask(taskId);
++    if (!after) throw new Error("Missing task after verification.");
++    expect(after.revision).toBe((before.revision ?? 0) + 1);
++    expect(after.verification?.state).toBe("ok");
++    expect(after.sections?.Findings).toContain(
++      "The lifecycle previously split verification and findings.",
++    );
++    expect(after.sections?.Verification).toContain("VERIFY — ok");
++    expect(after.sections?.Verification).not.toContain("doc_updated_at=");
++  });
++
+   it("keeps the final verification state aligned with a durable record during concurrent verifies", async () => {
+     const root = await makeRepo();
+     const taskId = "202602050900-V1F4E";

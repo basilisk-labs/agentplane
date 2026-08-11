@@ -1,0 +1,1 @@
+✅ 1RG86M task: Make verification atomic and reusable across lifecycle-only drift [202608102243-1RG86M]

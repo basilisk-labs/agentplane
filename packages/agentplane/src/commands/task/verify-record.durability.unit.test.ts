@@ -1,10 +1,11 @@
-import { readdir } from "node:fs/promises";
+import { mkdir, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as taskBackend from "../../backends/task-backend.js";
 import { cmdTaskAdd } from "../workflow.js";
 import { loadCommandContext } from "../shared/task-backend.js";
+import * as taskMutation from "../shared/task-mutation.js";
 import { cmdVerifyParsed } from "./verify-record.js";
 import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 
@@ -75,5 +76,46 @@ describe("task verification durability", () => {
     await expect(
       readdir(path.join(root, ".agentplane", "tasks", taskId, "verification")),
     ).resolves.toEqual([]);
+  });
+
+  it("removes an uncommitted record when the guarded task mutation fails", async () => {
+    const root = await makeRepo();
+    const taskId = "202602050900-V1F4G";
+    await addTask(root, taskId);
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+    const current = await ctx.taskBackend.getTask(taskId);
+    if (!current) throw new Error("missing task fixture");
+    mocks.writeJsonStableIfChanged.mockImplementationOnce(async (filePath, value) => {
+      const resolvedPath = String(filePath);
+      await mkdir(path.dirname(resolvedPath), { recursive: true });
+      await writeFile(resolvedPath, `${JSON.stringify(value)}\n`, "utf8");
+      return true;
+    });
+    const mutation = vi
+      .spyOn(taskMutation, "applyTaskMutation")
+      .mockImplementationOnce(async (options) => {
+        await options.build(current);
+        throw new Error("task write failed");
+      });
+
+    await expect(
+      cmdVerifyParsed({
+        ctx,
+        cwd: root,
+        rootOverride: undefined,
+        taskId,
+        state: "ok",
+        by: "REVIEWER",
+        note: "Looks good",
+        quiet: true,
+      }),
+    ).rejects.toThrow("task write failed");
+
+    await expect(
+      readdir(path.join(root, ".agentplane", "tasks", taskId, "verification")),
+    ).resolves.toEqual([]);
+    const task = await ctx.taskBackend.getTask(taskId);
+    expect(task?.verification?.state).toBe("pending");
+    mutation.mockRestore();
   });
 });
