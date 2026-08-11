@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608110110-3QTGFQ-582032d10501a8f6a34dcec2",
+  "prepared_at": "2026-08-11T02:23:04.029Z",
+  "task": {
+    "id": "202608110110-3QTGFQ",
+    "revision": 18,
+    "objective": "Advance the integration queue in the foreground supervisor\n\nMake branch_pr task supervision enqueue and then serialize its own integration queue through typed deterministic operations, recover handoffs without semantic rework, and prevent stale base task replicas while preserving parallel per-task worktrees.",
+    "acceptance_criteria": [
+      "- In scope: Make branch_pr task supervision enqueue and then serialize its own integration queue through typed deterministic operations, recover handoffs without semantic rework, and prevent stale base task replicas while preserving parallel per-task worktrees.\n- Out of scope: unrelated refactors not required for \"Advance the integration queue in the foreground supervisor\".",
+      "1. Add a typed integration queue run-next operation to the workflow registry, deterministic argv projection, effects, postconditions, and authority policy.\n2. Route matching queued and recoverable handoff entries to foreground queue advancement; continue to wait when another live claimant owns the serialized lane and terminate only from provider-backed merged truth.\n3. Execute run-next in-process from the base checkout with hosted-check waiting, bounded lane waiting, no duplicate local verification, and durable supervisor receipts.\n4. Make branch_pr work start transfer the active task artifact out of the base checkout for every repository-local backend shape, while keeping exactly one worktree per active task and allowing multiple different task worktrees in parallel.\n5. Add focused route, registry, authority, supervisor, contention, handoff recovery, provider-unavailability, base-replica, and parallel-worktree tests.\n6. Run targeted tests, typecheck, lint/format/knip/hotspot checks, build, and the full fast suite. Record durable verification and quality evidence before PR integration.\n7. Publish through the guarded branch_pr lifecycle, require hosted CI, and prove the merged task converges without a separate queue-worker process or stale base task README.",
+      "PLANNER fallback scaffold for \"Advance the integration queue in the foreground supervisor\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Advance the integration queue in the foreground supervisor\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "4f552f3128af05f795cefd98ab5c085c3cafd11c",
+  "diff_base_sha": "4677188e875b6a7034f935b382f142e93d7d02e5",
+  "blueprint_digest": "1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-022304029-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:771088a74011216199e22214e410227f64d320ee27df5ee7fd942da46a93b29a",
+    "prompt_path": ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/422378ecf67d70cc09b53a356abd622a893a830f20e0187fc0e2734a8af1529d.md",
+    "result_schema_path": ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608110110-3QTGFQ/README.md",
+      "sha256": "sha256:1795861f9129b531c3e667419493ca453eea0372e8248e59acd2efa102f55362",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/a523ef07ba8d9fc0e77209f6f5c6a36f358252bf0279c1e4ab3ddc88a556129b.patch",
+      "sha256": "sha256:a523ef07ba8d9fc0e77209f6f5c6a36f358252bf0279c1e4ab3ddc88a556129b",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/eb15f8247ea013a5420004f7ee90222e05b460017891a8c9844eb269a294609d.json",
+      "sha256": "sha256:eb15f8247ea013a5420004f7ee90222e05b460017891a8c9844eb269a294609d",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608110110-3QTGFQ/verification/20260811022037383-81731587fb45eca8.json",
+      "sha256": "sha256:22945a717020e4e2e0d28f529b5dbb5286c4c058cfff5999c242ae9638874b40",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/06bbf483effbb4b2e3bc1f6176380d9728a74d011cef05d430fd68c36043477a.json",
+      "sha256": "sha256:06bbf483effbb4b2e3bc1f6176380d9728a74d011cef05d430fd68c36043477a",
+      "required": true
+    }
+  ]
+}
