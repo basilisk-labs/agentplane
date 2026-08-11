@@ -4,7 +4,7 @@ title: "Replace task-create keyword inference with explicit semantic intent"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +38,16 @@ execution_route:
   requested_mode: "branch_pr"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "9db650cb39af2db83252ae0c137fbb4552510acb"
+  message: "🚧 WCJJRD task: require explicit semantic task intent"
 comments:
   -
     author: "CODER"
     body: "Start: replace keyword inference with explicit structured semantic intent and a neutral PLANNER intake boundary."
+  -
+    author: "CODER"
+    body: "Implementation committed: task create now accepts explicit structured intent or creates a neutral PLANNER intake without keyword inference."
 events:
   -
     type: "status"
@@ -51,8 +56,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: replace keyword inference with explicit structured semantic intent and a neutral PLANNER intake boundary."
+  -
+    type: "status"
+    at: "2026-08-11T02:45:57.509Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: task create now accepts explicit structured intent or creates a neutral PLANNER intake without keyword inference."
+    commit: "9db650cb39af2db83252ae0c137fbb4552510acb"
 doc_version: 3
-doc_updated_at: "2026-08-11T02:36:02.384Z"
+doc_updated_at: "2026-08-11T02:45:57.509Z"
 doc_updated_by: "CODER"
 description: "Remove ordered natural-language keyword classification from task create. The CLI must validate structured task intent supplied by the agent or user, and otherwise create a neutral semantic-intake boundary for PLANNER without guessing task kind, mutation scope, risks, tags, blueprint, or execution route."
 sections:
