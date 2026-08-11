@@ -13,7 +13,7 @@ Created: 2026-08-11T01:10:43.816Z
 ## Verification
 
 - State: ok
-- Note: Verified foreground queue supervision, stale merged-entry recovery, and parallel worktree ownership at implementation a0cfe7da0.
+- Note: Verified the CI lint correction at 573f88809; production behavior is unchanged and prior full-suite evidence remains applicable.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -32,7 +32,7 @@ Created: 2026-08-11T01:10:43.816Z
  .../src/cli/run-cli.core.pr-flow.test.ts           | 112 +++++++++++++++++++++
  .../src/commands/integrate-queue-lane.test.ts      |  19 +++-
  .../src/commands/integrate-queue-lane.ts           |  11 +-
- .../src/commands/integrate-queue.command.test.ts   |  11 +-
+ .../src/commands/integrate-queue.command.test.ts   |  19 +++-
  .../src/commands/integrate-queue.command.ts        |   9 ++
  .../commands/shared/side-effect-authority.test.ts  |   4 +
  .../src/commands/shared/side-effect-authority.ts   |  14 +++
@@ -47,7 +47,7 @@ Created: 2026-08-11T01:10:43.816Z
  .../task/branch-task-supervisor-operations.test.ts |  49 +++++++++
  .../task/branch-task-supervisor-operations.ts      |  25 +++++
  .../commands/task/branch-task-supervisor.test.ts   |  15 ++-
- 18 files changed, 342 insertions(+), 27 deletions(-)
+ 18 files changed, 347 insertions(+), 30 deletions(-)
 ```
 
 </details>

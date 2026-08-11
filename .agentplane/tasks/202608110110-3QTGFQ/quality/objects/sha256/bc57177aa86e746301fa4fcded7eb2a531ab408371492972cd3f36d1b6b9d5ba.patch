@@ -1,0 +1,742 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
+index 3ac5818a9..6a12bf493 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
+@@ -521,6 +521,118 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
+     WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
+   );
+ 
++  it(
++    "work start allows one dedicated worktree for each of multiple parallel tasks",
++    async () => {
++      const root = await mkGitRepoRootWithBranch("main");
++      const config = defaultConfig();
++      config.workflow_mode = "branch_pr";
++      await writeConfig(root, config);
++      await configureGitUser(root);
++
++      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
++      const execFileAsync = promisify(execFile);
++      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
++      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
++      await seedRepoLocalBinArtifacts(root);
++      await seedRepoLocalNodeModules(root);
++      await seedRepoLocalCorePackage(root);
++      await seedRepoLocalDistArtifacts(root);
++      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++
++      const createTask = async (title: string): Promise<string> => {
++        const io = captureStdIO();
++        try {
++          expect(
++            await runCli([
++              "task",
++              "new",
++              "--title",
++              title,
++              "--description",
++              `${title} uses its own parallel worktree.`,
++              "--priority",
++              "med",
++              "--owner",
++              "CODER",
++              "--tag",
++              "workflow",
++              "--root",
++              root,
++            ]),
++          ).toBe(0);
++          return io.stdout.trim();
++        } finally {
++          io.restore();
++        }
++      };
++
++      const firstTask = await createTask("Parallel task one");
++      await approveTaskPlan(root, firstTask);
++      await runCliSilent([
++        "work",
++        "start",
++        firstTask,
++        "--agent",
++        "CODER",
++        "--slug",
++        "parallel-one",
++        "--worktree",
++        "--root",
++        root,
++      ]);
++
++      const secondTask = await createTask("Parallel task two");
++      await approveTaskPlan(root, secondTask);
++      await runCliSilent([
++        "work",
++        "start",
++        secondTask,
++        "--agent",
++        "CODER",
++        "--slug",
++        "parallel-two",
++        "--worktree",
++        "--root",
++        root,
++      ]);
++
++      const firstWorktree = path.join(
++        root,
++        ".agentplane",
++        "worktrees",
++        `${firstTask}-parallel-one`,
++      );
++      const secondWorktree = path.join(
++        root,
++        ".agentplane",
++        "worktrees",
++        `${secondTask}-parallel-two`,
++      );
++      const { stdout } = await execFileAsync("git", ["worktree", "list", "--porcelain"], {
++        cwd: root,
++      });
++
++      expect(stdout).toContain(firstWorktree);
++      expect(stdout).toContain(secondWorktree);
++      expect(
++        await pathExists(path.join(root, ".agentplane", "tasks", firstTask, "README.md")),
++      ).toBe(false);
++      expect(
++        await pathExists(path.join(root, ".agentplane", "tasks", secondTask, "README.md")),
++      ).toBe(false);
++      expect(
++        await pathExists(path.join(firstWorktree, ".agentplane", "tasks", firstTask, "README.md")),
++      ).toBe(true);
++      expect(
++        await pathExists(
++          path.join(secondWorktree, ".agentplane", "tasks", secondTask, "README.md"),
++        ),
++      ).toBe(true);
++    },
++    WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
++  );
++
+   it(
+     "work start rejects a base branch that is behind its upstream tracking ref",
+     async () => {
+diff --git a/packages/agentplane/src/commands/integrate-queue-lane.test.ts b/packages/agentplane/src/commands/integrate-queue-lane.test.ts
+index 86e5e02c8..c5ee4d952 100644
+--- a/packages/agentplane/src/commands/integrate-queue-lane.test.ts
++++ b/packages/agentplane/src/commands/integrate-queue-lane.test.ts
+@@ -230,7 +230,7 @@ describe("integration queue terminal recovery", () => {
+     });
+   });
+ 
+-  it("does not normalize a pre-merge DONE task while its provider PR is open", async () => {
++  it("does not normalize an active queued entry while its provider PR is open", async () => {
+     const root = await makeQueueRoot();
+     mocks.resolvePrFlowStatus.mockResolvedValue(openReport);
+ 
+@@ -246,6 +246,23 @@ describe("integration queue terminal recovery", () => {
+     expect(mocks.resolvePrFlowStatus).toHaveBeenCalledOnce();
+   });
+ 
++  it("normalizes a merged queued entry even when local task state is stale", async () => {
++    const root = await makeQueueRoot();
++    mocks.resolvePrFlowStatus.mockResolvedValue(completedReport);
++
++    await normalizeTerminalQueueEntries({
++      ctx: {} as CommandContext,
++      cwd: root,
++      gitRoot: root,
++      quiet: true,
++    });
++
++    const queue = await readIntegrationQueue(root);
++    expect(queue.entries[0]?.status).toBe("done");
++    expect(mocks.resolvePrFlowStatus).toHaveBeenCalledOnce();
++    expect(mocks.loadBackendTask).not.toHaveBeenCalled();
++  });
++
+   it("returns a typed read-only list result without provider normalization", async () => {
+     const root = await makeQueueRoot();
+ 
+diff --git a/packages/agentplane/src/commands/integrate-queue-lane.ts b/packages/agentplane/src/commands/integrate-queue-lane.ts
+index da46c0029..a23433852 100644
+--- a/packages/agentplane/src/commands/integrate-queue-lane.ts
++++ b/packages/agentplane/src/commands/integrate-queue-lane.ts
+@@ -4,7 +4,7 @@ import { gitDiffNames } from "@agentplaneorg/core/git";
+ 
+ import { createCliEmitter } from "../cli/output.js";
+ import { CliError } from "../shared/errors.js";
+-import { loadBackendTask, type CommandContext } from "./shared/task-backend.js";
++import type { CommandContext } from "./shared/task-backend.js";
+ import { gitBranchUpstream, gitRevParse } from "./shared/git-ops.js";
+ import { resolvePrFlowStatus } from "./pr/flow-status.js";
+ import { isProviderHeadUnavailableError, requireOpenGithubPrAtHead } from "./pr/provider-head.js";
+@@ -236,15 +236,6 @@ export async function normalizeTerminalQueueEntries(opts: {
+   }[] = [];
+ 
+   for (const entry of candidates) {
+-    const loaded = await loadBackendTask({
+-      ctx: opts.ctx,
+-      cwd: opts.cwd,
+-      rootOverride: opts.rootOverride ?? null,
+-      taskId: entry.task_id,
+-    }).catch(() => null);
+-    if (loaded?.task.status !== "DONE" && entry.status !== "handoff") {
+-      continue;
+-    }
+     const report = await resolvePrFlowStatus({
+       ctx: opts.ctx,
+       cwd: opts.cwd,
+diff --git a/packages/agentplane/src/commands/integrate-queue.command.test.ts b/packages/agentplane/src/commands/integrate-queue.command.test.ts
+index f1e65569f..5ac766fa0 100644
+--- a/packages/agentplane/src/commands/integrate-queue.command.test.ts
++++ b/packages/agentplane/src/commands/integrate-queue.command.test.ts
+@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
+   loadBackendTask: vi.fn(),
+   claimNextQueuedEntry: vi.fn(),
+   markQueueEntry: vi.fn(),
++  normalizeTerminalQueueEntries: vi.fn(),
+   rejectIfQueuedEntryIsStale: vi.fn(),
+   rejectIfQueuedEntryPublicationIsStale: vi.fn(),
+   prepareIntegrate: vi.fn(),
+@@ -57,7 +58,7 @@ vi.mock("./integrate-queue-lane.js", () => ({
+   defaultIntegrationQueueWorker: () => "worker",
+   findActiveIntegrationLane: vi.fn(),
+   hasQueuedIntegrationEntries: vi.fn(),
+-  normalizeTerminalQueueEntries: vi.fn(),
++  normalizeTerminalQueueEntries: mocks.normalizeTerminalQueueEntries,
+   recoverStaleActiveLane: vi.fn(),
+   rejectIfQueuedEntryIsStale: mocks.rejectIfQueuedEntryIsStale,
+   rejectIfQueuedEntryPublicationIsStale: mocks.rejectIfQueuedEntryPublicationIsStale,
+@@ -114,10 +115,12 @@ const entry = {
+   updated_at: "2026-01-01T00:00:00.000Z",
+ };
+ 
++const commandContextValue = {
++  resolvedProject: { gitRoot: "/repo" },
++} as never;
++
+ function commandContext() {
+-  return Promise.resolve({
+-    resolvedProject: { gitRoot: "/repo" },
+-  } as never);
++  return Promise.resolve(commandContextValue);
+ }
+ 
+ function runNextParsed(overrides: Record<string, unknown> = {}) {
+@@ -195,6 +198,7 @@ describe("integrate queue claim publication guard", () => {
+     });
+     mocks.claimNextQueuedEntry.mockReturnValue({ state, entry });
+     mocks.rejectIfQueuedEntryIsStale.mockResolvedValue(null);
++    mocks.normalizeTerminalQueueEntries.mockResolvedValue(undefined);
+     mocks.rejectIfQueuedEntryPublicationIsStale.mockImplementation(() => {
+       expect(mocks.inMutex).toBe(false);
+       return Promise.resolve(null);
+@@ -534,6 +538,13 @@ describe("integrate queue claim publication guard", () => {
+       }),
+     ).resolves.toBe(0);
+ 
++    expect(mocks.normalizeTerminalQueueEntries).toHaveBeenCalledWith({
++      ctx: commandContextValue,
++      cwd: "/repo",
++      rootOverride: null,
++      gitRoot: "/repo",
++      quiet: true,
++    });
+     expect(mocks.rejectIfQueuedEntryPublicationIsStale).toHaveBeenCalledTimes(2);
+     expect(mocks.cmdIntegrate).toHaveBeenCalledWith(
+       expect.objectContaining({
+diff --git a/packages/agentplane/src/commands/integrate-queue.command.ts b/packages/agentplane/src/commands/integrate-queue.command.ts
+index 297034da2..95422cdcf 100644
+--- a/packages/agentplane/src/commands/integrate-queue.command.ts
++++ b/packages/agentplane/src/commands/integrate-queue.command.ts
+@@ -45,6 +45,7 @@ import {
+   defaultIntegrationQueueWorker,
+   findActiveIntegrationLane,
+   hasQueuedIntegrationEntries,
++  normalizeTerminalQueueEntries,
+   recoverStaleActiveLane,
+   rejectIfQueuedEntryIsStale,
+ } from "./integrate-queue-lane.js";
+@@ -443,6 +444,14 @@ export function makeRunIntegrateQueueRunNextHandler(
+     const pollIntervalMs = p.pollIntervalMs ?? DEFAULT_QUEUE_POLL_INTERVAL_MS;
+     const timeoutMs = p.timeoutMs ?? DEFAULT_QUEUE_WAIT_TIMEOUT_MS;
+ 
++    await normalizeTerminalQueueEntries({
++      ctx: commandCtx,
++      cwd: ctx.cwd,
++      rootOverride: ctx.rootOverride,
++      gitRoot,
++      quiet: p.quiet,
++    });
++
+     do {
+       retryAfterGate = false;
+       const claimed = await claimFreshIntegrationQueueEntry({
+diff --git a/packages/agentplane/src/commands/shared/side-effect-authority.test.ts b/packages/agentplane/src/commands/shared/side-effect-authority.test.ts
+index 4a7130501..569ab70e2 100644
+--- a/packages/agentplane/src/commands/shared/side-effect-authority.test.ts
++++ b/packages/agentplane/src/commands/shared/side-effect-authority.test.ts
+@@ -144,6 +144,10 @@ describe("side-effect authority", () => {
+       class: "external_high_risk",
+       requiresAuthority: true,
+     });
++    expect(WORKFLOW_OPERATION_AUTHORITY_POLICY["integration.run_next"]).toMatchObject({
++      class: "external_pre_authorized",
++      requiresAuthority: false,
++    });
+     for (const operationId of [
+       "pr.artifacts.update",
+       "pr.sync_or_verify",
+diff --git a/packages/agentplane/src/commands/shared/side-effect-authority.ts b/packages/agentplane/src/commands/shared/side-effect-authority.ts
+index ca02614db..fd18cf593 100644
+--- a/packages/agentplane/src/commands/shared/side-effect-authority.ts
++++ b/packages/agentplane/src/commands/shared/side-effect-authority.ts
+@@ -18,6 +18,7 @@ type SideEffectClass =
+   | "local_reversible"
+   | "external_reversible"
+   | "external_high_risk"
++  | "external_pre_authorized"
+   | "semantic_decision";
+ 
+ type AuthorityRequirement = {
+@@ -44,6 +45,18 @@ const EXTERNAL_HIGH_RISK: AuthorityRequirement = {
+   requiresAuthority: true,
+ };
+ 
++/**
++ * The queue entry is itself an exact, durable integration authorization: it
++ * can only be created by the authority-gated integration.enqueue operation.
++ * Consuming that entry is deterministic execution of the existing authority,
++ * not a second high-risk decision.
++ */
++const EXTERNAL_PRE_AUTHORIZED: AuthorityRequirement = {
++  class: "external_pre_authorized",
++  policyRule: "workflow.external_pre_authorized_queue",
++  requiresAuthority: false,
++};
++
+ /**
+  * One exhaustive policy table makes a newly added formal operation fail closed
+  * until it is deliberately classified here.
+@@ -67,6 +80,7 @@ export const WORKFLOW_OPERATION_AUTHORITY_POLICY = {
+   "route.remote.refresh": EXTERNAL_REVERSIBLE,
+   "task.pre_merge_close": EXTERNAL_HIGH_RISK,
+   "integration.enqueue": EXTERNAL_HIGH_RISK,
++  "integration.run_next": EXTERNAL_PRE_AUTHORIZED,
+   "task.hosted_close.open": EXTERNAL_REVERSIBLE,
+   // The protected merge and task completion have already been recorded before
+   // this route. `cleanup merged --finalize` only fast-forwards the local base
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-effects.ts b/packages/agentplane/src/commands/shared/workflow-operation-effects.ts
+index c2fc75fd4..9f31aab86 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-effects.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-effects.ts
+@@ -26,6 +26,7 @@ export const WORKFLOW_OPERATION_EFFECTS = {
+   "route.remote.refresh": "read_only",
+   "task.pre_merge_close": "mutating",
+   "integration.enqueue": "mutating",
++  "integration.run_next": "mutating",
+   "task.hosted_close.open": "mutating",
+   "task.hosted_close.finalize": "mutating",
+   "task.worktree.cleanup": "mutating",
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts b/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts
+index cd2c589df..a9be177ae 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts
+@@ -6,6 +6,7 @@ export const WORKFLOW_OPERATION_ARGV_PREFIX = {
+   "batch.reconcile_included": ["agentplane", "release", "tasks", "reconcile"],
+   "integration.adopt_legacy_protected_conflict": ["agentplane", "repair", "adopt-legacy-conflict"],
+   "integration.enqueue": ["agentplane", "integrate", "queue", "enqueue"],
++  "integration.run_next": ["agentplane", "integrate", "queue", "run-next"],
+   "pr.artifacts.update": ["agentplane", "pr", "update"],
+   "pr.head.publish": ["agentplane", "pr", "open"],
+   "pr.open": ["agentplane", "pr", "open"],
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts b/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+index 99b9506b3..8a14743f1 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+@@ -86,6 +86,10 @@ describe("Workflow operation projection registry", () => {
+         params: { taskId, branch: taskBranch },
+         argv: ["agentplane", "integrate", "queue", "enqueue", taskId, "--branch", taskBranch],
+       },
++      "integration.run_next": {
++        params: { taskId },
++        argv: ["agentplane", "integrate", "queue", "run-next", "--wait", "--hosted", "--quiet"],
++      },
+       "pr.artifacts.update": {
+         params: { taskId, includeTaskIds: ["INCLUDED"] },
+         argv: ["agentplane", "pr", "update", taskId, "--include-task", "INCLUDED"],
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-projection.ts b/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
+index df87aa0d3..63e1df424 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
+@@ -37,6 +37,9 @@ function operationArgv(operation: WorkflowOperation): string[] {
+         operation.params.branch,
+       ];
+     }
++    case "integration.run_next": {
++      return ["agentplane", "integrate", "queue", "run-next", "--wait", "--hosted", "--quiet"];
++    }
+     case "pr.artifacts.update":
+     case "pr.sync_or_verify": {
+       return [
+diff --git a/packages/agentplane/src/commands/shared/workflow-postconditions.ts b/packages/agentplane/src/commands/shared/workflow-postconditions.ts
+index beacf3834..bfc2a115e 100644
+--- a/packages/agentplane/src/commands/shared/workflow-postconditions.ts
++++ b/packages/agentplane/src/commands/shared/workflow-postconditions.ts
+@@ -2,6 +2,7 @@ type WorkflowPostconditionId =
+   | "base_checkout_synced"
+   | "hosted_close_pr_open"
+   | "included_batch_closure_reconciled"
++  | "integration_queue_worker_cycle_completed"
+   | "integration_queue_contains_task"
+   | "pr_artifacts_current"
+   | "provider_state_observed"
+@@ -79,6 +80,12 @@ export const POSTCONDITION = {
+     subject: "task",
+     expected: "integration queue contains the exact task branch head",
+   },
++  integrationQueueWorkerCycleCompleted: {
++    id: "integration_queue_worker_cycle_completed",
++    subject: "route",
++    expected:
++      "one serialized integration queue worker cycle completed or re-observed the active lane",
++  },
+   hostedCloseOpen: {
+     id: "hosted_close_pr_open",
+     subject: "provider",
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-integration-projections.test.ts b/packages/agentplane/src/commands/shared/workflow-step-integration-projections.test.ts
+index afc7ef4a0..a2c49f9b0 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-integration-projections.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-integration-projections.test.ts
+@@ -212,16 +212,48 @@ describe("WorkflowStep integration projections", () => {
+         },
+       },
+     });
+-    const queuedStep = reduceRouteState(queuedState);
++    for (const status of ["queued", "claimed", "handoff"] as const) {
++      const activeQueueState = {
++        ...queuedState,
++        prFlow: {
++          ...queuedState.prFlow!,
++          queue: { ...queuedState.prFlow!.queue, present: true as const, status },
++        },
++      };
++      const queueStep = reduceRouteState(activeQueueState);
++      const packet = executionPacket({ state: activeQueueState, step: queueStep });
++
++      expect(queueStep).toMatchObject({
++        kind: "cli_operation",
++        operation: { id: "integration.run_next", params: { taskId: task.id } },
++      });
++      expect(packet).toMatchObject({
++        recommendedRole: "INTEGRATOR",
++        authoritativeCheckout: "base_checkout",
++        safeToMutate: true,
++        exactArgv: [
++          "agentplane",
++          "integrate",
++          "queue",
++          "run-next",
++          "--wait",
++          "--hosted",
++          "--quiet",
++        ],
++      });
++    }
+ 
+-    expect(queuedStep).toMatchObject({
++    const doneQueueState = {
++      ...queuedState,
++      prFlow: {
++        ...queuedState.prFlow!,
++        queue: { ...queuedState.prFlow!.queue, present: true as const, status: "done" as const },
++      },
++    };
++    expect(reduceRouteState(doneQueueState)).toMatchObject({
+       id: "wait.integration_queue",
+       kind: "wait",
+-      condition: {
+-        type: "integration_queue_terminal",
+-        taskId: task.id,
+-        queueStatus: "queued",
+-      },
++      condition: { queueStatus: "done" },
+     });
+ 
+     const staleQueueStep = reduceRouteState({
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-integration-queue.ts b/packages/agentplane/src/commands/shared/workflow-step-integration-queue.ts
+index 31e0e059f..02a6cb85e 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-integration-queue.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-integration-queue.ts
+@@ -46,6 +46,18 @@ function integrationQueueWaitStep(
+   };
+ }
+ 
++function integrationQueueRunNextStep(state: WorkflowRouteState): WorkflowStep {
++  return cliOperationStep({
++    state,
++    operationId: "integration.run_next",
++    params: { taskId: state.task.id },
++    code: "advance_integration_queue",
++    summary:
++      "advance the serialized integration queue in the foreground and recompute provider truth",
++    selectedBlocker: null,
++  });
++}
++
+ function queueMatchesCurrentRoute(state: WorkflowRouteState): boolean {
+   const flow = state.prFlow;
+   const queue = flow?.queue;
+@@ -78,11 +90,11 @@ export function integrationQueueStep(
+       });
+     }
+     const identityMatches = queueMatchesCurrentRoute(state);
+-    if (queue.status === "claimed" || queue.status === "handoff") {
+-      return integrationQueueWaitStep(state, queue.status);
+-    }
+     if (identityMatches) {
+       if (queue.status === "rework") return implementationReworkStep(state);
++      if (queue.status === "queued" || queue.status === "claimed" || queue.status === "handoff") {
++        return integrationQueueRunNextStep(state);
++      }
+       return integrationQueueWaitStep(state, queue.status);
+     }
+   }
+diff --git a/packages/agentplane/src/commands/shared/workflow-step.ts b/packages/agentplane/src/commands/shared/workflow-step.ts
+index 2326dbf36..35f622f68 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step.ts
+@@ -46,6 +46,7 @@ type WorkflowOperationType =
+   | "hosted_close_prepare"
+   | "integration_legacy_conflict_adoption"
+   | "integration_enqueue"
++  | "integration_run_next"
+   | "pr_sync"
+   | "provider_refresh"
+   | "runner_follow"
+@@ -61,6 +62,7 @@ export type WorkflowOperationId =
+   | "batch.reconcile_included"
+   | "integration.adopt_legacy_protected_conflict"
+   | "integration.enqueue"
++  | "integration.run_next"
+   | "pr.artifacts.update"
+   | "pr.head.publish"
+   | "pr.open"
+@@ -88,6 +90,7 @@ export type WorkflowOperationParams = {
+     expectedAdoptionToken: string;
+   };
+   "integration.enqueue": { taskId: string; branch: string };
++  "integration.run_next": { taskId: string };
+   "pr.artifacts.update": { taskId: string; includeTaskIds: readonly string[] };
+   "pr.head.publish": {
+     taskId: string;
+@@ -343,6 +346,23 @@ export const WORKFLOW_OPERATION_REGISTRY = {
+     verificationCandidate: "agentplane pr check <task-id>",
+     needsVerificationRecord: false,
+   },
++  "integration.run_next": {
++    type: "integration_run_next",
++    phase: "integration_queue_foreground",
++    checkout: "base_checkout",
++    role: "INTEGRATOR",
++    expectedPostconditions: [
++      POSTCONDITION.integrationQueueWorkerCycleCompleted,
++      POSTCONDITION.routeRecomputed,
++    ],
++    mustNot: [
++      "do not integrate a branch directly; run-next may consume only a queue entry created by the authority-gated enqueue operation",
++      "do not run semantic verification again when the exact queued head already has a reusable verification record and hosted checks",
++    ],
++    triggersGitHooks: false,
++    verificationCandidate: "agentplane integrate queue doctor --json",
++    needsVerificationRecord: false,
++  },
+   "integration.adopt_legacy_protected_conflict": {
+     type: "integration_legacy_conflict_adoption",
+     phase: "legacy_protected_conflict_adoption_required",
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+index 6cd6c2d45..f6b6bc5f2 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+@@ -7,6 +7,7 @@ import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operati
+ 
+ const mocks = vi.hoisted(() => ({
+   cmdFinish: vi.fn(),
++  runNext: vi.fn(),
+   loadCommandContext: vi.fn(),
+   loadTaskFromContext: vi.fn(),
+ }));
+@@ -20,6 +21,12 @@ vi.mock("./finish-command.js", () => ({
+   cmdFinish: mocks.cmdFinish,
+ }));
+ 
++vi.mock("../integrate-queue.command.js", () => ({
++  makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler: vi.fn(),
++  makeRunIntegrateQueueEnqueueHandler: vi.fn(),
++  makeRunIntegrateQueueRunNextHandler: () => mocks.runNext,
++}));
++
+ function preMergeCloseOperation(): Extract<WorkflowOperation, { id: "task.pre_merge_close" }> {
+   return {
+     id: "task.pre_merge_close",
+@@ -58,6 +65,19 @@ function routeDecision(operation: WorkflowOperation): TaskRouteDecision {
+   } as unknown as TaskRouteDecision;
+ }
+ 
++function runNextOperation(): Extract<WorkflowOperation, { id: "integration.run_next" }> {
++  return {
++    id: "integration.run_next",
++    type: "integration_run_next",
++    params: { taskId: "202607221852-71SCSW" },
++    preconditionFingerprint: preMergeCloseOperation().preconditionFingerprint,
++    authorityRef: "route:test",
++    idempotencyKey: "integration.run_next:test",
++    expectedPostconditions: [],
++    triggersGitHooks: false,
++  };
++}
++
+ describe("branch task supervisor operations", () => {
+   beforeEach(() => {
+     vi.clearAllMocks();
+@@ -69,6 +89,7 @@ describe("branch task supervisor operations", () => {
+       execution_route: { selected_mode: "branch_pr" },
+     });
+     mocks.cmdFinish.mockResolvedValue(0);
++    mocks.runNext.mockResolvedValue(0);
+   });
+ 
+   it("lets finish resolve the reviewed implementation behind a task-artifact head", async () => {
+@@ -89,4 +110,32 @@ describe("branch task supervisor operations", () => {
+     });
+     expect(options).not.toHaveProperty("implementationCommit");
+   });
++
++  it("runs one hosted foreground queue cycle without repeating local verification", async () => {
++    const operation = runNextOperation();
++
++    const result = await executeBranchWorkflowOperation({
++      decision: routeDecision(operation),
++      operation,
++    });
++
++    expect(result.status).toBe("succeeded");
++    expect(mocks.runNext).toHaveBeenCalledOnce();
++    expect(mocks.runNext.mock.calls[0]?.[1]).toEqual({
++      worker: null,
++      leaseMs: null,
++      pollIntervalMs: null,
++      timeoutMs: null,
++      runVerify: false,
++      dryRun: false,
++      quiet: true,
++      drain: false,
++      wait: true,
++      hosted: true,
++      stablePolls: null,
++      hostedPollIntervalMs: null,
++      hostedTimeoutMs: null,
++      requiredChecks: [],
++    });
++  });
+ });
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
+index 598e80658..1129fcbad 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
+@@ -5,6 +5,7 @@ import { cmdCommit } from "../guard/impl/commit.js";
+ import {
+   makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler,
+   makeRunIntegrateQueueEnqueueHandler,
++  makeRunIntegrateQueueRunNextHandler,
+ } from "../integrate-queue.command.js";
+ import { resolvePrFlowStatus } from "../pr/flow-status.js";
+ import { cmdPrOpen } from "../pr/open.js";
+@@ -198,6 +199,30 @@ export async function executeBranchWorkflowOperation(opts: {
+         exitCode,
+       );
+     }
++    case "integration.run_next": {
++      const handler = makeRunIntegrateQueueRunNextHandler(() => Promise.resolve(command));
++      exitCode = await handler(cliContext, {
++        worker: null,
++        leaseMs: null,
++        pollIntervalMs: null,
++        timeoutMs: null,
++        runVerify: false,
++        dryRun: false,
++        quiet: true,
++        drain: false,
++        wait: true,
++        hosted: true,
++        stablePolls: null,
++        hostedPollIntervalMs: null,
++        hostedTimeoutMs: null,
++        requiredChecks: [],
++      });
++      return succeeded(
++        operation,
++        `advanced the serialized integration queue for ${operation.params.taskId}`,
++        exitCode,
++      );
++    }
+     case "integration.adopt_legacy_protected_conflict": {
+       const handler = makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler(() =>
+         Promise.resolve(command),
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor.test.ts b/packages/agentplane/src/commands/task/branch-task-supervisor.test.ts
+index 4e589fbe0..c07719890 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor.test.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor.test.ts
+@@ -568,7 +568,7 @@ describe("branch_pr task supervisor", () => {
+     });
+   });
+ 
+-  it("runs semantic roles, opens one PR, enqueues one exact head, then stops on provider wait", async () => {
++  it("runs semantic roles, opens one PR, enqueues one exact head, and advances its queue", async () => {
+     const root = await mkGitRepoRoot();
+     const decisions = [
+       agentDecision(1, "implementation"),
+@@ -576,26 +576,28 @@ describe("branch_pr task supervisor", () => {
+       agentDecision(3, "quality_review"),
+       cliDecision(4, "pr.open", { taskId, author: "CODER", includeTaskIds: [] }),
+       cliDecision(5, "integration.enqueue", { taskId, branch }),
+-      stopDecision(6, "wait"),
++      cliDecision(6, "integration.run_next", { taskId }),
++      stopDecision(7, "terminal"),
+     ];
+     const calls: string[] = [];
+     const result = await superviseBranchTaskRunWithPorts(sequencePorts(root, decisions, calls));
+ 
+-    expect(result.status).toBe("stopped");
+-    expect(result.stop?.code).toBe("wait_required");
++    expect(result.status).toBe("finalized");
++    expect(result.stop).toBeNull();
+     expect(calls).toEqual([
+       "agent.implementation",
+       "agent.verification",
+       "agent.quality_review",
+       "pr.open",
+       "integration.enqueue",
++      "integration.run_next",
+     ]);
+     expect(result.executor).toMatchObject({
+       implementation_commit: "a".repeat(40),
+       semantic_status: "completed",
+     });
+     expect(result.metrics.executor_lifecycle_event_delta).toBe(0);
+-    expect(result.operation_receipts).toHaveLength(2);
++    expect(result.operation_receipts).toHaveLength(3);
+     expect(result.operation_receipts[0]).toMatchObject({
+       operation_id: "pr.open",
+       provider: { state: "OPEN", pr_number: 4702 },
+@@ -605,6 +607,9 @@ describe("branch_pr task supervisor", () => {
+       branch,
+       task_head_sha: String(6).padStart(40, "0"),
+     });
++    expect(result.operation_receipts[2]).toMatchObject({
++      operation_id: "integration.run_next",
++    });
+   });
+ 
+   it("returns merge authority to the user without imitating a provider action", async () => {

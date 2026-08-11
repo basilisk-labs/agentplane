@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608110110-3QTGFQ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T01:51:20.885Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "CI lint failure was isolated to a test-only unsafe matcher; the typed assertion preserves behavior and now passes the exact hosted lint command.",
+  "evaluated_sha": "573f88809e982f6ca23d8d436fb3ae4868837b4b",
+  "blueprint_digest": "1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b",
+  "findings": [
+    "No production source changed after the 3979-test full-suite pass; targeted queue tests and full core lint cover the only changed test assertion."
+  ],
+  "evidence_refs": [
+    "bun run lint:core passed at 573f88809",
+    "2 focused queue test files, 32 tests passed at 573f88809",
+    "production diff a0cfe7da0..573f88809 is empty; full-suite evidence from a0cfe7da0 remains applicable"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted checks must rerun on the new head before queue integration."
+  ]
+}
