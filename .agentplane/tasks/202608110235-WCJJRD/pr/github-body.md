@@ -1,0 +1,33 @@
+Task: `202608110235-WCJJRD`
+Title: Replace task-create keyword inference with explicit semantic intent
+Canonical task record: `.agentplane/tasks/202608110235-WCJJRD/README.md`
+
+## Summary
+
+Replace task-create keyword inference with explicit semantic intent
+
+Remove ordered natural-language keyword classification from task create. The CLI must validate structured task intent supplied by the agent or user, and otherwise create a neutral semantic-intake boundary for PLANNER without guessing task kind, mutation scope, risks, tags, blueprint, or execution route.
+
+## Scope
+
+- In scope: Remove ordered natural-language keyword classification from task create. The CLI must validate structured task intent supplied by the agent or user, and otherwise create a neutral semantic-intake boundary for PLANNER without guessing task kind, mutation scope, risks, tags, blueprint, or execution route.
+- Out of scope: unrelated refactors not required for "Replace task-create keyword inference with explicit semantic intent".
+
+## Verification
+
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-08-11T02:36:02.480Z
+- Branch: task/202608110235-WCJJRD/replace-task-create-keyword-inference-with-expli
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+No changes detected.
+```
+
+</details>

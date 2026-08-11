@@ -22,7 +22,7 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
   ],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<subcommand>" }],
   notes: [
-    'Default external-agent path: task create "<outcome>" -> task advance --agent-json. Agentplane infers structured intent and an explainable route, then returns one bounded semantic action while retaining lifecycle authority.',
+    'Default external-agent path: task create "<outcome>" -> task advance --agent-json. Callers may supply structured intent; otherwise AgentPlane creates a neutral PLANNER intake without classifying title words.',
     "Default managed-agent path: create the task, then use task run to supervise the typed lifecycle and stop at any operator boundary.",
     "The generated Plan is an explicit placeholder: task plan approve fails until PLANNER or a human records a task-specific plan.",
     "Use `agentplane task next-action <task-id> --explain` only for full route diagnostics.",
@@ -31,7 +31,7 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
   examples: [
     {
       cmd: 'agentplane task create "Fix the parser edge case"',
-      why: "Create a task from the desired outcome and show its inferred execution route.",
+      why: "Create a neutral task intake whose semantic classification belongs to PLANNER.",
     },
     {
       cmd: "agentplane task advance <task-id> --agent-json",
