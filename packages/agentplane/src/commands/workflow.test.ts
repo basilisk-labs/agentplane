@@ -344,7 +344,7 @@ describe("commands/workflow", () => {
         commentAuthor: null,
         commentBody: null,
       }),
-    ).rejects.toMatchObject({ code: "E_IO" });
+    ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
   it("task add writes tasks via writeTask when writeTasks is missing", async () => {

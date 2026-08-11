@@ -3,7 +3,9 @@ import path from "node:path";
 import type { Readable } from "node:stream";
 
 import { startProcess } from "@agentplaneorg/core/process";
-import { resolveCommandInvocation, resolveDeclaredTaskCheck } from "../declared-check.js";
+import { resolveDeclaredTaskCheck } from "../declared-check.js";
+
+export { resolveCommandInvocation as resolveShellInvocation } from "../declared-check.js";
 
 const VERIFY_OUTPUT_TAIL_BYTES = 1024 * 1024;
 const VERIFY_RUNTIME_ENV_KEYS = [
@@ -16,8 +18,6 @@ const VERIFY_RUNTIME_ENV_KEYS = [
   "AGENTPLANE_DEV_AUTO_BOOTSTRAPPED",
   "AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH",
 ] as const;
-
-export const resolveShellInvocation = resolveCommandInvocation;
 
 export function verificationChildEnv(source: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
   const env = { ...source };
