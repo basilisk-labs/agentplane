@@ -66,7 +66,8 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
       kind: "string",
       name: "details",
       valueHint: "<text>",
-      description: "Optional free-form details (mutually exclusive with --file).",
+      description:
+        "Verification check blocks using Command, Result, Evidence, and Scope fields; required for a passing committed branch_pr task and mutually exclusive with --file.",
     },
     {
       kind: "string",
@@ -86,15 +87,15 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
   ],
   examples: [
     {
-      cmd: 'agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --quiet',
-      why: "Record an OK verification outcome.",
+      cmd: 'agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --details "Command: bun run test:fast. Result: pass. Evidence: exited 0. Scope: repository test suite." --quiet',
+      why: "Record a committed branch_pr OK outcome with reusable structured evidence.",
     },
     {
       cmd: "agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note-file ./verify-note.txt",
       why: "Record an OK verification outcome using a file-backed note.",
     },
     {
-      cmd: 'agentplane verify 202602030608-F1Q8AB --rework --by REVIEWER --note "Needs changes" --details "Missing tests"',
+      cmd: 'agentplane verify 202602030608-F1Q8AB --rework --by REVIEWER --note "Needs changes" --details "Command: bun run test:fast. Result: fail. Evidence: one regression failed. Scope: repository test suite."',
       why: "Record a needs-rework outcome with details.",
     },
     {

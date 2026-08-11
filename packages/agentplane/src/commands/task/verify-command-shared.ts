@@ -150,7 +150,8 @@ const verifyCommonOptions: readonly OptionSpec[] = [
     kind: "string",
     name: "details",
     valueHint: "<text>",
-    description: "Optional details text (mutually exclusive with --file).",
+    description:
+      "Verification check blocks using Command, Result, Evidence, and Scope fields; required for a passing committed branch_pr task and mutually exclusive with --file.",
   },
   {
     kind: "string",

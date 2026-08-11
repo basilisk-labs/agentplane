@@ -316,6 +316,17 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "cleanup_blocked"),
     });
   }
+  if (state.cleanupProbe.state === "already_clean" && state.prFlow === null) {
+    return cliOperationStep({
+      state,
+      operationId: "route.remote.refresh",
+      params: { taskId: id },
+      code: "refresh_remote_route",
+      summary:
+        "load provider truth before treating a branch_pr task with no local branch or PR record as complete",
+      selectedBlocker: null,
+    });
+  }
   if (state.cleanupProbe.state === "already_clean") {
     return terminalStep({
       state,

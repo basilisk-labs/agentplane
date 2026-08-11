@@ -186,6 +186,24 @@ describe("content-addressed verification records", () => {
     });
   });
 
+  it("reports missing structured check details separately from task metadata drift", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await commitPath(root, "package.json", '{"name":"verification-v2"}\n', "seed context");
+    await execFileAsync("git", ["checkout", "-b", "task/verification-v2"], { cwd: root });
+    const implementationSha = await commitPath(
+      root,
+      "src/feature.ts",
+      "export const feature = true;\n",
+      "implement feature",
+    );
+    await writeRecord(root, implementationSha, "Verification passed without structured details.");
+
+    await expect(assess(root, task(), implementationSha)).resolves.toMatchObject({
+      accepted: false,
+      reason: "verification_details_missing",
+    });
+  });
+
   it("rejects a record after its referenced mutable evidence is replaced", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await commitPath(root, "package.json", '{"name":"verification-v2"}\n', "seed context");

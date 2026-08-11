@@ -194,7 +194,116 @@ describe("runCli route decision verification freshness", () => {
     ]);
     expect(stale.blockers).toContainEqual({
       code: "verification_required",
-      summary: "the passing verification record does not cover the current implementation head",
+      summary:
+        "the passing verification record does not cover the current verification input (reason_code=verification_implementation_changed)",
     });
+  });
+
+  it("accepts one valid verify result immediately and reuses it across a lifecycle-only commit", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Record verification once and reuse it when only lifecycle evidence changes.",
+      "--updated-by",
+      "PLANNER",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/single-verification`], {
+      cwd: root,
+    });
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: implement the verification freshness regression fixture.",
+      "--root",
+      root,
+    ]);
+    await execFileAsync("git", ["add", "--all"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: prepare verification fixture"], {
+      cwd: root,
+    });
+    await writeFile(path.join(root, "impl.txt"), "verified implementation\n", "utf8");
+    await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: verified implementation"], {
+      cwd: root,
+    });
+    const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    await runCliSilent([
+      "task",
+      "set-status",
+      taskId,
+      "DOING",
+      "--author",
+      "CODER",
+      "--body",
+      "Implementation committed and ready for independent verification evidence.",
+      "--commit",
+      implementationHead.trim(),
+      "--root",
+      root,
+    ]);
+    await runCliSilent([
+      "verify",
+      taskId,
+      "--ok",
+      "--by",
+      "TESTER",
+      "--note",
+      "Focused verification passed.",
+      "--details",
+      "Command: test fixture. Result: pass. Evidence: implementation fixture is present. Scope: verification freshness.",
+      "--observation",
+      "The committed implementation and verification input match.",
+      "--impact",
+      "The route may reuse this evidence after lifecycle-only changes.",
+      "--resolution",
+      "Keep semantic verification input separate from lifecycle artifacts.",
+      "--root",
+      root,
+    ]);
+
+    const immediate = await runJson<{
+      blockers: { code: string }[];
+      nextAction: { code: string };
+    }>(["task", "status", taskId, "--route", "--json", "--root", root]);
+    expect(immediate.blockers.map((blocker) => blocker.code)).not.toContain(
+      "verification_required",
+    );
+    expect(immediate.nextAction.code).not.toBe("verification_required");
+
+    await execFileAsync("git", ["add", "--all"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: persist verification evidence"], {
+      cwd: root,
+    });
+    const afterLifecycleCommit = await runJson<{ blockers: { code: string }[] }>([
+      "task",
+      "status",
+      taskId,
+      "--route",
+      "--json",
+      "--root",
+      root,
+    ]);
+    expect(afterLifecycleCommit.blockers.map((blocker) => blocker.code)).not.toContain(
+      "verification_required",
+    );
   });
 });
