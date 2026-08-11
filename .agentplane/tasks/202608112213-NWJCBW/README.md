@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -63,7 +63,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-11T23:40:00.746Z"
+  updated_at: "2026-08-11T23:47:26.627Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -73,8 +73,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "3711cb03b8474b2e78d4f7dc27e3dcecb665a378"
-  message: "✅ NWJCBW task: record compatibility review"
+  hash: "d2848f6ea024075f7c86f2fa73387795545d5975"
+  message: "✅ NWJCBW task: review hotspot remediation"
 comments:
   -
     author: "CODER"
@@ -85,6 +85,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -150,8 +153,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Hotspot remediation verified at 6d74e0fe8: moved the unchanged config-policy assertion out of the oversized core test without raising the baseline or changing runtime code."
+  -
+    type: "status"
+    at: "2026-08-11T23:47:26.627Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "d2848f6ea024075f7c86f2fa73387795545d5975"
 doc_version: 3
-doc_updated_at: "2026-08-11T23:46:34.888Z"
+doc_updated_at: "2026-08-11T23:47:26.660Z"
 doc_updated_by: "CODER"
 description: "Remove profile-driven process variants from init, config, and runtime. New and upgraded projects must resolve to one fixed execution policy while legacy profile inputs migrate compatibly without changing workflow, runner, integrations, or explicit project approvals. Preserve task flexibility by making lifecycle and safety invariants fixed instead of imposing arbitrary autonomy tiers."
 sections:
@@ -442,8 +453,8 @@ sections:
       Resolution: Recorded exact CLI mutations, legacy aliases, canonical workflow schema values, provenance, and planned release surface digest; added checker assertions and regression expectations.
 extensions:
   implementation_commit:
-    hash: "017d3d3a8a724880ca20a011f1488fb98bb664ee"
-    message: "🧪 NWJCBW task: review compatibility surface"
+    hash: "6d74e0fe8fd606da181097bc7badf55007970055"
+    message: "🧪 NWJCBW task: split config policy coverage"
   workflow_route_baseline:
     start_head_sha: "206b349e8dd08051f695d68f8558db94b2e23cb5"
     version: 1
@@ -759,4 +770,4 @@ Implementation finding: task creation omitted explicit structured intent and def
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-11T23:40:00.746Z`
+- Updated at: `2026-08-11T23:47:26.627Z`
