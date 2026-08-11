@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608111010-2M6168/make-task-episode-plans-lossless-and-language-ne",
+  "created_at": "2026-08-11T10:11:16.241Z",
+  "diffstat_sha256": "sha256:97010e11004b68698f4fa71529d095ba4636e941d6d3d2bcb0d1684871e0513c",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608111010-2M6168",
+  "updated_at": "2026-08-11T10:11:16.241Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

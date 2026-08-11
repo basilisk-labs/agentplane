@@ -30,6 +30,8 @@ const TRUNCATED_MARKER = "\n\n[TRUNCATED]";
 const VERIFICATION_RESULTS_BEGIN = "<!-- BEGIN VERIFICATION RESULTS -->";
 
 export const RUNNER_TASK_CONTEXT_BUDGETS = {
+  required_section_max_bytes: 65_536,
+  required_sections_total_max_bytes: 262_144,
   section_max_bytes: 3072,
   sections_total_max_bytes: 20_480,
   comments_max_count: 20,
@@ -167,7 +169,9 @@ function compactSections(opts: {
     .filter(([section]) => !requiredByKey.has(sectionKey(section)))
     .map(([name, text]) => ({ name, text, required: false as const }));
   const originalEntries = [...requiredEntries, ...optionalEntries];
-  let remainingBudget: number = RUNNER_TASK_CONTEXT_BUDGETS.sections_total_max_bytes;
+  let remainingRequiredBudget: number =
+    RUNNER_TASK_CONTEXT_BUDGETS.required_sections_total_max_bytes;
+  let remainingOptionalBudget: number = RUNNER_TASK_CONTEXT_BUDGETS.sections_total_max_bytes;
   let truncated = false;
   const omissions: TaskEpisodeOmissionReceipt[] = [
     ...missing.map((section) => ({
@@ -185,7 +189,10 @@ function compactSections(opts: {
   for (const entry of originalEntries) {
     const textBytes = utf8Bytes(entry.text);
     if (entry.required) {
-      const allowedBytes = Math.min(RUNNER_TASK_CONTEXT_BUDGETS.section_max_bytes, remainingBudget);
+      const allowedBytes = Math.min(
+        RUNNER_TASK_CONTEXT_BUDGETS.required_section_max_bytes,
+        remainingRequiredBudget,
+      );
       if (textBytes > allowedBytes) {
         throw new CliError({
           code: "E_VALIDATION",
@@ -201,11 +208,11 @@ function compactSections(opts: {
           },
         });
       }
-      remainingBudget -= textBytes;
+      remainingRequiredBudget -= textBytes;
       compactedEntries.push(entry);
       continue;
     }
-    if (remainingBudget <= 0) {
+    if (remainingOptionalBudget <= 0) {
       truncated = true;
       omissions.push({
         section: entry.name,
@@ -214,10 +221,13 @@ function compactSections(opts: {
       });
       continue;
     }
-    const allowedBytes = Math.min(RUNNER_TASK_CONTEXT_BUDGETS.section_max_bytes, remainingBudget);
+    const allowedBytes = Math.min(
+      RUNNER_TASK_CONTEXT_BUDGETS.section_max_bytes,
+      remainingOptionalBudget,
+    );
     const nextText = textBytes > allowedBytes ? truncateUtf8(entry.text, allowedBytes) : entry.text;
     if (nextText !== entry.text) truncated = true;
-    remainingBudget = Math.max(0, remainingBudget - utf8Bytes(nextText));
+    remainingOptionalBudget = Math.max(0, remainingOptionalBudget - utf8Bytes(nextText));
     compactedEntries.push({ ...entry, text: nextText });
   }
   return {
