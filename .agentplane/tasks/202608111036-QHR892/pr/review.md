@@ -13,7 +13,7 @@ Created: 2026-08-11T11:23:13.777Z
 ## Verification
 
 - State: ok
-- Note: Exact quality-review transition, conflicting-failure pre-mutation rejection, post-verify route, and clean-worktree evidence are complete; expensive runtime-equivalent receipts remain reusable.
+- Note: Hosted formatting rework is behavior-neutral and complete; focused parser/route tests, typecheck, repository formatting, route, and clean-worktree evidence are current at a7548d1de.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -34,14 +34,14 @@ Created: 2026-08-11T11:23:13.777Z
  .../commands/shared/task-verification-records.ts   |  15 +-
  .../shared/task-verification-records.v2.test.ts    |  18 ++
  .../commands/shared/verification-details.test.ts   |  40 +++-
- .../src/commands/shared/verification-details.ts    |  63 +++++--
+ .../src/commands/shared/verification-details.ts    |  62 +++++--
  .../commands/shared/workflow-step-branch-state.ts  |  14 +-
  .../src/commands/shared/workflow-step-branch.ts    |   4 +
  .../src/commands/task/verify-command-shared.ts     |   3 +-
  .../src/commands/task/verify-record-execute.ts     |  26 +++
  .../src/commands/task/verify-record.unit.test.ts   |   1 +
  packages/agentplane/src/commands/verify.spec.ts    |   9 +-
- 12 files changed, 368 insertions(+), 41 deletions(-)
+ 12 files changed, 367 insertions(+), 41 deletions(-)
 ```
 
 </details>
