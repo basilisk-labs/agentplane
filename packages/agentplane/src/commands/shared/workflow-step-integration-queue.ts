@@ -92,7 +92,7 @@ export function integrationQueueStep(
     const identityMatches = queueMatchesCurrentRoute(state);
     if (identityMatches) {
       if (queue.status === "rework") return implementationReworkStep(state);
-      if (queue.status === "queued" || queue.status === "claimed" || queue.status === "handoff") {
+      if (queue.status === "queued" || queue.status === "claimed") {
         return integrationQueueRunNextStep(state);
       }
       return integrationQueueWaitStep(state, queue.status);

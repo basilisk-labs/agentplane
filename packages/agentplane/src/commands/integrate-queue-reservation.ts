@@ -14,11 +14,15 @@ import {
 import { isExternalStateUnavailableError } from "./shared/external-unavailability.js";
 
 export function isRetryableIntegrationGateError(error: unknown): boolean {
-  return (
-    error instanceof CliError &&
-    error.code === "E_VALIDATION" &&
-    error.context?.reason_code === "github_review_threads_unresolved"
-  );
+  if (!(error instanceof CliError)) return false;
+  const reasonCode = error.context?.reason_code;
+  if (typeof reasonCode !== "string") return false;
+  return new Set([
+    "github_review_threads_unresolved",
+    "github_review_threads_unavailable",
+    "hosted_checks_pending",
+    "hosted_checks_unavailable",
+  ]).has(reasonCode);
 }
 
 function queueEntryMatchesClaimIdentity(

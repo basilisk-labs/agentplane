@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { CliError } from "../../shared/errors.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { WorkflowOperation } from "../shared/workflow-step.js";
@@ -137,5 +138,38 @@ describe("branch task supervisor operations", () => {
       hostedTimeoutMs: null,
       requiredChecks: [],
     });
+  });
+
+  it.each(["protected_base_auto_merge_enabled", "protected_base_github_merge_completed"])(
+    "completes the worker cycle for expected provider handoff %s",
+    async (reasonCode) => {
+      const operation = runNextOperation();
+      mocks.runNext.mockRejectedValueOnce(
+        new CliError({
+          code: "E_HANDOFF",
+          message: "provider owns the protected-base completion",
+          context: { reason_code: reasonCode },
+        }),
+      );
+
+      const result = await executeBranchWorkflowOperation({
+        decision: routeDecision(operation),
+        operation,
+      });
+
+      expect(result.status).toBe("succeeded");
+      expect(result.exit_code).toBe(0);
+      expect(result.detail).toContain("provider handoff remains durable");
+    },
+  );
+
+  it("does not hide an unrecognized queue handoff", async () => {
+    const operation = runNextOperation();
+    const handoff = new CliError({ code: "E_HANDOFF", message: "queue reservation lost" });
+    mocks.runNext.mockRejectedValueOnce(handoff);
+
+    await expect(
+      executeBranchWorkflowOperation({ decision: routeDecision(operation), operation }),
+    ).rejects.toBe(handoff);
   });
 });
