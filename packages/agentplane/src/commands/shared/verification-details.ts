@@ -11,8 +11,7 @@ type RequiredField = (typeof REQUIRED_FIELDS)[number];
 // A label is structural only at a line boundary or after the terminal period
 // used by the compatibility inline format. Plain label-shaped text inside a
 // command or evidence value (for example `echo Scope: smoke`) stays data.
-const FIELD_PATTERN =
-  /(?:^|(?:\r?\n)[\t ]*|(?<=\.)[\t ]+)(Command|Result|Evidence|Scope):[\t ]*/gu;
+const FIELD_PATTERN = /(?:^|(?:\r?\n)[\t ]*|(?<=\.)[\t ]+)(Command|Result|Evidence|Scope):[\t ]*/gu;
 
 /**
  * Parses the durable, user-facing verification-details format once. Consumers
