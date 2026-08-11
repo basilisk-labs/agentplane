@@ -4,7 +4,7 @@ title: "Replace task-create keyword inference with explicit semantic intent"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,40 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T08:34:09.304Z"
+  updated_at: "2026-08-11T08:37:09.532Z"
   updated_by: "TESTER"
-  note: "Verified explicit structured intent and neutral planner intake at c7de784fbab8; all focused, full regression, static, and build gates pass."
+  note: "Verified c7de784fbab8 using unchanged content-addressed evidence; lifecycle metadata did not trigger duplicate test execution."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-08-11T08:38:12.333Z"
+  updated_by: "HUMAN"
+  note: "Task creation no longer guesses semantic intent from natural-language keywords; deterministic validation remains in the CLI, while unstructured input is handed to PLANNER and the patch keeps its prior JSON field as a deprecated exact alias."
+  evaluated_sha: "c7de784fbab8d1f3bc5b6f5c1d8432dddd3e3bb2"
+  blueprint_digest: "6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944"
+  evidence_refs:
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-083811948-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-083811948-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/a74c7c43bc0435b16b8cc6c983da42a2dd56c97aa3489c0e91b24b75fb993735.md"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-083811948-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/20260811-083811948-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608110235-WCJJRD/README.md"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/2767b19416d0115ba10849463f556a1340ba3e93af9a93e9708028850240d9d8.patch"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/fb5bd1acf6e7e1788bdeb626d59a0dc984d9becc78223e4a4858f48a582e30c4.json"
+    - ".agentplane/tasks/202608110235-WCJJRD/verification/20260811083709532-bfd9177b3422d30b.json"
+    - ".agentplane/tasks/202608110235-WCJJRD/quality/objects/sha256/401907a8523393cf75cebc6e66ba47c377563c19ea58b2689c0a3bfbe01b846a.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - "packages/agentplane/src/commands/task/create.command.ts"
+    - "packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts"
+    - "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
+  findings:
+    - "The implementation removes ordered keyword tables and routes English, Russian, Japanese, negated, and ambiguous unstructured descriptions to the same semantic_intake_pending boundary."
+    - "Partially supplied structured intent fails closed, while complete caller-supplied task kind and mutation scope persist with explicit provenance and existing branch_pr route floors."
+    - "The new semantic_intent payload is truthful and the deprecated inferred_intent alias preserves patch-level consumers without restoring inference behavior."
 execution_route:
   frozen: true
   reason_codes:
@@ -39,8 +69,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "9db650cb39af2db83252ae0c137fbb4552510acb"
-  message: "🚧 WCJJRD task: require explicit semantic task intent"
+  hash: "c7de784fbab8d1f3bc5b6f5c1d8432dddd3e3bb2"
+  message: "🚧 WCJJRD task: preserve task-create JSON compatibility"
 comments:
   -
     author: "CODER"
@@ -48,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: task create now accepts explicit structured intent or creates a neutral PLANNER intake without keyword inference."
+  -
+    author: "CODER"
+    body: "Compatibility adjustment committed: retain deprecated JSON inferred_intent as an exact alias of semantic_intent."
 events:
   -
     type: "status"
@@ -76,8 +109,28 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified explicit structured intent and neutral planner intake at c7de784fbab8; all focused, full regression, static, and build gates pass."
+  -
+    type: "status"
+    at: "2026-08-11T08:36:06.536Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Compatibility adjustment committed: retain deprecated JSON inferred_intent as an exact alias of semantic_intent."
+    commit: "c7de784fbab8d1f3bc5b6f5c1d8432dddd3e3bb2"
+  -
+    type: "verify"
+    at: "2026-08-11T08:36:28.355Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified c7de784fbab8 using unchanged content-addressed evidence; lifecycle metadata did not trigger duplicate test execution."
+  -
+    type: "verify"
+    at: "2026-08-11T08:37:09.532Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified c7de784fbab8 using unchanged content-addressed evidence; lifecycle metadata did not trigger duplicate test execution."
 doc_version: 3
-doc_updated_at: "2026-08-11T08:34:10.573Z"
+doc_updated_at: "2026-08-11T08:37:10.955Z"
 doc_updated_by: "CODER"
 description: "Remove ordered natural-language keyword classification from task create. The CLI must validate structured task intent supplied by the agent or user, and otherwise create a neutral semantic-intake boundary for PLANNER without guessing task kind, mutation scope, risks, tags, blueprint, or execution route."
 sections:
@@ -176,6 +229,116 @@ sections:
     Command: `git diff --check` and final implementation diff inspection
     Result: pass.
     Evidence: No whitespace errors; ordered keyword tables and the natural-language classifier are absent; only caller-supplied structured semantic fields are validated, otherwise `semantic_intake_pending` is emitted. The deprecated JSON `inferred_intent` field is retained as an exact alias for patch compatibility.
+    Scope: Final implementation and test diff at commit c7de784fbab8.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110235-WCJJRD-replace-task-create-keyword-inference-with-expli/.agentplane/tasks/202608110235-WCJJRD/blueprint/resolved-snapshot.json
+    - old_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+    - current_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608110235-WCJJRD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T08:36:28.355Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified c7de784fbab8 using unchanged content-addressed evidence; lifecycle metadata did not trigger duplicate test execution.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a592495c95da711ecb80215b6394f03120f4aad2dfdbcaa463af64d31287db66, input_digest=sha256:3051a093c6caff3cbebf2d02d3fef40f12bc162178c8468b1ba002fa90023147
+
+    Details:
+
+    Command: `bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts`
+    Result: pass (4 files, 36 tests).
+    Evidence: Reused content-addressed result already obtained for implementation commit c7de784fbab8; no implementation input changed.
+    Scope: Explicit structured intent, neutral cross-language planner intake, help, and documentation contracts.
+
+    Command: `bun run typecheck` and `bun run lint:core`
+    Result: pass.
+    Evidence: Reused results already obtained for implementation commit c7de784fbab8; no implementation input changed.
+    Scope: Public payload types, structured option parsing, persistence, and core source lint.
+
+    Command: `bun run test:fast`
+    Result: pass (549 files, 3983 tests).
+    Evidence: Reused complete regression result already obtained for implementation commit c7de784fbab8; no implementation input changed.
+    Scope: Routes, task creation, duplicate locking, handoff behavior, and repository regressions.
+
+    Command: `bun run format:check`, `bun run knip:check`, `bun run hotspots:check`, and `bun run build`
+    Result: pass.
+    Evidence: Reused static and build results already obtained for implementation commit c7de784fbab8; no implementation input changed.
+    Scope: Formatting, dead-code, source-size, and distributable build gates.
+
+    Command: `git diff --check` and final implementation diff inspection
+    Result: pass.
+    Evidence: No whitespace errors; ordered keyword tables and natural-language classifier are absent; the deprecated JSON `inferred_intent` field remains an exact alias for patch compatibility.
+    Scope: Final implementation and test diff at commit c7de784fbab8.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110235-WCJJRD-replace-task-create-keyword-inference-with-expli/.agentplane/tasks/202608110235-WCJJRD/blueprint/resolved-snapshot.json
+    - old_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+    - current_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608110235-WCJJRD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T08:37:09.532Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified c7de784fbab8 using unchanged content-addressed evidence; lifecycle metadata did not trigger duplicate test execution.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a592495c95da711ecb80215b6394f03120f4aad2dfdbcaa463af64d31287db66, input_digest=sha256:424ab8992aadb7b22d916a5a91945a9c9b2cde9c9966d392638fcba2b7c89da3
+
+    Details:
+
+    Command: `bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts`
+    Result: pass (4 files, 36 tests)
+    Evidence: Reused content-addressed result already obtained for implementation commit c7de784fbab8; no implementation input changed.
+    Scope: Explicit structured intent, neutral cross-language planner intake, help, and documentation contracts.
+
+    Command: `bun run typecheck` and `bun run lint:core`
+    Result: pass.
+    Evidence: Reused results already obtained for implementation commit c7de784fbab8; no implementation input changed.
+    Scope: Public payload types, structured option parsing, persistence, and core source lint.
+
+    Command: `bun run test:fast`
+    Result: pass (549 files, 3983 tests)
+    Evidence: Reused complete regression result already obtained for implementation commit c7de784fbab8; no implementation input changed.
+    Scope: Routes, task creation, duplicate locking, handoff behavior, and repository regressions.
+
+    Command: `bun run format:check`, `bun run knip:check`, `bun run hotspots:check`, and `bun run build`
+    Result: pass.
+    Evidence: Reused static and build results already obtained for implementation commit c7de784fbab8; no implementation input changed.
+    Scope: Formatting, dead-code, source-size, and distributable build gates.
+
+    Command: `git diff --check` and final implementation diff inspection
+    Result: pass.
+    Evidence: No whitespace errors; ordered keyword tables and natural-language classifier are absent; the deprecated JSON `inferred_intent` field remains an exact alias for patch compatibility.
     Scope: Final implementation and test diff at commit c7de784fbab8.
 
     BlueprintSnapshotRef:
@@ -314,6 +477,116 @@ Scope: Formatting, dead-code, source-size, and distributable build gates at impl
 Command: `git diff --check` and final implementation diff inspection
 Result: pass.
 Evidence: No whitespace errors; ordered keyword tables and the natural-language classifier are absent; only caller-supplied structured semantic fields are validated, otherwise `semantic_intake_pending` is emitted. The deprecated JSON `inferred_intent` field is retained as an exact alias for patch compatibility.
+Scope: Final implementation and test diff at commit c7de784fbab8.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110235-WCJJRD-replace-task-create-keyword-inference-with-expli/.agentplane/tasks/202608110235-WCJJRD/blueprint/resolved-snapshot.json
+- old_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+- current_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608110235-WCJJRD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T08:36:28.355Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified c7de784fbab8 using unchanged content-addressed evidence; lifecycle metadata did not trigger duplicate test execution.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a592495c95da711ecb80215b6394f03120f4aad2dfdbcaa463af64d31287db66, input_digest=sha256:3051a093c6caff3cbebf2d02d3fef40f12bc162178c8468b1ba002fa90023147
+
+Details:
+
+Command: `bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts`
+Result: pass (4 files, 36 tests).
+Evidence: Reused content-addressed result already obtained for implementation commit c7de784fbab8; no implementation input changed.
+Scope: Explicit structured intent, neutral cross-language planner intake, help, and documentation contracts.
+
+Command: `bun run typecheck` and `bun run lint:core`
+Result: pass.
+Evidence: Reused results already obtained for implementation commit c7de784fbab8; no implementation input changed.
+Scope: Public payload types, structured option parsing, persistence, and core source lint.
+
+Command: `bun run test:fast`
+Result: pass (549 files, 3983 tests).
+Evidence: Reused complete regression result already obtained for implementation commit c7de784fbab8; no implementation input changed.
+Scope: Routes, task creation, duplicate locking, handoff behavior, and repository regressions.
+
+Command: `bun run format:check`, `bun run knip:check`, `bun run hotspots:check`, and `bun run build`
+Result: pass.
+Evidence: Reused static and build results already obtained for implementation commit c7de784fbab8; no implementation input changed.
+Scope: Formatting, dead-code, source-size, and distributable build gates.
+
+Command: `git diff --check` and final implementation diff inspection
+Result: pass.
+Evidence: No whitespace errors; ordered keyword tables and natural-language classifier are absent; the deprecated JSON `inferred_intent` field remains an exact alias for patch compatibility.
+Scope: Final implementation and test diff at commit c7de784fbab8.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110235-WCJJRD-replace-task-create-keyword-inference-with-expli/.agentplane/tasks/202608110235-WCJJRD/blueprint/resolved-snapshot.json
+- old_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+- current_digest: 6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608110235-WCJJRD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T08:37:09.532Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified c7de784fbab8 using unchanged content-addressed evidence; lifecycle metadata did not trigger duplicate test execution.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a592495c95da711ecb80215b6394f03120f4aad2dfdbcaa463af64d31287db66, input_digest=sha256:424ab8992aadb7b22d916a5a91945a9c9b2cde9c9966d392638fcba2b7c89da3
+
+Details:
+
+Command: `bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts`
+Result: pass (4 files, 36 tests)
+Evidence: Reused content-addressed result already obtained for implementation commit c7de784fbab8; no implementation input changed.
+Scope: Explicit structured intent, neutral cross-language planner intake, help, and documentation contracts.
+
+Command: `bun run typecheck` and `bun run lint:core`
+Result: pass.
+Evidence: Reused results already obtained for implementation commit c7de784fbab8; no implementation input changed.
+Scope: Public payload types, structured option parsing, persistence, and core source lint.
+
+Command: `bun run test:fast`
+Result: pass (549 files, 3983 tests)
+Evidence: Reused complete regression result already obtained for implementation commit c7de784fbab8; no implementation input changed.
+Scope: Routes, task creation, duplicate locking, handoff behavior, and repository regressions.
+
+Command: `bun run format:check`, `bun run knip:check`, `bun run hotspots:check`, and `bun run build`
+Result: pass.
+Evidence: Reused static and build results already obtained for implementation commit c7de784fbab8; no implementation input changed.
+Scope: Formatting, dead-code, source-size, and distributable build gates.
+
+Command: `git diff --check` and final implementation diff inspection
+Result: pass.
+Evidence: No whitespace errors; ordered keyword tables and natural-language classifier are absent; the deprecated JSON `inferred_intent` field remains an exact alias for patch compatibility.
 Scope: Final implementation and test diff at commit c7de784fbab8.
 
 BlueprintSnapshotRef:

@@ -19,8 +19,8 @@ Remove ordered natural-language keyword classification from task create. The CLI
 - Note:
 
 ```text
-Verified explicit structured intent and neutral planner intake at c7de784fbab8; all focused, full
-regression, static, and build gates pass.
+Verified c7de784fbab8 using unchanged content-addressed evidence; lifecycle metadata did not trigger
+duplicate test execution.
 ```
 - Canonical workflow state lives in the task README.
 
