@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608110235-WCJJRD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T09:07:40.800Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The final head now aligns implementation, reviewed compatibility surface, critical tests, and generated public documentation; the second hosted failure was a stale generated reference rather than a behavior defect.",
+  "evaluated_sha": "0cca190046749f1bb43c39bce2cb98c9eb11a240",
+  "blueprint_digest": "6e42bd4641d0ab0db28c9d66ab0775241614b6a96b069fa051b02adc19386944",
+  "findings": [
+    "The generated task-create reference exposes all structured semantic options and describes neutral planner intake without restoring keyword inference.",
+    "The documentation-only descendant preserves the exact approved release compatibility digest and the 12-chunk critical result, so no duplicate execution of unchanged gates was necessary.",
+    "The two hosted failures were addressed at their actual contracts: reviewed compatibility provenance first, generated CLI documentation second."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608110235-WCJJRD/verification/20260811090705505-fbc202a7956f3249.json",
+    "docs/user/cli-reference.generated.mdx",
+    "scripts/baselines/v0.7-compatibility-candidate.json",
+    "packages/agentplane/src/commands/task/create.command.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Public CLI changes currently surface required generated and compatibility artifacts only after separate contract gates; task 7XGP97 should make this feedback earlier and faster."
+  ]
+}

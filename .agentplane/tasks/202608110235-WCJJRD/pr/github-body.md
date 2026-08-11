@@ -19,8 +19,8 @@ Remove ordered natural-language keyword classification from task create. The CLI
 - Note:
 
 ```text
-Verified da72914861a3: explicit intent behavior remains green and both previously failing hosted
-gate commands now pass locally.
+Verified 0cca19004674: the generated CLI reference is exact; unchanged explicit-intent and
+compatibility evidence remains reusable.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -32,6 +32,7 @@ gate commands now pass locally.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/user/cli-reference.generated.mdx              |  17 +-
  .../run-cli.core.help-snap.test.ts.snap            |   2 +-
  .../src/cli/run-cli.core.tasks.user-create.test.ts | 248 ++++++++-----
  ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
@@ -39,7 +40,7 @@ gate commands now pass locally.
  .../agentplane/src/commands/task/task.command.ts   |   4 +-
  .../baselines/v0.7-compatibility-candidate.json    | 157 +++++++-
  .../check-compatibility-contract-baseline.mjs      | 132 ++++++-
- 7 files changed, 598 insertions(+), 356 deletions(-)
+ 8 files changed, 609 insertions(+), 362 deletions(-)
 ```
 
 </details>
