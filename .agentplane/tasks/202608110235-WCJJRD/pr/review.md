@@ -6,7 +6,7 @@ Created: 2026-08-11T02:36:02.480Z
 
 - Task: `202608110235-WCJJRD`
 - Title: Replace task-create keyword inference with explicit semantic intent
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608110235-WCJJRD/replace-task-create-keyword-inference-with-expli`
 - Canonical task record: `.agentplane/tasks/202608110235-WCJJRD/README.md`
 
