@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -58,19 +58,19 @@ quality_review:
   findings:
     - "Structured verification parsing, pre-mutation rejection, precise freshness classification, immediate quality-gate routing, lifecycle-only reuse, and final repository cleanliness are covered by the frozen implementation and verification evidence."
 token_usage:
-  agent_runs: 0
-  input_tokens: null
-  journal_digest: null
-  observed_agent_runs: 0
+  agent_runs: 4
+  input_tokens: 690969
+  journal_digest: "sha256:45c06b798d21d8a73211373d4ec2c5bb12535c32ad2c5cef0688d918b9b849ef"
+  observed_agent_runs: 4
   observed_by: "agentplane"
-  output_tokens: null
-  reasoning_tokens: null
+  output_tokens: 9880
+  reasoning_tokens: 2950
   schema_version: 1
-  source: "unavailable"
-  state: "unavailable"
-  total_tokens: null
-  unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-11T14:29:03.411Z"
+  source: "supervisor_journal"
+  state: "observed"
+  total_tokens: 703799
+  unavailable_reason: null
+  updated_at: "2026-08-11T15:52:48.228Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -80,8 +80,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "df96cd27c2d1cfada7a853c096d7e5c6742f2c3b"
-  message: "🧾 QHR892 task: record hosted contract rework"
+  hash: "9c7e50743af99e28d832284c6f425e6379130109"
+  message: "🧪 QHR892 verification: reject failing passing evidence"
 comments:
   -
     author: "CODER"
@@ -98,6 +98,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -180,8 +183,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Exact quality-review transition, conflicting-failure pre-mutation rejection, post-verify route, and clean-worktree evidence are complete; expensive runtime-equivalent receipts remain reusable."
+  -
+    type: "status"
+    at: "2026-08-11T15:52:48.228Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "9c7e50743af99e28d832284c6f425e6379130109"
 doc_version: 3
-doc_updated_at: "2026-08-11T15:45:44.378Z"
+doc_updated_at: "2026-08-11T15:52:48.314Z"
 doc_updated_by: "CODER"
 description: "Eliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command."
 sections:
@@ -720,13 +731,13 @@ DecisionContextRef:
 
 ## Token Usage
 
-- State: `unavailable`
-- Completeness: `0/0` agent runs
-- Input tokens: `unavailable`
-- Output tokens: `unavailable`
-- Reasoning tokens: `unavailable`
-- Total tokens: `unavailable`
-- Provenance: `unavailable/agentplane`
-- Journal digest: `unavailable`
-- Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-11T14:29:03.411Z`
+- State: `observed`
+- Completeness: `4/4` agent runs
+- Input tokens: `690969`
+- Output tokens: `9880`
+- Reasoning tokens: `2950`
+- Total tokens: `703799`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:45c06b798d21d8a73211373d4ec2c5bb12535c32ad2c5cef0688d918b9b849ef`
+- Unavailable reason: `none`
+- Updated at: `2026-08-11T15:52:48.228Z`

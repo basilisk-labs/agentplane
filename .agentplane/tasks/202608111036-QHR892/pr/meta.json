@@ -8,10 +8,10 @@
   "pr_number": 4823,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4823",
   "pre_merge_closure": {
-    "basis_commit": "df96cd27c2d1cfada7a853c096d7e5c6742f2c3b",
+    "basis_commit": "7e74c8b2a2bb86789de54b125435314eef2245e3",
     "branch": "task/202608111036-QHR892/make-verification-evidence-atomic-immediately-fr",
     "pr_number": 4823,
-    "recorded_at": "2026-08-11T14:29:03.482Z",
+    "recorded_at": "2026-08-11T15:52:48.465Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
