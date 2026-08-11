@@ -1,0 +1,24 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-11T23:53:29.454Z",
+    "updated_by": "TESTER",
+    "note": "Generated documentation remediation verified at 427ccd91a: llms-full now matches the canonical standard-policy docs and the complete docs-site contract passes."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608112213-NWJCBW/verification/20260811235329454-484cdc87a396314c.json",
+      "sha256": "sha256:24daf75624a6cc602859d76c45197b3a54f9db7437296641e46bff4de6a4d5ef"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

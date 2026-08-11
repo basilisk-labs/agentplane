@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -29,27 +29,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-11T23:46:34.863Z"
+  updated_at: "2026-08-11T23:53:52.395Z"
   updated_by: "HUMAN"
-  note: "The hotspot remediation is a behavior-preserving test split: the exact execution-policy rejection assertion moved from the 1046-line aggregate file to a dedicated cli-core test, the oversized baseline was not raised, and runtime code and compatibility surfaces are unchanged."
-  evaluated_sha: "6d74e0fe8fd606da181097bc7badf55007970055"
+  note: "The generated llms-full update is the exact downstream projection of the already reviewed canonical profile documentation: legacy profiles are described only as aliases, standard is the sole policy, and independent project settings remain explicit."
+  evaluated_sha: "427ccd91a4182511a118e31baaefc44de69a4142"
   blueprint_digest: "8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61"
   evidence_refs:
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-234634330-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-234634330-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/d6690e7e0a7659d5db1aa1b95445dfd180a2844ddd2606e331810f2f63a68448.md"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-234634330-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-234634330-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-235351948-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-235351948-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/89bc6415a1ec4ab59dc620c762ad1f91b94675fe4eba2de119dffee29467b2e4.md"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-235351948-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-235351948-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608112213-NWJCBW/README.md"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/be41f95a182f331aeab8d3cb1157a40ceea17bf16ca22900b3e91fa228b6d25c.patch"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/fc7a1c1ef696f77a0bdf31d9ff6ae6c1963fd498cc2c3687cb4f83cad9f6bcd2.json"
-    - ".agentplane/tasks/202608112213-NWJCBW/verification/20260811234613834-c6ecaf89660b868c.json"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/641b0e940f47043c6bd073a6fc4b4aaf557ee5f53d6b4e6b688aaed257f65439.patch"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/a5daedafaf94ca19421dc6666e1e4337e0eeb342d12d4e708d5df65fa2189b6c.json"
+    - ".agentplane/tasks/202608112213-NWJCBW/verification/20260811235329454-484cdc87a396314c.json"
     - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/39161dc5db0288e890dd4aad39fa7ee11c43b7fa801ca1b21153c50fac06b56e.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
-    - "bun test run-cli.core.test.ts run-cli.core.config-policy.test.ts => 44/44 pass; bun run hotspots:check => pass at 1046-line baseline; compatibility current=324aabe0 approved"
+    - "bun run docs:site:check => pass; generated llms-full diff replaces profile tiers with standard policy and legacy-alias migration text"
   findings:
-    - "No blocking issue found. The original aggregate suite and new focused test pass together; test inventory discovers the new file; hotspot and compatibility ratchets pass."
+    - "No blocking issue found. The full docs-site pipeline passes, including generation freshness, typecheck, production build, navigation, social-image inventory, and design checks."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -168,7 +168,7 @@ events:
     state: "ok"
     note: "Generated documentation remediation verified at 427ccd91a: llms-full now matches the canonical standard-policy docs and the complete docs-site contract passes."
 doc_version: 3
-doc_updated_at: "2026-08-11T23:53:32.296Z"
+doc_updated_at: "2026-08-11T23:53:52.417Z"
 doc_updated_by: "CODER"
 description: "Remove profile-driven process variants from init, config, and runtime. New and upgraded projects must resolve to one fixed execution policy while legacy profile inputs migrate compatibly without changing workflow, runner, integrations, or explicit project approvals. Preserve task flexibility by making lifecycle and safety invariants fixed instead of imposing arbitrary autonomy tiers."
 sections:
