@@ -1,0 +1,28 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run test:fast",
+    "bun run typecheck",
+    "bun test packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-11T15:31:55.281Z",
+    "updated_by": "REVIEWER",
+    "note": "Post-verify route inspection was added without rerunning unchanged checks; the route has no verification_required blocker and correctly preserves the prior evaluator rework until superseded."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608111036-QHR892/verification/20260811153155281-47d172ef240de214.json",
+      "sha256": "sha256:e4ea7900c7b7ab75e497f2f72a219a339a77b254b88e33f5d2aae992943f34f4"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

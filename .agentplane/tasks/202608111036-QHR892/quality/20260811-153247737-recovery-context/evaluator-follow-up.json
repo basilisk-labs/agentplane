@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608111036-QHR892-71f08967fa874e8c10d09e9c",
+  "task_id": "202608111036-QHR892",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Зафиксировать разрешенную read-only проверку `git status --short --untracked-files=all`, классифицировать ожидаемые evaluator artifacts отдельно от постороннего drift и включить результат в итоговые verification evidence; также добавить отрицательную проверку конфликтующего `Result: fail`.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "Замороженная проверка не содержит обязательного финального доказательства чистого состояния репозитория.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/verification/20260811153155281-47d172ef240de214.json",
+          "sha256": "sha256:e4ea7900c7b7ab75e497f2f72a219a339a77b254b88e33f5d2aae992943f34f4",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608111036-QHR892/quality/20260811-153247737-recovery-context/evaluator-result.json"
+}

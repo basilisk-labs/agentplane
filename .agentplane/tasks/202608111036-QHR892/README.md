@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -34,31 +34,30 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-11T15:20:58.744Z"
+  updated_at: "2026-08-11T15:34:08.217Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "313dfa2210aafad5b6188aeae13318a97f56cdf5"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "6a2cf7854d8a2145e78a9e38bd6ff2c037f9a73e"
   blueprint_digest: "7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b"
   evidence_refs:
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-151947717-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-151947717-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/320332bf614ca3458684e4755e6f8708527806848a48a9ad207124166d275e16.md"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-151947717-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-151947717-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-151947717-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-151947717-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-153247737-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-153247737-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/d076b6dacfbee5607788c0ddb63fbf48d16eec757dd856fd3641b1c83107db51.md"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-153247737-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-153247737-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-153247737-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-153247737-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608111036-QHR892/README.md"
-    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/bbe6214187cd93bb1d754af8d416ffdbe15938444f2f45af6c595c50cfc0ab51.patch"
-    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/efe9c4881cafe0c14569c81df0d2492ba9163218bc973c40606ba1fcfed8a67a.json"
-    - ".agentplane/tasks/202608111036-QHR892/verification/20260811151629029-e146b2f46c0413b6.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/14e6574f9ffe8ea76297ebbf90de9dd5444bd546e60725a5f9a2bf0066f9efc4.patch"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/f329f13321c15efc8f88f006dd8c4cbd9b9c5b0ecbfee7d3c9e5a883b1c274b7.json"
+    - ".agentplane/tasks/202608111036-QHR892/verification/20260811153155281-47d172ef240de214.json"
     - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/8babde3dcd7045f8ca2ec9145f1683be19cb2c338cc01c76dd940c6b1e51de51.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "CLI-регрессия не доказывает немедленный переход именно к quality review: она проверяет лишь отсутствие verification_required и допускает любой другой nextAction."
-    - "Замороженная запись проверки не содержит результата обязательной инспекции итогового маршрута после единой команды verify."
+    - "Замороженная проверка не содержит обязательного финального доказательства чистого состояния репозитория."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -177,7 +176,7 @@ events:
     state: "ok"
     note: "Post-verify route inspection was added without rerunning unchanged checks; the route has no verification_required blocker and correctly preserves the prior evaluator rework until superseded."
 doc_version: 3
-doc_updated_at: "2026-08-11T15:32:01.990Z"
+doc_updated_at: "2026-08-11T15:34:08.265Z"
 doc_updated_by: "CODER"
 description: "Eliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command."
 sections:
