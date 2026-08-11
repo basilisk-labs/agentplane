@@ -1,1 +1,1 @@
-🚧 NWJCBW task: Replace mutable setup and execution profiles with one canonical policy [202608112213-NWJCBW]
+✅ NWJCBW task: Replace mutable setup and execution profiles with one canonical policy [202608112213-NWJCBW]

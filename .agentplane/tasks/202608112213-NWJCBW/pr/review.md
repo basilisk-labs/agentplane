@@ -6,7 +6,7 @@ Created: 2026-08-11T22:15:13.771Z
 
 - Task: `202608112213-NWJCBW`
 - Title: Replace mutable setup and execution profiles with one canonical policy
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608112213-NWJCBW/replace-mutable-setup-and-execution-profiles-wit`
 - Canonical task record: `.agentplane/tasks/202608112213-NWJCBW/README.md`
 
