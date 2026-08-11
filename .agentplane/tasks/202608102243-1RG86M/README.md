@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -23,9 +23,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T00:07:41.457Z"
+  updated_at: "2026-08-11T00:53:37.867Z"
   updated_by: "TESTER"
-  note: "Final tree verified with scoped reuse after pre-release CI incident registration."
+  note: "Review fixes verified: whitespace, tool context, and mutable evidence are bound to verification identity."
   attempts: 0
 quality_review:
   state: "pass"
@@ -173,8 +173,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "24a71d74a1350ce7983f70de3923a592d1de64f8"
+  -
+    type: "verify"
+    at: "2026-08-11T00:53:37.867Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Review fixes verified: whitespace, tool context, and mutable evidence are bound to verification identity."
 doc_version: 3
-doc_updated_at: "2026-08-11T00:09:46.223Z"
+doc_updated_at: "2026-08-11T00:53:40.292Z"
 doc_updated_by: "CODER"
 description: "Persist pass or rework, structured findings, tested input identity, and evidence references in one atomic verification transaction. Define freshness from content-addressed implementation and verification inputs rather than task README revision or lifecycle-only commits; reuse receipts after rebases or metadata-only changes when the relevant patch and declared inputs are identical; invalidate them when code, Verify Steps, configuration, dependencies, environment contract, or evidence changes. DONE tasks must remain terminal and must not route back to verification. Provide deterministic CLI reasons for reuse or invalidation and regression coverage for the ordering defect reproduced in AgentPlane 0.7.5."
 sections:
@@ -362,6 +368,61 @@ sections:
     Result: pass
     Evidence: all distributable bundles built from final tree 09c137cb1be297a8f7601966946d82fed3892b88
     Scope: final distributable tree including packaged incident registry
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608102243-1RG86M-make-verification-atomic-and-reusable-across-lif/.agentplane/tasks/202608102243-1RG86M/blueprint/resolved-snapshot.json
+    - old_digest: 3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963
+    - current_digest: 3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608102243-1RG86M
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T00:53:37.867Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Review fixes verified: whitespace, tool context, and mutable evidence are bound to verification identity.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:20b160e8f5672c5a1676c10b42016b09c08011caf12082bfc4377d2a317e3fb6, input_digest=sha256:51b755a990f90c11924f06dfebf309bdae49da18672f720618ee7fa778e170dd
+
+    Details:
+
+    Command: bun run test:fast
+    Result: pass (549 files, 3977 tests)
+    Evidence: .agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#full-suite
+    Scope: complete AgentPlane runtime suite after review fixes
+
+    Command: bunx vitest run packages/agentplane/src/commands/shared/task-verification-input.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+    Result: pass (3 files, 18 tests)
+    Evidence: .agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#targeted-suite
+    Scope: whitespace, tool-config, mutable-evidence, Git-fallback, and record-assessment regressions
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#typecheck
+    Scope: repository TypeScript contract
+
+    Command: bunx eslint packages/agentplane/src/commands/shared/task-verification-input.ts packages/agentplane/src/commands/shared/task-verification-input.test.ts packages/agentplane/src/commands/shared/task-verification-records.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#lint
+    Scope: changed verification implementation and tests
+
+    Command: bun run build
+    Result: pass
+    Evidence: .agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#build
+    Scope: all package bundles
 
     BlueprintSnapshotRef:
     - state: current
@@ -597,6 +658,61 @@ Command: bun run build
 Result: pass
 Evidence: all distributable bundles built from final tree 09c137cb1be297a8f7601966946d82fed3892b88
 Scope: final distributable tree including packaged incident registry
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608102243-1RG86M-make-verification-atomic-and-reusable-across-lif/.agentplane/tasks/202608102243-1RG86M/blueprint/resolved-snapshot.json
+- old_digest: 3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963
+- current_digest: 3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608102243-1RG86M
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T00:53:37.867Z — VERIFY — ok
+
+By: TESTER
+
+Note: Review fixes verified: whitespace, tool context, and mutable evidence are bound to verification identity.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:20b160e8f5672c5a1676c10b42016b09c08011caf12082bfc4377d2a317e3fb6, input_digest=sha256:51b755a990f90c11924f06dfebf309bdae49da18672f720618ee7fa778e170dd
+
+Details:
+
+Command: bun run test:fast
+Result: pass (549 files, 3977 tests)
+Evidence: .agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#full-suite
+Scope: complete AgentPlane runtime suite after review fixes
+
+Command: bunx vitest run packages/agentplane/src/commands/shared/task-verification-input.test.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+Result: pass (3 files, 18 tests)
+Evidence: .agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#targeted-suite
+Scope: whitespace, tool-config, mutable-evidence, Git-fallback, and record-assessment regressions
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#typecheck
+Scope: repository TypeScript contract
+
+Command: bunx eslint packages/agentplane/src/commands/shared/task-verification-input.ts packages/agentplane/src/commands/shared/task-verification-input.test.ts packages/agentplane/src/commands/shared/task-verification-records.ts packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts
+Result: pass
+Evidence: .agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#lint
+Scope: changed verification implementation and tests
+
+Command: bun run build
+Result: pass
+Evidence: .agentplane/tasks/202608102243-1RG86M/verification/review-fixes-evidence.json#build
+Scope: all package bundles
 
 BlueprintSnapshotRef:
 - state: current
