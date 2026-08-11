@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -63,7 +63,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-11T01:57:38.374Z"
+  updated_at: "2026-08-11T02:24:22.807Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -73,8 +73,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "6b2b59ebe6d6999654b50dfb6b31bf48e84c4718"
-  message: "✅ 3QTGFQ close: normalize verification evidence format"
+  hash: "c7a002081b2e23ec0daff563d498208939ff3c26"
+  message: "📋 3QTGFQ task: record evaluator review"
 comments:
   -
     author: "CODER"
@@ -85,6 +85,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -173,8 +176,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Foreground queue recovery verified at 4f552f312: temporary provider gates requeue safely and protected-base completion handoffs finish the worker cycle without false failures."
+  -
+    type: "status"
+    at: "2026-08-11T02:24:22.807Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "c7a002081b2e23ec0daff563d498208939ff3c26"
 doc_version: 3
-doc_updated_at: "2026-08-11T02:23:04.431Z"
+doc_updated_at: "2026-08-11T02:24:22.838Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr task supervision enqueue and then serialize its own integration queue through typed deterministic operations, recover handoffs without semantic rework, and prevent stale base task replicas while preserving parallel per-task worktrees."
 sections:
@@ -541,8 +552,8 @@ sections:
       Resolution: Added exhaustive typed operation wiring, pre-authorized queue-consumption policy, in-process run-next execution, and real parallel-worktree/base-replica regression coverage.
 extensions:
   implementation_commit:
-    hash: "573f88809e982f6ca23d8d436fb3ae4868837b4b"
-    message: "🚧 3QTGFQ task: type queue normalization assertion"
+    hash: "4f552f3128af05f795cefd98ab5c085c3cafd11c"
+    message: "🚧 3QTGFQ task: recover provider-owned queue handoffs"
   workflow_route_baseline:
     start_head_sha: "4677188e875b6a7034f935b382f142e93d7d02e5"
     version: 1
@@ -934,4 +945,4 @@ DecisionContextRef:
 - Provenance: `supervisor_journal/agentplane`
 - Journal digest: `sha256:90eda43765582f18f2d4797a05eca613f69ac87dbfdd9a6f76ca52656db29c1d`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-11T01:57:38.374Z`
+- Updated at: `2026-08-11T02:24:22.807Z`
