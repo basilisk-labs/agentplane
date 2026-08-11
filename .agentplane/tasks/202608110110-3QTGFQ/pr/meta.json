@@ -2,9 +2,9 @@
   "base": "main",
   "branch": "task/202608110110-3QTGFQ/advance-the-integration-queue-in-the-foreground",
   "created_at": "2026-08-11T01:10:43.816Z",
-  "diffstat_sha256": "sha256:7594ecb9e1cd77cc25a29cb0b397a48d3b8843df6d15259c6d2f54d5a837bd14",
-  "last_verified_at": "2026-08-11T01:42:04.356Z",
-  "last_verified_diffstat_sha256": "sha256:7594ecb9e1cd77cc25a29cb0b397a48d3b8843df6d15259c6d2f54d5a837bd14",
+  "diffstat_sha256": "sha256:fb1b62f0f18247880c82d6b064903eb6ab12cb33e332c12af57832ff7834f323",
+  "last_verified_at": "2026-08-11T01:51:03.407Z",
+  "last_verified_diffstat_sha256": "sha256:fb1b62f0f18247880c82d6b064903eb6ab12cb33e332c12af57832ff7834f323",
   "pr_number": 4819,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4819",
   "pre_merge_closure": {

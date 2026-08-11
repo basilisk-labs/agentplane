@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -19,35 +19,33 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T01:42:04.356Z"
+  updated_at: "2026-08-11T01:51:03.407Z"
   updated_by: "TESTER"
-  note: "Verified foreground queue supervision, stale merged-entry recovery, and parallel worktree ownership at implementation a0cfe7da0."
+  note: "Verified the CI lint correction at 573f88809; production behavior is unchanged and prior full-suite evidence remains applicable."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-11T01:42:38.197Z"
+  updated_at: "2026-08-11T01:51:20.885Z"
   updated_by: "HUMAN"
-  note: "The foreground queue operation is typed, authority-bounded, mutex-protected, and now reconciles already-merged stale queue entries before claiming the next task."
-  evaluated_sha: "a0cfe7da09eae3b06577caa9e7c02cb2c6bfd421"
+  note: "CI lint failure was isolated to a test-only unsafe matcher; the typed assertion preserves behavior and now passes the exact hosted lint command."
+  evaluated_sha: "573f88809e982f6ca23d8d436fb3ae4868837b4b"
   blueprint_digest: "1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b"
   evidence_refs:
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-014237891-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-014237891-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/e5cb4c23030e9bf5c9d82aaaf4bbb6a1cbba6d9b82e1acaf2cd48802fb874497.md"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-014237891-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-014237891-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-015120621-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-015120621-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/80345b5a9e2576a6e62311ba724c1514dee0c28e1c841190a64ab80ecdd00469.md"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-015120621-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/20260811-015120621-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608110110-3QTGFQ/README.md"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/3b0800ac86093f17e4d9547aa407754e0c6f1a165d5395fe0ea20ae359ecb47c.patch"
-    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/b9bf38b7f15dd857b0e9a0023ea677ac78d719617b8ed350788c1c2be304e1a7.json"
-    - ".agentplane/tasks/202608110110-3QTGFQ/verification/20260811014204356-89c7882ecf64f607.json"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/bc57177aa86e746301fa4fcded7eb2a531ab408371492972cd3f36d1b6b9d5ba.patch"
+    - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/cb1177c9873bf7a2a8b464cc9e568119a621b157ed66f1fc5b80af0ca5dedcad.json"
     - ".agentplane/tasks/202608110110-3QTGFQ/quality/objects/sha256/06bbf483effbb4b2e3bc1f6176380d9728a74d011cef05d430fd68c36043477a.json"
-    - "bun run test:fast: 549 files, 3979 tests passed at a0cfe7da0"
-    - "integrate-queue-lane.test.ts: merged queued entry normalizes without local task-state dependency"
-    - "typecheck, format, lint, knip baseline, hotspot thresholds, and build passed"
+    - "bun run lint:core passed at 573f88809"
+    - "2 focused queue test files, 32 tests passed at 573f88809"
+    - "production diff a0cfe7da0..573f88809 is empty; full-suite evidence from a0cfe7da0 remains applicable"
   findings:
-    - "Provider truth is consulted for every nonterminal queue entry before run-next claims local state, preventing a removed post-merge branch from blocking later integrations."
-    - "Parallel tasks retain independent worktrees while duplicate worktrees for the same task remain rejected."
+    - "No production source changed after the 3979-test full-suite pass; targeted queue tests and full core lint cover the only changed test assertion."
 token_usage:
   agent_runs: 1
   input_tokens: null
@@ -136,8 +134,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "dcff436aeadbf074cd8db29c843dc14baa7b78c9"
+  -
+    type: "verify"
+    at: "2026-08-11T01:51:03.407Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified the CI lint correction at 573f88809; production behavior is unchanged and prior full-suite evidence remains applicable."
 doc_version: 3
-doc_updated_at: "2026-08-11T01:44:16.856Z"
+doc_updated_at: "2026-08-11T01:51:20.906Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr task supervision enqueue and then serialize its own integration queue through typed deterministic operations, recover handoffs without semantic rework, and prevent stale base task replicas while preserving parallel per-task worktrees."
 sections:
@@ -274,6 +278,56 @@ sections:
     Result: pass.
     Evidence: Baselines, size thresholds, and distributable bundles exited 0.
     Scope: Architecture and packaging.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110110-3QTGFQ-advance-the-integration-queue-in-the-foreground/.agentplane/tasks/202608110110-3QTGFQ/blueprint/resolved-snapshot.json
+    - old_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+    - current_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608110110-3QTGFQ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T01:51:03.407Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified the CI lint correction at 573f88809; production behavior is unchanged and prior full-suite evidence remains applicable.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4f23b4bc1923b5ab7fb8043edbb9863bb7710c459d6f8f9fa554dcc91b163f, input_digest=sha256:1bbf21c3b497ce110371584d561e6e5da8a9471b6caaf243694c635bb979b193
+
+    Details:
+
+    Command: bun run lint:core
+    Result: pass.
+    Evidence: GitHub-reported no-unsafe-assignment at integrate-queue.command.test.ts:540 is removed; ESLint exited 0 at 573f88809.
+    Scope: Complete packages/scripts core lint surface.
+
+    Command: bun vitest run packages/agentplane/src/commands/integrate-queue.command.test.ts packages/agentplane/src/commands/integrate-queue-lane.test.ts
+    Result: pass (2 files, 32 tests).
+    Evidence: Queue normalization and run-next tests exited 0 at 573f88809.
+    Scope: Test-only typed assertion change.
+
+    Reused evidence: bun run test:fast at a0cfe7da0
+    Result: pass (549 files, 3979 tests).
+    Evidence: Production source is byte-identical between a0cfe7da0 and 573f88809; only a test assertion was typed.
+    Scope: Complete production behavior and regression suite.
+
+    Reused evidence: typecheck, format, knip baseline, hotspot thresholds, and build at a0cfe7da0
+    Result: pass.
+    Evidence: No production, configuration, dependency, or build input changed after those checks.
+    Scope: Static architecture and packaging.
 
     BlueprintSnapshotRef:
     - state: current
@@ -453,6 +507,56 @@ Command: bun run knip:check && bun run hotspots:check && bun run build
 Result: pass.
 Evidence: Baselines, size thresholds, and distributable bundles exited 0.
 Scope: Architecture and packaging.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608110110-3QTGFQ-advance-the-integration-queue-in-the-foreground/.agentplane/tasks/202608110110-3QTGFQ/blueprint/resolved-snapshot.json
+- old_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+- current_digest: 1cb94d965a1acd8f886369422a1c133b9ee31200eadcd95161e88824b4e6a83b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608110110-3QTGFQ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T01:51:03.407Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified the CI lint correction at 573f88809; production behavior is unchanged and prior full-suite evidence remains applicable.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4f23b4bc1923b5ab7fb8043edbb9863bb7710c459d6f8f9fa554dcc91b163f, input_digest=sha256:1bbf21c3b497ce110371584d561e6e5da8a9471b6caaf243694c635bb979b193
+
+Details:
+
+Command: bun run lint:core
+Result: pass.
+Evidence: GitHub-reported no-unsafe-assignment at integrate-queue.command.test.ts:540 is removed; ESLint exited 0 at 573f88809.
+Scope: Complete packages/scripts core lint surface.
+
+Command: bun vitest run packages/agentplane/src/commands/integrate-queue.command.test.ts packages/agentplane/src/commands/integrate-queue-lane.test.ts
+Result: pass (2 files, 32 tests).
+Evidence: Queue normalization and run-next tests exited 0 at 573f88809.
+Scope: Test-only typed assertion change.
+
+Reused evidence: bun run test:fast at a0cfe7da0
+Result: pass (549 files, 3979 tests).
+Evidence: Production source is byte-identical between a0cfe7da0 and 573f88809; only a test assertion was typed.
+Scope: Complete production behavior and regression suite.
+
+Reused evidence: typecheck, format, knip baseline, hotspot thresholds, and build at a0cfe7da0
+Result: pass.
+Evidence: No production, configuration, dependency, or build input changed after those checks.
+Scope: Static architecture and packaging.
 
 BlueprintSnapshotRef:
 - state: current
