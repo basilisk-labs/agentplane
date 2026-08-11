@@ -1,10 +1,11 @@
 ---
 id: "202608102243-1RG86M"
 title: "Make verification atomic and reusable across lifecycle-only drift"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -26,6 +27,50 @@ verification:
   updated_by: "TESTER"
   note: "Final content-addressed verification and terminal convergence pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-08-11T00:02:59.454Z"
+  updated_by: "HUMAN"
+  note: "Content-addressed verification is atomic at task-state boundary, reusable across lifecycle-only drift, conservative for legacy records, and terminal after hosted close."
+  evaluated_sha: "e3a351ab0dbf4bb6d2296ec79cb1a70cb78ddb26"
+  blueprint_digest: "3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963"
+  evidence_refs:
+    - ".agentplane/tasks/202608102243-1RG86M/quality/20260811-000258940-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608102243-1RG86M/quality/20260811-000258940-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608102243-1RG86M/quality/objects/sha256/cd8ee59f24893060ecb6eab9b5789750e5c5d60ae969a8c59d2490579d0efd65.md"
+    - ".agentplane/tasks/202608102243-1RG86M/quality/20260811-000258940-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608102243-1RG86M/quality/20260811-000258940-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608102243-1RG86M/README.md"
+    - ".agentplane/tasks/202608102243-1RG86M/quality/objects/sha256/5521d4a94cc9a4f3d25dd6c120d43e110e4b9d2f336558474180e10e391a644d.patch"
+    - ".agentplane/tasks/202608102243-1RG86M/quality/objects/sha256/c3199602415dbda99a5fef69ffb184ab880d456d5527695834c4f9f119739358.json"
+    - ".agentplane/tasks/202608102243-1RG86M/verification/20260811000105206-c2f99c3715bc7227.json"
+    - ".agentplane/tasks/202608102243-1RG86M/quality/objects/sha256/c5d1e46519c5845e0727845e8138f843fb901c242c4429ca3bcbf4774de8ea8b.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - "packages/agentplane/src/commands/shared/task-verification-input.test.ts: lifecycle, rebase, source, Verify Steps, context, and runtime identity cases"
+    - "packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts: v2 acceptance and invalidation"
+    - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts: injected write failure rollback"
+    - "bun run test:fast: 549 files and 3972 tests passed"
+    - "PR #4818 and live route probe for completed task 202608102112-AY0H1F"
+  findings:
+    - "No blocking correctness defect remains after excluding all direct-mode lifecycle task artifacts and accepting bounded typed result counts."
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-11T00:03:51.591Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -35,8 +80,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "e3a351ab0dbf4bb6d2296ec79cb1a70cb78ddb26"
-  message: "🐛 1RG86M task: accept bounded verification counts"
+  hash: "f5b12ec62dc09dab7dc67cf6226a64f2d1378534"
+  message: "🧪 1RG86M task: record final verification"
 comments:
   -
     author: "CODER"
@@ -50,6 +95,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation finalized: direct lifecycle artifacts are excluded from verification identity and typed result details accept bounded parenthesized counts. Full suite 3972/3972 and all static/build gates passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -100,8 +148,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Final content-addressed verification and terminal convergence pass."
+  -
+    type: "status"
+    at: "2026-08-11T00:03:51.591Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "f5b12ec62dc09dab7dc67cf6226a64f2d1378534"
 doc_version: 3
-doc_updated_at: "2026-08-11T00:01:06.703Z"
+doc_updated_at: "2026-08-11T00:03:51.601Z"
 doc_updated_by: "CODER"
 description: "Persist pass or rework, structured findings, tested input identity, and evidence references in one atomic verification transaction. Define freshness from content-addressed implementation and verification inputs rather than task README revision or lifecycle-only commits; reuse receipts after rebases or metadata-only changes when the relevant patch and declared inputs are identical; invalidate them when code, Verify Steps, configuration, dependencies, environment contract, or evidence changes. DONE tasks must remain terminal and must not route back to verification. Provide deterministic CLI reasons for reuse or invalidation and regression coverage for the ordering defect reproduced in AgentPlane 0.7.5."
 sections:
@@ -278,6 +334,9 @@ sections:
       IncidentTags: ci, performance
       IncidentMatch: RF-04 dependency seed resolves outside node_modules
 extensions:
+  implementation_commit:
+    hash: "e3a351ab0dbf4bb6d2296ec79cb1a70cb78ddb26"
+    message: "🐛 1RG86M task: accept bounded verification counts"
   workflow_route_baseline:
     start_head_sha: "1423a4736890404d114c688da49746aa7ca5aaa4"
     version: 1
@@ -468,3 +527,16 @@ DecisionContextRef:
   IncidentScope: ci-shared-worktree
   IncidentTags: ci, performance
   IncidentMatch: RF-04 dependency seed resolves outside node_modules
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-11T00:03:51.591Z`

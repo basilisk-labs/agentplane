@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202608102243-1RG86M",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T00:02:59.454Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Content-addressed verification is atomic at task-state boundary, reusable across lifecycle-only drift, conservative for legacy records, and terminal after hosted close.",
+  "evaluated_sha": "e3a351ab0dbf4bb6d2296ec79cb1a70cb78ddb26",
+  "blueprint_digest": "3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963",
+  "findings": [
+    "No blocking correctness defect remains after excluding all direct-mode lifecycle task artifacts and accepting bounded typed result counts."
+  ],
+  "evidence_refs": [
+    "packages/agentplane/src/commands/shared/task-verification-input.test.ts: lifecycle, rebase, source, Verify Steps, context, and runtime identity cases",
+    "packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts: v2 acceptance and invalidation",
+    "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts: injected write failure rollback",
+    "bun run test:fast: 549 files and 3972 tests passed",
+    "PR #4818 and live route probe for completed task 202608102112-AY0H1F"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Registered shared-worktree RF-04 dependency seed resolution remains assigned to pre-release CI task 202608102115-7XGP97; it is outside P04 verification semantics."
+  ]
+}
