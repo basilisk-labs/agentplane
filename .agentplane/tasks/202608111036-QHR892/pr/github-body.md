@@ -19,8 +19,8 @@ Eliminate verification self-staleness and repeated checks caused only by AgentPl
 - Note:
 
 ```text
-Post-verify route inspection was added without rerunning unchanged checks; the route has no
-verification_required blocker and correctly preserves the prior evaluator rework until superseded.
+Exact quality-review transition, conflicting-failure pre-mutation rejection, post-verify route, and
+clean-worktree evidence are complete; expensive runtime-equivalent receipts remain reusable.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -33,18 +33,18 @@ verification_required blocker and correctly preserves the prior evaluator rework
 
 ```text
  docs/user/cli-reference.generated.mdx              |  12 +-
- ...un-cli.core.route-decision.verification.test.ts | 171 ++++++++++++++++++++-
+ ...un-cli.core.route-decision.verification.test.ts | 204 ++++++++++++++++++++-
  .../commands/shared/task-verification-records.ts   |  15 +-
- .../shared/task-verification-records.v2.test.ts    |  18 +++
- .../commands/shared/verification-details.test.ts   |  40 ++++-
- .../src/commands/shared/verification-details.ts    |  63 +++++---
+ .../shared/task-verification-records.v2.test.ts    |  18 ++
+ .../commands/shared/verification-details.test.ts   |  40 +++-
+ .../src/commands/shared/verification-details.ts    |  63 +++++--
  .../commands/shared/workflow-step-branch-state.ts  |  14 +-
  .../src/commands/shared/workflow-step-branch.ts    |   4 +
  .../src/commands/task/verify-command-shared.ts     |   3 +-
- .../src/commands/task/verify-record-execute.ts     |  26 ++++
+ .../src/commands/task/verify-record-execute.ts     |  26 +++
  .../src/commands/task/verify-record.unit.test.ts   |   1 +
  packages/agentplane/src/commands/verify.spec.ts    |   9 +-
- 12 files changed, 335 insertions(+), 41 deletions(-)
+ 12 files changed, 368 insertions(+), 41 deletions(-)
 ```
 
 </details>
