@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -65,7 +65,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-11T21:31:46.286Z"
+  updated_at: "2026-08-11T21:47:06.143Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -75,8 +75,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "7a3839cafce167e47d14f4e73ddac38941e5b4ec"
-  message: "✅ W4ZM7J task: record bypass review"
+  hash: "3a3e58e63a918cdeff89cdf07c5b4775e1537ebf"
+  message: "✅ W4ZM7J task: reuse formatted quality review"
 comments:
   -
     author: "CODER"
@@ -87,6 +87,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -174,8 +177,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified formatting-only implementation 656f84c44 by evidence reuse; no executable or assertion semantics changed from tested parent d1a7fbcf6."
+  -
+    type: "status"
+    at: "2026-08-11T21:47:06.143Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "3a3e58e63a918cdeff89cdf07c5b4775e1537ebf"
 doc_version: 3
-doc_updated_at: "2026-08-11T21:42:43.758Z"
+doc_updated_at: "2026-08-11T21:47:06.175Z"
 doc_updated_by: "CODER"
 description: "Reject unsupported verification commands at every task mutation boundary using the same deterministic parser later used by automatic TESTER execution. Return an actionable error before persisting task state; preserve repository-bound argv execution without shell evaluation; cover task new, add, update, derive, begin/create adapters, and the previously failing bun test path command."
 sections:
@@ -412,8 +423,8 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "d1a7fbcf680b4d8071e5d6ff7e27e988b84420aa"
-    message: "🔒 W4ZM7J task: close declared-check bypasses"
+    hash: "656f84c44be81e48d339bf5b15db9ccfce221a03"
+    message: "🎨 W4ZM7J task: format declared-check guard"
   workflow_route_baseline:
     start_head_sha: "2069221001f334aa7538042998166dae60919499"
     version: 1
@@ -675,4 +686,4 @@ DecisionContextRef:
 - Provenance: `supervisor_journal/agentplane`
 - Journal digest: `sha256:af2921d2c54ba16356be575bbdeb7b6d8a6bd05b0f05b4374affe3e3521c5483`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-11T21:31:46.286Z`
+- Updated at: `2026-08-11T21:47:06.143Z`
