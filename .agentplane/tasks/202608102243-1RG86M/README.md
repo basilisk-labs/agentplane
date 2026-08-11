@@ -4,7 +4,7 @@ title: "Make verification atomic and reusable across lifecycle-only drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-10T23:42:29.826Z"
+  updated_at: "2026-08-10T23:54:33.870Z"
   updated_by: "TESTER"
-  note: "Content-addressed verification reuse and atomic finding persistence passed."
+  note: "Content-addressed verification and terminal convergence pass after direct-mode lifecycle exclusion."
   attempts: 0
 execution_route:
   frozen: true
@@ -77,8 +77,14 @@ events:
     to: "DOING"
     note: "Implementation updated: direct-mode verification identity now excludes the complete lifecycle task directory, preserving source, Verify Steps, toolchain context, and runtime invalidation. Full test suite 3971/3971 and all static/build gates passed."
     commit: "b18a06196eac99099017805ab649aa1229d65335"
+  -
+    type: "verify"
+    at: "2026-08-10T23:54:33.870Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Content-addressed verification and terminal convergence pass after direct-mode lifecycle exclusion."
 doc_version: 3
-doc_updated_at: "2026-08-10T23:54:05.889Z"
+doc_updated_at: "2026-08-10T23:54:35.205Z"
 doc_updated_by: "CODER"
 description: "Persist pass or rework, structured findings, tested input identity, and evidence references in one atomic verification transaction. Define freshness from content-addressed implementation and verification inputs rather than task README revision or lifecycle-only commits; reuse receipts after rebases or metadata-only changes when the relevant patch and declared inputs are identical; invalidate them when code, Verify Steps, configuration, dependencies, environment contract, or evidence changes. DONE tasks must remain terminal and must not route back to verification. Provide deterministic CLI reasons for reuse or invalidation and regression coverage for the ordering defect reproduced in AgentPlane 0.7.5."
 sections:
@@ -121,6 +127,56 @@ sections:
     Result: pass
     Evidence: 3970 full-suite tests and 22 final focused tests passed; all static contracts and builds passed; completed task 202608102112-AY0H1F routes to terminal done after lifecycle-only closeout and idempotent cleanup
     Scope: P04 verification identity, atomic persistence, legacy compatibility, qualification/evaluator compatibility, and terminal route convergence
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608102243-1RG86M-make-verification-atomic-and-reusable-across-lif/.agentplane/tasks/202608102243-1RG86M/blueprint/resolved-snapshot.json
+    - old_digest: 3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963
+    - current_digest: 3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608102243-1RG86M
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608102243-1RG86M
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-10T23:54:33.870Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Content-addressed verification and terminal convergence pass after direct-mode lifecycle exclusion.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:20b160e8f5672c5a1676c10b42016b09c08011caf12082bfc4377d2a317e3fb6, input_digest=sha256:1c5e4c157942bbbc12d71a38fa258a8c2c91738165b6ca24905aacf4ff2e5901
+
+    Details:
+
+    Command: bun run test:fast
+    Result: pass (549 files, 3971 tests)
+    Evidence: local full-suite output on commit b18a06196eac99099017805ab649aa1229d65335
+    Scope: verification identity, durable records, route convergence, evaluator compatibility
+
+    Command: bun run typecheck && bun run lint && bun run format:changed && bun run knip:check && bun run hotspots:check
+    Result: pass
+    Evidence: local static-gate output on commit b18a06196eac99099017805ab649aa1229d65335
+    Scope: types, lint, formatting, unused-code baseline, module budgets
+
+    Command: bun run build
+    Result: pass
+    Evidence: local bundle output on commit b18a06196eac99099017805ab649aa1229d65335
+    Scope: distributable CLI bundles
+
+    Command: built CLI task next-action 202608102112-AY0H1F --explain
+    Result: pass (phase=done, code=done)
+    Evidence: live completed-task route probe
+    Scope: terminal convergence without duplicate verification or cleanup loop
 
     BlueprintSnapshotRef:
     - state: current
@@ -208,6 +264,56 @@ Command: focused verification tests; bun run test:fast; bun run typecheck; bun r
 Result: pass
 Evidence: 3970 full-suite tests and 22 final focused tests passed; all static contracts and builds passed; completed task 202608102112-AY0H1F routes to terminal done after lifecycle-only closeout and idempotent cleanup
 Scope: P04 verification identity, atomic persistence, legacy compatibility, qualification/evaluator compatibility, and terminal route convergence
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608102243-1RG86M-make-verification-atomic-and-reusable-across-lif/.agentplane/tasks/202608102243-1RG86M/blueprint/resolved-snapshot.json
+- old_digest: 3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963
+- current_digest: 3ff4186f4859b5f928c8d89d3ef54ae8fea91f22634d5d6d5c850dfbf3159963
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608102243-1RG86M
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608102243-1RG86M
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-10T23:54:33.870Z — VERIFY — ok
+
+By: TESTER
+
+Note: Content-addressed verification and terminal convergence pass after direct-mode lifecycle exclusion.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:20b160e8f5672c5a1676c10b42016b09c08011caf12082bfc4377d2a317e3fb6, input_digest=sha256:1c5e4c157942bbbc12d71a38fa258a8c2c91738165b6ca24905aacf4ff2e5901
+
+Details:
+
+Command: bun run test:fast
+Result: pass (549 files, 3971 tests)
+Evidence: local full-suite output on commit b18a06196eac99099017805ab649aa1229d65335
+Scope: verification identity, durable records, route convergence, evaluator compatibility
+
+Command: bun run typecheck && bun run lint && bun run format:changed && bun run knip:check && bun run hotspots:check
+Result: pass
+Evidence: local static-gate output on commit b18a06196eac99099017805ab649aa1229d65335
+Scope: types, lint, formatting, unused-code baseline, module budgets
+
+Command: bun run build
+Result: pass
+Evidence: local bundle output on commit b18a06196eac99099017805ab649aa1229d65335
+Scope: distributable CLI bundles
+
+Command: built CLI task next-action 202608102112-AY0H1F --explain
+Result: pass (phase=done, code=done)
+Evidence: live completed-task route probe
+Scope: terminal convergence without duplicate verification or cleanup loop
 
 BlueprintSnapshotRef:
 - state: current

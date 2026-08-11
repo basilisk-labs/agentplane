@@ -36,6 +36,19 @@ describe("verification details", () => {
     ]);
   });
 
+  it("accepts parenthesized result counts after the typed outcome", () => {
+    expect(
+      parseVerificationCheckDetails(
+        [
+          "Command: bun run test:fast",
+          "Result: pass (549 files, 3971 tests)",
+          "Evidence: process exited 0 at the evaluated SHA.",
+          "Scope: complete local suite.",
+        ].join("\n"),
+      )?.[0]?.result,
+    ).toBe("pass");
+  });
+
   it.each(["passed", "pass maybe", "failure", "fail open", "pass;"])(
     "rejects an ambiguous result value: %s",
     (result) => {

@@ -13,7 +13,7 @@ Created: 2026-08-10T22:44:13.062Z
 ## Verification
 
 - State: ok
-- Note: Content-addressed verification reuse and atomic finding persistence passed.
+- Note: Content-addressed verification and terminal convergence pass after direct-mode lifecycle exclusion.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -37,8 +37,8 @@ Created: 2026-08-10T22:44:13.062Z
  .../shared/route-decision-verification-blocker.ts  |  33 +++
  .../commands/shared/route-decision-verification.ts |   8 +-
  .../src/commands/shared/route-decision.ts          |   1 -
- .../shared/task-verification-input.test.ts         | 157 ++++++++++
- .../src/commands/shared/task-verification-input.ts | 282 ++++++++++++++++++
+ .../shared/task-verification-input.test.ts         | 201 +++++++++++++
+ .../src/commands/shared/task-verification-input.ts | 298 +++++++++++++++++++
  .../commands/shared/task-verification-records.ts   | 309 +++++++++++++++++---
  .../shared/task-verification-records.v2.test.ts    | 181 ++++++++++++
  .../src/commands/task/qualification-packet.ts      |   2 +-
@@ -46,7 +46,7 @@ Created: 2026-08-10T22:44:13.062Z
  .../src/commands/task/verify-record-execute.ts     | 322 +++++++++++----------
  .../task/verify-record.durability.unit.test.ts     |  44 ++-
  .../src/commands/workflow.verify-hooks.test.ts     |  39 +++
- 17 files changed, 1318 insertions(+), 226 deletions(-)
+ 17 files changed, 1378 insertions(+), 226 deletions(-)
 ```
 
 </details>

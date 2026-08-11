@@ -1,0 +1,57 @@
+{
+  "details": "Command: bun run test:fast\nResult: pass (549 files, 3971 tests)\nEvidence: local full-suite output on commit b18a06196eac99099017805ab649aa1229d65335\nScope: verification identity, durable records, route convergence, evaluator compatibility\n\nCommand: bun run typecheck && bun run lint && bun run format:changed && bun run knip:check && bun run hotspots:check\nResult: pass\nEvidence: local static-gate output on commit b18a06196eac99099017805ab649aa1229d65335\nScope: types, lint, formatting, unused-code baseline, module budgets\n\nCommand: bun run build\nResult: pass\nEvidence: local bundle output on commit b18a06196eac99099017805ab649aa1229d65335\nScope: distributable CLI bundles\n\nCommand: built CLI task next-action 202608102112-AY0H1F --explain\nResult: pass (phase=done, code=done)\nEvidence: live completed-task route probe\nScope: terminal convergence without duplicate verification or cleanup loop",
+  "digest": "sha256:943301700e7560896d4da30b6c7cfcfcaf57f877751bf88ebef027039b232168",
+  "implementation_sha": "b18a06196eac99099017805ab649aa1229d65335",
+  "input": {
+    "context": {
+      "digest": "sha256:d2be8e06bd75acb7aa3935374b7e1f515d5ce3059d777698ef140fec47a89fd3",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        "bun.lock",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/tsconfig.json",
+        "packages/core/package.json",
+        "packages/core/tsconfig.json",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/spec/package.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "tsconfig.json",
+        "website/bun.lock",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:1c5e4c157942bbbc12d71a38fa258a8c2c91738165b6ca24905aacf4ff2e5901",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "implementation": {
+      "base_sha": "1423a4736890404d114c688da49746aa7ca5aaa4",
+      "digest": "sha256:da29a243b583c73515b75230479354c1c0a53ccbd049bb0f8a84157187b63b97",
+      "strategy": "branch_diff",
+      "target_sha": "b18a06196eac99099017805ab649aa1229d65335"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 1,
+    "verify_steps_digest": "sha256:20b160e8f5672c5a1676c10b42016b09c08011caf12082bfc4377d2a317e3fb6"
+  },
+  "kind": "task_verification_record",
+  "note": "Content-addressed verification and terminal convergence pass after direct-mode lifecycle exclusion.",
+  "recorded_at": "2026-08-10T23:54:33.870Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run the focused verification identity, record, route, transition, durability, and workflow-hook tests. Expected: pass plus structured Finding is one task revision; lifecycle-only commits and identical-patch rebases reuse a receipt; source, Verify Steps, dependency context, and runtime drift return specific invalidation reason codes.\n2. Run `bun run test:fast`. Expected: the complete agentplane, core, recipes, and testkit suite passes with no regression in legacy v1 verification records or qualification/evaluator evidence.\n3. Run `bun run typecheck`, `bun run lint`, `bun run format:changed`, `bun run knip:check`, and `bun run hotspots:check`. Expected: all repository contracts pass without widening baselines or size limits.\n4. Run `bun run build`. Expected: all distributable bundles build successfully.\n5. Execute the rebuilt CLI against completed task 202608102112-AY0H1F after its lifecycle-only closeout drift. Expected: route phase is `done`, no `verification_required` blocker appears, and an idempotent cleanup does not create a command loop.\n6. Inspect an injected task-write failure during verify. Expected: neither a passing verification record nor task verification/Finding state remains partially persisted.",
+  "scope_digest": "sha256:20b160e8f5672c5a1676c10b42016b09c08011caf12082bfc4377d2a317e3fb6",
+  "task_id": "202608102243-1RG86M",
+  "verification_command": "agentplane verify 202608102243-1RG86M --ok --by TESTER",
+  "verifier": "TESTER"
+}
