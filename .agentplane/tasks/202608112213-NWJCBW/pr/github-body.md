@@ -19,8 +19,8 @@ Remove profile-driven process variants from init, config, and runtime. New and u
 - Note:
 
 ```text
-Hotspot remediation verified at 6d74e0fe8: moved the unchanged config-policy assertion out of the
-oversized core test without raising the baseline or changing runtime code.
+Generated documentation remediation verified at 427ccd91a: llms-full now matches the canonical
+standard-policy docs and the complete docs-site contract passes.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -99,7 +99,8 @@ oversized core test without raising the baseline or changing runtime code.
  schemas/workflow.schema.json                       |   8 +-
  .../baselines/v0.7-compatibility-candidate.json    | 101 +++++++++++++--
  .../check-compatibility-contract-baseline.mjs      | 110 ++++++++++++++--
- 67 files changed, 726 insertions(+), 602 deletions(-)
+ website/static/llms-full.txt                       |  47 +++----
+ 68 files changed, 745 insertions(+), 630 deletions(-)
 ```
 
 </details>

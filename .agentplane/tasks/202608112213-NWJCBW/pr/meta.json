@@ -2,9 +2,9 @@
   "base": "main",
   "branch": "task/202608112213-NWJCBW/replace-mutable-setup-and-execution-profiles-wit",
   "created_at": "2026-08-11T22:15:13.771Z",
-  "diffstat_sha256": "sha256:d3f63a117c3687cfa22154b400587d93e7c63719bef84512d1c81ee3eaea0746",
-  "last_verified_at": "2026-08-11T23:46:13.834Z",
-  "last_verified_diffstat_sha256": "sha256:d3f63a117c3687cfa22154b400587d93e7c63719bef84512d1c81ee3eaea0746",
+  "diffstat_sha256": "sha256:332909975eccd5df257036ec16e0fb6b70fca8216c7beb1523c80f70242e91a3",
+  "last_verified_at": "2026-08-11T23:53:29.454Z",
+  "last_verified_diffstat_sha256": "sha256:332909975eccd5df257036ec16e0fb6b70fca8216c7beb1523c80f70242e91a3",
   "pr_number": 4827,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4827",
   "pre_merge_closure": {

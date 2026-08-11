@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T23:46:13.834Z"
+  updated_at: "2026-08-11T23:53:29.454Z"
   updated_by: "TESTER"
-  note: "Hotspot remediation verified at 6d74e0fe8: moved the unchanged config-policy assertion out of the oversized core test without raising the baseline or changing runtime code."
+  note: "Generated documentation remediation verified at 427ccd91a: llms-full now matches the canonical standard-policy docs and the complete docs-site contract passes."
   attempts: 0
 quality_review:
   state: "pass"
@@ -161,8 +161,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "d2848f6ea024075f7c86f2fa73387795545d5975"
+  -
+    type: "verify"
+    at: "2026-08-11T23:53:29.454Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Generated documentation remediation verified at 427ccd91a: llms-full now matches the canonical standard-policy docs and the complete docs-site contract passes."
 doc_version: 3
-doc_updated_at: "2026-08-11T23:47:26.660Z"
+doc_updated_at: "2026-08-11T23:53:32.296Z"
 doc_updated_by: "CODER"
 description: "Remove profile-driven process variants from init, config, and runtime. New and upgraded projects must resolve to one fixed execution policy while legacy profile inputs migrate compatibly without changing workflow, runner, integrations, or explicit project approvals. Preserve task flexibility by making lifecycle and safety invariants fixed instead of imposing arbitrary autonomy tiers."
 sections:
@@ -417,6 +423,51 @@ sections:
     Result: pass
     Evidence: ESLint clean; compatibility surface remains approved at 324aabe0; no whitespace errors
     Scope: static quality and absence of compatibility drift from test-only refactoring
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112213-NWJCBW-replace-mutable-setup-and-execution-profiles-wit/.agentplane/tasks/202608112213-NWJCBW/blueprint/resolved-snapshot.json
+    - old_digest: 8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61
+    - current_digest: 8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608112213-NWJCBW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-11T23:53:29.454Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Generated documentation remediation verified at 427ccd91a: llms-full now matches the canonical standard-policy docs and the complete docs-site contract passes.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1729a9a771942d9da42f2a6d1ee52a4a4172d3cb503a0913402e59118d69b9ba, input_digest=sha256:4da8bf1981c8252e807856e9acdd93b56f2ff9e848dec290d2ba09f003ed7769
+
+    Details:
+
+    Command: bun run docs:site:generate
+    Result: pass
+    Evidence: generated website/static/llms-full.txt; docs/reference/generated-reference.mdx unchanged
+    Scope: deterministic website and LLM documentation generation
+
+    Command: bun run docs:site:check
+    Result: pass
+    Evidence: docs IA, generated freshness, website typecheck, 227 social images, optimized production build, navigation check, and design-language check all passed
+    Scope: complete public documentation site contract
+
+    Command: git diff --check
+    Result: pass
+    Evidence: no whitespace errors
+    Scope: generated artifact integrity
 
     BlueprintSnapshotRef:
     - state: current
@@ -720,6 +771,51 @@ Command: bun x eslint packages/agentplane/src/cli/run-cli.core.config-policy.tes
 Result: pass
 Evidence: ESLint clean; compatibility surface remains approved at 324aabe0; no whitespace errors
 Scope: static quality and absence of compatibility drift from test-only refactoring
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112213-NWJCBW-replace-mutable-setup-and-execution-profiles-wit/.agentplane/tasks/202608112213-NWJCBW/blueprint/resolved-snapshot.json
+- old_digest: 8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61
+- current_digest: 8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608112213-NWJCBW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-11T23:53:29.454Z — VERIFY — ok
+
+By: TESTER
+
+Note: Generated documentation remediation verified at 427ccd91a: llms-full now matches the canonical standard-policy docs and the complete docs-site contract passes.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1729a9a771942d9da42f2a6d1ee52a4a4172d3cb503a0913402e59118d69b9ba, input_digest=sha256:4da8bf1981c8252e807856e9acdd93b56f2ff9e848dec290d2ba09f003ed7769
+
+Details:
+
+Command: bun run docs:site:generate
+Result: pass
+Evidence: generated website/static/llms-full.txt; docs/reference/generated-reference.mdx unchanged
+Scope: deterministic website and LLM documentation generation
+
+Command: bun run docs:site:check
+Result: pass
+Evidence: docs IA, generated freshness, website typecheck, 227 social images, optimized production build, navigation check, and design-language check all passed
+Scope: complete public documentation site contract
+
+Command: git diff --check
+Result: pass
+Evidence: no whitespace errors
+Scope: generated artifact integrity
 
 BlueprintSnapshotRef:
 - state: current
