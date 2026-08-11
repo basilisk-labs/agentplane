@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -29,32 +29,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-11T21:17:37.216Z"
+  updated_at: "2026-08-11T21:30:42.757Z"
   updated_by: "HUMAN"
-  note: "One shared repository-bound argv parser now governs declared-check persistence and both direct and branch_pr execution; the CI remediation preserves that contract and aligns duplicate validation with the early E_USAGE boundary."
-  evaluated_sha: "7703c7a64192b7888a9fc5d0482f3c22fa11d349"
+  note: "The shared declared-check contract now closes wrapper composition and Git alias/subcommand bypasses without reverting to product-language keyword classification: project-native test/build argv remain accepted, while Git is limited to explicit read-only operations."
+  evaluated_sha: "d1a7fbcf680b4d8071e5d6ff7e27e988b84420aa"
   blueprint_digest: "9b3d0c0bdabd86b6c7a650586ae52f11eff355ce6ae5dcd7451e31a470913fb4"
   evidence_refs:
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-211736800-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-211736800-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/8999ccd511cf2dc3a70918fb793b6293fc9eb6a4afba82a083a367f89b02aeed.md"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-211736800-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-211736800-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-213042355-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-213042355-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/a7b7a59c6d9568ddb51e4911685389d00228d2704a1710975cf71bd052e3e86b.md"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-213042355-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-213042355-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608111922-W4ZM7J/README.md"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/7b9ca317dd9a12e3e7a81281d4b04fc6b96a3ee1cc6b8e829e9c1886caf13496.patch"
-    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/6e08e941aba7b568770cf778ab32796b124f1edcbfb0d67ed25ea8311f20718a.json"
-    - ".agentplane/tasks/202608111922-W4ZM7J/verification/20260811211429082-491e89cb67bf0183.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/f56ee3524d159c68e7aef6ac6baca32e5d23ea46dde90cf336625cfe544d906b.patch"
+    - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/e6d60a41a2139bcda624e37ad351dacc1d15880ee2bd6b6006c79bef8852e54a.json"
+    - ".agentplane/tasks/202608111922-W4ZM7J/verification/20260811213001270-6f3669e7606eda49.json"
     - ".agentplane/tasks/202608111922-W4ZM7J/quality/objects/sha256/559acda9b5852a0eac86146788242df1183cfd1a93800fa00e801d462c45e4da.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
     - "packages/agentplane/src/commands/shared/declared-check.ts"
-    - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
-    - "packages/agentplane/src/commands/task/direct-task-verification.ts"
-    - "packages/agentplane/src/commands/workflow.test.ts"
+    - "packages/agentplane/src/commands/shared/declared-check.test.ts"
+    - "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
   findings:
-    - "No blocking semantic mismatch found. Generic repository scripts remain intentionally flexible; runtime supervision and approvals, not keyword allowlists, own their effects."
+    - "Both P1 review cases are covered directly: env/xargs-style wrappers are rejected and git branch plus git -c alias execution are rejected. No duplicate execution grammar was reintroduced."
 token_usage:
   agent_runs: 1
   input_tokens: null
@@ -161,7 +160,7 @@ events:
     state: "ok"
     note: "Verified implementation d1a7fbcf6 after resolving both P1 review findings."
 doc_version: 3
-doc_updated_at: "2026-08-11T21:30:03.591Z"
+doc_updated_at: "2026-08-11T21:30:42.781Z"
 doc_updated_by: "CODER"
 description: "Reject unsupported verification commands at every task mutation boundary using the same deterministic parser later used by automatic TESTER execution. Return an actionable error before persisting task state; preserve repository-bound argv execution without shell evaluation; cover task new, add, update, derive, begin/create adapters, and the previously failing bun test path command."
 sections:
