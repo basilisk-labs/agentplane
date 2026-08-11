@@ -4,7 +4,7 @@ title: "Replace mutable setup and execution profiles with one canonical policy"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +33,16 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "2b5503e9435e355bd282f7f98dff6a61baa2e69e"
+  message: "🚧 NWJCBW task: standardize execution policy"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed: one canonical standard policy now governs profile-derived runtime behavior; legacy aliases migrate with explicit warnings and cannot weaken or strengthen the process."
 events:
   -
     type: "status"
@@ -46,8 +51,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-11T23:15:29.858Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: one canonical standard policy now governs profile-derived runtime behavior; legacy aliases migrate with explicit warnings and cannot weaken or strengthen the process."
+    commit: "2b5503e9435e355bd282f7f98dff6a61baa2e69e"
 doc_version: 3
-doc_updated_at: "2026-08-11T23:12:48.761Z"
+doc_updated_at: "2026-08-11T23:15:29.858Z"
 doc_updated_by: "CODER"
 description: "Remove profile-driven process variants from init, config, and runtime. New and upgraded projects must resolve to one fixed execution policy while legacy profile inputs migrate compatibly without changing workflow, runner, integrations, or explicit project approvals. Preserve task flexibility by making lifecycle and safety invariants fixed instead of imposing arbitrary autonomy tiers."
 sections:
