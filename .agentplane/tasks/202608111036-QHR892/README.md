@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -32,33 +32,33 @@ verification:
   note: "Parser boundary review at 313dfa221; the hosted review finding is covered without widening lifecycle scope."
   attempts: 0
 quality_review:
-  state: "pass"
-  provenance: "human_supplied"
-  updated_at: "2026-08-11T14:28:12.594Z"
-  updated_by: "HUMAN"
-  note: "The hosted-contract rework preserves the accepted verification behavior while restoring both runtime and test hotspot budgets; affected route, verification, type, and contract checks are current for 586b7f340."
-  evaluated_sha: "586b7f3400e3700c69b28688fec53f7cb0456213"
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-11T15:01:28.992Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "313dfa2210aafad5b6188aeae13318a97f56cdf5"
   blueprint_digest: "7cb1e1a2f18e2cf810c78283b347ca31be7b89ac765b4a8a7ab73100ccdee30b"
   evidence_refs:
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-142811962-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-142811962-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/355f7abe40635a957c363cc64293bfbd5a152da259be74fc325c640a47578b79.md"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-142811962-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-142811962-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-145952566-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-145952566-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/776f7b0cd7406e66747538606ad450c131c0b00df728e84100f75ee254e1516c.md"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-145952566-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-145952566-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-145952566-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/20260811-145952566-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608111036-QHR892/README.md"
-    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/13c17a5c5b3df98c00d3f482a5b956a243aa1014ad3395fd0a84b50aa70b80bb.patch"
-    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/1d0a1ee14ea54771fafb3372569264eeff993307b4d4483b9165a43d1cd9d095.json"
-    - ".agentplane/tasks/202608111036-QHR892/verification/20260811142532613-5638fa439d087087.json"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/bbe6214187cd93bb1d754af8d416ffdbe15938444f2f45af6c595c50cfc0ab51.patch"
+    - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/113926dd729152532bf89ef00a59db78f7cb398b96d1fc222815cda3817d1acd.json"
+    - ".agentplane/tasks/202608111036-QHR892/verification/20260811145104568-cdb19553c88b1444.json"
     - ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/8babde3dcd7045f8ca2ec9145f1683be19cb2c338cc01c76dd940c6b1e51de51.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
-    - "packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
-    - "packages/agentplane/src/commands/shared/workflow-step-branch-state.ts"
   findings:
-    - "The remote-refresh route helper is extracted into the existing branch-state module, reducing workflow-step-branch.ts below the 600-line hard limit without changing its decision order."
-    - "Pre-mutation rejection remains covered at CLI level, where both the visible error and unchanged verification_required route are asserted, while the unit file returns below the oversized-test baseline."
+    - "Замороженная проверка для evaluated_sha 313dfa2210aafad5b6188aeae13318a97f56cdf5 не содержит обязательных результатов test:fast, docs:cli:check и отдельного ресурсоёмкого теста; текущая запись фиксирует только 5 сфокусированных файлов, typecheck и hotspots:check."
+    - "Нет замороженного доказательства инспекции итогового маршрута после записи всех проверок одной командой verify."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -159,7 +159,7 @@ events:
     state: "ok"
     note: "Parser boundary review at 313dfa221; the hosted review finding is covered without widening lifecycle scope."
 doc_version: 3
-doc_updated_at: "2026-08-11T14:51:07.511Z"
+doc_updated_at: "2026-08-11T15:01:29.015Z"
 doc_updated_by: "CODER"
 description: "Eliminate verification self-staleness and repeated checks caused only by AgentPlane lifecycle metadata. Reject incomplete verification evidence before mutation, classify stale reasons precisely, keep semantic evidence reusable across lifecycle-only commits, and route immediately to the next gate after a valid verify command."
 sections:

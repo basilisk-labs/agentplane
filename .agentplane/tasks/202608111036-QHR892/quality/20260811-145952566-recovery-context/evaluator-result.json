@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "Замороженная проверка для evaluated_sha 313dfa2210aafad5b6188aeae13318a97f56cdf5 не содержит обязательных результатов test:fast, docs:cli:check и отдельного ресурсоёмкого теста; текущая запись фиксирует только 5 сфокусированных файлов, typecheck и hotspots:check.",
+      "broken_invariant": "Verify Steps 3–5 требуют выполнения и записи docs:cli:check, полного test:fast и отдельного standalone-теста. Ранее принятый полный прогон можно повторно использовать после lifecycle-only коммитов, но frozen diff содержит семантические изменения парсера и маршрутизации, поэтому такое повторное использование для текущего evaluated_sha не доказано.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/README.md",
+          "sha256": "sha256:9d248af149100de112e13dfd5493aa4909b09cf99fa9dacd4f20dbcb6adaceae",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/verification/20260811145104568-cdb19553c88b1444.json",
+          "sha256": "sha256:489228f3c13e555b0b94ce6060d50787e2cec302458dd51920f8fa3607782f5f",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/bbe6214187cd93bb1d754af8d416ffdbe15938444f2f45af6c595c50cfc0ab51.patch",
+          "sha256": "sha256:bbe6214187cd93bb1d754af8d416ffdbe15938444f2f45af6c595c50cfc0ab51"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/113926dd729152532bf89ef00a59db78f7cb398b96d1fc222815cda3817d1acd.json",
+          "sha256": "sha256:113926dd729152532bf89ef00a59db78f7cb398b96d1fc222815cda3817d1acd",
+          "section": "runtime_evidence"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "medium",
+      "summary": "Нет замороженного доказательства инспекции итогового маршрута после записи всех проверок одной командой verify.",
+      "broken_invariant": "Verify Step 6 требует подтвердить на фактическом итоговом маршруте отсутствие verification_required и немедленную выдачу следующего gate; регрессионный тест на временном репозитории не заменяет эту итоговую проверку задачи.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/README.md",
+          "sha256": "sha256:9d248af149100de112e13dfd5493aa4909b09cf99fa9dacd4f20dbcb6adaceae",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/quality/objects/sha256/113926dd729152532bf89ef00a59db78f7cb398b96d1fc222815cda3817d1acd.json",
+          "sha256": "sha256:113926dd729152532bf89ef00a59db78f7cb398b96d1fc222815cda3817d1acd"
+        },
+        {
+          "path": ".agentplane/tasks/202608111036-QHR892/verification/20260811145104568-cdb19553c88b1444.json",
+          "sha256": "sha256:489228f3c13e555b0b94ce6060d50787e2cec302458dd51920f8fa3607782f5f",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Запустить и записать bun run docs:cli:check на evaluated_sha 313dfa2210aafad5b6188aeae13318a97f56cdf5.",
+    "Запустить и записать полный bun run test:fast -- --maxWorkers=4 с предусмотренным исключением, затем отдельный standalone dependency fixture на том же evaluated_sha.",
+    "Зафиксировать read-only результат итогового task route после одной валидной verify-команды: verification_required отсутствует, следующий gate выдан без повторного запуска проверок."
+  ],
+  "hidden_assumptions": [
+    "Сфокусированный прогон 5 файлов считается достаточным основанием для повторного использования полного test:fast после семантических изменений verification-details.ts и workflow routing, хотя контракт разрешает доказанное повторное использование только для lifecycle-only изменений.",
+    "Изменение сгенерированной CLI-документации считается корректным без текущего результата docs:cli:check.",
+    "Регрессионный маршрут во временном тестовом репозитории считается эквивалентом требуемой инспекции фактического итогового маршрута задачи."
+  ],
+  "recovery_context": "На SHA 313dfa2210aafad5b6188aeae13318a97f56cdf5 выполните и атомарно запишите недостающие обязательные проверки, затем приложите итоговый route-result, подтверждающий отсутствие verification_required и переход к следующему gate."
+}
