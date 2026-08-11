@@ -115,10 +115,12 @@ const entry = {
   updated_at: "2026-01-01T00:00:00.000Z",
 };
 
+const commandContextValue = {
+  resolvedProject: { gitRoot: "/repo" },
+} as never;
+
 function commandContext() {
-  return Promise.resolve({
-    resolvedProject: { gitRoot: "/repo" },
-  } as never);
+  return Promise.resolve(commandContextValue);
 }
 
 function runNextParsed(overrides: Record<string, unknown> = {}) {
@@ -537,7 +539,7 @@ describe("integrate queue claim publication guard", () => {
     ).resolves.toBe(0);
 
     expect(mocks.normalizeTerminalQueueEntries).toHaveBeenCalledWith({
-      ctx: expect.anything(),
+      ctx: commandContextValue,
       cwd: "/repo",
       rootOverride: null,
       gitRoot: "/repo",
