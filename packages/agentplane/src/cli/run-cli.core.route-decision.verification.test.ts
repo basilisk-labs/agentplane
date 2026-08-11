@@ -318,6 +318,39 @@ describe("runCli route decision verification freshness", () => {
     expect(afterRejected.blockers.map((blocker) => blocker.code)).toContain(
       "verification_required",
     );
+    const conflictingIo = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "verify",
+          taskId,
+          "--ok",
+          "--by",
+          "TESTER",
+          "--note",
+          "A failing check cannot produce a passing verification record.",
+          "--details",
+          "Command: failing fixture. Result: fail. Evidence: fixture exited 1. Scope: verification conflict.",
+          "--root",
+          root,
+        ]),
+      ).toBe(3);
+      expect(conflictingIo.stderr).toContain("No verification state was changed");
+    } finally {
+      conflictingIo.restore();
+    }
+    const afterConflicting = await runJson<{ blockers: { code: string }[] }>([
+      "task",
+      "status",
+      taskId,
+      "--route",
+      "--json",
+      "--root",
+      root,
+    ]);
+    expect(afterConflicting.blockers.map((blocker) => blocker.code)).toContain(
+      "verification_required",
+    );
     await runCliSilent([
       "verify",
       taskId,
