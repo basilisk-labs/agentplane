@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 4efbe19bb2aed31d9b6beb6f01288906b823d8bb..e7e76d7855570667aca67e6e47bbca4822628cea",
+      "command": "git diff --check 4efbe19bb2aed31d9b6beb6f01288906b823d8bb..33a325f05e8cedf0870d340c749cbe5e354e90f9",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 4efbe19bb2aed31d9b6beb6f01288906b823d8bb..e7e76d7855570667aca67e6e47bbca4822628cea",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 4efbe19bb2aed31d9b6beb6f01288906b823d8bb..33a325f05e8cedf0870d340c749cbe5e354e90f9",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,6 +24,7 @@
         "A\t.agentplane/tasks/202608120643-75ZFHW/pr/github-title.txt",
         "A\t.agentplane/tasks/202608120643-75ZFHW/pr/meta.json",
         "A\t.agentplane/tasks/202608120643-75ZFHW/pr/review.md",
+        "A\t.agentplane/tasks/202608120643-75ZFHW/supervision/implementation-evidence.json",
         "M\tpackages/agentplane/src/cli/run-cli.core.pr-flow.test.ts",
         "M\tpackages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts",
         "M\tpackages/agentplane/src/commands/branch/cleanup-merged.ts",
@@ -48,7 +49,7 @@
     }
   ],
   "execution_base_commit": "4efbe19bb2aed31d9b6beb6f01288906b823d8bb",
-  "implementation_commit": "e7e76d7855570667aca67e6e47bbca4822628cea",
+  "implementation_commit": "33a325f05e8cedf0870d340c749cbe5e354e90f9",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [

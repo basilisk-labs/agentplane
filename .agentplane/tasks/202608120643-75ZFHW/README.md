@@ -4,7 +4,7 @@ title: "Prevent worktree accumulation and clean obsolete task checkouts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -136,8 +136,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "e7e76d7855570667aca67e6e47bbca4822628cea"
-  message: "🚧 75ZFHW task: apply external agent result"
+  hash: "33a325f05e8cedf0870d340c749cbe5e354e90f9"
+  message: "🚧 75ZFHW task: record external implementation evidence"
 comments:
   -
     author: "CODER"
@@ -145,6 +145,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: e7e76d785557. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 33a325f05e8c. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -161,8 +164,16 @@ events:
     to: "DOING"
     note: "Implementation committed: e7e76d785557. CLI accepted one state-bound external-agent semantic result."
     commit: "e7e76d7855570667aca67e6e47bbca4822628cea"
+  -
+    type: "status"
+    at: "2026-08-12T07:32:54.702Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 33a325f05e8c. CLI accepted one state-bound external-agent semantic result."
+    commit: "33a325f05e8cedf0870d340c749cbe5e354e90f9"
 doc_version: 3
-doc_updated_at: "2026-08-12T07:29:22.527Z"
+doc_updated_at: "2026-08-12T07:32:54.702Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement lifecycle-owned worktree hygiene before the verification optimization task. Preserve parallel development by allowing one authoritative worktree for each active branch_pr task, while preventing duplicate worktrees for the same task. Automatically finalize clean task worktrees and local task branches after hosted-close or proven merge, and make queue/supervisor progression own this cleanup without requiring the coding agent to infer it. Prevent recovery/control checkouts from recursively registering or restoring nested historical task worktrees. Add deterministic inventory/readback that classifies active, merged, dirty, recovery, detached, remote-only, and ambiguous refs; delete only provider-proven merged or explicitly obsolete clean state, preserving dirty, open-PR, active, blocked, stashed, release archive, and uniquely unassimilated work. Apply the command to the current repository, reconcile local and remote branches, and record before/after counts and retained reasons. Cover parallel active tasks, duplicate same-task worktree rejection, hosted-close cleanup, recovery non-resurrection, dirty preservation, and idempotent cleanup with focused and realistic E2E tests."
 sections:
