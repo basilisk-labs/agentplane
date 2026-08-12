@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-12T01:57:43.942Z"
+  updated_at: "2026-08-12T02:25:34.184Z"
   updated_by: "TESTER"
-  note: "Implementation 12f447c63 verified after P1 rework."
+  note: "Execution strategy contract and verification-race fix pass full and focused validation for implementation 9ad25f443."
   attempts: 0
 quality_review:
   state: "pass"
@@ -152,8 +152,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "9a7817e984c30b698f02084996704b4b76577e08"
+  -
+    type: "verify"
+    at: "2026-08-12T02:25:34.184Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Execution strategy contract and verification-race fix pass full and focused validation for implementation 9ad25f443."
 doc_version: 3
-doc_updated_at: "2026-08-12T02:00:40.346Z"
+doc_updated_at: "2026-08-12T02:25:36.602Z"
 doc_updated_by: "CODER"
 description: "Use one canonical lifecycle while letting the agent semantically choose direct or branch_pr through a structured risk/effect declaration. AgentPlane must compile and enforce one deterministic execution contract, compare it with observed effects, escalate monotonically when required, and never use product-language keyword heuristics as lifecycle authority."
 sections:
@@ -327,6 +333,51 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608112232-3NC7Y4
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-12T02:25:34.184Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Execution strategy contract and verification-race fix pass full and focused validation for implementation 9ad25f443.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:dca184be90fa3ce8f32f16e9f1a157c5f2a648692b107ebd2119d23831c66570, input_digest=sha256:9ee3faa3bd5d14981488d4b87f532803365f8ee1e3ed6904484a366816a4613a
+
+    Details:
+
+    Command: bun run ci:local:fast
+    Result: pass
+    Evidence: 554 test files passed; 4051 tests passed and 1 skipped; all 12 critical CLI shards passed; implementation commit 9ad25f443.
+    Scope: full fast local CI including formatting, schemas, build, types, lint, unit tests, and critical CLI E2E.
+
+    Command: bun x vitest run <12 changed execution-contract test modules>
+    Result: pass
+    Evidence: 12 test files passed; 120 tests passed.
+    Scope: agent-selected direct and branch_pr routing, structural effects, monotonic escalation, scope authority, verification, supervisors, work orders, and legacy compatibility.
+
+    Command: bun x vitest run packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
+    Result: pass
+    Evidence: 2 test files passed; 19 tests passed; concurrent verification test passed after one exact task reread.
+    Scope: fail-closed reconciliation and transient task README read race handling.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112232-3NC7Y4-make-execution-strategy-risk-adaptive-and-agent/.agentplane/tasks/202608112232-3NC7Y4/blueprint/resolved-snapshot.json
+    - old_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+    - current_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608112232-3NC7Y4
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -526,6 +577,51 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608112232-3NC7Y4
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-12T02:25:34.184Z — VERIFY — ok
+
+By: TESTER
+
+Note: Execution strategy contract and verification-race fix pass full and focused validation for implementation 9ad25f443.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:dca184be90fa3ce8f32f16e9f1a157c5f2a648692b107ebd2119d23831c66570, input_digest=sha256:9ee3faa3bd5d14981488d4b87f532803365f8ee1e3ed6904484a366816a4613a
+
+Details:
+
+Command: bun run ci:local:fast
+Result: pass
+Evidence: 554 test files passed; 4051 tests passed and 1 skipped; all 12 critical CLI shards passed; implementation commit 9ad25f443.
+Scope: full fast local CI including formatting, schemas, build, types, lint, unit tests, and critical CLI E2E.
+
+Command: bun x vitest run <12 changed execution-contract test modules>
+Result: pass
+Evidence: 12 test files passed; 120 tests passed.
+Scope: agent-selected direct and branch_pr routing, structural effects, monotonic escalation, scope authority, verification, supervisors, work orders, and legacy compatibility.
+
+Command: bun x vitest run packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
+Result: pass
+Evidence: 2 test files passed; 19 tests passed; concurrent verification test passed after one exact task reread.
+Scope: fail-closed reconciliation and transient task README read race handling.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112232-3NC7Y4-make-execution-strategy-risk-adaptive-and-agent/.agentplane/tasks/202608112232-3NC7Y4/blueprint/resolved-snapshot.json
+- old_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+- current_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608112232-3NC7Y4
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

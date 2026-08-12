@@ -16,7 +16,12 @@ Use one canonical lifecycle while letting the agent semantically choose direct o
 ## Verification
 
 - State: ok
-- Note: Implementation 12f447c63 verified after P1 rework.
+- Note:
+
+```text
+Execution strategy contract and verification-race fix pass full and focused validation for
+implementation 9ad25f443.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -34,6 +39,8 @@ Use one canonical lifecycle while letting the agent semantically choose direct o
  ...run-cli.core.task-create-planner-intent.test.ts | 118 ++++++
  .../src/commands/blueprint/task-input.test.ts      |  32 ++
  .../src/commands/blueprint/task-input.ts           |  73 +++-
+ .../src/commands/shared/reconcile-check.test.ts    |  26 ++
+ .../src/commands/shared/reconcile-check.ts         |  38 +-
  .../src/commands/shared/route-decision-types.ts    |   2 +
  .../agentplane/src/commands/shared/task-backend.ts |   1 +
  .../shared/workflow-step-fingerprint.test.ts       |   2 +
@@ -82,7 +89,7 @@ Use one canonical lifecycle while letting the agent semantically choose direct o
  schemas/agent-semantic-result.schema.json          | 237 ++++++++++++
  schemas/task-readme-frontmatter.schema.json        | 229 ++++++++++++
  schemas/tasks-export.schema.json                   | 229 ++++++++++++
- 55 files changed, 3247 insertions(+), 201 deletions(-)
+ 57 files changed, 3310 insertions(+), 202 deletions(-)
 ```
 
 </details>
