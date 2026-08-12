@@ -2,10 +2,10 @@
 id: "202608112232-3NC7Y4"
 title: "Make execution strategy risk-adaptive and agent-selected"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -95,6 +95,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: address two valid P1 review findings without scope expansion."
 events:
   -
     type: "status"
@@ -125,8 +128,15 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "41f9990d02d3fee587bc99c0f784d0489623de67"
+  -
+    type: "status"
+    at: "2026-08-12T01:42:28.452Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Rework: address two valid P1 review findings without scope expansion."
 doc_version: 3
-doc_updated_at: "2026-08-12T01:41:24.719Z"
+doc_updated_at: "2026-08-12T01:42:28.481Z"
 doc_updated_by: "CODER"
 description: "Use one canonical lifecycle while letting the agent semantically choose direct or branch_pr through a structured risk/effect declaration. AgentPlane must compile and enforce one deterministic execution contract, compare it with observed effects, escalate monotonically when required, and never use product-language keyword heuristics as lifecycle authority."
 sections:

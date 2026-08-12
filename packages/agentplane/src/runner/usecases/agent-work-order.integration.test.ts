@@ -40,7 +40,12 @@ type WorkOrderView = {
       task_revision: number | null;
     };
     verification_intent: unknown;
-    authority: { writable_roots: string[]; external_side_effects: string[] };
+    authority: {
+      writable_roots: string[];
+      external_side_effects: string[];
+      allowed_tool_classes: string[];
+      sandbox: string;
+    };
   };
   work_order_preparation?: {
     remote_policy: unknown;
@@ -252,6 +257,38 @@ describe("AgentWorkOrder v2 surface integration", () => {
     expect(verificationIntent.requirements.map((requirement) => requirement.description)).toEqual(
       expect.arrayContaining(["repository_effect:source_code", "repository_effect:tests"]),
     );
+  });
+
+  it("keeps an explicitly empty declared scope read-only", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = await createPreparedTask(root);
+    const command = await loadCommandContext({ cwd: root, rootOverride: root });
+    const task = await loadTaskFromContext({ ctx: command, taskId });
+    const executionContract = resolveTaskExecutionContract({
+      config: command.config,
+      task,
+      declaration: {
+        schema_version: 1,
+        preferred_mode: "direct",
+        scope_roots: [],
+        repository_effects: [],
+        external_effects: [],
+        uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["analysis requires no repository writes"],
+      },
+    });
+    await command.taskBackend.writeTask(
+      { ...task, execution_contract: executionContract },
+      task.revision ? { expectedRevision: task.revision } : undefined,
+    );
+
+    const view = await captureRunnerWorkOrder({ taskId, root });
+    expect(view.work_order.authority).toMatchObject({
+      writable_roots: [],
+      sandbox: "read-only",
+    });
+    expect(view.work_order.authority.allowed_tool_classes).not.toContain("workspace_write");
   });
 
   it("prepares deterministic bounded knowledge through exact, FTS, alias, and graph adapters", async () => {

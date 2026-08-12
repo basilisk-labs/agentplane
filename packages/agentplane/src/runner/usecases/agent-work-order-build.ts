@@ -335,13 +335,17 @@ export function buildCanonicalAgentWorkOrder(opts: {
     workOrderRole(decision.executionPacket.recommendedRole ?? task.metadata.owner ?? "");
   const stateFingerprint = structuredClone(decision.workflowStep.preconditionFingerprint);
   const mutationPath = decision.oracle.mutationPathHint;
-  const canMutate = decision.executionPacket.safeToMutate && mutationPath !== null;
+  const executionContract = task.metadata.execution_contract;
+  const declaredScopeRoots = executionContract?.declaration.scope_roots;
+  const hasExplicitEmptyScope =
+    executionContract?.source === "agent_declared" && declaredScopeRoots?.length === 0;
+  const canMutate =
+    decision.executionPacket.safeToMutate && mutationPath !== null && !hasExplicitEmptyScope;
   const declaredWritableRoots = (() => {
     if (!canMutate || mutationPath === null) return [];
-    const roots = task.metadata.execution_contract?.declaration.scope_roots;
-    if (!roots || roots.length === 0) return [mutationPath];
+    if (!declaredScopeRoots || declaredScopeRoots.length === 0) return [mutationPath];
     const repositoryRoot = path.resolve(mutationPath);
-    return roots.map((root) => {
+    return declaredScopeRoots.map((root) => {
       const resolved = root === "." ? repositoryRoot : path.resolve(repositoryRoot, root);
       const relative = path.relative(repositoryRoot, resolved).replaceAll("\\", "/");
       if (relative === ".." || relative.startsWith("../") || path.isAbsolute(relative)) {

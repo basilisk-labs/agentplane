@@ -19,10 +19,15 @@ export async function recordObservedTaskExecutionContract(opts: {
   if (JSON.stringify(reconciled.contract) === JSON.stringify(current)) {
     return { task: opts.task, escalated: reconciled.escalated };
   }
+  const blueprintRequest =
+    reconciled.escalated && opts.task.blueprint_request === "code.direct"
+      ? "code.branch_pr"
+      : opts.task.blueprint_request;
 
   await opts.command.taskBackend.writeTask(
     {
       ...opts.task,
+      blueprint_request: blueprintRequest,
       execution_contract: reconciled.contract,
       execution_route: opts.task.execution_route
         ? {
