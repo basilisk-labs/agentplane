@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608112259-T3ZDDM-c130d62a96d3a7c0cb85825e",
+  "task_id": "202608112259-T3ZDDM",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Replace the planning-only performance qualification with repeated executed-contract measurements, derive lifecycle command counts from observations, and freeze traceable artifacts for every mandatory hosted, E2E, concurrency, fixture-isolation, duplication, and metric check before reevaluation.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The recorded performance qualification uses the planning-only benchmark, so it does not measure mandatory local verification.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/fa6040f58e26cbb69e73de62e8024819f9b43fa80ff04de4f4fd57c8ae2fe29c.patch",
+          "sha256": "sha256:fa6040f58e26cbb69e73de62e8024819f9b43fa80ff04de4f4fd57c8ae2fe29c",
+          "line": 324,
+          "section": "package.json and scripts/bench/measure-verification-contract.mjs"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260812180653436-1da08017f7d9e5b4.json",
+          "sha256": "sha256:48e7e2c7ed3cd013dfbf5acadc6897877500ae57920bdaf9f6e1370387f2f981",
+          "section": "details"
+        }
+      ]
+    },
+    {
+      "id": "RCI-002",
+      "summary": "Lifecycle/control-plane command count is asserted as a constant rather than reproducibly collected.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/fa6040f58e26cbb69e73de62e8024819f9b43fa80ff04de4f4fd57c8ae2fe29c.patch",
+          "sha256": "sha256:fa6040f58e26cbb69e73de62e8024819f9b43fa80ff04de4f4fd57c8ae2fe29c",
+          "line": 7618,
+          "section": "scripts/bench/measure-verification-contract.mjs and scripts/checks/run-local-ci.mjs"
+        }
+      ]
+    },
+    {
+      "id": "RCI-003",
+      "summary": "Frozen verification evidence does not provide traceable artifacts for several claimed mandatory checks.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/ee5e04dbea9400fc0db15f83ef13f29b6ecfb775d67d8104dc98cf6289f6ae1a.json",
+          "sha256": "sha256:ee5e04dbea9400fc0db15f83ef13f29b6ecfb775d67d8104dc98cf6289f6ae1a",
+          "section": "declared_checks, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260812180653436-1da08017f7d9e5b4.json",
+          "sha256": "sha256:48e7e2c7ed3cd013dfbf5acadc6897877500ae57920bdaf9f6e1370387f2f981",
+          "section": "input.evidence.references and details"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+          "sha256": "sha256:cca4279a1e67b82e3b12e22c08ee02961951abdc4a48ff3c816418ca33b4a70c",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608112259-T3ZDDM/quality/20260812-181554147-recovery-context/evaluator-result.json"
+}

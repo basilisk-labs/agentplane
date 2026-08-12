@@ -10,6 +10,11 @@ import {
 import { withFrameworkBuildLock } from "../lib/framework-build-lock.mjs";
 import { runVerificationGroups } from "../lib/verification-scheduler.mjs";
 import { writeLocalVerificationReceipt } from "../lib/local-verification-receipt.mjs";
+import {
+  evaluateLifecycleControlBudget,
+  readLifecycleControlEvents,
+  recordLifecycleControlCommand,
+} from "../lib/lifecycle-control-metrics.mjs";
 
 function sanitizeGitProcessEnv(env) {
   const nextEnv = { ...env };
@@ -66,6 +71,7 @@ function parseArgs(argv) {
     changedFiles: [],
     explain: false,
     json: false,
+    lifecycleEventLog: null,
     mode: "full",
   };
 
@@ -96,6 +102,21 @@ function parseArgs(argv) {
     }
     if (arg.startsWith("--changed-files=")) {
       parsed.changedFiles.push(...parseListValue(arg.slice("--changed-files=".length)));
+      continue;
+    }
+    if (arg === "--lifecycle-event-log") {
+      parsed.lifecycleEventLog = argv[index + 1] ?? "";
+      index += 1;
+      if (parsed.lifecycleEventLog.trim() === "") {
+        throw new Error("--lifecycle-event-log requires a path");
+      }
+      continue;
+    }
+    if (arg.startsWith("--lifecycle-event-log=")) {
+      parsed.lifecycleEventLog = arg.slice("--lifecycle-event-log=".length);
+      if (parsed.lifecycleEventLog.trim() === "") {
+        throw new Error("--lifecycle-event-log requires a path");
+      }
       continue;
     }
     throw new Error(`Unsupported local CI argument: ${arg}`);
@@ -249,6 +270,24 @@ const mode = parsedArgs.mode;
 if (mode !== "smoke" && mode !== "fast" && mode !== "full") {
   throw new Error(`Unsupported ci mode: ${mode}`);
 }
+if (parsedArgs.lifecycleEventLog) {
+  const observedArgv = [];
+  for (let index = 0; index < process.argv.slice(2).length; index += 1) {
+    const arg = process.argv.slice(2)[index];
+    if (arg === "--lifecycle-event-log") {
+      index += 1;
+      continue;
+    }
+    if (arg.startsWith("--lifecycle-event-log=")) continue;
+    observedArgv.push(arg);
+  }
+  recordLifecycleControlCommand(parsedArgs.lifecycleEventLog, {
+    command: "ci:local",
+    phase: parsedArgs.explain ? "plan" : "execute",
+    mode,
+    argv: observedArgv,
+  });
+}
 
 const fastSteps = [
   ...createBaselineStepEntries({ includeBuild: true }),
@@ -391,6 +430,15 @@ async function runTargetedFastPath(plan) {
     if (group.stderr) process.stderr.write(group.stderr);
   }
   const wallClockMs = Math.round(performance.now() - startedAt);
+  const lifecycleControl = parsedArgs.lifecycleEventLog
+    ? evaluateLifecycleControlBudget(readLifecycleControlEvents(parsedArgs.lifecycleEventLog), 3)
+    : {
+        provenance: "not_observed",
+        call_count: null,
+        maximum: 3,
+        commands: [],
+        ok: null,
+      };
   process.stdout.write(
     `${JSON.stringify({
       schema_version: 1,
@@ -405,7 +453,9 @@ async function runTargetedFastPath(plan) {
           Math.max(1, groups.length + 1)
         ).toFixed(2),
       ),
-      lifecycle_control_commands: 1,
+      lifecycle_control_commands: lifecycleControl.call_count,
+      lifecycle_control: lifecycleControl,
+      build_invocations: buildResult.results.filter((group) => group.id === "build").length,
       ok: result.ok,
     })}\n`,
   );

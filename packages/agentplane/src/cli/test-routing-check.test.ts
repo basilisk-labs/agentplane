@@ -1,3 +1,7 @@
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import * as testRoutingCheckModule from "../../../../scripts/check-test-routing.mjs";
@@ -13,26 +17,31 @@ const { buildTestInventory } = testInventoryModule as {
   buildTestInventory: () => InventoryEntry[];
 };
 
-const { renderTestRoutingReport, validateTargetedTestFiles, validateTestRouting } =
-  testRoutingCheckModule as {
-    renderTestRoutingReport: (result: {
-      ok: boolean;
-      errors: string[];
-      summary: Record<string, number>;
-      total: number;
-    }) => string;
-    validateTargetedTestFiles: (
-      sourceLabel: string,
-      groups: Record<string, string[]>,
-      inventoryFiles: Set<string>,
-    ) => string[];
-    validateTestRouting: (entries: InventoryEntry[]) => {
-      ok: boolean;
-      errors: string[];
-      summary: Record<string, number>;
-      total: number;
-    };
+const {
+  findDuplicateTestTitles,
+  renderTestRoutingReport,
+  validateTargetedTestFiles,
+  validateTestRouting,
+} = testRoutingCheckModule as {
+  findDuplicateTestTitles: (source: string) => { title: string; count: number }[];
+  renderTestRoutingReport: (result: {
+    ok: boolean;
+    errors: string[];
+    summary: Record<string, number>;
+    total: number;
+  }) => string;
+  validateTargetedTestFiles: (
+    sourceLabel: string,
+    groups: Record<string, string[]>,
+    inventoryFiles: Set<string>,
+  ) => string[];
+  validateTestRouting: (entries: InventoryEntry[]) => {
+    ok: boolean;
+    errors: string[];
+    summary: Record<string, number>;
+    total: number;
   };
+};
 
 describe("test routing check", () => {
   it("passes for the current inventory", () => {
@@ -112,6 +121,18 @@ describe("test routing check", () => {
     );
   });
 
+  it("reports duplicate behavioral test titles before expensive execution", () => {
+    expect(
+      findDuplicateTestTitles(
+        [
+          `it(${JSON.stringify("same cross-boundary behavior")}, () => {});`,
+          `test(${JSON.stringify("same cross-boundary behavior")}, () => {});`,
+          'it("different behavior", () => {});',
+        ].join("\n"),
+      ),
+    ).toEqual([{ title: "same cross-boundary behavior", count: 2 }]);
+  });
+
   it("renders a deterministic report", () => {
     const report = renderTestRoutingReport({
       ok: true,
@@ -121,5 +142,25 @@ describe("test routing check", () => {
     });
 
     expect(report).toBe("test routing OK\ntotal tests: 3\n  agentplane: 2\n  core: 1\n");
+  });
+
+  it("writes a machine-readable duplication report", () => {
+    const root = mkdtempSync(path.join(os.tmpdir(), "agentplane-test-routing-report-"));
+    try {
+      const reportPath = path.join(root, "report.json");
+      execFileSync(
+        process.execPath,
+        ["scripts/checks/check-test-routing.mjs", "--report-json", reportPath],
+        { stdio: "ignore" },
+      );
+      expect(JSON.parse(readFileSync(reportPath, "utf8"))).toMatchObject({
+        schema_version: 1,
+        kind: "agentplane.test_routing_and_duplication_report",
+        ok: true,
+        errors: [],
+      });
+    } finally {
+      rmSync(root, { force: true, recursive: true });
+    }
   });
 });

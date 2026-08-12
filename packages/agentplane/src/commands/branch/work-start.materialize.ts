@@ -74,6 +74,8 @@ export async function materializeRepoLocalDistForWorktree(opts: {
   const copyTargets = [
     ["packages/core/package.json", "packages/core/package.json"],
     ["packages/core/dist", "packages/core/dist"],
+    ["packages/recipes/package.json", "packages/recipes/package.json"],
+    ["packages/recipes/dist", "packages/recipes/dist"],
     ["packages/agentplane/package.json", "packages/agentplane/package.json"],
     ["packages/agentplane/dist", "packages/agentplane/dist"],
     ["packages/agentplane/bin", "packages/agentplane/bin"],

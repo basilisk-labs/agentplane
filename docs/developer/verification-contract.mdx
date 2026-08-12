@@ -27,33 +27,37 @@ selected by policy. New observed effects only strengthen the contract.
 - `verification_amplification`: executed required groups divided by selected required groups.
   The optimized local target is `1.0`; lifecycle-only reuse is represented by a separate exact-SHA
   receipt rather than by replaying groups.
-- `lifecycle_control_commands`: AgentPlane control-plane commands needed to select and run the local
-  verification. The small-change target is at most three.
+- `lifecycle_control_commands`: observed top-level AgentPlane control-plane command events needed to
+  select and run the local verification. The benchmark writes an append-only JSONL event for every
+  invocation and derives the count from that trace; an absent or malformed trace cannot qualify.
+  The small-change target is at most three.
 - `duplicate coverage`: the same observable behavior asserted at multiple layers. A higher-layer
   copy is retained only when it proves a process, filesystem, CLI, provider, or other boundary that
   the cheaper layer cannot observe.
 
-Run the reproducible selector benchmark:
+Inspect the selector-only planning latency. This command cannot produce a successful mandatory
+verification qualification:
+
+```bash
+bun run bench:verification:plan
+```
+
+Run the authoritative repeated small-change contract. This executes every selected check and is
+the only benchmark command that can pass the acceptance thresholds:
 
 ```bash
 bun run bench:verification:check
-```
-
-Run the measured small-change contract itself:
-
-```bash
-bun run bench:verification:execute
 ```
 
 The acceptance thresholds are p50 at most 60 seconds, p95 at most 120 seconds, at most three
 control-plane commands, and no local full CLI regression for the pinned localized reversible
 fixture.
 
-On the pinned `e4ec4520d` baseline, three isolated executions took 338.83 s, 367.28 s, and
-639.98 s (p50 367.28 s, p95 639.98 s). The final five-sample optimized run took 15.75-19.13 s
-(p50 19.06 s, p95 19.13 s): 19.27x faster at p50 and 33.46x at p95. The baseline selected 18
-groups and three build invocations; the optimized fixture selects five groups and one build. The
-high third baseline sample was host-contended and is retained rather than discarded.
+On the pinned `e4ec4520d` baseline, three isolated executions on an Apple M4 `Mac16,12` with 10
+logical CPUs and 24 GiB RAM took 338.83 s, 367.28 s, and 639.98 s (p50 367.28 s, p95 639.98 s).
+The baseline selected 18 groups and three build invocations. The high third baseline sample was
+host-contended and is retained rather than discarded. Current executed distributions are generated
+by `bench:verification:check`; planning-only distributions are not comparable evidence.
 
 ## Duplication and startup audit
 

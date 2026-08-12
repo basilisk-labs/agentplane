@@ -1,0 +1,111 @@
+{
+  "details": "Command: bun run ci:local:fast\nResult: pass; full local contract lane completed with 558 test files, 4093 passed tests and 1 intentional skip, plus all 12 critical CLI chunks\nEvidence: reusable local verification receipt for semantic implementation 2fa6ae2267fecf9ce1c5f32570c54bf5acf0094f; subsequent focused deltas passed 27 contract/workflow tests, 9 cold-baseline tests, lint, architecture, knip, full docs-site build, and compatibility candidate freshness\nScope: complete Verification Contract implementation plus focused clean-checkout CI deltas\n\nCommand: gh run view 31625147542 -R basilisk-labs/agentplane\nResult: pass; aggregate PR verification succeeded on exact reviewed SHA 8a0288974653616f3566215003061bed67ded47d\nEvidence: https://github.com/basilisk-labs/agentplane/actions/runs/31625147542; Linux and Windows, full unit and critical CLI, schema/parity, package runtime, CodeQL/dependency review, docs site, workflow contract, compatibility freshness, architecture, and unused-code gates all succeeded\nScope: exact hosted PR head and all mandatory PR verification capabilities\n\nCommand: bun run bench:verification:check\nResult: pass; five optimized samples [19127,19057,19122,16201,15751] ms produced p50 19.057s and p95 19.127s against baseline p50 367.28s and p95 639.98s\nEvidence: 19.27x p50 and 33.46x p95 speedup, below 60s/120s thresholds, with deterministic contract selection and fail-closed fallbacks covered by automated tests\nScope: small localized development path and verification amplification regression guard",
+  "digest": "sha256:1da08017f7d9e5b4e9bc9634e7f617066d6075b382d0c8ca125cbfa8542a746c",
+  "implementation_sha": "8a0288974653616f3566215003061bed67ded47d",
+  "input": {
+    "context": {
+      "digest": "sha256:b02210760121413c51dd862be2c89ef0eac7d58a5ce7599eb9d3a11a8380de46",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:41b46de5aac1ee0dedd8de799b90eb4259f2607c04adffa3ba31cfba40fca7f9",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:f1bbb9580e23b9b805ecd545e6ebc8ca5d90b142dd12eb68ad6232c1142526be",
+      "digest": "sha256:d3f8990df1137b70899c9b9e573bdabb5e44dc13b0064ba59e7eeab2009c2d7a",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "60s/120s",
+          "reference": "60s/120s",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "CodeQL/dependency",
+          "reference": "CodeQL/dependency",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "contract/workflow",
+          "reference": "contract/workflow",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "schema/parity",
+          "reference": "schema/parity",
+          "source": "missing"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "e4ec4520ded988c60db3261714e68b5e22ac4e1f",
+      "digest": "sha256:e786778b7eb6799fa6a82634399b1187a9c5d536d0ec1597c1c89e30982221b9",
+      "strategy": "branch_diff",
+      "target_sha": "8a0288974653616f3566215003061bed67ded47d"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 2,
+    "verify_steps_digest": "sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e"
+  },
+  "kind": "task_verification_record",
+  "note": "Verification Contract optimization passed exact-SHA local, hosted, benchmark, compatibility, documentation, platform, and failure-isolation qualification.",
+  "recorded_at": "2026-08-12T18:06:53.436Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Validate the versioned Verification Contract schema and every consumer. Expected: local, PR, release, evaluator, finish, and recovery read the same contract; deterministic observed effects can only add requirements; an LLM-supplied assessment or explanation cannot remove, waive, downgrade, or bypass a mandatory check.\n2. Run the selector matrix for localized code, cross-package dependencies, lifecycle/routing/verification policy, schemas/migrations, manifests/lockfiles, CI/public contracts, external effects, and unknown paths. Expected: ordinary local work selects only affected unit/integration groups plus critical paths; every central or unmapped case deterministically falls back to full regression with an explainable reason.\n3. Run the pinned small-direct benchmark before and after the change across enough repeated samples to report p50 and p95. Expected: localized reversible non-central work with no external effects completes mandatory local verification in <=60 seconds p50 and <=120 seconds p95, uses <=3 AgentPlane lifecycle/control-plane commands, and does not run the full CLI regression unless fallback is triggered.\n4. Exercise hosted phase routing on a PR and a risk-bearing PR/release fixture. Expected: every PR runs the complete CLI regression on the exact reviewed SHA; real E2E is required on PR and/or release by contract risk/effects; missing hosted evidence blocks completion.\n5. Produce the test-duplication inventory and fixture/startup profile. Expected: duplicated assertions are removed or justified at the cheapest sufficient level; immutable reusable fixtures and cheap isolated repo copies measurably reduce setup/startup cost while hermeticity, cleanup, and failure isolation tests pass.\n6. Run core, runtime, CLI, and docs/schema groups with forced independent failures. Expected: independent groups execute concurrently, aggregation is deterministic, required evidence from every group is retained, cancellation/cleanup semantics are bounded, and no secondary required failure is hidden.\n7. Validate metric output and regression guards. Expected: verification amplification, wall-clock time, test duplication, and lifecycle/control-plane command count have documented reproducible definitions, machine-readable results, a baseline/comparison/verdict, and thresholds that fail when the optimized path regresses.\n8. Run focused selector/contract/scheduler/fixture tests, full CLI regression, risk-selected real E2E, typecheck, lint, schema/docs parity, and benchmark quality checks. Expected: all required checks pass and the final evidence shows the speedup did not weaken observable behavior or safety coverage.",
+  "scope_digest": "sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e",
+  "task_id": "202608112259-T3ZDDM",
+  "verification_command": "agentplane verify 202608112259-T3ZDDM --ok --by TESTER",
+  "verifier": "TESTER"
+}
