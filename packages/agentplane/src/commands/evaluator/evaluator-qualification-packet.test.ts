@@ -3,7 +3,7 @@ import { mkdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+import { canonicalizeJson, parseTaskReadme } from "@agentplaneorg/core/tasks";
 import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
@@ -11,6 +11,7 @@ import type { TaskData } from "../../backends/task-backend.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
+import { taskReadmesHaveOnlyLifecycleDrift } from "../shared/quality-review-target.js";
 import {
   assertQualificationEvidenceLineage,
   isQualificationTask,
@@ -748,6 +749,9 @@ describe("evaluator qualification packet", () => {
       taskId,
       build: () => ({ intents: setTaskFieldsIntent({ depends_on: [leafId] }) }),
     });
+    const semanticallyDriftedRootReadme = await readFile(rootReadmePath, "utf8");
+    expect(parseTaskReadme(semanticallyDriftedRootReadme).frontmatter.depends_on).toEqual([leafId]);
+    expect(taskReadmesHaveOnlyLifecycleDrift(rootReadme, semanticallyDriftedRootReadme)).toBe(false);
     await expect(
       cmdVerifyParsed({
         ctx,
@@ -764,7 +768,11 @@ describe("evaluator qualification packet", () => {
     ).rejects.toThrow(
       "may differ from the reviewed implementation SHA only in lifecycle-managed fields",
     );
-    await writeFile(rootReadmePath, `${rootReadme}\n<!-- semantic root drift -->\n`, "utf8");
+    await writeFile(
+      rootReadmePath,
+      rootReadme.replace("## Summary\n", "## Summary\nsemantic root drift\n"),
+      "utf8",
+    );
     await expect(
       cmdVerifyParsed({
         ctx,
