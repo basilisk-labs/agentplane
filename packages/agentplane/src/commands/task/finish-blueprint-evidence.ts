@@ -1,9 +1,12 @@
+import path from "node:path";
+
 import { CliError } from "../../shared/errors.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { gitIsAncestor } from "@agentplaneorg/core/git";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { isTaskSetLocalOnlyAdvance } from "../shared/task-local-freshness.js";
+import { hasAcceptedVerificationRecord } from "../shared/task-verification-records.js";
 
 import type { LoadedFinishTask, ResolvedCommitInfo } from "./finish-shared.js";
 import { assertEvaluatorQualityReviewPassed } from "./quality-review-gate.js";
@@ -80,6 +83,38 @@ export async function assertQualityReviewBeforeFinish(opts: {
         loaded.task.commit?.hash ??
         null,
     });
+    const selectedChecks =
+      loaded.task.execution_contract?.verification.contract?.selected_checks ?? [];
+    if (selectedChecks.length > 0) {
+      const accepted = await hasAcceptedVerificationRecord({
+        taskRoot: path.join(
+          opts.ctx.resolvedProject.gitRoot,
+          opts.ctx.config.paths.workflow_dir,
+          loaded.task.id,
+        ),
+        task: loaded.task,
+        evaluatedSha: expectedSha,
+        targetContext: {
+          gitRoot: opts.ctx.resolvedProject.gitRoot,
+          workflowDir: opts.ctx.config.paths.workflow_dir,
+          taskIds,
+          workflowMode: opts.ctx.config.workflow_mode,
+        },
+        snapshotRef: expectedSha,
+      });
+      if (!accepted) {
+        throw new CliError({
+          exitCode: exitCodeForError("E_VALIDATION"),
+          code: "E_VALIDATION",
+          message: [
+            "finish requires a current verification record that satisfies the persisted Verification Contract.",
+            `task=${loaded.task.id}`,
+            `required_checks=${selectedChecks.join(",")}`,
+            "Fix: record current verification with concrete evidence and a `Check: <check-id>` block for every required check.",
+          ].join("\n"),
+        });
+      }
+    }
     assertEvaluatorQualityReviewPassed({
       task: loaded.task,
       expectedSha,

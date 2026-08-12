@@ -32,12 +32,18 @@ function isWithinRoot(root: string, target: string): boolean {
 async function verifiedRuntimeEvidencePath(opts: {
   gitRoot: string;
   realGitRoot: string;
+  taskEvidenceRoot: string | null;
   reference: string;
 }): Promise<string | null> {
   const reference = opts.reference.replaceAll("\\", "/");
-  if (!reference.startsWith(RUNTIME_EVIDENCE_PREFIX) || reference.includes("\0")) return null;
+  if (reference.includes("\0")) return null;
   const candidate = path.resolve(opts.gitRoot, reference);
   if (!isWithinRoot(opts.gitRoot, candidate)) return null;
+  const allowedByCache = reference.startsWith(RUNTIME_EVIDENCE_PREFIX);
+  const allowedByTask =
+    opts.taskEvidenceRoot !== null &&
+    (candidate === opts.taskEvidenceRoot || isWithinRoot(opts.taskEvidenceRoot, candidate));
+  if (!allowedByCache && !allowedByTask) return null;
   try {
     const resolved = await realpath(candidate);
     const metadata = await stat(resolved);
@@ -55,9 +61,11 @@ async function verifiedRuntimeEvidencePath(opts: {
  */
 export async function verificationRuntimeEvidencePaths(opts: {
   gitRoot: string;
+  taskRoot?: string;
   verificationRecordPaths: readonly string[];
 }): Promise<string[]> {
   const realGitRoot = await realpath(opts.gitRoot);
+  const taskEvidenceRoot = opts.taskRoot ? path.join(opts.taskRoot, "evidence") : null;
   const paths = new Set<string>();
   for (const recordPath of opts.verificationRecordPaths) {
     let raw: unknown;
@@ -74,6 +82,7 @@ export async function verificationRuntimeEvidencePaths(opts: {
       const resolved = await verifiedRuntimeEvidencePath({
         gitRoot: opts.gitRoot,
         realGitRoot,
+        taskEvidenceRoot,
         reference,
       });
       if (resolved) paths.add(resolved);

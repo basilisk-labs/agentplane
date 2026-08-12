@@ -41,6 +41,40 @@ export type DirectTaskVerificationResult = {
   reason: string | null;
 };
 
+export function renderDirectTaskVerificationDetails(opts: {
+  task: Pick<TaskData, "execution_contract">;
+  taskId: string;
+  workflow: "direct" | "branch_pr";
+  result: DirectTaskVerificationResult;
+}): string {
+  const checks = opts.result.checks;
+  const selectedChecks = opts.task.execution_contract?.verification.contract?.selected_checks ?? [];
+  if (opts.result.status === "passed" && selectedChecks.length > 0) {
+    const commands = checks.map(({ command }) => command).join(" && ");
+    return selectedChecks
+      .map((checkId) =>
+        [
+          `Check: ${checkId}`,
+          `Command: ${commands}`,
+          "Result: pass",
+          `Evidence: ${opts.result.artifact_path}#checks`,
+          `Scope: ${opts.workflow} task ${opts.taskId} Verification Contract check ${checkId}`,
+        ].join("\n"),
+      )
+      .join("\n\n");
+  }
+  return checks
+    .map((check, index) =>
+      [
+        `Command: ${check.command}`,
+        `Result: ${check.exit_code === 0 ? "pass" : "fail"}`,
+        `Evidence: ${opts.result.artifact_path}#check-${String(index + 1)}`,
+        `Scope: ${opts.workflow} task ${opts.taskId} declared verification`,
+      ].join("\n"),
+    )
+    .join("\n\n");
+}
+
 function tail(value: string): string {
   return value.length <= CHECK_OUTPUT_LIMIT ? value : value.slice(-CHECK_OUTPUT_LIMIT);
 }

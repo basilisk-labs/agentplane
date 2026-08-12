@@ -33,7 +33,10 @@ import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-im
 import { observeDirectExecutor } from "./direct-task-supervisor-observation.js";
 import type { JournalProjection } from "./direct-task-supervisor-result.js";
 import { journalProjection } from "./direct-task-supervisor-result.js";
-import { runDirectTaskVerification } from "./direct-task-verification.js";
+import {
+  renderDirectTaskVerificationDetails,
+  runDirectTaskVerification,
+} from "./direct-task-verification.js";
 import { cmdTaskSetStatus } from "./set-status.js";
 import { cmdVerifyParsed } from "./verify-record.js";
 import {
@@ -406,16 +409,12 @@ async function executeBranchVerificationEpisode(opts: {
           note: passed
             ? "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
             : `Rework: ${failureReason}`,
-          details: checks.checks
-            .map((check, index) =>
-              [
-                `Command: ${check.command}`,
-                `Result: ${check.exit_code === 0 ? "pass" : "fail"}`,
-                `Evidence: ${checks.artifact_path}#check-${String(index + 1)}`,
-                `Scope: branch_pr task ${opts.input.task_id} declared verification`,
-              ].join("\n"),
-            )
-            .join("\n\n"),
+          details: renderDirectTaskVerificationDetails({
+            task,
+            taskId: opts.input.task_id,
+            workflow: "branch_pr",
+            result: checks,
+          }),
           localOnly: false,
           repoFixable: !passed,
           incidentTags: [],

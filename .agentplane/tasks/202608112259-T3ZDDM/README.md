@@ -4,7 +4,7 @@ title: "Optimize the verification and test pipeline around one computed Verifica
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -27,39 +27,39 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-12T18:06:53.436Z"
+  updated_at: "2026-08-12T19:23:06.993Z"
   updated_by: "TESTER"
-  note: "Verification Contract optimization passed exact-SHA local, hosted, benchmark, compatibility, documentation, platform, and failure-isolation qualification."
+  note: "Exact-SHA c0bc6c613 passes executed benchmark, focused negative/concurrency tests, packaged and hosted E2E, and the full local fast regression."
   attempts: 0
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-12T18:16:56.212Z"
+  updated_at: "2026-08-12T19:25:07.043Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 3 typed finding(s)."
-  evaluated_sha: "8a0288974653616f3566215003061bed67ded47d"
+  evaluated_sha: "98422e10574192fd43f9da6a0509ec71a2e3d1cd"
   blueprint_digest: "ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb"
   evidence_refs:
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260812-181554147-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260812-181554147-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/90d962e274ac1745754c95c1c106aeecfcdfd2e3d68afc08170ed1851c0ca0e9.md"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260812-181554147-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260812-181554147-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260812-181554147-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260812-181554147-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260812-192343438-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260812-192343438-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/c87afe054ea710426b28e307ef58a157e84e103b81c6f7c4def9d805d3029c40.md"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260812-192343438-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260812-192343438-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260812-192343438-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260812-192343438-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608112259-T3ZDDM/README.md"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/fa6040f58e26cbb69e73de62e8024819f9b43fa80ff04de4f4fd57c8ae2fe29c.patch"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/ee5e04dbea9400fc0db15f83ef13f29b6ecfb775d67d8104dc98cf6289f6ae1a.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/verification/20260812180653436-1da08017f7d9e5b4.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/9a291733533abba8a1f938586cc3b60a4aeb2c90c506256de3f25be8df957261.patch"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/81240b92474e5510ea344b1d34da2acf1f52b220971dfb2c3b7170837659d444.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/verification/20260812192306993-5c516c2dac825b29.json"
     - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/478fe6fd0549b9c5f29594800dcc6351fe24c8d2b80ecb1bb3e98d5c1600c1ea.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The recorded performance qualification uses the planning-only benchmark, so it does not measure mandatory local verification."
-    - "Lifecycle/control-plane command count is asserted as a constant rather than reproducibly collected."
-    - "Frozen verification evidence does not provide traceable artifacts for several claimed mandatory checks."
+    - "The frozen exact-SHA verification record does not show a hosted PR full CLI regression for evaluated SHA 98422e10574192fd43f9da6a0509ec71a2e3d1cd."
+    - "The claimed risk-selected E2E evidence is a partial audit qualification on a different SHA, not completed real E2E on the evaluated SHA."
+    - "Frozen verification does not demonstrate that evaluator, finish, and recovery consume the contract as an authoritative check selector; the diff primarily binds verification reuse and quality targeting to a digest."
 execution_route:
   frozen: true
   reason_codes:
@@ -100,8 +100,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verification Contract optimization passed exact-SHA local, hosted, benchmark, compatibility, documentation, platform, and failure-isolation qualification."
+  -
+    type: "verify"
+    at: "2026-08-12T19:23:06.993Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Exact-SHA c0bc6c613 passes executed benchmark, focused negative/concurrency tests, packaged and hosted E2E, and the full local fast regression."
 doc_version: 3
-doc_updated_at: "2026-08-12T18:07:03.304Z"
+doc_updated_at: "2026-08-12T19:23:10.785Z"
 doc_updated_by: "CODER"
 description: "Implement a versioned Verification Contract computed once from the semantic task assessment introduced by 202608112232-3NC7Y4 and strengthened monotonically by deterministic observed effects. Make that contract the single authority for local, PR, release, evaluator, finish, and recovery verification. Add change-aware test selection so local development runs only affected unit/integration suites plus mandatory critical-path checks; run the full CLI regression on PR; run real E2E on PR and release according to risk and observed effects. Add a conservative fallback that selects full regression whenever central components, shared contracts, routing, lifecycle, verification policy, schemas, package/lockfiles, CI, or unknown/unmapped effects are touched. The LLM may propose semantic scope and explain results but must not remove, downgrade, or bypass mandatory checks selected by deterministic policy. Audit duplicate behavioral coverage and move assertions to the cheapest sufficient level, retaining higher-level tests only for observable cross-boundary contracts. Profile fixture creation and process startup; replace repeated mutable setup with reusable immutable fixtures and cheap isolated repository copies where hermeticity is preserved. Execute independent core, runtime, CLI, and docs/schema groups in parallel with deterministic aggregation, failure reporting, and cancellation semantics. Instrument and report verification amplification, wall-clock verification time, test duplication, and the number of AgentPlane lifecycle/control-plane commands. Define small direct work as localized, reversible, non-central, with no external effects; on pinned reference hardware target mandatory local verification at no more than 60 seconds p50 and 120 seconds p95, no more than three lifecycle/control-plane commands, and no local full CLI regression unless the deterministic fallback triggers. Establish a reproducible before/after benchmark, document metric definitions and residual risk, and prove that speedups do not weaken required evidence."
 sections:
@@ -159,6 +165,61 @@ sections:
     Result: pass; five optimized samples [19127,19057,19122,16201,15751] ms produced p50 19.057s and p95 19.127s against baseline p50 367.28s and p95 639.98s
     Evidence: 19.27x p50 and 33.46x p95 speedup, below 60s/120s thresholds, with deterministic contract selection and fail-closed fallbacks covered by automated tests
     Scope: small localized development path and verification amplification regression guard
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou/.agentplane/tasks/202608112259-T3ZDDM/blueprint/resolved-snapshot.json
+    - old_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+    - current_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608112259-T3ZDDM
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608112259-T3ZDDM
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-12T19:23:06.993Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Exact-SHA c0bc6c613 passes executed benchmark, focused negative/concurrency tests, packaged and hosted E2E, and the full local fast regression.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e, input_digest=sha256:1311443b146f711d8293efd147fe4debdb0ec14e20af3ea7c5acbe2e361e7831
+
+    Details:
+
+    Command: node scripts/bench/measure-verification-contract.mjs --samples 5 --execute
+    Result: pass; 5/5 mandatory executions, p50 18212ms, p95 20589ms, one observed control-plane command, five groups, one build, amplification 1.0.
+    Evidence: .agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/report.json
+    Scope: exact benchmark implementation retained as an ancestor of candidate c0bc6c613.
+
+    Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --scenario packaged-candidate-flow,hosted-boundary-matrix
+    Result: pass; selected E2E scenarios 2/2 and zero blocking defects.
+    Evidence: .agentplane/tasks/202608112259-T3ZDDM/evidence/risk-e2e/report.json
+    Scope: packaged candidate lifecycle and hosted boundary matrix on exact clean evidence SHA be0a63ba9.
+
+    Command: bunx vitest run verification-contract test-routing worktree-runtime github-ci-plan ci-workflow-contract
+    Result: pass; 10/10 suites and 42/42 tests.
+    Evidence: .agentplane/tasks/202608112259-T3ZDDM/evidence/focused-regressions/vitest.json
+    Scope: planning-only rejection, observed command threshold failure, forced independent failures, timeout aggregation, fixture cleanup, worktree runtime, routing, and risk-E2E selection.
+
+    Command: node scripts/checks/check-test-routing.mjs --report-json task-evidence.json
+    Result: pass; 703 tests, 10 primary routes, no duplicate-title or routing errors.
+    Evidence: .agentplane/tasks/202608112259-T3ZDDM/evidence/focused-regressions/test-routing-and-duplication.json
+    Scope: machine-readable duplication inventory and regression guard after removal of two duplicate worktree E2E bodies.
+
+    Command: bun run ci:local:fast
+    Result: pass; 558/558 unit files, 4099 passed plus 1 skipped, and 12/12 critical CLI chunks.
+    Evidence: exact terminal readback for c0bc6c613e00008a19d842e0368e4a88a652b9fd.
+    Scope: full local regression including build, schemas, docs, policy, cold-start, routing, lint, unit tests, and critical CLI.
 
     BlueprintSnapshotRef:
     - state: current
@@ -253,6 +314,61 @@ Command: bun run bench:verification:check
 Result: pass; five optimized samples [19127,19057,19122,16201,15751] ms produced p50 19.057s and p95 19.127s against baseline p50 367.28s and p95 639.98s
 Evidence: 19.27x p50 and 33.46x p95 speedup, below 60s/120s thresholds, with deterministic contract selection and fail-closed fallbacks covered by automated tests
 Scope: small localized development path and verification amplification regression guard
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou/.agentplane/tasks/202608112259-T3ZDDM/blueprint/resolved-snapshot.json
+- old_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+- current_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608112259-T3ZDDM
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608112259-T3ZDDM
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-12T19:23:06.993Z — VERIFY — ok
+
+By: TESTER
+
+Note: Exact-SHA c0bc6c613 passes executed benchmark, focused negative/concurrency tests, packaged and hosted E2E, and the full local fast regression.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e, input_digest=sha256:1311443b146f711d8293efd147fe4debdb0ec14e20af3ea7c5acbe2e361e7831
+
+Details:
+
+Command: node scripts/bench/measure-verification-contract.mjs --samples 5 --execute
+Result: pass; 5/5 mandatory executions, p50 18212ms, p95 20589ms, one observed control-plane command, five groups, one build, amplification 1.0.
+Evidence: .agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/report.json
+Scope: exact benchmark implementation retained as an ancestor of candidate c0bc6c613.
+
+Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --scenario packaged-candidate-flow,hosted-boundary-matrix
+Result: pass; selected E2E scenarios 2/2 and zero blocking defects.
+Evidence: .agentplane/tasks/202608112259-T3ZDDM/evidence/risk-e2e/report.json
+Scope: packaged candidate lifecycle and hosted boundary matrix on exact clean evidence SHA be0a63ba9.
+
+Command: bunx vitest run verification-contract test-routing worktree-runtime github-ci-plan ci-workflow-contract
+Result: pass; 10/10 suites and 42/42 tests.
+Evidence: .agentplane/tasks/202608112259-T3ZDDM/evidence/focused-regressions/vitest.json
+Scope: planning-only rejection, observed command threshold failure, forced independent failures, timeout aggregation, fixture cleanup, worktree runtime, routing, and risk-E2E selection.
+
+Command: node scripts/checks/check-test-routing.mjs --report-json task-evidence.json
+Result: pass; 703 tests, 10 primary routes, no duplicate-title or routing errors.
+Evidence: .agentplane/tasks/202608112259-T3ZDDM/evidence/focused-regressions/test-routing-and-duplication.json
+Scope: machine-readable duplication inventory and regression guard after removal of two duplicate worktree E2E bodies.
+
+Command: bun run ci:local:fast
+Result: pass; 558/558 unit files, 4099 passed plus 1 skipped, and 12/12 critical CLI chunks.
+Evidence: exact terminal readback for c0bc6c613e00008a19d842e0368e4a88a652b9fd.
+Scope: full local regression including build, schemas, docs, policy, cold-start, routing, lint, unit tests, and critical CLI.
 
 BlueprintSnapshotRef:
 - state: current

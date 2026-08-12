@@ -206,6 +206,20 @@ async function prepareEvaluatorReviewLocked(
     taskIds: normalizeBranchPrBatchTaskIds(opts.task, opts.task.id),
     workflowMode: opts.ctx.config.workflow_mode,
   });
+  const selectedContractChecks = [
+    ...(opts.task.execution_contract?.verification.contract?.selected_checks ?? []),
+  ];
+  if (selectedContractChecks.length > 0 && recordPaths.length === 0) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: [
+        "evaluator requires a current verification record that satisfies the persisted Verification Contract.",
+        `task=${opts.task.id}`,
+        `required_checks=${selectedContractChecks.join(",")}`,
+        "Fix: record current verification with concrete evidence and a `Check: <check-id>` block for every required check.",
+      ].join("\n"),
+    });
+  }
   const verificationRecords = await Promise.all(
     recordPaths.map((filePath, index) =>
       freezeEvaluatorFile({
@@ -219,6 +233,7 @@ async function prepareEvaluatorReviewLocked(
   );
   const runtimeEvidencePaths = await verificationRuntimeEvidencePaths({
     gitRoot,
+    taskRoot,
     verificationRecordPaths: recordPaths,
   });
   const runtimeEvidence = await Promise.all(
@@ -239,6 +254,7 @@ async function prepareEvaluatorReviewLocked(
   const observedChecks = {
     task_status: opts.task.status,
     declared_checks: opts.task.verify ?? [],
+    verification_contract: opts.task.execution_contract?.verification.contract ?? null,
     verification: opts.task.verification ?? null,
     verification_records: verificationRecords.map(({ path: evidencePath, sha256 }) => ({
       path: evidencePath,

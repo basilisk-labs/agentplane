@@ -4,6 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import { describe, expect, it } from "vitest";
 
 import { isRecord } from "../../shared/guards.js";
@@ -14,6 +15,7 @@ import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { cmdVerifyParsed } from "../task/verify-record.js";
 import { cmdTaskAdd } from "../workflow.js";
 import { prepareEvaluatorReview } from "./evaluator-review-usecase.js";
+import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -122,6 +124,47 @@ async function setPrimaryBatchOwnership(
 }
 
 describe("evaluator runtime evidence", () => {
+  it("blocks evaluator preparation until the Verification Contract has exact evidence coverage", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV16";
+    await addTask(root, taskId);
+    await commitPath(root, "src/evaluated.ts");
+    const command = await loadCommandContext({ cwd: root, rootOverride: root });
+    const contract = resolveTaskExecutionContract({
+      config: defaultConfig(),
+      task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
+      declaration: {
+        schema_version: 1,
+        preferred_mode: "direct",
+        scope_roots: ["src"],
+        repository_effects: ["repository_write", "source_code"],
+        external_effects: [],
+        uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["focused evaluator fixture"],
+      },
+    });
+    await applyTaskMutation({
+      ctx: command,
+      taskId,
+      build: () => ({ intents: setTaskFieldsIntent({ execution_contract: contract }) }),
+    });
+    const task = await loadTaskFromContext({ ctx: command, taskId });
+    const catalog = await loadEvaluatorCatalog({ projectRoot: root, includeBuiltin: true });
+    const evaluator = catalog.find((entry) => entry.id === "recovery-context");
+    if (!evaluator) throw new Error("Missing recovery-context evaluator fixture.");
+
+    await expect(
+      prepareEvaluatorReview({
+        ctx: command,
+        task,
+        evaluator,
+        provenance: "evaluator_supplied",
+      }),
+    ).rejects.toThrow("evaluator requires a current verification record");
+  });
+
   it("freezes verified local runtime evidence without widening EVALUATOR file access", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -131,6 +174,7 @@ describe("evaluator runtime evidence", () => {
     await commitPath(root, "src/evaluated.ts");
     const implementationEvidence = `.agentplane/cache/live-proof/.agentplane/tasks/${liveTaskId}/supervision/implementation-evidence.json`;
     const supervisorJournal = `.agentplane/cache/live-proof/.git/agentplane/supervisor/episodes/${liveTaskId}/journal.json`;
+    const taskEvidence = `.agentplane/tasks/${taskId}/evidence/contract-report.json`;
     await mkdir(path.dirname(path.join(root, implementationEvidence)), { recursive: true });
     await writeFile(
       path.join(root, implementationEvidence),
@@ -154,6 +198,8 @@ describe("evaluator runtime evidence", () => {
       })}\n`,
       "utf8",
     );
+    await mkdir(path.dirname(path.join(root, taskEvidence)), { recursive: true });
+    await writeFile(path.join(root, taskEvidence), '{"verdict":"pass"}\n', "utf8");
     const command = await loadCommandContext({ cwd: root, rootOverride: root });
     await cmdVerifyParsed({
       ctx: command,
@@ -166,7 +212,7 @@ describe("evaluator runtime evidence", () => {
       details: [
         `Command: node packages/agentplane/bin/agentplane.js task run ${liveTaskId} --json`,
         "Result: pass",
-        `Evidence: ${implementationEvidence} | ${supervisorJournal}`,
+        `Evidence: ${implementationEvidence} | ${supervisorJournal} | ${taskEvidence}`,
         "Scope: finalized direct golden path with CLI-owned verification and evaluation.",
       ].join("\n"),
       quiet: true,
@@ -184,7 +230,9 @@ describe("evaluator runtime evidence", () => {
     const runtimeEvidence = prepared.work_order.evidence
       .filter((entry) => entry.kind === "runtime_evidence")
       .map((entry) => entry.path);
-    expect(runtimeEvidence).toEqual([implementationEvidence, supervisorJournal].toSorted());
+    expect(runtimeEvidence).toEqual(
+      [implementationEvidence, supervisorJournal, taskEvidence].toSorted(),
+    );
     const observedEvidence = prepared.work_order.evidence.find(
       (entry) => entry.kind === "observed_checks",
     );
@@ -196,6 +244,7 @@ describe("evaluator runtime evidence", () => {
       expect.arrayContaining([
         expect.objectContaining({ path: implementationEvidence }),
         expect.objectContaining({ path: supervisorJournal }),
+        expect.objectContaining({ path: taskEvidence }),
       ]),
     );
     expect(observed.direct_supervision).toMatchObject({

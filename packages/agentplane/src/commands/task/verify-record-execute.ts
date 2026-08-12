@@ -49,6 +49,7 @@ import { resolveVerifyRecordInput } from "./verify-record-input.js";
 import { isQualificationTask, writeQualificationPacket } from "./qualification-packet.js";
 import { resolveQualificationDependencyLeaves } from "./qualification-packet-dependencies.js";
 import { parseVerificationCheckDetails } from "../shared/verification-details.js";
+import { verificationContractEvidenceCoverage } from "../shared/task-verification-records.js";
 import type {
   ExecuteVerifyRecordCommandOptions,
   VerifyState,
@@ -257,6 +258,28 @@ async function recordVerificationResult(opts: {
             context: {
               task_id: current.id,
               reason_code: "verification_result_conflict",
+            },
+          });
+        }
+        const contractCoverage = verificationContractEvidenceCoverage(current, opts.details);
+        if (
+          opts.state === "ok" &&
+          contractCoverage.requiredChecks.length > 0 &&
+          !contractCoverage.accepted
+        ) {
+          throw new CliError({
+            code: "E_VALIDATION",
+            message: [
+              "Passing verification must satisfy every check selected by the persisted Verification Contract. No verification state was changed.",
+              `required_checks=${contractCoverage.requiredChecks.join(",")}`,
+              `satisfied_checks=${contractCoverage.satisfiedChecks.join(",") || "none"}`,
+              `missing_checks=${contractCoverage.missingChecks.join(",") || "none"}`,
+              `unexpected_checks=${contractCoverage.unexpectedChecks.join(",") || "none"}`,
+              "Fix: add `Check: <check-id>` to a structured Command/Result/Evidence/Scope block for every required check.",
+            ].join("\n"),
+            context: {
+              task_id: current.id,
+              reason_code: "verification_contract_evidence_missing",
             },
           });
         }

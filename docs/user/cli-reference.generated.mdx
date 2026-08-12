@@ -1001,7 +1001,7 @@ Options:
 - `--by <id>`: Verifier id. (required)
 - `--note <text>`: Short verification note.
 - `--note-file <path>`: Read the verification note from a file path (mutually exclusive with --note).
-- `--details <text>`: Verification check blocks using Command, Result, Evidence, and Scope fields; required for a passing committed branch_pr task and mutually exclusive with --file.
+- `--details <text>`: Verification check blocks using optional Check plus Command, Result, Evidence, and Scope fields; Check is required for every selected Verification Contract item.
 - `--file <path>`: Optional details file path (mutually exclusive with --details).
 - `--quiet`: Suppress normal output (still prints errors). (default=false)
 - `--collect-incidents`: After recording verification, collect promotable findings into incidents.md immediately. (default=false)
@@ -1041,7 +1041,7 @@ Options:
 - `--by <id>`: Verifier id. (required)
 - `--note <text>`: Short verification note.
 - `--note-file <path>`: Read the verification note from a file path (mutually exclusive with --note).
-- `--details <text>`: Verification check blocks using Command, Result, Evidence, and Scope fields; required for a passing committed branch_pr task and mutually exclusive with --file.
+- `--details <text>`: Verification check blocks using optional Check plus Command, Result, Evidence, and Scope fields; Check is required for every selected Verification Contract item.
 - `--file <path>`: Optional details file path (mutually exclusive with --details).
 - `--quiet`: Suppress normal output (still prints errors). (default=false)
 - `--collect-incidents`: After recording verification, collect promotable findings into incidents.md immediately. (default=false)
@@ -1266,7 +1266,7 @@ Options:
 - `--by <id>`: Verifier id (e.g. REVIEWER). (required)
 - `--note <text>`: Short note describing the verification outcome.
 - `--note-file <path>`: Read the verification note from a file path (mutually exclusive with --note).
-- `--details <text>`: Verification check blocks using Command, Result, Evidence, and Scope fields; required for a passing committed branch_pr task and mutually exclusive with --file.
+- `--details <text>`: Verification check blocks using optional Check plus Command, Result, Evidence, and Scope fields; Check is required for every selected Verification Contract item.
 - `--file <path>`: Read details from a file path (mutually exclusive with --details).
 - `--collect-incidents`: After recording verification, collect promotable findings into incidents.md immediately. (default=false)
 - `--quiet`: Suppress output. (default=false)
@@ -1286,7 +1286,7 @@ Options:
 Examples:
 
 ```sh
-agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --details "Command: bun run test:fast. Result: pass. Evidence: exited 0. Scope: repository test suite." --quiet
+agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --details "Check: full_regression\nCommand: bun run test:fast\nResult: pass\nEvidence: exited 0\nScope: repository test suite" --quiet
 ```
 
 - Record a committed branch_pr OK outcome with reusable structured evidence.

@@ -19,8 +19,8 @@ Implement a versioned Verification Contract computed once from the semantic task
 - Note:
 
 ```text
-Verification Contract optimization passed exact-SHA local, hosted, benchmark, compatibility,
-documentation, platform, and failure-isolation qualification.
+Exact-SHA c0bc6c613 passes executed benchmark, focused negative/concurrency tests, packaged and
+hosted E2E, and the full local fast regression.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -34,16 +34,17 @@ documentation, platform, and failure-isolation qualification.
 ```text
  .github/workflows/ci.yml                           |   88 +-
  docs/developer/code-quality.mdx                    |    2 +
- docs/developer/verification-contract.mdx           |   77 +
- package.json                                       |    6 +-
+ docs/developer/verification-contract.mdx           |   81 +
+ package.json                                       |    7 +-
  .../agentplane/src/backends/task-backend.test.ts   |   67 +
  .../src/backends/task-backend/shared/record.ts     |  133 +-
  .../agentplane/src/cli/local-ci-selection.test.ts  |   71 +-
  .../run-cli.core.hooks.pre-push-full-fast.test.ts  |   61 +
- .../run-cli.core.pr-flow.worktree-runtime.test.ts  |   17 +-
+ .../run-cli.core.pr-flow.worktree-runtime.test.ts  |  250 +--
  ...-cli.critical.agent-efficiency-baseline.test.ts |   29 +-
- .../src/cli/verification-contract.test.ts          |  169 ++
- .../src/commands/branch/work-start.materialize.ts  |   92 +-
+ .../agentplane/src/cli/test-routing-check.test.ts  |   79 +-
+ .../src/cli/verification-contract.test.ts          |  247 +++
+ .../src/commands/branch/work-start.materialize.ts  |   94 +-
  .../evaluator-qualification-packet.test.ts         |   14 +-
  .../commands/release/ci-workflow-contract.test.ts  |    7 +
  .../src/commands/release/github-ci-plan.test.ts    |  113 +-
@@ -71,25 +72,30 @@ documentation, platform, and failure-isolation qualification.
  packages/spec/schemas/tasks-export.schema.json     |  199 ++
  schemas/task-readme-frontmatter.schema.json        |  199 ++
  schemas/tasks-export.schema.json                   |  199 ++
- scripts/README.md                                  |   42 +-
+ scripts/README.md                                  |   43 +-
  .../baselines/v0.7-compatibility-candidate.json    | 2344 +++++++++-----------
- scripts/baselines/verification-contract-small.json |   20 +
+ scripts/baselines/verification-contract-small.json |   37 +
  scripts/bench/capture-compatibility-candidate.mjs  |  172 ++
- scripts/bench/measure-verification-contract.mjs    |  104 +
+ scripts/bench/measure-verification-contract.mjs    |  235 ++
  scripts/checks/check-cli-cold-baseline.mjs         |    8 +-
  .../check-compatibility-contract-baseline.mjs      |   19 +-
+ scripts/checks/check-test-routing.mjs              |   67 +-
  scripts/checks/plan-github-ci.mjs                  |   45 +-
- scripts/checks/run-local-ci.mjs                    |  106 +-
+ scripts/checks/run-local-ci.mjs                    |  156 +-
  scripts/checks/run-pre-push-hook.mjs               |   17 +-
  scripts/checks/verify-reused-parent.mjs            |   50 +
  scripts/lib/github-ci-capabilities.d.ts            |   11 +
  scripts/lib/github-ci-capabilities.mjs             |   87 +-
+ scripts/lib/lifecycle-control-metrics.d.ts         |   30 +
+ scripts/lib/lifecycle-control-metrics.mjs          |   66 +
  scripts/lib/local-ci-selection.d.ts                |   19 +
  scripts/lib/local-ci-selection.mjs                 |   98 +-
  scripts/lib/local-verification-receipt.d.ts        |   26 +
  scripts/lib/local-verification-receipt.mjs         |   94 +
  scripts/lib/task-verification-contracts.d.ts       |   12 +
  scripts/lib/task-verification-contracts.mjs        |  166 ++
+ scripts/lib/verification-benchmark.d.ts            |   30 +
+ scripts/lib/verification-benchmark.mjs             |   36 +
  scripts/lib/verification-contract.d.ts             |   13 +
  scripts/lib/verification-contract.mjs              |   65 +
  scripts/lib/verification-scheduler.d.ts            |   33 +
@@ -98,7 +104,7 @@ documentation, platform, and failure-isolation qualification.
  tsconfig.base.json                                 |    1 +
  .../docs/developer/verification-contract.png       |  Bin 0 -> 59695 bytes
  website/static/img/social/manifest.json            |    8 +
- 66 files changed, 4994 insertions(+), 1547 deletions(-)
+ 72 files changed, 5575 insertions(+), 1791 deletions(-)
 ```
 
 </details>

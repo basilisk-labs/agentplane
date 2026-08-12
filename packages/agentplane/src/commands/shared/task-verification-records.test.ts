@@ -14,7 +14,10 @@ vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
   gitRevParse,
 }));
 
-import { verificationRecordPaths } from "./task-verification-records.js";
+import {
+  verificationContractEvidenceCoverage,
+  verificationRecordPaths,
+} from "./task-verification-records.js";
 
 const tempRoots: string[] = [];
 
@@ -89,6 +92,49 @@ afterEach(async () => {
 });
 
 describe("task verification records", () => {
+  it("requires exact structured coverage for every selected Verification Contract check", () => {
+    const task = makeTask("T-CONTRACT");
+    task.execution_contract = {
+      verification: {
+        contract: { selected_checks: ["critical_paths", "task_outcome"] },
+      },
+    } as TaskData["execution_contract"];
+
+    expect(
+      verificationContractEvidenceCoverage(
+        task,
+        "Check: task_outcome\nCommand: bun test\nResult: pass\nEvidence: report.json\nScope: outcome",
+      ),
+    ).toMatchObject({ accepted: false, missingChecks: ["critical_paths"] });
+    expect(
+      verificationContractEvidenceCoverage(
+        task,
+        "Check: critical_paths\nCommand: bun test\nResult: pass\nEvidence: report.json\nScope: critical\n\nCheck: task_outcome\nCommand: bun test\nResult: pass\nEvidence: report.json\nScope: outcome",
+      ),
+    ).toMatchObject({ accepted: true, missingChecks: [], unexpectedChecks: [] });
+  });
+
+  it("rejects a persisted passing record that omits a selected contract check", async () => {
+    const gitRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-verification-contract-"));
+    tempRoots.push(gitRoot);
+    const task = makeTask("T-CONTRACT-RECORD");
+    task.execution_contract = {
+      verification: {
+        contract: { selected_checks: ["critical_paths", "task_outcome"] },
+      },
+    } as TaskData["execution_contract"];
+    const taskRoot = path.join(gitRoot, ".agentplane", "tasks", task.id);
+    await writeValidRecord({
+      taskRoot,
+      task,
+      implementationSha: null,
+      details:
+        "Check: task_outcome\nCommand: bun test\nResult: pass\nEvidence: report.json\nScope: outcome",
+    });
+
+    await expect(verificationRecordPaths(taskRoot, task, null)).resolves.toEqual([]);
+  });
+
   it("accepts a current metadata-only record when both target SHAs are null", async () => {
     const gitRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-verification-record-"));
     tempRoots.push(gitRoot);

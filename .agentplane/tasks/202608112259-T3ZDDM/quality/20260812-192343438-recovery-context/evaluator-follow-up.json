@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608112259-T3ZDDM-e1bbaa61cf02122bd701271d",
+  "task_id": "202608112259-T3ZDDM",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Provide exact-SHA hosted PR full-regression evidence, completed risk-selected real E2E evidence for the evaluated SHA, and consumer-level proof that evaluator, finish, and recovery enforce the persisted Verification Contract before requesting reevaluation.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen exact-SHA verification record does not show a hosted PR full CLI regression for evaluated SHA 98422e10574192fd43f9da6a0509ec71a2e3d1cd.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260812192306993-5c516c2dac825b29.json",
+          "sha256": "sha256:53cd4c023f7632fa3d3ea809098505b2737a9822de5dc1bd7b91c1d10b328b7b",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+          "sha256": "sha256:d6fae6082802145d818393a8bc7b2d64a404f62535f77d8f377decf9d484280b",
+          "section": "Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "The claimed risk-selected E2E evidence is a partial audit qualification on a different SHA, not completed real E2E on the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260812192306993-5c516c2dac825b29.json",
+          "sha256": "sha256:53cd4c023f7632fa3d3ea809098505b2737a9822de5dc1bd7b91c1d10b328b7b",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/9a291733533abba8a1f938586cc3b60a4aeb2c90c506256de3f25be8df957261.patch",
+          "sha256": "sha256:9a291733533abba8a1f938586cc3b60a4aeb2c90c506256de3f25be8df957261",
+          "section": "risk E2E and hosted phase implementation"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "summary": "Frozen verification does not demonstrate that evaluator, finish, and recovery consume the contract as an authoritative check selector; the diff primarily binds verification reuse and quality targeting to a digest.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/9a291733533abba8a1f938586cc3b60a4aeb2c90c506256de3f25be8df957261.patch",
+          "sha256": "sha256:9a291733533abba8a1f938586cc3b60a4aeb2c90c506256de3f25be8df957261",
+          "section": "verification contract consumers"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260812192306993-5c516c2dac825b29.json",
+          "sha256": "sha256:53cd4c023f7632fa3d3ea809098505b2737a9822de5dc1bd7b91c1d10b328b7b",
+          "section": "scope"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608112259-T3ZDDM/quality/20260812-192343438-recovery-context/evaluator-result.json"
+}

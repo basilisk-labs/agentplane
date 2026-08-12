@@ -28,6 +28,7 @@ describe("verification details", () => {
       ),
     ).toEqual([
       {
+        checkId: null,
         command: "bun run test:critical",
         result: "pass",
         evidence: "process exited 0 at the evaluated SHA.",
@@ -57,12 +58,14 @@ describe("verification details", () => {
       ),
     ).toEqual([
       {
+        checkId: null,
         command: "bun test.",
         result: "pass",
         evidence: "7 tests passed.",
         scope: "focused suite.",
       },
       {
+        checkId: null,
         command: "bun run typecheck.",
         result: "pass",
         evidence: "exited 0.",
@@ -79,6 +82,7 @@ describe("verification details", () => {
       ),
     ).toEqual([
       {
+        checkId: null,
         command: 'sh -c "echo Scope: smoke".',
         result: "pass",
         evidence: "output mentioned Command: without starting a field.",
@@ -102,4 +106,26 @@ describe("verification details", () => {
       ).toBeNull();
     },
   );
+
+  it("binds a structured evidence block to an exact Verification Contract check id", () => {
+    expect(
+      parseVerificationCheckDetails(
+        [
+          "Check: full_regression",
+          "Command: bun run test:fast",
+          "Result: pass",
+          "Evidence: frozen report.json",
+          "Scope: complete CLI regression",
+        ].join("\n"),
+      ),
+    ).toEqual([
+      {
+        checkId: "full_regression",
+        command: "bun run test:fast",
+        result: "pass",
+        evidence: "frozen report.json",
+        scope: "complete CLI regression",
+      },
+    ]);
+  });
 });
