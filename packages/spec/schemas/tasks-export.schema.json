@@ -22,32 +22,18 @@
           },
           "risk_level": {
             "type": "string",
-            "enum": [
-              "low",
-              "med",
-              "high"
-            ]
+            "enum": ["low", "med", "high"]
           },
           "breaking": {
             "type": "boolean"
           },
           "status": {
             "type": "string",
-            "enum": [
-              "TODO",
-              "DOING",
-              "DONE",
-              "BLOCKED"
-            ]
+            "enum": ["TODO", "DOING", "DONE", "BLOCKED"]
           },
           "priority": {
             "type": "string",
-            "enum": [
-              "low",
-              "normal",
-              "med",
-              "high"
-            ]
+            "enum": ["low", "normal", "med", "high"]
           },
           "owner": {
             "type": "string",
@@ -90,9 +76,7 @@
                 "minLength": 1
               }
             },
-            "required": [
-              "system"
-            ],
+            "required": ["system"],
             "additionalProperties": {
               "type": "string"
             }
@@ -106,14 +90,7 @@
               },
               "status": {
                 "type": "string",
-                "enum": [
-                  "prepared",
-                  "running",
-                  "success",
-                  "failed",
-                  "blocked",
-                  "cancelled"
-                ]
+                "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
               },
               "adapter_id": {
                 "type": "string",
@@ -121,10 +98,7 @@
               },
               "mode": {
                 "type": "string",
-                "enum": [
-                  "execute",
-                  "dry_run"
-                ]
+                "enum": ["execute", "dry_run"]
               },
               "created_at": {
                 "type": "string",
@@ -163,10 +137,7 @@
                 "properties": {
                   "kind": {
                     "type": "string",
-                    "enum": [
-                      "task",
-                      "recipe_scenario"
-                    ]
+                    "enum": ["task", "recipe_scenario"]
                   },
                   "task_id": {
                     "type": "string",
@@ -181,9 +152,7 @@
                     "minLength": 1
                   }
                 },
-                "required": [
-                  "kind"
-                ],
+                "required": ["kind"],
                 "additionalProperties": {}
               },
               "summary": {
@@ -295,12 +264,7 @@
                     "const": "agentplane"
                   }
                 },
-                "required": [
-                  "path",
-                  "sha256",
-                  "verification_state",
-                  "observed_by"
-                ],
+                "required": ["path", "sha256", "verification_state", "observed_by"],
                 "additionalProperties": false
               },
               "history": {
@@ -314,14 +278,7 @@
                     },
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "prepared",
-                        "running",
-                        "success",
-                        "failed",
-                        "blocked",
-                        "cancelled"
-                      ]
+                      "enum": ["prepared", "running", "success", "failed", "blocked", "cancelled"]
                     },
                     "adapter_id": {
                       "type": "string",
@@ -329,10 +286,7 @@
                     },
                     "mode": {
                       "type": "string",
-                      "enum": [
-                        "execute",
-                        "dry_run"
-                      ]
+                      "enum": ["execute", "dry_run"]
                     },
                     "created_at": {
                       "type": "string",
@@ -371,10 +325,7 @@
                       "properties": {
                         "kind": {
                           "type": "string",
-                          "enum": [
-                            "task",
-                            "recipe_scenario"
-                          ]
+                          "enum": ["task", "recipe_scenario"]
                         },
                         "task_id": {
                           "type": "string",
@@ -389,9 +340,7 @@
                           "minLength": 1
                         }
                       },
-                      "required": [
-                        "kind"
-                      ],
+                      "required": ["kind"],
                       "additionalProperties": {}
                     },
                     "summary": {
@@ -503,12 +452,7 @@
                           "const": "agentplane"
                         }
                       },
-                      "required": [
-                        "path",
-                        "sha256",
-                        "verification_state",
-                        "observed_by"
-                      ],
+                      "required": ["path", "sha256", "verification_state", "observed_by"],
                       "additionalProperties": false
                     }
                   },
@@ -545,11 +489,7 @@
               },
               "state": {
                 "type": "string",
-                "enum": [
-                  "observed",
-                  "partial",
-                  "unavailable"
-                ]
+                "enum": ["observed", "partial", "unavailable"]
               },
               "input_tokens": {
                 "anyOf": [
@@ -611,10 +551,7 @@
               },
               "source": {
                 "type": "string",
-                "enum": [
-                  "supervisor_journal",
-                  "unavailable"
-                ]
+                "enum": ["supervisor_journal", "unavailable"]
               },
               "observed_by": {
                 "type": "string",
@@ -674,26 +611,15 @@
               },
               "requested_mode": {
                 "type": "string",
-                "enum": [
-                  "repository",
-                  "auto",
-                  "direct",
-                  "branch_pr"
-                ]
+                "enum": ["repository", "auto", "direct", "branch_pr"]
               },
               "selected_mode": {
                 "type": "string",
-                "enum": [
-                  "direct",
-                  "branch_pr"
-                ]
+                "enum": ["direct", "branch_pr"]
               },
               "repository_mode": {
                 "type": "string",
-                "enum": [
-                  "direct",
-                  "branch_pr"
-                ]
+                "enum": ["direct", "branch_pr"]
               },
               "reason_codes": {
                 "minItems": 1,
@@ -727,10 +653,7 @@
               },
               "source": {
                 "type": "string",
-                "enum": [
-                  "agent_declared",
-                  "legacy_compatibility"
-                ]
+                "enum": ["agent_declared", "legacy_compatibility"]
               },
               "declaration": {
                 "type": "object",
@@ -741,10 +664,7 @@
                   },
                   "preferred_mode": {
                     "type": "string",
-                    "enum": [
-                      "direct",
-                      "branch_pr"
-                    ]
+                    "enum": ["direct", "branch_pr"]
                   },
                   "scope_roots": {
                     "type": "array",
@@ -787,25 +707,15 @@
                   },
                   "requirements_uncertainty": {
                     "type": "string",
-                    "enum": [
-                      "bounded",
-                      "material"
-                    ]
+                    "enum": ["bounded", "material"]
                   },
                   "implementation_uncertainty": {
                     "type": "string",
-                    "enum": [
-                      "bounded",
-                      "material"
-                    ]
+                    "enum": ["bounded", "material"]
                   },
                   "reversibility": {
                     "type": "string",
-                    "enum": [
-                      "reversible",
-                      "recovery_required",
-                      "irreversible"
-                    ]
+                    "enum": ["reversible", "recovery_required", "irreversible"]
                   },
                   "rationale": {
                     "minItems": 1,
@@ -831,17 +741,11 @@
               },
               "selected_mode": {
                 "type": "string",
-                "enum": [
-                  "direct",
-                  "branch_pr"
-                ]
+                "enum": ["direct", "branch_pr"]
               },
               "repository_mode": {
                 "type": "string",
-                "enum": [
-                  "direct",
-                  "branch_pr"
-                ]
+                "enum": ["direct", "branch_pr"]
               },
               "reason_codes": {
                 "minItems": 1,
@@ -959,11 +863,7 @@
                     }
                   }
                 },
-                "required": [
-                  "requires_worktree",
-                  "requires_user_approval",
-                  "approval_effects"
-                ],
+                "required": ["requires_worktree", "requires_user_approval", "approval_effects"],
                 "additionalProperties": false
               },
               "verification": {
@@ -990,12 +890,7 @@
                       },
                       "phase": {
                         "type": "string",
-                        "enum": [
-                          "task",
-                          "local",
-                          "pr",
-                          "release"
-                        ]
+                        "enum": ["task", "local", "pr", "release"]
                       },
                       "declared": {
                         "type": "object",
@@ -1033,10 +928,7 @@
                             }
                           }
                         },
-                        "required": [
-                          "repository_effects",
-                          "external_effects"
-                        ],
+                        "required": ["repository_effects", "external_effects"],
                         "additionalProperties": false
                       },
                       "observed": {
@@ -1139,11 +1031,7 @@
                             }
                           }
                         },
-                        "required": [
-                          "kind",
-                          "reason",
-                          "selected_test_files"
-                        ],
+                        "required": ["kind", "reason", "selected_test_files"],
                         "additionalProperties": false
                       },
                       "selected_checks": {
@@ -1189,9 +1077,7 @@
                     "additionalProperties": false
                   }
                 },
-                "required": [
-                  "required_evidence"
-                ],
+                "required": ["required_evidence"],
                 "additionalProperties": false
               },
               "observed": {
@@ -1254,17 +1140,10 @@
                         },
                         "result": {
                           "type": "string",
-                          "enum": [
-                            "pass",
-                            "fail",
-                            "unsupported"
-                          ]
+                          "enum": ["pass", "fail", "unsupported"]
                         }
                       },
-                      "required": [
-                        "id",
-                        "result"
-                      ],
+                      "required": ["id", "result"],
                       "additionalProperties": false
                     }
                   },
@@ -1318,12 +1197,7 @@
                     "minLength": 1
                   }
                 },
-                "required": [
-                  "from",
-                  "to",
-                  "reason_codes",
-                  "preserved_changed_paths"
-                ],
+                "required": ["from", "to", "reason_codes", "preserved_changed_paths"],
                 "additionalProperties": false
               }
             },
@@ -1357,27 +1231,11 @@
           },
           "task_kind": {
             "type": "string",
-            "enum": [
-              "analysis",
-              "content",
-              "docs",
-              "code",
-              "release",
-              "ops",
-              "context"
-            ]
+            "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
           },
           "mutation_scope": {
             "type": "string",
-            "enum": [
-              "none",
-              "docs",
-              "code",
-              "release",
-              "ops",
-              "context",
-              "unknown"
-            ]
+            "enum": ["none", "docs", "code", "release", "ops", "context", "unknown"]
           },
           "risk_flags": {
             "type": "array",
@@ -1424,11 +1282,7 @@
             "properties": {
               "state": {
                 "type": "string",
-                "enum": [
-                  "pending",
-                  "approved",
-                  "rejected"
-                ]
+                "enum": ["pending", "approved", "rejected"]
               },
               "updated_at": {
                 "anyOf": [
@@ -1463,12 +1317,7 @@
                 ]
               }
             },
-            "required": [
-              "state",
-              "updated_at",
-              "updated_by",
-              "note"
-            ],
+            "required": ["state", "updated_at", "updated_by", "note"],
             "additionalProperties": {}
           },
           "verification": {
@@ -1476,12 +1325,7 @@
             "properties": {
               "state": {
                 "type": "string",
-                "enum": [
-                  "pending",
-                  "ok",
-                  "needs_rework",
-                  "blocked_external"
-                ]
+                "enum": ["pending", "ok", "needs_rework", "blocked_external"]
               },
               "attempts": {
                 "type": "integer",
@@ -1521,12 +1365,7 @@
                 ]
               }
             },
-            "required": [
-              "state",
-              "updated_at",
-              "updated_by",
-              "note"
-            ],
+            "required": ["state", "updated_at", "updated_by", "note"],
             "additionalProperties": {}
           },
           "quality_review": {
@@ -1534,20 +1373,11 @@
             "properties": {
               "state": {
                 "type": "string",
-                "enum": [
-                  "pending",
-                  "pass",
-                  "rework",
-                  "blocked",
-                  "human_review"
-                ]
+                "enum": ["pending", "pass", "rework", "blocked", "human_review"]
               },
               "provenance": {
                 "type": "string",
-                "enum": [
-                  "human_supplied",
-                  "evaluator_supplied"
-                ]
+                "enum": ["human_supplied", "evaluator_supplied"]
               },
               "updated_at": {
                 "anyOf": [
@@ -1640,10 +1470,7 @@
                     "minLength": 1
                   }
                 },
-                "required": [
-                  "hash",
-                  "message"
-                ],
+                "required": ["hash", "message"],
                 "additionalProperties": false
               },
               {
@@ -1665,10 +1492,7 @@
                   "minLength": 1
                 }
               },
-              "required": [
-                "author",
-                "body"
-              ],
+              "required": ["author", "body"],
               "additionalProperties": false
             }
           },
@@ -1679,11 +1503,7 @@
               "properties": {
                 "type": {
                   "type": "string",
-                  "enum": [
-                    "status",
-                    "comment",
-                    "verify"
-                  ]
+                  "enum": ["status", "comment", "verify"]
                 },
                 "at": {
                   "type": "string",
@@ -1714,11 +1534,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "type",
-                "at",
-                "author"
-              ],
+              "required": ["type", "at", "author"],
               "additionalProperties": {}
             }
           },
@@ -1777,10 +1593,7 @@
                       "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                     }
                   },
-                  "required": [
-                    "provider",
-                    "remote_id"
-                  ],
+                  "required": ["provider", "remote_id"],
                   "additionalProperties": false
                 }
               },
@@ -1796,13 +1609,7 @@
                   "properties": {
                     "authority": {
                       "type": "string",
-                      "enum": [
-                        "agentplane",
-                        "provider",
-                        "bidirectional",
-                        "derived",
-                        "ignored"
-                      ]
+                      "enum": ["agentplane", "provider", "bidirectional", "derived", "ignored"]
                     },
                     "remote_field": {
                       "type": "string",
@@ -1810,12 +1617,7 @@
                     },
                     "conflict_policy": {
                       "type": "string",
-                      "enum": [
-                        "record",
-                        "manual",
-                        "agentplane_wins",
-                        "provider_wins"
-                      ]
+                      "enum": ["record", "manual", "agentplane_wins", "provider_wins"]
                     },
                     "updated_at": {
                       "type": "string",
@@ -1827,9 +1629,7 @@
                       "minLength": 1
                     }
                   },
-                  "required": [
-                    "authority"
-                  ],
+                  "required": ["authority"],
                   "additionalProperties": false
                 }
               },
@@ -1887,19 +1687,11 @@
                     },
                     "severity": {
                       "type": "string",
-                      "enum": [
-                        "info",
-                        "warning",
-                        "blocking"
-                      ]
+                      "enum": ["info", "warning", "blocking"]
                     },
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "open",
-                        "resolved",
-                        "ignored"
-                      ]
+                      "enum": ["open", "resolved", "ignored"]
                     },
                     "summary": {
                       "type": "string",
@@ -1936,21 +1728,12 @@
                       "minLength": 1
                     }
                   },
-                  "required": [
-                    "id",
-                    "kind",
-                    "severity",
-                    "status",
-                    "summary",
-                    "detected_at"
-                  ],
+                  "required": ["id", "kind", "severity", "status", "summary", "detected_at"],
                   "additionalProperties": false
                 }
               }
             },
-            "required": [
-              "version"
-            ],
+            "required": ["version"],
             "additionalProperties": false
           },
           "doc_version": {
@@ -2020,18 +1803,10 @@
           "minLength": 1
         }
       },
-      "required": [
-        "schema_version",
-        "managed_by",
-        "checksum_algo",
-        "checksum"
-      ],
+      "required": ["schema_version", "managed_by", "checksum_algo", "checksum"],
       "additionalProperties": false
     }
   },
-  "required": [
-    "tasks",
-    "meta"
-  ],
+  "required": ["tasks", "meta"],
   "additionalProperties": false
 }
