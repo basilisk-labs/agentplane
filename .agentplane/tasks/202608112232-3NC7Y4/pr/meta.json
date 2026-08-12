@@ -8,10 +8,10 @@
   "pr_number": 4828,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4828",
   "pre_merge_closure": {
-    "basis_commit": "41f9990d02d3fee587bc99c0f784d0489623de67",
+    "basis_commit": "9a7817e984c30b698f02084996704b4b76577e08",
     "branch": "task/202608112232-3NC7Y4/make-execution-strategy-risk-adaptive-and-agent",
     "pr_number": 4828,
-    "recorded_at": "2026-08-12T01:41:24.771Z",
+    "recorded_at": "2026-08-12T02:00:40.381Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

@@ -2,10 +2,10 @@
 id: "202608112232-3NC7Y4"
 title: "Make execution strategy risk-adaptive and agent-selected"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -73,7 +73,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-12T01:41:24.708Z"
+  updated_at: "2026-08-12T02:00:40.317Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -83,8 +83,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "41f9990d02d3fee587bc99c0f784d0489623de67"
-  message: "✅ 3NC7Y4 task: record quality review"
+  hash: "9a7817e984c30b698f02084996704b4b76577e08"
+  message: "✅ 3NC7Y4 task: record rework quality review"
 comments:
   -
     author: "CODER"
@@ -98,6 +98,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: address two valid P1 review findings without scope expansion."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -141,8 +144,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Implementation 12f447c63 verified after P1 rework."
+  -
+    type: "status"
+    at: "2026-08-12T02:00:40.317Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "9a7817e984c30b698f02084996704b4b76577e08"
 doc_version: 3
-doc_updated_at: "2026-08-12T01:59:12.935Z"
+doc_updated_at: "2026-08-12T02:00:40.346Z"
 doc_updated_by: "CODER"
 description: "Use one canonical lifecycle while letting the agent semantically choose direct or branch_pr through a structured risk/effect declaration. AgentPlane must compile and enforce one deterministic execution contract, compare it with observed effects, escalate monotonically when required, and never use product-language keyword heuristics as lifecycle authority."
 sections:
@@ -329,8 +340,8 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "13559201918e82ed10fd775bb6163be1822e8e37"
-    message: "🎨 3NC7Y4 task: align execution routing format"
+    hash: "12f447c63ce5c78b152d461dcc1e00517a04f149"
+    message: "🐛 3NC7Y4 task: close execution authority gaps"
   workflow_route_baseline:
     start_head_sha: "106662505177833ff8ededb1ad621baf342c3a88"
     version: 1
@@ -541,4 +552,4 @@ DecisionContextRef:
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-12T01:41:24.708Z`
+- Updated at: `2026-08-12T02:00:40.317Z`
