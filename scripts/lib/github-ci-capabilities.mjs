@@ -190,12 +190,19 @@ export function buildGithubCiCapabilityPlan({
   const releaseMainPush =
     eventName === "push" && ref === "refs/heads/main" && isReleasePackageSet(effectiveFiles);
   const releaseReady = exactShaRecovery || releaseRef || releaseMainPush;
+  const malformedExecutionContract = (semanticEffects.parseErrors ?? []).length > 0;
   const localPlan = buildLocalCiExecutionPlan({
     mode: "fast",
     changedFiles: files,
     phase: exactShaRecovery || releaseRef || releaseMainPush ? "release" : "pr",
-    declaredRepositoryEffects: semanticEffects.declaredRepositoryEffects ?? [],
-    declaredExternalEffects: semanticEffects.declaredExternalEffects ?? [],
+    declaredRepositoryEffects: [
+      ...(semanticEffects.declaredRepositoryEffects ?? []),
+      ...(malformedExecutionContract ? ["ci"] : []),
+    ],
+    declaredExternalEffects: [
+      ...(semanticEffects.declaredExternalEffects ?? []),
+      ...(malformedExecutionContract ? ["external_write"] : []),
+    ],
     observedRepositoryEffects: semanticEffects.observedRepositoryEffects ?? [],
     observedExternalEffects: semanticEffects.observedExternalEffects ?? [],
   });
@@ -306,6 +313,7 @@ export function buildGithubCiCapabilityPlan({
     reuse_sha: lifecycleOnlyHead ? reuseSha : "",
     release_ready: releaseReady,
     unknown_paths: unknown,
+    semantic_effect_parse_errors: semanticEffects.parseErrors ?? [],
     capabilities,
     codeql_languages: codeqlLanguages,
     expected_jobs: expectedJobs,

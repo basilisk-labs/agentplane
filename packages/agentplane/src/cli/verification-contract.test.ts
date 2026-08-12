@@ -81,6 +81,7 @@ describe("verification contract", () => {
         declaredExternalEffects: ["external_write"],
         observedRepositoryEffects: ["tests"],
         observedExternalEffects: [],
+        parseErrors: [],
         sourcePaths: [relative],
       });
 
@@ -104,6 +105,28 @@ describe("verification contract", () => {
         declaredRepositoryEffects: ["source_code", "tests"],
         declaredExternalEffects: ["external_write"],
         observedRepositoryEffects: ["ci"],
+        parseErrors: [],
+      });
+
+      writeFileSync(
+        path.join(root, relative),
+        [
+          "---",
+          "id: 202608120000-RISK",
+          "execution_contract:",
+          "  declaration:",
+          "    repository_effects: source_code",
+          "    external_effects: [future_external_effect]",
+          "---",
+          "",
+        ].join("\n"),
+      );
+      expect(readTaskVerificationEffects([relative], { cwd: root })).toMatchObject({
+        declaredRepositoryEffects: [],
+        parseErrors: [
+          expect.stringContaining("invalid repository_effects list"),
+          expect.stringContaining("unknown effect value future_external_effect"),
+        ],
       });
     } finally {
       rmSync(root, { force: true, recursive: true });

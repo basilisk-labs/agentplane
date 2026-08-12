@@ -27,6 +27,7 @@ type GithubCiPlan = {
   executing_jobs_count: number;
   lifecycle_only_head: boolean;
   reuse_sha: string;
+  semantic_effect_parse_errors: string[];
   verification_contract: {
     phase: string;
     requires_full_regression: boolean;
@@ -49,6 +50,7 @@ const { GITHUB_CI_GATE_JOBS, buildGithubCiCapabilityPlan } = githubCiCapabilitie
       declaredExternalEffects?: string[];
       observedRepositoryEffects?: string[];
       observedExternalEffects?: string[];
+      parseErrors?: string[];
     };
   }) => GithubCiPlan;
 };
@@ -85,6 +87,20 @@ describe("GitHub CI capability planning", () => {
     expect(external.capabilities.real_e2e).toBe(true);
     expect(external.expected_jobs).toContain("verify-real-e2e");
     expect(external.verification_contract).toMatchObject({ requires_real_e2e: true });
+  });
+
+  it("fails closed when the structured execution contract cannot be parsed", () => {
+    const result = buildGithubCiCapabilityPlan({
+      changedFiles: ["packages/testkit/src/helper.test.ts"],
+      eventName: "pull_request",
+      semanticEffects: { parseErrors: ["task README: invalid external_effects list"] },
+    });
+    expect(result.semantic_effect_parse_errors).toHaveLength(1);
+    expect(result.verification_contract).toMatchObject({
+      requires_full_regression: true,
+      requires_real_e2e: true,
+    });
+    expect(result.expected_jobs).toContain("verify-real-e2e");
   });
 
   it("routes lifecycle-only heads to verified-parent reuse", () => {
