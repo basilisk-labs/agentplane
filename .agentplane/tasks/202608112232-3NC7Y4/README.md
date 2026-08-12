@@ -4,7 +4,7 @@ title: "Make execution strategy risk-adaptive and agent-selected"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -37,11 +37,16 @@ execution_route:
   requested_mode: "repository"
   schema_version: 1
   selected_mode: "branch_pr"
-commit: null
+commit:
+  hash: "40afabe86933efaad8d6bca48903ea38bcc378e2"
+  message: "✨ 3NC7Y4 task: add risk-adaptive execution contract"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation complete: structured agent execution declaration, deterministic contract compilation, effect-based routing, monotonic escalation with preserved work, and realistic direct/branch_pr E2Es. Full local fast CI passed."
 events:
   -
     type: "status"
@@ -50,8 +55,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-12T01:26:09.791Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation complete: structured agent execution declaration, deterministic contract compilation, effect-based routing, monotonic escalation with preserved work, and realistic direct/branch_pr E2Es. Full local fast CI passed."
+    commit: "40afabe86933efaad8d6bca48903ea38bcc378e2"
 doc_version: 3
-doc_updated_at: "2026-08-12T00:34:37.688Z"
+doc_updated_at: "2026-08-12T01:26:09.791Z"
 doc_updated_by: "CODER"
 description: "Use one canonical lifecycle while letting the agent semantically choose direct or branch_pr through a structured risk/effect declaration. AgentPlane must compile and enforce one deterministic execution contract, compare it with observed effects, escalate monotonically when required, and never use product-language keyword heuristics as lifecycle authority."
 sections:
