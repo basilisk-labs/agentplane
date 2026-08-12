@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608112232-3NC7Y4-2f671631a6e18078526a62b7",
+  "task_id": "202608112232-3NC7Y4",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Extend the canonical execution contract and schema with explicit allowed/forbidden effects and writable authority, persist objective external/network/component/verification observations, make lifecycle consumers enforce those contract fields, and add negative E2E coverage for undeclared external effects and verification-driven strengthening.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The execution contract does not contain the required allowed effects, forbidden effects, or writable authority; writable scope is derived separately by consumers from declaration scope roots, so the contract is not the single authoritative capability model required by the task.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/README.md",
+          "sha256": "sha256:20c579b7aaf2d494cf515399a407198b5ae0c0a25116a59d50fe172079216ea9",
+          "section": "Plan, criterion 2"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/5b956bb7e1e15d1c0ba0f9c197c22f9b095dece01da01280706f39745bf6090d.patch",
+          "sha256": "sha256:5b956bb7e1e15d1c0ba0f9c197c22f9b095dece01da01280706f39745bf6090d",
+          "section": "resolveTaskExecutionContract and agent-work-order authority changes"
+        }
+      ]
+    },
+    {
+      "id": "RCI-002",
+      "summary": "Observed-effect reconciliation only classifies changed repository paths. The persisted observed model has no external/network effects, changed components, or verification-result observations, so declared external effects and verification outcomes cannot be compared with objective observations or strengthen the contract monotonically.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/README.md",
+          "sha256": "sha256:20c579b7aaf2d494cf515399a407198b5ae0c0a25116a59d50fe172079216ea9",
+          "section": "Plan, criterion 4"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/5b956bb7e1e15d1c0ba0f9c197c22f9b095dece01da01280706f39745bf6090d.patch",
+          "sha256": "sha256:5b956bb7e1e15d1c0ba0f9c197c22f9b095dece01da01280706f39745bf6090d",
+          "section": "structuralEffectsForPath, reconcileTaskExecutionContract, and TaskExecutionContract observed schema"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812022534184-74a4267a46e8c812.json",
+          "sha256": "sha256:f8aa333baaf677b19f89add9b48aee03b0c161c9ea464e27a24fff02cd2c4847",
+          "section": "Targeted verification scope and evidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-022652913-recovery-context/evaluator-result.json"
+}

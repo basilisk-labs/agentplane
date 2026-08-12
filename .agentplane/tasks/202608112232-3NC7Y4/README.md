@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -31,35 +31,33 @@ verification:
   note: "Execution strategy contract and verification-race fix pass full and focused validation for implementation 9ad25f443."
   attempts: 0
 quality_review:
-  state: "pass"
-  provenance: "human_supplied"
-  updated_at: "2026-08-12T01:59:12.913Z"
-  updated_by: "HUMAN"
-  note: "The reworked execution strategy closes both reviewed authority gaps without weakening legacy compatibility or monotonic escalation."
-  evaluated_sha: "12f447c63ce5c78b152d461dcc1e00517a04f149"
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-12T02:27:50.026Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "9ad25f44386d208e7ce24206a999a6a683b99d06"
   blueprint_digest: "9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6"
   evidence_refs:
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-015912495-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-015912495-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/2d1094cd3d2f463153396d893ddcadca3c1bee2b3b2fa1c117f84a828eba4ca4.md"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-015912495-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-015912495-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-022652913-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-022652913-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/1561d1e90c7deaefd781727a72ec507d1ddd4cda05c2d178f0315ed22470ac62.md"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-022652913-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-022652913-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-022652913-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-022652913-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608112232-3NC7Y4/README.md"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/7e7cb078ae9a2f19dc0ed49d3d32ba21e378ecf9d5a24d2976adbb87632eec0d.patch"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/c0ec1e2a0e72a5da6af12616db5c74c731742547572edc5d8ea9401106ac3c6f.json"
-    - ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812015743942-150180079fdf6c3e.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/5b956bb7e1e15d1c0ba0f9c197c22f9b095dece01da01280706f39745bf6090d.patch"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/06400de92ef62fc042247adc6304b30afc837eef8c6c4f5fda85516f4e2cf120.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812022534184-74a4267a46e8c812.json"
     - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/713d635b887c7c585dcaacdf90acc3b66adefd80a7316bf2f3f88328352bd276.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
-    - "commit:12f447c63ce5c78b152d461dcc1e00517a04f149"
-    - "packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts"
-    - "packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
   findings:
-    - "Agent-declared scope_roots: [] is distinguished from absent or legacy scope and produces read-only work-order authority; integration coverage asserts writable roots, sandbox, and tool classes."
-    - "Observed direct-to-branch escalation atomically replaces code.direct with code.branch_pr, preventing an incompatible blueprint from blocking the deterministic handoff."
-    - "The changes remain within the approved risk-adaptive execution contract and preserve the rule that semantic classification belongs to the agent while enforcement remains deterministic."
+    - "The execution contract does not contain the required allowed effects, forbidden effects, or writable authority; writable scope is derived separately by consumers from declaration scope roots, so the contract is not the single authoritative capability model required by the task."
+    - "Observed-effect reconciliation only classifies changed repository paths. The persisted observed model has no external/network effects, changed components, or verification-result observations, so declared external effects and verification outcomes cannot be compared with objective observations or strengthen the contract monotonically."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -159,7 +157,7 @@ events:
     state: "ok"
     note: "Execution strategy contract and verification-race fix pass full and focused validation for implementation 9ad25f443."
 doc_version: 3
-doc_updated_at: "2026-08-12T02:25:36.602Z"
+doc_updated_at: "2026-08-12T02:27:50.047Z"
 doc_updated_by: "CODER"
 description: "Use one canonical lifecycle while letting the agent semantically choose direct or branch_pr through a structured risk/effect declaration. AgentPlane must compile and enforce one deterministic execution contract, compare it with observed effects, escalate monotonically when required, and never use product-language keyword heuristics as lifecycle authority."
 sections:
