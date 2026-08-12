@@ -4,7 +4,7 @@ title: "Prevent worktree accumulation and clean obsolete task checkouts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -28,10 +28,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved as the previously agreed worktree/branch lifecycle step before final verification optimization."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-12T07:34:54.508Z"
+  updated_by: "TESTER"
+  note: "Implementation e7e76d785 passed focused worktree/cleanup/supervisor/authority/projection/CLI E2E coverage plus typecheck, build, lint, lifecycle invariants, policy routing, diff check, worktree prune dry-run, and real-repository cleanup readback."
   attempts: 0
 execution_route:
   frozen: true
@@ -109,7 +109,19 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
@@ -172,8 +184,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 33a325f05e8c. CLI accepted one state-bound external-agent semantic result."
     commit: "33a325f05e8cedf0870d340c749cbe5e354e90f9"
+  -
+    type: "verify"
+    at: "2026-08-12T07:34:54.508Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Implementation e7e76d785 passed focused worktree/cleanup/supervisor/authority/projection/CLI E2E coverage plus typecheck, build, lint, lifecycle invariants, policy routing, diff check, worktree prune dry-run, and real-repository cleanup readback."
 doc_version: 3
-doc_updated_at: "2026-08-12T07:32:54.702Z"
+doc_updated_at: "2026-08-12T07:34:55.810Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement lifecycle-owned worktree hygiene before the verification optimization task. Preserve parallel development by allowing one authoritative worktree for each active branch_pr task, while preventing duplicate worktrees for the same task. Automatically finalize clean task worktrees and local task branches after hosted-close or proven merge, and make queue/supervisor progression own this cleanup without requiring the coding agent to infer it. Prevent recovery/control checkouts from recursively registering or restoring nested historical task worktrees. Add deterministic inventory/readback that classifies active, merged, dirty, recovery, detached, remote-only, and ambiguous refs; delete only provider-proven merged or explicitly obsolete clean state, preserving dirty, open-PR, active, blocked, stashed, release archive, and uniquely unassimilated work. Apply the command to the current repository, reconcile local and remote branches, and record before/after counts and retained reasons. Cover parallel active tasks, duplicate same-task worktree rejection, hosted-close cleanup, recovery non-resurrection, dirty preservation, and idempotent cleanup with focused and realistic E2E tests."
 sections:
@@ -202,6 +220,56 @@ sections:
     6. Run focused lifecycle/cleanup unit and integration tests, realistic CLI E2E, typecheck, lint, schema/contract checks, and full hosted PR verification. Expected: all pass on the exact reviewed SHA and final git worktree prune dry-run reports no stale registrations.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-12T07:34:54.508Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Implementation e7e76d785 passed focused worktree/cleanup/supervisor/authority/projection/CLI E2E coverage plus typecheck, build, lint, lifecycle invariants, policy routing, diff check, worktree prune dry-run, and real-repository cleanup readback.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:841c3068db6bc34da584a40a2dbfcf74ec7ab97e68fda59f50cc690ce3691db3, input_digest=sha256:cca91140d8edeca9b3f93e161a01edf10e1d6bd61e75ebe17496f31620afac19
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/worktree-topology.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
+    Result: pass
+    Evidence: focused lifecycle and realistic CLI E2E suite exited 0.
+    Scope: one worktree per task, parallel different tasks, recovery non-resurrection, batch retention, hosted-close cleanup, authority and projection.
+
+    Command: bun run typecheck && bun run --filter=agentplane build
+    Result: pass
+    Evidence: TypeScript build and packaged CLI bundle completed successfully.
+    Scope: changed AgentPlane implementation.
+
+    Command: targeted eslint; bun run lifecycle:invariants; node .agentplane/policy/check-routing.mjs; git diff --check; git worktree prune --dry-run --verbose
+    Result: pass
+    Evidence: no lint, lifecycle, routing, whitespace, or stale-registration failures.
+    Scope: changed files and repository lifecycle contract.
+
+    Command: real repository cleanup inventory
+    Result: pass
+    Evidence: 69 to 28 worktrees and 83 to 44 local branches; 36 provider-proven merged task registrations removed in the recorded batch; active, dirty, recovery, ambiguous, and unique state retained.
+    Scope: approved local/remote worktree hygiene.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608120643-75ZFHW-prevent-worktree-accumulation-and-clean-obsolete/.agentplane/tasks/202608120643-75ZFHW/blueprint/resolved-snapshot.json
+    - old_digest: 576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5
+    - current_digest: 576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608120643-75ZFHW
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr open 202608120643-75ZFHW --author CODER
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -247,6 +315,56 @@ Implement lifecycle-owned worktree hygiene before the verification optimization 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-12T07:34:54.508Z — VERIFY — ok
+
+By: TESTER
+
+Note: Implementation e7e76d785 passed focused worktree/cleanup/supervisor/authority/projection/CLI E2E coverage plus typecheck, build, lint, lifecycle invariants, policy routing, diff check, worktree prune dry-run, and real-repository cleanup readback.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:841c3068db6bc34da584a40a2dbfcf74ec7ab97e68fda59f50cc690ce3691db3, input_digest=sha256:cca91140d8edeca9b3f93e161a01edf10e1d6bd61e75ebe17496f31620afac19
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/worktree-topology.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
+Result: pass
+Evidence: focused lifecycle and realistic CLI E2E suite exited 0.
+Scope: one worktree per task, parallel different tasks, recovery non-resurrection, batch retention, hosted-close cleanup, authority and projection.
+
+Command: bun run typecheck && bun run --filter=agentplane build
+Result: pass
+Evidence: TypeScript build and packaged CLI bundle completed successfully.
+Scope: changed AgentPlane implementation.
+
+Command: targeted eslint; bun run lifecycle:invariants; node .agentplane/policy/check-routing.mjs; git diff --check; git worktree prune --dry-run --verbose
+Result: pass
+Evidence: no lint, lifecycle, routing, whitespace, or stale-registration failures.
+Scope: changed files and repository lifecycle contract.
+
+Command: real repository cleanup inventory
+Result: pass
+Evidence: 69 to 28 worktrees and 83 to 44 local branches; 36 provider-proven merged task registrations removed in the recorded batch; active, dirty, recovery, ambiguous, and unique state retained.
+Scope: approved local/remote worktree hygiene.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608120643-75ZFHW-prevent-worktree-accumulation-and-clean-obsolete/.agentplane/tasks/202608120643-75ZFHW/blueprint/resolved-snapshot.json
+- old_digest: 576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5
+- current_digest: 576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608120643-75ZFHW
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr open 202608120643-75ZFHW --author CODER
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
