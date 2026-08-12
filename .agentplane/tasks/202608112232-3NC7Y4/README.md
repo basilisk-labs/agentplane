@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-12T05:53:28.437Z"
+  updated_at: "2026-08-12T06:17:20.376Z"
   updated_by: "CODER"
-  note: "Rework verified at 16629e79b: observed scope enforcement, mode-stable verification, and realistic direct/branch lifecycle coverage pass."
+  note: "Verified implementation 53d633332: execution declaration v2 separates uncertainty axes; legacy v1 remains conservative; normal action envelopes fit; full local CI passed."
   attempts: 0
 quality_review:
   state: "blocked"
@@ -179,8 +179,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Rework verified at 16629e79b: observed scope enforcement, mode-stable verification, and realistic direct/branch lifecycle coverage pass."
+  -
+    type: "verify"
+    at: "2026-08-12T06:17:20.376Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified implementation 53d633332: execution declaration v2 separates uncertainty axes; legacy v1 remains conservative; normal action envelopes fit; full local CI passed."
 doc_version: 3
-doc_updated_at: "2026-08-12T06:16:17.303Z"
+doc_updated_at: "2026-08-12T06:17:22.777Z"
 doc_updated_by: "CODER"
 description: "Use one canonical lifecycle while letting the agent semantically choose direct or branch_pr through a structured risk/effect declaration. AgentPlane must compile and enforce one deterministic execution contract, compare it with observed effects, escalate monotonically when required, and never use product-language keyword heuristics as lifecycle authority."
 sections:
@@ -535,6 +541,51 @@ sections:
     Result: pass (555 test files; 4061 passed, 1 skipped; 12/12 critical CLI chunks passed)
     Evidence: commit 16629e79b6164c75ebc1c41be2d0f0bf973bbda0; direct and branch lifecycle E2E; writable-scope escalation; verification compatibility units
     Scope: risk-adaptive execution contract, observed authority enforcement, deterministic escalation, verification identity, and workflow documentation
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112232-3NC7Y4-make-execution-strategy-risk-adaptive-and-agent/.agentplane/tasks/202608112232-3NC7Y4/blueprint/resolved-snapshot.json
+    - old_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+    - current_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608112232-3NC7Y4
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-12T06:17:20.376Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified implementation 53d633332: execution declaration v2 separates uncertainty axes; legacy v1 remains conservative; normal action envelopes fit; full local CI passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:dca184be90fa3ce8f32f16e9f1a157c5f2a648692b107ebd2119d23831c66570, input_digest=sha256:c22abc275ca63e03dd92f9a20aefbb4cd2810dae38ecb138c497e81994ca345d
+
+    Details:
+
+    Command: bun run ci:local:fast
+    Result: pass (555 test files; 4066 passed, 1 skipped; 12/12 critical CLI chunks passed)
+    Evidence: implementation commit 53d633332085897db0d5033df16b7d2db7b2fb9a; 8 realistic task lifecycle E2Es; 4 uncertainty matrix cases plus v1 compatibility; schema freshness; lint; typecheck; hotspot threshold
+    Scope: execution declaration schemas/readback, deterministic routing/evidence reason codes, legacy normalization, action-packet budget, observed path factoring, user workflow documentation
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/core/src/tasks/task-execution-contract-compat.test.ts packages/core/src/runner/agent-semantic-result.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts
+    Result: pass (59/59)
+    Evidence: localized direct, broad branch_pr, underestimated escalation, prohibited effects, misleading language, network approval, legacy v1, independent requirements/implementation uncertainty
+    Scope: acceptance scenarios and compatibility
+
+    Command: bunx vitest run packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts packages/agentplane/src/commands/blueprint/task-input.test.ts
+    Result: pass (46/46)
+    Evidence: backend normalization, durable verification observations, WorkOrder propagation, blueprint consumption
+    Scope: cross-subsystem consumption and persistence
 
     BlueprintSnapshotRef:
     - state: current
@@ -936,6 +987,51 @@ Command: bun run ci:local:fast
 Result: pass (555 test files; 4061 passed, 1 skipped; 12/12 critical CLI chunks passed)
 Evidence: commit 16629e79b6164c75ebc1c41be2d0f0bf973bbda0; direct and branch lifecycle E2E; writable-scope escalation; verification compatibility units
 Scope: risk-adaptive execution contract, observed authority enforcement, deterministic escalation, verification identity, and workflow documentation
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112232-3NC7Y4-make-execution-strategy-risk-adaptive-and-agent/.agentplane/tasks/202608112232-3NC7Y4/blueprint/resolved-snapshot.json
+- old_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+- current_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608112232-3NC7Y4
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-12T06:17:20.376Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified implementation 53d633332: execution declaration v2 separates uncertainty axes; legacy v1 remains conservative; normal action envelopes fit; full local CI passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:dca184be90fa3ce8f32f16e9f1a157c5f2a648692b107ebd2119d23831c66570, input_digest=sha256:c22abc275ca63e03dd92f9a20aefbb4cd2810dae38ecb138c497e81994ca345d
+
+Details:
+
+Command: bun run ci:local:fast
+Result: pass (555 test files; 4066 passed, 1 skipped; 12/12 critical CLI chunks passed)
+Evidence: implementation commit 53d633332085897db0d5033df16b7d2db7b2fb9a; 8 realistic task lifecycle E2Es; 4 uncertainty matrix cases plus v1 compatibility; schema freshness; lint; typecheck; hotspot threshold
+Scope: execution declaration schemas/readback, deterministic routing/evidence reason codes, legacy normalization, action-packet budget, observed path factoring, user workflow documentation
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/core/src/tasks/task-execution-contract-compat.test.ts packages/core/src/runner/agent-semantic-result.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts
+Result: pass (59/59)
+Evidence: localized direct, broad branch_pr, underestimated escalation, prohibited effects, misleading language, network approval, legacy v1, independent requirements/implementation uncertainty
+Scope: acceptance scenarios and compatibility
+
+Command: bunx vitest run packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts packages/agentplane/src/commands/blueprint/task-input.test.ts
+Result: pass (46/46)
+Evidence: backend normalization, durable verification observations, WorkOrder propagation, blueprint consumption
+Scope: cross-subsystem consumption and persistence
 
 BlueprintSnapshotRef:
 - state: current

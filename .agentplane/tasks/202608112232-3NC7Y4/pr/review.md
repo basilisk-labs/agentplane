@@ -13,7 +13,7 @@ Created: 2026-08-12T00:34:37.819Z
 ## Verification
 
 - State: ok
-- Note: Rework verified at 16629e79b: observed scope enforcement, mode-stable verification, and realistic direct/branch lifecycle coverage pass.
+- Note: Verified implementation 53d633332: execution declaration v2 separates uncertainty axes; legacy v1 remains conservative; normal action envelopes fit; full local CI passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,14 +29,14 @@ Created: 2026-08-12T00:34:37.819Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/user/workflow.mdx                             |  42 +
+ docs/user/workflow.mdx                             |  43 +
  .../agentplane/src/backends/task-backend.test.ts   |  52 ++
- .../src/backends/task-backend/shared/record.ts     | 229 +++++
+ .../src/backends/task-backend/shared/record.ts     | 236 +++++
  .../src/backends/task-backend/shared/types.ts      |   2 +
  packages/agentplane/src/blueprints/resolve.test.ts |  15 +-
  packages/agentplane/src/blueprints/resolve.ts      | 132 +--
- ...run-cli.core.task-create-planner-intent.test.ts | 948 +++++++++++++++++++--
- .../src/cli/task-create-planner-intent.testkit.ts  | 231 +++++
+ ...run-cli.core.task-create-planner-intent.test.ts | 949 +++++++++++++++++++--
+ .../src/cli/task-create-planner-intent.testkit.ts  | 232 +++++
  .../src/commands/blueprint/task-input.test.ts      |  32 +
  .../src/commands/blueprint/task-input.ts           |  73 +-
  .../src/commands/shared/reconcile-check.test.ts    |  26 +
@@ -44,7 +44,7 @@ Created: 2026-08-12T00:34:37.819Z
  .../src/commands/shared/route-decision-types.ts    |   2 +
  .../agentplane/src/commands/shared/task-backend.ts |   1 +
  .../shared/workflow-step-fingerprint.test.ts       |   2 +
- .../src/commands/task/agent-action-packet.ts       |   2 +-
+ .../src/commands/task/agent-action-packet.ts       |   6 +-
  .../task/branch-task-supervisor-episodes.ts        |  22 +
  .../agentplane/src/commands/task/brief-model.ts    |   8 +-
  .../agentplane/src/commands/task/brief-render.ts   |  29 +
@@ -58,7 +58,7 @@ Created: 2026-08-12T00:34:37.819Z
  .../commands/task/direct-task-verification.test.ts |  76 ++
  .../src/commands/task/direct-task-verification.ts  |   9 +-
  .../external-agent-implementation-authority.ts     |  23 +
- .../task/external-agent-planning-authority.ts      |  30 +-
+ .../task/external-agent-planning-authority.ts      |  42 +-
  packages/agentplane/src/commands/task/new.ts       |  24 +-
  .../src/commands/task/next-action.command.ts       |  22 +
  packages/agentplane/src/commands/task/plan.ts      |   8 +-
@@ -76,26 +76,29 @@ Created: 2026-08-12T00:34:37.819Z
  .../src/runtime/task-intake/resolve-materialize.ts |   3 +
  .../src/runtime/task-intake/resolve-normalize.ts   |   3 +
  .../agentplane/src/runtime/task-intake/types.ts    |   7 +-
- .../agentplane/src/runtime/task-routing/index.ts   |   2 +
- .../src/runtime/task-routing/resolve.test.ts       | 327 ++++++-
- .../agentplane/src/runtime/task-routing/resolve.ts | 551 ++++++++++--
- .../schemas/task-readme-frontmatter.schema.json    | 367 ++++++++
- packages/core/schemas/tasks-export.schema.json     | 367 ++++++++
- .../core/src/runner/agent-semantic-result.test.ts  |  20 +
- packages/core/src/runner/agent-semantic-result.ts  |  36 +
- packages/core/src/tasks/index.ts                   |   5 +
- .../core/src/tasks/task-artifact-schema.task.ts    | 168 ++++
- .../tasks/task-execution-contract-compat.test.ts   |  65 ++
+ .../agentplane/src/runtime/task-routing/index.ts   |   3 +
+ .../src/runtime/task-routing/observed-path.ts      |  66 ++
+ .../src/runtime/task-routing/resolve.test.ts       | 418 ++++++++-
+ .../agentplane/src/runtime/task-routing/resolve.ts | 518 +++++++++--
+ .../schemas/task-readme-frontmatter.schema.json    | 372 ++++++++
+ packages/core/schemas/tasks-export.schema.json     | 372 ++++++++
+ .../core/src/runner/agent-semantic-result.test.ts  |  22 +
+ packages/core/src/runner/agent-semantic-result.ts  |  77 ++
+ packages/core/src/tasks/index.ts                   |   8 +
+ .../core/src/tasks/task-artifact-schema.task.ts    | 183 ++++
+ .../tasks/task-execution-contract-compat.test.ts   |  70 ++
  .../src/tasks/task-provider-safe-projection.ts     |   5 +
  packages/core/src/tasks/task-readme.ts             |   1 +
- packages/core/src/tasks/task-store.ts              |  76 ++
+ packages/core/src/tasks/task-store.ts              |  92 ++
  packages/core/src/tasks/tasks-export.ts            |   3 +
- .../schemas/task-readme-frontmatter.schema.json    | 367 ++++++++
- packages/spec/schemas/tasks-export.schema.json     | 367 ++++++++
- schemas/agent-semantic-result.schema.json          | 237 ++++++
- schemas/task-readme-frontmatter.schema.json        | 367 ++++++++
- schemas/tasks-export.schema.json                   | 367 ++++++++
- 66 files changed, 6183 insertions(+), 285 deletions(-)
+ .../schemas/task-readme-frontmatter.schema.json    | 372 ++++++++
+ packages/spec/schemas/tasks-export.schema.json     | 372 ++++++++
+ schemas/agent-semantic-result.schema.json          | 501 +++++++++++
+ schemas/task-readme-frontmatter.schema.json        | 372 ++++++++
+ schemas/tasks-export.schema.json                   | 372 ++++++++
+ .../check-v0.7.1-product-contract.mjs              |   7 +-
+ .../qualification/release-qualification.test.mjs   |   2 +-
+ 69 files changed, 6715 insertions(+), 289 deletions(-)
 ```
 
 </details>
