@@ -1,6 +1,9 @@
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
-import { resolveTaskExecutionRoute } from "../../runtime/task-routing/index.js";
+import {
+  resolveTaskExecutionContract,
+  resolveTaskExecutionRoute,
+} from "../../runtime/task-routing/index.js";
 import { CliError } from "../../shared/errors.js";
 
 import { cmdTaskComment } from "./comment.js";
@@ -25,10 +28,17 @@ function planningTaskFields(opts: {
     throw new CliError({
       code: "E_VALIDATION",
       message:
-        "PLANNER result must include task_intent before a neutral intake task can advance. Return task_kind, mutation_scope, risk_flags, and tags in result.task_intent; mutation_scope must be resolved rather than unknown.",
+        "PLANNER result must include task_intent before a neutral intake task can advance. Return task_kind, mutation_scope, risk_flags, tags, and execution in result.task_intent; mutation_scope must be resolved rather than unknown.",
     });
   }
   if (!intent) return;
+  if (requiresIntent && !intent.execution) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message:
+        "PLANNER result must include task_intent.execution so the agent selects a preferred workflow and declares scope, repository effects, external effects, requirements uncertainty, implementation uncertainty, reversibility, and rationale.",
+    });
+  }
 
   const explicitIntent =
     opts.task.mutation_scope !== "unknown" && opts.task.task_kind !== undefined;
@@ -47,6 +57,17 @@ function planningTaskFields(opts: {
     });
   }
 
+  const executionContract = resolveTaskExecutionContract({
+    config: opts.command.config,
+    requestedMode: opts.task.execution_route?.requested_mode,
+    task: {
+      task_kind: intent.task_kind,
+      mutation_scope: intent.mutation_scope,
+      risk_flags: intent.risk_flags,
+      blueprint_request: intent.blueprint_request,
+    },
+    ...(intent.execution ? { declaration: intent.execution } : {}),
+  });
   const route = resolveTaskExecutionRoute({
     config: opts.command.config,
     requestedMode: opts.task.execution_route?.requested_mode,
@@ -56,6 +77,7 @@ function planningTaskFields(opts: {
       risk_flags: intent.risk_flags,
       blueprint_request: intent.blueprint_request,
     },
+    ...(intent.execution ? { declaration: intent.execution } : {}),
   });
   return {
     task_kind: intent.task_kind,
@@ -64,6 +86,7 @@ function planningTaskFields(opts: {
     tags: intent.tags,
     blueprint_request: intent.blueprint_request,
     execution_route: route,
+    execution_contract: executionContract,
   };
 }
 
@@ -132,6 +155,21 @@ export async function isExternalPlanningResultApplied(opts: {
       !sameValue(task.blueprint_request, intent.blueprint_request))
   ) {
     return false;
+  }
+  if (intent?.execution) {
+    const expectedContract = resolveTaskExecutionContract({
+      config: opts.command.config,
+      requestedMode: task.execution_route?.requested_mode,
+      task: {
+        task_kind: intent.task_kind,
+        mutation_scope: intent.mutation_scope,
+        risk_flags: intent.risk_flags,
+        blueprint_request: intent.blueprint_request,
+      },
+      declaration: intent.execution,
+    });
+    if (!sameValue(task.execution_contract?.declaration, expectedContract.declaration))
+      return false;
   }
   return (
     (opts.decision.workflowStep.kind === "approval" &&

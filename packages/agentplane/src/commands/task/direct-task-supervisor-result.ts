@@ -33,6 +33,7 @@ export type DirectTaskSupervisorStopCode =
   | "evaluator_blocked"
   | "evaluator_adapter_crash"
   | "executor_lifecycle_mutation"
+  | "execution_contract_escalated"
   | DirectTaskCloseoutStopCode;
 
 export type DirectTaskSupervisorStop = {

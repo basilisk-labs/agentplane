@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608112232-3NC7Y4-ed9b51e67a04070701d89030",
+  "task_id": "202608112232-3NC7Y4",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Предоставить новый замороженный observed-checks artifact с детерминированными командами, результатами, областями покрытия и ключевыми выводами для всех обязательных targeted, lifecycle, recovery, compatibility и E2E проверок; текущий пакет содержит только неподкреплённый статус verification.state=ok.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "Замороженный пакет не содержит детерминированных результатов проверок: declared_checks, verification_records, runner_history и runtime_evidence пусты, поэтому заявленный verification.state=ok не подтверждает критерии приёмки.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/d995fd167d32d456e092f97ce5ed6c3cf0243904bc61aa8bfe3a4f0db9799701.json",
+          "sha256": "sha256:d995fd167d32d456e092f97ce5ed6c3cf0243904bc61aa8bfe3a4f0db9799701",
+          "section": "declared_checks, verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/README.md",
+          "sha256": "sha256:bccb7d5ec99f4b9a1b7fef385d414fb439357fb50fb001dc46174cf25dbabddf",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-061534783-recovery-context/evaluator-result.json"
+}

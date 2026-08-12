@@ -21,6 +21,7 @@ export type DirectRepositoryStatus = {
 export type DirectImplementationEvidence = {
   artifact_path: string;
   implementation_commit: string;
+  changed_paths: string[];
 };
 
 export async function readDirectTaskHead(cwd: string): Promise<string | null> {
@@ -39,6 +40,20 @@ function outputLines(stdout: string): string[] {
     .split("\n")
     .map((line) => line.trimEnd())
     .filter(Boolean);
+}
+
+function pathsFromNameStatus(stdout: string): string[] {
+  return [
+    ...new Set(
+      outputLines(stdout).flatMap((line) => {
+        const fields = line
+          .split("\t")
+          .map((field) => field.trim())
+          .filter(Boolean);
+        return fields.length > 1 ? fields.slice(1) : [];
+      }),
+    ),
+  ].toSorted();
 }
 
 async function runGit(opts: { cwd: string; args: string[] }) {
@@ -328,7 +343,11 @@ export async function recordDirectImplementationEvidence(opts: {
       classification,
     },
   });
-  return { artifact_path: relative, implementation_commit: opts.implementation_commit };
+  return {
+    artifact_path: relative,
+    implementation_commit: opts.implementation_commit,
+    changed_paths: pathsFromNameStatus(commitPaths.stdout),
+  };
 }
 
 export async function finishDirectTask(opts: {

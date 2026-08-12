@@ -69,7 +69,10 @@ export function makeRunTaskStatusHandler(session: {
       taskId: parsed.taskId,
     });
     const operatorGuidance = deriveRouteOperatorGuidance(decision);
-    const selectedRoute = decision.task.execution_route?.selected_mode ?? decision.workflowMode;
+    const selectedRoute =
+      decision.task.execution_contract?.selected_mode ??
+      decision.task.execution_route?.selected_mode ??
+      decision.workflowMode;
     const nextStep = decision.oracle.nextCommand ?? decision.oracle.summary;
     const output = createCliEmitter();
     if (parsed.json) {

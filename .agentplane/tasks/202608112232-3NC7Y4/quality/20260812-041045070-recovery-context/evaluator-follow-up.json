@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608112232-3NC7Y4-831582ac12da44bcbd7cd526",
+  "task_id": "202608112232-3NC7Y4",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Add the missing explicit branch_pr-preference E2E and make lifecycle-transition measurements asserted and visible for all required scenarios, then rerun the focused E2Es and relevant full CI.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The required broad agent-selected branch_pr E2E is absent. The scenario documented and verified as the broad branch_pr case declares preferred_mode as direct and only reaches branch_pr through deterministic override, so it does not prove that a compatible agent-selected branch_pr preference is respected end to end.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/README.md",
+          "sha256": "sha256:0731485a6ee4d95fc9de66421d6dc2a7dbcc59b329e6622449a227830b8cba00",
+          "section": "Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/2256613fbfd6186cc65b095ffc3a94850e0db3c282c322041d42899e7a284cc0.patch",
+          "sha256": "sha256:2256613fbfd6186cc65b095ffc3a94850e0db3c282c322041d42899e7a284cc0",
+          "line": 887,
+          "lines": "887-952"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812041025439-8bd2ab0ef09e0963.json",
+          "sha256": "sha256:c0fd98b0b1e94f5e08397c2c301f2dfb07cfd81521c7c674020c9a57c1d390d4",
+          "section": "details"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "The documented scenario measurements omit lifecycle-transition counts, and most routing scenarios collect lifecycle_transitions without asserting them. This leaves the required transition and ceremony comparison unproven for the five representative E2Es.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/README.md",
+          "sha256": "sha256:0731485a6ee4d95fc9de66421d6dc2a7dbcc59b329e6622449a227830b8cba00",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/2256613fbfd6186cc65b095ffc3a94850e0db3c282c322041d42899e7a284cc0.patch",
+          "sha256": "sha256:2256613fbfd6186cc65b095ffc3a94850e0db3c282c322041d42899e7a284cc0",
+          "line": 30,
+          "lines": "30-49"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812041025439-8bd2ab0ef09e0963.json",
+          "sha256": "sha256:c0fd98b0b1e94f5e08397c2c301f2dfb07cfd81521c7c674020c9a57c1d390d4",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-041045070-recovery-context/evaluator-result.json"
+}

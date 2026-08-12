@@ -1,0 +1,24 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-12T06:17:20.376Z",
+    "updated_by": "CODER",
+    "note": "Verified implementation 53d633332: execution declaration v2 separates uncertainty axes; legacy v1 remains conservative; normal action envelopes fit; full local CI passed."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812061720376-2037537404c8ab08.json",
+      "sha256": "sha256:07ac81f6ea442e03bb202082e90f2ee449a9a52ba0a807a89b25e872b8f4b376"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

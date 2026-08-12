@@ -17,28 +17,42 @@ import {
 } from "../../backends/task-backend/shared/domain-values.js";
 import { resolveEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
 
-const CODE_TAGS = ["code", "backend", "frontend", "cli"] as const;
-const DOCS_TAGS = ["docs", "documentation", "roadmap"] as const;
-const OPS_TAGS = ["ops", "deploy", "config"] as const;
-
-function hasAny(tags: Set<string>, candidates: readonly string[]): boolean {
-  return candidates.some((candidate) => tags.has(candidate));
-}
-
 export function workflowModeFromConfig(config: AgentplaneConfig): WorkflowMode | undefined {
   return config.workflow_mode === "direct" || config.workflow_mode === "branch_pr"
     ? config.workflow_mode
     : undefined;
 }
 
-function inferMutationFromTask(task: Pick<TaskData, "tags" | "verify">): MutationKind {
-  const tags = new Set((task.tags ?? []).map((tag) => tag.trim().toLowerCase()).filter(Boolean));
-  if (hasAny(tags, ["release", "publish"])) return "release";
-  if (hasAny(tags, OPS_TAGS)) return "ops";
-  if (hasAny(tags, CODE_TAGS)) return "code";
-  if (hasAny(tags, DOCS_TAGS)) return "docs";
-  if ((task.verify ?? []).length > 0) return "code";
-  return "none";
+function mutationFromExecutionContract(task: Pick<TaskData, "execution_contract">): MutationKind {
+  const repositoryEffects = task.execution_contract?.authority.allowed_repository_effects ?? [];
+  const externalEffects = task.execution_contract?.declaration.external_effects ?? [];
+  if (repositoryEffects.includes("release_metadata") || externalEffects.includes("publish")) {
+    return "release";
+  }
+  if (
+    externalEffects.some((effect) =>
+      ["external_write", "credentials", "deploy", "destructive_git"].includes(effect),
+    )
+  ) {
+    return "ops";
+  }
+  if (
+    repositoryEffects.some((effect) =>
+      [
+        "source_code",
+        "tests",
+        "public_api",
+        "schema",
+        "dependencies",
+        "ci",
+        "security_boundary",
+      ].includes(effect),
+    )
+  ) {
+    return "code";
+  }
+  if (repositoryEffects.includes("documentation")) return "docs";
+  return repositoryEffects.includes("repository_write") ? "unknown" : "none";
 }
 
 function enumValue<T extends string>(value: unknown, allowed: Set<string>): T | undefined {
@@ -50,6 +64,24 @@ function enumArray<T extends string>(value: unknown, allowed: Set<string>): T[] 
   return value
     .filter((item): item is string => typeof item === "string" && allowed.has(item))
     .filter((item, index, array) => array.indexOf(item) === index) as T[];
+}
+
+function riskFlagsFromExecutionContract(task: Pick<TaskData, "execution_contract">): RiskFlag[] {
+  const contract = task.execution_contract;
+  if (!contract) return [];
+  const risks: RiskFlag[] = [];
+  if (contract.authority.allowed_repository_effects.includes("security_boundary")) {
+    risks.push("security");
+  }
+  for (const effect of contract.declaration.external_effects) {
+    if (effect === "network_read") risks.push("network");
+    if (effect === "external_write") risks.push("external_system");
+    if (effect === "credentials") risks.push("credentials");
+    if (effect === "publish") risks.push("publish");
+    if (effect === "deploy") risks.push("deploy");
+    if (effect === "destructive_git") risks.push("merge");
+  }
+  return [...new Set(risks)].toSorted();
 }
 
 export function blueprintResolveInputFromTask(opts: {
@@ -67,12 +99,17 @@ export function blueprintResolveInputFromTask(opts: {
     owner: opts.task.owner,
     taskKind: enumValue<TaskKind>(opts.task.task_kind, TASK_KIND_VALUES),
     workflowMode: opts.workflowMode ?? resolveEffectiveTaskWorkflowMode(opts.task, opts.config),
-    mutation: opts.mutation ?? opts.task.mutation_scope ?? inferMutationFromTask(opts.task),
+    mutation: opts.mutation ?? opts.task.mutation_scope ?? mutationFromExecutionContract(opts.task),
     mutationScope: enumValue<MutationKind>(opts.task.mutation_scope, MUTATION_SCOPE_VALUES),
     riskFlags:
       opts.riskFlags && opts.riskFlags.length > 0
         ? opts.riskFlags
-        : enumArray<RiskFlag>(opts.task.risk_flags, RISK_FLAG_VALUES),
+        : [
+            ...new Set([
+              ...riskFlagsFromExecutionContract(opts.task),
+              ...enumArray<RiskFlag>(opts.task.risk_flags, RISK_FLAG_VALUES),
+            ]),
+          ].toSorted(),
     blueprintRequest: enumValue<BlueprintId>(opts.task.blueprint_request, BLUEPRINT_REQUEST_VALUES),
   };
 }

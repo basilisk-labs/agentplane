@@ -17,6 +17,7 @@ import { cmdContextReindex } from "../../commands/context/reindex.js";
 import { projectTaskBriefFromPreparedWorkOrder } from "../../commands/task/brief-model.js";
 import { routePacket } from "../../commands/hermes/hermes-runtime.js";
 import { loadCommandContext, loadTaskFromContext } from "../../commands/shared/task-backend.js";
+import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import {
   evaluatePreparedAgentWorkOrderReadiness,
   prepareAgentWorkOrder,
@@ -39,6 +40,13 @@ type WorkOrderView = {
       task_revision: number | null;
     };
     verification_intent: unknown;
+    authority: {
+      writable_roots: string[];
+      external_side_effects: string[];
+      allowed_tool_classes: string[];
+      network: string;
+      sandbox: string;
+    };
   };
   work_order_preparation?: {
     remote_policy: unknown;
@@ -215,6 +223,125 @@ function duplicatePromptOverlayBundle(): Record<string, unknown> {
 }
 
 describe("AgentWorkOrder v2 surface integration", () => {
+  it("projects the execution contract into writable authority and verification intent", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = await createPreparedTask(root);
+    const command = await loadCommandContext({ cwd: root, rootOverride: root });
+    const task = await loadTaskFromContext({ ctx: command, taskId });
+    const executionContract = resolveTaskExecutionContract({
+      config: command.config,
+      task,
+      declaration: {
+        schema_version: 1,
+        preferred_mode: "direct",
+        scope_roots: ["packages/app/src", "packages/app/test"],
+        repository_effects: ["repository_write", "source_code", "tests"],
+        external_effects: [],
+        uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["localized implementation with targeted tests"],
+      },
+    });
+    await command.taskBackend.writeTask(
+      { ...task, execution_contract: executionContract },
+      task.revision ? { expectedRevision: task.revision } : undefined,
+    );
+
+    const view = await captureRunnerWorkOrder({ taskId, root });
+    expect(view.work_order.authority).toMatchObject({
+      writable_roots: [path.join(root, "packages/app/src"), path.join(root, "packages/app/test")],
+      external_side_effects: [],
+    });
+    const verificationIntent = view.work_order.verification_intent as {
+      requirements: { description: string }[];
+    };
+    expect(verificationIntent.requirements.map((requirement) => requirement.description)).toEqual(
+      expect.arrayContaining(["repository_effect:source_code", "repository_effect:tests"]),
+    );
+    expect(executionContract.authority).toMatchObject({
+      writable_roots: ["packages/app/src", "packages/app/test"],
+      allowed_repository_effects: ["repository_write", "source_code", "tests"],
+      allowed_external_effects: [],
+    });
+    expect(executionContract.authority.forbidden_external_effects).toEqual(
+      expect.arrayContaining(["deploy", "external_write"]),
+    );
+  });
+
+  it("keeps an explicitly empty declared scope read-only", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = await createPreparedTask(root);
+    const command = await loadCommandContext({ cwd: root, rootOverride: root });
+    const task = await loadTaskFromContext({ ctx: command, taskId });
+    const executionContract = resolveTaskExecutionContract({
+      config: command.config,
+      task,
+      declaration: {
+        schema_version: 1,
+        preferred_mode: "direct",
+        scope_roots: [],
+        repository_effects: [],
+        external_effects: [],
+        uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["analysis requires no repository writes"],
+      },
+    });
+    await command.taskBackend.writeTask(
+      { ...task, execution_contract: executionContract },
+      task.revision ? { expectedRevision: task.revision } : undefined,
+    );
+
+    const view = await captureRunnerWorkOrder({ taskId, root });
+    expect(view.work_order.authority).toMatchObject({
+      writable_roots: [],
+      sandbox: "read-only",
+    });
+    expect(view.work_order.authority.allowed_tool_classes).not.toContain("workspace_write");
+  });
+
+  it("projects policy-permitted network reads without external write authority", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = await createPreparedTask(root);
+    const command = await loadCommandContext({ cwd: root, rootOverride: root });
+    command.config.agents.approvals.require_network = false;
+    const task = await loadTaskFromContext({ ctx: command, taskId });
+    const executionContract = resolveTaskExecutionContract({
+      config: command.config,
+      task,
+      declaration: {
+        schema_version: 1,
+        preferred_mode: "direct",
+        scope_roots: [],
+        repository_effects: [],
+        external_effects: ["network_read"],
+        uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["read public package metadata"],
+      },
+    });
+    await command.taskBackend.writeTask(
+      { ...task, execution_contract: executionContract },
+      task.revision ? { expectedRevision: task.revision } : undefined,
+    );
+
+    const prepared = await prepareTaskRunnerExecution({
+      ctx: command,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      mode: "dry_run",
+    });
+    expect(prepared.bundle.work_order.authority).toMatchObject({
+      network: "allowed",
+      external_side_effects: [],
+    });
+    expect(executionContract.authority.allowed_external_effects).toEqual(["network_read"]);
+    expect(executionContract.authority.forbidden_external_effects).toEqual(
+      expect.arrayContaining(["deploy", "external_write", "publish", "destructive_git"]),
+    );
+  });
+
   it("prepares deterministic bounded knowledge through exact, FTS, alias, and graph adapters", async () => {
     const root = await mkGitRepoRoot();
     const taskId = await createPreparedTask(root);

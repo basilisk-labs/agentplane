@@ -414,6 +414,9 @@ export async function assembleRunnerTaskContext(opts: {
         task_kind: task.task_kind ?? null,
         mutation_scope: task.mutation_scope ?? null,
         blueprint_request: task.blueprint_request ?? null,
+        ...(task.execution_contract
+          ? { execution_contract: structuredClone(task.execution_contract) }
+          : {}),
       },
       narrative: {
         title: task.title,

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "202608112232-3NC7Y4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-12T06:16:17.280Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "53d633332085897db0d5033df16b7d2db7b2fb9a",
+  "blueprint_digest": "9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6",
+  "findings": [
+    "Замороженный пакет не содержит детерминированных результатов проверок: declared_checks, verification_records, runner_history и runtime_evidence пусты, поэтому заявленный verification.state=ok не подтверждает критерии приёмки."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/d995fd167d32d456e092f97ce5ed6c3cf0243904bc61aa8bfe3a4f0db9799701.json",
+    ".agentplane/tasks/202608112232-3NC7Y4/README.md",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [
+    "Замороженные результаты целевых проверок схем декларации и execution contract, миграций, explain/readback и межподсистемного потребления.",
+    "Замороженные результаты E2E для localized direct, broad branch_pr, underestimated direct-to-branch_pr с сохранением работы, запрещённых external/destructive effects и misleading-language routing.",
+    "Замороженные результаты routing, writable-scope, commit-policy, verification, evaluator, finish, recovery, compatibility, formatting, type и lint suites.",
+    "Детерминированное сравнение before/after для числа команд, approvals, transitions, verification time, сохранения работы и recovery-command count."
+  ],
+  "hidden_assumptions": [
+    "Поле verification.state=ok и свободный текст note считаются достаточной заменой наблюдаемым командам, результатам, областям покрытия и сохранённым артефактам проверок.",
+    "Изменения тестовых файлов в diff считаются доказательством того, что соответствующие тесты были выполнены и прошли."
+  ],
+  "residual_risks": [
+    "Предоставить новый замороженный observed-checks artifact с детерминированными командами, результатами, областями покрытия и ключевыми выводами для всех обязательных targeted, lifecycle, recovery, compatibility и E2E проверок; текущий пакет содержит только неподкреплённый статус verification.state=ok."
+  ]
+}

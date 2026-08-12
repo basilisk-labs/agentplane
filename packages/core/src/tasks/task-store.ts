@@ -179,6 +179,97 @@ export type TaskExecutionRoute = {
   frozen: true;
 };
 
+export type TaskRepositoryEffect =
+  | "repository_write"
+  | "documentation"
+  | "source_code"
+  | "tests"
+  | "public_api"
+  | "schema"
+  | "dependencies"
+  | "ci"
+  | "release_metadata"
+  | "security_boundary";
+
+export type TaskExternalEffect =
+  | "network_read"
+  | "external_write"
+  | "credentials"
+  | "publish"
+  | "deploy"
+  | "destructive_git";
+
+export type TaskExecutionUncertainty = "bounded" | "material";
+
+export type TaskExecutionDeclarationV1 = {
+  schema_version: 1;
+  preferred_mode: TaskExecutionRouteMode;
+  scope_roots: string[];
+  repository_effects: TaskRepositoryEffect[];
+  external_effects: TaskExternalEffect[];
+  uncertainty: TaskExecutionUncertainty;
+  reversibility: "reversible" | "recovery_required" | "irreversible";
+  rationale: string[];
+};
+
+export type TaskExecutionDeclaration = {
+  schema_version: 2;
+  preferred_mode: TaskExecutionRouteMode;
+  scope_roots: string[];
+  repository_effects: TaskRepositoryEffect[];
+  external_effects: TaskExternalEffect[];
+  requirements_uncertainty: TaskExecutionUncertainty;
+  implementation_uncertainty: TaskExecutionUncertainty;
+  reversibility: "reversible" | "recovery_required" | "irreversible";
+  rationale: string[];
+};
+
+export type TaskExecutionDeclarationInput = TaskExecutionDeclaration | TaskExecutionDeclarationV1;
+
+export type TaskVerificationObservation = {
+  id: string;
+  result: "pass" | "fail" | "unsupported";
+};
+
+export type TaskExecutionContract = {
+  schema_version: 1;
+  source: "agent_declared" | "legacy_compatibility";
+  declaration: TaskExecutionDeclaration;
+  selected_mode: TaskExecutionRouteMode;
+  repository_mode: TaskExecutionRouteMode;
+  reason_codes: string[];
+  authority: {
+    writable_roots: string[];
+    allowed_repository_effects: TaskRepositoryEffect[];
+    forbidden_repository_effects: TaskRepositoryEffect[];
+    allowed_external_effects: TaskExternalEffect[];
+    forbidden_external_effects: TaskExternalEffect[];
+  };
+  safety: {
+    requires_worktree: boolean;
+    requires_user_approval: boolean;
+    approval_effects: TaskExternalEffect[];
+  };
+  verification: {
+    required_evidence: string[];
+  };
+  observed: {
+    repository_effects: TaskRepositoryEffect[];
+    external_effects: TaskExternalEffect[];
+    changed_paths: string[];
+    changed_components: string[];
+    verification_results: TaskVerificationObservation[];
+    authority_violations: string[];
+  };
+  escalation?: {
+    from: "direct";
+    to: "branch_pr";
+    reason_codes: string[];
+    preserved_changed_paths: string[];
+    preserved_commit?: string;
+  };
+};
+
 export type TaskSyncExternalRef = {
   provider: string;
   connector_kind?: string;
@@ -261,6 +352,7 @@ export type TaskFrontmatter = {
   runner?: TaskRunnerOutcome;
   token_usage?: TaskTokenUsage;
   execution_route?: TaskExecutionRoute;
+  execution_contract?: TaskExecutionContract;
   sync?: TaskSyncEnvelope;
   comments: { author: string; body: string }[];
   events?: TaskEvent[];

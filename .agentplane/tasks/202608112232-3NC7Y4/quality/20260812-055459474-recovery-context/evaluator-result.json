@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The versioned execution declaration collapses requirements uncertainty and implementation uncertainty into one `uncertainty` field, so the resolver cannot represent or reason about these independently as required.",
+      "broken_invariant": "Acceptance criterion 1 requires the structured declaration to separate requirements uncertainty from implementation uncertainty; acceptance criterion 2 requires deterministic resolution from that declaration. A single combined enum loses required semantic input and can produce the same workflow and evidence contract for materially different risks.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/README.md",
+          "sha256": "sha256:2064b65b234a78d002b4c94f4e642344e423100717f8fd2dfc633baedda7c5ab",
+          "lines": "Plan item 1 requires separation of \"requirements/implementation uncertainty\" in the versioned declaration.",
+          "section": "Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/c54420ced0dd987642bf51e7bd403ccaf786c58ff80bf2ce85b1b0b0623cf3cd.patch",
+          "sha256": "sha256:c54420ced0dd987642bf51e7bd403ccaf786c58ff80bf2ce85b1b0b0623cf3cd",
+          "lines": "TASK_EXECUTION_DECLARATION_SCHEMA defines only `uncertainty: z.enum([\"bounded\", \"material\"])`, and routing derives `material_uncertainty` solely from that combined field.",
+          "section": "packages/core/src/tasks/task-artifact-schema.task.ts and packages/agentplane/src/runtime/task-routing/resolve.ts"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Schema and resolver tests covering independent combinations of bounded/material requirements uncertainty and bounded/material implementation uncertainty, including distinct reason codes and deterministic workflow/evidence outcomes.",
+    "Compatibility tests proving legacy declarations migrate or normalize into both uncertainty dimensions without silently weakening an existing branch_pr or verification requirement."
+  ],
+  "hidden_assumptions": [
+    "Requirements ambiguity and implementation difficulty always have the same risk level and therefore can be represented by one enum.",
+    "One generic `material_uncertainty` reason is sufficient for explainability and for every subsystem consuming the compiled contract."
+  ],
+  "recovery_context": "Split the execution declaration into explicit requirements-uncertainty and implementation-uncertainty dimensions, define deterministic resolution and compatibility behavior for both, propagate them through schemas/readback, and add combination tests before reevaluation."
+}

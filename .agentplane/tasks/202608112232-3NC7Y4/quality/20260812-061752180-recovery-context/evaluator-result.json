@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "no material findings",
+      "severity": "low",
+      "summary": "No material contract divergence found in the frozen implementation and deterministic verification evidence.",
+      "broken_invariant": "None.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/0baff72a70c3edb00310fb6e54473f731937ca2611e0bf432beacfd4ccac36d9.patch",
+          "sha256": "sha256:0baff72a70c3edb00310fb6e54473f731937ca2611e0bf432beacfd4ccac36d9"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812061720376-2037537404c8ab08.json",
+          "sha256": "sha256:07ac81f6ea442e03bb202082e90f2ee449a9a52ba0a807a89b25e872b8f4b376"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

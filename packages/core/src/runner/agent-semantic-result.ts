@@ -75,6 +75,82 @@ const AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA = z
   })
   .strict();
 
+const AGENT_SEMANTIC_RESULT_EXECUTION_DECLARATION_V1_ZOD_SCHEMA = z
+  .object({
+    schema_version: z.literal(1),
+    preferred_mode: z.enum(["direct", "branch_pr"]),
+    scope_roots: z.array(NON_EMPTY_STRING),
+    repository_effects: z.array(
+      z.enum([
+        "repository_write",
+        "documentation",
+        "source_code",
+        "tests",
+        "public_api",
+        "schema",
+        "dependencies",
+        "ci",
+        "release_metadata",
+        "security_boundary",
+      ]),
+    ),
+    external_effects: z.array(
+      z.enum([
+        "network_read",
+        "external_write",
+        "credentials",
+        "publish",
+        "deploy",
+        "destructive_git",
+      ]),
+    ),
+    uncertainty: z.enum(["bounded", "material"]),
+    reversibility: z.enum(["reversible", "recovery_required", "irreversible"]),
+    rationale: z.array(NON_EMPTY_STRING).min(1),
+  })
+  .strict();
+
+const AGENT_SEMANTIC_RESULT_EXECUTION_DECLARATION_V2_ZOD_SCHEMA = z
+  .object({
+    schema_version: z.literal(2),
+    preferred_mode: z.enum(["direct", "branch_pr"]),
+    scope_roots: z.array(NON_EMPTY_STRING),
+    repository_effects: z.array(
+      z.enum([
+        "repository_write",
+        "documentation",
+        "source_code",
+        "tests",
+        "public_api",
+        "schema",
+        "dependencies",
+        "ci",
+        "release_metadata",
+        "security_boundary",
+      ]),
+    ),
+    external_effects: z.array(
+      z.enum([
+        "network_read",
+        "external_write",
+        "credentials",
+        "publish",
+        "deploy",
+        "destructive_git",
+      ]),
+    ),
+    requirements_uncertainty: z.enum(["bounded", "material"]),
+    implementation_uncertainty: z.enum(["bounded", "material"]),
+    reversibility: z.enum(["reversible", "recovery_required", "irreversible"]),
+    rationale: z.array(NON_EMPTY_STRING).min(1),
+  })
+  .strict();
+
+const AGENT_SEMANTIC_RESULT_EXECUTION_DECLARATION_ZOD_SCHEMA = z.union([
+  AGENT_SEMANTIC_RESULT_EXECUTION_DECLARATION_V2_ZOD_SCHEMA,
+  AGENT_SEMANTIC_RESULT_EXECUTION_DECLARATION_V1_ZOD_SCHEMA,
+]);
+
 const AGENT_SEMANTIC_RESULT_TASK_INTENT_ZOD_SCHEMA = z
   .object({
     task_kind: z.enum(["analysis", "content", "docs", "code", "release", "ops", "context"]),
@@ -107,6 +183,7 @@ const AGENT_SEMANTIC_RESULT_TASK_INTENT_ZOD_SCHEMA = z
         "ops.approval",
       ])
       .optional(),
+    execution: AGENT_SEMANTIC_RESULT_EXECUTION_DECLARATION_ZOD_SCHEMA.optional(),
   })
   .strict();
 

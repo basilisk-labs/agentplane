@@ -1,0 +1,27 @@
+# Semantic quality review: rework
+
+Provenance: evaluator_supplied
+
+EVALUATOR returned rework with 2 typed finding(s).
+
+## Findings
+- The execution contract does not contain the required allowed effects, forbidden effects, or writable authority; writable scope is derived separately by consumers from declaration scope roots, so the contract is not the single authoritative capability model required by the task.
+- Observed-effect reconciliation only classifies changed repository paths. The persisted observed model has no external/network effects, changed components, or verification-result observations, so declared external effects and verification outcomes cannot be compared with objective observations or strengthen the contract monotonically.
+
+## Evidence
+- .agentplane/tasks/202608112232-3NC7Y4/README.md
+- .agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/5b956bb7e1e15d1c0ba0f9c197c22f9b095dece01da01280706f39745bf6090d.patch
+- .agentplane/tasks/202608112232-3NC7Y4/verification/20260812022534184-74a4267a46e8c812.json
+
+## Missing Tests
+- An end-to-end test proving the persisted execution contract itself exposes allowed effects, forbidden effects, and writable authority and that every lifecycle consumer uses those fields.
+- A negative end-to-end test where an undeclared observed network or external-system effect strengthens approval and evidence requirements or stops execution.
+- A test where changed component identity or a failing verification result updates observed contract state and monotonically strengthens required evidence.
+
+## Hidden Assumptions
+- Repository paths are assumed to be a sufficient proxy for all objective effects, although network and external-system effects leave no required path signal.
+- Consumers are assumed to derive identical writable and forbidden authority from declaration fields even though those capabilities are not represented explicitly in the authoritative contract.
+- A successful verification record is assumed to prove observation-driven verification behavior without persisting verification results in the observed contract model.
+
+## Residual Risks
+- Extend the canonical execution contract and schema with explicit allowed/forbidden effects and writable authority, persist objective external/network/component/verification observations, make lifecycle consumers enforce those contract fields, and add negative E2E coverage for undeclared external effects and verification-driven strengthening.

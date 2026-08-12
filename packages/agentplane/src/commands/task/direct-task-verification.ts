@@ -69,10 +69,13 @@ function bunTestReportedZeroTests(opts: {
 }
 
 function directTaskVerificationCommands(
-  task: Pick<TaskData, "verify" | "task_kind" | "mutation_scope">,
+  task: Pick<TaskData, "verify" | "task_kind" | "mutation_scope" | "execution_contract">,
 ): string[] {
   const commands = [...(task.verify ?? [])];
-  if (task.task_kind !== "docs" && task.mutation_scope !== "docs") return commands;
+  const declaresDocs = task.execution_contract
+    ? task.execution_contract.authority.allowed_repository_effects.includes("documentation")
+    : task.task_kind === "docs" || task.mutation_scope === "docs";
+  if (!declaresDocs) return commands;
   for (const required of ["node .agentplane/policy/check-routing.mjs", "agentplane doctor"]) {
     if (!commands.includes(required)) commands.push(required);
   }
@@ -110,7 +113,7 @@ async function writeCheckArtifact(opts: {
  */
 export async function runDirectTaskVerification(opts: {
   command: CommandContext;
-  task: Pick<TaskData, "verify" | "task_kind" | "mutation_scope">;
+  task: Pick<TaskData, "verify" | "task_kind" | "mutation_scope" | "execution_contract">;
   task_id: string;
   cwd: string;
   run_process?: typeof runProcess;

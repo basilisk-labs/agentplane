@@ -1,0 +1,4639 @@
+diff --git a/packages/agentplane/src/backends/task-backend/shared/record.ts b/packages/agentplane/src/backends/task-backend/shared/record.ts
+index 0b44a70bd..a394122dd 100644
+--- a/packages/agentplane/src/backends/task-backend/shared/record.ts
++++ b/packages/agentplane/src/backends/task-backend/shared/record.ts
+@@ -97,6 +97,150 @@ function normalizeExecutionRoute(value: unknown): TaskData["execution_route"] {
+   };
+ }
+ 
++const REPOSITORY_EFFECTS = new Set([
++  "repository_write",
++  "documentation",
++  "source_code",
++  "tests",
++  "public_api",
++  "schema",
++  "dependencies",
++  "ci",
++  "release_metadata",
++  "security_boundary",
++]);
++const EXTERNAL_EFFECTS = new Set([
++  "network_read",
++  "external_write",
++  "credentials",
++  "publish",
++  "deploy",
++  "destructive_git",
++]);
++
++function normalizeStringList(value: unknown): string[] | null {
++  if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || !item.trim())) {
++    return null;
++  }
++  return [...new Set(value as string[])];
++}
++
++function normalizeExecutionContract(value: unknown): TaskData["execution_contract"] {
++  if (!isRecord(value) || value.schema_version !== 1 || !isRecord(value.declaration)) {
++    return undefined;
++  }
++  const declaration = value.declaration;
++  const scopeRoots = normalizeStringList(declaration.scope_roots);
++  const repositoryEffects = normalizeStringList(declaration.repository_effects);
++  const externalEffects = normalizeStringList(declaration.external_effects);
++  const rationale = normalizeStringList(declaration.rationale);
++  const reasons = normalizeStringList(value.reason_codes);
++  if (
++    declaration.schema_version !== 1 ||
++    (declaration.preferred_mode !== "direct" && declaration.preferred_mode !== "branch_pr") ||
++    scopeRoots === null ||
++    repositoryEffects === null ||
++    repositoryEffects.some((item) => !REPOSITORY_EFFECTS.has(item)) ||
++    externalEffects === null ||
++    externalEffects.some((item) => !EXTERNAL_EFFECTS.has(item)) ||
++    (declaration.uncertainty !== "bounded" && declaration.uncertainty !== "material") ||
++    (declaration.reversibility !== "reversible" &&
++      declaration.reversibility !== "recovery_required" &&
++      declaration.reversibility !== "irreversible") ||
++    !rationale?.length ||
++    (value.source !== "agent_declared" && value.source !== "legacy_compatibility") ||
++    (value.selected_mode !== "direct" && value.selected_mode !== "branch_pr") ||
++    (value.repository_mode !== "direct" && value.repository_mode !== "branch_pr") ||
++    !reasons?.length ||
++    !isRecord(value.safety) ||
++    typeof value.safety.requires_worktree !== "boolean" ||
++    typeof value.safety.requires_user_approval !== "boolean" ||
++    !isRecord(value.verification) ||
++    !isRecord(value.observed)
++  ) {
++    return undefined;
++  }
++  const approvalEffects = normalizeStringList(value.safety.approval_effects);
++  const requiredEvidence = normalizeStringList(value.verification.required_evidence);
++  const observedEffects = normalizeStringList(value.observed.repository_effects);
++  const changedPaths = normalizeStringList(value.observed.changed_paths);
++  if (
++    approvalEffects === null ||
++    approvalEffects.some((item) => !EXTERNAL_EFFECTS.has(item)) ||
++    !requiredEvidence?.length ||
++    observedEffects === null ||
++    observedEffects.some((item) => !REPOSITORY_EFFECTS.has(item)) ||
++    changedPaths === null
++  ) {
++    return undefined;
++  }
++  const escalation = value.escalation;
++  if (escalation !== undefined && !isRecord(escalation)) return undefined;
++  const escalationReasons = escalation ? normalizeStringList(escalation.reason_codes) : null;
++  const preservedPaths = escalation
++    ? normalizeStringList(escalation.preserved_changed_paths)
++    : null;
++  if (
++    escalation &&
++    (escalation.from !== "direct" ||
++      escalation.to !== "branch_pr" ||
++      !escalationReasons?.length ||
++      !preservedPaths?.length ||
++      (escalation.preserved_commit !== undefined &&
++        typeof escalation.preserved_commit !== "string"))
++  ) {
++    return undefined;
++  }
++  return {
++    schema_version: 1,
++    source: value.source,
++    declaration: {
++      schema_version: 1,
++      preferred_mode: declaration.preferred_mode,
++      scope_roots: scopeRoots,
++      repository_effects: repositoryEffects as NonNullable<
++        TaskData["execution_contract"]
++      >["declaration"]["repository_effects"],
++      external_effects: externalEffects as NonNullable<
++        TaskData["execution_contract"]
++      >["declaration"]["external_effects"],
++      uncertainty: declaration.uncertainty,
++      reversibility: declaration.reversibility,
++      rationale,
++    },
++    selected_mode: value.selected_mode,
++    repository_mode: value.repository_mode,
++    reason_codes: reasons,
++    safety: {
++      requires_worktree: value.safety.requires_worktree,
++      requires_user_approval: value.safety.requires_user_approval,
++      approval_effects: approvalEffects as NonNullable<
++        TaskData["execution_contract"]
++      >["safety"]["approval_effects"],
++    },
++    verification: { required_evidence: requiredEvidence },
++    observed: {
++      repository_effects: observedEffects as NonNullable<
++        TaskData["execution_contract"]
++      >["observed"]["repository_effects"],
++      changed_paths: changedPaths,
++    },
++    ...(escalation
++      ? {
++          escalation: {
++            from: "direct" as const,
++            to: "branch_pr" as const,
++            reason_codes: escalationReasons ?? [],
++            preserved_changed_paths: preservedPaths ?? [],
++            ...(typeof escalation.preserved_commit === "string"
++              ? { preserved_commit: escalation.preserved_commit }
++              : {}),
++          },
++        }
++      : {}),
++  };
++}
++
+ export function taskRecordToData(record: TaskRecord): TaskData {
+   const fm = record.frontmatter as unknown as Record<string, unknown>;
+   const comments = Array.isArray(fm.comments)
+@@ -167,6 +311,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
+     runner: runner ?? undefined,
+     token_usage: tokenUsage ?? undefined,
+     execution_route: normalizeExecutionRoute(fm.execution_route),
++    execution_contract: normalizeExecutionContract(fm.execution_contract),
+     sync: isRecord(fm.sync) ? (fm.sync as TaskData["sync"]) : undefined,
+     commit,
+     comments,
+diff --git a/packages/agentplane/src/backends/task-backend/shared/types.ts b/packages/agentplane/src/backends/task-backend/shared/types.ts
+index 3a0d45769..f77cf0e33 100644
+--- a/packages/agentplane/src/backends/task-backend/shared/types.ts
++++ b/packages/agentplane/src/backends/task-backend/shared/types.ts
+@@ -7,6 +7,7 @@ import type {
+   TaskRunnerOutcome,
+   TaskTokenUsage,
+   TaskExecutionRoute,
++  TaskExecutionContract,
+   TaskSyncEnvelope,
+   QualityReviewResult,
+   VerificationResult,
+@@ -73,6 +74,7 @@ export type TaskData = {
+   runner?: TaskRunnerOutcome;
+   token_usage?: TaskTokenUsage;
+   execution_route?: TaskExecutionRoute;
++  execution_contract?: TaskExecutionContract;
+   sync?: TaskSyncEnvelope;
+   commit?: { hash: string; message: string } | null;
+   comments?: { author: string; body: string }[];
+diff --git a/packages/agentplane/src/blueprints/resolve.test.ts b/packages/agentplane/src/blueprints/resolve.test.ts
+index dc9ae719c..3a8cfd5a9 100644
+--- a/packages/agentplane/src/blueprints/resolve.test.ts
++++ b/packages/agentplane/src/blueprints/resolve.test.ts
+@@ -108,7 +108,7 @@ describe("resolveBlueprint", () => {
+   });
+ 
+   it("resolves content-only work to content.light", () => {
+-    const resolved = resolve({ tags: ["content"], mutation: "none" });
++    const resolved = resolve({ tags: ["content"], taskKind: "content", mutation: "none" });
+ 
+     expect(resolved.blueprint.id).toBe("content.light");
+   });
+@@ -160,12 +160,13 @@ describe("resolveBlueprint", () => {
+     );
+   });
+ 
+-  it("routes benchmark, post-run, and regression code domains to specialized branch PR blueprints", () => {
++  it("uses agent-selected specialized blueprints instead of classifying product language", () => {
+     expect(
+       resolve({
+         mutation: "code",
+         workflowMode: "branch_pr",
+         title: "Add post-run improvement review follow-up tasks",
++        blueprintRequest: "post_run.improvement_review",
+       }).blueprint.id,
+     ).toBe("post_run.improvement_review");
+     expect(
+@@ -173,6 +174,7 @@ describe("resolveBlueprint", () => {
+         mutation: "code",
+         workflowMode: "branch_pr",
+         tags: ["code", "performance"],
++        blueprintRequest: "performance.benchmark",
+       }).blueprint.id,
+     ).toBe("performance.benchmark");
+     expect(
+@@ -180,11 +182,12 @@ describe("resolveBlueprint", () => {
+         mutation: "code",
+         workflowMode: "branch_pr",
+         title: "Fix flaky CI coverage regression",
++        blueprintRequest: "quality.regression",
+       }).blueprint.id,
+     ).toBe("quality.regression");
+   });
+ 
+-  it("keeps direct workflow code tasks on the direct route despite specialized domain hints", () => {
++  it("does not let misleading title or tag language override structured intent", () => {
+     expect(
+       resolve({
+         mutation: "code",
+@@ -308,6 +311,7 @@ describe("resolveBlueprint", () => {
+   it("uses compatible recipe preferred blueprints as route hints", () => {
+     const resolved = resolve({
+       tags: ["content"],
++      taskKind: "content",
+       mutation: "none",
+       recipeHints: [
+         {
+@@ -480,6 +484,7 @@ describe("resolveBlueprint", () => {
+       mutation: "code",
+       mutationScope: "code",
+       workflowMode: "branch_pr",
++      blueprintRequest: "performance.benchmark",
+     };
+     const output = explainResolvedBlueprint({
+       resolved: resolve(input),
+@@ -531,7 +536,9 @@ describe("resolveBlueprint", () => {
+   });
+ 
+   it("infers task kind without constructing a resolved blueprint", () => {
+-    expect(inferBlueprintTaskKind({ mutation: "none", tags: ["editorial"] })).toBe("content");
++    expect(
++      inferBlueprintTaskKind({ mutation: "none", taskKind: "content", tags: ["editorial"] }),
++    ).toBe("content");
+     expect(inferBlueprintTaskKind({ mutation: "release", tags: [] })).toBe("release");
+   });
+ });
+diff --git a/packages/agentplane/src/blueprints/resolve.ts b/packages/agentplane/src/blueprints/resolve.ts
+index 921209309..1bc1c5284 100644
+--- a/packages/agentplane/src/blueprints/resolve.ts
++++ b/packages/agentplane/src/blueprints/resolve.ts
+@@ -31,61 +31,19 @@ const RISK_ROUTE: Partial<Record<RiskFlag, BlueprintId>> = {
+   security: "ops.approval",
+ };
+ 
+-const POST_RUN_DOMAIN_TAGS = [
+-  "post-run",
+-  "post_run",
+-  "retrospective",
+-  "improvement",
+-  "follow-up",
+-] as const;
+-const PERFORMANCE_DOMAIN_TAGS = [
+-  "performance",
+-  "benchmark",
+-  "benchmarks",
+-  "perf",
+-  "speed",
+-  "latency",
+-] as const;
+-const QUALITY_DOMAIN_TAGS = [
+-  "ci",
+-  "coverage",
+-  "knip",
+-  "lint",
+-  "flaky",
+-  "regression",
+-  "testing",
+-  "tests",
+-] as const;
+-
+-function normalizeTags(tags: readonly string[]): Set<string> {
+-  return new Set(tags.map((tag) => tag.trim().toLowerCase()).filter(Boolean));
+-}
+-
+ function effectiveMutation(input: BlueprintResolveInput): MutationKind {
+   return input.mutationScope ?? input.mutation;
+ }
+ 
+-function includesAny(values: Set<string>, candidates: readonly string[]): boolean {
+-  return candidates.some((candidate) => values.has(candidate));
+-}
+-
+ function inferTaskKind(input: BlueprintResolveInput): TaskKind {
+   if (input.taskKind) return input.taskKind;
+-  const tags = normalizeTags(input.tags);
+-  const title = `${input.title ?? ""} ${input.description ?? ""}`.toLowerCase();
+   const mutation = effectiveMutation(input);
+ 
+-  if (mutation === "release" || includesAny(tags, ["release", "publish"])) return "release";
+-  if (mutation === "ops" || includesAny(tags, ["ops", "deploy", "config"])) return "ops";
+-  if (mutation === "code" || includesAny(tags, ["code", "backend", "frontend", "cli"])) {
+-    return "code";
+-  }
+-  if (mutation === "docs" || includesAny(tags, ["docs", "documentation", "roadmap"])) {
+-    return "docs";
+-  }
+-  if (includesAny(tags, ["content", "copy", "editorial", "marketing"])) return "content";
+-  if (title.includes("write") || title.includes("draft") || title.includes("copy"))
+-    return "content";
++  if (mutation === "release") return "release";
++  if (mutation === "ops") return "ops";
++  if (mutation === "code") return "code";
++  if (mutation === "docs") return "docs";
++  if (mutation === "context") return "context";
+   return "analysis";
+ }
+ 
+@@ -130,53 +88,6 @@ function preferredBlueprintId(input: BlueprintResolveInput): BlueprintId | undef
+   return undefined;
+ }
+ 
+-function textSignal(input: BlueprintResolveInput): string {
+-  return `${input.title ?? ""} ${input.description ?? ""}`.toLowerCase();
+-}
+-
+-function selectSpecializedCodeBlueprintId(opts: {
+-  input: BlueprintResolveInput;
+-  taskKind: TaskKind;
+-}): { id: BlueprintId; reason: string } | undefined {
+-  if (opts.taskKind !== "code") return undefined;
+-  if (opts.input.workflowMode === "direct") return undefined;
+-
+-  const tags = normalizeTags(opts.input.tags);
+-  const text = textSignal(opts.input);
+-  if (
+-    includesAny(tags, POST_RUN_DOMAIN_TAGS) ||
+-    /\bpost[-_ ]run\b|\bafter[-_ ]action\b|\bretrospective\b|\bimprovement review\b|\bfollow[-_ ]up tasks\b/.test(
+-      text,
+-    )
+-  ) {
+-    return {
+-      id: "post_run.improvement_review",
+-      reason: "specialized code domain resolved to post_run.improvement_review",
+-    };
+-  }
+-  if (
+-    includesAny(tags, PERFORMANCE_DOMAIN_TAGS) ||
+-    /\bbenchmark\b|\bperformance\b|\bfaster\b|\bslower\b|\blatency\b|\bthroughput\b/.test(text)
+-  ) {
+-    return {
+-      id: "performance.benchmark",
+-      reason: "specialized code domain resolved to performance.benchmark",
+-    };
+-  }
+-  if (
+-    includesAny(tags, QUALITY_DOMAIN_TAGS) ||
+-    /\bfix ci\b|\bfailing check\b|\bfailing test\b|\bflaky\b|\bregression\b|\bcoverage\b|\bknip\b|\blint\b/.test(
+-      text,
+-    )
+-  ) {
+-    return {
+-      id: "quality.regression",
+-      reason: "specialized code domain resolved to quality.regression",
+-    };
+-  }
+-  return undefined;
+-}
+-
+ function explicitCompatibilityStop(opts: {
+   blueprint: Blueprint;
+   input: BlueprintResolveInput;
+@@ -230,7 +141,11 @@ function selectRiskBlueprintId(riskFlags: readonly RiskFlag[]): BlueprintId | un
+   return undefined;
+ }
+ 
+-function selectBlueprint(opts: { input: BlueprintResolveInput; registry: BlueprintRegistry }): {
++function selectBlueprint(opts: {
++  input: BlueprintResolveInput;
++  registry: BlueprintRegistry;
++  projectBlueprintIds?: readonly BlueprintId[];
++}): {
+   blueprint: Blueprint;
+   reasons: string[];
+   stopReasons: StopReason[];
+@@ -238,16 +153,20 @@ function selectBlueprint(opts: { input: BlueprintResolveInput; registry: Bluepri
+   const input = opts.input;
+   const riskFlags = input.riskFlags ?? [];
+   const riskBlueprintId = selectRiskBlueprintId(riskFlags);
+-  const taskKind = inferTaskKind(input);
+-  const specializedCodeBlueprint = selectSpecializedCodeBlueprintId({ input, taskKind });
+-  const inferredBlueprintId =
+-    riskBlueprintId ??
+-    specializedCodeBlueprint?.id ??
+-    blueprintForTaskKind(taskKind, input.workflowMode);
+   const requestedBlueprintId = input.explicitBlueprintId ?? input.blueprintRequest;
+   const preferredId =
+     riskBlueprintId || requestedBlueprintId ? undefined : preferredBlueprintId(input);
+   const preferredBlueprint = preferredId ? getBlueprint(preferredId, opts.registry) : undefined;
++  const preferredIsTrustedProjectBlueprint =
++    preferredId !== undefined && opts.projectBlueprintIds?.includes(preferredId) === true;
++  const semanticTaskKind = inferTaskKind(input);
++  const taskKind =
++    !input.taskKind &&
++    preferredIsTrustedProjectBlueprint &&
++    preferredBlueprint?.taskKinds.length === 1
++      ? preferredBlueprint.taskKinds[0]
++      : semanticTaskKind;
++  const inferredBlueprintId = riskBlueprintId ?? blueprintForTaskKind(taskKind, input.workflowMode);
+   const selectedId: BlueprintId =
+     requestedBlueprintId ??
+     (preferredId &&
+@@ -271,10 +190,11 @@ function selectBlueprint(opts: { input: BlueprintResolveInput; registry: Bluepri
+     stopReasons.push(...explicitCompatibilityStop({ blueprint, input }));
+   } else if (riskBlueprintId) {
+     reasons.push(`risk flags require ${riskBlueprintId}: ${riskFlags.join(", ")}`);
+-  } else if (selectedId === specializedCodeBlueprint?.id) {
+-    reasons.push(specializedCodeBlueprint.reason);
+   } else if (preferredId && selectedId === preferredId) {
+     reasons.push(`recipe preferred compatible blueprint: ${preferredId}`);
++    if (!input.taskKind && preferredIsTrustedProjectBlueprint && taskKind !== semanticTaskKind) {
++      reasons.push(`trusted project blueprint declared task kind: ${taskKind}`);
++    }
+   } else if (preferredId && !preferredBlueprint) {
+     reasons.push(`recipe preferred unknown blueprint ignored: ${preferredId}`);
+   } else if (preferredId) {
+@@ -313,7 +233,11 @@ export function resolveBlueprint(opts: {
+   projectBlueprintIds?: readonly BlueprintId[];
+ }): ResolvedBlueprint {
+   const registry = opts.registry ?? createBlueprintRegistry();
+-  const { blueprint, reasons, stopReasons } = selectBlueprint({ input: opts.input, registry });
++  const { blueprint, reasons, stopReasons } = selectBlueprint({
++    input: opts.input,
++    registry,
++    projectBlueprintIds: opts.projectBlueprintIds,
++  });
+   if (opts.projectBlueprintIds?.includes(blueprint.id)) {
+     reasons.push(`trusted project-local blueprint selected: ${blueprint.id}`);
+   }
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts b/packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts
+index 591bce51c..e32e07951 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts
+@@ -11,6 +11,7 @@ import {
+ 
+ import { defaultConfig } from "./core-imports.js";
+ import { runCli } from "./run-cli.js";
++import type { TaskExecutionDeclaration } from "@agentplaneorg/core/tasks";
+ 
+ installRunCliIntegrationHarness();
+ 
+@@ -41,6 +42,7 @@ async function writePlannerResult(opts: {
+   packet: AgentPacket;
+   summary: string;
+   includeIntent: boolean;
++  execution?: TaskExecutionDeclaration;
+ }): Promise<string> {
+   const exchange = opts.packet.exchange;
+   if (!exchange) throw new Error("expected external-agent exchange");
+@@ -73,6 +75,16 @@ async function writePlannerResult(opts: {
+                   mutation_scope: "code",
+                   risk_flags: [],
+                   tags: ["cli", "parser"],
++                  execution: opts.execution ?? {
++                    schema_version: 1,
++                    preferred_mode: "direct",
++                    scope_roots: ["packages/agentplane/src/cli"],
++                    repository_effects: ["repository_write", "source_code", "tests"],
++                    external_effects: [],
++                    uncertainty: "bounded",
++                    reversibility: "reversible",
++                    rationale: ["localized parser change with existing tests"],
++                  },
+                 },
+               }
+             : {}),
+@@ -162,8 +174,114 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+     expect(readme).toContain('task_kind: "code"');
+     expect(readme).toContain('mutation_scope: "code"');
+     expect(readme).toContain('requested_mode: "auto"');
++    expect(readme).toContain("execution_contract:");
++    expect(readme).toContain('preferred_mode: "direct"');
+     expect(readme).not.toContain("mutation_scope_unknown");
+     const brief = await runJson(root, ["task", "brief", taskId, "--json"]);
+     expect((brief.blueprint as { blueprint_id: string }).blueprint_id).toBe("code.branch_pr");
+   });
++
++  it("keeps a localized product change direct even when its wording contains deployment terms", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    await writeConfig(root, config);
++    const created = await runJson(root, [
++      "task",
++      "create",
++      "Add the deployment badge to the local preview card",
++      "--description",
++      "Implement the badge component and its unit test without external effects.",
++      "--json",
++    ]);
++    const taskId = created.task_id as string;
++    const issued = (await runJson(root, [
++      "task",
++      "advance",
++      taskId,
++      "--agent-json",
++    ])) as AgentPacket;
++    const resultPath = await writePlannerResult({
++      packet: issued,
++      summary: "Implement the preview badge and verify the component test.",
++      includeIntent: true,
++      execution: {
++        schema_version: 1,
++        preferred_mode: "direct",
++        scope_roots: ["packages/app/src/components/preview-badge.tsx"],
++        repository_effects: ["repository_write", "source_code", "tests"],
++        external_effects: [],
++        uncertainty: "bounded",
++        reversibility: "reversible",
++        rationale: ["localized UI change with no provider or deployment action"],
++      },
++    });
++
++    await runJson(root, ["task", "advance", taskId, "--result", resultPath, "--agent-json"]);
++    const brief = await runJson(root, ["task", "brief", taskId, "--json"]);
++    expect(brief.workflow).toMatchObject({ mode: "direct" });
++    expect(brief.blueprint).toMatchObject({ blueprint_id: "code.direct" });
++    expect(brief.task).toMatchObject({
++      execution_contract: {
++        source: "agent_declared",
++        selected_mode: "direct",
++        reason_codes: ["agent_preferred_direct_compatible"],
++      },
++    });
++  });
++
++  it("escalates a user product SDK and schema change before implementation", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    await writeConfig(root, config);
++    const created = await runJson(root, [
++      "task",
++      "create",
++      "Expose a new SDK capability and persist its schema",
++      "--json",
++    ]);
++    const taskId = created.task_id as string;
++    const issued = (await runJson(root, [
++      "task",
++      "advance",
++      taskId,
++      "--agent-json",
++    ])) as AgentPacket;
++    const resultPath = await writePlannerResult({
++      packet: issued,
++      summary: "Update the SDK surface, schema, compatibility tests, and migration evidence.",
++      includeIntent: true,
++      execution: {
++        schema_version: 1,
++        preferred_mode: "direct",
++        scope_roots: ["packages/sdk", "schemas"],
++        repository_effects: ["repository_write", "source_code", "tests", "public_api", "schema"],
++        external_effects: [],
++        uncertainty: "bounded",
++        reversibility: "recovery_required",
++        rationale: ["public contract and persisted schema change atomically"],
++      },
++    });
++
++    await runJson(root, ["task", "advance", taskId, "--result", resultPath, "--agent-json"]);
++    const brief = await runJson(root, ["task", "brief", taskId, "--json"]);
++    expect(brief.workflow).toMatchObject({ mode: "branch_pr" });
++    expect(brief.task).toMatchObject({
++      execution_contract: {
++        selected_mode: "branch_pr",
++        safety: { requires_worktree: true, requires_user_approval: false },
++      },
++    });
++    const contract = (
++      brief.task as { execution_contract: { verification: { required_evidence: string[] } } }
++    ).execution_contract;
++    expect(contract.verification.required_evidence).toEqual(
++      expect.arrayContaining([
++        "repository_effect:public_api",
++        "repository_effect:schema",
++        "hosted_integration",
++      ]),
++    );
++  });
+ });
+diff --git a/packages/agentplane/src/commands/blueprint/task-input.test.ts b/packages/agentplane/src/commands/blueprint/task-input.test.ts
+index 389819281..35c5c65a6 100644
+--- a/packages/agentplane/src/commands/blueprint/task-input.test.ts
++++ b/packages/agentplane/src/commands/blueprint/task-input.test.ts
+@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
+ import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
++import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
+ import { blueprintResolveInputFromTask } from "./task-input.js";
+ 
+ const config = {
+@@ -103,4 +104,35 @@ describe("blueprintResolveInputFromTask", () => {
+ 
+     expect(input.workflowMode).toBe("branch_pr");
+   });
++
++  it("derives deterministic blueprint risk only from the execution contract", () => {
++    const directConfig = { workflow_mode: "direct" } as AgentplaneConfig;
++    const executionContract = resolveTaskExecutionContract({
++      config: directConfig,
++      task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
++      declaration: {
++        schema_version: 1,
++        preferred_mode: "direct",
++        scope_roots: ["infra"],
++        repository_effects: ["repository_write"],
++        external_effects: ["deploy", "destructive_git"],
++        uncertainty: "bounded",
++        reversibility: "irreversible",
++        rationale: ["deployment is a separately approved external effect"],
++      },
++    });
++    const input = blueprintResolveInputFromTask({
++      config: directConfig,
++      task: task({
++        title: "Write local documentation without deploying anything",
++        task_kind: "code",
++        execution_contract: executionContract,
++        tags: ["docs", "safe", "local"],
++      }),
++    });
++
++    expect(input.workflowMode).toBe("branch_pr");
++    expect(input.riskFlags).toEqual(["deploy", "merge"]);
++    expect(input.mutation).toBe("ops");
++  });
+ });
+diff --git a/packages/agentplane/src/commands/blueprint/task-input.ts b/packages/agentplane/src/commands/blueprint/task-input.ts
+index 690bcfe7f..80e0fea0a 100644
+--- a/packages/agentplane/src/commands/blueprint/task-input.ts
++++ b/packages/agentplane/src/commands/blueprint/task-input.ts
+@@ -17,28 +17,42 @@ import {
+ } from "../../backends/task-backend/shared/domain-values.js";
+ import { resolveEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
+ 
+-const CODE_TAGS = ["code", "backend", "frontend", "cli"] as const;
+-const DOCS_TAGS = ["docs", "documentation", "roadmap"] as const;
+-const OPS_TAGS = ["ops", "deploy", "config"] as const;
+-
+-function hasAny(tags: Set<string>, candidates: readonly string[]): boolean {
+-  return candidates.some((candidate) => tags.has(candidate));
+-}
+-
+ export function workflowModeFromConfig(config: AgentplaneConfig): WorkflowMode | undefined {
+   return config.workflow_mode === "direct" || config.workflow_mode === "branch_pr"
+     ? config.workflow_mode
+     : undefined;
+ }
+ 
+-function inferMutationFromTask(task: Pick<TaskData, "tags" | "verify">): MutationKind {
+-  const tags = new Set((task.tags ?? []).map((tag) => tag.trim().toLowerCase()).filter(Boolean));
+-  if (hasAny(tags, ["release", "publish"])) return "release";
+-  if (hasAny(tags, OPS_TAGS)) return "ops";
+-  if (hasAny(tags, CODE_TAGS)) return "code";
+-  if (hasAny(tags, DOCS_TAGS)) return "docs";
+-  if ((task.verify ?? []).length > 0) return "code";
+-  return "none";
++function mutationFromExecutionContract(task: Pick<TaskData, "execution_contract">): MutationKind {
++  const repositoryEffects = task.execution_contract?.declaration.repository_effects ?? [];
++  const externalEffects = task.execution_contract?.declaration.external_effects ?? [];
++  if (repositoryEffects.includes("release_metadata") || externalEffects.includes("publish")) {
++    return "release";
++  }
++  if (
++    externalEffects.some((effect) =>
++      ["external_write", "credentials", "deploy", "destructive_git"].includes(effect),
++    )
++  ) {
++    return "ops";
++  }
++  if (
++    repositoryEffects.some((effect) =>
++      [
++        "source_code",
++        "tests",
++        "public_api",
++        "schema",
++        "dependencies",
++        "ci",
++        "security_boundary",
++      ].includes(effect),
++    )
++  ) {
++    return "code";
++  }
++  if (repositoryEffects.includes("documentation")) return "docs";
++  return repositoryEffects.includes("repository_write") ? "unknown" : "none";
+ }
+ 
+ function enumValue<T extends string>(value: unknown, allowed: Set<string>): T | undefined {
+@@ -52,6 +66,24 @@ function enumArray<T extends string>(value: unknown, allowed: Set<string>): T[]
+     .filter((item, index, array) => array.indexOf(item) === index) as T[];
+ }
+ 
++function riskFlagsFromExecutionContract(task: Pick<TaskData, "execution_contract">): RiskFlag[] {
++  const contract = task.execution_contract;
++  if (!contract) return [];
++  const risks: RiskFlag[] = [];
++  if (contract.declaration.repository_effects.includes("security_boundary")) {
++    risks.push("security");
++  }
++  for (const effect of contract.declaration.external_effects) {
++    if (effect === "network_read") risks.push("network");
++    if (effect === "external_write") risks.push("external_system");
++    if (effect === "credentials") risks.push("credentials");
++    if (effect === "publish") risks.push("publish");
++    if (effect === "deploy") risks.push("deploy");
++    if (effect === "destructive_git") risks.push("merge");
++  }
++  return [...new Set(risks)].toSorted();
++}
++
+ export function blueprintResolveInputFromTask(opts: {
+   task: TaskData;
+   config: AgentplaneConfig;
+@@ -67,12 +99,17 @@ export function blueprintResolveInputFromTask(opts: {
+     owner: opts.task.owner,
+     taskKind: enumValue<TaskKind>(opts.task.task_kind, TASK_KIND_VALUES),
+     workflowMode: opts.workflowMode ?? resolveEffectiveTaskWorkflowMode(opts.task, opts.config),
+-    mutation: opts.mutation ?? opts.task.mutation_scope ?? inferMutationFromTask(opts.task),
++    mutation: opts.mutation ?? opts.task.mutation_scope ?? mutationFromExecutionContract(opts.task),
+     mutationScope: enumValue<MutationKind>(opts.task.mutation_scope, MUTATION_SCOPE_VALUES),
+     riskFlags:
+       opts.riskFlags && opts.riskFlags.length > 0
+         ? opts.riskFlags
+-        : enumArray<RiskFlag>(opts.task.risk_flags, RISK_FLAG_VALUES),
++        : [
++            ...new Set([
++              ...riskFlagsFromExecutionContract(opts.task),
++              ...enumArray<RiskFlag>(opts.task.risk_flags, RISK_FLAG_VALUES),
++            ]),
++          ].toSorted(),
+     blueprintRequest: enumValue<BlueprintId>(opts.task.blueprint_request, BLUEPRINT_REQUEST_VALUES),
+   };
+ }
+diff --git a/packages/agentplane/src/commands/shared/reconcile-check.test.ts b/packages/agentplane/src/commands/shared/reconcile-check.test.ts
+index fee2ae7c8..9f84f1bee 100644
+--- a/packages/agentplane/src/commands/shared/reconcile-check.test.ts
++++ b/packages/agentplane/src/commands/shared/reconcile-check.test.ts
+@@ -137,6 +137,32 @@ describe("commands/shared/reconcile-check", () => {
+     });
+   });
+ 
++  it("accepts a task-scoped read warning only when an exact stable reread succeeds", async () => {
++    const getTask = vi.fn().mockResolvedValue({ id: "T-ACTIVE" });
++    const ctx = mkCtx({
++      taskBackend: {
++        id: "mock",
++        capabilities: {
++          canonical_source: "local",
++          writes_task_readmes: true,
++        },
++        listTasks: vi.fn().mockResolvedValue([]),
++        getTask,
++        writeTask: vi.fn().mockResolvedValue(),
++        getLastListWarnings: vi.fn().mockReturnValue(["skip:T-ACTIVE: unreadable_readme"]),
++      } as unknown as CommandContext["taskBackend"],
++    });
++
++    await expect(
++      ensureReconciledBeforeMutation({
++        ctx,
++        command: "verify",
++        taskIds: ["T-ACTIVE"],
++      }),
++    ).resolves.toBeUndefined();
++    expect(getTask).toHaveBeenCalledExactlyOnceWith("T-ACTIVE");
++  });
++
+   it("keeps unrelated invalid frontmatter warnings even for task-scoped mutations", async () => {
+     const ctx = mkCtx({
+       taskBackend: {
+diff --git a/packages/agentplane/src/commands/shared/reconcile-check.ts b/packages/agentplane/src/commands/shared/reconcile-check.ts
+index e7b2f0670..5b3514bb2 100644
+--- a/packages/agentplane/src/commands/shared/reconcile-check.ts
++++ b/packages/agentplane/src/commands/shared/reconcile-check.ts
+@@ -147,9 +147,14 @@ export async function ensureReconciledBeforeMutation(opts: {
+     });
+   }
+ 
+-  const branchFilteredWarnings = await filterWarningsResolvedFromTaskBranch(
++  const stableReadWarnings = await filterTransientTaskScopedReadWarnings(
+     opts.ctx,
+     opts.ctx.taskBackend.getLastListWarnings?.() ?? [],
++    opts.taskIds,
++  );
++  const branchFilteredWarnings = await filterWarningsResolvedFromTaskBranch(
++    opts.ctx,
++    stableReadWarnings,
+   );
+   const warnings = filterWarningsOutsideTaskScope(branchFilteredWarnings, opts.taskIds);
+   if (warnings.length === 0) return;
+@@ -169,6 +174,37 @@ export async function ensureReconciledBeforeMutation(opts: {
+   });
+ }
+ 
++async function filterTransientTaskScopedReadWarnings(
++  ctx: CommandContext,
++  warnings: string[],
++  taskIds: readonly string[] | undefined,
++): Promise<string[]> {
++  if (warnings.length === 0 || !backendUsesLocalTaskStore(ctx)) return warnings;
++  const taskSet = new Set((taskIds ?? []).map((taskId) => taskId.trim()).filter(Boolean));
++  if (taskSet.size === 0) return warnings;
++
++  const kept: string[] = [];
++  for (const raw of warnings) {
++    const parsed = parseTaskScanWarning(raw);
++    if (
++      !parsed.taskId ||
++      !taskSet.has(parsed.taskId) ||
++      (parsed.kind !== "missing_or_unreadable_readme" && parsed.kind !== "unreadable_readme")
++    ) {
++      kept.push(raw);
++      continue;
++    }
++
++    try {
++      const task = await ctx.taskBackend.getTask(parsed.taskId);
++      if (task?.id !== parsed.taskId) kept.push(raw);
++    } catch {
++      kept.push(raw);
++    }
++  }
++  return kept;
++}
++
+ function filterWarningsOutsideTaskScope(
+   warnings: string[],
+   taskIds: readonly string[] | undefined,
+diff --git a/packages/agentplane/src/commands/shared/route-decision-types.ts b/packages/agentplane/src/commands/shared/route-decision-types.ts
+index b4a6ac87b..dbe4cb385 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-types.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-types.ts
+@@ -39,6 +39,7 @@ export type TaskRouteDecision = {
+     commit: string | null;
+     token_usage?: TaskData["token_usage"];
+     execution_route?: TaskData["execution_route"];
++    execution_contract?: TaskData["execution_contract"];
+   };
+   workflowMode: string;
+   workspace: {
+@@ -96,5 +97,6 @@ export function taskSummary(task: TaskData): TaskRouteDecision["task"] {
+     commit: commitHash || null,
+     token_usage: task.token_usage,
+     execution_route: task.execution_route,
++    execution_contract: task.execution_contract,
+   };
+ }
+diff --git a/packages/agentplane/src/commands/shared/task-backend.ts b/packages/agentplane/src/commands/shared/task-backend.ts
+index 3115d21f3..33eb1a2dd 100644
+--- a/packages/agentplane/src/commands/shared/task-backend.ts
++++ b/packages/agentplane/src/commands/shared/task-backend.ts
+@@ -117,6 +117,7 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
+     runner: task.runner ?? undefined,
+     token_usage: task.token_usage ?? undefined,
+     execution_route: task.execution_route ?? undefined,
++    execution_contract: task.execution_contract ?? undefined,
+     commit: task.commit ?? null,
+     comments: task.comments ?? [],
+     events: task.events ?? [],
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts
+index 3646c50f8..9697b8017 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts
+@@ -135,6 +135,8 @@ function task(overrides: Partial<TaskData> = {}): TaskData {
+     revision: 3,
+     depends_on: [],
+     tags: ["code"],
++    task_kind: "code",
++    mutation_scope: "code",
+     verify: ["bun test"],
+     plan_approval: {
+       state: "approved",
+diff --git a/packages/agentplane/src/commands/task/agent-action-packet.ts b/packages/agentplane/src/commands/task/agent-action-packet.ts
+index 6af97fc6f..7fd1934ec 100644
+--- a/packages/agentplane/src/commands/task/agent-action-packet.ts
++++ b/packages/agentplane/src/commands/task/agent-action-packet.ts
+@@ -86,7 +86,7 @@ function semanticInstruction(
+ ): string {
+   switch (purpose) {
+     case "planning": {
+-      return "Prepare a task-specific semantic plan and, when intent is unknown, return result.task_intent for explicit approval.";
++      return "Prepare a task-specific semantic plan and, when intent is unknown, return result.task_intent with result.task_intent.execution. Select direct or branch_pr semantically and declare scope roots, repository effects, external effects, uncertainty, reversibility, and rationale; do not infer them from title keywords.";
+     }
+     case "implementation": {
+       return "Perform the scoped implementation from the prepared context and report a semantic outcome.";
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts
+index 912f770af..0319690bc 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts
+@@ -40,6 +40,7 @@ import {
+   branchSupervisorArtifactCommitMessage,
+   commitBranchSupervisorTaskArtifacts,
+ } from "./branch-task-supervisor-artifact-commit.js";
++import { recordObservedTaskExecutionContract } from "./task-execution-contract-observation.js";
+ 
+ function operationId(decision: TaskRouteDecision): string | null {
+   return decision.workflowStep.kind === "cli_operation" ? decision.workflowStep.operation.id : null;
+@@ -297,6 +298,12 @@ async function executeBranchImplementationEpisode(opts: {
+       });
+     }
+     const commit = implementation.evidence.implementation_commit;
++    await recordObservedTaskExecutionContract({
++      command,
++      task: currentTask,
++      changed_paths: implementation.evidence.changed_paths,
++      preserved_commit: commit,
++    });
+     await cmdTaskSetStatus({
+       ctx: command,
+       cwd: checkout,
+diff --git a/packages/agentplane/src/commands/task/brief-model.ts b/packages/agentplane/src/commands/task/brief-model.ts
+index 1364dcf59..d6c5af816 100644
+--- a/packages/agentplane/src/commands/task/brief-model.ts
++++ b/packages/agentplane/src/commands/task/brief-model.ts
+@@ -6,7 +6,11 @@ import { buildRouteSourceConfidenceBase } from "../shared/source-confidence.js";
+ import type { WorkflowStep } from "../shared/workflow-step.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+-import type { TaskExecutionRoute, TaskTokenUsage } from "@agentplaneorg/core/tasks";
++import type {
++  TaskExecutionContract,
++  TaskExecutionRoute,
++  TaskTokenUsage,
++} from "@agentplaneorg/core/tasks";
+ import {
+   prepareAgentWorkOrder,
+   requirePreparedAgentWorkOrder,
+@@ -87,6 +91,7 @@ type TaskBriefLegacyProjection = {
+     verification: string | null;
+     token_usage: TaskTokenUsage | undefined;
+     execution_route: TaskExecutionRoute | undefined;
++    execution_contract: TaskExecutionContract | undefined;
+   };
+   workflow: {
+     mode: string;
+@@ -281,6 +286,7 @@ export function projectTaskBriefFromPreparedWorkOrder(
+       verification: task.verification?.state ?? null,
+       token_usage: task.token_usage,
+       execution_route: task.execution_route,
++      execution_contract: task.execution_contract,
+     },
+     workflow: {
+       mode: route.workflowMode,
+diff --git a/packages/agentplane/src/commands/task/brief-render.ts b/packages/agentplane/src/commands/task/brief-render.ts
+index 3612f1326..4a1deb475 100644
+--- a/packages/agentplane/src/commands/task/brief-render.ts
++++ b/packages/agentplane/src/commands/task/brief-render.ts
+@@ -54,6 +54,29 @@ export function reportTaskBriefText(brief: TaskBriefWithWorkflowStep, taskId: st
+             },
+           ]
+         : []),
++      ...(brief.task.execution_contract
++        ? [
++            {
++              label: "execution_contract",
++              value:
++                `source=${brief.task.execution_contract.source} ` +
++                `preferred=${brief.task.execution_contract.declaration.preferred_mode} ` +
++                `selected=${brief.task.execution_contract.selected_mode}`,
++            },
++            {
++              label: "declared_effects",
++              value:
++                [
++                  ...brief.task.execution_contract.declaration.repository_effects,
++                  ...brief.task.execution_contract.declaration.external_effects,
++                ].join(", ") || "none",
++            },
++            {
++              label: "required_evidence",
++              value: brief.task.execution_contract.verification.required_evidence.join(", "),
++            },
++          ]
++        : []),
+       { label: "phase", value: brief.route.phase },
+       { label: "step_kind", value: brief.workflow_step.kind },
+       { label: "step_id", value: brief.workflow_step.id },
+diff --git a/packages/agentplane/src/commands/task/create.command.ts b/packages/agentplane/src/commands/task/create.command.ts
+index d7a01ef4d..c8bad1ca1 100644
+--- a/packages/agentplane/src/commands/task/create.command.ts
++++ b/packages/agentplane/src/commands/task/create.command.ts
+@@ -2,7 +2,10 @@ import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spe
+ import { usageError } from "../../cli/spec/errors.js";
+ import { createCliEmitter } from "../../cli/output.js";
+ import { makeExecutionContext } from "../../runtime/execution-context.js";
+-import { resolveTaskExecutionRoute } from "../../runtime/task-routing/index.js";
++import {
++  resolveTaskExecutionContract,
++  resolveTaskExecutionRoute,
++} from "../../runtime/task-routing/index.js";
+ import { throwIfPolicyDecisionDenied } from "../shared/policy-deny.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ 
+@@ -272,6 +275,16 @@ export function makeRunTaskCreateHandler(
+         blueprint_request: intent.blueprintRequest,
+       },
+     });
++    const executionContract = resolveTaskExecutionContract({
++      config: execution.config,
++      requestedMode: parsed.route,
++      task: {
++        task_kind: intent.taskKind,
++        mutation_scope: intent.mutationScope,
++        risk_flags: intent.riskFlags,
++        blueprint_request: intent.blueprintRequest,
++      },
++    });
+     const created = await runTaskNewParsed({
+       ctx: execution.command,
+       cwd: ctx.cwd,
+@@ -312,6 +325,7 @@ export function makeRunTaskCreateHandler(
+       /** @deprecated Compatibility alias for pre-0.7.6 JSON consumers. */
+       inferred_intent: semanticIntent,
+       execution_route: route,
++      execution_contract: executionContract,
+       required_role: "PLANNER" as const,
+       next_command: nextCommand,
+     };
+diff --git a/packages/agentplane/src/commands/task/direct-task-finalization.test.ts b/packages/agentplane/src/commands/task/direct-task-finalization.test.ts
+index 104d84cef..5eaef820e 100644
+--- a/packages/agentplane/src/commands/task/direct-task-finalization.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-finalization.test.ts
+@@ -209,6 +209,7 @@ describe("direct task finalization", () => {
+     ).resolves.toEqual({
+       artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/implementation-evidence.json`,
+       implementation_commit: "def456",
++      changed_paths: ["packages/agentplane/src/index.ts"],
+     });
+     const evidence = mocks.writeJson.mock.calls[0]?.[1] as {
+       implementation_commit: string;
+diff --git a/packages/agentplane/src/commands/task/direct-task-finalization.ts b/packages/agentplane/src/commands/task/direct-task-finalization.ts
+index bd2648442..a9e78e543 100644
+--- a/packages/agentplane/src/commands/task/direct-task-finalization.ts
++++ b/packages/agentplane/src/commands/task/direct-task-finalization.ts
+@@ -21,6 +21,7 @@ export type DirectRepositoryStatus = {
+ export type DirectImplementationEvidence = {
+   artifact_path: string;
+   implementation_commit: string;
++  changed_paths: string[];
+ };
+ 
+ export async function readDirectTaskHead(cwd: string): Promise<string | null> {
+@@ -41,6 +42,20 @@ function outputLines(stdout: string): string[] {
+     .filter(Boolean);
+ }
+ 
++function pathsFromNameStatus(stdout: string): string[] {
++  return [
++    ...new Set(
++      outputLines(stdout).flatMap((line) => {
++        const fields = line
++          .split("\t")
++          .map((field) => field.trim())
++          .filter(Boolean);
++        return fields.length > 1 ? fields.slice(1) : [];
++      }),
++    ),
++  ].toSorted();
++}
++
+ async function runGit(opts: { cwd: string; args: string[] }) {
+   return await runProcess({
+     command: "git",
+@@ -328,7 +343,11 @@ export async function recordDirectImplementationEvidence(opts: {
+       classification,
+     },
+   });
+-  return { artifact_path: relative, implementation_commit: opts.implementation_commit };
++  return {
++    artifact_path: relative,
++    implementation_commit: opts.implementation_commit,
++    changed_paths: pathsFromNameStatus(commitPaths.stdout),
++  };
+ }
+ 
+ export async function finishDirectTask(opts: {
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor-result.ts b/packages/agentplane/src/commands/task/direct-task-supervisor-result.ts
+index 890909e88..f0b49a38a 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor-result.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor-result.ts
+@@ -33,6 +33,7 @@ export type DirectTaskSupervisorStopCode =
+   | "evaluator_blocked"
+   | "evaluator_adapter_crash"
+   | "executor_lifecycle_mutation"
++  | "execution_contract_escalated"
+   | DirectTaskCloseoutStopCode;
+ 
+ export type DirectTaskSupervisorStop = {
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor.test.ts b/packages/agentplane/src/commands/task/direct-task-supervisor.test.ts
+index ee253ad22..acec948c5 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor.test.ts
+@@ -148,6 +148,7 @@ describe("direct task supervisor", () => {
+     mocks.recordEvidence.mockResolvedValue({
+       artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/implementation-evidence.json`,
+       implementation_commit: "def456",
++      changed_paths: [],
+     });
+     mocks.resolveCommit.mockResolvedValue({ status: "ready", commit: "def456" });
+     mocks.recordGoldenMetrics.mockResolvedValue({
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor.ts b/packages/agentplane/src/commands/task/direct-task-supervisor.ts
+index d637cbc3c..17ae3b92b 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor.ts
+@@ -36,6 +36,7 @@ import {
+   measureDuplicateExecutorContextBytes,
+ } from "./direct-task-supervision-measurement.js";
+ import { recordDirectTaskSupervisionGoldenMetrics } from "./direct-task-supervision-golden-metrics.js";
++import { recordObservedTaskExecutionContract } from "./task-execution-contract-observation.js";
+ 
+ export type { DirectTaskSupervisorResult } from "./direct-task-supervisor-result.js";
+ 
+@@ -345,11 +346,39 @@ export async function superviseDirectTaskRun(
+         },
+       });
+     }
++    const reconciliation = await recordObservedTaskExecutionContract({
++      command: input.command,
++      task,
++      changed_paths: implementation.evidence.changed_paths,
++      preserved_commit: implementation.evidence.implementation_commit,
++    });
++    if (reconciliation.escalated) {
++      return stoppedResult({
++        decision: current,
++        journal,
++        executor: observed.executor,
++        metrics: directTaskSupervisorMetrics({
++          provider_episodes: providerEpisodes,
++          executor_lifecycle_event_delta: executorLifecycleEventDelta,
++          declared_checks: declaredChecks,
++          lifecycle_calls: lifecycleCalls,
++          tool_calls: toolCalls,
++          duplicate_executor_context_bytes: duplicateExecutorContextBytes,
++        }),
++        stop: {
++          code: "execution_contract_escalated",
++          reason:
++            "Supervisor-observed repository effects require branch_pr. The execution contract preserved the implementation commit and changed paths; recompute task next-action for the single deterministic handoff.",
++          route_step_id: current.workflowStep.id,
++          operation_id: null,
++        },
++      });
++    }
+     const verification = await verifyDirectTask({
+       ctx: input.ctx,
+       command: input.command,
+       task_id: input.task_id,
+-      task,
++      task: reconciliation.task,
+       implementation_evidence: implementation.evidence,
+       decision,
+       on_lifecycle_operation: () => {
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.test.ts b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+index 0f240a9cc..e32271d2b 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+@@ -4,6 +4,7 @@ import path from "node:path";
+ import { afterEach, describe, expect, it, vi } from "vitest";
+ 
+ import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
++import type { TaskData } from "../../backends/task-backend.js";
+ 
+ const mocks = { runProcess: vi.fn() };
+ const ORIGINAL_AGENT_MODE = process.env.AGENTPLANE_AGENT_MODE;
+@@ -21,6 +22,37 @@ function command(root: string) {
+   } as never;
+ }
+ 
++function executionContract(
++  repositoryEffects: NonNullable<
++    TaskData["execution_contract"]
++  >["declaration"]["repository_effects"],
++): NonNullable<TaskData["execution_contract"]> {
++  return {
++    schema_version: 1,
++    source: "agent_declared",
++    declaration: {
++      schema_version: 1,
++      preferred_mode: "direct",
++      scope_roots: ["docs"],
++      repository_effects: repositoryEffects,
++      external_effects: [],
++      uncertainty: "bounded",
++      reversibility: "reversible",
++      rationale: ["task-specific semantic assessment"],
++    },
++    selected_mode: "direct",
++    repository_mode: "direct",
++    reason_codes: ["agent_preferred_direct_compatible"],
++    safety: {
++      requires_worktree: false,
++      requires_user_approval: false,
++      approval_effects: [],
++    },
++    verification: { required_evidence: ["task_outcome"] },
++    observed: { repository_effects: [], changed_paths: [] },
++  };
++}
++
+ async function root(): Promise<string> {
+   const value = await mkdtemp(path.join(os.tmpdir(), "agentplane-direct-verification-"));
+   roots.push(value);
+@@ -274,6 +306,29 @@ describe("direct task verification", () => {
+     );
+   });
+ 
++  it("uses declared effects instead of a misleading task kind to select docs policy checks", async () => {
++    const cwd = await root();
++    mocks.runProcess
++      .mockResolvedValueOnce({ exitCode: 0, stdout: "routing ok", stderr: "" })
++      .mockResolvedValueOnce({ exitCode: 0, stdout: "doctor ok", stderr: "" });
++
++    const result = await runDirectTaskVerification({
++      command: command(cwd),
++      task: {
++        verify: [],
++        task_kind: "code",
++        mutation_scope: "code",
++        execution_contract: executionContract(["repository_write", "documentation"]),
++      },
++      task_id: TASK_ID,
++      cwd,
++      run_process: mocks.runProcess,
++    });
++
++    expect(result).toMatchObject({ status: "passed" });
++    expect(mocks.runProcess).toHaveBeenCalledTimes(2);
++  });
++
+   it("does not treat an empty code-task check contract as successful verification", async () => {
+     const cwd = await root();
+     const result = await runDirectTaskVerification({
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.ts b/packages/agentplane/src/commands/task/direct-task-verification.ts
+index bade5f61c..94f048fe3 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.ts
+@@ -69,10 +69,13 @@ function bunTestReportedZeroTests(opts: {
+ }
+ 
+ function directTaskVerificationCommands(
+-  task: Pick<TaskData, "verify" | "task_kind" | "mutation_scope">,
++  task: Pick<TaskData, "verify" | "task_kind" | "mutation_scope" | "execution_contract">,
+ ): string[] {
+   const commands = [...(task.verify ?? [])];
+-  if (task.task_kind !== "docs" && task.mutation_scope !== "docs") return commands;
++  const declaresDocs = task.execution_contract
++    ? task.execution_contract.declaration.repository_effects.includes("documentation")
++    : task.task_kind === "docs" || task.mutation_scope === "docs";
++  if (!declaresDocs) return commands;
+   for (const required of ["node .agentplane/policy/check-routing.mjs", "agentplane doctor"]) {
+     if (!commands.includes(required)) commands.push(required);
+   }
+@@ -110,7 +113,7 @@ async function writeCheckArtifact(opts: {
+  */
+ export async function runDirectTaskVerification(opts: {
+   command: CommandContext;
+-  task: Pick<TaskData, "verify" | "task_kind" | "mutation_scope">;
++  task: Pick<TaskData, "verify" | "task_kind" | "mutation_scope" | "execution_contract">;
+   task_id: string;
+   cwd: string;
+   run_process?: typeof runProcess;
+diff --git a/packages/agentplane/src/commands/task/external-agent-planning-authority.ts b/packages/agentplane/src/commands/task/external-agent-planning-authority.ts
+index 89691c07e..276a920c5 100644
+--- a/packages/agentplane/src/commands/task/external-agent-planning-authority.ts
++++ b/packages/agentplane/src/commands/task/external-agent-planning-authority.ts
+@@ -1,6 +1,9 @@
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+-import { resolveTaskExecutionRoute } from "../../runtime/task-routing/index.js";
++import {
++  resolveTaskExecutionContract,
++  resolveTaskExecutionRoute,
++} from "../../runtime/task-routing/index.js";
+ import { CliError } from "../../shared/errors.js";
+ 
+ import { cmdTaskComment } from "./comment.js";
+@@ -25,10 +28,17 @@ function planningTaskFields(opts: {
+     throw new CliError({
+       code: "E_VALIDATION",
+       message:
+-        "PLANNER result must include task_intent before a neutral intake task can advance. Return task_kind, mutation_scope, risk_flags, and tags in result.task_intent; mutation_scope must be resolved rather than unknown.",
++        "PLANNER result must include task_intent before a neutral intake task can advance. Return task_kind, mutation_scope, risk_flags, tags, and execution in result.task_intent; mutation_scope must be resolved rather than unknown.",
+     });
+   }
+   if (!intent) return;
++  if (requiresIntent && !intent.execution) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        "PLANNER result must include task_intent.execution so the agent selects a preferred workflow and declares scope, repository effects, external effects, uncertainty, reversibility, and rationale.",
++    });
++  }
+ 
+   const explicitIntent =
+     opts.task.mutation_scope !== "unknown" && opts.task.task_kind !== undefined;
+@@ -47,6 +57,17 @@ function planningTaskFields(opts: {
+     });
+   }
+ 
++  const executionContract = resolveTaskExecutionContract({
++    config: opts.command.config,
++    requestedMode: opts.task.execution_route?.requested_mode,
++    task: {
++      task_kind: intent.task_kind,
++      mutation_scope: intent.mutation_scope,
++      risk_flags: intent.risk_flags,
++      blueprint_request: intent.blueprint_request,
++    },
++    ...(intent.execution ? { declaration: intent.execution } : {}),
++  });
+   const route = resolveTaskExecutionRoute({
+     config: opts.command.config,
+     requestedMode: opts.task.execution_route?.requested_mode,
+@@ -56,6 +77,7 @@ function planningTaskFields(opts: {
+       risk_flags: intent.risk_flags,
+       blueprint_request: intent.blueprint_request,
+     },
++    ...(intent.execution ? { declaration: intent.execution } : {}),
+   });
+   return {
+     task_kind: intent.task_kind,
+@@ -64,6 +86,7 @@ function planningTaskFields(opts: {
+     tags: intent.tags,
+     blueprint_request: intent.blueprint_request,
+     execution_route: route,
++    execution_contract: executionContract,
+   };
+ }
+ 
+@@ -133,6 +156,9 @@ export async function isExternalPlanningResultApplied(opts: {
+   ) {
+     return false;
+   }
++  if (intent?.execution && !sameValue(task.execution_contract?.declaration, intent.execution)) {
++    return false;
++  }
+   return (
+     (opts.decision.workflowStep.kind === "approval" &&
+       opts.decision.workflowStep.request.type === "plan_approval") ||
+diff --git a/packages/agentplane/src/commands/task/new.ts b/packages/agentplane/src/commands/task/new.ts
+index 38524d909..47dbdaf01 100644
+--- a/packages/agentplane/src/commands/task/new.ts
++++ b/packages/agentplane/src/commands/task/new.ts
+@@ -38,7 +38,10 @@ import {
+   formatTaskBlueprintCreationPreview,
+   resolveTaskBlueprintLifecycleSummary,
+ } from "./blueprint-summary.js";
+-import { resolveTaskExecutionRoute } from "../../runtime/task-routing/index.js";
++import {
++  resolveTaskExecutionContract,
++  resolveTaskExecutionRoute,
++} from "../../runtime/task-routing/index.js";
+ import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
+ 
+ export type TaskNewParsed = {
+@@ -283,6 +286,17 @@ export async function runTaskNewParsed(opts: {
+       const clarification = createClarificationContract({
+         context: intakeContext,
+       });
++      const routeTask = {
++        task_kind: p.taskKind,
++        mutation_scope: p.mutationScope,
++        risk_flags: p.riskFlags,
++        blueprint_request: p.blueprintRequest,
++      };
++      const executionContract = resolveTaskExecutionContract({
++        config: ctx.config,
++        requestedMode: p.route,
++        task: routeTask,
++      });
+       const draft = createTaskGraphDraft({
+         context: intakeContext,
+         clarification,
+@@ -303,13 +317,9 @@ export async function runTaskNewParsed(opts: {
+             execution_route: resolveTaskExecutionRoute({
+               config: ctx.config,
+               requestedMode: p.route,
+-              task: {
+-                task_kind: p.taskKind,
+-                mutation_scope: p.mutationScope,
+-                risk_flags: p.riskFlags,
+-                blueprint_request: p.blueprintRequest,
+-              },
++              task: routeTask,
+             }),
++            execution_contract: executionContract,
+             ...(p.extensions ? { extensions: p.extensions } : {}),
+             depends_on: p.dependsOn,
+             verify: p.verify,
+diff --git a/packages/agentplane/src/commands/task/next-action.command.ts b/packages/agentplane/src/commands/task/next-action.command.ts
+index 13e232d27..17e81dd68 100644
+--- a/packages/agentplane/src/commands/task/next-action.command.ts
++++ b/packages/agentplane/src/commands/task/next-action.command.ts
+@@ -359,6 +359,22 @@ export function makeRunTaskNextActionHandler(session: {
+                     },
+                   ]
+                 : []),
++              ...(decision.task.execution_contract
++                ? [
++                    {
++                      label: "execution_contract",
++                      value:
++                        `source=${decision.task.execution_contract.source} ` +
++                        `preferred=${decision.task.execution_contract.declaration.preferred_mode} ` +
++                        `selected=${decision.task.execution_contract.selected_mode}`,
++                    },
++                    {
++                      label: "contract_evidence",
++                      value:
++                        decision.task.execution_contract.verification.required_evidence.join(", "),
++                    },
++                  ]
++                : []),
+               { label: "checkout_role", value: decision.workspace.checkoutRole },
+               { label: "branch", value: decision.workspace.branch ?? "unknown" },
+               { label: "base_branch", value: decision.workspace.baseBranch ?? "unknown" },
+diff --git a/packages/agentplane/src/commands/task/plan.ts b/packages/agentplane/src/commands/task/plan.ts
+index ef4d3fb21..aae815c33 100644
+--- a/packages/agentplane/src/commands/task/plan.ts
++++ b/packages/agentplane/src/commands/task/plan.ts
+@@ -32,7 +32,13 @@ export type TaskPlanSetResult = {
+ 
+ type PlanningTaskFields = Pick<
+   TaskData,
+-  "task_kind" | "mutation_scope" | "risk_flags" | "blueprint_request" | "tags" | "execution_route"
++  | "task_kind"
++  | "mutation_scope"
++  | "risk_flags"
++  | "blueprint_request"
++  | "tags"
++  | "execution_route"
++  | "execution_contract"
+ >;
+ 
+ function planningTaskFieldsChanged(
+diff --git a/packages/agentplane/src/commands/task/run-execution-preview.ts b/packages/agentplane/src/commands/task/run-execution-preview.ts
+index 91ec1627d..babf288b5 100644
+--- a/packages/agentplane/src/commands/task/run-execution-preview.ts
++++ b/packages/agentplane/src/commands/task/run-execution-preview.ts
+@@ -37,6 +37,7 @@ export type TaskRunExecutionPreview = {
+ 
+ export function buildTaskRunExecutionPreview(bundle: RunnerContextBundle): TaskRunExecutionPreview {
+   const persistedRoute = bundle.route_decision?.task.execution_route;
++  const persistedContract = bundle.route_decision?.task.execution_contract;
+   const fallbackRoute = bundle.blueprint?.workflowMode ?? "direct";
+   const toolBudget = Object.fromEntries(
+     Object.entries(bundle.execution.profile_runtime?.budget ?? {}).map(([phase, budget]) => [
+@@ -47,8 +48,12 @@ export function buildTaskRunExecutionPreview(bundle: RunnerContextBundle): TaskR
+   return {
+     route: {
+       requested_mode: persistedRoute?.requested_mode ?? "repository",
+-      selected_mode: persistedRoute?.selected_mode ?? fallbackRoute,
+-      reason_codes: [...(persistedRoute?.reason_codes ?? ["repository_mode_selected"])],
++      selected_mode:
++        persistedContract?.selected_mode ?? persistedRoute?.selected_mode ?? fallbackRoute,
++      reason_codes: [
++        ...(persistedContract?.reason_codes ??
++          persistedRoute?.reason_codes ?? ["repository_mode_selected"]),
++      ],
+     },
+     context: {
+       blueprint_id: bundle.blueprint?.blueprintId ?? null,
+diff --git a/packages/agentplane/src/commands/task/status.command.ts b/packages/agentplane/src/commands/task/status.command.ts
+index 647d1f7e5..f47144916 100644
+--- a/packages/agentplane/src/commands/task/status.command.ts
++++ b/packages/agentplane/src/commands/task/status.command.ts
+@@ -69,7 +69,10 @@ export function makeRunTaskStatusHandler(session: {
+       taskId: parsed.taskId,
+     });
+     const operatorGuidance = deriveRouteOperatorGuidance(decision);
+-    const selectedRoute = decision.task.execution_route?.selected_mode ?? decision.workflowMode;
++    const selectedRoute =
++      decision.task.execution_contract?.selected_mode ??
++      decision.task.execution_route?.selected_mode ??
++      decision.workflowMode;
+     const nextStep = decision.oracle.nextCommand ?? decision.oracle.summary;
+     const output = createCliEmitter();
+     if (parsed.json) {
+diff --git a/packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts b/packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts
+new file mode 100644
+index 000000000..1828f87ab
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts
+@@ -0,0 +1,77 @@
++import { describe, expect, it, vi } from "vitest";
++
++import type { TaskData, TaskWriteOptions } from "../../backends/task-backend.js";
++import type { CommandContext } from "../shared/task-backend.js";
++import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
++import { defaultConfig } from "@agentplaneorg/core/config";
++
++import { recordObservedTaskExecutionContract } from "./task-execution-contract-observation.js";
++
++describe("task execution contract observation", () => {
++  it("replaces a direct-only blueprint during observed branch escalation", async () => {
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    const task = {
++      id: "202608120000-ESCAL8",
++      title: "Escalation fixture",
++      description: "Start direct, then observe a CI change.",
++      status: "DOING",
++      priority: "high",
++      owner: "CODER",
++      revision: 3,
++      depends_on: [],
++      tags: [],
++      verify: [],
++      task_kind: "code",
++      mutation_scope: "code",
++      blueprint_request: "code.direct",
++      execution_contract: resolveTaskExecutionContract({
++        config,
++        task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
++        declaration: {
++          schema_version: 1,
++          preferred_mode: "direct",
++          scope_roots: ["."],
++          repository_effects: ["repository_write", "source_code"],
++          external_effects: [],
++          uncertainty: "bounded",
++          reversibility: "reversible",
++          rationale: ["localized implementation"],
++        },
++      }),
++    } satisfies TaskData;
++    let persistedTask: TaskData | null = null;
++    let persistedOptions: TaskWriteOptions | undefined;
++    const writeTask = vi.fn<(nextTask: TaskData, options?: TaskWriteOptions) => Promise<void>>(
++      (nextTask, options) => {
++        persistedTask = nextTask;
++        persistedOptions = options;
++        return Promise.resolve();
++      },
++    );
++    const getTask = vi.fn<(taskId: string) => Promise<TaskData | null>>(() =>
++      Promise.resolve({ ...task, blueprint_request: "code.branch_pr" }),
++    );
++    const command = {
++      config,
++      backendId: "local",
++      resolvedProject: { gitRoot: "/repo" },
++      taskBackend: { writeTask, getTask },
++    } as unknown as CommandContext;
++
++    const result = await recordObservedTaskExecutionContract({
++      command,
++      task,
++      changed_paths: [".github/workflows/ci.yml"],
++      preserved_commit: "abc123",
++    });
++
++    expect(result.escalated).toBe(true);
++    expect(writeTask).toHaveBeenCalledOnce();
++    expect(persistedTask).toMatchObject({
++      blueprint_request: "code.branch_pr",
++      execution_contract: { selected_mode: "branch_pr" },
++    });
++    expect(persistedOptions).toEqual({ expectedRevision: 3 });
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/task-execution-contract-observation.ts b/packages/agentplane/src/commands/task/task-execution-contract-observation.ts
+new file mode 100644
+index 000000000..a7e3aabdf
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/task-execution-contract-observation.ts
+@@ -0,0 +1,46 @@
++import type { TaskData } from "../../backends/task-backend.js";
++import { reconcileTaskExecutionContract } from "../../runtime/task-routing/index.js";
++import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
++
++export async function recordObservedTaskExecutionContract(opts: {
++  command: CommandContext;
++  task: TaskData;
++  changed_paths: readonly string[];
++  preserved_commit: string;
++}): Promise<{ task: TaskData; escalated: boolean }> {
++  const current = opts.task.execution_contract;
++  if (!current) return { task: opts.task, escalated: false };
++
++  const reconciled = reconcileTaskExecutionContract({
++    contract: current,
++    changed_paths: opts.changed_paths,
++    preserved_commit: opts.preserved_commit,
++  });
++  if (JSON.stringify(reconciled.contract) === JSON.stringify(current)) {
++    return { task: opts.task, escalated: reconciled.escalated };
++  }
++  const blueprintRequest =
++    reconciled.escalated && opts.task.blueprint_request === "code.direct"
++      ? "code.branch_pr"
++      : opts.task.blueprint_request;
++
++  await opts.command.taskBackend.writeTask(
++    {
++      ...opts.task,
++      blueprint_request: blueprintRequest,
++      execution_contract: reconciled.contract,
++      execution_route: opts.task.execution_route
++        ? {
++            ...opts.task.execution_route,
++            selected_mode: reconciled.contract.selected_mode,
++            reason_codes: [...reconciled.contract.reason_codes],
++          }
++        : undefined,
++    },
++    opts.task.revision ? { expectedRevision: opts.task.revision } : undefined,
++  );
++  return {
++    task: await loadTaskFromContext({ ctx: opts.command, taskId: opts.task.id }),
++    escalated: reconciled.escalated,
++  };
++}
+diff --git a/packages/agentplane/src/runner/context/task-context.ts b/packages/agentplane/src/runner/context/task-context.ts
+index 5ca27ef02..9834a49ee 100644
+--- a/packages/agentplane/src/runner/context/task-context.ts
++++ b/packages/agentplane/src/runner/context/task-context.ts
+@@ -414,6 +414,9 @@ export async function assembleRunnerTaskContext(opts: {
+         task_kind: task.task_kind ?? null,
+         mutation_scope: task.mutation_scope ?? null,
+         blueprint_request: task.blueprint_request ?? null,
++        ...(task.execution_contract
++          ? { execution_contract: structuredClone(task.execution_contract) }
++          : {}),
+       },
+       narrative: {
+         title: task.title,
+diff --git a/packages/agentplane/src/runner/types/context.ts b/packages/agentplane/src/runner/types/context.ts
+index a6be1b7d7..091d8db85 100644
+--- a/packages/agentplane/src/runner/types/context.ts
++++ b/packages/agentplane/src/runner/types/context.ts
+@@ -10,6 +10,7 @@ import type {
+   StateFingerprint,
+   StateFingerprintPolicy,
+ } from "@agentplaneorg/core/schemas";
++import type { TaskExecutionContract } from "@agentplaneorg/core/tasks";
+ 
+ import type { TaskEvent } from "../../backends/task-backend.js";
+ import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
+@@ -70,6 +71,7 @@ type TaskEpisodeMetadata = {
+   task_kind: string | null;
+   mutation_scope: string | null;
+   blueprint_request: string | null;
++  execution_contract?: TaskExecutionContract;
+ };
+ 
+ /**
+diff --git a/packages/agentplane/src/runner/usecases/agent-work-order-build.ts b/packages/agentplane/src/runner/usecases/agent-work-order-build.ts
+index aba6307a1..eac03abbe 100644
+--- a/packages/agentplane/src/runner/usecases/agent-work-order-build.ts
++++ b/packages/agentplane/src/runner/usecases/agent-work-order-build.ts
+@@ -208,6 +208,7 @@ function acceptanceCriteria(opts: {
+   const candidates = uniqueSorted([
+     ...opts.source_manifest.verification_context.task_verify,
+     ...opts.source_manifest.verification_context.verify_steps,
++    ...(opts.task_envelope.task.metadata.execution_contract?.verification.required_evidence ?? []),
+   ]);
+   const descriptions =
+     candidates.length > 0
+@@ -222,10 +223,12 @@ function acceptanceCriteria(opts: {
+ 
+ function verificationIntent(opts: {
+   source_manifest: AgentWorkOrderSourceManifest;
++  execution_contract?: RunnerTaskContextEnvelope["task"]["metadata"]["execution_contract"];
+ }): AgentWorkOrderV2["verification_intent"] {
+   const candidates = uniqueSorted([
+     ...opts.source_manifest.verification_context.task_verify,
+     ...opts.source_manifest.verification_context.verify_steps,
++    ...(opts.execution_contract?.verification.required_evidence ?? []),
+   ]);
+   const descriptions =
+     candidates.length > 0
+@@ -332,7 +335,25 @@ export function buildCanonicalAgentWorkOrder(opts: {
+     workOrderRole(decision.executionPacket.recommendedRole ?? task.metadata.owner ?? "");
+   const stateFingerprint = structuredClone(decision.workflowStep.preconditionFingerprint);
+   const mutationPath = decision.oracle.mutationPathHint;
+-  const canMutate = decision.executionPacket.safeToMutate && mutationPath !== null;
++  const executionContract = task.metadata.execution_contract;
++  const declaredScopeRoots = executionContract?.declaration.scope_roots;
++  const hasExplicitEmptyScope =
++    executionContract?.source === "agent_declared" && declaredScopeRoots?.length === 0;
++  const canMutate =
++    decision.executionPacket.safeToMutate && mutationPath !== null && !hasExplicitEmptyScope;
++  const declaredWritableRoots = (() => {
++    if (!canMutate || mutationPath === null) return [];
++    if (!declaredScopeRoots || declaredScopeRoots.length === 0) return [mutationPath];
++    const repositoryRoot = path.resolve(mutationPath);
++    return declaredScopeRoots.map((root) => {
++      const resolved = root === "." ? repositoryRoot : path.resolve(repositoryRoot, root);
++      const relative = path.relative(repositoryRoot, resolved).replaceAll("\\", "/");
++      if (relative === ".." || relative.startsWith("../") || path.isAbsolute(relative)) {
++        throw new Error(`Execution declaration scope escapes the authoritative checkout: ${root}`);
++      }
++      return resolved;
++    });
++  })();
+   const allowedToolClasses: AgentWorkOrderV2["authority"]["allowed_tool_classes"] = canMutate
+     ? [
+         "repository_read",
+@@ -352,7 +373,10 @@ export function buildCanonicalAgentWorkOrder(opts: {
+   const summary =
+     episodeSectionText({ task_envelope: taskEnvelope, section: "Summary" }) ||
+     task.narrative.description;
+-  const verification = verificationIntent({ source_manifest: opts.source_manifest });
++  const verification = verificationIntent({
++    source_manifest: opts.source_manifest,
++    execution_contract: task.metadata.execution_contract,
++  });
+   const stopRules = uniqueSorted([
+     ...decision.executionPacket.mustNot,
+     decision.executionPacket.returnControlWhen,
+@@ -381,7 +405,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
+     state_fingerprint_policy: AGENT_WORK_ORDER_STATE_FINGERPRINT_POLICY,
+     authority: {
+       mutation_scope: task.metadata.mutation_scope ?? "unknown",
+-      writable_roots: canMutate ? [mutationPath] : [],
++      writable_roots: declaredWritableRoots,
+       protected_paths: protectedPaths(executionContext),
+       allowed_tool_classes: allowedToolClasses,
+       // Hosted lifecycle evidence is collected by the CLI before delegation;
+diff --git a/packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts b/packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts
+index 5af72f7dc..5b82b091f 100644
+--- a/packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts
++++ b/packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts
+@@ -17,6 +17,7 @@ import { cmdContextReindex } from "../../commands/context/reindex.js";
+ import { projectTaskBriefFromPreparedWorkOrder } from "../../commands/task/brief-model.js";
+ import { routePacket } from "../../commands/hermes/hermes-runtime.js";
+ import { loadCommandContext, loadTaskFromContext } from "../../commands/shared/task-backend.js";
++import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
+ import {
+   evaluatePreparedAgentWorkOrderReadiness,
+   prepareAgentWorkOrder,
+@@ -39,6 +40,12 @@ type WorkOrderView = {
+       task_revision: number | null;
+     };
+     verification_intent: unknown;
++    authority: {
++      writable_roots: string[];
++      external_side_effects: string[];
++      allowed_tool_classes: string[];
++      sandbox: string;
++    };
+   };
+   work_order_preparation?: {
+     remote_policy: unknown;
+@@ -215,6 +222,75 @@ function duplicatePromptOverlayBundle(): Record<string, unknown> {
+ }
+ 
+ describe("AgentWorkOrder v2 surface integration", () => {
++  it("projects the execution contract into writable authority and verification intent", async () => {
++    const root = await mkGitRepoRoot();
++    const taskId = await createPreparedTask(root);
++    const command = await loadCommandContext({ cwd: root, rootOverride: root });
++    const task = await loadTaskFromContext({ ctx: command, taskId });
++    const executionContract = resolveTaskExecutionContract({
++      config: command.config,
++      task,
++      declaration: {
++        schema_version: 1,
++        preferred_mode: "direct",
++        scope_roots: ["packages/app/src", "packages/app/test"],
++        repository_effects: ["repository_write", "source_code", "tests"],
++        external_effects: [],
++        uncertainty: "bounded",
++        reversibility: "reversible",
++        rationale: ["localized implementation with targeted tests"],
++      },
++    });
++    await command.taskBackend.writeTask(
++      { ...task, execution_contract: executionContract },
++      task.revision ? { expectedRevision: task.revision } : undefined,
++    );
++
++    const view = await captureRunnerWorkOrder({ taskId, root });
++    expect(view.work_order.authority).toMatchObject({
++      writable_roots: [path.join(root, "packages/app/src"), path.join(root, "packages/app/test")],
++      external_side_effects: [],
++    });
++    const verificationIntent = view.work_order.verification_intent as {
++      requirements: { description: string }[];
++    };
++    expect(verificationIntent.requirements.map((requirement) => requirement.description)).toEqual(
++      expect.arrayContaining(["repository_effect:source_code", "repository_effect:tests"]),
++    );
++  });
++
++  it("keeps an explicitly empty declared scope read-only", async () => {
++    const root = await mkGitRepoRoot();
++    const taskId = await createPreparedTask(root);
++    const command = await loadCommandContext({ cwd: root, rootOverride: root });
++    const task = await loadTaskFromContext({ ctx: command, taskId });
++    const executionContract = resolveTaskExecutionContract({
++      config: command.config,
++      task,
++      declaration: {
++        schema_version: 1,
++        preferred_mode: "direct",
++        scope_roots: [],
++        repository_effects: [],
++        external_effects: [],
++        uncertainty: "bounded",
++        reversibility: "reversible",
++        rationale: ["analysis requires no repository writes"],
++      },
++    });
++    await command.taskBackend.writeTask(
++      { ...task, execution_contract: executionContract },
++      task.revision ? { expectedRevision: task.revision } : undefined,
++    );
++
++    const view = await captureRunnerWorkOrder({ taskId, root });
++    expect(view.work_order.authority).toMatchObject({
++      writable_roots: [],
++      sandbox: "read-only",
++    });
++    expect(view.work_order.authority.allowed_tool_classes).not.toContain("workspace_write");
++  });
++
+   it("prepares deterministic bounded knowledge through exact, FTS, alias, and graph adapters", async () => {
+     const root = await mkGitRepoRoot();
+     const taskId = await createPreparedTask(root);
+diff --git a/packages/agentplane/src/runtime/task-intake/resolve-materialize.ts b/packages/agentplane/src/runtime/task-intake/resolve-materialize.ts
+index 2e21e4921..2b0e2be5b 100644
+--- a/packages/agentplane/src/runtime/task-intake/resolve-materialize.ts
++++ b/packages/agentplane/src/runtime/task-intake/resolve-materialize.ts
+@@ -81,6 +81,9 @@ function buildMaterializedTask(opts: {
+     ...(opts.draftTask.execution_route
+       ? { execution_route: structuredClone(opts.draftTask.execution_route) }
+       : {}),
++    ...(opts.draftTask.execution_contract
++      ? { execution_contract: structuredClone(opts.draftTask.execution_contract) }
++      : {}),
+     ...(opts.draftTask.extensions
+       ? { extensions: structuredClone(opts.draftTask.extensions) }
+       : {}),
+diff --git a/packages/agentplane/src/runtime/task-intake/resolve-normalize.ts b/packages/agentplane/src/runtime/task-intake/resolve-normalize.ts
+index 97440065f..e580ebbd8 100644
+--- a/packages/agentplane/src/runtime/task-intake/resolve-normalize.ts
++++ b/packages/agentplane/src/runtime/task-intake/resolve-normalize.ts
+@@ -106,6 +106,9 @@ export function normalizeDraftTasks(tasks: readonly TaskGraphDraftTask[]): TaskG
+         : {}),
+       ...(task.blueprint_request ? { blueprint_request: task.blueprint_request } : {}),
+       ...(task.execution_route ? { execution_route: structuredClone(task.execution_route) } : {}),
++      ...(task.execution_contract
++        ? { execution_contract: structuredClone(task.execution_contract) }
++        : {}),
+       ...(task.extensions ? { extensions: structuredClone(task.extensions) } : {}),
+       verify: dedupeTrimmed(task.verify).toSorted(),
+       depends_on: dedupeTrimmed(task.depends_on).toSorted(),
+diff --git a/packages/agentplane/src/runtime/task-intake/types.ts b/packages/agentplane/src/runtime/task-intake/types.ts
+index 53d97ed50..9e69e17f9 100644
+--- a/packages/agentplane/src/runtime/task-intake/types.ts
++++ b/packages/agentplane/src/runtime/task-intake/types.ts
+@@ -1,5 +1,9 @@
+ import type { ApprovalSettings } from "@agentplaneorg/core/config";
+-import type { TaskDocVersion, TaskExecutionRoute } from "@agentplaneorg/core/tasks";
++import type {
++  TaskDocVersion,
++  TaskExecutionContract,
++  TaskExecutionRoute,
++} from "@agentplaneorg/core/tasks";
+ 
+ import type { TaskBackendCapabilities, TaskData, TaskOrigin } from "../../backends/task-backend.js";
+ import type { BehaviorLayer } from "../behavior/index.js";
+@@ -106,6 +110,7 @@ export type TaskGraphDraftTask = {
+   risk_flags?: TaskData["risk_flags"];
+   blueprint_request?: TaskData["blueprint_request"];
+   execution_route?: TaskExecutionRoute;
++  execution_contract?: TaskExecutionContract;
+   extensions?: TaskData["extensions"];
+   verify: string[];
+   depends_on: string[];
+diff --git a/packages/agentplane/src/runtime/task-routing/index.ts b/packages/agentplane/src/runtime/task-routing/index.ts
+index 17da4ea28..1040016d3 100644
+--- a/packages/agentplane/src/runtime/task-routing/index.ts
++++ b/packages/agentplane/src/runtime/task-routing/index.ts
+@@ -1,5 +1,7 @@
+ export {
+   resolveEffectiveTaskWorkflowMode,
++  reconcileTaskExecutionContract,
++  resolveTaskExecutionContract,
+   resolveTaskExecutionRoute,
+   withEffectiveTaskWorkflowMode,
+ } from "./resolve.js";
+diff --git a/packages/agentplane/src/runtime/task-routing/resolve.test.ts b/packages/agentplane/src/runtime/task-routing/resolve.test.ts
+index 826d3c09b..477928982 100644
+--- a/packages/agentplane/src/runtime/task-routing/resolve.test.ts
++++ b/packages/agentplane/src/runtime/task-routing/resolve.test.ts
+@@ -2,7 +2,12 @@ import { describe, expect, it } from "vitest";
+ 
+ import { defaultConfig } from "@agentplaneorg/core/config";
+ 
+-import { resolveEffectiveTaskWorkflowMode, resolveTaskExecutionRoute } from "./resolve.js";
++import {
++  reconcileTaskExecutionContract,
++  resolveEffectiveTaskWorkflowMode,
++  resolveTaskExecutionContract,
++  resolveTaskExecutionRoute,
++} from "./resolve.js";
+ 
+ describe("task execution route", () => {
+   it("keeps legacy task new behavior when repository mode is requested", () => {
+@@ -88,4 +93,193 @@ describe("task execution route", () => {
+       ),
+     ).toBe("branch_pr");
+   });
++
++  it("respects a compatible agent-selected direct workflow without language classification", () => {
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    const contract = resolveTaskExecutionContract({
++      config,
++      requestedMode: "auto",
++      task: {
++        task_kind: "code",
++        mutation_scope: "code",
++        risk_flags: [],
++      },
++      declaration: {
++        schema_version: 1,
++        preferred_mode: "direct",
++        scope_roots: ["packages/widget/src/parser.ts"],
++        repository_effects: ["repository_write", "source_code", "tests"],
++        external_effects: [],
++        uncertainty: "bounded",
++        reversibility: "reversible",
++        rationale: ["localized parser fix covered by unit tests"],
++      },
++    });
++
++    expect(contract).toMatchObject({
++      source: "agent_declared",
++      selected_mode: "direct",
++      reason_codes: ["agent_preferred_direct_compatible"],
++      safety: { requires_worktree: false, requires_user_approval: false },
++    });
++    expect(contract.verification.required_evidence).toContain("repository_effect:tests");
++  });
++
++  it("enforces broad declared effects while preserving the agent rationale", () => {
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    const contract = resolveTaskExecutionContract({
++      config,
++      task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
++      declaration: {
++        schema_version: 1,
++        preferred_mode: "direct",
++        scope_roots: ["packages/sdk", "schemas"],
++        repository_effects: ["repository_write", "public_api", "schema"],
++        external_effects: [],
++        uncertainty: "bounded",
++        reversibility: "recovery_required",
++        rationale: ["SDK contract and stored schema change together"],
++      },
++    });
++
++    expect(contract.selected_mode).toBe("branch_pr");
++    expect(contract.reason_codes).toEqual([
++      "effect_public_api",
++      "effect_schema",
++      "reversibility_recovery_required",
++    ]);
++    expect(contract.declaration.rationale).toEqual([
++      "SDK contract and stored schema change together",
++    ]);
++  });
++
++  it("escalates underestimated direct work once and preserves observed work", () => {
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    const initial = resolveTaskExecutionContract({
++      config,
++      task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
++      declaration: {
++        schema_version: 1,
++        preferred_mode: "direct",
++        scope_roots: ["."],
++        repository_effects: ["repository_write", "source_code", "tests"],
++        external_effects: [],
++        uncertainty: "bounded",
++        reversibility: "reversible",
++        rationale: ["expected a localized implementation"],
++      },
++    });
++    const first = reconcileTaskExecutionContract({
++      contract: initial,
++      changed_paths: ["packages/app/src/index.ts", ".github/workflows/ci.yml"],
++      preserved_commit: "abc123",
++    });
++    const second = reconcileTaskExecutionContract({
++      contract: first.contract,
++      changed_paths: [".github/workflows/ci.yml", "packages/app/src/index.ts"],
++      preserved_commit: "abc123",
++    });
++
++    expect(first.escalated).toBe(true);
++    expect(first.contract).toMatchObject({
++      selected_mode: "branch_pr",
++      escalation: {
++        from: "direct",
++        to: "branch_pr",
++        preserved_commit: "abc123",
++        preserved_changed_paths: [".github/workflows/ci.yml", "packages/app/src/index.ts"],
++      },
++    });
++    expect(first.contract.verification.required_evidence).toContain("repository_effect:ci");
++    expect(second.escalated).toBe(false);
++    expect(second.contract).toEqual(first.contract);
++  });
++
++  it("never self-authorizes external or destructive effects", () => {
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    const contract = resolveTaskExecutionContract({
++      config,
++      task: { task_kind: "ops", mutation_scope: "ops", risk_flags: [] },
++      declaration: {
++        schema_version: 1,
++        preferred_mode: "direct",
++        scope_roots: ["infra"],
++        repository_effects: ["repository_write"],
++        external_effects: ["deploy", "destructive_git"],
++        uncertainty: "bounded",
++        reversibility: "irreversible",
++        rationale: ["operator requested an external rollout"],
++      },
++    });
++
++    expect(contract.selected_mode).toBe("branch_pr");
++    expect(contract.safety).toEqual({
++      requires_worktree: true,
++      requires_user_approval: true,
++      approval_effects: ["deploy", "destructive_git"],
++    });
++  });
++
++  it("derives network approval from project policy instead of the agent risk assessment", () => {
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    config.agents.approvals.require_network = false;
++    const declaration = {
++      schema_version: 1 as const,
++      preferred_mode: "direct" as const,
++      scope_roots: [],
++      repository_effects: [],
++      external_effects: ["network_read" as const],
++      uncertainty: "bounded" as const,
++      reversibility: "reversible" as const,
++      rationale: ["read public package metadata"],
++    };
++
++    const allowed = resolveTaskExecutionContract({
++      config,
++      task: { task_kind: "analysis", mutation_scope: "none", risk_flags: [] },
++      declaration,
++    });
++    config.agents.approvals.require_network = true;
++    const gated = resolveTaskExecutionContract({
++      config,
++      task: { task_kind: "analysis", mutation_scope: "none", risk_flags: [] },
++      declaration,
++    });
++
++    expect(allowed.safety).toMatchObject({
++      requires_user_approval: false,
++      approval_effects: [],
++    });
++    expect(gated.safety).toMatchObject({
++      requires_user_approval: true,
++      approval_effects: ["network_read"],
++    });
++  });
++
++  it("rejects scope roots that normalize outside the repository", () => {
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++
++    expect(() =>
++      resolveTaskExecutionContract({
++        config,
++        task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
++        declaration: {
++          schema_version: 1,
++          preferred_mode: "direct",
++          scope_roots: ["packages/app/../../../outside"],
++          repository_effects: ["repository_write"],
++          external_effects: [],
++          uncertainty: "bounded",
++          reversibility: "reversible",
++          rationale: ["invalid scope"],
++        },
++      }),
++    ).toThrow("scope root must be repository-relative");
++  });
+ });
+diff --git a/packages/agentplane/src/runtime/task-routing/resolve.ts b/packages/agentplane/src/runtime/task-routing/resolve.ts
+index 395e409b5..b41a86761 100644
+--- a/packages/agentplane/src/runtime/task-routing/resolve.ts
++++ b/packages/agentplane/src/runtime/task-routing/resolve.ts
+@@ -1,8 +1,14 @@
++import path from "node:path";
++
+ import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+ import type {
++  TaskExecutionContract,
++  TaskExecutionDeclaration,
+   TaskExecutionRoute,
+   TaskExecutionRouteMode,
+   TaskExecutionRouteRequest,
++  TaskExternalEffect,
++  TaskRepositoryEffect,
+ } from "@agentplaneorg/core/tasks";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+@@ -13,7 +19,22 @@ type RouteTaskInput = Pick<
+   "task_kind" | "mutation_scope" | "risk_flags" | "blueprint_request"
+ >;
+ 
+-const BRANCH_PR_RISK_FLAGS = new Set([
++const ISOLATED_REPOSITORY_EFFECTS = new Set<TaskRepositoryEffect>([
++  "public_api",
++  "schema",
++  "dependencies",
++  "ci",
++  "release_metadata",
++  "security_boundary",
++]);
++const ISOLATED_EXTERNAL_EFFECTS = new Set<TaskExternalEffect>([
++  "external_write",
++  "credentials",
++  "publish",
++  "deploy",
++  "destructive_git",
++]);
++const LEGACY_BRANCH_PR_RISK_FLAGS = new Set([
+   "credentials",
+   "deploy",
+   "publish",
+@@ -26,7 +47,196 @@ function repositoryMode(config: AgentplaneConfig): TaskExecutionRouteMode {
+   return config.workflow_mode === "branch_pr" ? "branch_pr" : "direct";
+ }
+ 
+-function autoRouteReasons(task: RouteTaskInput): string[] {
++function uniqueSorted<T extends string>(values: readonly T[]): T[] {
++  return [...new Set(values)].toSorted();
++}
++
++function normalizedScopeRoots(values: readonly string[]): string[] {
++  const roots: string[] = [];
++  for (const value of values) {
++    const raw = value.trim().replaceAll("\\", "/");
++    if (!raw || raw.startsWith("/") || /^(?:[A-Za-z]:|\\\\)/u.test(raw)) {
++      throw new Error(`Execution declaration scope root must be repository-relative: ${value}`);
++    }
++    const root = path.posix.normalize(raw.replace(/^\.\//u, ""));
++    if (root === ".." || root.startsWith("../")) {
++      throw new Error(`Execution declaration scope root must be repository-relative: ${value}`);
++    }
++    roots.push(root);
++  }
++  return uniqueSorted(roots);
++}
++
++function legacyDeclaration(opts: {
++  task: RouteTaskInput;
++  requestedMode: TaskExecutionRouteRequest;
++}): TaskExecutionDeclaration {
++  const repositoryEffects: TaskRepositoryEffect[] = [];
++  const externalEffects: TaskExternalEffect[] = [];
++  if (opts.task.mutation_scope && opts.task.mutation_scope !== "none") {
++    repositoryEffects.push("repository_write");
++  }
++  if (opts.task.mutation_scope === "docs") repositoryEffects.push("documentation");
++  if (opts.task.mutation_scope === "code") repositoryEffects.push("source_code");
++  if (opts.task.mutation_scope === "release") repositoryEffects.push("release_metadata");
++  for (const risk of opts.task.risk_flags ?? []) {
++    if (risk === "network") externalEffects.push("network_read");
++    if (risk === "credentials") externalEffects.push("credentials");
++    if (risk === "deploy") externalEffects.push("deploy");
++    if (risk === "publish") externalEffects.push("publish");
++    if (risk === "external_system") externalEffects.push("external_write");
++    if (risk === "security") repositoryEffects.push("security_boundary");
++    if (risk === "merge") repositoryEffects.push("release_metadata");
++  }
++  if (opts.task.blueprint_request === "release.strict") {
++    repositoryEffects.push("release_metadata");
++  }
++  return {
++    schema_version: 1,
++    preferred_mode: opts.requestedMode === "branch_pr" ? "branch_pr" : "direct",
++    scope_roots: [],
++    repository_effects: uniqueSorted(repositoryEffects),
++    external_effects: uniqueSorted(externalEffects),
++    uncertainty: opts.task.mutation_scope === "unknown" ? "material" : "bounded",
++    reversibility:
++      externalEffects.some((effect) => effect !== "network_read") ||
++      repositoryEffects.includes("release_metadata")
++        ? "recovery_required"
++        : "reversible",
++    rationale: ["legacy structured task fields mapped to the execution contract"],
++  };
++}
++
++function contractReasonCodes(opts: {
++  declaration: TaskExecutionDeclaration;
++  repository_mode: TaskExecutionRouteMode;
++}): string[] {
++  const reasons: string[] = [];
++  if (opts.repository_mode === "branch_pr") reasons.push("repository_branch_pr_floor");
++  if (opts.declaration.preferred_mode === "branch_pr") reasons.push("agent_preferred_branch_pr");
++  const isolatedRepositoryEffects = opts.declaration.repository_effects.filter((effect) =>
++    ISOLATED_REPOSITORY_EFFECTS.has(effect),
++  );
++  const isolatedExternalEffects = opts.declaration.external_effects.filter((effect) =>
++    ISOLATED_EXTERNAL_EFFECTS.has(effect),
++  );
++  reasons.push(
++    ...isolatedRepositoryEffects.map((effect) => `effect_${effect}`),
++    ...isolatedExternalEffects.map((effect) => `effect_${effect}`),
++  );
++  if (opts.declaration.uncertainty === "material") reasons.push("material_uncertainty");
++  if (opts.declaration.reversibility !== "reversible") {
++    reasons.push(`reversibility_${opts.declaration.reversibility}`);
++  }
++  if (reasons.length === 0) reasons.push("agent_preferred_direct_compatible");
++  return uniqueSorted(reasons);
++}
++
++function selectedModeForReasons(opts: {
++  declaration: TaskExecutionDeclaration;
++  repository_mode: TaskExecutionRouteMode;
++  reason_codes: readonly string[];
++}): TaskExecutionRouteMode {
++  if (opts.repository_mode === "branch_pr" || opts.declaration.preferred_mode === "branch_pr") {
++    return "branch_pr";
++  }
++  return opts.reason_codes.some(
++    (reason) =>
++      reason.startsWith("effect_") ||
++      reason === "material_uncertainty" ||
++      reason.startsWith("reversibility_"),
++  )
++    ? "branch_pr"
++    : "direct";
++}
++
++function requiredEvidence(opts: {
++  declaration: TaskExecutionDeclaration;
++  selected_mode: TaskExecutionRouteMode;
++  observed_effects?: readonly TaskRepositoryEffect[];
++}): string[] {
++  const repositoryEffects = uniqueSorted([
++    ...opts.declaration.repository_effects,
++    ...(opts.observed_effects ?? []),
++  ]);
++  return uniqueSorted([
++    "task_outcome",
++    ...repositoryEffects.map((effect) => `repository_effect:${effect}`),
++    ...opts.declaration.external_effects.map((effect) => `external_effect:${effect}`),
++    ...(opts.selected_mode === "branch_pr" ? ["hosted_integration"] : []),
++  ]);
++}
++
++export function resolveTaskExecutionContract(opts: {
++  config: AgentplaneConfig;
++  task: RouteTaskInput;
++  requestedMode?: TaskExecutionRouteRequest;
++  declaration?: TaskExecutionDeclaration;
++}): TaskExecutionContract {
++  const repository_mode = repositoryMode(opts.config);
++  const requestedMode = opts.requestedMode ?? "repository";
++  const declaration = opts.declaration
++    ? structuredClone(opts.declaration)
++    : legacyDeclaration({ task: opts.task, requestedMode });
++  const scopeRoots = normalizedScopeRoots(declaration.scope_roots);
++  if (declaration.repository_effects.length > 0 && scopeRoots.length === 0 && opts.declaration) {
++    throw new Error("Execution declaration with repository effects requires scope_roots.");
++  }
++  const preservesLegacyRepositoryRoute = !opts.declaration && requestedMode === "repository";
++  const reason_codes = preservesLegacyRepositoryRoute
++    ? ["repository_mode_selected"]
++    : contractReasonCodes({ declaration, repository_mode });
++  const selected_mode = preservesLegacyRepositoryRoute
++    ? repository_mode
++    : selectedModeForReasons({
++        declaration,
++        repository_mode,
++        reason_codes,
++      });
++  const approval_effects = uniqueSorted(
++    declaration.external_effects.filter(
++      (effect) =>
++        effect !== "network_read" || opts.config.agents?.approvals?.require_network === true,
++    ),
++  );
++  return {
++    schema_version: 1,
++    source: opts.declaration ? "agent_declared" : "legacy_compatibility",
++    declaration: {
++      ...declaration,
++      scope_roots: scopeRoots,
++      repository_effects: uniqueSorted(declaration.repository_effects),
++      external_effects: uniqueSorted(declaration.external_effects),
++      rationale: uniqueSorted(declaration.rationale),
++    },
++    selected_mode,
++    repository_mode,
++    reason_codes,
++    safety: {
++      requires_worktree: selected_mode === "branch_pr",
++      requires_user_approval: approval_effects.length > 0,
++      approval_effects,
++    },
++    verification: { required_evidence: requiredEvidence({ declaration, selected_mode }) },
++    observed: { repository_effects: [], changed_paths: [] },
++  };
++}
++
++function routeFromContract(
++  contract: TaskExecutionContract,
++  requestedMode: TaskExecutionRouteRequest,
++): TaskExecutionRoute {
++  return {
++    schema_version: 1,
++    requested_mode: requestedMode,
++    selected_mode: contract.selected_mode,
++    repository_mode: contract.repository_mode,
++    reason_codes: [...contract.reason_codes],
++    frozen: true,
++  };
++}
++
++function legacyAutoRouteReasons(task: RouteTaskInput): string[] {
+   const reasons: string[] = [];
+   if (task.blueprint_request === "code.branch_pr" || task.blueprint_request === "release.strict") {
+     reasons.push("blueprint_requires_branch_pr");
+@@ -41,78 +251,176 @@ function autoRouteReasons(task: RouteTaskInput): string[] {
+   }
+   if (task.mutation_scope === "unknown") reasons.push("mutation_scope_unknown");
+   for (const risk of task.risk_flags ?? []) {
+-    if (BRANCH_PR_RISK_FLAGS.has(risk)) reasons.push(`risk_${risk}`);
++    if (LEGACY_BRANCH_PR_RISK_FLAGS.has(risk)) reasons.push(`risk_${risk}`);
+   }
+-  return [...new Set(reasons)].toSorted();
++  return uniqueSorted(reasons);
+ }
+ 
+-export function resolveTaskExecutionRoute(opts: {
++function resolveLegacyTaskExecutionRoute(opts: {
+   config: AgentplaneConfig;
+   task: RouteTaskInput;
+-  requestedMode?: TaskExecutionRouteRequest;
++  requestedMode: TaskExecutionRouteRequest;
+ }): TaskExecutionRoute {
+-  const repoMode = repositoryMode(opts.config);
+-  const requestedMode = opts.requestedMode ?? "repository";
++  const repository_mode = repositoryMode(opts.config);
+   const reasons: string[] = [];
+-  let selectedMode: TaskExecutionRouteMode;
+-
+-  if (repoMode === "branch_pr") {
+-    selectedMode = "branch_pr";
++  let selected_mode: TaskExecutionRouteMode;
++  if (repository_mode === "branch_pr") {
++    selected_mode = "branch_pr";
+     reasons.push("repository_branch_pr_floor");
+-    if (requestedMode === "direct") reasons.push("direct_request_overridden");
++    if (opts.requestedMode === "direct") reasons.push("direct_request_overridden");
++  } else if (opts.requestedMode === "repository") {
++    selected_mode = "direct";
++    reasons.push("repository_mode_selected");
++  } else if (opts.requestedMode === "branch_pr") {
++    selected_mode = "branch_pr";
++    reasons.push("explicit_branch_pr");
+   } else {
+-    switch (requestedMode) {
+-      case "repository": {
+-        selectedMode = "direct";
+-        reasons.push("repository_mode_selected");
+-        break;
+-      }
+-      case "branch_pr": {
+-        selectedMode = "branch_pr";
+-        reasons.push("explicit_branch_pr");
+-        break;
+-      }
+-      case "direct": {
+-        const forcedReasons = autoRouteReasons(opts.task);
+-        selectedMode = forcedReasons.length > 0 ? "branch_pr" : "direct";
+-        reasons.push(
+-          ...(forcedReasons.length > 0
+-            ? ["direct_request_overridden", ...forcedReasons]
+-            : ["explicit_direct"]),
+-        );
+-        break;
+-      }
+-      case "auto": {
+-        const forcedReasons = autoRouteReasons(opts.task);
+-        selectedMode = forcedReasons.length > 0 ? "branch_pr" : "direct";
+-        reasons.push(...(forcedReasons.length > 0 ? forcedReasons : ["automatic_safe_direct"]));
+-        break;
+-      }
+-    }
++    const forcedReasons = legacyAutoRouteReasons(opts.task);
++    selected_mode = forcedReasons.length > 0 ? "branch_pr" : "direct";
++    reasons.push(
++      ...(forcedReasons.length > 0
++        ? [
++            ...(opts.requestedMode === "direct" ? ["direct_request_overridden"] : []),
++            ...forcedReasons,
++          ]
++        : [opts.requestedMode === "direct" ? "explicit_direct" : "automatic_safe_direct"]),
++    );
+   }
+-
+   return {
+     schema_version: 1,
+-    requested_mode: requestedMode,
+-    selected_mode: selectedMode,
+-    repository_mode: repoMode,
+-    reason_codes: [...new Set(reasons)].toSorted(),
++    requested_mode: opts.requestedMode,
++    selected_mode,
++    repository_mode,
++    reason_codes: uniqueSorted(reasons),
+     frozen: true,
+   };
+ }
+ 
++export function resolveTaskExecutionRoute(opts: {
++  config: AgentplaneConfig;
++  task: RouteTaskInput;
++  requestedMode?: TaskExecutionRouteRequest;
++  declaration?: TaskExecutionDeclaration;
++}): TaskExecutionRoute {
++  const requestedMode = opts.requestedMode ?? "repository";
++  if (!opts.declaration) {
++    return resolveLegacyTaskExecutionRoute({
++      config: opts.config,
++      task: opts.task,
++      requestedMode,
++    });
++  }
++  return routeFromContract(resolveTaskExecutionContract(opts), requestedMode);
++}
++
++function structuralEffectsForPath(pathValue: string): TaskRepositoryEffect[] {
++  const normalized = pathValue.trim().replaceAll("\\", "/").replace(/^\.\//u, "");
++  if (!normalized || normalized.startsWith("../") || normalized.startsWith("/")) return [];
++  const effects: TaskRepositoryEffect[] = ["repository_write"];
++  if (
++    normalized.startsWith(".github/workflows/") ||
++    normalized === ".gitlab-ci.yml" ||
++    normalized.startsWith(".circleci/")
++  ) {
++    effects.push("ci");
++  }
++  if (
++    /(^|\/)(?:package\.json|bun\.lockb?|pnpm-lock\.yaml|yarn\.lock|package-lock\.json)$/u.test(
++      normalized,
++    )
++  ) {
++    effects.push("dependencies");
++  }
++  if (
++    normalized.startsWith("schemas/") ||
++    normalized.includes("/schemas/") ||
++    normalized.startsWith("migrations/") ||
++    normalized.includes("/migrations/") ||
++    normalized.endsWith(".schema.json")
++  ) {
++    effects.push("schema");
++  }
++  if (
++    normalized === "CHANGELOG.md" ||
++    normalized.startsWith(".changeset/") ||
++    normalized.startsWith("changesets/")
++  ) {
++    effects.push("release_metadata");
++  }
++  if (/^packages\/[^/]+\/src\/index\.[cm]?[jt]sx?$/u.test(normalized)) {
++    effects.push("public_api");
++  }
++  return effects;
++}
++
++export function reconcileTaskExecutionContract(opts: {
++  contract: TaskExecutionContract;
++  changed_paths: readonly string[];
++  preserved_commit?: string;
++}): { contract: TaskExecutionContract; escalated: boolean } {
++  const changed_paths = uniqueSorted(
++    opts.changed_paths
++      .map((entry) => entry.trim().replaceAll("\\", "/"))
++      .filter((entry) => entry && !entry.startsWith("../") && !entry.startsWith("/")),
++  );
++  const observedEffects = uniqueSorted([
++    ...opts.contract.observed.repository_effects,
++    ...changed_paths.flatMap((changedPath) => structuralEffectsForPath(changedPath)),
++  ]);
++  const newlyIsolatedEffects = observedEffects.filter(
++    (effect) =>
++      ISOLATED_REPOSITORY_EFFECTS.has(effect) &&
++      !opts.contract.declaration.repository_effects.includes(effect),
++  );
++  const escalated = opts.contract.selected_mode === "direct" && newlyIsolatedEffects.length > 0;
++  const selected_mode = escalated ? "branch_pr" : opts.contract.selected_mode;
++  const escalationReasons = newlyIsolatedEffects.map((effect) => `observed_effect_${effect}`);
++  const reason_codes = uniqueSorted([...opts.contract.reason_codes, ...escalationReasons]);
++  const contract: TaskExecutionContract = {
++    ...opts.contract,
++    selected_mode,
++    reason_codes,
++    safety: { ...opts.contract.safety, requires_worktree: selected_mode === "branch_pr" },
++    verification: {
++      required_evidence: requiredEvidence({
++        declaration: opts.contract.declaration,
++        selected_mode,
++        observed_effects: observedEffects,
++      }),
++    },
++    observed: {
++      repository_effects: observedEffects,
++      changed_paths: uniqueSorted([...opts.contract.observed.changed_paths, ...changed_paths]),
++    },
++    ...(escalated
++      ? {
++          escalation: {
++            from: "direct" as const,
++            to: "branch_pr" as const,
++            reason_codes: uniqueSorted(escalationReasons),
++            preserved_changed_paths: changed_paths,
++            ...(opts.preserved_commit ? { preserved_commit: opts.preserved_commit } : {}),
++          },
++        }
++      : opts.contract.escalation
++        ? { escalation: structuredClone(opts.contract.escalation) }
++        : {}),
++  };
++  return { contract, escalated };
++}
++
+ export function resolveEffectiveTaskWorkflowMode(
+-  task: Pick<TaskData, "execution_route">,
++  task: Pick<TaskData, "execution_route" | "execution_contract">,
+   config: AgentplaneConfig,
+ ): TaskExecutionRouteMode {
+   const repoMode = repositoryMode(config);
+   if (repoMode === "branch_pr") return "branch_pr";
+-  return task.execution_route?.selected_mode ?? repoMode;
++  return task.execution_contract?.selected_mode ?? task.execution_route?.selected_mode ?? repoMode;
+ }
+ 
+ export function withEffectiveTaskWorkflowMode(
+   ctx: CommandContext,
+-  task: Pick<TaskData, "execution_route">,
++  task: Pick<TaskData, "execution_route" | "execution_contract">,
+ ): CommandContext {
+   const workflowMode = resolveEffectiveTaskWorkflowMode(task, ctx.config);
+   if (workflowMode === ctx.config.workflow_mode) return ctx;
+diff --git a/packages/core/schemas/task-readme-frontmatter.schema.json b/packages/core/schemas/task-readme-frontmatter.schema.json
+index 58ae24bb2..2cf36d415 100644
+--- a/packages/core/schemas/task-readme-frontmatter.schema.json
++++ b/packages/core/schemas/task-readme-frontmatter.schema.json
+@@ -868,6 +868,235 @@
+       ],
+       "additionalProperties": false
+     },
++    "execution_contract": {
++      "type": "object",
++      "properties": {
++        "schema_version": {
++          "type": "number",
++          "const": 1
++        },
++        "source": {
++          "type": "string",
++          "enum": ["agent_declared", "legacy_compatibility"]
++        },
++        "declaration": {
++          "type": "object",
++          "properties": {
++            "schema_version": {
++              "type": "number",
++              "const": 1
++            },
++            "preferred_mode": {
++              "type": "string",
++              "enum": ["direct", "branch_pr"]
++            },
++            "scope_roots": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "repository_effects": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "enum": [
++                  "repository_write",
++                  "documentation",
++                  "source_code",
++                  "tests",
++                  "public_api",
++                  "schema",
++                  "dependencies",
++                  "ci",
++                  "release_metadata",
++                  "security_boundary"
++                ]
++              }
++            },
++            "external_effects": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "enum": [
++                  "network_read",
++                  "external_write",
++                  "credentials",
++                  "publish",
++                  "deploy",
++                  "destructive_git"
++                ]
++              }
++            },
++            "uncertainty": {
++              "type": "string",
++              "enum": ["bounded", "material"]
++            },
++            "reversibility": {
++              "type": "string",
++              "enum": ["reversible", "recovery_required", "irreversible"]
++            },
++            "rationale": {
++              "minItems": 1,
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            }
++          },
++          "required": [
++            "schema_version",
++            "preferred_mode",
++            "scope_roots",
++            "repository_effects",
++            "external_effects",
++            "uncertainty",
++            "reversibility",
++            "rationale"
++          ],
++          "additionalProperties": false
++        },
++        "selected_mode": {
++          "type": "string",
++          "enum": ["direct", "branch_pr"]
++        },
++        "repository_mode": {
++          "type": "string",
++          "enum": ["direct", "branch_pr"]
++        },
++        "reason_codes": {
++          "minItems": 1,
++          "type": "array",
++          "items": {
++            "type": "string",
++            "minLength": 1
++          }
++        },
++        "safety": {
++          "type": "object",
++          "properties": {
++            "requires_worktree": {
++              "type": "boolean"
++            },
++            "requires_user_approval": {
++              "type": "boolean"
++            },
++            "approval_effects": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "enum": [
++                  "network_read",
++                  "external_write",
++                  "credentials",
++                  "publish",
++                  "deploy",
++                  "destructive_git"
++                ]
++              }
++            }
++          },
++          "required": ["requires_worktree", "requires_user_approval", "approval_effects"],
++          "additionalProperties": false
++        },
++        "verification": {
++          "type": "object",
++          "properties": {
++            "required_evidence": {
++              "minItems": 1,
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            }
++          },
++          "required": ["required_evidence"],
++          "additionalProperties": false
++        },
++        "observed": {
++          "type": "object",
++          "properties": {
++            "repository_effects": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "enum": [
++                  "repository_write",
++                  "documentation",
++                  "source_code",
++                  "tests",
++                  "public_api",
++                  "schema",
++                  "dependencies",
++                  "ci",
++                  "release_metadata",
++                  "security_boundary"
++                ]
++              }
++            },
++            "changed_paths": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            }
++          },
++          "required": ["repository_effects", "changed_paths"],
++          "additionalProperties": false
++        },
++        "escalation": {
++          "type": "object",
++          "properties": {
++            "from": {
++              "type": "string",
++              "const": "direct"
++            },
++            "to": {
++              "type": "string",
++              "const": "branch_pr"
++            },
++            "reason_codes": {
++              "minItems": 1,
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "preserved_changed_paths": {
++              "minItems": 1,
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "preserved_commit": {
++              "type": "string",
++              "minLength": 1
++            }
++          },
++          "required": ["from", "to", "reason_codes", "preserved_changed_paths"],
++          "additionalProperties": false
++        }
++      },
++      "required": [
++        "schema_version",
++        "source",
++        "declaration",
++        "selected_mode",
++        "repository_mode",
++        "reason_codes",
++        "safety",
++        "verification",
++        "observed"
++      ],
++      "additionalProperties": false
++    },
+     "sync": {
+       "type": "object",
+       "properties": {
+diff --git a/packages/core/schemas/tasks-export.schema.json b/packages/core/schemas/tasks-export.schema.json
+index 4f199defd..72fd75f2b 100644
+--- a/packages/core/schemas/tasks-export.schema.json
++++ b/packages/core/schemas/tasks-export.schema.json
+@@ -644,6 +644,235 @@
+             ],
+             "additionalProperties": false
+           },
++          "execution_contract": {
++            "type": "object",
++            "properties": {
++              "schema_version": {
++                "type": "number",
++                "const": 1
++              },
++              "source": {
++                "type": "string",
++                "enum": ["agent_declared", "legacy_compatibility"]
++              },
++              "declaration": {
++                "type": "object",
++                "properties": {
++                  "schema_version": {
++                    "type": "number",
++                    "const": 1
++                  },
++                  "preferred_mode": {
++                    "type": "string",
++                    "enum": ["direct", "branch_pr"]
++                  },
++                  "scope_roots": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  },
++                  "repository_effects": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "enum": [
++                        "repository_write",
++                        "documentation",
++                        "source_code",
++                        "tests",
++                        "public_api",
++                        "schema",
++                        "dependencies",
++                        "ci",
++                        "release_metadata",
++                        "security_boundary"
++                      ]
++                    }
++                  },
++                  "external_effects": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "enum": [
++                        "network_read",
++                        "external_write",
++                        "credentials",
++                        "publish",
++                        "deploy",
++                        "destructive_git"
++                      ]
++                    }
++                  },
++                  "uncertainty": {
++                    "type": "string",
++                    "enum": ["bounded", "material"]
++                  },
++                  "reversibility": {
++                    "type": "string",
++                    "enum": ["reversible", "recovery_required", "irreversible"]
++                  },
++                  "rationale": {
++                    "minItems": 1,
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  }
++                },
++                "required": [
++                  "schema_version",
++                  "preferred_mode",
++                  "scope_roots",
++                  "repository_effects",
++                  "external_effects",
++                  "uncertainty",
++                  "reversibility",
++                  "rationale"
++                ],
++                "additionalProperties": false
++              },
++              "selected_mode": {
++                "type": "string",
++                "enum": ["direct", "branch_pr"]
++              },
++              "repository_mode": {
++                "type": "string",
++                "enum": ["direct", "branch_pr"]
++              },
++              "reason_codes": {
++                "minItems": 1,
++                "type": "array",
++                "items": {
++                  "type": "string",
++                  "minLength": 1
++                }
++              },
++              "safety": {
++                "type": "object",
++                "properties": {
++                  "requires_worktree": {
++                    "type": "boolean"
++                  },
++                  "requires_user_approval": {
++                    "type": "boolean"
++                  },
++                  "approval_effects": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "enum": [
++                        "network_read",
++                        "external_write",
++                        "credentials",
++                        "publish",
++                        "deploy",
++                        "destructive_git"
++                      ]
++                    }
++                  }
++                },
++                "required": ["requires_worktree", "requires_user_approval", "approval_effects"],
++                "additionalProperties": false
++              },
++              "verification": {
++                "type": "object",
++                "properties": {
++                  "required_evidence": {
++                    "minItems": 1,
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  }
++                },
++                "required": ["required_evidence"],
++                "additionalProperties": false
++              },
++              "observed": {
++                "type": "object",
++                "properties": {
++                  "repository_effects": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "enum": [
++                        "repository_write",
++                        "documentation",
++                        "source_code",
++                        "tests",
++                        "public_api",
++                        "schema",
++                        "dependencies",
++                        "ci",
++                        "release_metadata",
++                        "security_boundary"
++                      ]
++                    }
++                  },
++                  "changed_paths": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  }
++                },
++                "required": ["repository_effects", "changed_paths"],
++                "additionalProperties": false
++              },
++              "escalation": {
++                "type": "object",
++                "properties": {
++                  "from": {
++                    "type": "string",
++                    "const": "direct"
++                  },
++                  "to": {
++                    "type": "string",
++                    "const": "branch_pr"
++                  },
++                  "reason_codes": {
++                    "minItems": 1,
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  },
++                  "preserved_changed_paths": {
++                    "minItems": 1,
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  },
++                  "preserved_commit": {
++                    "type": "string",
++                    "minLength": 1
++                  }
++                },
++                "required": ["from", "to", "reason_codes", "preserved_changed_paths"],
++                "additionalProperties": false
++              }
++            },
++            "required": [
++              "schema_version",
++              "source",
++              "declaration",
++              "selected_mode",
++              "repository_mode",
++              "reason_codes",
++              "safety",
++              "verification",
++              "observed"
++            ],
++            "additionalProperties": false
++          },
+           "depends_on": {
+             "type": "array",
+             "items": {
+diff --git a/packages/core/src/runner/agent-semantic-result.test.ts b/packages/core/src/runner/agent-semantic-result.test.ts
+index 20ebd9a21..9a6206179 100644
+--- a/packages/core/src/runner/agent-semantic-result.test.ts
++++ b/packages/core/src/runner/agent-semantic-result.test.ts
+@@ -109,6 +109,16 @@ describe("agent semantic result contract", () => {
+           risk_flags: ["security"],
+           tags: ["cli", "parser"],
+           blueprint_request: "code.branch_pr",
++          execution: {
++            schema_version: 1,
++            preferred_mode: "branch_pr",
++            scope_roots: ["packages/core"],
++            repository_effects: ["repository_write", "source_code", "security_boundary"],
++            external_effects: [],
++            uncertainty: "bounded",
++            reversibility: "reversible",
++            rationale: ["security boundary changes require isolated review"],
++          },
+         },
+       }).task_intent,
+     ).toEqual({
+@@ -117,6 +127,16 @@ describe("agent semantic result contract", () => {
+       risk_flags: ["security"],
+       tags: ["cli", "parser"],
+       blueprint_request: "code.branch_pr",
++      execution: {
++        schema_version: 1,
++        preferred_mode: "branch_pr",
++        scope_roots: ["packages/core"],
++        repository_effects: ["repository_write", "source_code", "security_boundary"],
++        external_effects: [],
++        uncertainty: "bounded",
++        reversibility: "reversible",
++        rationale: ["security boundary changes require isolated review"],
++      },
+     });
+     expect(
+       listAgentSemanticResultSchemaErrors({
+diff --git a/packages/core/src/runner/agent-semantic-result.ts b/packages/core/src/runner/agent-semantic-result.ts
+index d95903813..65d6ab951 100644
+--- a/packages/core/src/runner/agent-semantic-result.ts
++++ b/packages/core/src/runner/agent-semantic-result.ts
+@@ -75,6 +75,41 @@ const AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA = z
+   })
+   .strict();
+ 
++const AGENT_SEMANTIC_RESULT_EXECUTION_DECLARATION_ZOD_SCHEMA = z
++  .object({
++    schema_version: z.literal(1),
++    preferred_mode: z.enum(["direct", "branch_pr"]),
++    scope_roots: z.array(NON_EMPTY_STRING),
++    repository_effects: z.array(
++      z.enum([
++        "repository_write",
++        "documentation",
++        "source_code",
++        "tests",
++        "public_api",
++        "schema",
++        "dependencies",
++        "ci",
++        "release_metadata",
++        "security_boundary",
++      ]),
++    ),
++    external_effects: z.array(
++      z.enum([
++        "network_read",
++        "external_write",
++        "credentials",
++        "publish",
++        "deploy",
++        "destructive_git",
++      ]),
++    ),
++    uncertainty: z.enum(["bounded", "material"]),
++    reversibility: z.enum(["reversible", "recovery_required", "irreversible"]),
++    rationale: z.array(NON_EMPTY_STRING).min(1),
++  })
++  .strict();
++
+ const AGENT_SEMANTIC_RESULT_TASK_INTENT_ZOD_SCHEMA = z
+   .object({
+     task_kind: z.enum(["analysis", "content", "docs", "code", "release", "ops", "context"]),
+@@ -107,6 +142,7 @@ const AGENT_SEMANTIC_RESULT_TASK_INTENT_ZOD_SCHEMA = z
+         "ops.approval",
+       ])
+       .optional(),
++    execution: AGENT_SEMANTIC_RESULT_EXECUTION_DECLARATION_ZOD_SCHEMA.optional(),
+   })
+   .strict();
+ 
+diff --git a/packages/core/src/tasks/index.ts b/packages/core/src/tasks/index.ts
+index 21ceca7fa..c66a55692 100644
+--- a/packages/core/src/tasks/index.ts
++++ b/packages/core/src/tasks/index.ts
+@@ -130,6 +130,10 @@ export {
+   type TaskExecutionRoute,
+   type TaskExecutionRouteMode,
+   type TaskExecutionRouteRequest,
++  type TaskExecutionContract,
++  type TaskExecutionDeclaration,
++  type TaskExternalEffect,
++  type TaskRepositoryEffect,
+   type TaskSyncConflict,
+   type TaskSyncConflictPolicy,
+   type TaskSyncEnvelope,
+diff --git a/packages/core/src/tasks/task-artifact-schema.task.ts b/packages/core/src/tasks/task-artifact-schema.task.ts
+index 2eeb27d1d..17e43c389 100644
+--- a/packages/core/src/tasks/task-artifact-schema.task.ts
++++ b/packages/core/src/tasks/task-artifact-schema.task.ts
+@@ -110,6 +110,72 @@ const TASK_EXECUTION_ROUTE_SCHEMA = z
+     frozen: z.literal(true),
+   })
+   .strict();
++const TASK_REPOSITORY_EFFECT_SCHEMA = z.enum([
++  "repository_write",
++  "documentation",
++  "source_code",
++  "tests",
++  "public_api",
++  "schema",
++  "dependencies",
++  "ci",
++  "release_metadata",
++  "security_boundary",
++]);
++const TASK_EXTERNAL_EFFECT_SCHEMA = z.enum([
++  "network_read",
++  "external_write",
++  "credentials",
++  "publish",
++  "deploy",
++  "destructive_git",
++]);
++const TASK_EXECUTION_DECLARATION_SCHEMA = z
++  .object({
++    schema_version: z.literal(1),
++    preferred_mode: z.enum(["direct", "branch_pr"]),
++    scope_roots: z.array(NON_EMPTY_STRING),
++    repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
++    external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
++    uncertainty: z.enum(["bounded", "material"]),
++    reversibility: z.enum(["reversible", "recovery_required", "irreversible"]),
++    rationale: z.array(NON_EMPTY_STRING).min(1),
++  })
++  .strict();
++const TASK_EXECUTION_CONTRACT_SCHEMA = z
++  .object({
++    schema_version: z.literal(1),
++    source: z.enum(["agent_declared", "legacy_compatibility"]),
++    declaration: TASK_EXECUTION_DECLARATION_SCHEMA,
++    selected_mode: z.enum(["direct", "branch_pr"]),
++    repository_mode: z.enum(["direct", "branch_pr"]),
++    reason_codes: z.array(NON_EMPTY_STRING).min(1),
++    safety: z
++      .object({
++        requires_worktree: z.boolean(),
++        requires_user_approval: z.boolean(),
++        approval_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
++      })
++      .strict(),
++    verification: z.object({ required_evidence: z.array(NON_EMPTY_STRING).min(1) }).strict(),
++    observed: z
++      .object({
++        repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
++        changed_paths: z.array(NON_EMPTY_STRING),
++      })
++      .strict(),
++    escalation: z
++      .object({
++        from: z.literal("direct"),
++        to: z.literal("branch_pr"),
++        reason_codes: z.array(NON_EMPTY_STRING).min(1),
++        preserved_changed_paths: z.array(NON_EMPTY_STRING).min(1),
++        preserved_commit: NON_EMPTY_STRING.optional(),
++      })
++      .strict()
++      .optional(),
++  })
++  .strict();
+ 
+ const TASK_ORIGIN_SCHEMA = z
+   .object({
+@@ -357,6 +423,7 @@ export const TASK_README_FRONTMATTER_ZOD_SCHEMA = z
+     runner: RUNNER_OUTCOME_SCHEMA.optional(),
+     token_usage: TASK_TOKEN_USAGE_SCHEMA.optional(),
+     execution_route: TASK_EXECUTION_ROUTE_SCHEMA.optional(),
++    execution_contract: TASK_EXECUTION_CONTRACT_SCHEMA.optional(),
+     sync: TASK_SYNC_ENVELOPE_SCHEMA.optional(),
+     commit: TASK_COMMIT_SCHEMA.optional(),
+     comments: z.array(TASK_COMMENT_SCHEMA),
+@@ -387,6 +454,7 @@ const TASKS_EXPORT_TASK_SCHEMA = z
+     runner: RUNNER_OUTCOME_SCHEMA.optional(),
+     token_usage: TASK_TOKEN_USAGE_SCHEMA.optional(),
+     execution_route: TASK_EXECUTION_ROUTE_SCHEMA.optional(),
++    execution_contract: TASK_EXECUTION_CONTRACT_SCHEMA.optional(),
+     depends_on: z.array(NON_EMPTY_STRING),
+     tags: z.array(NON_EMPTY_STRING),
+     task_kind: TASK_KIND_SCHEMA.optional(),
+diff --git a/packages/core/src/tasks/task-provider-safe-projection.ts b/packages/core/src/tasks/task-provider-safe-projection.ts
+index 463a64305..eea237e17 100644
+--- a/packages/core/src/tasks/task-provider-safe-projection.ts
++++ b/packages/core/src/tasks/task-provider-safe-projection.ts
+@@ -34,6 +34,7 @@ export type ProviderSafeTaskProjection = {
+   task_kind?: string;
+   mutation_scope?: string;
+   execution_route?: TaskFrontmatter["execution_route"];
++  execution_contract?: TaskFrontmatter["execution_contract"];
+   plan_approval_state: PlanApprovalState;
+   plan_approved: boolean;
+   verification_state: VerificationState;
+@@ -88,6 +89,7 @@ export type ProviderSafeTaskProjectionInput = Pick<
+   | "runner"
+   | "token_usage"
+   | "execution_route"
++  | "execution_contract"
+   | "sync"
+   | "sections"
+   | "doc_version"
+@@ -138,6 +140,9 @@ export function buildProviderSafeTaskProjection(
+     ...(task.runner?.status ? { runner_status: task.runner.status } : {}),
+     ...(task.token_usage ? { token_usage: structuredClone(task.token_usage) } : {}),
+     ...(task.execution_route ? { execution_route: structuredClone(task.execution_route) } : {}),
++    ...(task.execution_contract
++      ? { execution_contract: structuredClone(task.execution_contract) }
++      : {}),
+     ...(task.commit?.hash ? { commit_hash: task.commit.hash } : {}),
+     ...(task.doc_version ? { doc_version: task.doc_version } : {}),
+     ...(task.doc_updated_at ? { doc_updated_at: task.doc_updated_at } : {}),
+diff --git a/packages/core/src/tasks/task-readme.ts b/packages/core/src/tasks/task-readme.ts
+index b80c257d8..bd97cb94a 100644
+--- a/packages/core/src/tasks/task-readme.ts
++++ b/packages/core/src/tasks/task-readme.ts
+@@ -285,6 +285,7 @@ export function renderTaskFrontmatter(frontmatter: Record<string, unknown>): str
+     "runner",
+     "token_usage",
+     "execution_route",
++    "execution_contract",
+     "commit",
+     "comments",
+     "events",
+diff --git a/packages/core/src/tasks/task-store.ts b/packages/core/src/tasks/task-store.ts
+index 8e2cfd914..9b19a3760 100644
+--- a/packages/core/src/tasks/task-store.ts
++++ b/packages/core/src/tasks/task-store.ts
+@@ -179,6 +179,65 @@ export type TaskExecutionRoute = {
+   frozen: true;
+ };
+ 
++export type TaskRepositoryEffect =
++  | "repository_write"
++  | "documentation"
++  | "source_code"
++  | "tests"
++  | "public_api"
++  | "schema"
++  | "dependencies"
++  | "ci"
++  | "release_metadata"
++  | "security_boundary";
++
++export type TaskExternalEffect =
++  | "network_read"
++  | "external_write"
++  | "credentials"
++  | "publish"
++  | "deploy"
++  | "destructive_git";
++
++export type TaskExecutionDeclaration = {
++  schema_version: 1;
++  preferred_mode: TaskExecutionRouteMode;
++  scope_roots: string[];
++  repository_effects: TaskRepositoryEffect[];
++  external_effects: TaskExternalEffect[];
++  uncertainty: "bounded" | "material";
++  reversibility: "reversible" | "recovery_required" | "irreversible";
++  rationale: string[];
++};
++
++export type TaskExecutionContract = {
++  schema_version: 1;
++  source: "agent_declared" | "legacy_compatibility";
++  declaration: TaskExecutionDeclaration;
++  selected_mode: TaskExecutionRouteMode;
++  repository_mode: TaskExecutionRouteMode;
++  reason_codes: string[];
++  safety: {
++    requires_worktree: boolean;
++    requires_user_approval: boolean;
++    approval_effects: TaskExternalEffect[];
++  };
++  verification: {
++    required_evidence: string[];
++  };
++  observed: {
++    repository_effects: TaskRepositoryEffect[];
++    changed_paths: string[];
++  };
++  escalation?: {
++    from: "direct";
++    to: "branch_pr";
++    reason_codes: string[];
++    preserved_changed_paths: string[];
++    preserved_commit?: string;
++  };
++};
++
+ export type TaskSyncExternalRef = {
+   provider: string;
+   connector_kind?: string;
+@@ -261,6 +320,7 @@ export type TaskFrontmatter = {
+   runner?: TaskRunnerOutcome;
+   token_usage?: TaskTokenUsage;
+   execution_route?: TaskExecutionRoute;
++  execution_contract?: TaskExecutionContract;
+   sync?: TaskSyncEnvelope;
+   comments: { author: string; body: string }[];
+   events?: TaskEvent[];
+diff --git a/packages/core/src/tasks/tasks-export.ts b/packages/core/src/tasks/tasks-export.ts
+index b9d50be9b..0f065c697 100644
+--- a/packages/core/src/tasks/tasks-export.ts
++++ b/packages/core/src/tasks/tasks-export.ts
+@@ -15,6 +15,7 @@ import {
+   type TaskRunnerTarget,
+   type TaskTokenUsage,
+   type TaskExecutionRoute,
++  type TaskExecutionContract,
+   type TaskSyncEnvelope,
+ } from "./task-store.js";
+ 
+@@ -487,6 +488,7 @@ export type TasksExportTask = {
+   runner?: TaskRunnerOutcome;
+   token_usage?: TaskTokenUsage;
+   execution_route?: TaskExecutionRoute;
++  execution_contract?: TaskExecutionContract;
+   sync?: TaskSyncEnvelope;
+   depends_on: string[];
+   tags: string[];
+@@ -642,6 +644,7 @@ export async function buildTasksExportSnapshot(opts: {
+       runner: normalizeTaskRunnerOutcome(fm.runner),
+       token_usage: t.frontmatter.token_usage,
+       execution_route: t.frontmatter.execution_route,
++      execution_contract: t.frontmatter.execution_contract,
+       sync: normalizeTaskSyncEnvelope(fm.sync),
+       depends_on: dependsOn,
+       tags,
+diff --git a/packages/spec/schemas/task-readme-frontmatter.schema.json b/packages/spec/schemas/task-readme-frontmatter.schema.json
+index 58ae24bb2..2cf36d415 100644
+--- a/packages/spec/schemas/task-readme-frontmatter.schema.json
++++ b/packages/spec/schemas/task-readme-frontmatter.schema.json
+@@ -868,6 +868,235 @@
+       ],
+       "additionalProperties": false
+     },
++    "execution_contract": {
++      "type": "object",
++      "properties": {
++        "schema_version": {
++          "type": "number",
++          "const": 1
++        },
++        "source": {
++          "type": "string",
++          "enum": ["agent_declared", "legacy_compatibility"]
++        },
++        "declaration": {
++          "type": "object",
++          "properties": {
++            "schema_version": {
++              "type": "number",
++              "const": 1
++            },
++            "preferred_mode": {
++              "type": "string",
++              "enum": ["direct", "branch_pr"]
++            },
++            "scope_roots": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "repository_effects": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "enum": [
++                  "repository_write",
++                  "documentation",
++                  "source_code",
++                  "tests",
++                  "public_api",
++                  "schema",
++                  "dependencies",
++                  "ci",
++                  "release_metadata",
++                  "security_boundary"
++                ]
++              }
++            },
++            "external_effects": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "enum": [
++                  "network_read",
++                  "external_write",
++                  "credentials",
++                  "publish",
++                  "deploy",
++                  "destructive_git"
++                ]
++              }
++            },
++            "uncertainty": {
++              "type": "string",
++              "enum": ["bounded", "material"]
++            },
++            "reversibility": {
++              "type": "string",
++              "enum": ["reversible", "recovery_required", "irreversible"]
++            },
++            "rationale": {
++              "minItems": 1,
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            }
++          },
++          "required": [
++            "schema_version",
++            "preferred_mode",
++            "scope_roots",
++            "repository_effects",
++            "external_effects",
++            "uncertainty",
++            "reversibility",
++            "rationale"
++          ],
++          "additionalProperties": false
++        },
++        "selected_mode": {
++          "type": "string",
++          "enum": ["direct", "branch_pr"]
++        },
++        "repository_mode": {
++          "type": "string",
++          "enum": ["direct", "branch_pr"]
++        },
++        "reason_codes": {
++          "minItems": 1,
++          "type": "array",
++          "items": {
++            "type": "string",
++            "minLength": 1
++          }
++        },
++        "safety": {
++          "type": "object",
++          "properties": {
++            "requires_worktree": {
++              "type": "boolean"
++            },
++            "requires_user_approval": {
++              "type": "boolean"
++            },
++            "approval_effects": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "enum": [
++                  "network_read",
++                  "external_write",
++                  "credentials",
++                  "publish",
++                  "deploy",
++                  "destructive_git"
++                ]
++              }
++            }
++          },
++          "required": ["requires_worktree", "requires_user_approval", "approval_effects"],
++          "additionalProperties": false
++        },
++        "verification": {
++          "type": "object",
++          "properties": {
++            "required_evidence": {
++              "minItems": 1,
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            }
++          },
++          "required": ["required_evidence"],
++          "additionalProperties": false
++        },
++        "observed": {
++          "type": "object",
++          "properties": {
++            "repository_effects": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "enum": [
++                  "repository_write",
++                  "documentation",
++                  "source_code",
++                  "tests",
++                  "public_api",
++                  "schema",
++                  "dependencies",
++                  "ci",
++                  "release_metadata",
++                  "security_boundary"
++                ]
++              }
++            },
++            "changed_paths": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            }
++          },
++          "required": ["repository_effects", "changed_paths"],
++          "additionalProperties": false
++        },
++        "escalation": {
++          "type": "object",
++          "properties": {
++            "from": {
++              "type": "string",
++              "const": "direct"
++            },
++            "to": {
++              "type": "string",
++              "const": "branch_pr"
++            },
++            "reason_codes": {
++              "minItems": 1,
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "preserved_changed_paths": {
++              "minItems": 1,
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "preserved_commit": {
++              "type": "string",
++              "minLength": 1
++            }
++          },
++          "required": ["from", "to", "reason_codes", "preserved_changed_paths"],
++          "additionalProperties": false
++        }
++      },
++      "required": [
++        "schema_version",
++        "source",
++        "declaration",
++        "selected_mode",
++        "repository_mode",
++        "reason_codes",
++        "safety",
++        "verification",
++        "observed"
++      ],
++      "additionalProperties": false
++    },
+     "sync": {
+       "type": "object",
+       "properties": {
+diff --git a/packages/spec/schemas/tasks-export.schema.json b/packages/spec/schemas/tasks-export.schema.json
+index 4f199defd..72fd75f2b 100644
+--- a/packages/spec/schemas/tasks-export.schema.json
++++ b/packages/spec/schemas/tasks-export.schema.json
+@@ -644,6 +644,235 @@
+             ],
+             "additionalProperties": false
+           },
++          "execution_contract": {
++            "type": "object",
++            "properties": {
++              "schema_version": {
++                "type": "number",
++                "const": 1
++              },
++              "source": {
++                "type": "string",
++                "enum": ["agent_declared", "legacy_compatibility"]
++              },
++              "declaration": {
++                "type": "object",
++                "properties": {
++                  "schema_version": {
++                    "type": "number",
++                    "const": 1
++                  },
++                  "preferred_mode": {
++                    "type": "string",
++                    "enum": ["direct", "branch_pr"]
++                  },
++                  "scope_roots": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  },
++                  "repository_effects": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "enum": [
++                        "repository_write",
++                        "documentation",
++                        "source_code",
++                        "tests",
++                        "public_api",
++                        "schema",
++                        "dependencies",
++                        "ci",
++                        "release_metadata",
++                        "security_boundary"
++                      ]
++                    }
++                  },
++                  "external_effects": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "enum": [
++                        "network_read",
++                        "external_write",
++                        "credentials",
++                        "publish",
++                        "deploy",
++                        "destructive_git"
++                      ]
++                    }
++                  },
++                  "uncertainty": {
++                    "type": "string",
++                    "enum": ["bounded", "material"]
++                  },
++                  "reversibility": {
++                    "type": "string",
++                    "enum": ["reversible", "recovery_required", "irreversible"]
++                  },
++                  "rationale": {
++                    "minItems": 1,
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  }
++                },
++                "required": [
++                  "schema_version",
++                  "preferred_mode",
++                  "scope_roots",
++                  "repository_effects",
++                  "external_effects",
++                  "uncertainty",
++                  "reversibility",
++                  "rationale"
++                ],
++                "additionalProperties": false
++              },
++              "selected_mode": {
++                "type": "string",
++                "enum": ["direct", "branch_pr"]
++              },
++              "repository_mode": {
++                "type": "string",
++                "enum": ["direct", "branch_pr"]
++              },
++              "reason_codes": {
++                "minItems": 1,
++                "type": "array",
++                "items": {
++                  "type": "string",
++                  "minLength": 1
++                }
++              },
++              "safety": {
++                "type": "object",
++                "properties": {
++                  "requires_worktree": {
++                    "type": "boolean"
++                  },
++                  "requires_user_approval": {
++                    "type": "boolean"
++                  },
++                  "approval_effects": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "enum": [
++                        "network_read",
++                        "external_write",
++                        "credentials",
++                        "publish",
++                        "deploy",
++                        "destructive_git"
++                      ]
++                    }
++                  }
++                },
++                "required": ["requires_worktree", "requires_user_approval", "approval_effects"],
++                "additionalProperties": false
++              },
++              "verification": {
++                "type": "object",
++                "properties": {
++                  "required_evidence": {
++                    "minItems": 1,
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  }
++                },
++                "required": ["required_evidence"],
++                "additionalProperties": false
++              },
++              "observed": {
++                "type": "object",
++                "properties": {
++                  "repository_effects": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "enum": [
++                        "repository_write",
++                        "documentation",
++                        "source_code",
++                        "tests",
++                        "public_api",
++                        "schema",
++                        "dependencies",
++                        "ci",
++                        "release_metadata",
++                        "security_boundary"
++                      ]
++                    }
++                  },
++                  "changed_paths": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  }
++                },
++                "required": ["repository_effects", "changed_paths"],
++                "additionalProperties": false
++              },
++              "escalation": {
++                "type": "object",
++                "properties": {
++                  "from": {
++                    "type": "string",
++                    "const": "direct"
++                  },
++                  "to": {
++                    "type": "string",
++                    "const": "branch_pr"
++                  },
++                  "reason_codes": {
++                    "minItems": 1,
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  },
++                  "preserved_changed_paths": {
++                    "minItems": 1,
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  },
++                  "preserved_commit": {
++                    "type": "string",
++                    "minLength": 1
++                  }
++                },
++                "required": ["from", "to", "reason_codes", "preserved_changed_paths"],
++                "additionalProperties": false
++              }
++            },
++            "required": [
++              "schema_version",
++              "source",
++              "declaration",
++              "selected_mode",
++              "repository_mode",
++              "reason_codes",
++              "safety",
++              "verification",
++              "observed"
++            ],
++            "additionalProperties": false
++          },
+           "depends_on": {
+             "type": "array",
+             "items": {
+diff --git a/schemas/agent-semantic-result.schema.json b/schemas/agent-semantic-result.schema.json
+index 70f98d543..a815c9aef 100644
+--- a/schemas/agent-semantic-result.schema.json
++++ b/schemas/agent-semantic-result.schema.json
+@@ -85,6 +85,85 @@
+                 "release.strict",
+                 "ops.approval"
+               ]
++            },
++            "execution": {
++              "type": "object",
++              "properties": {
++                "schema_version": {
++                  "type": "number",
++                  "const": 1
++                },
++                "preferred_mode": {
++                  "type": "string",
++                  "enum": ["direct", "branch_pr"]
++                },
++                "scope_roots": {
++                  "type": "array",
++                  "items": {
++                    "type": "string",
++                    "minLength": 1
++                  }
++                },
++                "repository_effects": {
++                  "type": "array",
++                  "items": {
++                    "type": "string",
++                    "enum": [
++                      "repository_write",
++                      "documentation",
++                      "source_code",
++                      "tests",
++                      "public_api",
++                      "schema",
++                      "dependencies",
++                      "ci",
++                      "release_metadata",
++                      "security_boundary"
++                    ]
++                  }
++                },
++                "external_effects": {
++                  "type": "array",
++                  "items": {
++                    "type": "string",
++                    "enum": [
++                      "network_read",
++                      "external_write",
++                      "credentials",
++                      "publish",
++                      "deploy",
++                      "destructive_git"
++                    ]
++                  }
++                },
++                "uncertainty": {
++                  "type": "string",
++                  "enum": ["bounded", "material"]
++                },
++                "reversibility": {
++                  "type": "string",
++                  "enum": ["reversible", "recovery_required", "irreversible"]
++                },
++                "rationale": {
++                  "minItems": 1,
++                  "type": "array",
++                  "items": {
++                    "type": "string",
++                    "minLength": 1
++                  }
++                }
++              },
++              "required": [
++                "schema_version",
++                "preferred_mode",
++                "scope_roots",
++                "repository_effects",
++                "external_effects",
++                "uncertainty",
++                "reversibility",
++                "rationale"
++              ],
++              "additionalProperties": false
+             }
+           },
+           "required": ["task_kind", "mutation_scope", "risk_flags", "tags"],
+@@ -300,6 +379,85 @@
+                 "release.strict",
+                 "ops.approval"
+               ]
++            },
++            "execution": {
++              "type": "object",
++              "properties": {
++                "schema_version": {
++                  "type": "number",
++                  "const": 1
++                },
++                "preferred_mode": {
++                  "type": "string",
++                  "enum": ["direct", "branch_pr"]
++                },
++                "scope_roots": {
++                  "type": "array",
++                  "items": {
++                    "type": "string",
++                    "minLength": 1
++                  }
++                },
++                "repository_effects": {
++                  "type": "array",
++                  "items": {
++                    "type": "string",
++                    "enum": [
++                      "repository_write",
++                      "documentation",
++                      "source_code",
++                      "tests",
++                      "public_api",
++                      "schema",
++                      "dependencies",
++                      "ci",
++                      "release_metadata",
++                      "security_boundary"
++                    ]
++                  }
++                },
++                "external_effects": {
++                  "type": "array",
++                  "items": {
++                    "type": "string",
++                    "enum": [
++                      "network_read",
++                      "external_write",
++                      "credentials",
++                      "publish",
++                      "deploy",
++                      "destructive_git"
++                    ]
++                  }
++                },
++                "uncertainty": {
++                  "type": "string",
++                  "enum": ["bounded", "material"]
++                },
++                "reversibility": {
++                  "type": "string",
++                  "enum": ["reversible", "recovery_required", "irreversible"]
++                },
++                "rationale": {
++                  "minItems": 1,
++                  "type": "array",
++                  "items": {
++                    "type": "string",
++                    "minLength": 1
++                  }
++                }
++              },
++              "required": [
++                "schema_version",
++                "preferred_mode",
++                "scope_roots",
++                "repository_effects",
++                "external_effects",
++                "uncertainty",
++                "reversibility",
++                "rationale"
++              ],
++              "additionalProperties": false
+             }
+           },
+           "required": ["task_kind", "mutation_scope", "risk_flags", "tags"],
+@@ -515,6 +673,85 @@
+                 "release.strict",
+                 "ops.approval"
+               ]
++            },
++            "execution": {
++              "type": "object",
++              "properties": {
++                "schema_version": {
++                  "type": "number",
++                  "const": 1
++                },
++                "preferred_mode": {
++                  "type": "string",
++                  "enum": ["direct", "branch_pr"]
++                },
++                "scope_roots": {
++                  "type": "array",
++                  "items": {
++                    "type": "string",
++                    "minLength": 1
++                  }
++                },
++                "repository_effects": {
++                  "type": "array",
++                  "items": {
++                    "type": "string",
++                    "enum": [
++                      "repository_write",
++                      "documentation",
++                      "source_code",
++                      "tests",
++                      "public_api",
++                      "schema",
++                      "dependencies",
++                      "ci",
++                      "release_metadata",
++                      "security_boundary"
++                    ]
++                  }
++                },
++                "external_effects": {
++                  "type": "array",
++                  "items": {
++                    "type": "string",
++                    "enum": [
++                      "network_read",
++                      "external_write",
++                      "credentials",
++                      "publish",
++                      "deploy",
++                      "destructive_git"
++                    ]
++                  }
++                },
++                "uncertainty": {
++                  "type": "string",
++                  "enum": ["bounded", "material"]
++                },
++                "reversibility": {
++                  "type": "string",
++                  "enum": ["reversible", "recovery_required", "irreversible"]
++                },
++                "rationale": {
++                  "minItems": 1,
++                  "type": "array",
++                  "items": {
++                    "type": "string",
++                    "minLength": 1
++                  }
++                }
++              },
++              "required": [
++                "schema_version",
++                "preferred_mode",
++                "scope_roots",
++                "repository_effects",
++                "external_effects",
++                "uncertainty",
++                "reversibility",
++                "rationale"
++              ],
++              "additionalProperties": false
+             }
+           },
+           "required": ["task_kind", "mutation_scope", "risk_flags", "tags"],
+diff --git a/schemas/task-readme-frontmatter.schema.json b/schemas/task-readme-frontmatter.schema.json
+index 58ae24bb2..2cf36d415 100644
+--- a/schemas/task-readme-frontmatter.schema.json
++++ b/schemas/task-readme-frontmatter.schema.json
+@@ -868,6 +868,235 @@
+       ],
+       "additionalProperties": false
+     },
++    "execution_contract": {
++      "type": "object",
++      "properties": {
++        "schema_version": {
++          "type": "number",
++          "const": 1
++        },
++        "source": {
++          "type": "string",
++          "enum": ["agent_declared", "legacy_compatibility"]
++        },
++        "declaration": {
++          "type": "object",
++          "properties": {
++            "schema_version": {
++              "type": "number",
++              "const": 1
++            },
++            "preferred_mode": {
++              "type": "string",
++              "enum": ["direct", "branch_pr"]
++            },
++            "scope_roots": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "repository_effects": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "enum": [
++                  "repository_write",
++                  "documentation",
++                  "source_code",
++                  "tests",
++                  "public_api",
++                  "schema",
++                  "dependencies",
++                  "ci",
++                  "release_metadata",
++                  "security_boundary"
++                ]
++              }
++            },
++            "external_effects": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "enum": [
++                  "network_read",
++                  "external_write",
++                  "credentials",
++                  "publish",
++                  "deploy",
++                  "destructive_git"
++                ]
++              }
++            },
++            "uncertainty": {
++              "type": "string",
++              "enum": ["bounded", "material"]
++            },
++            "reversibility": {
++              "type": "string",
++              "enum": ["reversible", "recovery_required", "irreversible"]
++            },
++            "rationale": {
++              "minItems": 1,
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            }
++          },
++          "required": [
++            "schema_version",
++            "preferred_mode",
++            "scope_roots",
++            "repository_effects",
++            "external_effects",
++            "uncertainty",
++            "reversibility",
++            "rationale"
++          ],
++          "additionalProperties": false
++        },
++        "selected_mode": {
++          "type": "string",
++          "enum": ["direct", "branch_pr"]
++        },
++        "repository_mode": {
++          "type": "string",
++          "enum": ["direct", "branch_pr"]
++        },
++        "reason_codes": {
++          "minItems": 1,
++          "type": "array",
++          "items": {
++            "type": "string",
++            "minLength": 1
++          }
++        },
++        "safety": {
++          "type": "object",
++          "properties": {
++            "requires_worktree": {
++              "type": "boolean"
++            },
++            "requires_user_approval": {
++              "type": "boolean"
++            },
++            "approval_effects": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "enum": [
++                  "network_read",
++                  "external_write",
++                  "credentials",
++                  "publish",
++                  "deploy",
++                  "destructive_git"
++                ]
++              }
++            }
++          },
++          "required": ["requires_worktree", "requires_user_approval", "approval_effects"],
++          "additionalProperties": false
++        },
++        "verification": {
++          "type": "object",
++          "properties": {
++            "required_evidence": {
++              "minItems": 1,
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            }
++          },
++          "required": ["required_evidence"],
++          "additionalProperties": false
++        },
++        "observed": {
++          "type": "object",
++          "properties": {
++            "repository_effects": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "enum": [
++                  "repository_write",
++                  "documentation",
++                  "source_code",
++                  "tests",
++                  "public_api",
++                  "schema",
++                  "dependencies",
++                  "ci",
++                  "release_metadata",
++                  "security_boundary"
++                ]
++              }
++            },
++            "changed_paths": {
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            }
++          },
++          "required": ["repository_effects", "changed_paths"],
++          "additionalProperties": false
++        },
++        "escalation": {
++          "type": "object",
++          "properties": {
++            "from": {
++              "type": "string",
++              "const": "direct"
++            },
++            "to": {
++              "type": "string",
++              "const": "branch_pr"
++            },
++            "reason_codes": {
++              "minItems": 1,
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "preserved_changed_paths": {
++              "minItems": 1,
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "preserved_commit": {
++              "type": "string",
++              "minLength": 1
++            }
++          },
++          "required": ["from", "to", "reason_codes", "preserved_changed_paths"],
++          "additionalProperties": false
++        }
++      },
++      "required": [
++        "schema_version",
++        "source",
++        "declaration",
++        "selected_mode",
++        "repository_mode",
++        "reason_codes",
++        "safety",
++        "verification",
++        "observed"
++      ],
++      "additionalProperties": false
++    },
+     "sync": {
+       "type": "object",
+       "properties": {
+diff --git a/schemas/tasks-export.schema.json b/schemas/tasks-export.schema.json
+index 4f199defd..72fd75f2b 100644
+--- a/schemas/tasks-export.schema.json
++++ b/schemas/tasks-export.schema.json
+@@ -644,6 +644,235 @@
+             ],
+             "additionalProperties": false
+           },
++          "execution_contract": {
++            "type": "object",
++            "properties": {
++              "schema_version": {
++                "type": "number",
++                "const": 1
++              },
++              "source": {
++                "type": "string",
++                "enum": ["agent_declared", "legacy_compatibility"]
++              },
++              "declaration": {
++                "type": "object",
++                "properties": {
++                  "schema_version": {
++                    "type": "number",
++                    "const": 1
++                  },
++                  "preferred_mode": {
++                    "type": "string",
++                    "enum": ["direct", "branch_pr"]
++                  },
++                  "scope_roots": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  },
++                  "repository_effects": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "enum": [
++                        "repository_write",
++                        "documentation",
++                        "source_code",
++                        "tests",
++                        "public_api",
++                        "schema",
++                        "dependencies",
++                        "ci",
++                        "release_metadata",
++                        "security_boundary"
++                      ]
++                    }
++                  },
++                  "external_effects": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "enum": [
++                        "network_read",
++                        "external_write",
++                        "credentials",
++                        "publish",
++                        "deploy",
++                        "destructive_git"
++                      ]
++                    }
++                  },
++                  "uncertainty": {
++                    "type": "string",
++                    "enum": ["bounded", "material"]
++                  },
++                  "reversibility": {
++                    "type": "string",
++                    "enum": ["reversible", "recovery_required", "irreversible"]
++                  },
++                  "rationale": {
++                    "minItems": 1,
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  }
++                },
++                "required": [
++                  "schema_version",
++                  "preferred_mode",
++                  "scope_roots",
++                  "repository_effects",
++                  "external_effects",
++                  "uncertainty",
++                  "reversibility",
++                  "rationale"
++                ],
++                "additionalProperties": false
++              },
++              "selected_mode": {
++                "type": "string",
++                "enum": ["direct", "branch_pr"]
++              },
++              "repository_mode": {
++                "type": "string",
++                "enum": ["direct", "branch_pr"]
++              },
++              "reason_codes": {
++                "minItems": 1,
++                "type": "array",
++                "items": {
++                  "type": "string",
++                  "minLength": 1
++                }
++              },
++              "safety": {
++                "type": "object",
++                "properties": {
++                  "requires_worktree": {
++                    "type": "boolean"
++                  },
++                  "requires_user_approval": {
++                    "type": "boolean"
++                  },
++                  "approval_effects": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "enum": [
++                        "network_read",
++                        "external_write",
++                        "credentials",
++                        "publish",
++                        "deploy",
++                        "destructive_git"
++                      ]
++                    }
++                  }
++                },
++                "required": ["requires_worktree", "requires_user_approval", "approval_effects"],
++                "additionalProperties": false
++              },
++              "verification": {
++                "type": "object",
++                "properties": {
++                  "required_evidence": {
++                    "minItems": 1,
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  }
++                },
++                "required": ["required_evidence"],
++                "additionalProperties": false
++              },
++              "observed": {
++                "type": "object",
++                "properties": {
++                  "repository_effects": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "enum": [
++                        "repository_write",
++                        "documentation",
++                        "source_code",
++                        "tests",
++                        "public_api",
++                        "schema",
++                        "dependencies",
++                        "ci",
++                        "release_metadata",
++                        "security_boundary"
++                      ]
++                    }
++                  },
++                  "changed_paths": {
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  }
++                },
++                "required": ["repository_effects", "changed_paths"],
++                "additionalProperties": false
++              },
++              "escalation": {
++                "type": "object",
++                "properties": {
++                  "from": {
++                    "type": "string",
++                    "const": "direct"
++                  },
++                  "to": {
++                    "type": "string",
++                    "const": "branch_pr"
++                  },
++                  "reason_codes": {
++                    "minItems": 1,
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  },
++                  "preserved_changed_paths": {
++                    "minItems": 1,
++                    "type": "array",
++                    "items": {
++                      "type": "string",
++                      "minLength": 1
++                    }
++                  },
++                  "preserved_commit": {
++                    "type": "string",
++                    "minLength": 1
++                  }
++                },
++                "required": ["from", "to", "reason_codes", "preserved_changed_paths"],
++                "additionalProperties": false
++              }
++            },
++            "required": [
++              "schema_version",
++              "source",
++              "declaration",
++              "selected_mode",
++              "repository_mode",
++              "reason_codes",
++              "safety",
++              "verification",
++              "observed"
++            ],
++            "additionalProperties": false
++          },
+           "depends_on": {
+             "type": "array",
+             "items": {

@@ -85,6 +85,173 @@
                 "release.strict",
                 "ops.approval"
               ]
+            },
+            "execution": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "schema_version": {
+                      "type": "number",
+                      "const": 2
+                    },
+                    "preferred_mode": {
+                      "type": "string",
+                      "enum": ["direct", "branch_pr"]
+                    },
+                    "scope_roots": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "repository_effects": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "repository_write",
+                          "documentation",
+                          "source_code",
+                          "tests",
+                          "public_api",
+                          "schema",
+                          "dependencies",
+                          "ci",
+                          "release_metadata",
+                          "security_boundary"
+                        ]
+                      }
+                    },
+                    "external_effects": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "network_read",
+                          "external_write",
+                          "credentials",
+                          "publish",
+                          "deploy",
+                          "destructive_git"
+                        ]
+                      }
+                    },
+                    "requirements_uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
+                    },
+                    "implementation_uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
+                    },
+                    "reversibility": {
+                      "type": "string",
+                      "enum": ["reversible", "recovery_required", "irreversible"]
+                    },
+                    "rationale": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "required": [
+                    "schema_version",
+                    "preferred_mode",
+                    "scope_roots",
+                    "repository_effects",
+                    "external_effects",
+                    "requirements_uncertainty",
+                    "implementation_uncertainty",
+                    "reversibility",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "schema_version": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "preferred_mode": {
+                      "type": "string",
+                      "enum": ["direct", "branch_pr"]
+                    },
+                    "scope_roots": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "repository_effects": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "repository_write",
+                          "documentation",
+                          "source_code",
+                          "tests",
+                          "public_api",
+                          "schema",
+                          "dependencies",
+                          "ci",
+                          "release_metadata",
+                          "security_boundary"
+                        ]
+                      }
+                    },
+                    "external_effects": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "network_read",
+                          "external_write",
+                          "credentials",
+                          "publish",
+                          "deploy",
+                          "destructive_git"
+                        ]
+                      }
+                    },
+                    "uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
+                    },
+                    "reversibility": {
+                      "type": "string",
+                      "enum": ["reversible", "recovery_required", "irreversible"]
+                    },
+                    "rationale": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "required": [
+                    "schema_version",
+                    "preferred_mode",
+                    "scope_roots",
+                    "repository_effects",
+                    "external_effects",
+                    "uncertainty",
+                    "reversibility",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
             }
           },
           "required": ["task_kind", "mutation_scope", "risk_flags", "tags"],
@@ -300,6 +467,173 @@
                 "release.strict",
                 "ops.approval"
               ]
+            },
+            "execution": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "schema_version": {
+                      "type": "number",
+                      "const": 2
+                    },
+                    "preferred_mode": {
+                      "type": "string",
+                      "enum": ["direct", "branch_pr"]
+                    },
+                    "scope_roots": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "repository_effects": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "repository_write",
+                          "documentation",
+                          "source_code",
+                          "tests",
+                          "public_api",
+                          "schema",
+                          "dependencies",
+                          "ci",
+                          "release_metadata",
+                          "security_boundary"
+                        ]
+                      }
+                    },
+                    "external_effects": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "network_read",
+                          "external_write",
+                          "credentials",
+                          "publish",
+                          "deploy",
+                          "destructive_git"
+                        ]
+                      }
+                    },
+                    "requirements_uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
+                    },
+                    "implementation_uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
+                    },
+                    "reversibility": {
+                      "type": "string",
+                      "enum": ["reversible", "recovery_required", "irreversible"]
+                    },
+                    "rationale": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "required": [
+                    "schema_version",
+                    "preferred_mode",
+                    "scope_roots",
+                    "repository_effects",
+                    "external_effects",
+                    "requirements_uncertainty",
+                    "implementation_uncertainty",
+                    "reversibility",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "schema_version": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "preferred_mode": {
+                      "type": "string",
+                      "enum": ["direct", "branch_pr"]
+                    },
+                    "scope_roots": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "repository_effects": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "repository_write",
+                          "documentation",
+                          "source_code",
+                          "tests",
+                          "public_api",
+                          "schema",
+                          "dependencies",
+                          "ci",
+                          "release_metadata",
+                          "security_boundary"
+                        ]
+                      }
+                    },
+                    "external_effects": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "network_read",
+                          "external_write",
+                          "credentials",
+                          "publish",
+                          "deploy",
+                          "destructive_git"
+                        ]
+                      }
+                    },
+                    "uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
+                    },
+                    "reversibility": {
+                      "type": "string",
+                      "enum": ["reversible", "recovery_required", "irreversible"]
+                    },
+                    "rationale": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "required": [
+                    "schema_version",
+                    "preferred_mode",
+                    "scope_roots",
+                    "repository_effects",
+                    "external_effects",
+                    "uncertainty",
+                    "reversibility",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
             }
           },
           "required": ["task_kind", "mutation_scope", "risk_flags", "tags"],
@@ -514,6 +848,173 @@
                 "post_run.improvement_review",
                 "release.strict",
                 "ops.approval"
+              ]
+            },
+            "execution": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "schema_version": {
+                      "type": "number",
+                      "const": 2
+                    },
+                    "preferred_mode": {
+                      "type": "string",
+                      "enum": ["direct", "branch_pr"]
+                    },
+                    "scope_roots": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "repository_effects": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "repository_write",
+                          "documentation",
+                          "source_code",
+                          "tests",
+                          "public_api",
+                          "schema",
+                          "dependencies",
+                          "ci",
+                          "release_metadata",
+                          "security_boundary"
+                        ]
+                      }
+                    },
+                    "external_effects": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "network_read",
+                          "external_write",
+                          "credentials",
+                          "publish",
+                          "deploy",
+                          "destructive_git"
+                        ]
+                      }
+                    },
+                    "requirements_uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
+                    },
+                    "implementation_uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
+                    },
+                    "reversibility": {
+                      "type": "string",
+                      "enum": ["reversible", "recovery_required", "irreversible"]
+                    },
+                    "rationale": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "required": [
+                    "schema_version",
+                    "preferred_mode",
+                    "scope_roots",
+                    "repository_effects",
+                    "external_effects",
+                    "requirements_uncertainty",
+                    "implementation_uncertainty",
+                    "reversibility",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "schema_version": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "preferred_mode": {
+                      "type": "string",
+                      "enum": ["direct", "branch_pr"]
+                    },
+                    "scope_roots": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "repository_effects": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "repository_write",
+                          "documentation",
+                          "source_code",
+                          "tests",
+                          "public_api",
+                          "schema",
+                          "dependencies",
+                          "ci",
+                          "release_metadata",
+                          "security_boundary"
+                        ]
+                      }
+                    },
+                    "external_effects": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "network_read",
+                          "external_write",
+                          "credentials",
+                          "publish",
+                          "deploy",
+                          "destructive_git"
+                        ]
+                      }
+                    },
+                    "uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
+                    },
+                    "reversibility": {
+                      "type": "string",
+                      "enum": ["reversible", "recovery_required", "irreversible"]
+                    },
+                    "rationale": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "required": [
+                    "schema_version",
+                    "preferred_mode",
+                    "scope_roots",
+                    "repository_effects",
+                    "external_effects",
+                    "uncertainty",
+                    "reversibility",
+                    "rationale"
+                  ],
+                  "additionalProperties": false
+                }
               ]
             }
           },

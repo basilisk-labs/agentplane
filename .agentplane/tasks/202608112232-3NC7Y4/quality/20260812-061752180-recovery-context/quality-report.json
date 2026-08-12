@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608112232-3NC7Y4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-12T06:18:47.972Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "53d633332085897db0d5033df16b7d2db7b2fb9a",
+  "blueprint_digest": "9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6",
+  "findings": [
+    "No material contract divergence found in the frozen implementation and deterministic verification evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/0baff72a70c3edb00310fb6e54473f731937ca2611e0bf432beacfd4ccac36d9.patch",
+    ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812061720376-2037537404c8ab08.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

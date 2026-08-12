@@ -97,6 +97,241 @@ function normalizeExecutionRoute(value: unknown): TaskData["execution_route"] {
   };
 }
 
+const REPOSITORY_EFFECTS = new Set([
+  "repository_write",
+  "documentation",
+  "source_code",
+  "tests",
+  "public_api",
+  "schema",
+  "dependencies",
+  "ci",
+  "release_metadata",
+  "security_boundary",
+]);
+const EXTERNAL_EFFECTS = new Set([
+  "network_read",
+  "external_write",
+  "credentials",
+  "publish",
+  "deploy",
+  "destructive_git",
+]);
+
+function normalizeStringList(value: unknown): string[] | null {
+  if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || !item.trim())) {
+    return null;
+  }
+  return [...new Set(value as string[])];
+}
+
+function normalizeExecutionContract(value: unknown): TaskData["execution_contract"] {
+  if (!isRecord(value) || value.schema_version !== 1 || !isRecord(value.declaration)) {
+    return undefined;
+  }
+  const declaration = value.declaration;
+  const scopeRoots = normalizeStringList(declaration.scope_roots);
+  const repositoryEffects = normalizeStringList(declaration.repository_effects);
+  const externalEffects = normalizeStringList(declaration.external_effects);
+  const rationale = normalizeStringList(declaration.rationale);
+  const reasons = normalizeStringList(value.reason_codes);
+  const legacyUncertainty = declaration.uncertainty;
+  const requirementsUncertainty =
+    declaration.schema_version === 1 ? legacyUncertainty : declaration.requirements_uncertainty;
+  const implementationUncertainty =
+    declaration.schema_version === 1 ? legacyUncertainty : declaration.implementation_uncertainty;
+  if (
+    (declaration.schema_version !== 1 && declaration.schema_version !== 2) ||
+    (declaration.preferred_mode !== "direct" && declaration.preferred_mode !== "branch_pr") ||
+    scopeRoots === null ||
+    repositoryEffects === null ||
+    repositoryEffects.some((item) => !REPOSITORY_EFFECTS.has(item)) ||
+    externalEffects === null ||
+    externalEffects.some((item) => !EXTERNAL_EFFECTS.has(item)) ||
+    (requirementsUncertainty !== "bounded" && requirementsUncertainty !== "material") ||
+    (implementationUncertainty !== "bounded" && implementationUncertainty !== "material") ||
+    (declaration.reversibility !== "reversible" &&
+      declaration.reversibility !== "recovery_required" &&
+      declaration.reversibility !== "irreversible") ||
+    !rationale?.length ||
+    (value.source !== "agent_declared" && value.source !== "legacy_compatibility") ||
+    (value.selected_mode !== "direct" && value.selected_mode !== "branch_pr") ||
+    (value.repository_mode !== "direct" && value.repository_mode !== "branch_pr") ||
+    !reasons?.length ||
+    !isRecord(value.safety) ||
+    typeof value.safety.requires_worktree !== "boolean" ||
+    typeof value.safety.requires_user_approval !== "boolean" ||
+    !isRecord(value.verification) ||
+    !isRecord(value.observed)
+  ) {
+    return undefined;
+  }
+  const authority = isRecord(value.authority) ? value.authority : {};
+  const writableRoots = normalizeStringList(authority.writable_roots ?? scopeRoots);
+  const allowedRepositoryEffects = normalizeStringList(
+    authority.allowed_repository_effects ?? repositoryEffects,
+  );
+  const forbiddenRepositoryEffects = normalizeStringList(
+    authority.forbidden_repository_effects ??
+      [...REPOSITORY_EFFECTS].filter((effect) => !repositoryEffects.includes(effect)),
+  );
+  const authorityAllowedExternalEffects = Array.isArray(authority.allowed_external_effects)
+    ? authority.allowed_external_effects.filter(
+        (effect): effect is string => typeof effect === "string",
+      )
+    : [];
+  const allowedExternalEffects = normalizeStringList([
+    ...authorityAllowedExternalEffects,
+    ...(externalEffects.includes("network_read") ? ["network_read"] : []),
+  ]);
+  const authorityForbiddenExternalEffects = Array.isArray(authority.forbidden_external_effects)
+    ? authority.forbidden_external_effects.filter(
+        (effect): effect is string => typeof effect === "string",
+      )
+    : [...EXTERNAL_EFFECTS];
+  const forbiddenExternalEffects = normalizeStringList(
+    authorityForbiddenExternalEffects.filter(
+      (effect) => effect !== "network_read" || !allowedExternalEffects?.includes(effect),
+    ),
+  );
+  const approvalEffects = normalizeStringList(value.safety.approval_effects);
+  const requiredEvidence = normalizeStringList(value.verification.required_evidence);
+  const observedEffects = normalizeStringList(value.observed.repository_effects);
+  const observedExternalEffects = normalizeStringList(value.observed.external_effects ?? []);
+  const changedPaths = normalizeStringList(value.observed.changed_paths);
+  const changedComponents = normalizeStringList(value.observed.changed_components ?? []);
+  const authorityViolations = normalizeStringList(
+    value.observed.authority_violations ??
+      (observedEffects ?? [])
+        .filter((effect) => !repositoryEffects.includes(effect))
+        .map((effect) => `repository_effect:${effect}`),
+  );
+  const verificationResultsSource = value.observed.verification_results ?? [];
+  const verificationResults = Array.isArray(verificationResultsSource)
+    ? verificationResultsSource
+    : null;
+  if (
+    writableRoots === null ||
+    allowedRepositoryEffects === null ||
+    allowedRepositoryEffects.some((item) => !REPOSITORY_EFFECTS.has(item)) ||
+    forbiddenRepositoryEffects === null ||
+    forbiddenRepositoryEffects.some((item) => !REPOSITORY_EFFECTS.has(item)) ||
+    allowedExternalEffects === null ||
+    allowedExternalEffects.some((item) => !EXTERNAL_EFFECTS.has(item)) ||
+    forbiddenExternalEffects === null ||
+    forbiddenExternalEffects.some((item) => !EXTERNAL_EFFECTS.has(item)) ||
+    approvalEffects === null ||
+    approvalEffects.some((item) => !EXTERNAL_EFFECTS.has(item)) ||
+    !requiredEvidence?.length ||
+    observedEffects === null ||
+    observedEffects.some((item) => !REPOSITORY_EFFECTS.has(item)) ||
+    observedExternalEffects === null ||
+    observedExternalEffects.some((item) => !EXTERNAL_EFFECTS.has(item)) ||
+    changedPaths === null ||
+    changedComponents === null ||
+    authorityViolations === null ||
+    verificationResults === null ||
+    verificationResults.some(
+      (item) =>
+        !isRecord(item) ||
+        typeof item.id !== "string" ||
+        !item.id.trim() ||
+        (item.result !== "pass" && item.result !== "fail" && item.result !== "unsupported"),
+    )
+  ) {
+    return undefined;
+  }
+  const escalation = value.escalation;
+  if (escalation !== undefined && !isRecord(escalation)) return undefined;
+  const escalationReasons = escalation ? normalizeStringList(escalation.reason_codes) : null;
+  const preservedPaths = escalation
+    ? normalizeStringList(escalation.preserved_changed_paths)
+    : null;
+  if (
+    escalation &&
+    (escalation.from !== "direct" ||
+      escalation.to !== "branch_pr" ||
+      !escalationReasons?.length ||
+      !preservedPaths?.length ||
+      (escalation.preserved_commit !== undefined &&
+        typeof escalation.preserved_commit !== "string"))
+  ) {
+    return undefined;
+  }
+  return {
+    schema_version: 1,
+    source: value.source,
+    declaration: {
+      schema_version: 2,
+      preferred_mode: declaration.preferred_mode,
+      scope_roots: scopeRoots,
+      repository_effects: repositoryEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["declaration"]["repository_effects"],
+      external_effects: externalEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["declaration"]["external_effects"],
+      requirements_uncertainty: requirementsUncertainty,
+      implementation_uncertainty: implementationUncertainty,
+      reversibility: declaration.reversibility,
+      rationale,
+    },
+    selected_mode: value.selected_mode,
+    repository_mode: value.repository_mode,
+    reason_codes: reasons,
+    authority: {
+      writable_roots: writableRoots,
+      allowed_repository_effects: allowedRepositoryEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["authority"]["allowed_repository_effects"],
+      forbidden_repository_effects: forbiddenRepositoryEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["authority"]["forbidden_repository_effects"],
+      allowed_external_effects: allowedExternalEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["authority"]["allowed_external_effects"],
+      forbidden_external_effects: forbiddenExternalEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["authority"]["forbidden_external_effects"],
+    },
+    safety: {
+      requires_worktree: value.safety.requires_worktree,
+      requires_user_approval: value.safety.requires_user_approval,
+      approval_effects: approvalEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["safety"]["approval_effects"],
+    },
+    verification: { required_evidence: requiredEvidence },
+    observed: {
+      repository_effects: observedEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["observed"]["repository_effects"],
+      external_effects: observedExternalEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["observed"]["external_effects"],
+      changed_paths: changedPaths,
+      changed_components: changedComponents,
+      verification_results: verificationResults as NonNullable<
+        TaskData["execution_contract"]
+      >["observed"]["verification_results"],
+      authority_violations: authorityViolations,
+    },
+    ...(escalation
+      ? {
+          escalation: {
+            from: "direct" as const,
+            to: "branch_pr" as const,
+            reason_codes: escalationReasons ?? [],
+            preserved_changed_paths: preservedPaths ?? [],
+            ...(typeof escalation.preserved_commit === "string"
+              ? { preserved_commit: escalation.preserved_commit }
+              : {}),
+          },
+        }
+      : {}),
+  };
+}
+
 export function taskRecordToData(record: TaskRecord): TaskData {
   const fm = record.frontmatter as unknown as Record<string, unknown>;
   const comments = Array.isArray(fm.comments)
@@ -167,6 +402,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     runner: runner ?? undefined,
     token_usage: tokenUsage ?? undefined,
     execution_route: normalizeExecutionRoute(fm.execution_route),
+    execution_contract: normalizeExecutionContract(fm.execution_contract),
     sync: isRecord(fm.sync) ? (fm.sync as TaskData["sync"]) : undefined,
     commit,
     comments,

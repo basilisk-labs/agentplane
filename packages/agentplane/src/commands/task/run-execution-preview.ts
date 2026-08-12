@@ -37,6 +37,7 @@ export type TaskRunExecutionPreview = {
 
 export function buildTaskRunExecutionPreview(bundle: RunnerContextBundle): TaskRunExecutionPreview {
   const persistedRoute = bundle.route_decision?.task.execution_route;
+  const persistedContract = bundle.route_decision?.task.execution_contract;
   const fallbackRoute = bundle.blueprint?.workflowMode ?? "direct";
   const toolBudget = Object.fromEntries(
     Object.entries(bundle.execution.profile_runtime?.budget ?? {}).map(([phase, budget]) => [
@@ -47,8 +48,12 @@ export function buildTaskRunExecutionPreview(bundle: RunnerContextBundle): TaskR
   return {
     route: {
       requested_mode: persistedRoute?.requested_mode ?? "repository",
-      selected_mode: persistedRoute?.selected_mode ?? fallbackRoute,
-      reason_codes: [...(persistedRoute?.reason_codes ?? ["repository_mode_selected"])],
+      selected_mode:
+        persistedContract?.selected_mode ?? persistedRoute?.selected_mode ?? fallbackRoute,
+      reason_codes: [
+        ...(persistedContract?.reason_codes ??
+          persistedRoute?.reason_codes ?? ["repository_mode_selected"]),
+      ],
     },
     context: {
       blueprint_id: bundle.blueprint?.blueprintId ?? null,

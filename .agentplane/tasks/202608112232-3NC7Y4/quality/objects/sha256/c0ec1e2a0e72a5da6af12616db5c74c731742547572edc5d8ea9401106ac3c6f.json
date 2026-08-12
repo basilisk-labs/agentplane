@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-12T01:57:43.942Z",
+    "updated_by": "TESTER",
+    "note": "Implementation 12f447c63 verified after P1 rework."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812015743942-150180079fdf6c3e.json",
+      "sha256": "sha256:256898ea5833e9eb7d5c81efb1d55f402960b974f5e6f3bc76eba6e4749083f0"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

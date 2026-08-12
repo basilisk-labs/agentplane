@@ -148,6 +148,7 @@ describe("direct task supervisor", () => {
     mocks.recordEvidence.mockResolvedValue({
       artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/implementation-evidence.json`,
       implementation_commit: "def456",
+      changed_paths: [],
     });
     mocks.resolveCommit.mockResolvedValue({ status: "ready", commit: "def456" });
     mocks.recordGoldenMetrics.mockResolvedValue({

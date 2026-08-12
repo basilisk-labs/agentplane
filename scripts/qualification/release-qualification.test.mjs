@@ -815,7 +815,7 @@ describe("v0.7.1 release qualification contract", () => {
       context_refs: [],
       stop: { reason: "semantic_boundary", resume: "request_fresh_packet" },
     });
-    assert.throws(() => assertCompactAgentPacket(oversizedPacket), /maximum is 2048/u);
+    assert.throws(() => assertCompactAgentPacket(oversizedPacket), /maximum is 8192/u);
   });
 
   it("accepts permanent historical readers without a removal deadline or blocker", () => {

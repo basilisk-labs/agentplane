@@ -10,6 +10,7 @@ import type {
   StateFingerprint,
   StateFingerprintPolicy,
 } from "@agentplaneorg/core/schemas";
+import type { TaskExecutionContract } from "@agentplaneorg/core/tasks";
 
 import type { TaskEvent } from "../../backends/task-backend.js";
 import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
@@ -70,6 +71,7 @@ type TaskEpisodeMetadata = {
   task_kind: string | null;
   mutation_scope: string | null;
   blueprint_request: string | null;
+  execution_contract?: TaskExecutionContract;
 };
 
 /**

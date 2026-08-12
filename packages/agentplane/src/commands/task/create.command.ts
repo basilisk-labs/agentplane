@@ -2,7 +2,10 @@ import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spe
 import { usageError } from "../../cli/spec/errors.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { makeExecutionContext } from "../../runtime/execution-context.js";
-import { resolveTaskExecutionRoute } from "../../runtime/task-routing/index.js";
+import {
+  resolveTaskExecutionContract,
+  resolveTaskExecutionRoute,
+} from "../../runtime/task-routing/index.js";
 import { throwIfPolicyDecisionDenied } from "../shared/policy-deny.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
@@ -272,6 +275,16 @@ export function makeRunTaskCreateHandler(
         blueprint_request: intent.blueprintRequest,
       },
     });
+    const executionContract = resolveTaskExecutionContract({
+      config: execution.config,
+      requestedMode: parsed.route,
+      task: {
+        task_kind: intent.taskKind,
+        mutation_scope: intent.mutationScope,
+        risk_flags: intent.riskFlags,
+        blueprint_request: intent.blueprintRequest,
+      },
+    });
     const created = await runTaskNewParsed({
       ctx: execution.command,
       cwd: ctx.cwd,
@@ -312,6 +325,7 @@ export function makeRunTaskCreateHandler(
       /** @deprecated Compatibility alias for pre-0.7.6 JSON consumers. */
       inferred_intent: semanticIntent,
       execution_route: route,
+      execution_contract: executionContract,
       required_role: "PLANNER" as const,
       next_command: nextCommand,
     };

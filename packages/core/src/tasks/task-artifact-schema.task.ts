@@ -110,6 +110,92 @@ const TASK_EXECUTION_ROUTE_SCHEMA = z
     frozen: z.literal(true),
   })
   .strict();
+const TASK_REPOSITORY_EFFECT_SCHEMA = z.enum([
+  "repository_write",
+  "documentation",
+  "source_code",
+  "tests",
+  "public_api",
+  "schema",
+  "dependencies",
+  "ci",
+  "release_metadata",
+  "security_boundary",
+]);
+const TASK_EXTERNAL_EFFECT_SCHEMA = z.enum([
+  "network_read",
+  "external_write",
+  "credentials",
+  "publish",
+  "deploy",
+  "destructive_git",
+]);
+const TASK_EXECUTION_DECLARATION_SCHEMA = z
+  .object({
+    schema_version: z.literal(2),
+    preferred_mode: z.enum(["direct", "branch_pr"]),
+    scope_roots: z.array(NON_EMPTY_STRING),
+    repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
+    external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
+    requirements_uncertainty: z.enum(["bounded", "material"]),
+    implementation_uncertainty: z.enum(["bounded", "material"]),
+    reversibility: z.enum(["reversible", "recovery_required", "irreversible"]),
+    rationale: z.array(NON_EMPTY_STRING).min(1),
+  })
+  .strict();
+const TASK_VERIFICATION_OBSERVATION_SCHEMA = z
+  .object({
+    id: NON_EMPTY_STRING,
+    result: z.enum(["pass", "fail", "unsupported"]),
+  })
+  .strict();
+const TASK_EXECUTION_CONTRACT_SCHEMA = z
+  .object({
+    schema_version: z.literal(1),
+    source: z.enum(["agent_declared", "legacy_compatibility"]),
+    declaration: TASK_EXECUTION_DECLARATION_SCHEMA,
+    selected_mode: z.enum(["direct", "branch_pr"]),
+    repository_mode: z.enum(["direct", "branch_pr"]),
+    reason_codes: z.array(NON_EMPTY_STRING).min(1),
+    authority: z
+      .object({
+        writable_roots: z.array(NON_EMPTY_STRING),
+        allowed_repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
+        forbidden_repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
+        allowed_external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
+        forbidden_external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
+      })
+      .strict(),
+    safety: z
+      .object({
+        requires_worktree: z.boolean(),
+        requires_user_approval: z.boolean(),
+        approval_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
+      })
+      .strict(),
+    verification: z.object({ required_evidence: z.array(NON_EMPTY_STRING).min(1) }).strict(),
+    observed: z
+      .object({
+        repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
+        external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
+        changed_paths: z.array(NON_EMPTY_STRING),
+        changed_components: z.array(NON_EMPTY_STRING),
+        verification_results: z.array(TASK_VERIFICATION_OBSERVATION_SCHEMA),
+        authority_violations: z.array(NON_EMPTY_STRING),
+      })
+      .strict(),
+    escalation: z
+      .object({
+        from: z.literal("direct"),
+        to: z.literal("branch_pr"),
+        reason_codes: z.array(NON_EMPTY_STRING).min(1),
+        preserved_changed_paths: z.array(NON_EMPTY_STRING).min(1),
+        preserved_commit: NON_EMPTY_STRING.optional(),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict();
 
 const TASK_ORIGIN_SCHEMA = z
   .object({
@@ -357,6 +443,7 @@ export const TASK_README_FRONTMATTER_ZOD_SCHEMA = z
     runner: RUNNER_OUTCOME_SCHEMA.optional(),
     token_usage: TASK_TOKEN_USAGE_SCHEMA.optional(),
     execution_route: TASK_EXECUTION_ROUTE_SCHEMA.optional(),
+    execution_contract: TASK_EXECUTION_CONTRACT_SCHEMA.optional(),
     sync: TASK_SYNC_ENVELOPE_SCHEMA.optional(),
     commit: TASK_COMMIT_SCHEMA.optional(),
     comments: z.array(TASK_COMMENT_SCHEMA),
@@ -387,6 +474,7 @@ const TASKS_EXPORT_TASK_SCHEMA = z
     runner: RUNNER_OUTCOME_SCHEMA.optional(),
     token_usage: TASK_TOKEN_USAGE_SCHEMA.optional(),
     execution_route: TASK_EXECUTION_ROUTE_SCHEMA.optional(),
+    execution_contract: TASK_EXECUTION_CONTRACT_SCHEMA.optional(),
     depends_on: z.array(NON_EMPTY_STRING),
     tags: z.array(NON_EMPTY_STRING),
     task_kind: TASK_KIND_SCHEMA.optional(),
@@ -441,6 +529,98 @@ function normalizeLegacyTaskPriority(value: unknown): unknown {
   return value;
 }
 
+function legacyExecutionContractDefaults(value: unknown): unknown {
+  if (!isRecord(value) || !isRecord(value.declaration)) return value;
+  const declaration = value.declaration;
+  const legacyUncertainty = declaration.uncertainty === "material" ? "material" : "bounded";
+  const normalizedDeclaration =
+    declaration.schema_version === 1
+      ? (() => {
+          const { uncertainty: _legacyUncertainty, ...remainingDeclaration } = declaration;
+          return {
+            ...remainingDeclaration,
+            schema_version: 2,
+            requirements_uncertainty: legacyUncertainty,
+            implementation_uncertainty: legacyUncertainty,
+          };
+        })()
+      : declaration;
+  const repositoryEffects = Array.isArray(declaration.repository_effects)
+    ? declaration.repository_effects.filter(
+        (effect): effect is string => typeof effect === "string",
+      )
+    : [];
+  const scopeRoots = Array.isArray(declaration.scope_roots)
+    ? declaration.scope_roots.filter((root): root is string => typeof root === "string")
+    : [];
+  const observedSource = isRecord(value.observed) ? value.observed : {};
+  const observedRepositoryEffects = Array.isArray(observedSource.repository_effects)
+    ? observedSource.repository_effects.filter(
+        (effect): effect is string => typeof effect === "string",
+      )
+    : [];
+  const changedPaths = Array.isArray(observedSource.changed_paths)
+    ? observedSource.changed_paths.filter((entry): entry is string => typeof entry === "string")
+    : [];
+  const authoritySource = isRecord(value.authority) ? value.authority : {};
+  const allowedExternalEffects = Array.isArray(authoritySource.allowed_external_effects)
+    ? authoritySource.allowed_external_effects.filter(
+        (effect): effect is string => typeof effect === "string",
+      )
+    : [];
+  if (
+    Array.isArray(declaration.external_effects) &&
+    declaration.external_effects.includes("network_read") &&
+    !allowedExternalEffects.includes("network_read")
+  ) {
+    allowedExternalEffects.push("network_read");
+  }
+  const authority = {
+    writable_roots: Array.isArray(authoritySource.writable_roots)
+      ? authoritySource.writable_roots
+      : scopeRoots,
+    allowed_repository_effects: Array.isArray(authoritySource.allowed_repository_effects)
+      ? authoritySource.allowed_repository_effects
+      : repositoryEffects,
+    forbidden_repository_effects: Array.isArray(authoritySource.forbidden_repository_effects)
+      ? authoritySource.forbidden_repository_effects
+      : TASK_REPOSITORY_EFFECT_SCHEMA.options.filter(
+          (effect) => !repositoryEffects.includes(effect),
+        ),
+    allowed_external_effects: allowedExternalEffects,
+    forbidden_external_effects: (Array.isArray(authoritySource.forbidden_external_effects)
+      ? authoritySource.forbidden_external_effects.filter(
+          (effect): effect is string => typeof effect === "string",
+        )
+      : TASK_EXTERNAL_EFFECT_SCHEMA.options
+    ).filter((effect) => effect !== "network_read" || !allowedExternalEffects.includes(effect)),
+  };
+  return {
+    ...value,
+    declaration: normalizedDeclaration,
+    authority,
+    observed: {
+      ...observedSource,
+      repository_effects: observedRepositoryEffects,
+      external_effects: Array.isArray(observedSource.external_effects)
+        ? observedSource.external_effects
+        : [],
+      changed_paths: changedPaths,
+      changed_components: Array.isArray(observedSource.changed_components)
+        ? observedSource.changed_components
+        : [],
+      verification_results: Array.isArray(observedSource.verification_results)
+        ? observedSource.verification_results
+        : [],
+      authority_violations: Array.isArray(observedSource.authority_violations)
+        ? observedSource.authority_violations
+        : observedRepositoryEffects
+            .filter((effect) => !repositoryEffects.includes(effect))
+            .map((effect) => `repository_effect:${effect}`),
+    },
+  };
+}
+
 export function withTaskReadmeFrontmatterDefaults(
   value: Record<string, unknown>,
 ): Record<string, unknown> {
@@ -471,5 +651,8 @@ export function withTaskReadmeFrontmatterDefaults(
       "rejected",
     ]),
     verification: { ...verification, attempts: verificationAttempts },
+    ...(value.execution_contract
+      ? { execution_contract: legacyExecutionContractDefaults(value.execution_contract) }
+      : {}),
   };
 }

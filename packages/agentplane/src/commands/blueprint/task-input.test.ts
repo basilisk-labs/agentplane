@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import { blueprintResolveInputFromTask } from "./task-input.js";
 
 const config = {
@@ -102,5 +103,36 @@ describe("blueprintResolveInputFromTask", () => {
     });
 
     expect(input.workflowMode).toBe("branch_pr");
+  });
+
+  it("derives deterministic blueprint risk only from the execution contract", () => {
+    const directConfig = { workflow_mode: "direct" } as AgentplaneConfig;
+    const executionContract = resolveTaskExecutionContract({
+      config: directConfig,
+      task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
+      declaration: {
+        schema_version: 1,
+        preferred_mode: "direct",
+        scope_roots: ["infra"],
+        repository_effects: ["repository_write"],
+        external_effects: ["deploy", "destructive_git"],
+        uncertainty: "bounded",
+        reversibility: "irreversible",
+        rationale: ["deployment is a separately approved external effect"],
+      },
+    });
+    const input = blueprintResolveInputFromTask({
+      config: directConfig,
+      task: task({
+        title: "Write local documentation without deploying anything",
+        task_kind: "code",
+        execution_contract: executionContract,
+        tags: ["docs", "safe", "local"],
+      }),
+    });
+
+    expect(input.workflowMode).toBe("branch_pr");
+    expect(input.riskFlags).toEqual(["deploy", "merge"]);
+    expect(input.mutation).toBe("ops");
   });
 });

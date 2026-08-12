@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The compiled contract always forbids every external effect, including declared network_read when configuration does not require network approval. The resolver may simultaneously report that no approval is required, while work-order projection grants no external authority and later observation treats the effect as unauthorized.",
+      "broken_invariant": "The execution contract must deterministically represent allowed and forbidden effects and be authoritative across approval, execution, and observed-effect reconciliation; compatible declared effects cannot be both approval-free and categorically forbidden.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/0bb3d05369643420ff35635cb541ea7c40e1c6c96420bd51a5f79ca7878d3db8.patch",
+          "sha256": "sha256:0bb3d05369643420ff35635cb541ea7c40e1c6c96420bd51a5f79ca7878d3db8",
+          "section": "executionAuthority, resolveTaskExecutionContract, and agent-work-order-build changes"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "medium",
+      "summary": "The change contains no user-facing workflow documentation and no realistic E2E suite demonstrating or measuring the five required scenarios; the supplied verification record only summarizes aggregate fast-CI results without scenario-level command, approval, transition, timing, preservation, or recovery-command measurements.",
+      "broken_invariant": "Acceptance criteria 8–10 require realistic E2E coverage with control-plane measurements, representative before/after traces, and updated documentation, not only unit/integration assertions and an aggregate test count.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/0bb3d05369643420ff35635cb541ea7c40e1c6c96420bd51a5f79ca7878d3db8.patch",
+          "sha256": "sha256:0bb3d05369643420ff35635cb541ea7c40e1c6c96420bd51a5f79ca7878d3db8",
+          "section": "complete changed-file patch"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812032704488-c2f68cb908a493bb.json",
+          "sha256": "sha256:3a497e984e89e18dcf679c37e8d703fe3951a259ca1bfb0f51f2b1aaeb47d8c6",
+          "section": "details and scope"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A contract-resolution and work-order projection test for declared network_read with require_network=false, proving that approval requirements and allowed external authority agree.",
+    "Realistic CLI E2Es for localized direct work, broad branch_pr work, preserved-work escalation, prohibited external/destructive effects, and misleading product language, with assertions for command count, approvals, transitions, verification time, preserved changes, and recovery-command count.",
+    "A compatibility E2E loading an existing project without manual migration and completing the canonical lifecycle."
+  ],
+  "hidden_assumptions": [
+    "Declaring an external effect is assumed never to grant authority, but no post-approval contract-compilation mechanism is evidenced that can grant deterministic authority when the effect is permitted.",
+    "Aggregate fast-CI success is assumed to demonstrate the scenario-level UX and ceremony measurements required by the task.",
+    "Existing brief/readback output is assumed sufficient documentation despite the explicit requirement to update docs."
+  ],
+  "recovery_context": "Align external-effect approval and authority semantics so the authoritative contract can represent permitted effects, then add the required documented, measured E2E evidence for all acceptance scenarios."
+}

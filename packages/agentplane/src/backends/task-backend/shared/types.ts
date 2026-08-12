@@ -7,6 +7,7 @@ import type {
   TaskRunnerOutcome,
   TaskTokenUsage,
   TaskExecutionRoute,
+  TaskExecutionContract,
   TaskSyncEnvelope,
   QualityReviewResult,
   VerificationResult,
@@ -73,6 +74,7 @@ export type TaskData = {
   runner?: TaskRunnerOutcome;
   token_usage?: TaskTokenUsage;
   execution_route?: TaskExecutionRoute;
+  execution_contract?: TaskExecutionContract;
   sync?: TaskSyncEnvelope;
   commit?: { hash: string; message: string } | null;
   comments?: { author: string; body: string }[];

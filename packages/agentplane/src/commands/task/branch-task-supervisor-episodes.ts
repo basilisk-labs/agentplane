@@ -40,6 +40,10 @@ import {
   branchSupervisorArtifactCommitMessage,
   commitBranchSupervisorTaskArtifacts,
 } from "./branch-task-supervisor-artifact-commit.js";
+import {
+  observedExternalEffectsFromRunnerResult,
+  recordObservedTaskExecutionContract,
+} from "./task-execution-contract-observation.js";
 
 function operationId(decision: TaskRouteDecision): string | null {
   return decision.workflowStep.kind === "cli_operation" ? decision.workflowStep.operation.id : null;
@@ -297,6 +301,24 @@ async function executeBranchImplementationEpisode(opts: {
       });
     }
     const commit = implementation.evidence.implementation_commit;
+    const reconciliation = await recordObservedTaskExecutionContract({
+      command,
+      task: currentTask,
+      changed_paths: implementation.evidence.changed_paths,
+      observed_external_effects: observedExternalEffectsFromRunnerResult(lifecycle.result),
+      preserved_commit: commit,
+    });
+    if (reconciliation.task.execution_contract?.observed.authority_violations.length) {
+      return stoppedEpisode({
+        decision: opts.decision,
+        code: "implementation_scope_violation",
+        reason:
+          "Supervisor-observed changes exceeded the execution contract authority; preserve the committed work and require a corrected scope or explicit side-effect authority before continuing.",
+        journal: journalRef,
+        provider_episodes: 1,
+        executor_lifecycle_event_delta: eventDelta,
+      });
+    }
     await cmdTaskSetStatus({
       ctx: command,
       cwd: checkout,

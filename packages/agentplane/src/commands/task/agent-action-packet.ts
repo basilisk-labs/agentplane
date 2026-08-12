@@ -4,7 +4,9 @@ import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 
-export const MAX_AGENT_ACTION_PACKET_BYTES = 2048;
+// The packet stays compact, but must fit a normal exchange envelope plus a typed
+// execution declaration after context refs have been removed.
+export const MAX_AGENT_ACTION_PACKET_BYTES = 8192;
 
 type AgentActionKind =
   | "agent_episode"
@@ -86,7 +88,7 @@ function semanticInstruction(
 ): string {
   switch (purpose) {
     case "planning": {
-      return "Prepare a task-specific semantic plan and, when intent is unknown, return result.task_intent for explicit approval.";
+      return "Prepare a task-specific semantic plan and, when intent is unknown, return result.task_intent with result.task_intent.execution. Select direct or branch_pr semantically and declare scope roots, repository effects, external effects, requirements uncertainty, implementation uncertainty, reversibility, and rationale; do not infer them from title keywords.";
     }
     case "implementation": {
       return "Perform the scoped implementation from the prepared context and report a semantic outcome.";

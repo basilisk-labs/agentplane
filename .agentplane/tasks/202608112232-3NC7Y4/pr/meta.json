@@ -1,0 +1,24 @@
+{
+  "base": "main",
+  "branch": "task/202608112232-3NC7Y4/make-execution-strategy-risk-adaptive-and-agent",
+  "created_at": "2026-08-12T00:34:37.819Z",
+  "diffstat_sha256": "sha256:3e596019ee455e49e6146573b69396d037f30223f946eb6a60821b188cec9427",
+  "last_verified_at": "2026-08-12T06:17:20.376Z",
+  "last_verified_diffstat_sha256": "sha256:3e596019ee455e49e6146573b69396d037f30223f946eb6a60821b188cec9427",
+  "pr_number": 4828,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4828",
+  "pre_merge_closure": {
+    "basis_commit": "4bb12b6cacd80043ece4c89d72c9fc25af691dbd",
+    "branch": "task/202608112232-3NC7Y4/make-execution-strategy-risk-adaptive-and-agent",
+    "pr_number": 4828,
+    "recorded_at": "2026-08-12T06:20:10.608Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608112232-3NC7Y4",
+  "updated_at": "2026-08-12T01:36:18.027Z",
+  "verify": {
+    "status": "pass"
+  }
+}

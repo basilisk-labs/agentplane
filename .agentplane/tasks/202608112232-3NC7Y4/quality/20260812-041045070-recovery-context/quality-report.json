@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "202608112232-3NC7Y4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-12T04:11:53.982Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "1d7a807eba17ca96c212eb25660ba3a86a372d66",
+  "blueprint_digest": "9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6",
+  "findings": [
+    "The required broad agent-selected branch_pr E2E is absent. The scenario documented and verified as the broad branch_pr case declares preferred_mode as direct and only reaches branch_pr through deterministic override, so it does not prove that a compatible agent-selected branch_pr preference is respected end to end.",
+    "The documented scenario measurements omit lifecycle-transition counts, and most routing scenarios collect lifecycle_transitions without asserting them. This leaves the required transition and ceremony comparison unproven for the five representative E2Es."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608112232-3NC7Y4/README.md",
+    ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/2256613fbfd6186cc65b095ffc3a94850e0db3c282c322041d42899e7a284cc0.patch",
+    ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812041025439-8bd2ab0ef09e0963.json"
+  ],
+  "missing_tests": [
+    "Add a realistic CLI E2E whose semantic declaration explicitly uses preferred_mode: branch_pr for broad multi-component work, then assert that branch_pr is retained for agent_preference rather than selected only by an effect or repository override.",
+    "Assert and report exact lifecycle-transition counts for each required representative scenario, including the localized direct, broad branch_pr, underestimated escalation, prohibited external/destructive, and misleading-language cases."
+  ],
+  "hidden_assumptions": [
+    "A deterministic direct-to-branch_pr override is assumed to be equivalent evidence for respecting an explicit agent-selected branch_pr preference.",
+    "Collecting lifecycle event counts without asserting or reporting them is assumed to satisfy the transition-measurement requirement.",
+    "The verification summary's claim of broad branch_pr E2E coverage is assumed accurate despite the scenario declaring preferred_mode: direct."
+  ],
+  "residual_risks": [
+    "Add the missing explicit branch_pr-preference E2E and make lifecycle-transition measurements asserted and visible for all required scenarios, then rerun the focused E2Es and relevant full CI."
+  ]
+}

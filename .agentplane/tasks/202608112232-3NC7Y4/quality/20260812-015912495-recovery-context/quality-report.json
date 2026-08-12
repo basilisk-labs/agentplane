@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608112232-3NC7Y4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-12T01:59:12.913Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The reworked execution strategy closes both reviewed authority gaps without weakening legacy compatibility or monotonic escalation.",
+  "evaluated_sha": "12f447c63ce5c78b152d461dcc1e00517a04f149",
+  "blueprint_digest": "9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6",
+  "findings": [
+    "Agent-declared scope_roots: [] is distinguished from absent or legacy scope and produces read-only work-order authority; integration coverage asserts writable roots, sandbox, and tool classes.",
+    "Observed direct-to-branch escalation atomically replaces code.direct with code.branch_pr, preventing an incompatible blueprint from blocking the deterministic handoff.",
+    "The changes remain within the approved risk-adaptive execution contract and preserve the rule that semantic classification belongs to the agent while enforcement remains deterministic."
+  ],
+  "evidence_refs": [
+    "commit:12f447c63ce5c78b152d461dcc1e00517a04f149",
+    ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812015743942-150180079fdf6c3e.json",
+    "packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts",
+    "packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted checks for the refreshed PR head are still pending and remain an independent integration gate."
+  ]
+}

@@ -208,6 +208,7 @@ function acceptanceCriteria(opts: {
   const candidates = uniqueSorted([
     ...opts.source_manifest.verification_context.task_verify,
     ...opts.source_manifest.verification_context.verify_steps,
+    ...(opts.task_envelope.task.metadata.execution_contract?.verification.required_evidence ?? []),
   ]);
   const descriptions =
     candidates.length > 0
@@ -222,10 +223,12 @@ function acceptanceCriteria(opts: {
 
 function verificationIntent(opts: {
   source_manifest: AgentWorkOrderSourceManifest;
+  execution_contract?: RunnerTaskContextEnvelope["task"]["metadata"]["execution_contract"];
 }): AgentWorkOrderV2["verification_intent"] {
   const candidates = uniqueSorted([
     ...opts.source_manifest.verification_context.task_verify,
     ...opts.source_manifest.verification_context.verify_steps,
+    ...(opts.execution_contract?.verification.required_evidence ?? []),
   ]);
   const descriptions =
     candidates.length > 0
@@ -332,7 +335,25 @@ export function buildCanonicalAgentWorkOrder(opts: {
     workOrderRole(decision.executionPacket.recommendedRole ?? task.metadata.owner ?? "");
   const stateFingerprint = structuredClone(decision.workflowStep.preconditionFingerprint);
   const mutationPath = decision.oracle.mutationPathHint;
-  const canMutate = decision.executionPacket.safeToMutate && mutationPath !== null;
+  const executionContract = task.metadata.execution_contract;
+  const declaredScopeRoots = executionContract?.authority.writable_roots;
+  const hasExplicitEmptyScope =
+    executionContract?.source === "agent_declared" && declaredScopeRoots?.length === 0;
+  const canMutate =
+    decision.executionPacket.safeToMutate && mutationPath !== null && !hasExplicitEmptyScope;
+  const declaredWritableRoots = (() => {
+    if (!canMutate || mutationPath === null) return [];
+    if (!declaredScopeRoots || declaredScopeRoots.length === 0) return [mutationPath];
+    const repositoryRoot = path.resolve(mutationPath);
+    return declaredScopeRoots.map((root) => {
+      const resolved = root === "." ? repositoryRoot : path.resolve(repositoryRoot, root);
+      const relative = path.relative(repositoryRoot, resolved).replaceAll("\\", "/");
+      if (relative === ".." || relative.startsWith("../") || path.isAbsolute(relative)) {
+        throw new Error(`Execution declaration scope escapes the authoritative checkout: ${root}`);
+      }
+      return resolved;
+    });
+  })();
   const allowedToolClasses: AgentWorkOrderV2["authority"]["allowed_tool_classes"] = canMutate
     ? [
         "repository_read",
@@ -352,12 +373,16 @@ export function buildCanonicalAgentWorkOrder(opts: {
   const summary =
     episodeSectionText({ task_envelope: taskEnvelope, section: "Summary" }) ||
     task.narrative.description;
-  const verification = verificationIntent({ source_manifest: opts.source_manifest });
+  const verification = verificationIntent({
+    source_manifest: opts.source_manifest,
+    execution_contract: task.metadata.execution_contract,
+  });
   const stopRules = uniqueSorted([
     ...decision.executionPacket.mustNot,
     decision.executionPacket.returnControlWhen,
     "Stop and return a blocked semantic result when the prepared state is stale or required context is missing.",
   ]);
+  const allowedExternalEffects = executionContract?.authority.allowed_external_effects ?? [];
   return validateAgentWorkOrderV2({
     schema_version: AGENT_WORK_ORDER_SCHEMA_VERSION,
     kind: AGENT_WORK_ORDER_KIND,
@@ -381,13 +406,13 @@ export function buildCanonicalAgentWorkOrder(opts: {
     state_fingerprint_policy: AGENT_WORK_ORDER_STATE_FINGERPRINT_POLICY,
     authority: {
       mutation_scope: task.metadata.mutation_scope ?? "unknown",
-      writable_roots: canMutate ? [mutationPath] : [],
+      writable_roots: declaredWritableRoots,
       protected_paths: protectedPaths(executionContext),
       allowed_tool_classes: allowedToolClasses,
       // Hosted lifecycle evidence is collected by the CLI before delegation;
       // this does not grant an executor independent network authority.
-      network: "deny",
-      external_side_effects: [],
+      network: allowedExternalEffects.includes("network_read") ? "allowed" : "deny",
+      external_side_effects: allowedExternalEffects.filter((effect) => effect !== "network_read"),
       sandbox: canMutate ? "workspace-write" : "read-only",
       expires_at: null,
     },

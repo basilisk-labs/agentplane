@@ -36,6 +36,10 @@ import {
   measureDuplicateExecutorContextBytes,
 } from "./direct-task-supervision-measurement.js";
 import { recordDirectTaskSupervisionGoldenMetrics } from "./direct-task-supervision-golden-metrics.js";
+import {
+  observedExternalEffectsFromRunnerResult,
+  recordObservedTaskExecutionContract,
+} from "./task-execution-contract-observation.js";
 
 export type { DirectTaskSupervisorResult } from "./direct-task-supervisor-result.js";
 
@@ -345,11 +349,43 @@ export async function superviseDirectTaskRun(
         },
       });
     }
+    const reconciliation = await recordObservedTaskExecutionContract({
+      command: input.command,
+      task,
+      changed_paths: implementation.evidence.changed_paths,
+      observed_external_effects: observedExternalEffectsFromRunnerResult(lifecycle.result),
+      preserved_commit: implementation.evidence.implementation_commit,
+    });
+    if (
+      reconciliation.escalated ||
+      reconciliation.task.execution_contract?.observed.authority_violations.length
+    ) {
+      return stoppedResult({
+        decision: current,
+        journal,
+        executor: observed.executor,
+        metrics: directTaskSupervisorMetrics({
+          provider_episodes: providerEpisodes,
+          executor_lifecycle_event_delta: executorLifecycleEventDelta,
+          declared_checks: declaredChecks,
+          lifecycle_calls: lifecycleCalls,
+          tool_calls: toolCalls,
+          duplicate_executor_context_bytes: duplicateExecutorContextBytes,
+        }),
+        stop: {
+          code: "execution_contract_escalated",
+          reason:
+            "Supervisor-observed effects exceed the execution contract authority and require branch_pr plus explicit side-effect authority. The execution contract preserved the implementation commit and changed paths; recompute task next-action for the single deterministic handoff.",
+          route_step_id: current.workflowStep.id,
+          operation_id: null,
+        },
+      });
+    }
     const verification = await verifyDirectTask({
       ctx: input.ctx,
       command: input.command,
       task_id: input.task_id,
-      task,
+      task: reconciliation.task,
       implementation_evidence: implementation.evidence,
       decision,
       on_lifecycle_operation: () => {

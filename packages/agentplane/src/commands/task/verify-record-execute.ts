@@ -25,10 +25,18 @@ import { resolvePrPaths } from "../pr/internal/pr-paths.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
-import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  loadTaskFromContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { resolveVerificationInputIdentity } from "../shared/task-verification-input.js";
+import {
+  reconcileTaskExecutionContract,
+  withEffectiveTaskWorkflowMode,
+} from "../../runtime/task-routing/index.js";
 
 import { buildStructuredFindingMutationPlan } from "./findings.js";
 import {
@@ -170,20 +178,22 @@ async function recordVerificationResult(opts: {
   quiet: boolean;
   command: ExecuteVerifyRecordCommandOptions["command"];
 }): Promise<void> {
-  const ctx =
+  const initialCtx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  await ensureReconciledBeforeMutation({ ctx, command: "verify", taskIds: [opts.taskId] });
-  const backend = ctx.taskBackend;
-  const config = ctx.config;
-  const resolved = ctx.resolvedProject;
-  if (!backend.getTaskDoc || !backend.writeTask) {
+  if (!initialCtx.taskBackend.getTaskDoc || !initialCtx.taskBackend.writeTask) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
       message: backendNotSupportedMessage("task docs"),
     });
   }
+  const routedTask = await loadTaskFromContext({ ctx: initialCtx, taskId: opts.taskId });
+  const ctx = withEffectiveTaskWorkflowMode(initialCtx, routedTask);
+  await ensureReconciledBeforeMutation({ ctx, command: "verify", taskIds: [opts.taskId] });
+  const backend = ctx.taskBackend;
+  const config = ctx.config;
+  const resolved = ctx.resolvedProject;
 
   const at = nowIso();
   let verificationPath: string | null = null;
@@ -350,6 +360,24 @@ async function recordVerificationResult(opts: {
           verificationInputDigest: verificationInput?.digest ?? null,
         });
         const intents = [...execution.intents];
+        if (current.execution_contract) {
+          const verificationResults = (parsedDetails ?? []).map((check, index) => ({
+            id: `recorded-check-${String(index + 1)}`,
+            result: check.result,
+          }));
+          if (verificationResults.length === 0) {
+            verificationResults.push({
+              id: "verification-record",
+              result: opts.state === "ok" ? "pass" : "fail",
+            });
+          }
+          const reconciledContract = reconcileTaskExecutionContract({
+            contract: current.execution_contract,
+            changed_paths: [],
+            verification_results: verificationResults,
+          }).contract;
+          intents.push(setTaskFieldsIntent({ execution_contract: reconciledContract }));
+        }
         if (opts.by === "EVALUATOR") {
           const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx, task: current }).catch(
             () => null,

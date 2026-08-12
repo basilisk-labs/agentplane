@@ -39,6 +39,7 @@ export type TaskRouteDecision = {
     commit: string | null;
     token_usage?: TaskData["token_usage"];
     execution_route?: TaskData["execution_route"];
+    execution_contract?: TaskData["execution_contract"];
   };
   workflowMode: string;
   workspace: {
@@ -96,5 +97,6 @@ export function taskSummary(task: TaskData): TaskRouteDecision["task"] {
     commit: commitHash || null,
     token_usage: task.token_usage,
     execution_route: task.execution_route,
+    execution_contract: task.execution_contract,
   };
 }
