@@ -2,9 +2,7 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-import { defaultConfig, saveConfig } from "../../packages/core/dist/config/index.js";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { defineCheck, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
 
@@ -107,6 +105,10 @@ function defaultCliPath(options) {
 }
 
 async function createLocalBasicFixture(options) {
+  const configModulePath = pathToFileURL(
+    path.join(repoRoot, "packages", "core", "dist", "config", "index.js"),
+  ).href;
+  const { defaultConfig, saveConfig } = await import(configModulePath);
   const root = mkdtempSync(path.join(os.tmpdir(), "agentplane-cold-fixture-"));
   execFileSync("git", ["init"], { cwd: root, stdio: "ignore" });
   mkdirSync(path.join(root, ".agentplane"), { recursive: true });
