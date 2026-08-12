@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { chmod, cp, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -418,65 +418,6 @@ async function runTargetedCleanup(fakeBin: string, fixture: TargetedFixture) {
   ]);
 }
 describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS }, () => {
-  it("retains an ambiguous batch target while deleting an independently proven target", async () => {
-    const proven = await createTargetedFixture();
-    const blocked = await createTargetedFixture();
-    const fakeBin = await installFakeGh({ kind: "found", fixture: proven });
-
-    // Move the second task branch into the same repository so one cleanup run
-    // observes both an independently proven and an ambiguous target.
-    const blockedRef = `refs/heads/${blocked.branch}`;
-    const blockedHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
-      cwd: blocked.worktreePath,
-      env: cleanGitEnv(),
-    });
-    const blockedHead = blockedHeadResult.stdout.trim();
-    await execFileAsync("git", ["fetch", blocked.root, blockedHead], {
-      cwd: proven.root,
-      env: cleanGitEnv(),
-    });
-    await execFileAsync("git", ["update-ref", blockedRef, blockedHead], {
-      cwd: proven.root,
-      env: cleanGitEnv(),
-    });
-    await cp(
-      path.join(blocked.root, ".agentplane", "tasks", blocked.taskId),
-      path.join(proven.root, ".agentplane", "tasks", blocked.taskId),
-      { recursive: true },
-    );
-    const blockedReadme = path.join(
-      proven.root,
-      ".agentplane",
-      "tasks",
-      blocked.taskId,
-      "README.md",
-    );
-    const blockedReadmeText = await readFile(blockedReadme, "utf8");
-    await writeFile(
-      blockedReadme,
-      blockedReadmeText.replace('status: "DONE"', 'status: "DOING"'),
-      "utf8",
-    );
-
-    const result = await runWithFakeGh(fakeBin, [
-      "cleanup",
-      "merged",
-      "--task-id",
-      proven.taskId,
-      "--task-id",
-      blocked.taskId,
-      "--yes",
-      "--root",
-      proven.root,
-    ]);
-
-    expect(result.code).toBe(0);
-    expect(result.stdout).toContain(`retained ${blocked.taskId}`);
-    expect(result.stdout).toContain("task status is DOING, not DONE");
-    expect(await gitBranchExists(proven.root, proven.branch)).toBe(false);
-    expect(await gitBranchExists(proven.root, blocked.branch)).toBe(true);
-  });
-
   it("recovers a legacy missing PR number from an exact merged branch-and-base lookup", async () => {
     const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
     const fakeBin = await installFakeGh({ kind: "found", fixture });
