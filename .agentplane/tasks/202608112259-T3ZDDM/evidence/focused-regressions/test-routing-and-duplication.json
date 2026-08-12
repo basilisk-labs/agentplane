@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.test_routing_and_duplication_report",
+  "ok": true,
+  "errors": [],
+  "summary": {
+    "agentplane": 511,
+    "cli-core": 128,
+    "cli-recipes": 3,
+    "cli-scenario": 1,
+    "cli-smoke": 1,
+    "core": 32,
+    "critical": 12,
+    "guard": 8,
+    "recipes": 3,
+    "testkit": 4
+  },
+  "total": 703
+}

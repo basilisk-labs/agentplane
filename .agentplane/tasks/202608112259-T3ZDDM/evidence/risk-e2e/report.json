@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.release_qualification_report",
+  "release": "0.7.1",
+  "mode": "audit",
+  "profile": "full",
+  "subject": "be0a63ba9eb1094a9bba53650e1df20a73a4e9b9",
+  "source_identity": {
+    "commit": "be0a63ba9eb1094a9bba53650e1df20a73a4e9b9",
+    "tree": "7ff316ca4677f639867a0d0556018ec1c5052cee",
+    "clean": true
+  },
+  "manifest": {
+    "path": "scripts/qualification/v0.7.1-release-qualification.json",
+    "sha256": "sha256:93b7e5441915287110b2ad73b6967298a849eb11338d2c29daebdf7b3b20ef09"
+  },
+  "started_at": "2026-08-12T19:03:15.974Z",
+  "finished_at": "2026-08-12T19:05:09.358Z",
+  "duration_ms": 113384,
+  "verdict": "incomplete",
+  "release_ready": false,
+  "local_ready": false,
+  "provider": {
+    "requested": false,
+    "status": "not_run"
+  },
+  "coverage": {
+    "workflow_modes": [
+      "direct",
+      "branch_pr"
+    ],
+    "supervisor_frontends": [
+      "managed_run",
+      "external_advance"
+    ],
+    "lifecycle_states": [
+      "planned",
+      "ready",
+      "doing",
+      "verify_rework",
+      "verified",
+      "integrated",
+      "done",
+      "blocked"
+    ],
+    "context_conditions": [
+      "fresh",
+      "warm",
+      "stale",
+      "missing",
+      "conflicting",
+      "provenance_restricted",
+      "token_budgeted"
+    ],
+    "semantic_stops": [
+      "approval_required",
+      "human_review",
+      "scope_drift",
+      "missing_knowledge"
+    ],
+    "recovery_states": [
+      "interruption",
+      "process_loss",
+      "provider_ambiguity",
+      "effect_in_doubt",
+      "replay",
+      "duplicate_side_effect",
+      "stale_fingerprint",
+      "evaluator_rework",
+      "approval_expiry",
+      "hosted_wait",
+      "cleanup_race"
+    ],
+    "hosted_boundaries": [
+      "pr_publish",
+      "checks",
+      "merge",
+      "hosted_close",
+      "release_publish"
+    ]
+  },
+  "summary": {
+    "selected": 2,
+    "declared": 19,
+    "passed": 2,
+    "failed": 0,
+    "blocking": 0,
+    "local_selection_complete": false,
+    "provider_selection_complete": false
+  },
+  "scenarios": [
+    {
+      "id": "packaged-candidate-flow",
+      "title": "Packed candidate install, initialization, context, lifecycle, and migration flow",
+      "tier": "full",
+      "status": "passed",
+      "duration_ms": 84850,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "scripts/release/check-local-tarball-install-smoke.mjs"
+      ],
+      "log": ".agentplane/tasks/202608112259-T3ZDDM/evidence/risk-e2e/logs/packaged-candidate-flow.log",
+      "output_tail": "installed migration matrix OK (scenarios=8)\nlocal tarball install smoke OK (202608121903-9AJEA7)\n"
+    },
+    {
+      "id": "hosted-boundary-matrix",
+      "title": "PR publication, checks, merge, hosted close, and release boundary matrix",
+      "tier": "full",
+      "status": "passed",
+      "duration_ms": 28531,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "scripts/checks/run-vitest-suite.mjs",
+        "v0.7-hosted"
+      ],
+      "log": ".agentplane/tasks/202608112259-T3ZDDM/evidence/risk-e2e/logs/hosted-boundary-matrix.log",
+      "output_tail": "Vitest suite v0.7-hosted: chunk 1/2 (4 files): packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts, packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts, packages/agentplane/src/commands/task/hosted-close-pr.command.test.ts, packages/agentplane/src/commands/task/hosted-merge-sync.test.ts\nVitest suite v0.7-hosted: chunk 1/2 passed in 18244ms (Test Files  4 passed (4); Tests  19 passed (19); Duration  17.70s (transform 9.55s, setup 0ms, import 10.43s, tests 23.55s, environment 0ms))\nVitest suite v0.7-hosted: chunk 2/2 (3 files): packages/agentplane/src/commands/pr/integrate/cmd.protected-base.test.ts, packages/agentplane/src/commands/release/apply.push-recovery.test.ts, packages/agentplane/src/commands/release/apply.apply-flow.test.ts\nVitest suite v0.7-hosted: chunk 2/2 passed in 10151ms (Test Files  3 passed (3); Tests  10 passed (10); Duration  9.65s (transform 5.96s, setup 0ms, import 7.45s, tests 8.25s, environment 0ms))\n"
+    }
+  ],
+  "defects": []
+}
