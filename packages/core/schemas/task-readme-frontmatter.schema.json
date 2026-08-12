@@ -884,7 +884,7 @@
           "properties": {
             "schema_version": {
               "type": "number",
-              "const": 1
+              "const": 2
             },
             "preferred_mode": {
               "type": "string",
@@ -929,7 +929,11 @@
                 ]
               }
             },
-            "uncertainty": {
+            "requirements_uncertainty": {
+              "type": "string",
+              "enum": ["bounded", "material"]
+            },
+            "implementation_uncertainty": {
               "type": "string",
               "enum": ["bounded", "material"]
             },
@@ -952,7 +956,8 @@
             "scope_roots",
             "repository_effects",
             "external_effects",
-            "uncertainty",
+            "requirements_uncertainty",
+            "implementation_uncertainty",
             "reversibility",
             "rationale"
           ],

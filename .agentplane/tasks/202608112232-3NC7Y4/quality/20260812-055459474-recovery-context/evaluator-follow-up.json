@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608112232-3NC7Y4-89f3a468e60c9687373bfffd",
+  "task_id": "202608112232-3NC7Y4",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Split the execution declaration into explicit requirements-uncertainty and implementation-uncertainty dimensions, define deterministic resolution and compatibility behavior for both, propagate them through schemas/readback, and add combination tests before reevaluation.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The versioned execution declaration collapses requirements uncertainty and implementation uncertainty into one `uncertainty` field, so the resolver cannot represent or reason about these independently as required.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/README.md",
+          "sha256": "sha256:2064b65b234a78d002b4c94f4e642344e423100717f8fd2dfc633baedda7c5ab",
+          "lines": "Plan item 1 requires separation of \"requirements/implementation uncertainty\" in the versioned declaration.",
+          "section": "Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/c54420ced0dd987642bf51e7bd403ccaf786c58ff80bf2ce85b1b0b0623cf3cd.patch",
+          "sha256": "sha256:c54420ced0dd987642bf51e7bd403ccaf786c58ff80bf2ce85b1b0b0623cf3cd",
+          "lines": "TASK_EXECUTION_DECLARATION_SCHEMA defines only `uncertainty: z.enum([\"bounded\", \"material\"])`, and routing derives `material_uncertainty` solely from that combined field.",
+          "section": "packages/core/src/tasks/task-artifact-schema.task.ts and packages/agentplane/src/runtime/task-routing/resolve.ts"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-055459474-recovery-context/evaluator-result.json"
+}

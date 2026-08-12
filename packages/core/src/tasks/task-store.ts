@@ -199,16 +199,32 @@ export type TaskExternalEffect =
   | "deploy"
   | "destructive_git";
 
-export type TaskExecutionDeclaration = {
+export type TaskExecutionUncertainty = "bounded" | "material";
+
+export type TaskExecutionDeclarationV1 = {
   schema_version: 1;
   preferred_mode: TaskExecutionRouteMode;
   scope_roots: string[];
   repository_effects: TaskRepositoryEffect[];
   external_effects: TaskExternalEffect[];
-  uncertainty: "bounded" | "material";
+  uncertainty: TaskExecutionUncertainty;
   reversibility: "reversible" | "recovery_required" | "irreversible";
   rationale: string[];
 };
+
+export type TaskExecutionDeclaration = {
+  schema_version: 2;
+  preferred_mode: TaskExecutionRouteMode;
+  scope_roots: string[];
+  repository_effects: TaskRepositoryEffect[];
+  external_effects: TaskExternalEffect[];
+  requirements_uncertainty: TaskExecutionUncertainty;
+  implementation_uncertainty: TaskExecutionUncertainty;
+  reversibility: "reversible" | "recovery_required" | "irreversible";
+  rationale: string[];
+};
+
+export type TaskExecutionDeclarationInput = TaskExecutionDeclaration | TaskExecutionDeclarationV1;
 
 export type TaskVerificationObservation = {
   id: string;

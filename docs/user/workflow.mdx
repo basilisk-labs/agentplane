@@ -37,8 +37,9 @@ episode.
 
 The PLANNER interprets the task and returns a structured execution declaration. It chooses a
 preferred `direct` or `branch_pr` strategy and declares repository scope, expected repository and
-external effects, uncertainty, reversibility, and rationale. Agentplane does not infer these facts
-from product-language keywords such as `production`, `release`, `docs`, `server`, or `deployment`.
+external effects, requirements uncertainty, implementation uncertainty, reversibility, and
+rationale. Agentplane does not infer these facts from product-language keywords such as
+`production`, `release`, `docs`, `server`, or `deployment`.
 
 Agentplane compiles the declaration into one deterministic execution contract:
 

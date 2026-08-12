@@ -4,6 +4,7 @@ import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import type {
   TaskExecutionContract,
   TaskExecutionDeclaration,
+  TaskExecutionDeclarationInput,
   TaskExecutionRoute,
   TaskExecutionRouteMode,
   TaskExecutionRouteRequest,
@@ -15,6 +16,7 @@ import type {
 import type { TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import { gitPathIsUnderPrefix } from "../../shared/git-path.js";
+import { componentForPath, structuralEffectsForPath } from "./observed-path.js";
 
 type RouteTaskInput = Pick<
   TaskData,
@@ -114,18 +116,36 @@ function legacyDeclaration(opts: {
     repositoryEffects.push("release_metadata");
   }
   return {
-    schema_version: 1,
+    schema_version: 2,
     preferred_mode: opts.requestedMode === "branch_pr" ? "branch_pr" : "direct",
     scope_roots: [],
     repository_effects: uniqueSorted(repositoryEffects),
     external_effects: uniqueSorted(externalEffects),
-    uncertainty: opts.task.mutation_scope === "unknown" ? "material" : "bounded",
+    requirements_uncertainty: opts.task.mutation_scope === "unknown" ? "material" : "bounded",
+    implementation_uncertainty: "bounded",
     reversibility:
       externalEffects.some((effect) => effect !== "network_read") ||
       repositoryEffects.includes("release_metadata")
         ? "recovery_required"
         : "reversible",
     rationale: ["legacy structured task fields mapped to the execution contract"],
+  };
+}
+
+export function normalizeTaskExecutionDeclaration(
+  declaration: TaskExecutionDeclarationInput,
+): TaskExecutionDeclaration {
+  if (declaration.schema_version === 2) return structuredClone(declaration);
+  return {
+    schema_version: 2,
+    preferred_mode: declaration.preferred_mode,
+    scope_roots: [...declaration.scope_roots],
+    repository_effects: [...declaration.repository_effects],
+    external_effects: [...declaration.external_effects],
+    requirements_uncertainty: declaration.uncertainty,
+    implementation_uncertainty: declaration.uncertainty,
+    reversibility: declaration.reversibility,
+    rationale: [...declaration.rationale],
   };
 }
 
@@ -146,7 +166,12 @@ function contractReasonCodes(opts: {
     ...isolatedRepositoryEffects.map((effect) => `effect_${effect}`),
     ...isolatedExternalEffects.map((effect) => `effect_${effect}`),
   );
-  if (opts.declaration.uncertainty === "material") reasons.push("material_uncertainty");
+  if (opts.declaration.requirements_uncertainty === "material") {
+    reasons.push("material_requirements_uncertainty");
+  }
+  if (opts.declaration.implementation_uncertainty === "material") {
+    reasons.push("material_implementation_uncertainty");
+  }
   if (opts.declaration.reversibility !== "reversible") {
     reasons.push(`reversibility_${opts.declaration.reversibility}`);
   }
@@ -165,7 +190,8 @@ function selectedModeForReasons(opts: {
   return opts.reason_codes.some(
     (reason) =>
       reason.startsWith("effect_") ||
-      reason === "material_uncertainty" ||
+      reason === "material_requirements_uncertainty" ||
+      reason === "material_implementation_uncertainty" ||
       reason.startsWith("reversibility_"),
   )
     ? "branch_pr"
@@ -194,6 +220,12 @@ function requiredEvidence(opts: {
       .filter((result) => result.result !== "pass")
       .map((result) => `verification_recovery:${result.id}`),
     ...(opts.selected_mode === "branch_pr" ? ["hosted_integration"] : []),
+    ...(opts.declaration.requirements_uncertainty === "material"
+      ? ["requirements_resolution"]
+      : []),
+    ...(opts.declaration.implementation_uncertainty === "material"
+      ? ["implementation_risk_validation"]
+      : []),
   ]);
 }
 
@@ -223,12 +255,12 @@ export function resolveTaskExecutionContract(opts: {
   config: AgentplaneConfig;
   task: RouteTaskInput;
   requestedMode?: TaskExecutionRouteRequest;
-  declaration?: TaskExecutionDeclaration;
+  declaration?: TaskExecutionDeclarationInput;
 }): TaskExecutionContract {
   const repository_mode = repositoryMode(opts.config);
   const requestedMode = opts.requestedMode ?? "repository";
   const declaration = opts.declaration
-    ? structuredClone(opts.declaration)
+    ? normalizeTaskExecutionDeclaration(opts.declaration)
     : legacyDeclaration({ task: opts.task, requestedMode });
   const scopeRoots = normalizedScopeRoots(declaration.scope_roots);
   if (declaration.repository_effects.length > 0 && scopeRoots.length === 0 && opts.declaration) {
@@ -360,7 +392,7 @@ export function resolveTaskExecutionRoute(opts: {
   config: AgentplaneConfig;
   task: RouteTaskInput;
   requestedMode?: TaskExecutionRouteRequest;
-  declaration?: TaskExecutionDeclaration;
+  declaration?: TaskExecutionDeclarationInput;
 }): TaskExecutionRoute {
   const requestedMode = opts.requestedMode ?? "repository";
   if (!opts.declaration) {
@@ -371,71 +403,6 @@ export function resolveTaskExecutionRoute(opts: {
     });
   }
   return routeFromContract(resolveTaskExecutionContract(opts), requestedMode);
-}
-
-function structuralEffectsForPath(pathValue: string): TaskRepositoryEffect[] {
-  const normalized = pathValue.trim().replaceAll("\\", "/").replace(/^\.\//u, "");
-  if (!normalized || normalized.startsWith("../") || normalized.startsWith("/")) return [];
-  const effects: TaskRepositoryEffect[] = ["repository_write"];
-  if (
-    normalized.startsWith("docs/") ||
-    normalized === "README.md" ||
-    normalized.endsWith(".md") ||
-    normalized.endsWith(".mdx")
-  ) {
-    effects.push("documentation");
-  }
-  if (
-    /(?:^|\/)(?:test|tests|__tests__)(?:\/|$)/u.test(normalized) ||
-    /\.(?:spec|test)\.[cm]?[jt]sx?$/u.test(normalized)
-  ) {
-    effects.push("tests");
-  } else if (/\.[cm]?[jt]sx?$/u.test(normalized)) {
-    effects.push("source_code");
-  }
-  if (
-    normalized.startsWith(".github/workflows/") ||
-    normalized === ".gitlab-ci.yml" ||
-    normalized.startsWith(".circleci/")
-  ) {
-    effects.push("ci");
-  }
-  if (
-    /(^|\/)(?:package\.json|bun\.lockb?|pnpm-lock\.yaml|yarn\.lock|package-lock\.json)$/u.test(
-      normalized,
-    )
-  ) {
-    effects.push("dependencies");
-  }
-  if (
-    normalized.startsWith("schemas/") ||
-    normalized.includes("/schemas/") ||
-    normalized.startsWith("migrations/") ||
-    normalized.includes("/migrations/") ||
-    normalized.endsWith(".schema.json")
-  ) {
-    effects.push("schema");
-  }
-  if (
-    normalized === "CHANGELOG.md" ||
-    normalized.startsWith(".changeset/") ||
-    normalized.startsWith("changesets/")
-  ) {
-    effects.push("release_metadata");
-  }
-  if (/^packages\/[^/]+\/src\/index\.[cm]?[jt]sx?$/u.test(normalized)) {
-    effects.push("public_api");
-  }
-  return effects;
-}
-
-function componentForPath(pathValue: string): string {
-  const normalized = pathValue.trim().replaceAll("\\", "/").replace(/^\.\//u, "");
-  const segments = normalized.split("/").filter(Boolean);
-  if (segments.length === 0) return "repository";
-  if (segments[0] === "packages" && segments[1]) return `packages/${segments[1]}`;
-  if (segments[0] === "apps" && segments[1]) return `apps/${segments[1]}`;
-  return segments[0] ?? "repository";
 }
 
 function verificationObservation(value: TaskVerificationObservation): TaskVerificationObservation {

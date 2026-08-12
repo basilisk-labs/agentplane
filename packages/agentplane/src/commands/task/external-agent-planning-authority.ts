@@ -36,7 +36,7 @@ function planningTaskFields(opts: {
     throw new CliError({
       code: "E_VALIDATION",
       message:
-        "PLANNER result must include task_intent.execution so the agent selects a preferred workflow and declares scope, repository effects, external effects, uncertainty, reversibility, and rationale.",
+        "PLANNER result must include task_intent.execution so the agent selects a preferred workflow and declares scope, repository effects, external effects, requirements uncertainty, implementation uncertainty, reversibility, and rationale.",
     });
   }
 
@@ -156,8 +156,20 @@ export async function isExternalPlanningResultApplied(opts: {
   ) {
     return false;
   }
-  if (intent?.execution && !sameValue(task.execution_contract?.declaration, intent.execution)) {
-    return false;
+  if (intent?.execution) {
+    const expectedContract = resolveTaskExecutionContract({
+      config: opts.command.config,
+      requestedMode: task.execution_route?.requested_mode,
+      task: {
+        task_kind: intent.task_kind,
+        mutation_scope: intent.mutation_scope,
+        risk_flags: intent.risk_flags,
+        blueprint_request: intent.blueprint_request,
+      },
+      declaration: intent.execution,
+    });
+    if (!sameValue(task.execution_contract?.declaration, expectedContract.declaration))
+      return false;
   }
   return (
     (opts.decision.workflowStep.kind === "approval" &&

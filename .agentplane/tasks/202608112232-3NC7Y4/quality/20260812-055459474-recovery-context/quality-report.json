@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608112232-3NC7Y4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-12T05:56:09.233Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "16629e79b6164c75ebc1c41be2d0f0bf973bbda0",
+  "blueprint_digest": "9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6",
+  "findings": [
+    "The versioned execution declaration collapses requirements uncertainty and implementation uncertainty into one `uncertainty` field, so the resolver cannot represent or reason about these independently as required."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608112232-3NC7Y4/README.md",
+    ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/c54420ced0dd987642bf51e7bd403ccaf786c58ff80bf2ce85b1b0b0623cf3cd.patch"
+  ],
+  "missing_tests": [
+    "Schema and resolver tests covering independent combinations of bounded/material requirements uncertainty and bounded/material implementation uncertainty, including distinct reason codes and deterministic workflow/evidence outcomes.",
+    "Compatibility tests proving legacy declarations migrate or normalize into both uncertainty dimensions without silently weakening an existing branch_pr or verification requirement."
+  ],
+  "hidden_assumptions": [
+    "Requirements ambiguity and implementation difficulty always have the same risk level and therefore can be represented by one enum.",
+    "One generic `material_uncertainty` reason is sufficient for explainability and for every subsystem consuming the compiled contract."
+  ],
+  "residual_risks": [
+    "Split the execution declaration into explicit requirements-uncertainty and implementation-uncertainty dimensions, define deterministic resolution and compatibility behavior for both, propagate them through schemas/readback, and add combination tests before reevaluation."
+  ]
+}

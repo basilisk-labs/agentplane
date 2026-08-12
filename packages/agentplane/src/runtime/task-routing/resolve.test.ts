@@ -126,6 +126,97 @@ describe("task execution route", () => {
     expect(contract.verification.required_evidence).toContain("repository_effect:tests");
   });
 
+  it.each([
+    {
+      requirements: "bounded" as const,
+      implementation: "bounded" as const,
+      mode: "direct",
+      reasons: ["agent_preferred_direct_compatible"],
+      evidence: [],
+    },
+    {
+      requirements: "material" as const,
+      implementation: "bounded" as const,
+      mode: "branch_pr",
+      reasons: ["material_requirements_uncertainty"],
+      evidence: ["requirements_resolution"],
+    },
+    {
+      requirements: "bounded" as const,
+      implementation: "material" as const,
+      mode: "branch_pr",
+      reasons: ["material_implementation_uncertainty"],
+      evidence: ["implementation_risk_validation"],
+    },
+    {
+      requirements: "material" as const,
+      implementation: "material" as const,
+      mode: "branch_pr",
+      reasons: ["material_implementation_uncertainty", "material_requirements_uncertainty"],
+      evidence: ["implementation_risk_validation", "requirements_resolution"],
+    },
+  ])(
+    "resolves requirements=$requirements and implementation=$implementation independently",
+    ({ requirements, implementation, mode, reasons, evidence }) => {
+      const config = defaultConfig();
+      config.workflow_mode = "direct";
+      const contract = resolveTaskExecutionContract({
+        config,
+        task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
+        declaration: {
+          schema_version: 2,
+          preferred_mode: "direct",
+          scope_roots: ["packages/app"],
+          repository_effects: ["repository_write", "source_code"],
+          external_effects: [],
+          requirements_uncertainty: requirements,
+          implementation_uncertainty: implementation,
+          reversibility: "reversible",
+          rationale: ["independent uncertainty assessment"],
+        },
+      });
+
+      expect(contract.selected_mode).toBe(mode);
+      expect(contract.reason_codes).toEqual(reasons);
+      for (const evidenceId of evidence) {
+        expect(contract.verification.required_evidence).toContain(evidenceId);
+      }
+    },
+  );
+
+  it("normalizes legacy combined uncertainty without weakening branch or evidence", () => {
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    const contract = resolveTaskExecutionContract({
+      config,
+      task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
+      declaration: {
+        schema_version: 1,
+        preferred_mode: "direct",
+        scope_roots: ["packages/app"],
+        repository_effects: ["repository_write", "source_code"],
+        external_effects: [],
+        uncertainty: "material",
+        reversibility: "reversible",
+        rationale: ["legacy combined uncertainty"],
+      },
+    });
+
+    expect(contract.declaration).toMatchObject({
+      schema_version: 2,
+      requirements_uncertainty: "material",
+      implementation_uncertainty: "material",
+    });
+    expect(contract.selected_mode).toBe("branch_pr");
+    expect(contract.reason_codes).toEqual([
+      "material_implementation_uncertainty",
+      "material_requirements_uncertainty",
+    ]);
+    expect(contract.verification.required_evidence).toEqual(
+      expect.arrayContaining(["requirements_resolution", "implementation_risk_validation"]),
+    );
+  });
+
   it("enforces broad declared effects while preserving the agent rationale", () => {
     const config = defaultConfig();
     config.workflow_mode = "direct";

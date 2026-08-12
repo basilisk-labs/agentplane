@@ -135,15 +135,21 @@ function normalizeExecutionContract(value: unknown): TaskData["execution_contrac
   const externalEffects = normalizeStringList(declaration.external_effects);
   const rationale = normalizeStringList(declaration.rationale);
   const reasons = normalizeStringList(value.reason_codes);
+  const legacyUncertainty = declaration.uncertainty;
+  const requirementsUncertainty =
+    declaration.schema_version === 1 ? legacyUncertainty : declaration.requirements_uncertainty;
+  const implementationUncertainty =
+    declaration.schema_version === 1 ? legacyUncertainty : declaration.implementation_uncertainty;
   if (
-    declaration.schema_version !== 1 ||
+    (declaration.schema_version !== 1 && declaration.schema_version !== 2) ||
     (declaration.preferred_mode !== "direct" && declaration.preferred_mode !== "branch_pr") ||
     scopeRoots === null ||
     repositoryEffects === null ||
     repositoryEffects.some((item) => !REPOSITORY_EFFECTS.has(item)) ||
     externalEffects === null ||
     externalEffects.some((item) => !EXTERNAL_EFFECTS.has(item)) ||
-    (declaration.uncertainty !== "bounded" && declaration.uncertainty !== "material") ||
+    (requirementsUncertainty !== "bounded" && requirementsUncertainty !== "material") ||
+    (implementationUncertainty !== "bounded" && implementationUncertainty !== "material") ||
     (declaration.reversibility !== "reversible" &&
       declaration.reversibility !== "recovery_required" &&
       declaration.reversibility !== "irreversible") ||
@@ -256,7 +262,7 @@ function normalizeExecutionContract(value: unknown): TaskData["execution_contrac
     schema_version: 1,
     source: value.source,
     declaration: {
-      schema_version: 1,
+      schema_version: 2,
       preferred_mode: declaration.preferred_mode,
       scope_roots: scopeRoots,
       repository_effects: repositoryEffects as NonNullable<
@@ -265,7 +271,8 @@ function normalizeExecutionContract(value: unknown): TaskData["execution_contrac
       external_effects: externalEffects as NonNullable<
         TaskData["execution_contract"]
       >["declaration"]["external_effects"],
-      uncertainty: declaration.uncertainty,
+      requirements_uncertainty: requirementsUncertainty,
+      implementation_uncertainty: implementationUncertainty,
       reversibility: declaration.reversibility,
       rationale,
     },

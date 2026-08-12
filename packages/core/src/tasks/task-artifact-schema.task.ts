@@ -132,12 +132,13 @@ const TASK_EXTERNAL_EFFECT_SCHEMA = z.enum([
 ]);
 const TASK_EXECUTION_DECLARATION_SCHEMA = z
   .object({
-    schema_version: z.literal(1),
+    schema_version: z.literal(2),
     preferred_mode: z.enum(["direct", "branch_pr"]),
     scope_roots: z.array(NON_EMPTY_STRING),
     repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
     external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
-    uncertainty: z.enum(["bounded", "material"]),
+    requirements_uncertainty: z.enum(["bounded", "material"]),
+    implementation_uncertainty: z.enum(["bounded", "material"]),
     reversibility: z.enum(["reversible", "recovery_required", "irreversible"]),
     rationale: z.array(NON_EMPTY_STRING).min(1),
   })
@@ -531,6 +532,19 @@ function normalizeLegacyTaskPriority(value: unknown): unknown {
 function legacyExecutionContractDefaults(value: unknown): unknown {
   if (!isRecord(value) || !isRecord(value.declaration)) return value;
   const declaration = value.declaration;
+  const legacyUncertainty = declaration.uncertainty === "material" ? "material" : "bounded";
+  const normalizedDeclaration =
+    declaration.schema_version === 1
+      ? (() => {
+          const { uncertainty: _legacyUncertainty, ...remainingDeclaration } = declaration;
+          return {
+            ...remainingDeclaration,
+            schema_version: 2,
+            requirements_uncertainty: legacyUncertainty,
+            implementation_uncertainty: legacyUncertainty,
+          };
+        })()
+      : declaration;
   const repositoryEffects = Array.isArray(declaration.repository_effects)
     ? declaration.repository_effects.filter(
         (effect): effect is string => typeof effect === "string",
@@ -583,6 +597,7 @@ function legacyExecutionContractDefaults(value: unknown): unknown {
   };
   return {
     ...value,
+    declaration: normalizedDeclaration,
     authority,
     observed: {
       ...observedSource,

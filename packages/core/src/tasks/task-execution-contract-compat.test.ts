@@ -49,6 +49,11 @@ describe("task execution contract compatibility", () => {
 
     expect(() => validateTaskReadmeFrontmatter(task)).not.toThrow();
     expect(task.execution_contract).toMatchObject({
+      declaration: {
+        schema_version: 2,
+        requirements_uncertainty: "bounded",
+        implementation_uncertainty: "bounded",
+      },
       authority: {
         writable_roots: ["packages/app"],
         allowed_repository_effects: ["repository_write", "source_code"],

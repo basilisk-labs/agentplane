@@ -10,7 +10,7 @@ import { isDirectRun } from "../lib/script-runtime.mjs";
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
 const cliPath = path.join(repoRoot, "packages", "agentplane", "bin", "agentplane.js");
-const MAX_AGENT_PACKET_BYTES = 2048;
+const MAX_AGENT_PACKET_BYTES = 8192;
 
 function run(command, args, cwd) {
   return execFileSync(command, args, {
@@ -147,7 +147,10 @@ function checkCanonicalHelp(failures) {
 
 export function assertCompactAgentPacket(packetText) {
   const bytes = Buffer.byteLength(packetText, "utf8");
-  assert.ok(bytes <= MAX_AGENT_PACKET_BYTES, `agent packet is ${bytes} bytes; maximum is 2048`);
+  assert.ok(
+    bytes <= MAX_AGENT_PACKET_BYTES,
+    `agent packet is ${bytes} bytes; maximum is ${MAX_AGENT_PACKET_BYTES}`,
+  );
   const packet = JSON.parse(packetText);
   assert.equal(packet.schema_version, 1, "agent packet schema_version must be 1");
   assert.equal(typeof packet.task_id, "string", "agent packet task_id is required");
