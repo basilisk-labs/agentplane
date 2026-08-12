@@ -147,9 +147,14 @@ export async function ensureReconciledBeforeMutation(opts: {
     });
   }
 
-  const branchFilteredWarnings = await filterWarningsResolvedFromTaskBranch(
+  const stableReadWarnings = await filterTransientTaskScopedReadWarnings(
     opts.ctx,
     opts.ctx.taskBackend.getLastListWarnings?.() ?? [],
+    opts.taskIds,
+  );
+  const branchFilteredWarnings = await filterWarningsResolvedFromTaskBranch(
+    opts.ctx,
+    stableReadWarnings,
   );
   const warnings = filterWarningsOutsideTaskScope(branchFilteredWarnings, opts.taskIds);
   if (warnings.length === 0) return;
@@ -167,6 +172,37 @@ export async function ensureReconciledBeforeMutation(opts: {
       buildWarningDiagnostic(warnings),
     ),
   });
+}
+
+async function filterTransientTaskScopedReadWarnings(
+  ctx: CommandContext,
+  warnings: string[],
+  taskIds: readonly string[] | undefined,
+): Promise<string[]> {
+  if (warnings.length === 0 || !backendUsesLocalTaskStore(ctx)) return warnings;
+  const taskSet = new Set((taskIds ?? []).map((taskId) => taskId.trim()).filter(Boolean));
+  if (taskSet.size === 0) return warnings;
+
+  const kept: string[] = [];
+  for (const raw of warnings) {
+    const parsed = parseTaskScanWarning(raw);
+    if (
+      !parsed.taskId ||
+      !taskSet.has(parsed.taskId) ||
+      (parsed.kind !== "missing_or_unreadable_readme" && parsed.kind !== "unreadable_readme")
+    ) {
+      kept.push(raw);
+      continue;
+    }
+
+    try {
+      const task = await ctx.taskBackend.getTask(parsed.taskId);
+      if (task?.id !== parsed.taskId) kept.push(raw);
+    } catch {
+      kept.push(raw);
+    }
+  }
+  return kept;
 }
 
 function filterWarningsOutsideTaskScope(

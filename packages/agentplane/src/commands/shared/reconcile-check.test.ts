@@ -137,6 +137,32 @@ describe("commands/shared/reconcile-check", () => {
     });
   });
 
+  it("accepts a task-scoped read warning only when an exact stable reread succeeds", async () => {
+    const getTask = vi.fn().mockResolvedValue({ id: "T-ACTIVE" });
+    const ctx = mkCtx({
+      taskBackend: {
+        id: "mock",
+        capabilities: {
+          canonical_source: "local",
+          writes_task_readmes: true,
+        },
+        listTasks: vi.fn().mockResolvedValue([]),
+        getTask,
+        writeTask: vi.fn().mockResolvedValue(),
+        getLastListWarnings: vi.fn().mockReturnValue(["skip:T-ACTIVE: unreadable_readme"]),
+      } as unknown as CommandContext["taskBackend"],
+    });
+
+    await expect(
+      ensureReconciledBeforeMutation({
+        ctx,
+        command: "verify",
+        taskIds: ["T-ACTIVE"],
+      }),
+    ).resolves.toBeUndefined();
+    expect(getTask).toHaveBeenCalledExactlyOnceWith("T-ACTIVE");
+  });
+
   it("keeps unrelated invalid frontmatter warnings even for task-scoped mutations", async () => {
     const ctx = mkCtx({
       taskBackend: {
