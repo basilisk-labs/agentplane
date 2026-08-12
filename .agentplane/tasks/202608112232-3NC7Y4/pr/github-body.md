@@ -15,8 +15,13 @@ Use one canonical lifecycle while letting the agent semantically choose direct o
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+PASS: agent-selected risk-adaptive routing, deterministic safety enforcement, preserved-work
+escalation, and realistic user E2Es verified.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

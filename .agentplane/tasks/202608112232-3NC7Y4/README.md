@@ -4,7 +4,7 @@ title: "Make execution strategy risk-adaptive and agent-selected"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,10 +24,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-12T01:39:32.590Z"
+  updated_by: "TESTER"
+  note: "PASS: agent-selected risk-adaptive routing, deterministic safety enforcement, preserved-work escalation, and realistic user E2Es verified."
   attempts: 0
 execution_route:
   frozen: true
@@ -63,8 +63,14 @@ events:
     to: "DOING"
     note: "Implementation complete: structured agent execution declaration, deterministic contract compilation, effect-based routing, monotonic escalation with preserved work, and realistic direct/branch_pr E2Es. Full local fast CI passed."
     commit: "40afabe86933efaad8d6bca48903ea38bcc378e2"
+  -
+    type: "verify"
+    at: "2026-08-12T01:39:32.590Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS: agent-selected risk-adaptive routing, deterministic safety enforcement, preserved-work escalation, and realistic user E2Es verified."
 doc_version: 3
-doc_updated_at: "2026-08-12T01:26:09.791Z"
+doc_updated_at: "2026-08-12T01:39:33.722Z"
 doc_updated_by: "CODER"
 description: "Use one canonical lifecycle while letting the agent semantically choose direct or branch_pr through a structured risk/effect declaration. AgentPlane must compile and enforce one deterministic execution contract, compare it with observed effects, escalate monotonically when required, and never use product-language keyword heuristics as lifecycle authority."
 sections:
@@ -94,6 +100,111 @@ sections:
     5. Run routing, writable-scope, commit-policy, verification, evaluator, finish, recovery, compatibility, formatting, type, lint, and relevant full test shards. Expected: all pass; existing projects load without manual migration; representative before/after traces show fewer commands/approvals/transitions for low-risk direct work without weaker significant-task evidence.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-12T01:39:32.590Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS: agent-selected risk-adaptive routing, deterministic safety enforcement, preserved-work escalation, and realistic user E2Es verified.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:dca184be90fa3ce8f32f16e9f1a157c5f2a648692b107ebd2119d23831c66570, input_digest=sha256:157186805616e646ad0b097885f98a35f72d8e6c6e85dc8a7c8113a2b293f676
+
+    Details:
+
+    Command: AGENTPLANE_FAST_CHANGED_FILES=".agentplane/tasks/202608112232-3NC7Y4/README.md
+    .agentplane/tasks/202608112232-3NC7Y4/blueprint/resolved-snapshot.json
+    .agentplane/tasks/202608112232-3NC7Y4/pr/diffstat.txt
+    .agentplane/tasks/202608112232-3NC7Y4/pr/github-body.md
+    .agentplane/tasks/202608112232-3NC7Y4/pr/github-title.txt
+    .agentplane/tasks/202608112232-3NC7Y4/pr/meta.json
+    .agentplane/tasks/202608112232-3NC7Y4/pr/review.md
+    packages/agentplane/src/backends/task-backend/shared/record.ts
+    packages/agentplane/src/backends/task-backend/shared/types.ts
+    packages/agentplane/src/blueprints/resolve.test.ts
+    packages/agentplane/src/blueprints/resolve.ts
+    packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts
+    packages/agentplane/src/commands/blueprint/task-input.test.ts
+    packages/agentplane/src/commands/blueprint/task-input.ts
+    packages/agentplane/src/commands/shared/route-decision-types.ts
+    packages/agentplane/src/commands/shared/task-backend.ts
+    packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts
+    packages/agentplane/src/commands/task/agent-action-packet.ts
+    packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts
+    packages/agentplane/src/commands/task/brief-model.ts
+    packages/agentplane/src/commands/task/brief-render.ts
+    packages/agentplane/src/commands/task/create.command.ts
+    packages/agentplane/src/commands/task/direct-task-finalization.test.ts
+    packages/agentplane/src/commands/task/direct-task-finalization.ts
+    packages/agentplane/src/commands/task/direct-task-supervisor-result.ts
+    packages/agentplane/src/commands/task/direct-task-supervisor.test.ts
+    packages/agentplane/src/commands/task/direct-task-supervisor.ts
+    packages/agentplane/src/commands/task/direct-task-verification.test.ts
+    packages/agentplane/src/commands/task/direct-task-verification.ts
+    packages/agentplane/src/commands/task/external-agent-planning-authority.ts
+    packages/agentplane/src/commands/task/new.ts
+    packages/agentplane/src/commands/task/next-action.command.ts
+    packages/agentplane/src/commands/task/plan.ts
+    packages/agentplane/src/commands/task/run-execution-preview.ts
+    packages/agentplane/src/commands/task/status.command.ts
+    packages/agentplane/src/commands/task/task-execution-contract-observation.ts
+    packages/agentplane/src/runner/context/task-context.ts
+    packages/agentplane/src/runner/types/context.ts
+    packages/agentplane/src/runner/usecases/agent-work-order-build.ts
+    packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts
+    packages/agentplane/src/runtime/task-intake/resolve-materialize.ts
+    packages/agentplane/src/runtime/task-intake/resolve-normalize.ts
+    packages/agentplane/src/runtime/task-intake/types.ts
+    packages/agentplane/src/runtime/task-routing/index.ts
+    packages/agentplane/src/runtime/task-routing/resolve.test.ts
+    packages/agentplane/src/runtime/task-routing/resolve.ts
+    packages/core/schemas/task-readme-frontmatter.schema.json
+    packages/core/schemas/tasks-export.schema.json
+    packages/core/src/runner/agent-semantic-result.test.ts
+    packages/core/src/runner/agent-semantic-result.ts
+    packages/core/src/tasks/index.ts
+    packages/core/src/tasks/task-artifact-schema.task.ts
+    packages/core/src/tasks/task-provider-safe-projection.ts
+    packages/core/src/tasks/task-readme.ts
+    packages/core/src/tasks/task-store.ts
+    packages/core/src/tasks/tasks-export.ts
+    packages/spec/schemas/task-readme-frontmatter.schema.json
+    packages/spec/schemas/tasks-export.schema.json
+    schemas/agent-semantic-result.schema.json
+    schemas/task-readme-frontmatter.schema.json
+    schemas/tasks-export.schema.json" bun run ci:local:fast
+    Result: pass
+    Evidence: 553 test files passed; 4048 tests passed and 1 skipped; all 12 critical CLI E2E chunks passed; format, schemas, policy routing, build, typecheck, lint, hotspot, docs freshness, and cold-start checks passed on final source head
+    Scope: full fast release-relevant regression surface for the risk-adaptive execution contract
+
+    Command: bunx vitest run packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts
+    Result: pass
+    Evidence: 6 files passed; 61 tests passed
+    Scope: localized direct work, broad SDK/schema branch_pr work, misleading-language routing, underestimated direct escalation with preserved commit, non-self-authorizable external effects, writable roots, supervisors, and effect-derived verification
+
+    Command: bun scripts/generate/sync-schemas.mjs check && node scripts/checks/check-policy-routing.mjs && git diff --check origin/main...HEAD
+    Result: pass
+    Evidence: generated schemas current; policy routing valid; no diff whitespace errors
+    Scope: persisted execution-contract schema, routing policy, and final branch integrity
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112232-3NC7Y4-make-execution-strategy-risk-adaptive-and-agent/.agentplane/tasks/202608112232-3NC7Y4/blueprint/resolved-snapshot.json
+    - old_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+    - current_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608112232-3NC7Y4
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608112232-3NC7Y4
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -140,6 +251,111 @@ Use one canonical lifecycle while letting the agent semantically choose direct o
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-12T01:39:32.590Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS: agent-selected risk-adaptive routing, deterministic safety enforcement, preserved-work escalation, and realistic user E2Es verified.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:dca184be90fa3ce8f32f16e9f1a157c5f2a648692b107ebd2119d23831c66570, input_digest=sha256:157186805616e646ad0b097885f98a35f72d8e6c6e85dc8a7c8113a2b293f676
+
+Details:
+
+Command: AGENTPLANE_FAST_CHANGED_FILES=".agentplane/tasks/202608112232-3NC7Y4/README.md
+.agentplane/tasks/202608112232-3NC7Y4/blueprint/resolved-snapshot.json
+.agentplane/tasks/202608112232-3NC7Y4/pr/diffstat.txt
+.agentplane/tasks/202608112232-3NC7Y4/pr/github-body.md
+.agentplane/tasks/202608112232-3NC7Y4/pr/github-title.txt
+.agentplane/tasks/202608112232-3NC7Y4/pr/meta.json
+.agentplane/tasks/202608112232-3NC7Y4/pr/review.md
+packages/agentplane/src/backends/task-backend/shared/record.ts
+packages/agentplane/src/backends/task-backend/shared/types.ts
+packages/agentplane/src/blueprints/resolve.test.ts
+packages/agentplane/src/blueprints/resolve.ts
+packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts
+packages/agentplane/src/commands/blueprint/task-input.test.ts
+packages/agentplane/src/commands/blueprint/task-input.ts
+packages/agentplane/src/commands/shared/route-decision-types.ts
+packages/agentplane/src/commands/shared/task-backend.ts
+packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts
+packages/agentplane/src/commands/task/agent-action-packet.ts
+packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts
+packages/agentplane/src/commands/task/brief-model.ts
+packages/agentplane/src/commands/task/brief-render.ts
+packages/agentplane/src/commands/task/create.command.ts
+packages/agentplane/src/commands/task/direct-task-finalization.test.ts
+packages/agentplane/src/commands/task/direct-task-finalization.ts
+packages/agentplane/src/commands/task/direct-task-supervisor-result.ts
+packages/agentplane/src/commands/task/direct-task-supervisor.test.ts
+packages/agentplane/src/commands/task/direct-task-supervisor.ts
+packages/agentplane/src/commands/task/direct-task-verification.test.ts
+packages/agentplane/src/commands/task/direct-task-verification.ts
+packages/agentplane/src/commands/task/external-agent-planning-authority.ts
+packages/agentplane/src/commands/task/new.ts
+packages/agentplane/src/commands/task/next-action.command.ts
+packages/agentplane/src/commands/task/plan.ts
+packages/agentplane/src/commands/task/run-execution-preview.ts
+packages/agentplane/src/commands/task/status.command.ts
+packages/agentplane/src/commands/task/task-execution-contract-observation.ts
+packages/agentplane/src/runner/context/task-context.ts
+packages/agentplane/src/runner/types/context.ts
+packages/agentplane/src/runner/usecases/agent-work-order-build.ts
+packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts
+packages/agentplane/src/runtime/task-intake/resolve-materialize.ts
+packages/agentplane/src/runtime/task-intake/resolve-normalize.ts
+packages/agentplane/src/runtime/task-intake/types.ts
+packages/agentplane/src/runtime/task-routing/index.ts
+packages/agentplane/src/runtime/task-routing/resolve.test.ts
+packages/agentplane/src/runtime/task-routing/resolve.ts
+packages/core/schemas/task-readme-frontmatter.schema.json
+packages/core/schemas/tasks-export.schema.json
+packages/core/src/runner/agent-semantic-result.test.ts
+packages/core/src/runner/agent-semantic-result.ts
+packages/core/src/tasks/index.ts
+packages/core/src/tasks/task-artifact-schema.task.ts
+packages/core/src/tasks/task-provider-safe-projection.ts
+packages/core/src/tasks/task-readme.ts
+packages/core/src/tasks/task-store.ts
+packages/core/src/tasks/tasks-export.ts
+packages/spec/schemas/task-readme-frontmatter.schema.json
+packages/spec/schemas/tasks-export.schema.json
+schemas/agent-semantic-result.schema.json
+schemas/task-readme-frontmatter.schema.json
+schemas/tasks-export.schema.json" bun run ci:local:fast
+Result: pass
+Evidence: 553 test files passed; 4048 tests passed and 1 skipped; all 12 critical CLI E2E chunks passed; format, schemas, policy routing, build, typecheck, lint, hotspot, docs freshness, and cold-start checks passed on final source head
+Scope: full fast release-relevant regression surface for the risk-adaptive execution contract
+
+Command: bunx vitest run packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts
+Result: pass
+Evidence: 6 files passed; 61 tests passed
+Scope: localized direct work, broad SDK/schema branch_pr work, misleading-language routing, underestimated direct escalation with preserved commit, non-self-authorizable external effects, writable roots, supervisors, and effect-derived verification
+
+Command: bun scripts/generate/sync-schemas.mjs check && node scripts/checks/check-policy-routing.mjs && git diff --check origin/main...HEAD
+Result: pass
+Evidence: generated schemas current; policy routing valid; no diff whitespace errors
+Scope: persisted execution-contract schema, routing policy, and final branch integrity
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112232-3NC7Y4-make-execution-strategy-risk-adaptive-and-agent/.agentplane/tasks/202608112232-3NC7Y4/blueprint/resolved-snapshot.json
+- old_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+- current_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608112232-3NC7Y4
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608112232-3NC7Y4
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
