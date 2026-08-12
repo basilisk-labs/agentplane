@@ -10,7 +10,11 @@ const mocks = { runProcess: vi.fn() };
 const ORIGINAL_AGENT_MODE = process.env.AGENTPLANE_AGENT_MODE;
 const ORIGINAL_RUNTIME_ACTIVE_BIN = process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
 
-import { parseDirectTaskCheck, runDirectTaskVerification } from "./direct-task-verification.js";
+import {
+  parseDirectTaskCheck,
+  renderDirectTaskVerificationDetails,
+  runDirectTaskVerification,
+} from "./direct-task-verification.js";
 
 const TASK_ID = "202607290000-RF10A1";
 const roots: string[] = [];
@@ -270,6 +274,44 @@ describe("direct task verification", () => {
         { command: "bun run lifecycle:invariants", exit_code: 0 },
       ],
     });
+  });
+
+  it("binds supervisor evidence to every selected Verification Contract check", () => {
+    const task = {
+      execution_contract: {
+        ...executionContract(["repository_write", "source_code"]),
+        verification: {
+          required_evidence: ["task_outcome"],
+          contract: {
+            selected_checks: ["critical_paths", "task_outcome"],
+          },
+        },
+      },
+    } as unknown as Pick<TaskData, "execution_contract">;
+    const details = renderDirectTaskVerificationDetails({
+      task,
+      taskId: TASK_ID,
+      workflow: "branch_pr",
+      result: {
+        status: "passed",
+        artifact_path: ".agentplane/tasks/T/supervision/declared-checks.json",
+        reason: null,
+        checks: [
+          {
+            command: "bun run test:critical",
+            script: "test:critical",
+            exit_code: 0,
+            duration_ms: 10,
+            stdout_tail: "pass",
+            stderr_tail: "",
+          },
+        ],
+      },
+    });
+
+    expect(details).toContain("Check: critical_paths");
+    expect(details).toContain("Check: task_outcome");
+    expect(details.match(/Command: bun run test:critical/gu)).toHaveLength(2);
   });
 
   it("gives the canonical provider qualification its bounded release window", async () => {

@@ -171,7 +171,7 @@ describe("task verification durability", () => {
       by: "REVIEWER",
       note: "Focused check passed.",
       details:
-        "Command: bun test focused\nResult: pass\nEvidence: 1 test passed\nScope: focused behavior",
+        "Check: affected_unit_integration\nCommand: bun test focused\nResult: pass\nEvidence: 1 test passed\nScope: focused behavior\n\nCheck: critical_paths\nCommand: bun test focused\nResult: pass\nEvidence: 1 test passed\nScope: critical behavior\n\nCheck: task_outcome\nCommand: bun test focused\nResult: pass\nEvidence: 1 test passed\nScope: task outcome",
       quiet: true,
     });
 
@@ -181,7 +181,11 @@ describe("task verification durability", () => {
       verification: { state: "ok" },
       execution_contract: {
         observed: {
-          verification_results: [{ id: "recorded-check-1", result: "pass" }],
+          verification_results: [
+            { id: "recorded-check-1", result: "pass" },
+            { id: "recorded-check-2", result: "pass" },
+            { id: "recorded-check-3", result: "pass" },
+          ],
         },
       },
     });

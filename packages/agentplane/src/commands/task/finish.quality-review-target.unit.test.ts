@@ -8,6 +8,8 @@ const mocks = vi.hoisted(() => ({
   isTaskLocalOnlyAdvance: vi.fn(),
   isTaskSetLocalOnlyAdvance: vi.fn(),
   readCommitInfo: vi.fn(),
+  hasAcceptedVerificationRecord: vi.fn(),
+  checkTaskBlueprintSnapshotDrift: vi.fn(),
 }));
 
 vi.mock("../shared/task-local-freshness.js", () => ({
@@ -25,6 +27,12 @@ vi.mock("./shared.js", async (importOriginal) => {
     readCommitInfo: mocks.readCommitInfo,
   };
 });
+vi.mock("../shared/task-verification-records.js", () => ({
+  hasAcceptedVerificationRecord: mocks.hasAcceptedVerificationRecord,
+}));
+vi.mock("../blueprint/snapshot-artifact.js", () => ({
+  checkTaskBlueprintSnapshotDrift: mocks.checkTaskBlueprintSnapshotDrift,
+}));
 
 function mkCtx(): CommandContext {
   const config = defaultConfig();
@@ -59,6 +67,31 @@ describe("finish quality review target selection", () => {
     mocks.isTaskLocalOnlyAdvance.mockReset();
     mocks.isTaskSetLocalOnlyAdvance.mockReset();
     mocks.readCommitInfo.mockReset();
+    mocks.hasAcceptedVerificationRecord.mockReset().mockResolvedValue(true);
+    mocks.checkTaskBlueprintSnapshotDrift.mockReset().mockResolvedValue({
+      state: "current",
+      path: ".agentplane/tasks/T-1/blueprint/resolved.json",
+      previous: { digest: null },
+      current: { digest: "d1" },
+    });
+  });
+
+  it("blocks finish when the persisted Verification Contract lacks accepted evidence", async () => {
+    const loaded = mkLoadedTask();
+    loaded.task.execution_contract = {
+      verification: { contract: { selected_checks: ["task_outcome"] } },
+    } as TaskData["execution_contract"];
+    mocks.hasAcceptedVerificationRecord.mockResolvedValue(false);
+    const { assertQualityReviewBeforeFinish } = await import("./finish-blueprint-evidence.js");
+
+    await expect(
+      assertQualityReviewBeforeFinish({
+        ctx: mkCtx(),
+        loadedTasks: [loaded],
+        taskCommitInfo: { hash: "impl-sha", message: "feat: implementation" },
+        implementationCommitInfo: null,
+      }),
+    ).rejects.toThrow("finish requires a current verification record");
   });
 
   it("prefers explicit --implementation-commit over artifact --commit", async () => {

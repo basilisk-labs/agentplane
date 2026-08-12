@@ -32,6 +32,7 @@ type VerificationRecordAssessmentReason =
   | "verification_invalid_record"
   | "verification_metadata_changed"
   | "verification_details_missing"
+  | "verification_contract_evidence_missing"
   | "verification_implementation_changed"
   | "verification_steps_changed"
   | "verification_contract_changed"
@@ -60,6 +61,45 @@ function verifyStepsDigest(task: TaskData): `sha256:${string}` | null {
 
 function hasConcreteCheckDetails(details: unknown): boolean {
   return parseVerificationCheckDetails(details) !== null;
+}
+
+function normalizedCheckIds(value: unknown): string[] | null {
+  if (!Array.isArray(value)) return null;
+  const normalized = value.map((item) => (typeof item === "string" ? item.trim() : ""));
+  if (normalized.some((item) => !item)) return null;
+  return [...new Set(normalized)].toSorted();
+}
+
+export type VerificationContractEvidenceCoverage = {
+  requiredChecks: string[];
+  satisfiedChecks: string[];
+  missingChecks: string[];
+  unexpectedChecks: string[];
+  accepted: boolean;
+};
+
+export function verificationContractEvidenceCoverage(
+  task: TaskData,
+  details: unknown,
+): VerificationContractEvidenceCoverage {
+  const requiredChecks = [
+    ...(task.execution_contract?.verification.contract?.selected_checks ?? []),
+  ].toSorted();
+  const normalized = normalizedCheckIds(
+    parseVerificationCheckDetails(details)?.map(({ checkId }) => checkId) ?? null,
+  );
+  const satisfied = normalized ?? [];
+  const required = new Set(requiredChecks);
+  const supplied = new Set(satisfied);
+  const missingChecks = requiredChecks.filter((check) => !supplied.has(check));
+  const unexpectedChecks = satisfied.filter((check) => !required.has(check));
+  return {
+    requiredChecks,
+    satisfiedChecks: satisfied,
+    missingChecks,
+    unexpectedChecks,
+    accepted: normalized !== null && missingChecks.length === 0 && unexpectedChecks.length === 0,
+  };
 }
 
 function hasValidRecordDigest(record: Record<string, unknown>): boolean {
@@ -236,6 +276,12 @@ async function assessCurrentVerification(
   }
   if (requireConcreteCheckDetails && !hasConcreteCheckDetails(record.details)) {
     return rejectedAssessment("verification_details_missing");
+  }
+  if (record.result === "ok") {
+    const coverage = verificationContractEvidenceCoverage(task, record.details);
+    if (coverage.requiredChecks.length > 0 && !coverage.accepted) {
+      return rejectedAssessment("verification_contract_evidence_missing");
+    }
   }
 
   if (record.schema_version === 2) {

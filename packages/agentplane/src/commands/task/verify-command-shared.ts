@@ -151,7 +151,7 @@ const verifyCommonOptions: readonly OptionSpec[] = [
     name: "details",
     valueHint: "<text>",
     description:
-      "Verification check blocks using Command, Result, Evidence, and Scope fields; required for a passing committed branch_pr task and mutually exclusive with --file.",
+      "Verification check blocks using optional Check plus Command, Result, Evidence, and Scope fields; Check is required for every selected Verification Contract item.",
   },
   {
     kind: "string",

@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen exact-SHA verification record does not show a hosted PR full CLI regression for evaluated SHA 98422e10574192fd43f9da6a0509ec71a2e3d1cd.",
+      "broken_invariant": "Every PR must run the complete CLI regression on the exact reviewed SHA, and missing hosted evidence must block completion.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260812192306993-5c516c2dac825b29.json",
+          "sha256": "sha256:53cd4c023f7632fa3d3ea809098505b2737a9822de5dc1bd7b91c1d10b328b7b",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+          "sha256": "sha256:d6fae6082802145d818393a8bc7b2d64a404f62535f77d8f377decf9d484280b",
+          "section": "Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "high",
+      "summary": "The claimed risk-selected E2E evidence is a partial audit qualification on a different SHA, not completed real E2E on the evaluated SHA.",
+      "broken_invariant": "Risk-selected real E2E must execute for the applicable PR or release contract on exact reviewed evidence; incomplete or mismatched-SHA qualification cannot establish that requirement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260812192306993-5c516c2dac825b29.json",
+          "sha256": "sha256:53cd4c023f7632fa3d3ea809098505b2737a9822de5dc1bd7b91c1d10b328b7b",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/9a291733533abba8a1f938586cc3b60a4aeb2c90c506256de3f25be8df957261.patch",
+          "sha256": "sha256:9a291733533abba8a1f938586cc3b60a4aeb2c90c506256de3f25be8df957261",
+          "section": "risk E2E and hosted phase implementation"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "severity": "medium",
+      "summary": "Frozen verification does not demonstrate that evaluator, finish, and recovery consume the contract as an authoritative check selector; the diff primarily binds verification reuse and quality targeting to a digest.",
+      "broken_invariant": "One computed Verification Contract must be the single authority for local, PR, release, evaluator, finish, and recovery verification, with monotonic strengthening and explainable readback at every consumer.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/9a291733533abba8a1f938586cc3b60a4aeb2c90c506256de3f25be8df957261.patch",
+          "sha256": "sha256:9a291733533abba8a1f938586cc3b60a4aeb2c90c506256de3f25be8df957261",
+          "section": "verification contract consumers"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260812192306993-5c516c2dac825b29.json",
+          "sha256": "sha256:53cd4c023f7632fa3d3ea809098505b2737a9822de5dc1bd7b91c1d10b328b7b",
+          "section": "scope"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Hosted PR qualification proving the complete CLI regression passed on evaluated SHA 98422e10574192fd43f9da6a0509ec71a2e3d1cd.",
+    "A real risk-triggered E2E run bound to the evaluated SHA, with completed qualification rather than a partial audit selection.",
+    "End-to-end tests showing evaluator, finish, and recovery derive mandatory checks from the persisted Verification Contract and block when required evidence is absent or stale."
+  ],
+  "hidden_assumptions": [
+    "A packaged install smoke test plus hosted-boundary Vitest matrix is treated as equivalent to the task's required real E2E.",
+    "Evidence produced on ancestor or different clean SHAs is assumed sufficient for exact-SHA hosted and E2E gates.",
+    "Binding verification records to a contract digest is assumed to make every lifecycle consumer authoritative even without evidence that those consumers enforce the selected checks."
+  ],
+  "recovery_context": "Provide exact-SHA hosted PR full-regression evidence, completed risk-selected real E2E evidence for the evaluated SHA, and consumer-level proof that evaluator, finish, and recovery enforce the persisted Verification Contract before requesting reevaluation."
+}

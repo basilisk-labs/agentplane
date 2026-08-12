@@ -11,7 +11,10 @@ import {
   type DirectImplementationEvidence,
 } from "./direct-task-finalization.js";
 import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal-operation.js";
-import { runDirectTaskVerification } from "./direct-task-verification.js";
+import {
+  renderDirectTaskVerificationDetails,
+  runDirectTaskVerification,
+} from "./direct-task-verification.js";
 import { cmdVerifyParsed } from "./verify-record.js";
 
 export type DirectTaskCloseoutStopCode =
@@ -123,7 +126,7 @@ export async function verifyDirectTask(opts: {
   ctx: CommandCtx;
   command: CommandContext;
   task_id: string;
-  task: Pick<TaskData, "verify">;
+  task: Pick<TaskData, "verify" | "execution_contract">;
   implementation_evidence?: DirectImplementationEvidence;
   evaluator?: DirectTaskCloseoutEvaluatorEvidence;
   decision: () => Promise<TaskRouteDecision>;
@@ -205,14 +208,12 @@ export async function verifyDirectTask(opts: {
             ? "Verified: independent EVALUATOR pass is recorded in the task quality artifacts."
             : "Verified: CLI declared checks passed; independent EVALUATOR review is pending.",
           details: [
-            ...checks.checks.map((check, index) =>
-              [
-                `Command: ${check.command}`,
-                "Result: pass",
-                `Evidence: ${checks.artifact_path}#check-${String(index + 1)}`,
-                `Scope: direct task ${opts.task_id} declared verification`,
-              ].join("\n"),
-            ),
+            renderDirectTaskVerificationDetails({
+              task: opts.task,
+              taskId: opts.task_id,
+              workflow: "direct",
+              result: checks,
+            }),
             ...(opts.implementation_evidence
               ? [
                   [
@@ -442,7 +443,7 @@ export async function closeDirectTask(opts: {
   ctx: CommandCtx;
   command: CommandContext;
   task_id: string;
-  task: Pick<TaskData, "verify">;
+  task: Pick<TaskData, "verify" | "execution_contract">;
   evaluator: DirectTaskCloseoutEvaluatorEvidence;
   decision: () => Promise<TaskRouteDecision>;
   execution_base_commit: string | null;

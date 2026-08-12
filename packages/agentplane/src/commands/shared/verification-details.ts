@@ -1,4 +1,5 @@
 export type VerificationCheckDetail = {
+  checkId: string | null;
   command: string;
   result: "pass" | "fail";
   evidence: string;
@@ -7,11 +8,13 @@ export type VerificationCheckDetail = {
 
 const REQUIRED_FIELDS = ["Command", "Result", "Evidence", "Scope"] as const;
 type RequiredField = (typeof REQUIRED_FIELDS)[number];
+type VerificationField = RequiredField | "Check";
 
 // A label is structural only at a line boundary or after the terminal period
 // used by the compatibility inline format. Plain label-shaped text inside a
 // command or evidence value (for example `echo Scope: smoke`) stays data.
-const FIELD_PATTERN = /(?:^|(?:\r?\n)[\t ]*|(?<=\.)[\t ]+)(Command|Result|Evidence|Scope):[\t ]*/gu;
+const FIELD_PATTERN =
+  /(?:^|(?:\r?\n)[\t ]*|(?<=\.)[\t ]+)(Check|Command|Result|Evidence|Scope):[\t ]*/gu;
 
 /**
  * Parses the durable, user-facing verification-details format once. Consumers
@@ -24,14 +27,15 @@ export function parseVerificationCheckDetails(details: unknown): VerificationChe
   const matches = [...text.matchAll(FIELD_PATTERN)];
   if (matches.length === 0) return null;
 
-  const checks: Map<RequiredField, string>[] = [];
-  let fields: Map<RequiredField, string> | null = null;
+  const checks: Map<VerificationField, string>[] = [];
+  let fields: Map<VerificationField, string> | null = null;
   for (const [index, match] of matches.entries()) {
-    const field = match[1] as RequiredField;
-    if (field === "Command") {
+    const field = match[1] as VerificationField;
+    if (field === "Check" || (field === "Command" && fields?.has("Command"))) {
       if (fields) checks.push(fields);
       fields = new Map();
     }
+    if (field === "Command" && !fields) fields = new Map();
     if (!fields || fields.has(field)) return null;
     const valueStart = (match.index ?? 0) + match[0].length;
     const valueEnd = matches[index + 1]?.index ?? text.length;
@@ -53,6 +57,7 @@ export function parseVerificationCheckDetails(details: unknown): VerificationChe
     const resultMatch = /^(pass|fail)(?:\.|\s*;\s*.+|\s+\(.+\)\.?)?$/u.exec(resultField);
     if (!resultMatch) return null;
     parsed.push({
+      checkId: check.get("Check") ?? null,
       command: check.get("Command") ?? "",
       result: resultMatch[1] as "pass" | "fail",
       evidence: check.get("Evidence") ?? "",
