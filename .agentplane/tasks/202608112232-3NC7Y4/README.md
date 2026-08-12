@@ -1,10 +1,11 @@
 ---
 id: "202608112232-3NC7Y4"
 title: "Make execution strategy risk-adaptive and agent-selected"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -59,6 +60,20 @@ quality_review:
     - "Natural-language keyword routing was removed from authoritative blueprint and mutation inference; explicit structured intent and trusted project blueprints remain supported."
     - "Direct-to-branch_pr escalation is monotonic, idempotent, preserves the implementation commit and changed paths, and returns one canonical next action."
     - "External writes, credentials, publish, deploy, destructive Git, security boundaries, public API, schema, dependency, CI, and release effects retain deterministic isolation or approval floors."
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-12T01:41:24.708Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -68,8 +83,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "40afabe86933efaad8d6bca48903ea38bcc378e2"
-  message: "✨ 3NC7Y4 task: add risk-adaptive execution contract"
+  hash: "41f9990d02d3fee587bc99c0f784d0489623de67"
+  message: "✅ 3NC7Y4 task: record quality review"
 comments:
   -
     author: "CODER"
@@ -77,6 +92,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation complete: structured agent execution declaration, deterministic contract compilation, effect-based routing, monotonic escalation with preserved work, and realistic direct/branch_pr E2Es. Full local fast CI passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -99,8 +117,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: agent-selected risk-adaptive routing, deterministic safety enforcement, preserved-work escalation, and realistic user E2Es verified."
+  -
+    type: "status"
+    at: "2026-08-12T01:41:24.708Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "41f9990d02d3fee587bc99c0f784d0489623de67"
 doc_version: 3
-doc_updated_at: "2026-08-12T01:39:33.722Z"
+doc_updated_at: "2026-08-12T01:41:24.719Z"
 doc_updated_by: "CODER"
 description: "Use one canonical lifecycle while letting the agent semantically choose direct or branch_pr through a structured risk/effect declaration. AgentPlane must compile and enforce one deterministic execution contract, compare it with observed effects, escalate monotonically when required, and never use product-language keyword heuristics as lifecycle authority."
 sections:
@@ -241,6 +267,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "13559201918e82ed10fd775bb6163be1822e8e37"
+    message: "🎨 3NC7Y4 task: align execution routing format"
   workflow_route_baseline:
     start_head_sha: "106662505177833ff8ededb1ad621baf342c3a88"
     version: 1
@@ -394,3 +423,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-12T01:41:24.708Z`
