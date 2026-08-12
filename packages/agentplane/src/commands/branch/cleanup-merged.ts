@@ -366,6 +366,11 @@ export async function cmdCleanupMerged(opts: {
 
     let deletedRemoteBranches = 0;
     for (const { item, worktreePath, registeredSiblingWorktree } of preparedCandidates) {
+      if (opts.deleteRemoteBranches) {
+        deletedRemoteBranches += (await deleteRemoteBranchIfPresent(resolved.gitRoot, item.branch))
+          ? 1
+          : 0;
+      }
       const cleanup = await cleanupMergedLocalBranch({
         gitRoot: resolved.gitRoot,
         branch: item.branch,
@@ -390,11 +395,6 @@ export async function cmdCleanupMerged(opts: {
       reportRows.push(
         `deleted task=${item.taskId} branch=${item.branch} worktree=${worktreePath ?? "-"} preserve_dirty=${cleanup.preservedDirtyState ? "yes" : "no"} stash=${cleanup.stashMessage ?? "-"}`,
       );
-      if (opts.deleteRemoteBranches) {
-        deletedRemoteBranches += (await deleteRemoteBranchIfPresent(resolved.gitRoot, item.branch))
-          ? 1
-          : 0;
-      }
     }
 
     await writeCleanupReportIfRequested({

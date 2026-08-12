@@ -55,6 +55,20 @@ describe("worktree topology invariants", () => {
     ]);
   });
 
+  it("does not report healthy siblings as nested when doctor runs from a task worktree", () => {
+    const worktrees = [
+      { path: "/repo", branch: "refs/heads/control" },
+      { path: "/repo/.agentplane/worktrees/T1", branch: "refs/heads/task/T1/a" },
+      { path: "/repo/.agentplane/worktrees/T2", branch: "refs/heads/task/T2/a" },
+    ];
+    expect(
+      findNestedWorktreeRegistrations({
+        projectRoot: "/repo/.agentplane/worktrees/T1",
+        worktrees,
+      }),
+    ).toEqual([]);
+  });
+
   it("rejects worktree creation from internal recovery and task checkouts", async () => {
     mocks.listWorktrees.mockResolvedValue([
       { path: "/repo", branch: "refs/heads/main" },
@@ -78,6 +92,24 @@ describe("worktree topology invariants", () => {
     await expect(
       assertCanonicalWorktreeCreationRoot({ gitRoot: "/repo", baseBranch: "main" }),
     ).resolves.toBeUndefined();
+  });
+
+  it("rejects creation when a recovery checkout temporarily owns the base branch", async () => {
+    mocks.listWorktrees.mockResolvedValue([
+      { path: "/repo", branch: "refs/heads/control" },
+      { path: "/repo/.agentplane/tmp/recovery", branch: "refs/heads/main" },
+    ]);
+    await expect(
+      assertCanonicalWorktreeCreationRoot({
+        gitRoot: "/repo/.agentplane/tmp/recovery",
+        baseBranch: "main",
+      }),
+    ).rejects.toMatchObject({
+      context: {
+        reason_code: "nested_control_worktree_creation_forbidden",
+        canonical_project_root: "/repo",
+      },
+    });
   });
 
   it("reports the authoritative checkout when the same task already owns a worktree", async () => {

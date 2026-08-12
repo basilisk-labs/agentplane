@@ -31,18 +31,18 @@ export function findNestedWorktreeRegistrations(opts: {
   projectRoot: string;
   worktrees: readonly RegisteredWorktree[];
 }): NestedWorktreeRegistration[] {
-  const projectRoot = normalizedPath(opts.projectRoot);
   const normalized = opts.worktrees.map((entry) => ({
     ...entry,
     normalizedPath: normalizedPath(entry.path),
   }));
+  const primaryRoot = normalized[0]?.normalizedPath ?? normalizedPath(opts.projectRoot);
   const nested: NestedWorktreeRegistration[] = [];
 
   for (const candidate of normalized) {
     const parent = normalized
       .filter(
         (entry) =>
-          entry.normalizedPath !== projectRoot &&
+          entry.normalizedPath !== primaryRoot &&
           entry.normalizedPath !== candidate.normalizedPath &&
           isPathWithin(entry.normalizedPath, candidate.normalizedPath),
       )
@@ -86,31 +86,26 @@ export async function assertCanonicalWorktreeCreationRoot(opts: {
   baseBranch: string;
 }): Promise<void> {
   const worktrees = await listWorktrees(opts.gitRoot);
-  const baseRef = opts.baseBranch.startsWith("refs/heads/")
-    ? opts.baseBranch
-    : `refs/heads/${opts.baseBranch}`;
-  const canonical = worktrees.find(
-    (entry) => entry.branch === opts.baseBranch || entry.branch === baseRef,
-  );
-  if (!canonical) return;
+  const primary = worktrees[0];
+  if (!primary) return;
 
-  const [projectRoot, canonicalRoot] = await Promise.all([
+  const [projectRoot, primaryRoot] = await Promise.all([
     resolvePathFallback(opts.gitRoot),
-    resolvePathFallback(canonical.path),
+    resolvePathFallback(primary.path),
   ]);
-  if (projectRoot === canonicalRoot) return;
+  if (projectRoot === primaryRoot) return;
 
   throw new CliError({
     exitCode: exitCodeForError("E_GIT"),
     code: "E_GIT",
     message:
       `Refusing to create task worktrees from internal control checkout ${projectRoot}. ` +
-      `Run work start from the ${opts.baseBranch} base checkout ${canonicalRoot}; recovery and task ` +
+      `Run work start from the primary checkout ${primaryRoot} on ${opts.baseBranch}; recovery and task ` +
       "checkouts must not create a nested historical worktree graph.",
     context: {
       reason_code: "nested_control_worktree_creation_forbidden",
       project_root: projectRoot,
-      canonical_project_root: canonicalRoot,
+      canonical_project_root: primaryRoot,
       base_branch: opts.baseBranch,
     },
   });
