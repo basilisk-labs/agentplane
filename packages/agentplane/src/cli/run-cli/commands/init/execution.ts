@@ -1,10 +1,10 @@
 import path from "node:path";
 
-import { buildExecutionProfile } from "@agentplaneorg/core/config";
 import { setPinnedBaseBranch } from "@agentplaneorg/core/git";
 
 import { cmdHooksInstall, ensureInitCommit } from "../../../../commands/workflow.js";
 import { getVersion } from "../../../../meta/version.js";
+import { buildCanonicalExecutionPolicy } from "../../../../runtime/execution-profile/index.js";
 import { InitAborted, type InitClackPrompts } from "./prompts.js";
 import type { InitParsed, InitPlan } from "./model.js";
 import type { InitAnswers } from "./answers.js";
@@ -45,7 +45,7 @@ export async function maybeConfirmInteractiveApply(opts: {
   if (!opts.clack) return;
   previewInstall(opts.clack, [
     { label: "Target", value: opts.paths.gitRoot },
-    { label: "Profile", value: opts.answers.setupProfileDescription },
+    { label: "Process policy", value: opts.answers.setupProfileDescription },
     { label: "Gateway", value: opts.answers.policyGateway },
     { label: "Workflow", value: opts.answers.workflow },
     { label: "Runner", value: opts.answers.runnerProfile },
@@ -146,9 +146,7 @@ export async function applyInitPlan(opts: {
           requireVerifyApproval: opts.answers.requireVerifyApproval,
           feedbackGithubIssues: opts.answers.feedbackGithubIssues,
           feedbackAnonymousCloud: opts.answers.feedbackAnonymousCloud,
-          execution: buildExecutionProfile(opts.answers.executionProfile, {
-            strictUnsafeConfirm: opts.answers.strictUnsafeConfirm,
-          }),
+          execution: buildCanonicalExecutionPolicy(),
           evaluatorSkepticism: opts.answers.evaluatorSkepticism,
           runnerProfile: opts.answers.runnerProfile,
         });

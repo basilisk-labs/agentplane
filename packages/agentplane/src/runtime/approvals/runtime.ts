@@ -13,7 +13,7 @@ import type {
 } from "./model.js";
 
 export function resolveEffectiveApprovalSettings(
-  config: AgentplaneConfig,
+  config: Pick<AgentplaneConfig, "agents" | "execution">,
 ): EffectiveApprovalSettings {
   const approvals = config.agents?.approvals as
     | {
@@ -27,15 +27,8 @@ export function resolveEffectiveApprovalSettings(
     require_plan: approvals?.require_plan === true,
     require_network: approvals?.require_network === true,
     require_verify: approvals?.require_verify === true,
-    require_force: approvals?.require_force === true,
+    require_force: true,
   };
-  if (config.execution.profile === "conservative") {
-    return {
-      ...base,
-      require_network: true,
-      require_force: true,
-    };
-  }
   return base;
 }
 
@@ -55,7 +48,6 @@ function resolveRequirement(opts: {
   const classification = decision.action;
   const configuredNetwork = opts.config.agents?.approvals?.require_network === true;
   const configuredForce = opts.config.agents?.approvals?.require_force === true;
-  const conservativeProfile = opts.config.execution.profile === "conservative";
 
   switch (classification.approval) {
     case "network_access": {
@@ -63,13 +55,7 @@ function resolveRequirement(opts: {
         action: classification,
         approvals,
         required: approvals.require_network === true,
-        source: approvals.require_network
-          ? configuredNetwork
-            ? "config"
-            : conservativeProfile
-              ? "execution_profile"
-              : "none"
-          : "none",
+        source: approvals.require_network ? (configuredNetwork ? "config" : "none") : "none",
         reason: "Network access requires explicit approval",
       };
     }
@@ -78,13 +64,7 @@ function resolveRequirement(opts: {
         action: classification,
         approvals,
         required: approvals.require_force === true,
-        source: approvals.require_force
-          ? configuredForce
-            ? "config"
-            : conservativeProfile
-              ? "execution_profile"
-              : "none"
-          : "none",
+        source: approvals.require_force ? (configuredForce ? "config" : "builtin") : "none",
         reason: "Force action requires explicit approval",
       };
     }

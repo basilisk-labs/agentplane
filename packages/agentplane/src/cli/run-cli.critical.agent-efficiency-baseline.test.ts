@@ -198,17 +198,19 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202608062023-V3WHE9",
           "202608080805-KPWPAV",
           "202608110235-WCJJRD",
+          "202608112213-NWJCBW",
         ],
         candidate: {
-          surface_sha256: "f1b4d63936ce9a7cd726c0cc133d65d8df49f16e1d84394e5c4f1f554a0f11ce",
+          surface_sha256: "f3feeb8f0e903d11cc79eaa38b1f0da6135f882bd0dca3f4b48688e7b17db2c9",
           section_digests: {
             agent_facing_context_contracts:
               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
-            cli_topology: "2266d1c7b93ec63f79f6a89f2105cdee5a295f4819508ad9fdc53233a6d40a6b",
+            cli_topology: "049140adaeeec07e19c9ecba8d33831bb9b5784ca98e4a444d2246fe957eb9a4",
             machine_output_contract:
               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
             package_manifests: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
             tarball_policy: "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
+            workflow_schema: "4714ecc43f394109cd5807ec5e544716abe7c67c20ea18554f8f2b559bf97b21",
           },
         },
         pre_release_package_delta: {
@@ -234,7 +236,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           section: "package_manifests",
           from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
           to_sha256: "68d85075ead827909740cafc59eba72dc94c7e9a2e754d16bea85041ab875f53",
-          surface_sha256: "40b3337f28279da20f287cf584b95fafa81383a20abc4e7adc4cf4dce755f459",
+          surface_sha256: "324aabe0f0296740ae6c2b309ca94694997a13bc7210cf48f9ce4b221899f691",
           allowed_json_paths: [
             "$.package_manifests[0].dependencies.@agentplaneorg/core",
             "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -600,7 +602,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
       expect(JSON.parse(result.stdout)).toEqual({
         packageManifestDigest: "68d85075ead827909740cafc59eba72dc94c7e9a2e754d16bea85041ab875f53",
-        surfaceDigest: "40b3337f28279da20f287cf584b95fafa81383a20abc4e7adc4cf4dce755f459",
+        surfaceDigest: "324aabe0f0296740ae6c2b309ca94694997a13bc7210cf48f9ce4b221899f691",
         changedPaths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",

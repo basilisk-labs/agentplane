@@ -304,6 +304,72 @@ describe("runCli interactive init UI", () => {
     await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
   });
 
+  it("surfaces legacy profile warnings on the detailed interactive route", async () => {
+    const root = await mkTempDir();
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "init",
+        "--advanced",
+        "--tool",
+        "codex",
+        "--setup-profile",
+        "light",
+        "--policy-gateway",
+        "codex",
+        "--ide",
+        "none",
+        "--workflow",
+        "direct",
+        "--direct-close-dirty-policy",
+        "allow-other-task-readmes",
+        "--backend",
+        "local",
+        "--hooks",
+        "no",
+        "--require-plan-approval",
+        "yes",
+        "--require-network-approval",
+        "yes",
+        "--require-verify-approval",
+        "yes",
+        "--feedback-github-issues",
+        "no",
+        "--feedback-anonymous-cloud",
+        "no",
+        "--execution-profile",
+        "aggressive",
+        "--evaluator-skepticism",
+        "standard",
+        "--strict-unsafe-confirm",
+        "true",
+        "--recipes",
+        "none",
+        "--blueprints",
+        "none",
+        "--root",
+        root,
+      ]);
+
+      expect(code).toBe(0);
+      expect(mocks.noteMock).toHaveBeenCalledWith(
+        expect.stringContaining('Setup profile "light" is a compatibility alias'),
+        "Install preview",
+      );
+      expect(mocks.noteMock).toHaveBeenCalledWith(
+        expect.stringContaining('Execution profile "aggressive" is a compatibility alias'),
+        "Install preview",
+      );
+      expect(mocks.noteMock).toHaveBeenCalledWith(
+        expect.stringContaining("--strict-unsafe-confirm is a compatibility option"),
+        "Install preview",
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
   it("uses init for the default TTY interactive route", async () => {
     const root = await mkTempDir();
     mocks.selectMock
@@ -332,14 +398,12 @@ describe("runCli interactive init UI", () => {
     const root = await mkTempDir();
     await writeLegacyRecipeCache();
     mocks.selectMock
-      .mockResolvedValueOnce("full-harness")
       .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("direct")
       .mockResolvedValueOnce("allow-other-task-readmes")
       .mockResolvedValueOnce("local")
-      .mockResolvedValueOnce("aggressive")
       .mockResolvedValueOnce("standard");
     mocks.confirmMock
       .mockResolvedValueOnce(false)
@@ -362,7 +426,7 @@ describe("runCli interactive init UI", () => {
     expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
     expect(mocks.noteMock).toHaveBeenCalledWith(expect.stringContaining("agent/plane"));
     expect(mocks.logStepMock).toHaveBeenCalledWith("Advanced setup");
-    expect(mocks.selectMock).toHaveBeenCalledTimes(9);
+    expect(mocks.selectMock).toHaveBeenCalledTimes(7);
     expect(mocks.textMock).toHaveBeenCalledWith(
       expect.objectContaining({ message: "Materialize cached recipes" }),
     );
@@ -387,14 +451,12 @@ describe("runCli interactive init UI", () => {
     const root = await mkTempDir();
     await writeLegacyRecipeCache();
     mocks.selectMock
-      .mockResolvedValueOnce("full-harness")
       .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("direct")
       .mockResolvedValueOnce("allow-other-task-readmes")
       .mockResolvedValueOnce("local")
-      .mockResolvedValueOnce("aggressive")
       .mockResolvedValueOnce("standard");
     mocks.confirmMock
       .mockResolvedValueOnce(false)
@@ -430,17 +492,14 @@ describe("runCli interactive init UI", () => {
     const root = await mkTempDir();
     await writeInvalidRecipeCacheWithoutPromptSurfaces();
     mocks.selectMock
-      .mockResolvedValueOnce("full-harness")
       .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("direct")
       .mockResolvedValueOnce("allow-other-task-readmes")
       .mockResolvedValueOnce("local")
-      .mockResolvedValueOnce("aggressive")
       .mockResolvedValueOnce("standard");
     mocks.confirmMock
-      .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(true);
@@ -473,14 +532,12 @@ describe("runCli interactive init UI", () => {
     await mkdir(path.join(root, ".git", "hooks"), { recursive: true });
     await writeFile(path.join(root, ".git", "hooks", "commit-msg"), "custom", "utf8");
     mocks.selectMock
-      .mockResolvedValueOnce("full-harness")
       .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("codex")
       .mockResolvedValueOnce("direct")
       .mockResolvedValueOnce("allow-other-task-readmes")
       .mockResolvedValueOnce("local")
-      .mockResolvedValueOnce("aggressive")
       .mockResolvedValueOnce("standard")
       .mockResolvedValueOnce("cancel");
     mocks.confirmMock

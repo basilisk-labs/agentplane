@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { applyExecutionToApprovals, type AgentplaneConfig } from "@agentplaneorg/core/config";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import type { ResolvedProject } from "@agentplaneorg/core/project";
 
 import type { TaskBackendCapabilities } from "../../backends/task-backend.js";
@@ -22,6 +22,7 @@ import type {
   ResolvedHarnessTrace,
   ResolvedProtectedPathGroups,
 } from "./types.js";
+import { resolveEffectiveApprovalSettings } from "../approvals/index.js";
 
 function source(id: HarnessSourceRef["id"], detail: string): HarnessSourceRef {
   return { id, detail };
@@ -128,15 +129,7 @@ export async function resolveHarnessContract(opts: {
     gitRoot: opts.project.gitRoot,
     fallbackFlavor: opts.fallbackPolicyGatewayFlavor,
   });
-  const approvals = applyExecutionToApprovals({
-    execution: opts.config.execution,
-    approvals: opts.config.agents?.approvals ?? {
-      require_plan: false,
-      require_network: false,
-      require_verify: false,
-      require_force: false,
-    },
-  });
+  const approvals = resolveEffectiveApprovalSettings(opts.config);
   const protectedPaths = resolveProtectedPaths({
     config: opts.config,
     policyGatewayFileName: policyGateway.fileName,
@@ -195,7 +188,7 @@ export async function resolveHarnessContract(opts: {
       policy_gateway: [gatewaySource(policyGateway.fileName)],
       approval_requirements: mergeSourceRefs(
         [source("config", ".agentplane/config.json")],
-        [source("execution_profile", opts.config.execution.profile)],
+        [source("builtin", "standard process policy")],
       ),
       protected_paths: protectedPaths.trace,
       execution: [source("config", ".agentplane/config.json")],

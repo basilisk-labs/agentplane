@@ -1,11 +1,12 @@
 import path from "node:path";
 
-import { buildExecutionProfile, saveConfig, setByDottedKey } from "@agentplaneorg/core/config";
+import { saveConfig, setByDottedKey } from "@agentplaneorg/core/config";
 
 import { createCliEmitter } from "../../output.js";
 import { usageError } from "../../spec/errors.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import { ensureActionApproved } from "../../../commands/shared/approval-requirements.js";
+import { buildCanonicalExecutionPolicy } from "../../../runtime/execution-profile/index.js";
 import type { CommandSessionResolvers } from "../command-catalog/kernel.js";
 import { wrapCommand } from "./wrap-command.js";
 
@@ -14,7 +15,7 @@ const output = createCliEmitter();
 type ConfigCommandDeps = Pick<CommandSessionResolvers, "getResolvedProject" | "getLoadedConfig">;
 
 export type ConfigShowResult = {
-  raw: Awaited<ReturnType<CommandSessionResolvers["getLoadedConfig"]>>["raw"];
+  config: Awaited<ReturnType<CommandSessionResolvers["getLoadedConfig"]>>["config"];
 };
 export type ConfigWriteResult = { value: string; workflowPath: string };
 
@@ -35,7 +36,7 @@ async function cmdConfigShow(opts: {
 }): Promise<ConfigShowResult> {
   return wrapCommand({ command: "config show", rootOverride: opts.rootOverride }, async () => {
     const loaded = await opts.deps.getLoadedConfig("config show");
-    return { raw: loaded.raw };
+    return { config: loaded.config };
   });
 }
 
@@ -44,7 +45,7 @@ export function makeRunConfigShowHandler(
 ): CommandHandler<ConfigShowParsed> {
   return async (ctx) => {
     const result = await cmdConfigShow({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, deps });
-    output.json(result.raw);
+    output.json(result.config);
     return 0;
   };
 }
@@ -67,6 +68,16 @@ export const configSetSpec: CommandSpec<ConfigSetParsed> = {
     },
   ],
   parse: (raw) => ({ key: String(raw.args.key ?? ""), value: String(raw.args.value ?? "") }),
+  validate: (parsed) => {
+    if (parsed.key === "execution" || parsed.key.startsWith("execution.")) {
+      throw usageError({
+        spec: configSetSpec,
+        command: "config set",
+        message:
+          "Execution policy is fixed. Configure workflow, runner, integrations, or explicit approvals instead.",
+      });
+    }
+  },
 };
 
 async function cmdConfigSet(opts: {
@@ -218,57 +229,29 @@ export function makeRunModeSetHandler(deps: ConfigCommandDeps): CommandHandler<M
 
 type ProfileSetParsed = { profile: string };
 
-type ProfilePreset = {
-  requirePlan: boolean;
-  requireNetwork: boolean;
-  requireVerify: boolean;
-  executionProfile: "conservative" | "balanced" | "aggressive";
-  strictUnsafeConfirm: boolean;
-};
-
-const PROFILE_PRESETS: Record<"light" | "normal" | "full-harness", ProfilePreset> = {
-  light: {
-    requirePlan: false,
-    requireNetwork: false,
-    requireVerify: false,
-    executionProfile: "aggressive",
-    strictUnsafeConfirm: false,
-  },
-  normal: {
-    requirePlan: true,
-    requireNetwork: true,
-    requireVerify: true,
-    executionProfile: "balanced",
-    strictUnsafeConfirm: false,
-  },
-  "full-harness": {
-    requirePlan: true,
-    requireNetwork: true,
-    requireVerify: true,
-    executionProfile: "conservative",
-    strictUnsafeConfirm: true,
-  },
-};
-
-function normalizeProfile(value: string): "light" | "normal" | "full-harness" | null {
+function normalizeProfile(value: string): "standard" | null {
   const normalized = value.trim().toLowerCase();
-  if (normalized === "light" || normalized === "vibecoder") return "light";
-  if (normalized === "normal" || normalized === "manager") return "normal";
-  if (normalized === "full-harness" || normalized === "developer" || normalized === "enterprise") {
-    return "full-harness";
-  }
+  if (
+    normalized === "standard" ||
+    normalized === "light" ||
+    normalized === "normal" ||
+    normalized === "full-harness" ||
+    normalized === "vibecoder" ||
+    normalized === "manager" ||
+    normalized === "developer" ||
+    normalized === "enterprise"
+  )
+    return "standard";
   return null;
 }
 
 export const profileSetSpec: CommandSpec<ProfileSetParsed> = {
   id: ["profile", "set"],
   group: "Config",
-  summary: "Apply setup profile presets to WORKFLOW config.",
-  args: [{ name: "profile", required: true, valueHint: "<light|normal|full-harness>" }],
+  summary: "Apply the canonical AgentPlane process policy.",
+  args: [{ name: "profile", required: true, valueHint: "<standard>" }],
   examples: [
-    { cmd: "agentplane profile set light", why: "Apply flexible defaults." },
-    { cmd: "agentplane profile set normal", why: "Apply balanced defaults." },
-    { cmd: "agentplane profile set full-harness", why: "Apply strict defaults." },
+    { cmd: "agentplane profile set standard", why: "Restore the canonical process policy." },
   ],
   parse: (raw) => ({ profile: String(raw.args.profile ?? "") }),
   validate: (p) => {
@@ -276,7 +259,7 @@ export const profileSetSpec: CommandSpec<ProfileSetParsed> = {
       throw usageError({
         spec: profileSetSpec,
         command: "profile set",
-        message: `Invalid value for profile: ${p.profile} (expected: light|normal|full-harness)`,
+        message: `Invalid value for profile: ${p.profile} (expected: standard)`,
       });
     }
   },
@@ -285,7 +268,7 @@ export const profileSetSpec: CommandSpec<ProfileSetParsed> = {
 async function cmdProfileSet(opts: {
   cwd: string;
   rootOverride?: string;
-  profile: "light" | "normal" | "full-harness";
+  profile: "standard";
   deps: ConfigCommandDeps;
 }): Promise<ConfigWriteResult> {
   return wrapCommand(
@@ -298,14 +281,8 @@ async function cmdProfileSet(opts: {
       const resolved = await opts.deps.getResolvedProject("profile set");
       const loaded = await opts.deps.getLoadedConfig("profile set");
       const raw = { ...loaded.raw };
-      const preset = PROFILE_PRESETS[opts.profile];
-      const execution = buildExecutionProfile(preset.executionProfile, {
-        strictUnsafeConfirm: preset.strictUnsafeConfirm,
-      });
+      const execution = buildCanonicalExecutionPolicy();
 
-      setByDottedKey(raw, "agents.approvals.require_plan", String(preset.requirePlan));
-      setByDottedKey(raw, "agents.approvals.require_network", String(preset.requireNetwork));
-      setByDottedKey(raw, "agents.approvals.require_verify", String(preset.requireVerify));
       setByDottedKey(raw, "execution", JSON.stringify(execution));
 
       await saveConfig(resolved.agentplaneDir, raw);
@@ -324,12 +301,18 @@ export function makeRunProfileSetHandler(
   deps: ConfigCommandDeps,
 ): CommandHandler<ProfileSetParsed> {
   return async (ctx, p) => {
+    const requestedProfile = p.profile.trim().toLowerCase();
     const result = await cmdProfileSet({
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       profile: normalizeProfile(p.profile)!,
       deps,
     });
+    if (requestedProfile !== "standard") {
+      output.warn(
+        `Profile "${p.profile}" is a compatibility alias; AgentPlane applied the fixed standard policy.`,
+      );
+    }
     output.line(result.value);
     return 0;
   };

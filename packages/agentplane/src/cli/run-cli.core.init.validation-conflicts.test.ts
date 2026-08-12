@@ -90,12 +90,13 @@ describe("runCli", () => {
 
     const { config } = await loadConfig(path.join(root, ".agentplane"));
     expect(config.workflow_mode).toBe("direct");
-    expect(config.agents.approvals.require_network).toBe(false);
-    expect(config.agents.approvals.require_plan).toBe(false);
-    expect(config.agents.approvals.require_verify).toBe(false);
+    expect(config.agents.approvals.require_network).toBe(true);
+    expect(config.agents.approvals.require_plan).toBe(true);
+    expect(config.agents.approvals.require_verify).toBe(true);
+    expect(config.execution.profile).toBe("standard");
   });
 
-  it("init --setup-profile developer applies full-harness defaults in non-tty mode", async () => {
+  it("init normalizes a legacy setup profile to the standard policy", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
     const io = captureStdIO();
@@ -103,6 +104,7 @@ describe("runCli", () => {
       const code = await runCli(["init", "--root", root, "--setup-profile", "developer"]);
       expect(code).toBe(0);
       expect(io.stdout).toContain(".agentplane");
+      expect(io.stderr).toContain('Setup profile "developer" is a compatibility alias');
     } finally {
       io.restore();
     }
@@ -111,8 +113,8 @@ describe("runCli", () => {
     expect(config.agents.approvals.require_network).toBe(true);
     expect(config.agents.approvals.require_plan).toBe(true);
     expect(config.agents.approvals.require_verify).toBe(true);
-    expect(config.execution.profile).toBe("conservative");
-    expect(config.execution.unsafe_actions_requiring_explicit_user_ok).toContain(
+    expect(config.execution.profile).toBe("standard");
+    expect(config.execution.unsafe_actions_requiring_explicit_user_ok).not.toContain(
       "Network actions when approvals are disabled.",
     );
   });

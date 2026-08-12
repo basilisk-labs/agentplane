@@ -386,6 +386,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
+      expect(io.stderr).toContain('Execution profile "conservative" is a compatibility alias');
+      expect(io.stderr).toContain("--strict-unsafe-confirm is a compatibility option");
     } finally {
       process.env.PATH = originalPath;
       io.restore();
@@ -400,9 +402,9 @@ describe("runCli", () => {
     expect(config.agents.approvals.require_plan).toBe(true);
     expect(config.agents.approvals.require_network).toBe(false);
     expect(config.agents.approvals.require_verify).toBe(true);
-    expect(config.execution.profile).toBe("conservative");
-    expect(config.execution.reasoning_effort).toBe("high");
-    expect(config.execution.unsafe_actions_requiring_explicit_user_ok).toContain(
+    expect(config.execution.profile).toBe("standard");
+    expect(config.execution.reasoning_effort).toBe("medium");
+    expect(config.execution.unsafe_actions_requiring_explicit_user_ok).not.toContain(
       "Network actions when approvals are disabled.",
     );
 

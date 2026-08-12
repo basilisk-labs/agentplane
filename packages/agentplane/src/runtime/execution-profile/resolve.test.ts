@@ -10,7 +10,7 @@ describe("runtime/execution-profile", () => {
     const runtime = resolveExecutionProfileRuntime(config);
 
     expect(runtime).toMatchObject({
-      profile: "balanced",
+      profile: "standard",
       reasoning_effort: "medium",
       text_verbosity: "medium",
       budget: {
@@ -22,7 +22,7 @@ describe("runtime/execution-profile", () => {
         require_plan: true,
         require_network: true,
         require_verify: true,
-        require_force: false,
+        require_force: true,
       },
     });
     expect(runtime.stop_conditions.length).toBeGreaterThan(0);
@@ -30,7 +30,7 @@ describe("runtime/execution-profile", () => {
     expect(runtime.runner.trace_policy.retention).toBe("keep");
   });
 
-  it("applies conservative profile overrides to approvals and runner trace/timeout policies", () => {
+  it("ignores mutable legacy execution fields while preserving explicit project policy", () => {
     const config = defaultConfig();
     config.execution.profile = "conservative";
     config.execution.reasoning_effort = "xhigh";
@@ -43,13 +43,14 @@ describe("runtime/execution-profile", () => {
 
     const runtime = resolveExecutionProfileRuntime(config);
 
-    expect(runtime.reasoning_effort).toBe("xhigh");
-    expect(runtime.text_verbosity).toBe("high");
-    expect(runtime.approvals.require_network).toBe(true);
+    expect(runtime.profile).toBe("standard");
+    expect(runtime.reasoning_effort).toBe("medium");
+    expect(runtime.text_verbosity).toBe("medium");
+    expect(runtime.approvals.require_network).toBe(false);
     expect(runtime.approvals.require_force).toBe(true);
-    expect(runtime.runner.trace_policy.capture_stderr).toBe(true);
-    expect(runtime.runner.trace_policy.retention).toBe("keep");
-    expect(runtime.runner.timeout_policy.terminate_grace_ms).toBe(5000);
+    expect(runtime.runner.trace_policy.capture_stderr).toBe(false);
+    expect(runtime.runner.trace_policy.retention).toBe("remove_on_success");
+    expect(runtime.runner.timeout_policy.terminate_grace_ms).toBe(1000);
   });
 
   it("counts execution budgets per phase", () => {

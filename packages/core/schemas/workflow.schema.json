@@ -440,9 +440,9 @@
           "type": "object",
           "properties": {
             "profile": {
-              "default": "balanced",
+              "default": "standard",
               "type": "string",
-              "enum": ["conservative", "balanced", "aggressive"]
+              "enum": ["standard", "conservative", "balanced", "aggressive"]
             },
             "reasoning_effort": {
               "default": "medium",
@@ -1362,9 +1362,9 @@
           "type": "object",
           "properties": {
             "profile": {
-              "default": "balanced",
+              "default": "standard",
               "type": "string",
-              "enum": ["conservative", "balanced", "aggressive"]
+              "enum": ["standard", "conservative", "balanced", "aggressive"]
             },
             "reasoning_effort": {
               "default": "medium",

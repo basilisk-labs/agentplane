@@ -260,6 +260,7 @@ describe("runCli", () => {
           "--commit",
           "HEAD",
           "--force",
+          "--yes",
           "--root",
           root,
         ]);
@@ -307,7 +308,7 @@ describe("runCli", () => {
   });
 
   it(
-    "finish --force requires explicit approval in conservative profile",
+    "finish --force always requires explicit approval",
     { timeout: BLOCK_FINISH_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRoot();
@@ -376,7 +377,7 @@ describe("runCli", () => {
             "--author",
             "CODER",
             "--body",
-            "Verified: force finish requires explicit approval in conservative profile mode.",
+            "Verified: force finish requires explicit approval under the standard policy.",
             "--result",
             "force-finish-check",
             "--force",
@@ -399,7 +400,7 @@ describe("runCli", () => {
             "--author",
             "CODER",
             "--body",
-            "Verified: force finish proceeds with explicit yes approval in conservative profile mode.",
+            "Verified: force finish proceeds with explicit yes approval under the standard policy.",
             "--result",
             "force-finish-check",
             "--commit",

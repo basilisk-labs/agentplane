@@ -344,6 +344,7 @@ function validateReviewedCandidate({
     "202608062023-V3WHE9",
     "202608080805-KPWPAV",
     "202608110235-WCJJRD",
+    "202608112213-NWJCBW",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -379,6 +380,7 @@ function validateReviewedCandidate({
     "202608062023-V3WHE9",
     "202608080805-KPWPAV",
     "202608110235-WCJJRD",
+    "202608112213-NWJCBW",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -510,7 +512,7 @@ function validateReviewedCandidate({
         section: "package_manifests",
         from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
         to_sha256: "68d85075ead827909740cafc59eba72dc94c7e9a2e754d16bea85041ab875f53",
-        surface_sha256: "40b3337f28279da20f287cf584b95fafa81383a20abc4e7adc4cf4dce755f459",
+        surface_sha256: "324aabe0f0296740ae6c2b309ca94694997a13bc7210cf48f9ce4b221899f691",
         allowed_json_paths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -835,7 +837,7 @@ function validateReviewedCandidate({
     ],
     cli_topology: cliSourceTasks,
     machine_output_contract: ["202607221848-ABG7SD"],
-    workflow_schema: ["202607221846-4VB97J"],
+    workflow_schema: ["202607221846-4VB97J", "202608112213-NWJCBW"],
     tarball_policy: [
       "202607221846-4VB97J",
       "202607221848-ER5H6N",
@@ -2452,9 +2454,38 @@ function validateReviewedCandidate({
           : [{ name: argName, required: true, variadic: false, valueHint }],
     },
   }));
+  const canonicalProfileCommandMutation = {
+    identity: "profile set",
+    before: {
+      id: ["profile", "set"],
+      visibility: "user",
+      group: "Config",
+      args: [
+        {
+          name: "profile",
+          required: true,
+          valueHint: "<light|normal|full-harness>",
+          variadic: false,
+        },
+      ],
+    },
+    after: {
+      id: ["profile", "set"],
+      visibility: "user",
+      group: "Config",
+      args: [
+        {
+          name: "profile",
+          required: true,
+          variadic: false,
+          valueHint: "<standard>",
+        },
+      ],
+    },
+  };
   assert(
-    cliDelta?.classification === "additive_with_visibility_simplification",
-    "CLI candidate delta must preserve compatibility while simplifying visibility",
+    cliDelta?.classification === "compatible_with_visibility_and_profile_simplification",
+    "CLI candidate delta must preserve compatibility while simplifying visibility and profiles",
   );
   assert(
     hashJson(cliDelta.evidence) ===
@@ -2528,8 +2559,9 @@ function validateReviewedCandidate({
     "candidate removes an existing CLI command descriptor",
   );
   assert(
-    hashJson(cliTopologyDelta.mutated_command_shells) === hashJson(expectedVisibilityMutations),
-    "candidate command-shell mutation is not the approved visibility simplification",
+    hashJson(cliTopologyDelta.mutated_command_shells) ===
+      hashJson([canonicalProfileCommandMutation, ...expectedVisibilityMutations]),
+    "candidate command-shell mutation is not an approved simplification",
   );
   assert(cliTopologyDelta.removed_options.length === 0, "candidate removes an existing CLI option");
   const supersededQueueReleaseStatusMutation = {
@@ -2551,9 +2583,54 @@ function validateReviewedCandidate({
       choices: ["queued", "done", "rework", "superseded"],
     },
   };
+  const canonicalExecutionProfileOptionMutations = [
+    {
+      identity: "init --execution-profile",
+      before: {
+        command: "init",
+        choices: ["conservative", "balanced", "aggressive"],
+        kind: "string",
+        name: "execution-profile",
+        valueHint: "<conservative|balanced|aggressive>",
+      },
+      after: {
+        command: "init",
+        name: "execution-profile",
+        kind: "string",
+        valueHint: "<standard>",
+        choices: ["standard", "conservative", "balanced", "aggressive"],
+      },
+    },
+    {
+      identity: "init --setup-profile",
+      before: {
+        command: "init",
+        choices: ["light", "normal", "full-harness", "developer", "vibecoder", "manager"],
+        kind: "string",
+        name: "setup-profile",
+        valueHint: "<light|normal|full-harness>",
+      },
+      after: {
+        command: "init",
+        name: "setup-profile",
+        kind: "string",
+        valueHint: "<standard>",
+        choices: [
+          "standard",
+          "light",
+          "normal",
+          "full-harness",
+          "developer",
+          "vibecoder",
+          "manager",
+        ],
+      },
+    },
+  ];
   assert(
-    hashJson(cliTopologyDelta.mutated_options) === hashJson([supersededQueueReleaseStatusMutation]),
-    "CLI option mutation is not the approved semantic-supersession extension",
+    hashJson(cliTopologyDelta.mutated_options) ===
+      hashJson([...canonicalExecutionProfileOptionMutations, supersededQueueReleaseStatusMutation]),
+    "CLI option mutation is not an approved compatibility extension",
   );
 
   const machineOutputDelta = candidate.deltas.find(
@@ -2599,6 +2676,21 @@ function validateReviewedCandidate({
   const supportedInputVersions = (workflowSchema.anyOf ?? [])
     .map((branch) => branch?.properties?.version?.const)
     .filter((value) => Number.isInteger(value));
+  const executionProfiles = (workflowSchema.anyOf ?? []).map(
+    (branch) => branch?.properties?.execution?.properties?.profile,
+  );
+  const canonicalExecutionProfile = {
+    default: "standard",
+    type: "string",
+    enum: ["standard", "conservative", "balanced", "aggressive"],
+  };
+  assert(
+    executionProfiles.length === 2 &&
+      executionProfiles.every(
+        (profile) => hashJson(profile) === hashJson(canonicalExecutionProfile),
+      ),
+    "workflow schema execution profiles are not canonicalized consistently",
+  );
   assert(schemaDelta?.classification === "backward_compatible", "workflow schema review drift");
   assert(
     hashJson(schemaDelta.evidence) ===
@@ -2606,6 +2698,8 @@ function validateReviewedCandidate({
         schema_id: workflowSchema.$id,
         title: workflowSchema.title,
         supported_input_versions: supportedInputVersions,
+        execution_profile_default: canonicalExecutionProfile.default,
+        accepted_execution_profiles: canonicalExecutionProfile.enum,
       }),
     "workflow schema candidate evidence drift",
   );

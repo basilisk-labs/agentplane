@@ -100,7 +100,7 @@
     },
     "execution": {
       "default": {
-        "profile": "balanced",
+        "profile": "standard",
         "reasoning_effort": "medium",
         "text_verbosity": "medium",
         "tool_budget": {
@@ -127,9 +127,9 @@
       "type": "object",
       "properties": {
         "profile": {
-          "default": "balanced",
+          "default": "standard",
           "type": "string",
-          "enum": ["conservative", "balanced", "aggressive"]
+          "enum": ["standard", "conservative", "balanced", "aggressive"]
         },
         "reasoning_effort": {
           "default": "medium",

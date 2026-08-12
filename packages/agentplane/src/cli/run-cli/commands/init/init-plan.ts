@@ -170,6 +170,7 @@ export function buildInitPlan(opts: {
   const githubCliInstalled =
     opts.answers.workflow === "branch_pr" ? (opts.githubCliInstalled ?? null) : null;
   const warnings = [
+    ...(opts.answers.compatibilityWarnings ?? []),
     ...(opts.conflicts.length > 0 && !hasConflictStrategy
       ? ["Conflicts require --backup or --force before apply."]
       : []),

@@ -47,7 +47,7 @@ Show
 
 Sleep 700ms
 
-Type 'agentplane init --setup-profile light --workflow direct --backend local --hooks false --recipes none --yes'
+Type 'agentplane init --workflow direct --backend local --hooks false --recipes none --yes'
 Enter
 Sleep 2200ms
 

@@ -20,6 +20,16 @@ agentplane config show
 agentplane config set workflow_mode branch_pr
 ```
 
+## Fixed execution policy
+
+Execution policy is not a project tuning surface. AgentPlane normalizes legacy `execution.*` fields
+to one standard runtime policy and rejects attempts to change them through `config set`. This keeps
+lifecycle, force-action approval, stop, and handoff rules stable across projects.
+
+Task flexibility comes from explicit scope, plan, context, verification, workflow, and runner
+settings. Existing profile names are accepted only as migration aliases and do not change runtime
+behavior.
+
 ## High-impact keys
 
 ### workflow.mode
@@ -45,7 +55,8 @@ agentplane config set workflow_mode branch_pr
 - `require_verify`
 - `require_force`
 
-These keys control approval gates; they do not add or remove CLI capabilities.
+These keys control project approval gates; they do not add or remove CLI capabilities. Explicit
+approval for force actions is fixed by the standard process policy.
 
 ### workspace
 
@@ -93,18 +104,10 @@ Current enforcement should be documented and configured through primary-based ke
 
 ### execution
 
-- `execution.profile`
-- `execution.reasoning_effort`
-- `execution.text_verbosity`
-- `execution.tool_budget`
-- `execution.stop_conditions`
-- `execution.handoff_conditions`
-- `execution.unsafe_actions_requiring_explicit_user_ok`
-
-`execution.reasoning_effort` controls depth, not answer length. `medium` is the balanced default;
-`low` is latency-oriented; `high` and `xhigh` should be reserved for conservative profiles or
-eval-backed work. `execution.text_verbosity` controls output length/structure in execution profile
-prompts.
+`execution.*` is a compatibility projection of the fixed standard process policy. Older values are
+validated so malformed legacy config still fails clearly, then normalized to the standard policy.
+They are not writable through `agentplane config set` and must not be used for task-specific
+routing or verification decisions.
 
 ### runner
 

@@ -847,6 +847,7 @@ describe("commands/workflow", () => {
       commitRequireClean: false,
       confirmStatusCommit: false,
       force: true,
+      yes: true,
       quiet: true,
     });
     expect(codeStart).toBe(0);

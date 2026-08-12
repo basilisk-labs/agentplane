@@ -31,7 +31,8 @@ export async function promptBlueprintSelectionStep(opts: {
     return { blueprints: [...opts.flags.blueprints] };
   }
 
-  if (opts.setupProfileMode !== "full" || opts.setupProfilePreset !== "full-harness") {
+  void opts.setupProfilePreset;
+  if (opts.setupProfileMode !== "full") {
     return { blueprints: [] };
   }
 

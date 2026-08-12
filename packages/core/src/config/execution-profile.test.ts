@@ -8,10 +8,10 @@ import {
 } from "./execution-profile.js";
 
 describe("execution profile presets", () => {
-  it("matches schema defaults for balanced profile", () => {
+  it("matches schema defaults for the standard policy", () => {
     const cfg = defaultConfig();
-    const balanced = resolveExecutionProfilePreset("balanced");
-    expect(balanced).toEqual(cfg.execution);
+    const standard = resolveExecutionProfilePreset("standard");
+    expect(standard).toEqual(cfg.execution);
   });
 
   it("returns a deep clone on each call", () => {
@@ -19,29 +19,26 @@ describe("execution profile presets", () => {
     const b = resolveExecutionProfilePreset("conservative");
     a.tool_budget.discovery = 999;
     a.stop_conditions[0] = "changed";
-    expect(b.tool_budget.discovery).toBe(4);
+    expect(b.tool_budget.discovery).toBe(6);
     expect(b.stop_conditions[0]).not.toBe("changed");
   });
 
-  it("provides lower reasoning effort and larger implementation budget for aggressive", () => {
-    const aggressive = resolveExecutionProfilePreset("aggressive");
-    const conservative = resolveExecutionProfilePreset("conservative");
-    expect(aggressive.reasoning_effort).toBe("low");
-    expect(aggressive.text_verbosity).toBe("low");
-    expect(conservative.text_verbosity).toBe("medium");
-    expect(aggressive.tool_budget.implementation).toBeGreaterThan(
-      conservative.tool_budget.implementation,
-    );
+  it("normalizes every legacy name to the canonical policy", () => {
+    const profiles = ["standard", "conservative", "balanced", "aggressive"] as const;
+    const resolved = profiles.map((profile) => resolveExecutionProfilePreset(profile));
+
+    expect(resolved[0]).toEqual(resolved[1]);
+    expect(resolved[1]).toEqual(resolved[2]);
+    expect(resolved[2]).toEqual(resolved[3]);
+    expect(resolved.every((profile) => profile.profile === "standard")).toBe(true);
   });
 
-  it("adds strict unsafe confirmation item when requested", () => {
-    const strict = buildExecutionProfile("balanced", { strictUnsafeConfirm: true });
-    expect(strict.unsafe_actions_requiring_explicit_user_ok).toContain(
-      "Network actions when approvals are disabled.",
-    );
+  it("ignores legacy strict profile overrides", () => {
+    const strict = buildExecutionProfile("standard", { strictUnsafeConfirm: true });
+    expect(strict).toEqual(resolveExecutionProfilePreset("standard"));
   });
 
-  it("conservative escalates network and force approvals", () => {
+  it("keeps force approval fixed while preserving other explicit approvals", () => {
     const execution = resolveExecutionProfilePreset("conservative");
     const effective = applyExecutionToApprovals({
       execution,
@@ -52,12 +49,12 @@ describe("execution profile presets", () => {
         require_force: false,
       },
     });
-    expect(effective.require_network).toBe(true);
+    expect(effective.require_network).toBe(false);
     expect(effective.require_force).toBe(true);
   });
 
-  it("balanced keeps baseline approval settings", () => {
-    const execution = resolveExecutionProfilePreset("balanced");
+  it("standard keeps baseline approval settings", () => {
+    const execution = resolveExecutionProfilePreset("standard");
     const effective = applyExecutionToApprovals({
       execution,
       approvals: {
@@ -71,7 +68,7 @@ describe("execution profile presets", () => {
       require_plan: true,
       require_network: false,
       require_verify: true,
-      require_force: false,
+      require_force: true,
     });
   });
 });

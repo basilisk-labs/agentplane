@@ -2113,33 +2113,21 @@ agentplane mode set branch_pr
 
 ### profile set
 
-Apply setup profile presets to WORKFLOW config.
+Apply the canonical AgentPlane process policy.
 
 Usage:
 
 ```text
-agentplane profile set <light|normal|full-harness>
+agentplane profile set <standard>
 ```
 
 Examples:
 
 ```sh
-agentplane profile set light
+agentplane profile set standard
 ```
 
-- Apply flexible defaults.
-
-```sh
-agentplane profile set normal
-```
-
-- Apply balanced defaults.
-
-```sh
-agentplane profile set full-harness
-```
-
-- Apply strict defaults.
+- Restore the canonical process policy.
 
 ## Setup
 
@@ -2161,21 +2149,21 @@ Options:
 - `--quick`: Alias for --init-mode quick. (default=false)
 - `--advanced`: Alias for --init-mode advanced. (default=false)
 - `--tool <codex|claude|cursor|windsurf|hermes|multiple|manual>`: AI surface that should read project instructions. Granular --policy-gateway/--ide flags override this mapping. (choices=codex|claude|cursor|windsurf|hermes|multiple|manual)
-- `--setup-profile <light|normal|full-harness>`: Setup profile preset. Preferred values: light, normal, full-harness. (choices=light|normal|full-harness|developer|vibecoder|manager)
+- `--setup-profile <standard>`: Compatibility alias for the fixed standard process policy. Legacy values are accepted but no longer change behavior. (choices=standard|light|normal|full-harness|developer|vibecoder|manager)
 - `--policy-gateway <codex|claude>`: Policy gateway file to install (codex -&gt; AGENTS.md, claude -&gt; CLAUDE.md). (choices=codex|claude)
 - `--ide <none|codex|cursor|windsurf>`: IDE rules integration target (default: codex). (choices=none|codex|cursor|windsurf)
 - `--workflow <direct|branch_pr>`: Workflow mode (default: direct). (choices=direct|branch_pr)
 - `--direct-close-dirty-policy <allow-other-task-readmes|strict>`: Direct-mode close behavior when tracked dirt exists outside the active task: allow only other active task READMEs, or block on any unrelated tracked change. (choices=allow-other-task-readmes|strict)
 - `--backend <local|cloud>`: Task backend (default: local). (choices=local|cloud)
-- `--hooks <true|false>`: Install managed git hooks (default by setup profile: light=false, normal/full-harness=true).
+- `--hooks <true|false>`: Install managed git hooks (default: true).
 - `--require-plan-approval <true|false>`: Require explicit plan approval before starting work.
 - `--require-network-approval <true|false>`: Require explicit approval before any network operation.
 - `--require-verify-approval <true|false>`: Require explicit approval before recording verification.
 - `--feedback-github-issues <true|false>`: Opt in to Agentplane GitHub issue prompts for internal Agentplane errors (default: false).
 - `--feedback-anonymous-cloud <true|false>`: Allow anonymous Agentplane issue intake fallback when GitHub issue publishing is unavailable (default: false).
-- `--execution-profile <conservative|balanced|aggressive>`: Execution profile preset controlling autonomy, reasoning, and tool budgets. (choices=conservative|balanced|aggressive)
+- `--execution-profile <standard>`: Compatibility alias for the fixed standard execution policy. Legacy values are accepted but ignored. (choices=standard|conservative|balanced|aggressive)
 - `--evaluator-skepticism <standard|strict|paranoid>`: Evaluator audit skepticism level for Codex runner review prompts. (choices=standard|strict|paranoid)
-- `--strict-unsafe-confirm <true|false>`: Require strict explicit confirmations for additional unsafe actions.
+- `--strict-unsafe-confirm <true|false>`: Deprecated compatibility option. The standard process policy defines fixed unsafe-action boundaries.
 - `--recipes <none|id1,id2,...>`: Optional cached recipes to vendor during init (comma-separated), or 'none'.
 - `--blueprints <none|id1,pack:id2,...>`: Optional cached blueprint catalog entries to install and activate during init (comma-separated), or 'none'. Prefix with blueprint: or pack: to disambiguate.
 - `--force`: Overwrite init conflicts by deleting existing paths. (default=false)
@@ -2195,10 +2183,10 @@ agentplane init
 - Short interactive setup for agent surface and workflow, followed by an explained preview.
 
 ```sh
-agentplane init --setup-profile light --yes
+agentplane init --yes
 ```
 
-- Non-interactive setup with flexible defaults.
+- Non-interactive setup with the standard process policy.
 
 ```sh
 agentplane init --workflow direct --direct-close-dirty-policy allow-other-task-readmes --backend local --hooks true --require-network-approval true --yes

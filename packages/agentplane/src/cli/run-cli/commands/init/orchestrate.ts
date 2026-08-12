@@ -4,6 +4,7 @@ import { CliError } from "../../../../shared/errors.js";
 import { mapCoreError } from "../../../error-map.js";
 import { usageError } from "../../../spec/errors.js";
 import type { CommandSpec } from "../../../spec/spec.js";
+import { createCliEmitter } from "../../../output.js";
 
 import { resolveInitBaseBranchForInit } from "./base-branch.js";
 import { ensureGitRoot } from "./git.js";
@@ -25,6 +26,8 @@ import { buildNonInteractiveAnswers, promptInteractiveAnswers } from "./answers.
 import { outroError, outroSuccess } from "./ui.js";
 import { resolveInitMode } from "./modes.js";
 import { FIRST_TASK_COMMAND } from "./init-plan.js";
+
+const output = createCliEmitter();
 
 function shouldRunInteractiveInit(flags: InitParsed): boolean {
   if (
@@ -59,7 +62,7 @@ function renderDryRunPlanText(plan: ReturnType<typeof buildInitPlan>): string {
     "AgentPlane init plan",
     `Root: ${plan.root}`,
     `Mode: ${plan.mode}`,
-    `Profile: ${plan.profile} (${plan.internalSetupProfile})`,
+    `Process policy: ${plan.internalSetupProfile}`,
     `Workflow: ${plan.answers.workflow}`,
     `Runner: ${plan.answers.runnerProfile}`,
     `Evaluator skepticism: ${plan.answers.evaluatorSkepticism}`,
@@ -154,6 +157,9 @@ export async function cmdInit(opts: {
         process.stdout.write(renderDryRunPlanText(plan));
       }
       return 0;
+    }
+    if (!clack) {
+      for (const warning of plan.warnings) output.warn(warning);
     }
     await maybeConfirmInteractiveApply({ clack, flags: opts.flags, answers, paths, plan });
     await applyInitPlan({

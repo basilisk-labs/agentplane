@@ -1,13 +1,38 @@
 import type { CommandSpec } from "../../../spec/spec.js";
 import { usageError } from "../../../spec/errors.js";
 
-import { normalizeSetupProfile } from "./presets.js";
+import { normalizeExecutionProfile, normalizeSetupProfile } from "./presets.js";
 import {
   parseBlueprintsSelectionForInit,
   parseBooleanValueForInit,
   parseDirectCloseDirtyPolicyForInit,
   parseRecipesSelectionForInit,
 } from "./parsers.js";
+
+function profileCompatibilityWarnings(raw: Record<string, unknown>): string[] {
+  const warnings: string[] = [];
+  const setupProfileRaw = typeof raw["setup-profile"] === "string" ? raw["setup-profile"] : "";
+  const executionProfileRaw =
+    typeof raw["execution-profile"] === "string" ? raw["execution-profile"] : "";
+  const setupProfile = setupProfileRaw.trim().toLowerCase();
+  const executionProfile = executionProfileRaw.trim().toLowerCase();
+  if (setupProfile && setupProfile !== "standard") {
+    warnings.push(
+      `Setup profile "${setupProfileRaw}" is a compatibility alias; AgentPlane applied the fixed standard policy.`,
+    );
+  }
+  if (executionProfile && executionProfile !== "standard") {
+    warnings.push(
+      `Execution profile "${executionProfileRaw}" is a compatibility alias; AgentPlane applied the fixed standard policy.`,
+    );
+  }
+  if (raw["strict-unsafe-confirm"] !== undefined) {
+    warnings.push(
+      "--strict-unsafe-confirm is a compatibility option; the standard process policy defines fixed unsafe-action boundaries.",
+    );
+  }
+  return warnings;
+}
 import type { InitFlags, InitParsed } from "./model.js";
 
 export const initSpec: CommandSpec<InitParsed> = {
@@ -50,9 +75,10 @@ export const initSpec: CommandSpec<InitParsed> = {
     {
       kind: "string",
       name: "setup-profile",
-      valueHint: "<light|normal|full-harness>",
-      choices: ["light", "normal", "full-harness", "developer", "vibecoder", "manager"],
-      description: "Setup profile preset. Preferred values: light, normal, full-harness.",
+      valueHint: "<standard>",
+      choices: ["standard", "light", "normal", "full-harness", "developer", "vibecoder", "manager"],
+      description:
+        "Compatibility alias for the fixed standard process policy. Legacy values are accepted but no longer change behavior.",
     },
     {
       kind: "string",
@@ -97,8 +123,7 @@ export const initSpec: CommandSpec<InitParsed> = {
       kind: "string",
       name: "hooks",
       valueHint: "<true|false>",
-      description:
-        "Install managed git hooks (default by setup profile: light=false, normal/full-harness=true).",
+      description: "Install managed git hooks (default: true).",
     },
     {
       kind: "string",
@@ -135,9 +160,10 @@ export const initSpec: CommandSpec<InitParsed> = {
     {
       kind: "string",
       name: "execution-profile",
-      valueHint: "<conservative|balanced|aggressive>",
-      choices: ["conservative", "balanced", "aggressive"],
-      description: "Execution profile preset controlling autonomy, reasoning, and tool budgets.",
+      valueHint: "<standard>",
+      choices: ["standard", "conservative", "balanced", "aggressive"],
+      description:
+        "Compatibility alias for the fixed standard execution policy. Legacy values are accepted but ignored.",
     },
     {
       kind: "string",
@@ -151,7 +177,8 @@ export const initSpec: CommandSpec<InitParsed> = {
       kind: "string",
       name: "strict-unsafe-confirm",
       valueHint: "<true|false>",
-      description: "Require strict explicit confirmations for additional unsafe actions.",
+      description:
+        "Deprecated compatibility option. The standard process policy defines fixed unsafe-action boundaries.",
     },
     {
       kind: "string",
@@ -217,8 +244,8 @@ export const initSpec: CommandSpec<InitParsed> = {
       why: "Short interactive setup for agent surface and workflow, followed by an explained preview.",
     },
     {
-      cmd: "agentplane init --setup-profile light --yes",
-      why: "Non-interactive setup with flexible defaults.",
+      cmd: "agentplane init --yes",
+      why: "Non-interactive setup with the standard process policy.",
     },
     {
       cmd: "agentplane init --workflow direct --direct-close-dirty-policy allow-other-task-readmes --backend local --hooks true --require-network-approval true --yes",
@@ -323,7 +350,9 @@ export const initSpec: CommandSpec<InitParsed> = {
               "--feedback-anonymous-cloud",
               feedbackAnonymousCloudRaw,
             ),
-      executionProfile: raw.opts["execution-profile"] as InitFlags["executionProfile"],
+      executionProfile: normalizeExecutionProfile(
+        raw.opts["execution-profile"] as string | undefined,
+      ),
       evaluatorSkepticism: raw.opts["evaluator-skepticism"] as InitFlags["evaluatorSkepticism"],
       strictUnsafeConfirm:
         (raw.opts["strict-unsafe-confirm"] as string | undefined) === undefined
@@ -333,6 +362,7 @@ export const initSpec: CommandSpec<InitParsed> = {
               "--strict-unsafe-confirm",
               String(raw.opts["strict-unsafe-confirm"]),
             ),
+      compatibilityWarnings: profileCompatibilityWarnings(raw.opts),
       recipes: recipesRaw === undefined ? undefined : parseRecipesSelectionForInit(recipesRaw),
       blueprints:
         blueprintsRaw === undefined ? undefined : parseBlueprintsSelectionForInit(blueprintsRaw),
@@ -352,13 +382,6 @@ export const initSpec: CommandSpec<InitParsed> = {
         spec: initSpec,
         command: "init",
         message: "Use either --force or --backup (not both).",
-      });
-    }
-    if (p.initMode === "quick" && p.setupProfile === "full-harness") {
-      throw usageError({
-        spec: initSpec,
-        command: "init",
-        message: "--init-mode quick cannot be combined with --setup-profile full-harness.",
       });
     }
   },

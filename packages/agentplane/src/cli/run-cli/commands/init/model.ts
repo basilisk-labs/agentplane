@@ -5,7 +5,7 @@ import type { PolicyGatewayFlavor } from "../../../../shared/policy-gateway.js";
 
 export type InitIde = "none" | "codex" | "cursor" | "windsurf";
 
-export type SetupProfilePreset = "light" | "normal" | "full-harness";
+export type SetupProfilePreset = "standard";
 export type InitMode = "quick" | "guided" | "advanced" | "ci";
 export type UserFacingProfile = "solo" | "team" | "strict" | "custom";
 export type InitTool =
@@ -38,6 +38,7 @@ export type InitFlags = {
   executionProfile?: ExecutionProfile;
   evaluatorSkepticism?: EvaluatorSkepticismLevel;
   strictUnsafeConfirm?: boolean;
+  compatibilityWarnings?: string[];
   recipes?: string[];
   blueprints?: string[];
   force?: boolean;

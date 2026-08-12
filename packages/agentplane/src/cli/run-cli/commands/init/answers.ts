@@ -58,6 +58,7 @@ export type InitAnswers = {
   executionProfile: ExecutionProfile;
   evaluatorSkepticism: EvaluatorSkepticismLevel;
   strictUnsafeConfirm: boolean;
+  compatibilityWarnings?: string[];
   blueprints: string[];
   runnerProfile: "codex" | "hermes";
   decisionReasons: string[];
@@ -77,7 +78,7 @@ export function assertConfirmed(clack: InitClackPrompts, value: boolean | symbol
 }
 
 export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
-  const setupProfilePreset: SetupProfilePreset = flags.setupProfile ?? "normal";
+  const setupProfilePreset: SetupProfilePreset = flags.setupProfile ?? "standard";
   const preset = setupProfilePresets[setupProfilePreset];
   return {
     setupProfile: setupProfilePreset,
@@ -97,13 +98,14 @@ export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
     executionProfile: flags.executionProfile ?? preset.defaultExecutionProfile,
     evaluatorSkepticism: flags.evaluatorSkepticism ?? preset.defaultEvaluatorSkepticism,
     strictUnsafeConfirm: flags.strictUnsafeConfirm ?? preset.defaultStrictUnsafeConfirm,
+    compatibilityWarnings: [...(flags.compatibilityWarnings ?? [])],
     blueprints: flags.blueprints ?? INIT_DEFAULTS.blueprints,
     runnerProfile: resolveRunnerProfileFromFlags(flags, "codex"),
     decisionReasons: [
       "Automation mode: non-interactive flags and stable defaults determine every value.",
       `Agent surface: ${flags.tool ?? "codex default"}; granular gateway and IDE flags override the mapping.`,
       `Workflow: ${flags.workflow ?? INIT_DEFAULTS.workflow}${flags.workflow ? " selected explicitly" : " is the safe local default"}.`,
-      `Guardrails: ${setupProfilePreset} profile supplies approval and execution defaults unless overridden.`,
+      "Process policy: standard AgentPlane lifecycle and safety rules apply; explicit project settings remain independent.",
       `Storage: ${flags.backend ?? INIT_DEFAULTS.backend}${flags.backend ? " selected explicitly" : " keeps task state local by default"}.`,
     ],
   };
@@ -122,7 +124,7 @@ function quickDecisionReasons(opts: {
     ...opts.repositoryDefaults.decisionReasons,
     `Agent surface: ${opts.tool}; gateway, IDE integration, and managed-runner defaults are derived from this choice.`,
     `Workflow: ${opts.workflow}${opts.workflowExplicit ? " selected explicitly" : " selected in this dialog"}.`,
-    `Guardrails: ${opts.setupProfile} applies a coherent approval, hook, and execution profile.`,
+    "Process policy: standard AgentPlane lifecycle and safety rules apply; explicit project settings remain independent.",
     `Storage: ${opts.backend}${opts.backend === "local" ? " keeps the project self-contained" : " was selected explicitly"}.`,
     "Optional recipes and blueprints stay disabled until requested through advanced setup or explicit flags.",
   ];
@@ -138,7 +140,7 @@ async function promptQuickAnswers(opts: {
     "Quick setup",
     "Choose the agent surface and workflow. AgentPlane will explain the safe defaults before writing files; use Advanced setup to review every control.",
   );
-  const setupProfile = opts.flags.setupProfile ?? "normal";
+  const setupProfile = opts.flags.setupProfile ?? "standard";
   const selectedPreset = setupProfilePresets[setupProfile];
   const repositoryDefaults = await detectInitRepositoryDefaults(opts.targetRoot);
   const { tool } = await promptToolStep({
@@ -184,6 +186,7 @@ async function promptQuickAnswers(opts: {
     executionProfile: advanced.executionProfile,
     evaluatorSkepticism: advanced.evaluatorSkepticism,
     strictUnsafeConfirm: advanced.strictUnsafeConfirm,
+    compatibilityWarnings: [...(opts.flags.compatibilityWarnings ?? [])],
     blueprints: opts.flags.blueprints ?? INIT_DEFAULTS.blueprints,
     runnerProfile: toolDefaults.runnerProfile ?? "codex",
     decisionReasons: quickDecisionReasons({
@@ -204,10 +207,10 @@ async function promptDetailedAnswers(opts: {
   initMode: "guided" | "advanced";
 }): Promise<InitAnswers> {
   section(opts.clack, "Advanced setup", "Review project policy and integration controls.");
-  const setup = await promptSetupProfileStep({
+  const setup = promptSetupProfileStep({
     clack: opts.clack,
     flags: opts.flags,
-    defaultProfile: "normal",
+    defaultProfile: "standard",
   });
   const selectedPreset = setupProfilePresets[setup.setupProfilePreset];
   const { tool } = await promptToolStep({ clack: opts.clack, flags: opts.flags });
@@ -271,13 +274,14 @@ async function promptDetailedAnswers(opts: {
     executionProfile: advanced.executionProfile,
     evaluatorSkepticism: advanced.evaluatorSkepticism,
     strictUnsafeConfirm: advanced.strictUnsafeConfirm,
+    compatibilityWarnings: [...(opts.flags.compatibilityWarnings ?? [])],
     blueprints: blueprintSelection.blueprints,
     runnerProfile: toolDefaults.runnerProfile ?? "codex",
     decisionReasons: [
       `Setup depth: ${opts.initMode} exposes individual policy and integration controls.`,
       `Agent surface: ${tool}; gateway, IDE, and runner values remain individually reviewable.`,
       `Workflow: ${workflow.workflow} was confirmed in the detailed setup path.`,
-      `Guardrails: ${setup.setupProfilePreset} supplied the starting values for approvals and execution.`,
+      "Process policy: standard AgentPlane lifecycle and safety rules apply; explicit project settings remain independent.",
       `Storage: ${backend.backend} was confirmed in the detailed setup path.`,
     ],
   };

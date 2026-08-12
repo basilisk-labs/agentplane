@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608112213-NWJCBW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T23:39:13.368Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Compatibility remediation is exact, reviewable, and regression-protected: it records only the canonical profile CLI/schema mutations already shipped by this task, preserves legacy aliases, pins both workflow schema versions, and updates the planned v0.7.5 surface digest.",
+  "evaluated_sha": "017d3d3a8a724880ca20a011f1488fb98bb664ee",
+  "blueprint_digest": "8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61",
+  "findings": [
+    "No blocking semantic issue found. The checker rejects unapproved command, option, schema-profile, provenance, and release-surface drift; the focused critical suite reconstructs and validates the reviewed surface."
+  ],
+  "evidence_refs": [
+    "bun run bench:compatibility:check => pass current=324aabe0; bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts => 9/9 pass"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The compatibility candidate remains intentionally cumulative and verbose; final check-efficiency work should evaluate maintainability without weakening the exact ratchet."
+  ]
+}

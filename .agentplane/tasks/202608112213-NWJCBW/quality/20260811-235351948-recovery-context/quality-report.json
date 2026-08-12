@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608112213-NWJCBW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T23:53:52.395Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The generated llms-full update is the exact downstream projection of the already reviewed canonical profile documentation: legacy profiles are described only as aliases, standard is the sole policy, and independent project settings remain explicit.",
+  "evaluated_sha": "427ccd91a4182511a118e31baaefc44de69a4142",
+  "blueprint_digest": "8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61",
+  "findings": [
+    "No blocking issue found. The full docs-site pipeline passes, including generation freshness, typecheck, production build, navigation, social-image inventory, and design checks."
+  ],
+  "evidence_refs": [
+    "bun run docs:site:check => pass; generated llms-full diff replaces profile tiers with standard policy and legacy-alias migration text"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Generated documentation freshness should be routed automatically from source-doc changes; evaluate this in the final check-efficiency task."
+  ]
+}

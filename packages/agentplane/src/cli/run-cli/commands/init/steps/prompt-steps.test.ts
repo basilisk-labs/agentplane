@@ -48,27 +48,15 @@ function resetPromptMocks(): void {
 }
 
 describe("init prompt steps", () => {
-  it("collects the happy path for full-harness interactive setup", async () => {
+  it("uses the standard policy without profile prompts", async () => {
     resetPromptMocks();
     mocks.selectMock
-      .mockResolvedValueOnce("full-harness")
       .mockResolvedValueOnce("claude")
       .mockResolvedValueOnce("cursor")
-      .mockResolvedValueOnce("branch_pr")
-      .mockResolvedValueOnce("cloud")
-      .mockResolvedValueOnce("aggressive")
-      .mockResolvedValueOnce("standard");
-    mocks.confirmMock
-      .mockResolvedValueOnce(false)
-      .mockResolvedValueOnce(true)
-      .mockResolvedValueOnce(true)
-      .mockResolvedValueOnce(false);
-    mocks.textMock
-      .mockResolvedValueOnce("recipe-a, recipe-b")
-      .mockResolvedValueOnce("pack:enterprise-baseline");
+      .mockResolvedValueOnce("cloud");
     const prompt = clackMock();
 
-    const setup = await promptSetupProfileStep({ clack: prompt, flags: {} });
+    const setup = promptSetupProfileStep({ clack: prompt, flags: {} });
     const policy = await promptPolicyGatewayStep({ clack: prompt, flags: {} });
     const ide = await promptIdeStep({ clack: prompt, flags: {} });
     const workflow = await promptWorkflowStep({
@@ -98,11 +86,11 @@ describe("init prompt steps", () => {
       cachedBlueprints: ["blueprint:analysis-external", "pack:enterprise-baseline"],
     });
 
-    expect(setup).toEqual({ setupProfilePreset: "full-harness", setupProfileMode: "full" });
+    expect(setup).toEqual({ setupProfilePreset: "standard", setupProfileMode: "compact" });
     expect(policy).toEqual({ policyGateway: "claude" });
     expect(ide).toEqual({ ide: "cursor" });
     expect(workflow).toEqual({
-      workflow: "branch_pr",
+      workflow: "direct",
       directCloseDirtyPolicy: "allow_other_task_readmes",
     });
     expect(backend).toEqual({ backend: "cloud" });
@@ -111,14 +99,17 @@ describe("init prompt steps", () => {
       requirePlanApproval: true,
       requireNetworkApproval: true,
       requireVerifyApproval: true,
-      feedbackGithubIssues: true,
+      feedbackGithubIssues: false,
       feedbackAnonymousCloud: false,
-      executionProfile: "aggressive",
+      executionProfile: "standard",
       evaluatorSkepticism: "standard",
       strictUnsafeConfirm: false,
     });
-    expect(recipes).toEqual({ recipes: ["recipe-a", "recipe-b"] });
-    expect(blueprints).toEqual({ blueprints: ["pack:enterprise-baseline"] });
+    expect(recipes).toEqual({ recipes: [] });
+    expect(blueprints).toEqual({ blueprints: [] });
+    expect(mocks.selectMock).toHaveBeenCalledTimes(3);
+    expect(mocks.confirmMock).not.toHaveBeenCalled();
+    expect(mocks.textMock).not.toHaveBeenCalled();
   });
 
   it("keeps the default setup path to depth, agent surface, and workflow decisions", async () => {
@@ -151,9 +142,10 @@ describe("init prompt steps", () => {
     resetPromptMocks();
     const prompt = clackMock();
 
-    await expect(
-      promptSetupProfileStep({ clack: prompt, flags: { setupProfile: "light" } }),
-    ).resolves.toEqual({ setupProfilePreset: "light", setupProfileMode: "compact" });
+    expect(promptSetupProfileStep({ clack: prompt, flags: { setupProfile: "standard" } })).toEqual({
+      setupProfilePreset: "standard",
+      setupProfileMode: "compact",
+    });
     await expect(
       promptPolicyGatewayStep({ clack: prompt, flags: { policyGateway: "claude" } }),
     ).resolves.toEqual({ policyGateway: "claude" });
@@ -177,17 +169,17 @@ describe("init prompt steps", () => {
       promptAdvancedSettingsStep({
         clack: prompt,
         flags: {},
-        setupProfilePreset: "light",
+        setupProfilePreset: "standard",
         setupProfileMode: "compact",
       }),
     ).resolves.toEqual({
-      hooks: false,
-      requirePlanApproval: false,
-      requireNetworkApproval: false,
-      requireVerifyApproval: false,
+      hooks: true,
+      requirePlanApproval: true,
+      requireNetworkApproval: true,
+      requireVerifyApproval: true,
       feedbackGithubIssues: false,
       feedbackAnonymousCloud: false,
-      executionProfile: "aggressive",
+      executionProfile: "standard",
       evaluatorSkepticism: "standard",
       strictUnsafeConfirm: false,
     });
@@ -195,7 +187,7 @@ describe("init prompt steps", () => {
       promptRecipeSelectionStep({
         clack: prompt,
         flags: {},
-        setupProfilePreset: "light",
+        setupProfilePreset: "standard",
         setupProfileMode: "compact",
         cachedRecipes: ["recipe-a"],
       }),
@@ -204,7 +196,7 @@ describe("init prompt steps", () => {
       promptBlueprintSelectionStep({
         clack: prompt,
         flags: {},
-        setupProfilePreset: "light",
+        setupProfilePreset: "standard",
         setupProfileMode: "compact",
         cachedBlueprints: ["pack:baseline"],
       }),
@@ -235,7 +227,7 @@ describe("init prompt steps", () => {
       promptRecipeSelectionStep({
         clack: clackMock(),
         flags: {},
-        setupProfilePreset: "full-harness",
+        setupProfilePreset: "standard",
         setupProfileMode: "full",
         cachedRecipes: [],
       }),
@@ -250,7 +242,7 @@ describe("init prompt steps", () => {
       promptBlueprintSelectionStep({
         clack: clackMock(),
         flags: {},
-        setupProfilePreset: "full-harness",
+        setupProfilePreset: "standard",
         setupProfileMode: "full",
         cachedBlueprints: [],
       }),
@@ -271,7 +263,7 @@ describe("init prompt steps", () => {
       promptRecipeSelectionStep({
         clack: clackMock(),
         flags: {},
-        setupProfilePreset: "full-harness",
+        setupProfilePreset: "standard",
         setupProfileMode: "full",
         cachedRecipes: ["recipe-a", "recipe-b"],
       }),

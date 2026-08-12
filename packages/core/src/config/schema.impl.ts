@@ -21,7 +21,7 @@ const COMMENT_POLICY_DEFAULTS = {
 };
 
 const EXECUTION_DEFAULTS: {
-  profile: "balanced";
+  profile: "standard";
   reasoning_effort: "medium";
   text_verbosity: "medium";
   tool_budget: {
@@ -33,7 +33,7 @@ const EXECUTION_DEFAULTS: {
   handoff_conditions: string[];
   unsafe_actions_requiring_explicit_user_ok: string[];
 } = {
-  profile: "balanced",
+  profile: "standard",
   reasoning_effort: "medium",
   text_verbosity: "medium",
   tool_budget: {
@@ -248,7 +248,7 @@ export const AgentplaneConfigSchema = z
     execution: z
       .object({
         profile: z
-          .enum(["conservative", "balanced", "aggressive"])
+          .enum(["standard", "conservative", "balanced", "aggressive"])
           .default(EXECUTION_DEFAULTS.profile),
         reasoning_effort: z
           .enum(["low", "medium", "high", "xhigh"])
@@ -548,6 +548,15 @@ export function validateAgentplaneConfig(raw: unknown): AgentplaneConfig {
     throw new Error("config must be an object");
   }
 
+  parsed.data.execution = {
+    ...EXECUTION_DEFAULTS,
+    tool_budget: { ...EXECUTION_DEFAULTS.tool_budget },
+    stop_conditions: [...EXECUTION_DEFAULTS.stop_conditions],
+    handoff_conditions: [...EXECUTION_DEFAULTS.handoff_conditions],
+    unsafe_actions_requiring_explicit_user_ok: [
+      ...EXECUTION_DEFAULTS.unsafe_actions_requiring_explicit_user_ok,
+    ],
+  };
   return parsed.data;
 }
 

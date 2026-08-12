@@ -433,11 +433,11 @@ describe("runner state fingerprint production projections", () => {
     preparedBundle.base_prompts.push({
       id: "base.execution_profile",
       role: "policy",
-      source: "runtime:execution-profile:balanced",
+      source: "runtime:execution-profile:standard",
       priority: 250,
       content: `${JSON.stringify(
         {
-          profile: "balanced",
+          profile: "standard",
           reasoning_effort: "medium",
           approvals: preparedBundle.execution.approvals,
           stop_conditions: ["blocked"],

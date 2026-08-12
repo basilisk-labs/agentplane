@@ -267,7 +267,7 @@ describe("runCli", () => {
       normalizeSlashes(String((config.tasks_backend as Record<string, unknown>)?.config_path)),
     ).toBe(".agentplane/backends/local/backend.json");
     const execution = config.execution as Record<string, unknown>;
-    expect(execution?.profile).toBe("balanced");
+    expect(execution?.profile).toBe("standard");
     expect(execution?.reasoning_effort).toBe("medium");
 
     const backendText = await readFile(backendPath, "utf8");
@@ -299,27 +299,28 @@ describe("runCli", () => {
     expect(workflowText).not.toContain("packages/**");
   });
 
-  it("init --setup-profile vibecoder --yes applies compact autonomous defaults", async () => {
+  it("init normalizes a legacy setup profile to the standard defaults", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
     const io = captureStdIO();
     try {
       const code = await runCli(["init", "--yes", "--setup-profile", "vibecoder", "--root", root]);
       expect(code).toBe(0);
+      expect(io.stderr).toContain('Setup profile "vibecoder" is a compatibility alias');
     } finally {
       io.restore();
     }
 
     const workflowText = await readFile(path.join(root, ".agentplane", "WORKFLOW.md"), "utf8");
-    expect(workflowText).toContain("require_plan: false");
-    expect(workflowText).toContain("require_network: false");
-    expect(workflowText).toContain("require_verify: false");
-    expect(workflowText).toContain('profile: "aggressive"');
+    expect(workflowText).toContain("require_plan: true");
+    expect(workflowText).toContain("require_network: true");
+    expect(workflowText).toContain("require_verify: true");
+    expect(workflowText).toContain('profile: "standard"');
 
     const hookShimPath = path.join(root, ".agentplane", "bin", "agentplane");
     const commitMsgHookPath = path.join(root, ".git", "hooks", "commit-msg");
-    expect(await pathExists(hookShimPath)).toBe(false);
-    expect(await pathExists(commitMsgHookPath)).toBe(false);
+    expect(await pathExists(hookShimPath)).toBe(true);
+    expect(await pathExists(commitMsgHookPath)).toBe(true);
   });
 
   it("init with cached recipes includes materialized recipe files in the install commit", async () => {
@@ -812,7 +813,7 @@ describe("runCli", () => {
       };
       expect(envelope.data?.mode).toBe("quick");
       expect(envelope.data?.profile).toBe("team");
-      expect(envelope.data?.internalSetupProfile).toBe("normal");
+      expect(envelope.data?.internalSetupProfile).toBe("standard");
       expect(envelope.data?.answers).toMatchObject({ policyGateway: "codex", ide: "cursor" });
     } finally {
       io.restore();

@@ -358,7 +358,7 @@ describe("runCli", () => {
     }
   });
 
-  it("skips update check in conservative profile even when require_network=false", async () => {
+  it("honors explicit network approval settings independently of legacy profile input", async () => {
     const root = await mkGitRepoRoot();
     const cfg = defaultConfig();
     cfg.execution.profile = "conservative";
@@ -380,7 +380,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["config", "show", "--root", root]);
       expect(code).toBe(0);
-      expect(globalThis.fetch).not.toHaveBeenCalled();
+      expect(globalThis.fetch).toHaveBeenCalledTimes(1);
       expect(io.stderr).not.toContain("Update available");
     } finally {
       globalThis.fetch = originalFetch;
