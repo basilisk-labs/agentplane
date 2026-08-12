@@ -44,6 +44,7 @@ type WorkOrderView = {
       writable_roots: string[];
       external_side_effects: string[];
       allowed_tool_classes: string[];
+      network: string;
       sandbox: string;
     };
   };
@@ -297,6 +298,48 @@ describe("AgentWorkOrder v2 surface integration", () => {
       sandbox: "read-only",
     });
     expect(view.work_order.authority.allowed_tool_classes).not.toContain("workspace_write");
+  });
+
+  it("projects policy-permitted network reads without external write authority", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = await createPreparedTask(root);
+    const command = await loadCommandContext({ cwd: root, rootOverride: root });
+    command.config.agents.approvals.require_network = false;
+    const task = await loadTaskFromContext({ ctx: command, taskId });
+    const executionContract = resolveTaskExecutionContract({
+      config: command.config,
+      task,
+      declaration: {
+        schema_version: 1,
+        preferred_mode: "direct",
+        scope_roots: [],
+        repository_effects: [],
+        external_effects: ["network_read"],
+        uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["read public package metadata"],
+      },
+    });
+    await command.taskBackend.writeTask(
+      { ...task, execution_contract: executionContract },
+      task.revision ? { expectedRevision: task.revision } : undefined,
+    );
+
+    const prepared = await prepareTaskRunnerExecution({
+      ctx: command,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      mode: "dry_run",
+    });
+    expect(prepared.bundle.work_order.authority).toMatchObject({
+      network: "allowed",
+      external_side_effects: [],
+    });
+    expect(executionContract.authority.allowed_external_effects).toEqual(["network_read"]);
+    expect(executionContract.authority.forbidden_external_effects).toEqual(
+      expect.arrayContaining(["deploy", "external_write", "publish", "destructive_git"]),
+    );
   });
 
   it("prepares deterministic bounded knowledge through exact, FTS, alias, and graph adapters", async () => {

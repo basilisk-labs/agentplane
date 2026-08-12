@@ -200,16 +200,21 @@ function executionAuthority(
   declaration: TaskExecutionDeclaration,
 ): TaskExecutionContract["authority"] {
   const allowedRepositoryEffects = uniqueSorted(declaration.repository_effects);
-  const allowedExternalEffects: TaskExternalEffect[] = [];
+  const allowedExternalEffects: TaskExternalEffect[] = declaration.external_effects.filter(
+    (effect): effect is "network_read" => effect === "network_read",
+  );
   return {
     writable_roots: [...declaration.scope_roots],
     allowed_repository_effects: allowedRepositoryEffects,
     forbidden_repository_effects: ALL_REPOSITORY_EFFECTS.filter(
       (effect) => !allowedRepositoryEffects.includes(effect),
     ),
-    // Declaring an external effect describes intent; it never grants the agent authority.
+    // A declared network read may be delegated only after the contract's safety gate is met.
+    // High-risk effects remain forbidden even if the semantic agent declares them.
     allowed_external_effects: allowedExternalEffects,
-    forbidden_external_effects: [...ALL_EXTERNAL_EFFECTS],
+    forbidden_external_effects: ALL_EXTERNAL_EFFECTS.filter(
+      (effect) => !allowedExternalEffects.includes(effect),
+    ),
   };
 }
 

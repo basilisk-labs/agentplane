@@ -169,9 +169,24 @@ function normalizeExecutionContract(value: unknown): TaskData["execution_contrac
     authority.forbidden_repository_effects ??
       [...REPOSITORY_EFFECTS].filter((effect) => !repositoryEffects.includes(effect)),
   );
-  const allowedExternalEffects = normalizeStringList(authority.allowed_external_effects ?? []);
+  const authorityAllowedExternalEffects = Array.isArray(authority.allowed_external_effects)
+    ? authority.allowed_external_effects.filter(
+        (effect): effect is string => typeof effect === "string",
+      )
+    : [];
+  const allowedExternalEffects = normalizeStringList([
+    ...authorityAllowedExternalEffects,
+    ...(externalEffects.includes("network_read") ? ["network_read"] : []),
+  ]);
+  const authorityForbiddenExternalEffects = Array.isArray(authority.forbidden_external_effects)
+    ? authority.forbidden_external_effects.filter(
+        (effect): effect is string => typeof effect === "string",
+      )
+    : [...EXTERNAL_EFFECTS];
   const forbiddenExternalEffects = normalizeStringList(
-    authority.forbidden_external_effects ?? [...EXTERNAL_EFFECTS],
+    authorityForbiddenExternalEffects.filter(
+      (effect) => effect !== "network_read" || !allowedExternalEffects?.includes(effect),
+    ),
   );
   const approvalEffects = normalizeStringList(value.safety.approval_effects);
   const requiredEvidence = normalizeStringList(value.verification.required_evidence);

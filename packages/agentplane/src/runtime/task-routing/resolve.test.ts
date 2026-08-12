@@ -343,10 +343,16 @@ describe("task execution route", () => {
       requires_user_approval: false,
       approval_effects: [],
     });
+    expect(allowed.authority).toMatchObject({
+      allowed_external_effects: ["network_read"],
+    });
+    expect(allowed.authority.forbidden_external_effects).not.toContain("network_read");
     expect(gated.safety).toMatchObject({
       requires_user_approval: true,
       approval_effects: ["network_read"],
     });
+    expect(gated.authority.allowed_external_effects).toEqual(["network_read"]);
+    expect(gated.authority.forbidden_external_effects).not.toContain("network_read");
   });
 
   it("rejects scope roots that normalize outside the repository", () => {

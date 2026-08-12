@@ -382,6 +382,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
     decision.executionPacket.returnControlWhen,
     "Stop and return a blocked semantic result when the prepared state is stale or required context is missing.",
   ]);
+  const allowedExternalEffects = executionContract?.authority.allowed_external_effects ?? [];
   return validateAgentWorkOrderV2({
     schema_version: AGENT_WORK_ORDER_SCHEMA_VERSION,
     kind: AGENT_WORK_ORDER_KIND,
@@ -410,8 +411,8 @@ export function buildCanonicalAgentWorkOrder(opts: {
       allowed_tool_classes: allowedToolClasses,
       // Hosted lifecycle evidence is collected by the CLI before delegation;
       // this does not grant an executor independent network authority.
-      network: "deny",
-      external_side_effects: executionContract?.authority.allowed_external_effects ?? [],
+      network: allowedExternalEffects.includes("network_read") ? "allowed" : "deny",
+      external_side_effects: allowedExternalEffects.filter((effect) => effect !== "network_read"),
       sandbox: canMutate ? "workspace-write" : "read-only",
       expires_at: null,
     },

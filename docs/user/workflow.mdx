@@ -33,6 +33,47 @@ and stop boundaries. A newly created task still needs its initial PLANNER result
 `task advance`; after planning and approval, either frontend may resolve an eligible semantic
 episode.
 
+## Agent-selected execution strategy
+
+The PLANNER interprets the task and returns a structured execution declaration. It chooses a
+preferred `direct` or `branch_pr` strategy and declares repository scope, expected repository and
+external effects, uncertainty, reversibility, and rationale. Agentplane does not infer these facts
+from product-language keywords such as `production`, `release`, `docs`, `server`, or `deployment`.
+
+Agentplane compiles the declaration into one deterministic execution contract:
+
+- `authority` lists writable roots plus allowed and forbidden effects;
+- `safety` lists required approvals and whether a worktree is required;
+- `verification.required_evidence` is derived from declared effects;
+- `observed` accumulates changed paths, components, external capabilities, and check results.
+
+A declaration describes intent but cannot self-authorize deploy, publish, credentials, external
+writes, or destructive Git. A declared read-only network effect can be delegated, while `safety`
+still requires the configured approval boundary before an execution WorkOrder is issued. High-risk
+external effects remain forbidden after plan approval and require their own control-plane action.
+
+If objective observations exceed a compatible `direct` declaration, Agentplane preserves the
+implementation commit and changed paths, strengthens evidence, and emits one `branch_pr` handoff.
+It does not require the agent to run reclaim, reconcile, or repair commands. Once branch-specific
+state exists, the route never downgrades to `direct`.
+
+The realistic CLI contract suite records the following control-plane measurements. Verification
+time is `0 ms` for routing-only scenarios; executable checks are timed and retained separately in
+the task verification record rather than being rerun for every routing assertion.
+
+| Scenario                                               | Control-plane commands |                              Approval boundaries | Work preserved          | Recovery commands |
+| ------------------------------------------------------ | ---------------------: | -----------------------------------------------: | ----------------------- | ----------------: |
+| Local reversible or misleading-language direct route   |                      4 |                                      1 plan gate | not applicable          |                 0 |
+| Broad SDK/schema `branch_pr` route                     |                      4 |                                      1 plan gate | not applicable          |                 0 |
+| Underestimated `direct` route                          |                      6 |                                      1 plan gate | commit and changed path |                 0 |
+| Prohibited deploy/destructive effects                  |                      4 | 1 plan gate, external authority remains required | not executed            |                 0 |
+| Approved read-only network access                      |                      5 |                             1 user approval gate | not executed            |                 0 |
+| Existing contract through completed `direct` lifecycle |                      7 |                                      1 plan gate | changed path recorded   |                 0 |
+
+Compared with manually choosing task kind, process profile, mutation class, risk flags, and route,
+the normal path has no manual mode-selection command and no recovery-command sequence. Significant
+work still receives `branch_pr`, hosted-integration evidence, and explicit external authority.
+
 ## First managed workflow
 
 ```bash

@@ -548,17 +548,39 @@ function legacyExecutionContractDefaults(value: unknown): unknown {
   const changedPaths = Array.isArray(observedSource.changed_paths)
     ? observedSource.changed_paths.filter((entry): entry is string => typeof entry === "string")
     : [];
-  const authority = isRecord(value.authority)
-    ? value.authority
-    : {
-        writable_roots: scopeRoots,
-        allowed_repository_effects: repositoryEffects,
-        forbidden_repository_effects: TASK_REPOSITORY_EFFECT_SCHEMA.options.filter(
+  const authoritySource = isRecord(value.authority) ? value.authority : {};
+  const allowedExternalEffects = Array.isArray(authoritySource.allowed_external_effects)
+    ? authoritySource.allowed_external_effects.filter(
+        (effect): effect is string => typeof effect === "string",
+      )
+    : [];
+  if (
+    Array.isArray(declaration.external_effects) &&
+    declaration.external_effects.includes("network_read") &&
+    !allowedExternalEffects.includes("network_read")
+  ) {
+    allowedExternalEffects.push("network_read");
+  }
+  const authority = {
+    writable_roots: Array.isArray(authoritySource.writable_roots)
+      ? authoritySource.writable_roots
+      : scopeRoots,
+    allowed_repository_effects: Array.isArray(authoritySource.allowed_repository_effects)
+      ? authoritySource.allowed_repository_effects
+      : repositoryEffects,
+    forbidden_repository_effects: Array.isArray(authoritySource.forbidden_repository_effects)
+      ? authoritySource.forbidden_repository_effects
+      : TASK_REPOSITORY_EFFECT_SCHEMA.options.filter(
           (effect) => !repositoryEffects.includes(effect),
         ),
-        allowed_external_effects: [],
-        forbidden_external_effects: [...TASK_EXTERNAL_EFFECT_SCHEMA.options],
-      };
+    allowed_external_effects: allowedExternalEffects,
+    forbidden_external_effects: (Array.isArray(authoritySource.forbidden_external_effects)
+      ? authoritySource.forbidden_external_effects.filter(
+          (effect): effect is string => typeof effect === "string",
+        )
+      : TASK_EXTERNAL_EFFECT_SCHEMA.options
+    ).filter((effect) => effect !== "network_read" || !allowedExternalEffects.includes(effect)),
+  };
   return {
     ...value,
     authority,

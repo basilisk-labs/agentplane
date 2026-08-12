@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -33,31 +33,31 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-12T02:27:50.026Z"
+  updated_at: "2026-08-12T03:30:28.584Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "9ad25f44386d208e7ce24206a999a6a683b99d06"
+  evaluated_sha: "173f1d6a40ce417af847cc991f0a321a9a7543b2"
   blueprint_digest: "9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6"
   evidence_refs:
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-022652913-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-022652913-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/1561d1e90c7deaefd781727a72ec507d1ddd4cda05c2d178f0315ed22470ac62.md"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-022652913-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-022652913-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-022652913-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-022652913-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-032922043-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-032922043-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/9f7c35561feb8223c8afc3df6e41cc769210d44007c8c14ba09790ce79eae61f.md"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-032922043-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-032922043-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-032922043-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-032922043-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608112232-3NC7Y4/README.md"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/5b956bb7e1e15d1c0ba0f9c197c22f9b095dece01da01280706f39745bf6090d.patch"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/06400de92ef62fc042247adc6304b30afc837eef8c6c4f5fda85516f4e2cf120.json"
-    - ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812022534184-74a4267a46e8c812.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/0bb3d05369643420ff35635cb541ea7c40e1c6c96420bd51a5f79ca7878d3db8.patch"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/17ea81aaa891448bf0fa191588d0cfe94c6d2843d7db4d02a5b4555427e976e9.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812032704488-c2f68cb908a493bb.json"
     - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/713d635b887c7c585dcaacdf90acc3b66adefd80a7316bf2f3f88328352bd276.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The execution contract does not contain the required allowed effects, forbidden effects, or writable authority; writable scope is derived separately by consumers from declaration scope roots, so the contract is not the single authoritative capability model required by the task."
-    - "Observed-effect reconciliation only classifies changed repository paths. The persisted observed model has no external/network effects, changed components, or verification-result observations, so declared external effects and verification outcomes cannot be compared with objective observations or strengthen the contract monotonically."
+    - "The compiled contract always forbids every external effect, including declared network_read when configuration does not require network approval. The resolver may simultaneously report that no approval is required, while work-order projection grants no external authority and later observation treats the effect as unauthorized."
+    - "The change contains no user-facing workflow documentation and no realistic E2E suite demonstrating or measuring the five required scenarios; the supplied verification record only summarizes aggregate fast-CI results without scenario-level command, approval, transition, timing, preservation, or recovery-command measurements."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -163,7 +163,7 @@ events:
     state: "ok"
     note: "Execution authority rework and compatibility paths verified."
 doc_version: 3
-doc_updated_at: "2026-08-12T03:27:06.908Z"
+doc_updated_at: "2026-08-12T03:30:28.606Z"
 doc_updated_by: "CODER"
 description: "Use one canonical lifecycle while letting the agent semantically choose direct or branch_pr through a structured risk/effect declaration. AgentPlane must compile and enforce one deterministic execution contract, compare it with observed effects, escalate monotonically when required, and never use product-language keyword heuristics as lifecycle authority."
 sections:

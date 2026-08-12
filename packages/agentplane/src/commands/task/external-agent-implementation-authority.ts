@@ -21,6 +21,8 @@ import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-fi
 import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
 import { cmdTaskComment } from "./comment.js";
 import { cmdTaskSetStatus } from "./set-status.js";
+import { recordObservedTaskExecutionContract } from "./task-execution-contract-observation.js";
+import { loadTaskFromContext } from "../shared/task-backend.js";
 
 function pathFromStatusLine(line: string): string {
   const raw = line.length >= 4 ? line.slice(3).trim() : "";
@@ -337,6 +339,16 @@ export async function applyExternalImplementationResult(opts: {
       quiet: true,
     });
   }
+  const currentTask = await loadTaskFromContext({
+    ctx: opts.command,
+    taskId: opts.exchange.task_id,
+  });
+  await recordObservedTaskExecutionContract({
+    command: opts.command,
+    task: currentTask,
+    changed_paths: implementation.evidence.changed_paths,
+    preserved_commit: implementation.evidence.implementation_commit,
+  });
   if (opts.decision.workflowMode === "branch_pr") {
     const currentStatus = await readDirectRepositoryStatus(opts.exchange.checkout);
     if (!hasChangedTaskArtifacts(currentStatus?.lines ?? [], opts.exchange.task_id)) return;
