@@ -460,6 +460,28 @@ function assertDirectUpgradeScenario(agentplane, repoRoot, root, sourceTag, task
     "installed runner status lost run identity",
   );
 
+  run(
+    agentplane,
+    [
+      "verify",
+      taskId,
+      "--ok",
+      "--by",
+      "EVALUATOR",
+      "--note",
+      "Installed migration task outcome verified before evaluator preparation.",
+      "--details",
+      [
+        "Check: task_outcome",
+        "Command: agentplane task brief and task next-action",
+        "Result: pass",
+        `Evidence: .agentplane/tasks/${taskId}/README.md`,
+        "Scope: migrated task lifecycle and installed command surfaces",
+      ].join("\n"),
+    ],
+    { cwd: root },
+  );
+
   const evaluator = parseJson(
     run(
       agentplane,

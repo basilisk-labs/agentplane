@@ -25,6 +25,7 @@ const DEFAULT_IGNORES = [
   "**/__snapshots__/**",
   "**/node_modules/**",
   "**/dist/**",
+  "**/*.d.ts",
   "**/*.generated.ts",
   "scripts/baselines/**",
 ];

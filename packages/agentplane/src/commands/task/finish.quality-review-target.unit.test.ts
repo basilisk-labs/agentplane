@@ -29,6 +29,10 @@ vi.mock("./shared.js", async (importOriginal) => {
 });
 vi.mock("../shared/task-verification-records.js", () => ({
   hasAcceptedVerificationRecord: mocks.hasAcceptedVerificationRecord,
+  requiredVerificationContractChecks: (task: TaskData) =>
+    task.execution_contract?.source === "legacy_compatibility"
+      ? []
+      : (task.execution_contract?.verification.contract?.selected_checks ?? []),
 }));
 vi.mock("../blueprint/snapshot-artifact.js", () => ({
   checkTaskBlueprintSnapshotDrift: mocks.checkTaskBlueprintSnapshotDrift,

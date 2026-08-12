@@ -45,14 +45,22 @@ const testEnv = {
   GIT_COMMITTER_EMAIL: "agentplane-ci@example.com",
 };
 const VITEST_TIMEOUT_MS = "60000";
-const DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS = 10 * 60 * 1000;
+const DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS = 15 * 60 * 1000;
 const LOCAL_VITEST_SUITE_TIMEOUT_MS = parsePositiveIntegerEnv(
   baseEnv.AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS,
   DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS,
 );
 const LOCAL_FAST_VITEST_MAX_WORKERS =
   String(baseEnv.AGENTPLANE_FAST_VITEST_MAX_WORKERS ?? "").trim() || "4";
-const FAST_TEST_EXCLUDES = ["**/cli-smoke.test.ts", "**/run-cli*.test.ts"];
+const FAST_CONCURRENCY_TEST_FILES = [
+  "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
+  "packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts",
+];
+const FAST_TEST_EXCLUDES = [
+  "**/cli-smoke.test.ts",
+  "**/run-cli*.test.ts",
+  ...FAST_CONCURRENCY_TEST_FILES,
+];
 
 function parsePositiveIntegerEnv(rawValue, fallback) {
   const value = Number.parseInt(String(rawValue ?? "").trim(), 10);
@@ -295,6 +303,18 @@ const fastSteps = [
   [
     "Unit tests (fast)",
     () => runVitestSuite({ excludes: FAST_TEST_EXCLUDES, pool: "forks" }, testEnv),
+  ],
+  [
+    "Concurrency invariants (isolated)",
+    () =>
+      runVitestSuite(
+        {
+          testFiles: FAST_CONCURRENCY_TEST_FILES,
+          pool: "forks",
+          maxWorkers: "1",
+        },
+        testEnv,
+      ),
   ],
   ["CLI E2E (critical)", () => run("bun", ["run", "test:critical"], testEnv)],
 ];

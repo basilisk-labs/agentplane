@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   gitAheadBehind,
+  gitDiffNames,
   gitDiffNameStatus,
   gitDiffNumstat,
   gitDiffStat,
@@ -48,6 +49,19 @@ describe("git-diff", () => {
       { insertions: 1, deletions: 0, path: "added.txt" },
       { insertions: 1, deletions: 0, path: "tracked.txt" },
     ]);
+  });
+
+  it("uses the exact two-dot range for recorded checkpoint name diffs", async () => {
+    const root = await mkRepo();
+    const { stdout: baseOut } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    await writeFile(path.join(root, "checkpoint.txt"), "checkpoint\n", "utf8");
+    await execFileAsync("git", ["add", "checkpoint.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "checkpoint change"], { cwd: root });
+    const { stdout: headOut } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+
+    await expect(
+      gitDiffNames(root, baseOut.trim(), headOut.trim(), { range: "two-dot" }),
+    ).resolves.toEqual(["checkpoint.txt"]);
   });
 
   it("reads files from refs through repo-relative paths only", async () => {

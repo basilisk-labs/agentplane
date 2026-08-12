@@ -803,7 +803,11 @@ function fastStepReports({ runCliDocsCheck }) {
     commandStep("Lint (core)", "bun run lint:core"),
     commandStep(
       "Unit tests (fast)",
-      "bunx vitest run --exclude **/cli-smoke.test.ts --exclude **/run-cli*.test.ts --pool=forks",
+      "bunx vitest run --exclude **/cli-smoke.test.ts --exclude **/run-cli*.test.ts --exclude <isolated-concurrency-tests> --pool=forks",
+    ),
+    commandStep(
+      "Concurrency invariants (isolated)",
+      "bunx vitest run <isolated-concurrency-tests> --pool=forks --maxWorkers 1",
     ),
     commandStep("CLI E2E (critical)", "bun run test:critical"),
   ];

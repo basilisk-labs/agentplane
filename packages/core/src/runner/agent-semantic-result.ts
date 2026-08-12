@@ -75,74 +75,54 @@ const AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA = z
   })
   .strict();
 
+const AGENT_SEMANTIC_RESULT_REPOSITORY_EFFECT_ZOD_SCHEMA = z.enum([
+  "repository_write",
+  "documentation",
+  "source_code",
+  "tests",
+  "public_api",
+  "schema",
+  "dependencies",
+  "ci",
+  "release_metadata",
+  "security_boundary",
+]);
+const AGENT_SEMANTIC_RESULT_EXTERNAL_EFFECT_ZOD_SCHEMA = z.enum([
+  "network_read",
+  "external_write",
+  "credentials",
+  "publish",
+  "deploy",
+  "destructive_git",
+]);
+const AGENT_SEMANTIC_RESULT_REVERSIBILITY_ZOD_SCHEMA = z.enum([
+  "reversible",
+  "recovery_required",
+  "irreversible",
+]);
+const AGENT_SEMANTIC_RESULT_EXECUTION_DECLARATION_BASE = {
+  preferred_mode: z.enum(["direct", "branch_pr"]),
+  scope_roots: z.array(NON_EMPTY_STRING),
+  repository_effects: z.array(AGENT_SEMANTIC_RESULT_REPOSITORY_EFFECT_ZOD_SCHEMA),
+  external_effects: z.array(AGENT_SEMANTIC_RESULT_EXTERNAL_EFFECT_ZOD_SCHEMA),
+  reversibility: AGENT_SEMANTIC_RESULT_REVERSIBILITY_ZOD_SCHEMA,
+  rationale: z.array(NON_EMPTY_STRING).min(1),
+} as const;
+
 const AGENT_SEMANTIC_RESULT_EXECUTION_DECLARATION_V1_ZOD_SCHEMA = z
   .object({
     schema_version: z.literal(1),
-    preferred_mode: z.enum(["direct", "branch_pr"]),
-    scope_roots: z.array(NON_EMPTY_STRING),
-    repository_effects: z.array(
-      z.enum([
-        "repository_write",
-        "documentation",
-        "source_code",
-        "tests",
-        "public_api",
-        "schema",
-        "dependencies",
-        "ci",
-        "release_metadata",
-        "security_boundary",
-      ]),
-    ),
-    external_effects: z.array(
-      z.enum([
-        "network_read",
-        "external_write",
-        "credentials",
-        "publish",
-        "deploy",
-        "destructive_git",
-      ]),
-    ),
+    ...AGENT_SEMANTIC_RESULT_EXECUTION_DECLARATION_BASE,
     uncertainty: z.enum(["bounded", "material"]),
-    reversibility: z.enum(["reversible", "recovery_required", "irreversible"]),
-    rationale: z.array(NON_EMPTY_STRING).min(1),
   })
   .strict();
 
 const AGENT_SEMANTIC_RESULT_EXECUTION_DECLARATION_V2_ZOD_SCHEMA = z
   .object({
     schema_version: z.literal(2),
-    preferred_mode: z.enum(["direct", "branch_pr"]),
-    scope_roots: z.array(NON_EMPTY_STRING),
-    repository_effects: z.array(
-      z.enum([
-        "repository_write",
-        "documentation",
-        "source_code",
-        "tests",
-        "public_api",
-        "schema",
-        "dependencies",
-        "ci",
-        "release_metadata",
-        "security_boundary",
-      ]),
-    ),
-    external_effects: z.array(
-      z.enum([
-        "network_read",
-        "external_write",
-        "credentials",
-        "publish",
-        "deploy",
-        "destructive_git",
-      ]),
-    ),
+    ...AGENT_SEMANTIC_RESULT_EXECUTION_DECLARATION_BASE,
     requirements_uncertainty: z.enum(["bounded", "material"]),
     implementation_uncertainty: z.enum(["bounded", "material"]),
-    reversibility: z.enum(["reversible", "recovery_required", "irreversible"]),
-    rationale: z.array(NON_EMPTY_STRING).min(1),
   })
   .strict();
 

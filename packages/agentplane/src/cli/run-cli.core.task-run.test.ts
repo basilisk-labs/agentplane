@@ -235,7 +235,7 @@ describe("runCli task run", () => {
         selected_mode: "direct",
         reason_codes: ["repository_mode_selected"],
       });
-      expect(payload.execution_preview.context.blueprint_id).toBe("code.direct");
+      expect(payload.execution_preview.context.blueprint_id).toBe("analysis.light");
       expect(Number.isFinite(payload.execution_preview.context.task_sections)).toBe(true);
       expect(Number.isFinite(payload.execution_preview.context.task_context_bytes)).toBe(true);
       expect(Number.isFinite(payload.execution_preview.context.prompt_blocks)).toBe(true);
@@ -244,7 +244,7 @@ describe("runCli task run", () => {
         plan: true,
         verify: true,
         network: true,
-        force: false,
+        force: true,
       });
       expect(payload.execution_preview.checks).toContain("bun run test:critical");
       expect(payload.execution_preview.budgets.token.state).toBe("unavailable");

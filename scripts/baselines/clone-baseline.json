@@ -19,6 +19,7 @@
       "**/__snapshots__/**",
       "**/node_modules/**",
       "**/dist/**",
+      "**/*.d.ts",
       "**/*.generated.ts",
       "scripts/baselines/**"
     ],
@@ -29,42 +30,28 @@
     "compare_contract": "current metrics must not exceed baseline clones, duplicatedLines, or duplicatedTokens"
   },
   "metrics": {
-    "sources": 1274,
-    "lines": 231263,
-    "tokens": 1323710,
-    "clones": 90,
-    "duplicatedLines": 1431,
-    "duplicatedTokens": 9977,
-    "percentage": 0.6187760255639683,
-    "percentageTokens": 0.7537149375618527
+    "sources": 1401,
+    "lines": 264684,
+    "tokens": 1512459,
+    "clones": 89,
+    "duplicatedLines": 1412,
+    "duplicatedTokens": 9761,
+    "percentage": 0.5334663221048496,
+    "percentageTokens": 0.6453728663057974
   },
   "top_duplicates": [
-    {
-      "lines": 39,
-      "tokens": 103,
-      "firstFile": {
-        "path": "packages/core/src/index.ts",
-        "start": 369,
-        "end": 407
-      },
-      "secondFile": {
-        "path": "packages/core/src/tasks/index.ts",
-        "start": 92,
-        "end": 130
-      }
-    },
     {
       "lines": 38,
       "tokens": 299,
       "firstFile": {
         "path": "packages/agentplane/src/backends/task-backend/shared/normalize.ts",
-        "start": 263,
-        "end": 300
+        "start": 351,
+        "end": 388
       },
       "secondFile": {
         "path": "packages/core/src/tasks/tasks-export.ts",
-        "start": 206,
-        "end": 243
+        "start": 209,
+        "end": 246
       }
     },
     {
@@ -72,27 +59,27 @@
       "tokens": 245,
       "firstFile": {
         "path": "packages/agentplane/src/backends/task-backend/shared/normalize.ts",
-        "start": 183,
-        "end": 214
+        "start": 271,
+        "end": 302
       },
       "secondFile": {
         "path": "packages/core/src/tasks/tasks-export.ts",
-        "start": 82,
-        "end": 113
+        "start": 85,
+        "end": 116
       }
     },
     {
       "lines": 32,
-      "tokens": 166,
+      "tokens": 81,
       "firstFile": {
-        "path": "packages/agentplane/src/commands/branch/work-start.direct.ts",
-        "start": 9,
-        "end": 40
+        "path": "packages/core/src/index.ts",
+        "start": 380,
+        "end": 411
       },
       "secondFile": {
-        "path": "packages/agentplane/src/commands/task/shared/direct-work-lock.ts",
-        "start": 4,
-        "end": 34
+        "path": "packages/core/src/tasks/index.ts",
+        "start": 109,
+        "end": 140
       }
     },
     {
@@ -114,8 +101,8 @@
       "tokens": 138,
       "firstFile": {
         "path": "scripts/checks/check-cli-cold-baseline.mjs",
-        "start": 78,
-        "end": 105
+        "start": 76,
+        "end": 103
       },
       "secondFile": {
         "path": "scripts/checks/check-cli-walltime-baseline.mjs",
@@ -142,8 +129,8 @@
       "tokens": 143,
       "firstFile": {
         "path": "scripts/checks/check-cli-cold-baseline.mjs",
-        "start": 16,
-        "end": 40
+        "start": 14,
+        "end": 38
       },
       "secondFile": {
         "path": "scripts/checks/check-cli-walltime-baseline.mjs",
@@ -156,13 +143,27 @@
       "tokens": 117,
       "firstFile": {
         "path": "packages/agentplane/src/cli/critical/harness.ts",
-        "start": 179,
-        "end": 202
+        "start": 177,
+        "end": 200
       },
       "secondFile": {
         "path": "packages/testkit/src/cli-harness.ts",
-        "start": 673,
-        "end": 691
+        "start": 703,
+        "end": 721
+      }
+    },
+    {
+      "lines": 24,
+      "tokens": 139,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/branch/work-start.direct.ts",
+        "start": 17,
+        "end": 40
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/task/shared/direct-work-lock.ts",
+        "start": 12,
+        "end": 34
       }
     },
     {
@@ -170,8 +171,8 @@
       "tokens": 126,
       "firstFile": {
         "path": "scripts/checks/check-cli-cold-baseline.mjs",
-        "start": 153,
-        "end": 176
+        "start": 155,
+        "end": 178
       },
       "secondFile": {
         "path": "scripts/checks/check-cli-walltime-baseline.mjs",
@@ -219,20 +220,6 @@
         "path": "scripts/bench/measure-cli-walltime.mjs",
         "start": 62,
         "end": 83
-      }
-    },
-    {
-      "lines": 22,
-      "tokens": 83,
-      "firstFile": {
-        "path": "packages/agentplane/src/runner/context/base-prompt-sources.ts",
-        "start": 180,
-        "end": 201
-      },
-      "secondFile": {
-        "path": "packages/agentplane/src/runtime/prompt-modules/registry.ts",
-        "start": 145,
-        "end": 166
       }
     },
     {
@@ -296,8 +283,8 @@
       "tokens": 110,
       "firstFile": {
         "path": "packages/agentplane/src/commands/release/tasks-reconcile.command.ts",
-        "start": 98,
-        "end": 118
+        "start": 99,
+        "end": 119
       },
       "secondFile": {
         "path": "packages/agentplane/src/commands/task/hosted-merge-sync/local-branch.ts",
@@ -310,8 +297,8 @@
       "tokens": 116,
       "firstFile": {
         "path": "packages/agentplane/src/shared/stable-file.ts",
-        "start": 33,
-        "end": 53
+        "start": 34,
+        "end": 54
       },
       "secondFile": {
         "path": "packages/core/src/fs/atomic-write.ts",
@@ -338,13 +325,27 @@
       "tokens": 94,
       "firstFile": {
         "path": "packages/agentplane/src/commands/task/brief-model.ts",
-        "start": 103,
-        "end": 122
+        "start": 111,
+        "end": 130
       },
       "secondFile": {
         "path": "packages/agentplane/src/runner/usecases/agent-work-order-projection.ts",
         "start": 36,
         "end": 55
+      }
+    },
+    {
+      "lines": 20,
+      "tokens": 81,
+      "firstFile": {
+        "path": "packages/agentplane/src/runner/context/base-prompt-sources.ts",
+        "start": 191,
+        "end": 210
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/runtime/prompt-modules/registry.ts",
+        "start": 145,
+        "end": 164
       }
     },
     {
@@ -359,6 +360,20 @@
         "path": "packages/agentplane/src/runtime/sgr/contract-validators.ts",
         "start": 2,
         "end": 21
+      }
+    },
+    {
+      "lines": 20,
+      "tokens": 80,
+      "firstFile": {
+        "path": "packages/core/src/tasks/task-store.ts",
+        "start": 237,
+        "end": 256
+      },
+      "secondFile": {
+        "path": "packages/core/src/tasks/verification-contract.ts",
+        "start": 22,
+        "end": 38
       }
     },
     {
@@ -385,8 +400,8 @@
       },
       "secondFile": {
         "path": "packages/agentplane/src/backends/task-backend/shared/types.ts",
-        "start": 185,
-        "end": 203
+        "start": 190,
+        "end": 208
       }
     },
     {
@@ -394,13 +409,13 @@
       "tokens": 143,
       "firstFile": {
         "path": "packages/agentplane/src/backends/task-backend/shared/normalize.ts",
-        "start": 153,
-        "end": 171
+        "start": 241,
+        "end": 259
       },
       "secondFile": {
         "path": "packages/core/src/tasks/tasks-export.ts",
-        "start": 52,
-        "end": 70
+        "start": 55,
+        "end": 73
       }
     },
     {
@@ -413,8 +428,8 @@
       },
       "secondFile": {
         "path": "packages/agentplane/src/commands/shared/git-ops.ts",
-        "start": 63,
-        "end": 81
+        "start": 79,
+        "end": 97
       }
     },
     {
@@ -450,8 +465,8 @@
       "tokens": 124,
       "firstFile": {
         "path": "packages/agentplane/src/commands/release/apply.pipeline/state.ts",
-        "start": 250,
-        "end": 268
+        "start": 247,
+        "end": 265
       },
       "secondFile": {
         "path": "packages/agentplane/src/commands/release/plan.command.ts",
@@ -464,13 +479,13 @@
       "tokens": 98,
       "firstFile": {
         "path": "packages/agentplane/src/commands/task/plan.ts",
-        "start": 165,
-        "end": 183
+        "start": 190,
+        "end": 208
       },
       "secondFile": {
         "path": "packages/agentplane/src/commands/task/plan.ts",
-        "start": 252,
-        "end": 270
+        "start": 277,
+        "end": 295
       }
     },
     {
@@ -478,13 +493,13 @@
       "tokens": 102,
       "firstFile": {
         "path": "packages/agentplane/src/commands/task/shared/transitions.ts",
-        "start": 216,
-        "end": 234
+        "start": 198,
+        "end": 216
       },
       "secondFile": {
         "path": "packages/agentplane/src/commands/task/shared/transitions.ts",
-        "start": 277,
-        "end": 295
+        "start": 259,
+        "end": 277
       }
     },
     {
@@ -492,13 +507,13 @@
       "tokens": 143,
       "firstFile": {
         "path": "packages/agentplane/src/runner/adapters/codex-preparation.ts",
-        "start": 127,
-        "end": 145
+        "start": 159,
+        "end": 177
       },
       "secondFile": {
         "path": "packages/agentplane/src/runner/adapters/custom-preparation.ts",
-        "start": 156,
-        "end": 174
+        "start": 188,
+        "end": 206
       }
     },
     {
@@ -534,13 +549,13 @@
       "tokens": 90,
       "firstFile": {
         "path": "scripts/checks/run-local-ci.mjs",
-        "start": 12,
-        "end": 30
+        "start": 19,
+        "end": 37
       },
       "secondFile": {
         "path": "scripts/checks/run-pre-push-hook.mjs",
-        "start": 48,
-        "end": 66
+        "start": 49,
+        "end": 67
       }
     },
     {
@@ -586,45 +601,31 @@
       }
     },
     {
+      "lines": 18,
+      "tokens": 80,
+      "firstFile": {
+        "path": "packages/agentplane/src/runner/phase-tools/dispatch.ts",
+        "start": 367,
+        "end": 384
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/runner/phase-tools/dispatch.ts",
+        "start": 418,
+        "end": 435
+      }
+    },
+    {
       "lines": 17,
       "tokens": 98,
       "firstFile": {
         "path": "packages/agentplane/src/backends/task-backend/shared/normalize.ts",
-        "start": 220,
-        "end": 236
+        "start": 308,
+        "end": 324
       },
       "secondFile": {
         "path": "packages/core/src/tasks/tasks-export.ts",
-        "start": 119,
-        "end": 135
-      }
-    },
-    {
-      "lines": 17,
-      "tokens": 82,
-      "firstFile": {
-        "path": "packages/agentplane/src/cli/run-cli/commands/init/answers.ts",
-        "start": 33,
-        "end": 49
-      },
-      "secondFile": {
-        "path": "packages/agentplane/src/cli/run-cli/commands/init/model.ts",
-        "start": 52,
-        "end": 68
-      }
-    },
-    {
-      "lines": 17,
-      "tokens": 147,
-      "firstFile": {
-        "path": "packages/agentplane/src/commands/integrate-queue.command.ts",
-        "start": 194,
-        "end": 210
-      },
-      "secondFile": {
-        "path": "packages/agentplane/src/commands/integrate-queue.command.ts",
-        "start": 439,
-        "end": 458
+        "start": 122,
+        "end": 138
       }
     },
     {
@@ -646,8 +647,8 @@
       "tokens": 86,
       "firstFile": {
         "path": "scripts/release/smoke-bun-compiled-cli.mjs",
-        "start": 93,
-        "end": 109
+        "start": 139,
+        "end": 155
       },
       "secondFile": {
         "path": "scripts/release/smoke-standalone-cli-artifact.mjs",

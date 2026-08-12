@@ -804,7 +804,7 @@ describe("v0.7.1 release qualification contract", () => {
       task_id: "202608021231-PACKET",
       transition_id: "tr_test",
       state_fingerprint: `sha256:${"a".repeat(64)}`,
-      action: { kind: "agent_episode", instruction: "x".repeat(2100) },
+      action: { kind: "agent_episode", instruction: "x".repeat(9000) },
       authority: {
         role: "CODER",
         mutation: "scoped_write",
@@ -890,9 +890,29 @@ describe("v0.7.1 release qualification contract", () => {
     assert.equal(failing.verdict, "fail");
     assert.equal(failingP95.verdict, "fail");
     assert.equal(failing.delta_ms, 4);
+    assert.equal(failing.paired_comparison.confirmed_median_regression, true);
   });
 
-  it("uses balanced replicated logical samples without weakening latency thresholds", () => {
+  it("does not block on an unconfirmed sub-noise median movement", () => {
+    const baselineDurations = Array.from({ length: 20 }, () => 400);
+    const candidateDurations = [
+      ...Array.from({ length: 11 }, () => 405),
+      ...Array.from({ length: 9 }, () => 395),
+    ];
+    const comparison = compareMatchedLatencySamples({
+      id: "task_next",
+      baselineDurations,
+      candidateDurations,
+      baselineExitCode: 0,
+      candidateExitCode: 0,
+    });
+
+    assert.equal(comparison.paired_comparison.median_delta_ms, 5);
+    assert.equal(comparison.paired_comparison.confirmed_median_regression, false);
+    assert.equal(comparison.verdict, "pass");
+  });
+
+  it("uses balanced replicated logical samples with a zero paired-median target", () => {
     const baseline = ["baseline"];
     const candidate = ["candidate"];
     assert.deepEqual(matchedInvocationOrder(0, 0, baseline, candidate), [baseline, candidate]);
