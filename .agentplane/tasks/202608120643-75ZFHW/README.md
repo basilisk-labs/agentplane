@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -74,7 +74,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-12T07:55:53.076Z"
+  updated_at: "2026-08-12T08:17:55.742Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -190,8 +190,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "5df631a0fcf90ec0c0fae0a30749a916726e36d2"
-  message: "✅ 75ZFHW task: bind hosted-repair verification"
+  hash: "867c89e1c7dde503ca7d0d9c84efaf5fb93cc44b"
+  message: "✅ 75ZFHW task: bind review-fix evidence"
 comments:
   -
     author: "CODER"
@@ -211,6 +211,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -283,8 +286,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Review fixes verified at 6db914eee."
+  -
+    type: "status"
+    at: "2026-08-12T08:17:55.742Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "867c89e1c7dde503ca7d0d9c84efaf5fb93cc44b"
 doc_version: 3
-doc_updated_at: "2026-08-12T08:16:18.460Z"
+doc_updated_at: "2026-08-12T08:17:55.774Z"
 doc_updated_by: "CODER"
 description: "Implement lifecycle-owned worktree hygiene before the verification optimization task. Preserve parallel development by allowing one authoritative worktree for each active branch_pr task, while preventing duplicate worktrees for the same task. Automatically finalize clean task worktrees and local task branches after hosted-close or proven merge, and make queue/supervisor progression own this cleanup without requiring the coding agent to infer it. Prevent recovery/control checkouts from recursively registering or restoring nested historical task worktrees. Add deterministic inventory/readback that classifies active, merged, dirty, recovery, detached, remote-only, and ambiguous refs; delete only provider-proven merged or explicitly obsolete clean state, preserving dirty, open-PR, active, blocked, stashed, release archive, and uniquely unassimilated work. Apply the command to the current repository, reconcile local and remote branches, and record before/after counts and retained reasons. Cover parallel active tasks, duplicate same-task worktree rejection, hosted-close cleanup, recovery non-resurrection, dirty preservation, and idempotent cleanup with focused and realistic E2E tests."
 sections:
@@ -510,8 +521,8 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "5e7636a065ee379db747190f8c67594b90487fa1"
-    message: "🧹 75ZFHW cleanup: align exact route command contracts"
+    hash: "6db914eeea2d767a7422368d3c3491e9f35a90bb"
+    message: "🧹 75ZFHW cleanup: preserve retryable cleanup state"
   workflow_route_baseline:
     start_head_sha: "4efbe19bb2aed31d9b6beb6f01288906b823d8bb"
     version: 1
@@ -761,4 +772,4 @@ DecisionContextRef:
 - Provenance: `supervisor_journal/agentplane`
 - Journal digest: `sha256:6ce45672f0a42f80738af2416150b21af6e71d8ca4258ab6fbf39920af2ce841`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-12T07:55:53.076Z`
+- Updated at: `2026-08-12T08:17:55.742Z`
