@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202608112213-NWJCBW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-12T00:16:21.637Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Review remediation is coherent: canonical known execution fields override legacy values while passthrough extensions remain lossless; detailed init now projects parsed compatibility warnings; updated interactive tests match the removed profile prompts.",
+  "evaluated_sha": "dc33eaaeb3985b06cc40d40313f210c02151e982",
+  "blueprint_digest": "8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61",
+  "findings": [
+    "No blocking issue remains in the four-file remediation. Regression coverage proves top-level and nested execution extensions, all three detailed-init warnings, and the complete interactive init file after obsolete prompt mocks were removed."
+  ],
+  "evidence_refs": [
+    "packages/core/src/config/io.ts",
+    "packages/core/src/config/config.test.ts",
+    "packages/agentplane/src/cli/run-cli/commands/init/answers.ts",
+    "packages/agentplane/src/cli/run-cli.core.init.interactive.test.ts",
+    ".agentplane/tasks/202608112213-NWJCBW/verification/20260812001521493-2ae7fe348ed4ddf3.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The final pre-release check audit must add this interactive init file to the routinely selected verification surface so prompt-contract drift cannot bypass hosted CI."
+  ]
+}

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -29,27 +29,30 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-11T23:53:52.395Z"
+  updated_at: "2026-08-12T00:16:21.637Z"
   updated_by: "HUMAN"
-  note: "The generated llms-full update is the exact downstream projection of the already reviewed canonical profile documentation: legacy profiles are described only as aliases, standard is the sole policy, and independent project settings remain explicit."
-  evaluated_sha: "427ccd91a4182511a118e31baaefc44de69a4142"
+  note: "Review remediation is coherent: canonical known execution fields override legacy values while passthrough extensions remain lossless; detailed init now projects parsed compatibility warnings; updated interactive tests match the removed profile prompts."
+  evaluated_sha: "dc33eaaeb3985b06cc40d40313f210c02151e982"
   blueprint_digest: "8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61"
   evidence_refs:
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-235351948-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-235351948-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/89bc6415a1ec4ab59dc620c762ad1f91b94675fe4eba2de119dffee29467b2e4.md"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-235351948-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260811-235351948-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260812-001621215-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260812-001621215-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/e9439e090e2757da12a5fe4307b80c3b8bc2d459d639c45082b6a5e980499f57.md"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260812-001621215-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/20260812-001621215-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608112213-NWJCBW/README.md"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/641b0e940f47043c6bd073a6fc4b4aaf557ee5f53d6b4e6b688aaed257f65439.patch"
-    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/a5daedafaf94ca19421dc6666e1e4337e0eeb342d12d4e708d5df65fa2189b6c.json"
-    - ".agentplane/tasks/202608112213-NWJCBW/verification/20260811235329454-484cdc87a396314c.json"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/0742b80148bcadcf17d8f81c76178daaab6440a31bd0e902e2e36024137b5e16.patch"
+    - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/16ce2c09d2d921de5998b54327d141d2268f120dc28ea026c98c2c767e01a8f0.json"
+    - ".agentplane/tasks/202608112213-NWJCBW/verification/20260812001521493-2ae7fe348ed4ddf3.json"
     - ".agentplane/tasks/202608112213-NWJCBW/quality/objects/sha256/39161dc5db0288e890dd4aad39fa7ee11c43b7fa801ca1b21153c50fac06b56e.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
-    - "bun run docs:site:check => pass; generated llms-full diff replaces profile tiers with standard policy and legacy-alias migration text"
+    - "packages/core/src/config/io.ts"
+    - "packages/core/src/config/config.test.ts"
+    - "packages/agentplane/src/cli/run-cli/commands/init/answers.ts"
+    - "packages/agentplane/src/cli/run-cli.core.init.interactive.test.ts"
   findings:
-    - "No blocking issue found. The full docs-site pipeline passes, including generation freshness, typecheck, production build, navigation, social-image inventory, and design checks."
+    - "No blocking issue remains in the four-file remediation. Regression coverage proves top-level and nested execution extensions, all three detailed-init warnings, and the complete interactive init file after obsolete prompt mocks were removed."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -185,7 +188,7 @@ events:
     state: "ok"
     note: "PASS for dc33eaaeb: migration data is preserved and detailed init warnings are visible."
 doc_version: 3
-doc_updated_at: "2026-08-12T00:15:23.857Z"
+doc_updated_at: "2026-08-12T00:16:21.658Z"
 doc_updated_by: "CODER"
 description: "Remove profile-driven process variants from init, config, and runtime. New and upgraded projects must resolve to one fixed execution policy while legacy profile inputs migrate compatibly without changing workflow, runner, integrations, or explicit project approvals. Preserve task flexibility by making lifecycle and safety invariants fixed instead of imposing arbitrary autonomy tiers."
 sections:
