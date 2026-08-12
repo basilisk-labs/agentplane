@@ -24,7 +24,7 @@ Created: 2026-08-12T00:34:37.819Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-12T00:34:37.819Z
+- Updated: 2026-08-12T01:36:18.027Z
 - Branch: task/202608112232-3NC7Y4/make-execution-strategy-risk-adaptive-and-agent
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
