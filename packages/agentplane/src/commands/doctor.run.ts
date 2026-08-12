@@ -11,6 +11,7 @@ import {
   checkBranchPrBatchIncludedTaskDrift,
   checkBranchPrDoneTaskOpenPrDrift,
   checkBranchPrShippedTaskDrift,
+  checkBranchPrWorktreeTopology,
 } from "./doctor/branch-pr.js";
 import { safeFixGitignore, safeFixManagedHooks, safeFixTaskIndex } from "./doctor/fixes.js";
 import { checkLayering } from "./doctor/layering.js";
@@ -90,6 +91,7 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
       ...(await checkBranchPrShippedTaskDrift(commandCtx)),
       ...(await checkBranchPrDoneTaskOpenPrDrift(commandCtx)),
       ...(await checkBranchPrBatchIncludedTaskDrift(commandCtx)),
+      ...(await checkBranchPrWorktreeTopology(commandCtx)),
     );
     reportProgress("checking runtime source");
     checks.push(...checkRuntimeSourceFacts(ctx.cwd, loadedConfig.config));

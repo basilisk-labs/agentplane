@@ -3,6 +3,7 @@ import type { Dirent } from "node:fs";
 import path from "node:path";
 
 import { parseTaskReadme } from "@agentplaneorg/core/tasks";
+import { listWorktrees } from "@agentplaneorg/core/git";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { renderDiagnosticFinding } from "../shared/diagnostics.js";
@@ -17,6 +18,78 @@ import {
   findLocallyShippedBranchPrTasks,
 } from "../task/hosted-merge-sync.js";
 import { resolveLocalMergedPrMeta } from "../task/hosted-merge-sync/pr-meta.js";
+import {
+  findDuplicateTaskWorktreeRegistrations,
+  findNestedWorktreeRegistrations,
+} from "../shared/worktree-topology.js";
+
+export async function checkBranchPrWorktreeTopology(ctx?: CommandContext): Promise<string[]> {
+  if (ctx?.config.workflow_mode !== "branch_pr") return [];
+
+  let worktrees;
+  try {
+    worktrees = await listWorktrees(ctx.resolvedProject.gitRoot);
+  } catch {
+    return [];
+  }
+  const nested = findNestedWorktreeRegistrations({
+    projectRoot: ctx.resolvedProject.gitRoot,
+    worktrees,
+  });
+  const duplicateTasks = findDuplicateTaskWorktreeRegistrations({
+    taskPrefix: ctx.config.branch.task_prefix,
+    worktrees,
+  });
+  const findings: string[] = [];
+
+  if (nested.length > 0) {
+    findings.push(
+      renderDiagnosticFinding({
+        severity: "WARN",
+        state: "nested task/recovery worktrees are registered in the primary repository",
+        likelyCause:
+          "an internal recovery or task checkout created another worktree, restoring a historical checkout graph into the shared Git worktree registry",
+        nextAction: {
+          command: "agentplane cleanup merged --fetch",
+          reason:
+            "classify provider-proven merged candidates before removing only clean obsolete registrations",
+        },
+        details: [
+          `Affected registrations: ${nested.length}`,
+          `Examples: ${nested
+            .slice(0, 5)
+            .map((entry) => `${entry.path} under ${entry.parentPath}`)
+            .join(", ")}`,
+        ],
+      }),
+    );
+  }
+
+  if (duplicateTasks.length > 0) {
+    findings.push(
+      renderDiagnosticFinding({
+        severity: "WARN",
+        state: "one or more branch_pr tasks own multiple registered worktrees",
+        likelyCause:
+          "legacy or recovery work-start paths bypassed the one-authoritative-worktree-per-task invariant",
+        nextAction: {
+          command: "agentplane cleanup merged --fetch",
+          reason:
+            "inspect merged candidates while preserving active, dirty, open-PR, and ambiguous task state",
+        },
+        details: [
+          `Affected tasks: ${duplicateTasks.length}`,
+          `Examples: ${duplicateTasks
+            .slice(0, 5)
+            .map((entry) => `${entry.taskId}=${entry.worktrees.map((item) => item.path).join("|")}`)
+            .join(", ")}`,
+        ],
+      }),
+    );
+  }
+
+  return findings;
+}
 
 export async function checkBranchPrShippedTaskDrift(ctx?: CommandContext): Promise<string[]> {
   if (!ctx || !backendUsesLocalTaskStore(ctx) || ctx.config.workflow_mode !== "branch_pr") {

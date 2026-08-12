@@ -198,7 +198,8 @@ export async function cmdCleanupMerged(opts: {
     const sortedBlocked = resolution.blocked.toSorted(
       (a, b) => a.taskId.localeCompare(b.taskId) || a.branch.localeCompare(b.branch),
     );
-    if (sortedBlocked.length > 0) {
+    const preserveBlockedTargets = requestedTaskIds.length > 1;
+    if (sortedBlocked.length > 0 && !preserveBlockedTargets) {
       const details = sortedBlocked
         .map((item) => `- task=${item.taskId} branch=${item.branch}: ${item.reason}`)
         .join("\n");
@@ -216,7 +217,13 @@ export async function cmdCleanupMerged(opts: {
       `tasks=${targeted ? requestedTaskIds.join(",") : "*"}`,
       `matched_tasks=${[...resolution.matchedTaskIds].toSorted().join(",") || "-"}`,
       `candidates=${sortedCandidates.length}`,
+      `retained=${sortedBlocked.length}`,
     ];
+    for (const item of sortedBlocked) {
+      reportRows.push(
+        `retained task=${item.taskId} branch=${item.branch} worktree=${item.worktreePath ?? "-"} reason=${item.reason}`,
+      );
+    }
 
     if (!opts.quiet) {
       const archiveLabel = opts.archive ? " archive=on" : "";
@@ -229,6 +236,11 @@ export async function cmdCleanupMerged(opts: {
       for (const item of sortedCandidates) {
         output.line(
           `- ${item.taskId}: branch=${item.branch} worktree=${item.worktreePath ?? "-"} proof=${item.proof}`,
+        );
+      }
+      for (const item of sortedBlocked) {
+        output.line(
+          `- retained ${item.taskId}: branch=${item.branch} worktree=${item.worktreePath ?? "-"} reason=${item.reason}`,
         );
       }
     }
@@ -254,7 +266,11 @@ export async function cmdCleanupMerged(opts: {
       });
       if (!opts.quiet) {
         output.line(
-          targeted ? `already clean: task=${requestedTaskIds.join(",")}` : "no candidates",
+          sortedBlocked.length > 0
+            ? `no safe candidates; retained=${sortedBlocked.length}`
+            : targeted
+              ? `already clean: task=${requestedTaskIds.join(",")}`
+              : "no candidates",
         );
       }
       return 0;
@@ -350,6 +366,11 @@ export async function cmdCleanupMerged(opts: {
 
     let deletedRemoteBranches = 0;
     for (const { item, worktreePath, registeredSiblingWorktree } of preparedCandidates) {
+      if (opts.deleteRemoteBranches) {
+        deletedRemoteBranches += (await deleteRemoteBranchIfPresent(resolved.gitRoot, item.branch))
+          ? 1
+          : 0;
+      }
       const cleanup = await cleanupMergedLocalBranch({
         gitRoot: resolved.gitRoot,
         branch: item.branch,
@@ -374,11 +395,6 @@ export async function cmdCleanupMerged(opts: {
       reportRows.push(
         `deleted task=${item.taskId} branch=${item.branch} worktree=${worktreePath ?? "-"} preserve_dirty=${cleanup.preservedDirtyState ? "yes" : "no"} stash=${cleanup.stashMessage ?? "-"}`,
       );
-      if (opts.deleteRemoteBranches) {
-        deletedRemoteBranches += (await deleteRemoteBranchIfPresent(resolved.gitRoot, item.branch))
-          ? 1
-          : 0;
-      }
     }
 
     await writeCleanupReportIfRequested({

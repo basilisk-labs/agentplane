@@ -83,10 +83,11 @@ export const WORKFLOW_OPERATION_AUTHORITY_POLICY = {
   "integration.run_next": EXTERNAL_PRE_AUTHORIZED,
   "task.hosted_close.open": EXTERNAL_REVERSIBLE,
   // The protected merge and task completion have already been recorded before
-  // this route. `cleanup merged --finalize` only fast-forwards the local base
-  // and removes proven merged local worktrees/branches.
-  "task.hosted_close.finalize": LOCAL_REVERSIBLE,
-  "task.worktree.cleanup": LOCAL_REVERSIBLE,
+  // this route. The close-tail cleanup consumes that durable authorization to
+  // fast-forward the base and remove only provider-proven merged local/remote
+  // task refs; it cannot select a new integration target.
+  "task.hosted_close.finalize": EXTERNAL_PRE_AUTHORIZED,
+  "task.worktree.cleanup": EXTERNAL_PRE_AUTHORIZED,
   "pr.sync_or_verify": EXTERNAL_REVERSIBLE,
 } as const satisfies Record<WorkflowOperationId, AuthorityRequirement>;
 

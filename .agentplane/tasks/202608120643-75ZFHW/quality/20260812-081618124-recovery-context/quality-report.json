@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608120643-75ZFHW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-12T08:16:18.434Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "6db914eeea2d767a7422368d3c3491e9f35a90bb",
+  "blueprint_digest": "576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5",
+  "findings": [
+    "Remote deletion now precedes local branch/worktree removal, so a transient provider failure can be retried without reconstructing lost local state.",
+    "Primary-worktree topology is independent of which checkout temporarily owns main, preserving parallel task worktrees without recursive creation."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/cc663777e63822acc6b58cbc804d90eff29ebe9f198d4dc7ae9269fab2002ae4.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

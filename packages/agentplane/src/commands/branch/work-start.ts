@@ -17,6 +17,10 @@ import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
 import { throwIfPolicyDecisionDenied } from "../shared/policy-deny.js";
 import { isPathWithin } from "../shared/path.js";
 import {
+  assertCanonicalWorktreeCreationRoot,
+  assertSingleTaskWorktreeRegistration,
+} from "../shared/worktree-topology.js";
+import {
   ensureBranchPrBaseCheckout,
   resolveBranchPrLifecycleContext,
 } from "../shared/branch-pr-context.js";
@@ -164,6 +168,10 @@ export async function cmdWorkStart(opts: {
         missingBaseMessage: "Base branch could not be resolved (use `agentplane branch base set`).",
       });
       const { baseBranch } = lifecycleContext;
+      await assertCanonicalWorktreeCreationRoot({
+        gitRoot: resolved.gitRoot,
+        baseBranch,
+      });
       await ensureBranchPrBaseCheckout({
         context: lifecycleContext,
         gitRoot: resolved.gitRoot,
@@ -185,6 +193,11 @@ export async function cmdWorkStart(opts: {
       taskPrefix: prefix,
       taskId: opts.taskId,
       branchName,
+    });
+    await assertSingleTaskWorktreeRegistration({
+      gitRoot: resolved.gitRoot,
+      taskPrefix: prefix,
+      taskId: opts.taskId,
     });
 
     const branchExists = await gitBranchExists(resolved.gitRoot, branchName);
