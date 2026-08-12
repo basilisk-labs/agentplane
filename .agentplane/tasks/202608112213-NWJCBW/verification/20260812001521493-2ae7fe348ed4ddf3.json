@@ -1,0 +1,82 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project cli-core <all init test paths>\nResult: pass\nEvidence: 6 applicable files passed; 77 tests passed\nScope: interactive, branch_pr, validation, recipe-cache, prompt, and init execution behavior\n\nCommand: bun test packages/core/src/config/config.test.ts\nResult: pass\nEvidence: 29 tests passed; 150 expectations\nScope: canonical execution policy and lossless WORKFLOW/config persistence including extension fields\n\nCommand: bun run --filter=@agentplaneorg/core build && bun run --filter=@agentplane/testkit build && bun run --filter=agentplane build && bun run typecheck && bun run schemas:check && bun run docs:cli:check\nResult: pass\nEvidence: all packages built; TypeScript, schema freshness, and generated CLI reference checks passed\nScope: compile-time and generated-contract integrity\n\nCommand: bun x eslint <four changed files> && bun x prettier --check <four changed files> && git diff --check\nResult: pass\nEvidence: ESLint clean; Prettier clean; no whitespace errors\nScope: static quality of review remediation",
+  "digest": "sha256:2ae7fe348ed4ddf3767981b44639064d5bcc6c097505dd208cbeb650f9c461e9",
+  "implementation_sha": "dc33eaaeb3985b06cc40d40313f210c02151e982",
+  "input": {
+    "context": {
+      "digest": "sha256:cc7062753f698932f289ad1b5334207df3e1c81233ebf17c591c3b5370091508",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:6d29ae58b8bb30b16a8351d6595f793940f1d945345b587fbc4efec30797de04",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:4c5bda4d32227226c40fcc214bcbf07e173a13650d0776a1935e704b6a58667f",
+      "digest": "sha256:a7e85b3085e24f7713b7d3e77967609012f956972d7c5662ae5e84b6d70a2f8f",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "206b349e8dd08051f695d68f8558db94b2e23cb5",
+      "digest": "sha256:0dba40bbc3b3369327c248bab05c89cffa48bcc4ea8cef9be68f8a31d2fe219e",
+      "strategy": "branch_diff",
+      "target_sha": "dc33eaaeb3985b06cc40d40313f210c02151e982"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 2,
+    "verify_steps_digest": "sha256:1729a9a771942d9da42f2a6d1ee52a4a4172d3cb503a0913402e59118d69b9ba"
+  },
+  "kind": "task_verification_record",
+  "note": "PASS for dc33eaaeb: migration data is preserved and detailed init warnings are visible.",
+  "recorded_at": "2026-08-12T00:15:21.493Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run focused core configuration and runtime profile tests. Expected: fresh defaults and every legacy profile input resolve to the same canonical execution policy, with no profile-specific approvals, trace, timeout, or budget behavior.\n2. Run focused init and config CLI tests. Expected: interactive init exposes no setup or execution profile choice; deprecated profile flags are accepted only for compatibility and cannot select weaker or stricter process behavior; independent workflow, runner, hooks, integrations, and explicit approvals remain configurable.\n3. Regenerate and validate published config and CLI schema/docs artifacts. Expected: current public surfaces document one canonical policy, legacy inputs are marked compatibility-only, and generated artifacts match runtime sources.\n4. Run formatting, type checking, lint, and the relevant AgentPlane test shard. Expected: all pass with no unintended tracked or unreviewed untracked changes in the task checkout.",
+  "scope_digest": "sha256:1729a9a771942d9da42f2a6d1ee52a4a4172d3cb503a0913402e59118d69b9ba",
+  "task_id": "202608112213-NWJCBW",
+  "verification_command": "agentplane verify 202608112213-NWJCBW --ok --by TESTER",
+  "verifier": "TESTER"
+}

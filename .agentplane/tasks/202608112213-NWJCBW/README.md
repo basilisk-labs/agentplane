@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-11T23:53:29.454Z"
+  updated_at: "2026-08-12T00:15:21.493Z"
   updated_by: "TESTER"
-  note: "Generated documentation remediation verified at 427ccd91a: llms-full now matches the canonical standard-policy docs and the complete docs-site contract passes."
+  note: "PASS for dc33eaaeb: migration data is preserved and detailed init warnings are visible."
   attempts: 0
 quality_review:
   state: "pass"
@@ -178,8 +178,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "1d8f7f6bae86b4ba4e7822a5d24b075a763a8f75"
+  -
+    type: "verify"
+    at: "2026-08-12T00:15:21.493Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS for dc33eaaeb: migration data is preserved and detailed init warnings are visible."
 doc_version: 3
-doc_updated_at: "2026-08-11T23:54:43.729Z"
+doc_updated_at: "2026-08-12T00:15:23.857Z"
 doc_updated_by: "CODER"
 description: "Remove profile-driven process variants from init, config, and runtime. New and upgraded projects must resolve to one fixed execution policy while legacy profile inputs migrate compatibly without changing workflow, runner, integrations, or explicit project approvals. Preserve task flexibility by making lifecycle and safety invariants fixed instead of imposing arbitrary autonomy tiers."
 sections:
@@ -479,6 +485,56 @@ sections:
     Result: pass
     Evidence: no whitespace errors
     Scope: generated artifact integrity
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112213-NWJCBW-replace-mutable-setup-and-execution-profiles-wit/.agentplane/tasks/202608112213-NWJCBW/blueprint/resolved-snapshot.json
+    - old_digest: 8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61
+    - current_digest: 8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608112213-NWJCBW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-12T00:15:21.493Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS for dc33eaaeb: migration data is preserved and detailed init warnings are visible.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1729a9a771942d9da42f2a6d1ee52a4a4172d3cb503a0913402e59118d69b9ba, input_digest=sha256:6d29ae58b8bb30b16a8351d6595f793940f1d945345b587fbc4efec30797de04
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project cli-core <all init test paths>
+    Result: pass
+    Evidence: 6 applicable files passed; 77 tests passed
+    Scope: interactive, branch_pr, validation, recipe-cache, prompt, and init execution behavior
+
+    Command: bun test packages/core/src/config/config.test.ts
+    Result: pass
+    Evidence: 29 tests passed; 150 expectations
+    Scope: canonical execution policy and lossless WORKFLOW/config persistence including extension fields
+
+    Command: bun run --filter=@agentplaneorg/core build && bun run --filter=@agentplane/testkit build && bun run --filter=agentplane build && bun run typecheck && bun run schemas:check && bun run docs:cli:check
+    Result: pass
+    Evidence: all packages built; TypeScript, schema freshness, and generated CLI reference checks passed
+    Scope: compile-time and generated-contract integrity
+
+    Command: bun x eslint <four changed files> && bun x prettier --check <four changed files> && git diff --check
+    Result: pass
+    Evidence: ESLint clean; Prettier clean; no whitespace errors
+    Scope: static quality of review remediation
 
     BlueprintSnapshotRef:
     - state: current
@@ -827,6 +883,56 @@ Command: git diff --check
 Result: pass
 Evidence: no whitespace errors
 Scope: generated artifact integrity
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112213-NWJCBW-replace-mutable-setup-and-execution-profiles-wit/.agentplane/tasks/202608112213-NWJCBW/blueprint/resolved-snapshot.json
+- old_digest: 8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61
+- current_digest: 8021fcfd6ce08a59a1fc26ec9d9c35e27ad50897ba07d24683133e44dea53c61
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608112213-NWJCBW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-12T00:15:21.493Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS for dc33eaaeb: migration data is preserved and detailed init warnings are visible.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1729a9a771942d9da42f2a6d1ee52a4a4172d3cb503a0913402e59118d69b9ba, input_digest=sha256:6d29ae58b8bb30b16a8351d6595f793940f1d945345b587fbc4efec30797de04
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project cli-core <all init test paths>
+Result: pass
+Evidence: 6 applicable files passed; 77 tests passed
+Scope: interactive, branch_pr, validation, recipe-cache, prompt, and init execution behavior
+
+Command: bun test packages/core/src/config/config.test.ts
+Result: pass
+Evidence: 29 tests passed; 150 expectations
+Scope: canonical execution policy and lossless WORKFLOW/config persistence including extension fields
+
+Command: bun run --filter=@agentplaneorg/core build && bun run --filter=@agentplane/testkit build && bun run --filter=agentplane build && bun run typecheck && bun run schemas:check && bun run docs:cli:check
+Result: pass
+Evidence: all packages built; TypeScript, schema freshness, and generated CLI reference checks passed
+Scope: compile-time and generated-contract integrity
+
+Command: bun x eslint <four changed files> && bun x prettier --check <four changed files> && git diff --check
+Result: pass
+Evidence: ESLint clean; Prettier clean; no whitespace errors
+Scope: static quality of review remediation
 
 BlueprintSnapshotRef:
 - state: current

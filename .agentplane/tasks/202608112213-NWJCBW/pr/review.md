@@ -13,7 +13,7 @@ Created: 2026-08-11T22:15:13.771Z
 ## Verification
 
 - State: ok
-- Note: Generated documentation remediation verified at 427ccd91a: llms-full now matches the canonical standard-policy docs and the complete docs-site contract passes.
+- Note: PASS for dc33eaaeb: migration data is preserved and detailed init warnings are visible.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -40,6 +40,7 @@ Created: 2026-08-11T22:15:13.771Z
  ...n-cli.core.branch-meta.workflow-profile.test.ts |  14 ++-
  .../src/cli/run-cli.core.config-policy.test.ts     |  34 +++++
  .../src/cli/run-cli.core.init.branch-pr.test.ts    |   8 +-
+ .../src/cli/run-cli.core.init.interactive.test.ts  |  77 ++++++++++--
  .../agentplane/src/cli/run-cli.core.init.test.ts   |  19 +--
  .../run-cli.core.init.validation-conflicts.test.ts |  14 ++-
  ...un-cli.core.lifecycle.finish-validation.test.ts |   7 +-
@@ -47,7 +48,7 @@ Created: 2026-08-11T22:15:13.771Z
  packages/agentplane/src/cli/run-cli.core.test.ts   |   4 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |  10 +-
  .../agentplane/src/cli/run-cli/commands/config.ts  |  95 ++++++--------
- .../src/cli/run-cli/commands/init/answers.ts       |  17 +--
+ .../src/cli/run-cli/commands/init/answers.ts       |  18 +--
  .../cli/run-cli/commands/init/execution.test.ts    |   4 +-
  .../src/cli/run-cli/commands/init/execution.ts     |   8 +-
  .../src/cli/run-cli/commands/init/init-plan.ts     |   1 +
@@ -83,11 +84,11 @@ Created: 2026-08-11T22:15:13.771Z
  .../src/runtime/protocol/resolve.test.ts           |   2 +-
  packages/core/schemas/config.schema.json           |   6 +-
  packages/core/schemas/workflow.schema.json         |   8 +-
- packages/core/src/config/config.test.ts            |  28 ++++-
+ packages/core/src/config/config.test.ts            |  35 +++++-
  packages/core/src/config/execution-profile.test.ts |  43 +++----
  packages/core/src/config/execution-profile.ts      | 138 +++++++--------------
  packages/core/src/config/index.ts                  |   1 +
- packages/core/src/config/io.ts                     |  17 ++-
+ packages/core/src/config/io.ts                     |  32 ++++-
  packages/core/src/config/schema.impl.ts            |  15 ++-
  packages/core/src/index.ts                         |   1 +
  packages/spec/schemas/config.schema.json           |   6 +-
@@ -97,7 +98,7 @@ Created: 2026-08-11T22:15:13.771Z
  .../baselines/v0.7-compatibility-candidate.json    | 101 +++++++++++++--
  .../check-compatibility-contract-baseline.mjs      | 110 ++++++++++++++--
  website/static/llms-full.txt                       |  47 +++----
- 68 files changed, 745 insertions(+), 630 deletions(-)
+ 69 files changed, 835 insertions(+), 640 deletions(-)
 ```
 
 </details>
