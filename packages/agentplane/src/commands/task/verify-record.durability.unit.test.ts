@@ -3,9 +3,11 @@ import path from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as taskBackend from "../../backends/task-backend.js";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import { cmdTaskAdd } from "../workflow.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 import * as taskMutation from "../shared/task-mutation.js";
+import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import { cmdVerifyParsed } from "./verify-record.js";
 import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 
@@ -117,5 +119,71 @@ describe("task verification durability", () => {
     const task = await ctx.taskBackend.getTask(taskId);
     expect(task?.verification?.state).toBe("pending");
     mutation.mockRestore();
+  });
+
+  it("persists verification observations with the transition in one task write", async () => {
+    const root = await makeRepo();
+    const taskId = "202602050900-V1F4H";
+    await addTask(root, taskId);
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+    ctx.config.workflow_mode = "direct";
+    const current = await ctx.taskBackend.getTask(taskId);
+    if (!current) throw new Error("missing task fixture");
+    const executionContract = resolveTaskExecutionContract({
+      config: defaultConfig(),
+      task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
+      declaration: {
+        schema_version: 1,
+        preferred_mode: "direct",
+        scope_roots: ["packages/app"],
+        repository_effects: ["repository_write", "source_code"],
+        external_effects: [],
+        uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["localized implementation"],
+      },
+    });
+    await ctx.taskBackend.writeTask?.({
+      ...current,
+      status: "DOING",
+      execution_contract: executionContract,
+      doc: [
+        "## Summary",
+        "x",
+        "",
+        "## Verify Steps",
+        "Run the focused check.",
+        "",
+        "## Verification",
+        "<!-- BEGIN VERIFICATION RESULTS -->",
+        "<!-- END VERIFICATION RESULTS -->",
+      ].join("\n"),
+    });
+    const before = await ctx.taskBackend.getTask(taskId);
+    if (!before) throw new Error("missing persisted task fixture");
+
+    await cmdVerifyParsed({
+      ctx,
+      cwd: root,
+      rootOverride: undefined,
+      taskId,
+      state: "ok",
+      by: "REVIEWER",
+      note: "Focused check passed.",
+      details:
+        "Command: bun test focused\nResult: pass\nEvidence: 1 test passed\nScope: focused behavior",
+      quiet: true,
+    });
+
+    const task = await ctx.taskBackend.getTask(taskId);
+    expect(task).toMatchObject({
+      revision: before.revision + 1,
+      verification: { state: "ok" },
+      execution_contract: {
+        observed: {
+          verification_results: [{ id: "recorded-check-1", result: "pass" }],
+        },
+      },
+    });
   });
 });

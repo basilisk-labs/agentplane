@@ -5,7 +5,10 @@ import type { CommandContext } from "../shared/task-backend.js";
 import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import { defaultConfig } from "@agentplaneorg/core/config";
 
-import { recordObservedTaskExecutionContract } from "./task-execution-contract-observation.js";
+import {
+  observedExternalEffectsFromRunnerResult,
+  recordObservedTaskExecutionContract,
+} from "./task-execution-contract-observation.js";
 
 describe("task execution contract observation", () => {
   it("replaces a direct-only blueprint during observed branch escalation", async () => {
@@ -73,5 +76,18 @@ describe("task execution contract observation", () => {
       execution_contract: { selected_mode: "branch_pr" },
     });
     expect(persistedOptions).toEqual({ expectedRevision: 3 });
+  });
+
+  it("maps only supervisor capability identifiers into objective external effects", () => {
+    expect(
+      observedExternalEffectsFromRunnerResult({
+        capabilities_used: [
+          "codex.exec",
+          "agentplane.network.read",
+          "agentplane.deploy",
+          "deploy mentioned in prose",
+        ],
+      }),
+    ).toEqual(["deploy", "network_read"]);
   });
 });

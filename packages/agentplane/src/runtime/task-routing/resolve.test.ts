@@ -194,8 +194,96 @@ describe("task execution route", () => {
       },
     });
     expect(first.contract.verification.required_evidence).toContain("repository_effect:ci");
+    expect(first.contract.observed.changed_components).toEqual([".github", "packages/app"]);
+    expect(first.contract.observed.repository_effects).toEqual(
+      expect.arrayContaining(["ci", "source_code", "repository_write"]),
+    );
+    expect(first.contract.observed.authority_violations).toContain("repository_effect:ci");
     expect(second.escalated).toBe(false);
     expect(second.contract).toEqual(first.contract);
+  });
+
+  it("classifies documentation, source, and test paths structurally without task-text keywords", () => {
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    const contract = resolveTaskExecutionContract({
+      config,
+      task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
+      declaration: {
+        schema_version: 1,
+        preferred_mode: "direct",
+        scope_roots: ["."],
+        repository_effects: ["repository_write", "source_code", "tests", "documentation"],
+        external_effects: [],
+        uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["mixed repository update"],
+      },
+    });
+
+    const observed = reconcileTaskExecutionContract({
+      contract,
+      changed_paths: ["docs/guide.mdx", "packages/app/src/index.ts", "tests/app.test.ts"],
+    }).contract.observed;
+    expect(observed.repository_effects).toEqual([
+      "documentation",
+      "public_api",
+      "repository_write",
+      "source_code",
+      "tests",
+    ]);
+    expect(observed.changed_components).toEqual(["docs", "packages/app", "tests"]);
+  });
+
+  it("stops undeclared observed external effects and strengthens evidence monotonically", () => {
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    const initial = resolveTaskExecutionContract({
+      config,
+      task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
+      declaration: {
+        schema_version: 1,
+        preferred_mode: "direct",
+        scope_roots: ["packages/app"],
+        repository_effects: ["repository_write", "source_code"],
+        external_effects: [],
+        uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["local implementation"],
+      },
+    });
+    const reconciled = reconcileTaskExecutionContract({
+      contract: initial,
+      changed_paths: ["packages/app/src/feature.ts"],
+      observed_external_effects: ["network_read"],
+      verification_results: [{ id: "unit-tests", result: "fail" }],
+      preserved_commit: "abc123",
+    });
+
+    expect(initial.authority).toMatchObject({
+      writable_roots: ["packages/app"],
+      allowed_external_effects: [],
+    });
+    expect(initial.authority.forbidden_external_effects).toEqual(
+      expect.arrayContaining(["network_read", "deploy"]),
+    );
+    expect(reconciled.escalated).toBe(true);
+    expect(reconciled.contract.selected_mode).toBe("branch_pr");
+    expect(reconciled.contract.observed).toMatchObject({
+      external_effects: ["network_read"],
+      changed_components: ["packages/app"],
+      verification_results: [{ id: "unit-tests", result: "fail" }],
+    });
+    expect(reconciled.contract.observed.authority_violations).toEqual(
+      expect.arrayContaining(["external_effect:network_read", "verification:unit-tests:fail"]),
+    );
+    expect(reconciled.contract.verification.required_evidence).toEqual(
+      expect.arrayContaining([
+        "external_effect:network_read",
+        "verification_recovery:unit-tests",
+        "hosted_integration",
+      ]),
+    );
   });
 
   it("never self-authorizes external or destructive effects", () => {

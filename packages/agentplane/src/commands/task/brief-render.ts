@@ -72,6 +72,12 @@ export function reportTaskBriefText(brief: TaskBriefWithWorkflowStep, taskId: st
                 ].join(", ") || "none",
             },
             {
+              label: "contract_authority",
+              value:
+                `writable=${brief.task.execution_contract.authority.writable_roots.join(",") || "none"} ` +
+                `forbidden_external=${brief.task.execution_contract.authority.forbidden_external_effects.join(",") || "none"}`,
+            },
+            {
               label: "required_evidence",
               value: brief.task.execution_contract.verification.required_evidence.join(", "),
             },

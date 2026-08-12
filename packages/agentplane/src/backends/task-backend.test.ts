@@ -577,6 +577,58 @@ describe("task-backend helpers", () => {
     expect(data.id).toBe("202601300000-ABCD");
   });
 
+  it("taskRecordToData preserves the initial execution-contract shape", () => {
+    const record = {
+      id: "202608120000-LEGACY",
+      frontmatter: {
+        id: "202608120000-LEGACY",
+        title: "Legacy contract",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        execution_contract: {
+          schema_version: 1,
+          source: "agent_declared",
+          declaration: {
+            schema_version: 1,
+            preferred_mode: "direct",
+            scope_roots: ["packages/app"],
+            repository_effects: ["repository_write", "source_code"],
+            external_effects: [],
+            uncertainty: "bounded",
+            reversibility: "reversible",
+            rationale: ["localized implementation"],
+          },
+          selected_mode: "direct",
+          repository_mode: "direct",
+          reason_codes: ["agent_preferred_direct_compatible"],
+          safety: {
+            requires_worktree: false,
+            requires_user_approval: false,
+            approval_effects: [],
+          },
+          verification: { required_evidence: ["task_outcome"] },
+          observed: { repository_effects: [], changed_paths: [] },
+        },
+      },
+      body: "",
+    } as unknown as TaskRecord;
+
+    expect(taskRecordToData(record).execution_contract).toMatchObject({
+      authority: {
+        writable_roots: ["packages/app"],
+        allowed_repository_effects: ["repository_write", "source_code"],
+        allowed_external_effects: [],
+      },
+      observed: {
+        external_effects: [],
+        changed_components: [],
+        verification_results: [],
+        authority_violations: [],
+      },
+    });
+  });
+
   it("buildTasksExportSnapshotFromTasks produces checksum and stable order", () => {
     const tasks: TaskData[] = [
       {

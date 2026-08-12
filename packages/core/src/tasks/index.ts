@@ -132,6 +132,7 @@ export {
   type TaskExecutionRouteRequest,
   type TaskExecutionContract,
   type TaskExecutionDeclaration,
+  type TaskVerificationObservation,
   type TaskExternalEffect,
   type TaskRepositoryEffect,
   type TaskSyncConflict,

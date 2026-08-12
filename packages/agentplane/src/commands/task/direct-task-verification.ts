@@ -73,7 +73,7 @@ function directTaskVerificationCommands(
 ): string[] {
   const commands = [...(task.verify ?? [])];
   const declaresDocs = task.execution_contract
-    ? task.execution_contract.declaration.repository_effects.includes("documentation")
+    ? task.execution_contract.authority.allowed_repository_effects.includes("documentation")
     : task.task_kind === "docs" || task.mutation_scope === "docs";
   if (!declaresDocs) return commands;
   for (const required of ["node .agentplane/policy/check-routing.mjs", "agentplane doctor"]) {

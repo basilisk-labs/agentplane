@@ -974,6 +974,90 @@
             "minLength": 1
           }
         },
+        "authority": {
+          "type": "object",
+          "properties": {
+            "writable_roots": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "allowed_repository_effects": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "repository_write",
+                  "documentation",
+                  "source_code",
+                  "tests",
+                  "public_api",
+                  "schema",
+                  "dependencies",
+                  "ci",
+                  "release_metadata",
+                  "security_boundary"
+                ]
+              }
+            },
+            "forbidden_repository_effects": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "repository_write",
+                  "documentation",
+                  "source_code",
+                  "tests",
+                  "public_api",
+                  "schema",
+                  "dependencies",
+                  "ci",
+                  "release_metadata",
+                  "security_boundary"
+                ]
+              }
+            },
+            "allowed_external_effects": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "network_read",
+                  "external_write",
+                  "credentials",
+                  "publish",
+                  "deploy",
+                  "destructive_git"
+                ]
+              }
+            },
+            "forbidden_external_effects": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "network_read",
+                  "external_write",
+                  "credentials",
+                  "publish",
+                  "deploy",
+                  "destructive_git"
+                ]
+              }
+            }
+          },
+          "required": [
+            "writable_roots",
+            "allowed_repository_effects",
+            "forbidden_repository_effects",
+            "allowed_external_effects",
+            "forbidden_external_effects"
+          ],
+          "additionalProperties": false
+        },
         "safety": {
           "type": "object",
           "properties": {
@@ -1037,7 +1121,53 @@
                 ]
               }
             },
+            "external_effects": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "network_read",
+                  "external_write",
+                  "credentials",
+                  "publish",
+                  "deploy",
+                  "destructive_git"
+                ]
+              }
+            },
             "changed_paths": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "changed_components": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "verification_results": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "result": {
+                    "type": "string",
+                    "enum": ["pass", "fail", "unsupported"]
+                  }
+                },
+                "required": ["id", "result"],
+                "additionalProperties": false
+              }
+            },
+            "authority_violations": {
               "type": "array",
               "items": {
                 "type": "string",
@@ -1045,7 +1175,14 @@
               }
             }
           },
-          "required": ["repository_effects", "changed_paths"],
+          "required": [
+            "repository_effects",
+            "external_effects",
+            "changed_paths",
+            "changed_components",
+            "verification_results",
+            "authority_violations"
+          ],
           "additionalProperties": false
         },
         "escalation": {
@@ -1091,6 +1228,7 @@
         "selected_mode",
         "repository_mode",
         "reason_codes",
+        "authority",
         "safety",
         "verification",
         "observed"

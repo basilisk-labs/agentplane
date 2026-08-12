@@ -160,17 +160,63 @@ function normalizeExecutionContract(value: unknown): TaskData["execution_contrac
   ) {
     return undefined;
   }
+  const authority = isRecord(value.authority) ? value.authority : {};
+  const writableRoots = normalizeStringList(authority.writable_roots ?? scopeRoots);
+  const allowedRepositoryEffects = normalizeStringList(
+    authority.allowed_repository_effects ?? repositoryEffects,
+  );
+  const forbiddenRepositoryEffects = normalizeStringList(
+    authority.forbidden_repository_effects ??
+      [...REPOSITORY_EFFECTS].filter((effect) => !repositoryEffects.includes(effect)),
+  );
+  const allowedExternalEffects = normalizeStringList(authority.allowed_external_effects ?? []);
+  const forbiddenExternalEffects = normalizeStringList(
+    authority.forbidden_external_effects ?? [...EXTERNAL_EFFECTS],
+  );
   const approvalEffects = normalizeStringList(value.safety.approval_effects);
   const requiredEvidence = normalizeStringList(value.verification.required_evidence);
   const observedEffects = normalizeStringList(value.observed.repository_effects);
+  const observedExternalEffects = normalizeStringList(value.observed.external_effects ?? []);
   const changedPaths = normalizeStringList(value.observed.changed_paths);
+  const changedComponents = normalizeStringList(value.observed.changed_components ?? []);
+  const authorityViolations = normalizeStringList(
+    value.observed.authority_violations ??
+      (observedEffects ?? [])
+        .filter((effect) => !repositoryEffects.includes(effect))
+        .map((effect) => `repository_effect:${effect}`),
+  );
+  const verificationResultsSource = value.observed.verification_results ?? [];
+  const verificationResults = Array.isArray(verificationResultsSource)
+    ? verificationResultsSource
+    : null;
   if (
+    writableRoots === null ||
+    allowedRepositoryEffects === null ||
+    allowedRepositoryEffects.some((item) => !REPOSITORY_EFFECTS.has(item)) ||
+    forbiddenRepositoryEffects === null ||
+    forbiddenRepositoryEffects.some((item) => !REPOSITORY_EFFECTS.has(item)) ||
+    allowedExternalEffects === null ||
+    allowedExternalEffects.some((item) => !EXTERNAL_EFFECTS.has(item)) ||
+    forbiddenExternalEffects === null ||
+    forbiddenExternalEffects.some((item) => !EXTERNAL_EFFECTS.has(item)) ||
     approvalEffects === null ||
     approvalEffects.some((item) => !EXTERNAL_EFFECTS.has(item)) ||
     !requiredEvidence?.length ||
     observedEffects === null ||
     observedEffects.some((item) => !REPOSITORY_EFFECTS.has(item)) ||
-    changedPaths === null
+    observedExternalEffects === null ||
+    observedExternalEffects.some((item) => !EXTERNAL_EFFECTS.has(item)) ||
+    changedPaths === null ||
+    changedComponents === null ||
+    authorityViolations === null ||
+    verificationResults === null ||
+    verificationResults.some(
+      (item) =>
+        !isRecord(item) ||
+        typeof item.id !== "string" ||
+        !item.id.trim() ||
+        (item.result !== "pass" && item.result !== "fail" && item.result !== "unsupported"),
+    )
   ) {
     return undefined;
   }
@@ -211,6 +257,21 @@ function normalizeExecutionContract(value: unknown): TaskData["execution_contrac
     selected_mode: value.selected_mode,
     repository_mode: value.repository_mode,
     reason_codes: reasons,
+    authority: {
+      writable_roots: writableRoots,
+      allowed_repository_effects: allowedRepositoryEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["authority"]["allowed_repository_effects"],
+      forbidden_repository_effects: forbiddenRepositoryEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["authority"]["forbidden_repository_effects"],
+      allowed_external_effects: allowedExternalEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["authority"]["allowed_external_effects"],
+      forbidden_external_effects: forbiddenExternalEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["authority"]["forbidden_external_effects"],
+    },
     safety: {
       requires_worktree: value.safety.requires_worktree,
       requires_user_approval: value.safety.requires_user_approval,
@@ -223,7 +284,15 @@ function normalizeExecutionContract(value: unknown): TaskData["execution_contrac
       repository_effects: observedEffects as NonNullable<
         TaskData["execution_contract"]
       >["observed"]["repository_effects"],
+      external_effects: observedExternalEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["observed"]["external_effects"],
       changed_paths: changedPaths,
+      changed_components: changedComponents,
+      verification_results: verificationResults as NonNullable<
+        TaskData["execution_contract"]
+      >["observed"]["verification_results"],
+      authority_violations: authorityViolations,
     },
     ...(escalation
       ? {

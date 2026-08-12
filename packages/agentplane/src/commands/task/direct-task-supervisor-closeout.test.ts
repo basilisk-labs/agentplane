@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   finish: vi.fn(),
@@ -42,6 +42,41 @@ const completion = {
   task: { status: "DOING", verification: "ok" },
   workflowStep: { kind: "terminal", id: "task.complete.input" },
 } as never;
+
+const executionContract = {
+  schema_version: 1,
+  source: "agent_declared",
+  declaration: {
+    schema_version: 1,
+    preferred_mode: "direct",
+    scope_roots: ["packages/app"],
+    repository_effects: ["repository_write", "source_code"],
+    external_effects: [],
+    uncertainty: "bounded",
+    reversibility: "reversible",
+    rationale: ["localized implementation"],
+  },
+  selected_mode: "direct",
+  repository_mode: "direct",
+  reason_codes: ["agent_preferred_direct_compatible"],
+  authority: {
+    writable_roots: ["packages/app"],
+    allowed_repository_effects: ["repository_write", "source_code"],
+    forbidden_repository_effects: [],
+    allowed_external_effects: [],
+    forbidden_external_effects: [],
+  },
+  safety: { requires_worktree: false, requires_user_approval: false, approval_effects: [] },
+  verification: { required_evidence: ["task_outcome"] },
+  observed: {
+    repository_effects: [],
+    external_effects: [],
+    changed_paths: [],
+    changed_components: [],
+    verification_results: [],
+    authority_violations: [],
+  },
+} as const;
 const verificationRoute = {
   task: { status: "DOING", verification: null },
   workflowStep: {
@@ -52,6 +87,10 @@ const verificationRoute = {
 } as never;
 
 describe("direct task supervisor closeout", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("records declared checks in the evaluator-accepted verification evidence shape", async () => {
     mocks.runChecks.mockResolvedValue({
       status: "passed",
@@ -126,6 +165,39 @@ describe("direct task supervisor closeout", () => {
       },
     });
     expect(JSON.stringify(result)).not.toContain("secret-value");
+  });
+
+  it("passes structured check observations through one verification command", async () => {
+    mocks.runChecks.mockResolvedValue({
+      status: "passed",
+      checks: [{ command: "bun run test:critical" }],
+      artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/declared-checks.json`,
+    });
+    mocks.verify.mockResolvedValue(0);
+    mocks.formalOperation.mockImplementation(async (opts: { run: () => Promise<unknown> }) => {
+      await opts.run();
+      return {
+        journal,
+        journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+        decision: completion,
+      };
+    });
+
+    await verifyDirectTask({
+      ctx: { cwd: "/repo", rootOverride: null } as never,
+      command: {
+        config: { paths: { workflow_dir: ".agentplane/tasks" } },
+        resolvedProject: { gitRoot: "/repo" },
+      } as never,
+      task_id: TASK_ID,
+      task: { verify: ["bun run test:critical"], execution_contract: executionContract } as never,
+      decision: vi.fn().mockResolvedValue(verificationRoute),
+      journal: { journal, journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json" },
+    });
+
+    expect(mocks.verify).toHaveBeenCalledOnce();
+    const verifyArgs = mocks.verify.mock.calls[0]?.[0] as { details?: unknown };
+    expect(verifyArgs.details).toEqual(expect.stringContaining("Command: bun run test:critical"));
   });
 
   it("stops after verification and before finish when committed EXECUTOR paths exceed work-order authority", async () => {

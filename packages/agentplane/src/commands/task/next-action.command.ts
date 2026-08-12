@@ -373,6 +373,12 @@ export function makeRunTaskNextActionHandler(session: {
                       value:
                         decision.task.execution_contract.verification.required_evidence.join(", "),
                     },
+                    {
+                      label: "contract_authority",
+                      value:
+                        `writable=${decision.task.execution_contract.authority.writable_roots.join(",") || "none"} ` +
+                        `forbidden_external=${decision.task.execution_contract.authority.forbidden_external_effects.join(",") || "none"}`,
+                    },
                   ]
                 : []),
               { label: "checkout_role", value: decision.workspace.checkoutRole },

@@ -210,6 +210,11 @@ export type TaskExecutionDeclaration = {
   rationale: string[];
 };
 
+export type TaskVerificationObservation = {
+  id: string;
+  result: "pass" | "fail" | "unsupported";
+};
+
 export type TaskExecutionContract = {
   schema_version: 1;
   source: "agent_declared" | "legacy_compatibility";
@@ -217,6 +222,13 @@ export type TaskExecutionContract = {
   selected_mode: TaskExecutionRouteMode;
   repository_mode: TaskExecutionRouteMode;
   reason_codes: string[];
+  authority: {
+    writable_roots: string[];
+    allowed_repository_effects: TaskRepositoryEffect[];
+    forbidden_repository_effects: TaskRepositoryEffect[];
+    allowed_external_effects: TaskExternalEffect[];
+    forbidden_external_effects: TaskExternalEffect[];
+  };
   safety: {
     requires_worktree: boolean;
     requires_user_approval: boolean;
@@ -227,7 +239,11 @@ export type TaskExecutionContract = {
   };
   observed: {
     repository_effects: TaskRepositoryEffect[];
+    external_effects: TaskExternalEffect[];
     changed_paths: string[];
+    changed_components: string[];
+    verification_results: TaskVerificationObservation[];
+    authority_violations: string[];
   };
   escalation?: {
     from: "direct";

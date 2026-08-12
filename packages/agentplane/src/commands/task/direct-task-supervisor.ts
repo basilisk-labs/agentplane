@@ -36,7 +36,10 @@ import {
   measureDuplicateExecutorContextBytes,
 } from "./direct-task-supervision-measurement.js";
 import { recordDirectTaskSupervisionGoldenMetrics } from "./direct-task-supervision-golden-metrics.js";
-import { recordObservedTaskExecutionContract } from "./task-execution-contract-observation.js";
+import {
+  observedExternalEffectsFromRunnerResult,
+  recordObservedTaskExecutionContract,
+} from "./task-execution-contract-observation.js";
 
 export type { DirectTaskSupervisorResult } from "./direct-task-supervisor-result.js";
 
@@ -350,9 +353,15 @@ export async function superviseDirectTaskRun(
       command: input.command,
       task,
       changed_paths: implementation.evidence.changed_paths,
+      observed_external_effects: observedExternalEffectsFromRunnerResult(lifecycle.result),
       preserved_commit: implementation.evidence.implementation_commit,
     });
-    if (reconciliation.escalated) {
+    if (
+      reconciliation.escalated ||
+      reconciliation.task.execution_contract?.observed.authority_violations.some((violation) =>
+        violation.startsWith("external_effect:"),
+      )
+    ) {
       return stoppedResult({
         decision: current,
         journal,
@@ -368,7 +377,7 @@ export async function superviseDirectTaskRun(
         stop: {
           code: "execution_contract_escalated",
           reason:
-            "Supervisor-observed repository effects require branch_pr. The execution contract preserved the implementation commit and changed paths; recompute task next-action for the single deterministic handoff.",
+            "Supervisor-observed effects exceed the execution contract authority and require branch_pr plus explicit side-effect authority. The execution contract preserved the implementation commit and changed paths; recompute task next-action for the single deterministic handoff.",
           route_step_id: current.workflowStep.id,
           operation_id: null,
         },

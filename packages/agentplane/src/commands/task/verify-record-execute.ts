@@ -29,6 +29,7 @@ import { loadCommandContext, type CommandContext } from "../shared/task-backend.
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { resolveVerificationInputIdentity } from "../shared/task-verification-input.js";
+import { reconcileTaskExecutionContract } from "../../runtime/task-routing/index.js";
 
 import { buildStructuredFindingMutationPlan } from "./findings.js";
 import {
@@ -350,6 +351,24 @@ async function recordVerificationResult(opts: {
           verificationInputDigest: verificationInput?.digest ?? null,
         });
         const intents = [...execution.intents];
+        if (current.execution_contract) {
+          const verificationResults = (parsedDetails ?? []).map((check, index) => ({
+            id: `recorded-check-${String(index + 1)}`,
+            result: check.result,
+          }));
+          if (verificationResults.length === 0) {
+            verificationResults.push({
+              id: "verification-record",
+              result: opts.state === "ok" ? "pass" : "fail",
+            });
+          }
+          const reconciledContract = reconcileTaskExecutionContract({
+            contract: current.execution_contract,
+            changed_paths: [],
+            verification_results: verificationResults,
+          }).contract;
+          intents.push(setTaskFieldsIntent({ execution_contract: reconciledContract }));
+        }
         if (opts.by === "EVALUATOR") {
           const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx, task: current }).catch(
             () => null,

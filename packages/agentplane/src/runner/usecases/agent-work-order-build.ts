@@ -336,7 +336,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
   const stateFingerprint = structuredClone(decision.workflowStep.preconditionFingerprint);
   const mutationPath = decision.oracle.mutationPathHint;
   const executionContract = task.metadata.execution_contract;
-  const declaredScopeRoots = executionContract?.declaration.scope_roots;
+  const declaredScopeRoots = executionContract?.authority.writable_roots;
   const hasExplicitEmptyScope =
     executionContract?.source === "agent_declared" && declaredScopeRoots?.length === 0;
   const canMutate =
@@ -411,7 +411,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
       // Hosted lifecycle evidence is collected by the CLI before delegation;
       // this does not grant an executor independent network authority.
       network: "deny",
-      external_side_effects: [],
+      external_side_effects: executionContract?.authority.allowed_external_effects ?? [],
       sandbox: canMutate ? "workspace-write" : "read-only",
       expires_at: null,
     },

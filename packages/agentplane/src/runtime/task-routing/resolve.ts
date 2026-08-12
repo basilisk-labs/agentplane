@@ -9,6 +9,7 @@ import type {
   TaskExecutionRouteRequest,
   TaskExternalEffect,
   TaskRepositoryEffect,
+  TaskVerificationObservation,
 } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
@@ -34,6 +35,26 @@ const ISOLATED_EXTERNAL_EFFECTS = new Set<TaskExternalEffect>([
   "deploy",
   "destructive_git",
 ]);
+const ALL_REPOSITORY_EFFECTS = [
+  "repository_write",
+  "documentation",
+  "source_code",
+  "tests",
+  "public_api",
+  "schema",
+  "dependencies",
+  "ci",
+  "release_metadata",
+  "security_boundary",
+] as const satisfies readonly TaskRepositoryEffect[];
+const ALL_EXTERNAL_EFFECTS = [
+  "network_read",
+  "external_write",
+  "credentials",
+  "publish",
+  "deploy",
+  "destructive_git",
+] as const satisfies readonly TaskExternalEffect[];
 const LEGACY_BRANCH_PR_RISK_FLAGS = new Set([
   "credentials",
   "deploy",
@@ -154,6 +175,8 @@ function requiredEvidence(opts: {
   declaration: TaskExecutionDeclaration;
   selected_mode: TaskExecutionRouteMode;
   observed_effects?: readonly TaskRepositoryEffect[];
+  observed_external_effects?: readonly TaskExternalEffect[];
+  verification_results?: readonly TaskVerificationObservation[];
 }): string[] {
   const repositoryEffects = uniqueSorted([
     ...opts.declaration.repository_effects,
@@ -162,9 +185,32 @@ function requiredEvidence(opts: {
   return uniqueSorted([
     "task_outcome",
     ...repositoryEffects.map((effect) => `repository_effect:${effect}`),
-    ...opts.declaration.external_effects.map((effect) => `external_effect:${effect}`),
+    ...uniqueSorted([
+      ...opts.declaration.external_effects,
+      ...(opts.observed_external_effects ?? []),
+    ]).map((effect) => `external_effect:${effect}`),
+    ...(opts.verification_results ?? [])
+      .filter((result) => result.result !== "pass")
+      .map((result) => `verification_recovery:${result.id}`),
     ...(opts.selected_mode === "branch_pr" ? ["hosted_integration"] : []),
   ]);
+}
+
+function executionAuthority(
+  declaration: TaskExecutionDeclaration,
+): TaskExecutionContract["authority"] {
+  const allowedRepositoryEffects = uniqueSorted(declaration.repository_effects);
+  const allowedExternalEffects: TaskExternalEffect[] = [];
+  return {
+    writable_roots: [...declaration.scope_roots],
+    allowed_repository_effects: allowedRepositoryEffects,
+    forbidden_repository_effects: ALL_REPOSITORY_EFFECTS.filter(
+      (effect) => !allowedRepositoryEffects.includes(effect),
+    ),
+    // Declaring an external effect describes intent; it never grants the agent authority.
+    allowed_external_effects: allowedExternalEffects,
+    forbidden_external_effects: [...ALL_EXTERNAL_EFFECTS],
+  };
 }
 
 export function resolveTaskExecutionContract(opts: {
@@ -212,13 +258,21 @@ export function resolveTaskExecutionContract(opts: {
     selected_mode,
     repository_mode,
     reason_codes,
+    authority: executionAuthority({ ...declaration, scope_roots: scopeRoots }),
     safety: {
       requires_worktree: selected_mode === "branch_pr",
       requires_user_approval: approval_effects.length > 0,
       approval_effects,
     },
     verification: { required_evidence: requiredEvidence({ declaration, selected_mode }) },
-    observed: { repository_effects: [], changed_paths: [] },
+    observed: {
+      repository_effects: [],
+      external_effects: [],
+      changed_paths: [],
+      changed_components: [],
+      verification_results: [],
+      authority_violations: [],
+    },
   };
 }
 
@@ -318,6 +372,22 @@ function structuralEffectsForPath(pathValue: string): TaskRepositoryEffect[] {
   if (!normalized || normalized.startsWith("../") || normalized.startsWith("/")) return [];
   const effects: TaskRepositoryEffect[] = ["repository_write"];
   if (
+    normalized.startsWith("docs/") ||
+    normalized === "README.md" ||
+    normalized.endsWith(".md") ||
+    normalized.endsWith(".mdx")
+  ) {
+    effects.push("documentation");
+  }
+  if (
+    /(?:^|\/)(?:test|tests|__tests__)(?:\/|$)/u.test(normalized) ||
+    /\.(?:spec|test)\.[cm]?[jt]sx?$/u.test(normalized)
+  ) {
+    effects.push("tests");
+  } else if (/\.[cm]?[jt]sx?$/u.test(normalized)) {
+    effects.push("source_code");
+  }
+  if (
     normalized.startsWith(".github/workflows/") ||
     normalized === ".gitlab-ci.yml" ||
     normalized.startsWith(".circleci/")
@@ -353,9 +423,24 @@ function structuralEffectsForPath(pathValue: string): TaskRepositoryEffect[] {
   return effects;
 }
 
+function componentForPath(pathValue: string): string {
+  const normalized = pathValue.trim().replaceAll("\\", "/").replace(/^\.\//u, "");
+  const segments = normalized.split("/").filter(Boolean);
+  if (segments.length === 0) return "repository";
+  if (segments[0] === "packages" && segments[1]) return `packages/${segments[1]}`;
+  if (segments[0] === "apps" && segments[1]) return `apps/${segments[1]}`;
+  return segments[0] ?? "repository";
+}
+
+function verificationObservation(value: TaskVerificationObservation): TaskVerificationObservation {
+  return { id: value.id.trim(), result: value.result };
+}
+
 export function reconcileTaskExecutionContract(opts: {
   contract: TaskExecutionContract;
   changed_paths: readonly string[];
+  observed_external_effects?: readonly TaskExternalEffect[];
+  verification_results?: readonly TaskVerificationObservation[];
   preserved_commit?: string;
 }): { contract: TaskExecutionContract; escalated: boolean } {
   const changed_paths = uniqueSorted(
@@ -367,14 +452,46 @@ export function reconcileTaskExecutionContract(opts: {
     ...opts.contract.observed.repository_effects,
     ...changed_paths.flatMap((changedPath) => structuralEffectsForPath(changedPath)),
   ]);
+  const observedExternalEffects = uniqueSorted([
+    ...opts.contract.observed.external_effects,
+    ...(opts.observed_external_effects ?? []),
+  ]);
+  const observedVerificationResults = [
+    ...new Map(
+      [
+        ...opts.contract.observed.verification_results,
+        ...(opts.verification_results ?? []).map((result) => verificationObservation(result)),
+      ].map((result) => [result.id, result]),
+    ).values(),
+  ].toSorted((left, right) => left.id.localeCompare(right.id));
+  const undeclaredRepositoryEffects = observedEffects.filter(
+    (effect) => !opts.contract.authority.allowed_repository_effects.includes(effect),
+  );
+  const unauthorizedExternalEffects = observedExternalEffects.filter(
+    (effect) => !opts.contract.authority.allowed_external_effects.includes(effect),
+  );
+  const failedVerificationResults = observedVerificationResults.filter(
+    (result) => result.result !== "pass",
+  );
+  const authorityViolations = uniqueSorted([
+    ...opts.contract.observed.authority_violations,
+    ...undeclaredRepositoryEffects.map((effect) => `repository_effect:${effect}`),
+    ...unauthorizedExternalEffects.map((effect) => `external_effect:${effect}`),
+    ...failedVerificationResults.map((result) => `verification:${result.id}:${result.result}`),
+  ]);
   const newlyIsolatedEffects = observedEffects.filter(
     (effect) =>
       ISOLATED_REPOSITORY_EFFECTS.has(effect) &&
       !opts.contract.declaration.repository_effects.includes(effect),
   );
-  const escalated = opts.contract.selected_mode === "direct" && newlyIsolatedEffects.length > 0;
+  const escalated =
+    opts.contract.selected_mode === "direct" &&
+    (newlyIsolatedEffects.length > 0 || unauthorizedExternalEffects.length > 0);
   const selected_mode = escalated ? "branch_pr" : opts.contract.selected_mode;
-  const escalationReasons = newlyIsolatedEffects.map((effect) => `observed_effect_${effect}`);
+  const escalationReasons = [
+    ...newlyIsolatedEffects.map((effect) => `observed_effect_${effect}`),
+    ...unauthorizedExternalEffects.map((effect) => `observed_external_effect_${effect}`),
+  ];
   const reason_codes = uniqueSorted([...opts.contract.reason_codes, ...escalationReasons]);
   const contract: TaskExecutionContract = {
     ...opts.contract,
@@ -386,11 +503,20 @@ export function reconcileTaskExecutionContract(opts: {
         declaration: opts.contract.declaration,
         selected_mode,
         observed_effects: observedEffects,
+        observed_external_effects: observedExternalEffects,
+        verification_results: observedVerificationResults,
       }),
     },
     observed: {
       repository_effects: observedEffects,
+      external_effects: observedExternalEffects,
       changed_paths: uniqueSorted([...opts.contract.observed.changed_paths, ...changed_paths]),
+      changed_components: uniqueSorted([
+        ...opts.contract.observed.changed_components,
+        ...changed_paths.map((changedPath) => componentForPath(changedPath)),
+      ]),
+      verification_results: observedVerificationResults,
+      authority_violations: authorityViolations,
     },
     ...(escalated
       ? {

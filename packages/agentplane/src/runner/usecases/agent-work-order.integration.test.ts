@@ -257,6 +257,14 @@ describe("AgentWorkOrder v2 surface integration", () => {
     expect(verificationIntent.requirements.map((requirement) => requirement.description)).toEqual(
       expect.arrayContaining(["repository_effect:source_code", "repository_effect:tests"]),
     );
+    expect(executionContract.authority).toMatchObject({
+      writable_roots: ["packages/app/src", "packages/app/test"],
+      allowed_repository_effects: ["repository_write", "source_code", "tests"],
+      allowed_external_effects: [],
+    });
+    expect(executionContract.authority.forbidden_external_effects).toEqual(
+      expect.arrayContaining(["deploy", "external_write"]),
+    );
   });
 
   it("keeps an explicitly empty declared scope read-only", async () => {

@@ -43,13 +43,34 @@ function executionContract(
     selected_mode: "direct",
     repository_mode: "direct",
     reason_codes: ["agent_preferred_direct_compatible"],
+    authority: {
+      writable_roots: ["docs"],
+      allowed_repository_effects: repositoryEffects,
+      forbidden_repository_effects: [],
+      allowed_external_effects: [],
+      forbidden_external_effects: [
+        "network_read",
+        "external_write",
+        "credentials",
+        "publish",
+        "deploy",
+        "destructive_git",
+      ],
+    },
     safety: {
       requires_worktree: false,
       requires_user_approval: false,
       approval_effects: [],
     },
     verification: { required_evidence: ["task_outcome"] },
-    observed: { repository_effects: [], changed_paths: [] },
+    observed: {
+      repository_effects: [],
+      external_effects: [],
+      changed_paths: [],
+      changed_components: [],
+      verification_results: [],
+      authority_violations: [],
+    },
   };
 }
 

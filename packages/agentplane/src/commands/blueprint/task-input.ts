@@ -24,7 +24,7 @@ export function workflowModeFromConfig(config: AgentplaneConfig): WorkflowMode |
 }
 
 function mutationFromExecutionContract(task: Pick<TaskData, "execution_contract">): MutationKind {
-  const repositoryEffects = task.execution_contract?.declaration.repository_effects ?? [];
+  const repositoryEffects = task.execution_contract?.authority.allowed_repository_effects ?? [];
   const externalEffects = task.execution_contract?.declaration.external_effects ?? [];
   if (repositoryEffects.includes("release_metadata") || externalEffects.includes("publish")) {
     return "release";
@@ -70,7 +70,7 @@ function riskFlagsFromExecutionContract(task: Pick<TaskData, "execution_contract
   const contract = task.execution_contract;
   if (!contract) return [];
   const risks: RiskFlag[] = [];
-  if (contract.declaration.repository_effects.includes("security_boundary")) {
+  if (contract.authority.allowed_repository_effects.includes("security_boundary")) {
     risks.push("security");
   }
   for (const effect of contract.declaration.external_effects) {
