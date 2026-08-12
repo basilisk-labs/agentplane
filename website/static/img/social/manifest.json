@@ -461,6 +461,14 @@
       "svgSha256": "281dbbc762331f5569646e64ee9602affdde059bb60f7a4368f190e513e7e454"
     },
     {
+      "route": "/docs/developer/verification-contract",
+      "output": "static/img/social/docs/developer/verification-contract.png",
+      "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+      "title": "Verification contract",
+      "svgSha256": "469d9a7f39bb3b251ea7b002c392dfda543eff2cc5351cc7cbc4e8be938a801f"
+    },
+    {
       "route": "/docs/developer/website-success-metrics",
       "output": "static/img/social/docs/developer/website-success-metrics.png",
       "section": "Developer",

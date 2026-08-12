@@ -18,6 +18,7 @@
       "@agentplane/testkit/task": ["./packages/testkit/src/task.ts"],
       "@agentplane/testkit/*": ["./packages/testkit/src/*.ts"],
       "@agentplaneorg/core": ["./packages/core/src/index.ts"],
+      "@agentplaneorg/core/logger": ["./packages/core/src/logger.ts"],
       "@agentplaneorg/core/*": ["./packages/core/src/*/index.ts", "./packages/core/src/*"],
       "@agentplaneorg/recipes": ["./packages/recipes/src/index.ts"],
       "@agentplaneorg/recipes/*": ["./packages/recipes/src/*"]

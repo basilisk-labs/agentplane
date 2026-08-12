@@ -18,6 +18,7 @@ describe("Core CI workflow contract", () => {
     const workflow = await readFile(CI_WORKFLOW_PATH, "utf8");
 
     expect(workflow).toContain("node scripts/checks/plan-github-ci.mjs");
+    expect(workflow).toContain("run: bun run bench:compatibility:candidate:check");
     for (const output of [
       "docs",
       "dependency_review",

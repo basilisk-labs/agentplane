@@ -180,6 +180,8 @@ jobs:
         run: bun run release:parity
       - name: Compatibility baseline (check)
         run: bun run bench:compatibility:check
+      - name: Compatibility candidate freshness (check)
+        run: bun run bench:compatibility:candidate:check
       - name: Agent-efficiency baseline (check)
         run: bun run bench:agent-efficiency:check
       - name: Agent-efficiency replay baseline (check)
