@@ -1,0 +1,15 @@
+ .../src/cli/run-cli.core.pr-flow.test.ts           |  83 ++++++++++++
+ .../branch/cleanup-merged.targeted.test.ts         |  61 ++++++++-
+ .../src/commands/branch/cleanup-merged.ts          |  20 ++-
+ .../agentplane/src/commands/branch/work-start.ts   |  13 ++
+ packages/agentplane/src/commands/doctor.run.ts     |   2 +
+ .../agentplane/src/commands/doctor/branch-pr.ts    |  73 +++++++++++
+ .../commands/shared/side-effect-authority.test.ts  |   2 +-
+ .../src/commands/shared/side-effect-authority.ts   |   9 +-
+ .../workflow-operation-projection.registry.test.ts |   4 +
+ .../shared/workflow-operation-projection.ts        |   2 +
+ .../src/commands/shared/worktree-topology.test.ts  |  97 ++++++++++++++
+ .../src/commands/shared/worktree-topology.ts       | 146 +++++++++++++++++++++
+ .../task/branch-task-supervisor-operations.test.ts |  38 ++++++
+ .../task/branch-task-supervisor-operations.ts      |   4 +-
+ 14 files changed, 544 insertions(+), 10 deletions(-)

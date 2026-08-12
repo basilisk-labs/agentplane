@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   runNext: vi.fn(),
   loadCommandContext: vi.fn(),
   loadTaskFromContext: vi.fn(),
+  cmdCleanupMerged: vi.fn(),
 }));
 
 vi.mock("../shared/task-backend.js", () => ({
@@ -20,6 +21,10 @@ vi.mock("../shared/task-backend.js", () => ({
 
 vi.mock("./finish-command.js", () => ({
   cmdFinish: mocks.cmdFinish,
+}));
+
+vi.mock("../branch/cleanup-merged.js", () => ({
+  cmdCleanupMerged: mocks.cmdCleanupMerged,
 }));
 
 vi.mock("../integrate-queue.command.js", () => ({
@@ -91,6 +96,7 @@ describe("branch task supervisor operations", () => {
     });
     mocks.cmdFinish.mockResolvedValue(0);
     mocks.runNext.mockResolvedValue(0);
+    mocks.cmdCleanupMerged.mockResolvedValue(0);
   });
 
   it("lets finish resolve the reviewed implementation behind a task-artifact head", async () => {
@@ -172,4 +178,36 @@ describe("branch task supervisor operations", () => {
       executeBranchWorkflowOperation({ decision: routeDecision(operation), operation }),
     ).rejects.toBe(handoff);
   });
+
+  it.each(["task.hosted_close.finalize", "task.worktree.cleanup"] as const)(
+    "applies deterministic cleanup for %s instead of stopping at a dry-run",
+    async (id) => {
+      const operation = {
+        id,
+        type: "cleanup",
+        params: { taskId: "202607221852-71SCSW", base: "main" },
+        preconditionFingerprint: preMergeCloseOperation().preconditionFingerprint,
+        authorityRef: "route:test",
+        idempotencyKey: `${id}:test`,
+        expectedPostconditions: [],
+        triggersGitHooks: false,
+      } as WorkflowOperation;
+
+      const result = await executeBranchWorkflowOperation({
+        decision: routeDecision(operation),
+        operation,
+      });
+
+      expect(result.status).toBe("succeeded");
+      expect(mocks.cmdCleanupMerged).toHaveBeenCalledWith(
+        expect.objectContaining({
+          taskIds: ["202607221852-71SCSW"],
+          base: "main",
+          finalize: true,
+          yes: true,
+          deleteRemoteBranches: true,
+        }),
+      );
+    },
+  );
 });

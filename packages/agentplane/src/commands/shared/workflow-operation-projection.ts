@@ -119,6 +119,8 @@ function operationArgv(operation: WorkflowOperation): string[] {
         "--task-id",
         operation.params.taskId,
         "--finalize",
+        "--yes",
+        "--delete-remote-branches",
         "--base",
         operation.params.base,
       ];

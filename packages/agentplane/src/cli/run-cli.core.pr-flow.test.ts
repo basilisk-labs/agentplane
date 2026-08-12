@@ -634,6 +634,89 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
   );
 
   it(
+    "work start rejects task-worktree creation from a recovery checkout",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+      const ioTask = captureStdIO();
+      let taskId = "";
+      try {
+        expect(
+          await runCli([
+            "task",
+            "new",
+            "--title",
+            "Recovery nesting guard",
+            "--description",
+            "Recovery control checkouts must not create nested task worktrees.",
+            "--priority",
+            "med",
+            "--owner",
+            "CODER",
+            "--tag",
+            "workflow",
+            "--root",
+            root,
+          ]),
+        ).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+      await approveTaskPlan(root, taskId);
+
+      const recovery = path.join(root, ".agentplane", "tmp", "recovery-base");
+      await mkdir(path.dirname(recovery), { recursive: true });
+      await execFileAsync("git", ["worktree", "add", "-b", "recovery/base", recovery, "main"], {
+        cwd: root,
+      });
+      await cp(
+        path.join(root, ".agentplane", "tasks", taskId),
+        path.join(recovery, ".agentplane", "tasks", taskId),
+        { recursive: true },
+      );
+
+      const io = captureStdIO();
+      try {
+        expect(
+          await runCli([
+            "work",
+            "start",
+            taskId,
+            "--agent",
+            "CODER",
+            "--slug",
+            "nested-recovery",
+            "--worktree",
+            "--root",
+            recovery,
+          ]),
+        ).toBe(5);
+        expect(io.stderr).toContain("nested historical worktree graph");
+        expect(io.stderr).toContain(root);
+      } finally {
+        io.restore();
+      }
+
+      const { stdout } = await execFileAsync("git", ["worktree", "list", "--porcelain"], {
+        cwd: root,
+      });
+      expect(stdout).not.toContain(`${taskId}-nested-recovery`);
+    },
+    WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
+  );
+
+  it(
     "work start rejects a base branch that is behind its upstream tracking ref",
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
