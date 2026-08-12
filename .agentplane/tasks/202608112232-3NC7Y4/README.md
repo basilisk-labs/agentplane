@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on:
@@ -57,19 +57,19 @@ quality_review:
   findings:
     - "No material contract divergence found in the frozen implementation and deterministic verification evidence."
 token_usage:
-  agent_runs: 0
-  input_tokens: null
-  journal_digest: null
-  observed_agent_runs: 0
+  agent_runs: 7
+  input_tokens: 1424631
+  journal_digest: "sha256:93cca0c3baf85202d0b79e5e560c922b6e0f4d110061e53eab303b043756d65d"
+  observed_agent_runs: 7
   observed_by: "agentplane"
-  output_tokens: null
-  reasoning_tokens: null
+  output_tokens: 17741
+  reasoning_tokens: 3755
   schema_version: 1
-  source: "unavailable"
-  state: "unavailable"
-  total_tokens: null
-  unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-12T02:00:40.317Z"
+  source: "supervisor_journal"
+  state: "observed"
+  total_tokens: 1446127
+  unavailable_reason: null
+  updated_at: "2026-08-12T06:20:10.545Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -79,8 +79,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "9a7817e984c30b698f02084996704b4b76577e08"
-  message: "✅ 3NC7Y4 task: record rework quality review"
+  hash: "4bb12b6cacd80043ece4c89d72c9fc25af691dbd"
+  message: "✅ 3NC7Y4 task: record independent quality pass"
 comments:
   -
     author: "CODER"
@@ -97,6 +97,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -184,8 +187,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified implementation 53d633332: execution declaration v2 separates uncertainty axes; legacy v1 remains conservative; normal action envelopes fit; full local CI passed."
+  -
+    type: "status"
+    at: "2026-08-12T06:20:10.545Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "4bb12b6cacd80043ece4c89d72c9fc25af691dbd"
 doc_version: 3
-doc_updated_at: "2026-08-12T06:18:47.994Z"
+doc_updated_at: "2026-08-12T06:20:10.573Z"
 doc_updated_by: "CODER"
 description: "Use one canonical lifecycle while letting the agent semantically choose direct or branch_pr through a structured risk/effect declaration. AgentPlane must compile and enforce one deterministic execution contract, compare it with observed effects, escalate monotonically when required, and never use product-language keyword heuristics as lifecycle authority."
 sections:
@@ -619,8 +630,8 @@ sections:
       Resolution: Accept this exact implementation identity for independent evaluator review and hosted integration.
 extensions:
   implementation_commit:
-    hash: "12f447c63ce5c78b152d461dcc1e00517a04f149"
-    message: "🐛 3NC7Y4 task: close execution authority gaps"
+    hash: "53d633332085897db0d5033df16b7d2db7b2fb9a"
+    message: "🧭 3NC7Y4 task: separate execution uncertainty"
   workflow_route_baseline:
     start_head_sha: "106662505177833ff8ededb1ad621baf342c3a88"
     version: 1
@@ -1070,13 +1081,13 @@ DecisionContextRef:
 
 ## Token Usage
 
-- State: `unavailable`
-- Completeness: `0/0` agent runs
-- Input tokens: `unavailable`
-- Output tokens: `unavailable`
-- Reasoning tokens: `unavailable`
-- Total tokens: `unavailable`
-- Provenance: `unavailable/agentplane`
-- Journal digest: `unavailable`
-- Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-12T02:00:40.317Z`
+- State: `observed`
+- Completeness: `7/7` agent runs
+- Input tokens: `1424631`
+- Output tokens: `17741`
+- Reasoning tokens: `3755`
+- Total tokens: `1446127`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:93cca0c3baf85202d0b79e5e560c922b6e0f4d110061e53eab303b043756d65d`
+- Unavailable reason: `none`
+- Updated at: `2026-08-12T06:20:10.545Z`
