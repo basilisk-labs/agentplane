@@ -132,7 +132,7 @@ function legacyDeclaration(opts: {
   };
 }
 
-export function normalizeTaskExecutionDeclaration(
+function normalizeTaskExecutionDeclaration(
   declaration: TaskExecutionDeclarationInput,
 ): TaskExecutionDeclaration {
   if (declaration.schema_version === 2) return structuredClone(declaration);
