@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608120643-75ZFHW-eba14ba0f31884ce645a1aa2",
+  "prepared_at": "2026-08-12T08:16:18.124Z",
+  "task": {
+    "id": "202608120643-75ZFHW",
+    "revision": 16,
+    "objective": "Prevent worktree accumulation and clean obsolete task checkouts\n\nImplement lifecycle-owned worktree hygiene before the verification optimization task. Preserve parallel development by allowing one authoritative worktree for each active branch_pr task, while preventing duplicate worktrees for the same task. Automatically finalize clean task worktrees and local task branches after hosted-close or proven merge, and make queue/supervisor progression own this cleanup without requiring the coding agent to infer it. Prevent recovery/control checkouts from recursively registering or restoring nested historical task worktrees. Add deterministic inventory/readback that classifies active, merged, dirty, recovery, detached, remote-only, and ambiguous refs; delete only provider-proven merged or explicitly obsolete clean state, preserving dirty, open-PR, active, blocked, stashed, release archive, and uniquely unassimilated work. Apply the command to the current repository, reconcile local and remote branches, and record before/after counts and retained reasons. Cover parallel active tasks, duplicate same-task worktree rejection, hosted-close cleanup, recovery non-resurrection, dirty preservation, and idempotent cleanup with focused and realistic E2E tests.",
+    "acceptance_criteria": [
+      "- In scope: Implement lifecycle-owned worktree hygiene before the verification optimization task. Preserve parallel development by allowing one authoritative worktree for each active branch_pr task, while preventing duplicate worktrees for the same task. Automatically finalize clean task worktrees and local task branches after hosted-close or proven merge, and make queue/supervisor progression own this cleanup without requiring the coding agent to infer it. Prevent recovery/control checkouts from recursively registering or restoring nested historical task worktrees. Add deterministic inventory/readback that classifies active, merged, dirty, recovery, detached, remote-only, and ambiguous refs; delete only provider-proven merged or explicitly obsolete clean state, preserving dirty, open-PR, active, blocked, stashed, release archive, and uniquely unassimilated work. Apply the command to the current repository, reconcile local and remote branches, and record before/after counts and retained reasons. Cover parallel active tasks, duplicate same-task worktree rejection, hosted-close cleanup, recovery non-resurrection, dirty preservation, and idempotent cleanup with focused and realistic E2E tests.\n- Out of scope: unrelated refactors not required for \"Prevent worktree accumulation and clean obsolete task checkouts\".",
+      "1. Inventory the current local and hosted checkout graph. For every registered worktree and local or remote branch, record task id, task state, authoritative checkout, dirtiness, open/merged/closed PR state, ancestry to origin/main, stashes or archive refs, recovery/control provenance, and whether unique commits remain. Establish the pre-change baseline counts and retained-reason taxonomy.\n2. Define and implement the canonical invariant: any number of different active branch_pr tasks may run concurrently, but each task has exactly one authoritative task worktree; direct tasks need no dedicated worktree; merged or hosted-closed tasks own no task worktree or ordinary local task branch. Duplicate same-task worktree creation must fail with deterministic readback naming the authoritative checkout.\n3. Move cleanup into deterministic lifecycle ownership. After hosted-close or provider-proven merge, the foreground supervisor/queue progression must finalize the clean task worktree and local/remote task branch automatically and idempotently. The coding agent must not infer or manually advance the queue. A cleanup failure must preserve work, classify the blocker, and emit the exact safe retry or inspection command without rolling back a successful merge.\n4. Prevent worktree graph resurrection. Recovery, benchmark, integration, and control checkouts must be isolated from the primary repository worktree registry or explicitly marked non-authoritative; nested historical task worktrees must not be registered when a recovery base is created, resumed, copied, or removed. Add doctor/inventory detection for recursive recovery graphs and legacy duplicate registrations.\n5. Extend cleanup inventory/reporting to classify active, merged, dirty, detached, recovery, remote-only, open-PR, blocked, archived, and ambiguous refs. Automated deletion is allowed only for clean provider-proven merged/hosted-closed state or explicitly archived obsolete recovery state. Preserve dirty worktrees, active or blocked tasks, open PRs, stashes, release/archive refs, and unique unassimilated commits.\n6. Add focused unit/integration coverage plus realistic E2E scenarios: two different active tasks retain two independent worktrees; a second worktree for the same task is rejected; hosted-close removes a clean merged worktree/branch and is idempotent; cleanup preserves dirty/ambiguous state with actionable readback; recovery creation cannot re-register nested historical worktrees.\n7. Apply the deterministic inventory and cleanup to this repository. Reconcile origin/main and hosted PR truth, remove only proven obsolete worktrees and local/remote refs, retain every ambiguous or active item with a recorded reason, and report before/after counts. Verify git worktree integrity, branch recoverability, active task routing, stash preservation, remote branch state, and clean intended tracked state.\n8. Run focused lifecycle/cleanup tests, critical CLI E2E, typecheck, lint, schema/contract checks, and the full PR verification route. Record residual retained state and exact reasons rather than forcing deletion.",
+      "1. Run the worktree invariant matrix. Expected: different active branch_pr tasks can each own one worktree concurrently; a duplicate worktree for the same task is rejected with the authoritative checkout; direct tasks do not receive a mandatory worktree.\n2. Exercise hosted-close and queue progression on a merged task fixture. Expected: the supervisor advances the queue and removes the clean task worktree plus ordinary local/remote task refs exactly once; a second run is a no-op; merge success remains recorded if cleanup is blocked.\n3. Exercise dirty, blocked, open-PR, stashed, archived, detached, unique-commit, recovery, and ambiguous fixtures. Expected: no protected work is deleted; every retained item has a deterministic reason and safe next action.\n4. Create and resume recovery/control fixtures containing historical nested .agentplane/worktrees directories. Expected: no nested worktree becomes registered in the primary repository; doctor/inventory identifies any legacy recursive registration.\n5. Apply cleanup to the real repository after fetching hosted truth. Expected: before/after counts and every removed/retained ref are recorded; origin/main is current; only proven obsolete clean state is deleted; active tasks, open PRs, dirty state, stashes, release/archive refs, and unique commits are preserved.\n6. Run focused lifecycle/cleanup unit and integration tests, realistic CLI E2E, typecheck, lint, schema/contract checks, and full hosted PR verification. Expected: all pass on the exact reviewed SHA and final git worktree prune dry-run reports no stale registrations."
+    ]
+  },
+  "evaluated_sha": "6db914eeea2d767a7422368d3c3491e9f35a90bb",
+  "diff_base_sha": "4efbe19bb2aed31d9b6beb6f01288906b823d8bb",
+  "blueprint_digest": "576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608120643-75ZFHW/quality/20260812-081618124-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:5c0e86a6bacac14a0a2dc81c71dcb3251059b968842300a8561213c624ac5e52",
+    "prompt_path": ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/ebf9a9ac3e6eed9ec4da9575bcb19a09dd1e09732395747c20482d1e7c21a248.md",
+    "result_schema_path": ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608120643-75ZFHW/README.md",
+      "sha256": "sha256:3c86ceb8731dc5aee92faa6e4beb0c935d64f3d193f61a6fff7cf25a08f5dac6",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/cc663777e63822acc6b58cbc804d90eff29ebe9f198d4dc7ae9269fab2002ae4.patch",
+      "sha256": "sha256:cc663777e63822acc6b58cbc804d90eff29ebe9f198d4dc7ae9269fab2002ae4",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/30d893e648464cfe76cf9a311b70df667ff8ac4f997ac2afc116dc143a1c0587.json",
+      "sha256": "sha256:30d893e648464cfe76cf9a311b70df667ff8ac4f997ac2afc116dc143a1c0587",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608120643-75ZFHW/verification/20260812081603575-f9ed304aacd71b90.json",
+      "sha256": "sha256:23743ce48a4b61e15051ac1f3802cb43e212cf6ae3b7baff11ad6d52dc656b74",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/1ff932c7fd5c45ad498732c9c1003f19e0e7ce473a6e70fa96d5e33cde954e4e.json",
+      "sha256": "sha256:1ff932c7fd5c45ad498732c9c1003f19e0e7ce473a6e70fa96d5e33cde954e4e",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -30,37 +30,37 @@ plan_approval:
   note: "Approved as the previously agreed worktree/branch lifecycle step before final verification optimization."
 verification:
   state: "ok"
-  updated_at: "2026-08-12T07:51:12.037Z"
+  updated_at: "2026-08-12T08:16:03.575Z"
   updated_by: "TESTER"
-  note: "Final implementation 5e7636a06 passed the complete fast unit suite, the full-fast local CI route, and focused worktree/cleanup lifecycle tests."
+  note: "Review fixes verified at 6db914eee."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-12T07:55:17.253Z"
+  updated_at: "2026-08-12T08:16:18.434Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 2 typed finding(s)."
-  evaluated_sha: "5e7636a065ee379db747190f8c67594b90487fa1"
+  evaluated_sha: "6db914eeea2d767a7422368d3c3491e9f35a90bb"
   blueprint_digest: "576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5"
   evidence_refs:
-    - ".agentplane/tasks/202608120643-75ZFHW/quality/20260812-075516650-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608120643-75ZFHW/quality/20260812-075516650-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/7a565bfa8d3d0b95d1a9750addcd3bb97906b97e371b71d898f52994d239ab8a.md"
-    - ".agentplane/tasks/202608120643-75ZFHW/quality/20260812-075516650-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608120643-75ZFHW/quality/20260812-075516650-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608120643-75ZFHW/quality/20260812-075516650-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/20260812-081618124-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/20260812-081618124-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/ebf9a9ac3e6eed9ec4da9575bcb19a09dd1e09732395747c20482d1e7c21a248.md"
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/20260812-081618124-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/20260812-081618124-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/20260812-081618124-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608120643-75ZFHW/README.md"
-    - ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/6b6255b73530117c8d35523d309fcfd34e21af8844fe0b9905f23b064831b945.patch"
-    - ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/cfe2ce021c780721253bf07a0b4a54e9c476aace065c0a46ffda3b9ab504e20e.json"
-    - ".agentplane/tasks/202608120643-75ZFHW/verification/20260812075112037-05cd341849961760.json"
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/cc663777e63822acc6b58cbc804d90eff29ebe9f198d4dc7ae9269fab2002ae4.patch"
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/30d893e648464cfe76cf9a311b70df667ff8ac4f997ac2afc116dc143a1c0587.json"
+    - ".agentplane/tasks/202608120643-75ZFHW/verification/20260812081603575-f9ed304aacd71b90.json"
     - ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/1ff932c7fd5c45ad498732c9c1003f19e0e7ce473a6e70fa96d5e33cde954e4e.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Different active tasks remain independently parallel while duplicate worktrees for the same task are rejected at creation."
-    - "Hosted-close cleanup now performs the authorized local and remote cleanup operation instead of a dry-run, while batch cleanup preserves unresolved targets."
+    - "Remote deletion now precedes local branch/worktree removal, so a transient provider failure can be retried without reconstructing lost local state."
+    - "Primary-worktree topology is independent of which checkout temporarily owns main, preserving parallel task worktrees without recursive creation."
 token_usage:
   agent_runs: 1
   input_tokens: null
@@ -277,8 +277,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "5df631a0fcf90ec0c0fae0a30749a916726e36d2"
+  -
+    type: "verify"
+    at: "2026-08-12T08:16:03.575Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Review fixes verified at 6db914eee."
 doc_version: 3
-doc_updated_at: "2026-08-12T07:55:53.089Z"
+doc_updated_at: "2026-08-12T08:16:18.460Z"
 doc_updated_by: "CODER"
 description: "Implement lifecycle-owned worktree hygiene before the verification optimization task. Preserve parallel development by allowing one authoritative worktree for each active branch_pr task, while preventing duplicate worktrees for the same task. Automatically finalize clean task worktrees and local task branches after hosted-close or proven merge, and make queue/supervisor progression own this cleanup without requiring the coding agent to infer it. Prevent recovery/control checkouts from recursively registering or restoring nested historical task worktrees. Add deterministic inventory/readback that classifies active, merged, dirty, recovery, detached, remote-only, and ambiguous refs; delete only provider-proven merged or explicitly obsolete clean state, preserving dirty, open-PR, active, blocked, stashed, release archive, and uniquely unassimilated work. Apply the command to the current repository, reconcile local and remote branches, and record before/after counts and retained reasons. Cover parallel active tasks, duplicate same-task worktree rejection, hosted-close cleanup, recovery non-resurrection, dirty preservation, and idempotent cleanup with focused and realistic E2E tests."
 sections:
@@ -443,6 +449,51 @@ sections:
 
     DecisionContextRef:
     - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-12T08:16:03.575Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Review fixes verified at 6db914eee.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:841c3068db6bc34da584a40a2dbfcf74ec7ab97e68fda59f50cc690ce3691db3, input_digest=sha256:0a1cd91518439b4d82b0e4213d52564d591d9494e405b9dcaf7e038f34bbe709
+
+    Details:
+
+    Command: bunx vitest run worktree-topology cleanup-merged batch/targeted supervisor suites
+    Result: pass
+    Evidence: 4 files, 44 tests passed in 29.41s
+    Scope: remote-delete retry ordering, primary checkout guards, nested topology diagnostics, hosted cleanup
+
+    Command: bun run typecheck and targeted eslint
+    Result: pass
+    Evidence: both commands exited 0
+    Scope: TypeScript and lint correctness for changed implementation and regression tests
+
+    Command: bun run test:fast:ci
+    Result: pass
+    Evidence: 557 files passed; 4077 tests passed; 1 skipped; 207.12s
+    Scope: core, agentplane, recipes, and testkit unit/integration regression suite
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608120643-75ZFHW-prevent-worktree-accumulation-and-clean-obsolete/.agentplane/tasks/202608120643-75ZFHW/blueprint/resolved-snapshot.json
+    - old_digest: 576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5
+    - current_digest: 576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608120643-75ZFHW
+
+    DecisionContextRef:
+    - operator_action: stop
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
@@ -636,6 +687,51 @@ BlueprintSnapshotRef:
 
 DecisionContextRef:
 - operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-12T08:16:03.575Z — VERIFY — ok
+
+By: TESTER
+
+Note: Review fixes verified at 6db914eee.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:841c3068db6bc34da584a40a2dbfcf74ec7ab97e68fda59f50cc690ce3691db3, input_digest=sha256:0a1cd91518439b4d82b0e4213d52564d591d9494e405b9dcaf7e038f34bbe709
+
+Details:
+
+Command: bunx vitest run worktree-topology cleanup-merged batch/targeted supervisor suites
+Result: pass
+Evidence: 4 files, 44 tests passed in 29.41s
+Scope: remote-delete retry ordering, primary checkout guards, nested topology diagnostics, hosted cleanup
+
+Command: bun run typecheck and targeted eslint
+Result: pass
+Evidence: both commands exited 0
+Scope: TypeScript and lint correctness for changed implementation and regression tests
+
+Command: bun run test:fast:ci
+Result: pass
+Evidence: 557 files passed; 4077 tests passed; 1 skipped; 207.12s
+Scope: core, agentplane, recipes, and testkit unit/integration regression suite
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608120643-75ZFHW-prevent-worktree-accumulation-and-clean-obsolete/.agentplane/tasks/202608120643-75ZFHW/blueprint/resolved-snapshot.json
+- old_digest: 576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5
+- current_digest: 576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608120643-75ZFHW
+
+DecisionContextRef:
+- operator_action: stop
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none

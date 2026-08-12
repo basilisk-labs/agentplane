@@ -1,1 +1,1 @@
-🚧 75ZFHW task: Prevent worktree accumulation and clean obsolete task checkouts [202608120643-75ZFHW]
+✅ 75ZFHW task: Prevent worktree accumulation and clean obsolete task checkouts [202608120643-75ZFHW]

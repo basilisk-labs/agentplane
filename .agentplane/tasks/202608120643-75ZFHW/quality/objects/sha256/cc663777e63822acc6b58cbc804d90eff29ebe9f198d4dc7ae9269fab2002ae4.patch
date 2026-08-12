@@ -1,0 +1,1002 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
+index 6a12bf493..02ee41896 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
+@@ -633,6 +633,89 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
+     WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
+   );
+ 
++  it(
++    "work start rejects task-worktree creation from a recovery checkout",
++    async () => {
++      const root = await mkGitRepoRootWithBranch("main");
++      const config = defaultConfig();
++      config.workflow_mode = "branch_pr";
++      await writeConfig(root, config);
++      await configureGitUser(root);
++
++      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
++      const execFileAsync = promisify(execFile);
++      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
++      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
++      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++
++      const ioTask = captureStdIO();
++      let taskId = "";
++      try {
++        expect(
++          await runCli([
++            "task",
++            "new",
++            "--title",
++            "Recovery nesting guard",
++            "--description",
++            "Recovery control checkouts must not create nested task worktrees.",
++            "--priority",
++            "med",
++            "--owner",
++            "CODER",
++            "--tag",
++            "workflow",
++            "--root",
++            root,
++          ]),
++        ).toBe(0);
++        taskId = ioTask.stdout.trim();
++      } finally {
++        ioTask.restore();
++      }
++      await approveTaskPlan(root, taskId);
++
++      const recovery = path.join(root, ".agentplane", "tmp", "recovery-base");
++      await mkdir(path.dirname(recovery), { recursive: true });
++      await execFileAsync("git", ["worktree", "add", "-b", "recovery/base", recovery, "main"], {
++        cwd: root,
++      });
++      await cp(
++        path.join(root, ".agentplane", "tasks", taskId),
++        path.join(recovery, ".agentplane", "tasks", taskId),
++        { recursive: true },
++      );
++
++      const io = captureStdIO();
++      try {
++        expect(
++          await runCli([
++            "work",
++            "start",
++            taskId,
++            "--agent",
++            "CODER",
++            "--slug",
++            "nested-recovery",
++            "--worktree",
++            "--root",
++            recovery,
++          ]),
++        ).toBe(5);
++        expect(io.stderr).toContain("nested historical worktree graph");
++        expect(io.stderr).toContain(root);
++      } finally {
++        io.restore();
++      }
++
++      const { stdout } = await execFileAsync("git", ["worktree", "list", "--porcelain"], {
++        cwd: root,
++      });
++      expect(stdout).not.toContain(`${taskId}-nested-recovery`);
++    },
++    WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
++  );
++
+   it(
+     "work start rejects a base branch that is behind its upstream tracking ref",
+     async () => {
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged.batch.test.ts b/packages/agentplane/src/commands/branch/cleanup-merged.batch.test.ts
+new file mode 100644
+index 000000000..3cd948094
+--- /dev/null
++++ b/packages/agentplane/src/commands/branch/cleanup-merged.batch.test.ts
+@@ -0,0 +1,153 @@
++import { beforeEach, describe, expect, it, vi } from "vitest";
++import type * as CleanupProof from "./cleanup-merged-proof.js";
++import type * as GitOps from "../shared/git-ops.js";
++import type * as MergedCleanup from "../shared/merged-branch-cleanup.js";
++import type * as CoreProcess from "@agentplaneorg/core/process";
++
++import { cmdCleanupMerged } from "./cleanup-merged.js";
++
++const mocks = vi.hoisted(() => ({
++  cleanupMergedLocalBranch: vi.fn(),
++  gitBranchExists: vi.fn(),
++  gitCurrentBranch: vi.fn(),
++  resolveCleanupPlan: vi.fn(),
++  execFileAsync: vi.fn(),
++}));
++
++vi.mock("@agentplaneorg/core/git", () => ({
++  gitEnv: () => ({}),
++  resolveBaseBranch: () => Promise.resolve("main"),
++}));
++vi.mock("../guard/index.js", () => ({ ensureGitClean: vi.fn() }));
++vi.mock("../shared/git-ops.js", async (importOriginal) => ({
++  ...(await importOriginal<typeof GitOps>()),
++  gitBranchExists: mocks.gitBranchExists,
++  gitCurrentBranch: mocks.gitCurrentBranch,
++}));
++vi.mock("../shared/merged-branch-cleanup.js", async (importOriginal) => ({
++  ...(await importOriginal<typeof MergedCleanup>()),
++  cleanupMergedLocalBranch: mocks.cleanupMergedLocalBranch,
++}));
++vi.mock("@agentplaneorg/core/process", async (importOriginal) => ({
++  ...(await importOriginal<typeof CoreProcess>()),
++  execFileAsync: mocks.execFileAsync,
++}));
++vi.mock("./cleanup-merged-proof.js", async (importOriginal) => ({
++  ...(await importOriginal<typeof CleanupProof>()),
++  revalidateCleanupCandidate: vi.fn(() => Promise.resolve(null)),
++  resolveCleanupPlan: mocks.resolveCleanupPlan,
++}));
++
++describe("cleanup merged batch isolation", () => {
++  beforeEach(() => {
++    vi.clearAllMocks();
++    mocks.gitBranchExists.mockResolvedValue(true);
++    mocks.gitCurrentBranch.mockResolvedValue("main");
++    mocks.cleanupMergedLocalBranch.mockResolvedValue({
++      preservedDirtyState: false,
++      removedBranch: true,
++      removedWorktree: false,
++      stashMessage: null,
++    });
++    mocks.execFileAsync.mockResolvedValue({ stdout: "", stderr: "" });
++  });
++
++  it("deletes proven targets while retaining an independent blocked target", async () => {
++    const candidate = {
++      taskId: "T-PROVEN",
++      branch: "task/T-PROVEN/change",
++      worktreePath: null,
++      expectedHeadSha: "a".repeat(40),
++      proof: "provider_merge" as const,
++    };
++    mocks.resolveCleanupPlan.mockResolvedValue({
++      blocked: [
++        {
++          taskId: "T-BLOCKED",
++          branch: "task/T-BLOCKED/change",
++          worktreePath: null,
++          reason: "task status is DOING, not DONE",
++        },
++      ],
++      candidates: [candidate],
++      matchedTaskIds: new Set(["T-PROVEN", "T-BLOCKED"]),
++    });
++
++    const result = await cmdCleanupMerged({
++      ctx: {
++        config: {
++          workflow_mode: "branch_pr",
++          paths: { workflow_dir: ".agentplane/tasks", worktrees_dir: ".agentplane/worktrees" },
++        },
++        resolvedProject: { gitRoot: "/repo" },
++      } as never,
++      cwd: "/repo",
++      yes: true,
++      archive: false,
++      deleteRemoteBranches: false,
++      fetch: false,
++      quiet: true,
++      taskIds: ["T-PROVEN", "T-BLOCKED"],
++    });
++
++    expect(result).toBe(0);
++    expect(mocks.cleanupMergedLocalBranch).toHaveBeenCalledOnce();
++    expect(mocks.cleanupMergedLocalBranch).toHaveBeenCalledWith(
++      expect.objectContaining({ branch: candidate.branch }),
++    );
++  });
++
++  it("preserves the local branch and worktree when remote deletion fails transiently", async () => {
++    const branch = "task/T-PROVEN/change";
++    mocks.resolveCleanupPlan.mockResolvedValue({
++      blocked: [],
++      candidates: [
++        {
++          taskId: "T-PROVEN",
++          branch,
++          worktreePath: null,
++          expectedHeadSha: "a".repeat(40),
++          proof: "provider_merge" as const,
++        },
++      ],
++      matchedTaskIds: new Set(["T-PROVEN"]),
++    });
++    mocks.execFileAsync.mockImplementation((_command: string, args: string[]) => {
++      if (args[0] === "ls-remote") {
++        return Promise.resolve({
++          stdout: `${"a".repeat(40)}\trefs/heads/${branch}\n`,
++          stderr: "",
++        });
++      }
++      if (args[0] === "push") {
++        return Promise.reject(
++          Object.assign(new Error("transient network failure"), {
++            stderr: "fatal: unable to access remote",
++          }),
++        );
++      }
++      return Promise.resolve({ stdout: "", stderr: "" });
++    });
++
++    await expect(
++      cmdCleanupMerged({
++        ctx: {
++          config: {
++            workflow_mode: "branch_pr",
++            paths: { workflow_dir: ".agentplane/tasks", worktrees_dir: ".agentplane/worktrees" },
++          },
++          resolvedProject: { gitRoot: "/repo" },
++        } as never,
++        cwd: "/repo",
++        yes: true,
++        archive: false,
++        deleteRemoteBranches: true,
++        fetch: false,
++        quiet: true,
++        taskIds: ["T-PROVEN"],
++      }),
++    ).rejects.toThrow("transient network failure");
++
++    expect(mocks.cleanupMergedLocalBranch).not.toHaveBeenCalled();
++  });
++});
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged.ts b/packages/agentplane/src/commands/branch/cleanup-merged.ts
+index 1b313b330..76829b84b 100644
+--- a/packages/agentplane/src/commands/branch/cleanup-merged.ts
++++ b/packages/agentplane/src/commands/branch/cleanup-merged.ts
+@@ -198,7 +198,8 @@ export async function cmdCleanupMerged(opts: {
+     const sortedBlocked = resolution.blocked.toSorted(
+       (a, b) => a.taskId.localeCompare(b.taskId) || a.branch.localeCompare(b.branch),
+     );
+-    if (sortedBlocked.length > 0) {
++    const preserveBlockedTargets = requestedTaskIds.length > 1;
++    if (sortedBlocked.length > 0 && !preserveBlockedTargets) {
+       const details = sortedBlocked
+         .map((item) => `- task=${item.taskId} branch=${item.branch}: ${item.reason}`)
+         .join("\n");
+@@ -216,7 +217,13 @@ export async function cmdCleanupMerged(opts: {
+       `tasks=${targeted ? requestedTaskIds.join(",") : "*"}`,
+       `matched_tasks=${[...resolution.matchedTaskIds].toSorted().join(",") || "-"}`,
+       `candidates=${sortedCandidates.length}`,
++      `retained=${sortedBlocked.length}`,
+     ];
++    for (const item of sortedBlocked) {
++      reportRows.push(
++        `retained task=${item.taskId} branch=${item.branch} worktree=${item.worktreePath ?? "-"} reason=${item.reason}`,
++      );
++    }
+ 
+     if (!opts.quiet) {
+       const archiveLabel = opts.archive ? " archive=on" : "";
+@@ -231,6 +238,11 @@ export async function cmdCleanupMerged(opts: {
+           `- ${item.taskId}: branch=${item.branch} worktree=${item.worktreePath ?? "-"} proof=${item.proof}`,
+         );
+       }
++      for (const item of sortedBlocked) {
++        output.line(
++          `- retained ${item.taskId}: branch=${item.branch} worktree=${item.worktreePath ?? "-"} reason=${item.reason}`,
++        );
++      }
+     }
+     for (const item of sortedCandidates) {
+       reportRows.push(
+@@ -254,7 +266,11 @@ export async function cmdCleanupMerged(opts: {
+       });
+       if (!opts.quiet) {
+         output.line(
+-          targeted ? `already clean: task=${requestedTaskIds.join(",")}` : "no candidates",
++          sortedBlocked.length > 0
++            ? `no safe candidates; retained=${sortedBlocked.length}`
++            : targeted
++              ? `already clean: task=${requestedTaskIds.join(",")}`
++              : "no candidates",
+         );
+       }
+       return 0;
+@@ -350,6 +366,11 @@ export async function cmdCleanupMerged(opts: {
+ 
+     let deletedRemoteBranches = 0;
+     for (const { item, worktreePath, registeredSiblingWorktree } of preparedCandidates) {
++      if (opts.deleteRemoteBranches) {
++        deletedRemoteBranches += (await deleteRemoteBranchIfPresent(resolved.gitRoot, item.branch))
++          ? 1
++          : 0;
++      }
+       const cleanup = await cleanupMergedLocalBranch({
+         gitRoot: resolved.gitRoot,
+         branch: item.branch,
+@@ -374,11 +395,6 @@ export async function cmdCleanupMerged(opts: {
+       reportRows.push(
+         `deleted task=${item.taskId} branch=${item.branch} worktree=${worktreePath ?? "-"} preserve_dirty=${cleanup.preservedDirtyState ? "yes" : "no"} stash=${cleanup.stashMessage ?? "-"}`,
+       );
+-      if (opts.deleteRemoteBranches) {
+-        deletedRemoteBranches += (await deleteRemoteBranchIfPresent(resolved.gitRoot, item.branch))
+-          ? 1
+-          : 0;
+-      }
+     }
+ 
+     await writeCleanupReportIfRequested({
+diff --git a/packages/agentplane/src/commands/branch/work-start.ts b/packages/agentplane/src/commands/branch/work-start.ts
+index a166c4d64..9bb9be0ba 100644
+--- a/packages/agentplane/src/commands/branch/work-start.ts
++++ b/packages/agentplane/src/commands/branch/work-start.ts
+@@ -16,6 +16,10 @@ import { PolicyEngine } from "../../policy/engine.js";
+ import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
+ import { throwIfPolicyDecisionDenied } from "../shared/policy-deny.js";
+ import { isPathWithin } from "../shared/path.js";
++import {
++  assertCanonicalWorktreeCreationRoot,
++  assertSingleTaskWorktreeRegistration,
++} from "../shared/worktree-topology.js";
+ import {
+   ensureBranchPrBaseCheckout,
+   resolveBranchPrLifecycleContext,
+@@ -164,6 +168,10 @@ export async function cmdWorkStart(opts: {
+         missingBaseMessage: "Base branch could not be resolved (use `agentplane branch base set`).",
+       });
+       const { baseBranch } = lifecycleContext;
++      await assertCanonicalWorktreeCreationRoot({
++        gitRoot: resolved.gitRoot,
++        baseBranch,
++      });
+       await ensureBranchPrBaseCheckout({
+         context: lifecycleContext,
+         gitRoot: resolved.gitRoot,
+@@ -186,6 +194,11 @@ export async function cmdWorkStart(opts: {
+       taskId: opts.taskId,
+       branchName,
+     });
++    await assertSingleTaskWorktreeRegistration({
++      gitRoot: resolved.gitRoot,
++      taskPrefix: prefix,
++      taskId: opts.taskId,
++    });
+ 
+     const branchExists = await gitBranchExists(resolved.gitRoot, branchName);
+     let worktreePath = "";
+diff --git a/packages/agentplane/src/commands/doctor.run.ts b/packages/agentplane/src/commands/doctor.run.ts
+index cacd3cf81..1dcd82864 100644
+--- a/packages/agentplane/src/commands/doctor.run.ts
++++ b/packages/agentplane/src/commands/doctor.run.ts
+@@ -11,6 +11,7 @@ import {
+   checkBranchPrBatchIncludedTaskDrift,
+   checkBranchPrDoneTaskOpenPrDrift,
+   checkBranchPrShippedTaskDrift,
++  checkBranchPrWorktreeTopology,
+ } from "./doctor/branch-pr.js";
+ import { safeFixGitignore, safeFixManagedHooks, safeFixTaskIndex } from "./doctor/fixes.js";
+ import { checkLayering } from "./doctor/layering.js";
+@@ -90,6 +91,7 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
+       ...(await checkBranchPrShippedTaskDrift(commandCtx)),
+       ...(await checkBranchPrDoneTaskOpenPrDrift(commandCtx)),
+       ...(await checkBranchPrBatchIncludedTaskDrift(commandCtx)),
++      ...(await checkBranchPrWorktreeTopology(commandCtx)),
+     );
+     reportProgress("checking runtime source");
+     checks.push(...checkRuntimeSourceFacts(ctx.cwd, loadedConfig.config));
+diff --git a/packages/agentplane/src/commands/doctor/branch-pr.ts b/packages/agentplane/src/commands/doctor/branch-pr.ts
+index 2cb632040..f310a52e4 100644
+--- a/packages/agentplane/src/commands/doctor/branch-pr.ts
++++ b/packages/agentplane/src/commands/doctor/branch-pr.ts
+@@ -3,6 +3,7 @@ import type { Dirent } from "node:fs";
+ import path from "node:path";
+ 
+ import { parseTaskReadme } from "@agentplaneorg/core/tasks";
++import { listWorktrees } from "@agentplaneorg/core/git";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+ import { renderDiagnosticFinding } from "../shared/diagnostics.js";
+@@ -17,6 +18,78 @@ import {
+   findLocallyShippedBranchPrTasks,
+ } from "../task/hosted-merge-sync.js";
+ import { resolveLocalMergedPrMeta } from "../task/hosted-merge-sync/pr-meta.js";
++import {
++  findDuplicateTaskWorktreeRegistrations,
++  findNestedWorktreeRegistrations,
++} from "../shared/worktree-topology.js";
++
++export async function checkBranchPrWorktreeTopology(ctx?: CommandContext): Promise<string[]> {
++  if (ctx?.config.workflow_mode !== "branch_pr") return [];
++
++  let worktrees;
++  try {
++    worktrees = await listWorktrees(ctx.resolvedProject.gitRoot);
++  } catch {
++    return [];
++  }
++  const nested = findNestedWorktreeRegistrations({
++    projectRoot: ctx.resolvedProject.gitRoot,
++    worktrees,
++  });
++  const duplicateTasks = findDuplicateTaskWorktreeRegistrations({
++    taskPrefix: ctx.config.branch.task_prefix,
++    worktrees,
++  });
++  const findings: string[] = [];
++
++  if (nested.length > 0) {
++    findings.push(
++      renderDiagnosticFinding({
++        severity: "WARN",
++        state: "nested task/recovery worktrees are registered in the primary repository",
++        likelyCause:
++          "an internal recovery or task checkout created another worktree, restoring a historical checkout graph into the shared Git worktree registry",
++        nextAction: {
++          command: "agentplane cleanup merged --fetch",
++          reason:
++            "classify provider-proven merged candidates before removing only clean obsolete registrations",
++        },
++        details: [
++          `Affected registrations: ${nested.length}`,
++          `Examples: ${nested
++            .slice(0, 5)
++            .map((entry) => `${entry.path} under ${entry.parentPath}`)
++            .join(", ")}`,
++        ],
++      }),
++    );
++  }
++
++  if (duplicateTasks.length > 0) {
++    findings.push(
++      renderDiagnosticFinding({
++        severity: "WARN",
++        state: "one or more branch_pr tasks own multiple registered worktrees",
++        likelyCause:
++          "legacy or recovery work-start paths bypassed the one-authoritative-worktree-per-task invariant",
++        nextAction: {
++          command: "agentplane cleanup merged --fetch",
++          reason:
++            "inspect merged candidates while preserving active, dirty, open-PR, and ambiguous task state",
++        },
++        details: [
++          `Affected tasks: ${duplicateTasks.length}`,
++          `Examples: ${duplicateTasks
++            .slice(0, 5)
++            .map((entry) => `${entry.taskId}=${entry.worktrees.map((item) => item.path).join("|")}`)
++            .join(", ")}`,
++        ],
++      }),
++    );
++  }
++
++  return findings;
++}
+ 
+ export async function checkBranchPrShippedTaskDrift(ctx?: CommandContext): Promise<string[]> {
+   if (!ctx || !backendUsesLocalTaskStore(ctx) || ctx.config.workflow_mode !== "branch_pr") {
+diff --git a/packages/agentplane/src/commands/shared/route-decision-next-action.test.ts b/packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+index 6e34e30af..cf57e91f4 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+@@ -202,7 +202,8 @@ describe("DONE branch_pr route cleanup boundary", () => {
+   it("emits exact targeted cleanup only for a proven MERGED candidate", () => {
+     expect(nextAction(report("MERGED"), { state: "candidate", count: 1 })).toMatchObject({
+       code: "cleanup",
+-      command: "agentplane cleanup merged --task-id T-1 --finalize --base main",
++      command:
++        "agentplane cleanup merged --task-id T-1 --finalize --yes --delete-remote-branches --base main",
+     });
+   });
+ 
+diff --git a/packages/agentplane/src/commands/shared/route-guidance.test.ts b/packages/agentplane/src/commands/shared/route-guidance.test.ts
+index 65845af77..9e8eec6f2 100644
+--- a/packages/agentplane/src/commands/shared/route-guidance.test.ts
++++ b/packages/agentplane/src/commands/shared/route-guidance.test.ts
+@@ -363,7 +363,8 @@ describe("route operator guidance", () => {
+       }),
+       nextAction: {
+         code: "sync_hosted_close",
+-        command: "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
++        command:
++          "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --yes --delete-remote-branches --base main",
+         summary:
+           "hosted close-tail already landed upstream; finalize base sync and clean merged task branches/worktrees",
+         requiresApproval: false,
+@@ -375,7 +376,7 @@ describe("route operator guidance", () => {
+         mutationPathHint: "/repo",
+         blocker: null,
+         nextCommand:
+-          "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
++          "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --yes --delete-remote-branches --base main",
+         summary:
+           "hosted close-tail already landed upstream; finalize base sync and clean merged task branches/worktrees",
+       },
+@@ -390,6 +391,8 @@ describe("route operator guidance", () => {
+           "--task-id",
+           "202606080612-F8PTW7",
+           "--finalize",
++          "--yes",
++          "--delete-remote-branches",
+           "--base",
+           "main",
+         ],
+@@ -403,14 +406,15 @@ describe("route operator guidance", () => {
+ 
+     expect(deriveRouteOperatorGuidance(decision)).toMatchObject({
+       canExecuteNow: true,
+-      safeCommand: "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
++      safeCommand:
++        "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --yes --delete-remote-branches --base main",
+       diagnosticCommand:
+-        "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
++        "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --yes --delete-remote-branches --base main",
+       risks: [
+         {
+           code: "hosted_close_finalize",
+           mitigationCommand:
+-            "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
++            "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --yes --delete-remote-branches --base main",
+         },
+       ],
+     });
+@@ -458,6 +462,8 @@ describe("route operator guidance", () => {
+           "--task-id",
+           "202606080612-F8PTW7",
+           "--finalize",
++          "--yes",
++          "--delete-remote-branches",
+           "--base",
+           "main",
+         ],
+@@ -473,12 +479,12 @@ describe("route operator guidance", () => {
+       canExecuteNow: true,
+       operatorAction: "run_exact_argv",
+       diagnosticCommand:
+-        "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
++        "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --yes --delete-remote-branches --base main",
+       risks: [
+         {
+           code: "hosted_close_finalize",
+           mitigationCommand:
+-            "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
++            "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --yes --delete-remote-branches --base main",
+         },
+       ],
+     });
+diff --git a/packages/agentplane/src/commands/shared/side-effect-authority.test.ts b/packages/agentplane/src/commands/shared/side-effect-authority.test.ts
+index 569ab70e2..302fa6f59 100644
+--- a/packages/agentplane/src/commands/shared/side-effect-authority.test.ts
++++ b/packages/agentplane/src/commands/shared/side-effect-authority.test.ts
+@@ -160,7 +160,7 @@ describe("side-effect authority", () => {
+       });
+     }
+     expect(WORKFLOW_OPERATION_AUTHORITY_POLICY["task.hosted_close.finalize"]).toMatchObject({
+-      class: "local_reversible",
++      class: "external_pre_authorized",
+       requiresAuthority: false,
+     });
+   });
+diff --git a/packages/agentplane/src/commands/shared/side-effect-authority.ts b/packages/agentplane/src/commands/shared/side-effect-authority.ts
+index fd18cf593..bd56ad8ca 100644
+--- a/packages/agentplane/src/commands/shared/side-effect-authority.ts
++++ b/packages/agentplane/src/commands/shared/side-effect-authority.ts
+@@ -83,10 +83,11 @@ export const WORKFLOW_OPERATION_AUTHORITY_POLICY = {
+   "integration.run_next": EXTERNAL_PRE_AUTHORIZED,
+   "task.hosted_close.open": EXTERNAL_REVERSIBLE,
+   // The protected merge and task completion have already been recorded before
+-  // this route. `cleanup merged --finalize` only fast-forwards the local base
+-  // and removes proven merged local worktrees/branches.
+-  "task.hosted_close.finalize": LOCAL_REVERSIBLE,
+-  "task.worktree.cleanup": LOCAL_REVERSIBLE,
++  // this route. The close-tail cleanup consumes that durable authorization to
++  // fast-forward the base and remove only provider-proven merged local/remote
++  // task refs; it cannot select a new integration target.
++  "task.hosted_close.finalize": EXTERNAL_PRE_AUTHORIZED,
++  "task.worktree.cleanup": EXTERNAL_PRE_AUTHORIZED,
+   "pr.sync_or_verify": EXTERNAL_REVERSIBLE,
+ } as const satisfies Record<WorkflowOperationId, AuthorityRequirement>;
+ 
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts b/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+index 8a14743f1..ad745c375 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+@@ -157,6 +157,8 @@ describe("Workflow operation projection registry", () => {
+           "--task-id",
+           taskId,
+           "--finalize",
++          "--yes",
++          "--delete-remote-branches",
+           "--base",
+           "main",
+         ],
+@@ -213,6 +215,8 @@ describe("Workflow operation projection registry", () => {
+           "--task-id",
+           taskId,
+           "--finalize",
++          "--yes",
++          "--delete-remote-branches",
+           "--base",
+           "main",
+         ],
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-projection.ts b/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
+index 63e1df424..0d7d7159d 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
+@@ -119,6 +119,8 @@ function operationArgv(operation: WorkflowOperation): string[] {
+         "--task-id",
+         operation.params.taskId,
+         "--finalize",
++        "--yes",
++        "--delete-remote-branches",
+         "--base",
+         operation.params.base,
+       ];
+diff --git a/packages/agentplane/src/commands/shared/worktree-topology.test.ts b/packages/agentplane/src/commands/shared/worktree-topology.test.ts
+new file mode 100644
+index 000000000..59a861c74
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/worktree-topology.test.ts
+@@ -0,0 +1,129 @@
++import { describe, expect, it, vi } from "vitest";
++import type * as CoreGit from "@agentplaneorg/core/git";
++
++import {
++  assertCanonicalWorktreeCreationRoot,
++  assertSingleTaskWorktreeRegistration,
++  findDuplicateTaskWorktreeRegistrations,
++  findNestedWorktreeRegistrations,
++} from "./worktree-topology.js";
++
++const mocks = vi.hoisted(() => ({ listWorktrees: vi.fn() }));
++
++vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
++  ...(await importOriginal<typeof CoreGit>()),
++  listWorktrees: mocks.listWorktrees,
++}));
++
++describe("worktree topology invariants", () => {
++  it("allows different active tasks while finding duplicate ownership for one task", () => {
++    const worktrees = [
++      { path: "/repo", branch: "refs/heads/main" },
++      { path: "/repo/.agentplane/worktrees/T1-a", branch: "refs/heads/task/T1/a" },
++      { path: "/repo/.agentplane/worktrees/T2-a", branch: "refs/heads/task/T2/a" },
++    ];
++    expect(findDuplicateTaskWorktreeRegistrations({ taskPrefix: "task", worktrees })).toEqual([]);
++
++    expect(
++      findDuplicateTaskWorktreeRegistrations({
++        taskPrefix: "task",
++        worktrees: [
++          ...worktrees,
++          { path: "/repo/.agentplane/tmp/recovery/T1-b", branch: "refs/heads/task/T1/b" },
++        ],
++      }),
++    ).toMatchObject([{ taskId: "T1", worktrees: [{}, {}] }]);
++  });
++
++  it("finds a historical task worktree registered below a recovery base", () => {
++    const nested = findNestedWorktreeRegistrations({
++      projectRoot: "/repo",
++      worktrees: [
++        { path: "/repo", branch: "refs/heads/main" },
++        { path: "/repo/.agentplane/tmp/recovery", branch: "refs/heads/recovery/main" },
++        {
++          path: "/repo/.agentplane/tmp/recovery/.agentplane/worktrees/T1",
++          branch: "refs/heads/task/T1/a",
++        },
++      ],
++    });
++    expect(nested).toEqual([
++      expect.objectContaining({
++        parentPath: "/repo/.agentplane/tmp/recovery",
++        path: "/repo/.agentplane/tmp/recovery/.agentplane/worktrees/T1",
++      }),
++    ]);
++  });
++
++  it("does not report healthy siblings as nested when doctor runs from a task worktree", () => {
++    const worktrees = [
++      { path: "/repo", branch: "refs/heads/control" },
++      { path: "/repo/.agentplane/worktrees/T1", branch: "refs/heads/task/T1/a" },
++      { path: "/repo/.agentplane/worktrees/T2", branch: "refs/heads/task/T2/a" },
++    ];
++    expect(
++      findNestedWorktreeRegistrations({
++        projectRoot: "/repo/.agentplane/worktrees/T1",
++        worktrees,
++      }),
++    ).toEqual([]);
++  });
++
++  it("rejects worktree creation from internal recovery and task checkouts", async () => {
++    mocks.listWorktrees.mockResolvedValue([
++      { path: "/repo", branch: "refs/heads/main" },
++      { path: "/repo/.agentplane/tmp/recovery", branch: "refs/heads/recovery/main" },
++    ]);
++    await expect(
++      assertCanonicalWorktreeCreationRoot({
++        gitRoot: "/repo/.agentplane/tmp/recovery",
++        baseBranch: "main",
++      }),
++    ).rejects.toMatchObject({
++      context: { reason_code: "nested_control_worktree_creation_forbidden" },
++    });
++  });
++
++  it("allows the registered base checkout to create task worktrees", async () => {
++    mocks.listWorktrees.mockResolvedValue([
++      { path: "/repo", branch: "refs/heads/main" },
++      { path: "/repo/.agentplane/worktrees/T1", branch: "refs/heads/task/T1/a" },
++    ]);
++    await expect(
++      assertCanonicalWorktreeCreationRoot({ gitRoot: "/repo", baseBranch: "main" }),
++    ).resolves.toBeUndefined();
++  });
++
++  it("rejects creation when a recovery checkout temporarily owns the base branch", async () => {
++    mocks.listWorktrees.mockResolvedValue([
++      { path: "/repo", branch: "refs/heads/control" },
++      { path: "/repo/.agentplane/tmp/recovery", branch: "refs/heads/main" },
++    ]);
++    await expect(
++      assertCanonicalWorktreeCreationRoot({
++        gitRoot: "/repo/.agentplane/tmp/recovery",
++        baseBranch: "main",
++      }),
++    ).rejects.toMatchObject({
++      context: {
++        reason_code: "nested_control_worktree_creation_forbidden",
++        canonical_project_root: "/repo",
++      },
++    });
++  });
++
++  it("reports the authoritative checkout when the same task already owns a worktree", async () => {
++    mocks.listWorktrees.mockResolvedValue([
++      { path: "/repo", branch: "refs/heads/main" },
++      { path: "/repo/.agentplane/worktrees/T1-a", branch: "refs/heads/task/T1/a" },
++    ]);
++    await expect(
++      assertSingleTaskWorktreeRegistration({ gitRoot: "/repo", taskPrefix: "task", taskId: "T1" }),
++    ).rejects.toMatchObject({
++      context: {
++        reason_code: "task_worktree_already_registered",
++        authoritative_worktree: "/repo/.agentplane/worktrees/T1-a",
++      },
++    });
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/worktree-topology.ts b/packages/agentplane/src/commands/shared/worktree-topology.ts
+new file mode 100644
+index 000000000..4fb259421
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/worktree-topology.ts
+@@ -0,0 +1,141 @@
++import path from "node:path";
++
++import { listWorktrees, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
++
++import { exitCodeForError } from "../../cli/exit-codes.js";
++import { CliError } from "../../shared/errors.js";
++import { isPathWithin, resolvePathFallback } from "./path.js";
++
++export type RegisteredWorktree = {
++  path: string;
++  branch: string | null;
++};
++
++export type NestedWorktreeRegistration = {
++  path: string;
++  branch: string | null;
++  parentPath: string;
++  parentBranch: string | null;
++};
++
++export type DuplicateTaskWorktreeRegistration = {
++  taskId: string;
++  worktrees: RegisteredWorktree[];
++};
++
++function normalizedPath(value: string): string {
++  return path.resolve(value);
++}
++
++export function findNestedWorktreeRegistrations(opts: {
++  projectRoot: string;
++  worktrees: readonly RegisteredWorktree[];
++}): NestedWorktreeRegistration[] {
++  const normalized = opts.worktrees.map((entry) => ({
++    ...entry,
++    normalizedPath: normalizedPath(entry.path),
++  }));
++  const primaryRoot = normalized[0]?.normalizedPath ?? normalizedPath(opts.projectRoot);
++  const nested: NestedWorktreeRegistration[] = [];
++
++  for (const candidate of normalized) {
++    const parent = normalized
++      .filter(
++        (entry) =>
++          entry.normalizedPath !== primaryRoot &&
++          entry.normalizedPath !== candidate.normalizedPath &&
++          isPathWithin(entry.normalizedPath, candidate.normalizedPath),
++      )
++      .toSorted((a, b) => b.normalizedPath.length - a.normalizedPath.length)[0];
++    if (!parent) continue;
++    nested.push({
++      path: candidate.path,
++      branch: candidate.branch,
++      parentPath: parent.path,
++      parentBranch: parent.branch,
++    });
++  }
++
++  return nested.toSorted((a, b) => a.path.localeCompare(b.path));
++}
++
++export function findDuplicateTaskWorktreeRegistrations(opts: {
++  taskPrefix: string;
++  worktrees: readonly RegisteredWorktree[];
++}): DuplicateTaskWorktreeRegistration[] {
++  const byTask = new Map<string, RegisteredWorktree[]>();
++  for (const worktree of opts.worktrees) {
++    if (!worktree.branch) continue;
++    const taskId = parseTaskIdFromBranch(opts.taskPrefix, worktree.branch);
++    if (!taskId) continue;
++    const registrations = byTask.get(taskId) ?? [];
++    registrations.push(worktree);
++    byTask.set(taskId, registrations);
++  }
++  return [...byTask.entries()]
++    .filter(([, registrations]) => registrations.length > 1)
++    .map(([taskId, worktrees]) => ({
++      taskId,
++      worktrees: worktrees.toSorted((a, b) => a.path.localeCompare(b.path)),
++    }))
++    .toSorted((a, b) => a.taskId.localeCompare(b.taskId));
++}
++
++export async function assertCanonicalWorktreeCreationRoot(opts: {
++  gitRoot: string;
++  baseBranch: string;
++}): Promise<void> {
++  const worktrees = await listWorktrees(opts.gitRoot);
++  const primary = worktrees[0];
++  if (!primary) return;
++
++  const [projectRoot, primaryRoot] = await Promise.all([
++    resolvePathFallback(opts.gitRoot),
++    resolvePathFallback(primary.path),
++  ]);
++  if (projectRoot === primaryRoot) return;
++
++  throw new CliError({
++    exitCode: exitCodeForError("E_GIT"),
++    code: "E_GIT",
++    message:
++      `Refusing to create task worktrees from internal control checkout ${projectRoot}. ` +
++      `Run work start from the primary checkout ${primaryRoot} on ${opts.baseBranch}; recovery and task ` +
++      "checkouts must not create a nested historical worktree graph.",
++    context: {
++      reason_code: "nested_control_worktree_creation_forbidden",
++      project_root: projectRoot,
++      canonical_project_root: primaryRoot,
++      base_branch: opts.baseBranch,
++    },
++  });
++}
++
++export async function assertSingleTaskWorktreeRegistration(opts: {
++  gitRoot: string;
++  taskPrefix: string;
++  taskId: string;
++}): Promise<void> {
++  const worktrees = await listWorktrees(opts.gitRoot);
++  const owner = worktrees.find(
++    (entry) =>
++      entry.branch !== null && parseTaskIdFromBranch(opts.taskPrefix, entry.branch) === opts.taskId,
++  );
++  if (!owner) return;
++
++  const branch = owner.branch?.replace(/^refs\/heads\//u, "") ?? "detached";
++  throw new CliError({
++    exitCode: exitCodeForError("E_GIT"),
++    code: "E_GIT",
++    message:
++      `Task ${opts.taskId} already has authoritative worktree ${owner.path} on ${branch}. ` +
++      `Resume that checkout with agentplane work resume ${opts.taskId}; AgentPlane permits one ` +
++      "worktree per task while different active tasks may run in parallel.",
++    context: {
++      reason_code: "task_worktree_already_registered",
++      task_id: opts.taskId,
++      authoritative_worktree: owner.path,
++      branch,
++    },
++  });
++}
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+index 77962b696..7c10841d9 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
+   runNext: vi.fn(),
+   loadCommandContext: vi.fn(),
+   loadTaskFromContext: vi.fn(),
++  cmdCleanupMerged: vi.fn(),
+ }));
+ 
+ vi.mock("../shared/task-backend.js", () => ({
+@@ -22,6 +23,10 @@ vi.mock("./finish-command.js", () => ({
+   cmdFinish: mocks.cmdFinish,
+ }));
+ 
++vi.mock("../branch/cleanup-merged.js", () => ({
++  cmdCleanupMerged: mocks.cmdCleanupMerged,
++}));
++
+ vi.mock("../integrate-queue.command.js", () => ({
+   makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler: vi.fn(),
+   makeRunIntegrateQueueEnqueueHandler: vi.fn(),
+@@ -91,6 +96,7 @@ describe("branch task supervisor operations", () => {
+     });
+     mocks.cmdFinish.mockResolvedValue(0);
+     mocks.runNext.mockResolvedValue(0);
++    mocks.cmdCleanupMerged.mockResolvedValue(0);
+   });
+ 
+   it("lets finish resolve the reviewed implementation behind a task-artifact head", async () => {
+@@ -172,4 +178,36 @@ describe("branch task supervisor operations", () => {
+       executeBranchWorkflowOperation({ decision: routeDecision(operation), operation }),
+     ).rejects.toBe(handoff);
+   });
++
++  it.each(["task.hosted_close.finalize", "task.worktree.cleanup"] as const)(
++    "applies deterministic cleanup for %s instead of stopping at a dry-run",
++    async (id) => {
++      const operation = {
++        id,
++        type: "cleanup",
++        params: { taskId: "202607221852-71SCSW", base: "main" },
++        preconditionFingerprint: preMergeCloseOperation().preconditionFingerprint,
++        authorityRef: "route:test",
++        idempotencyKey: `${id}:test`,
++        expectedPostconditions: [],
++        triggersGitHooks: false,
++      } as WorkflowOperation;
++
++      const result = await executeBranchWorkflowOperation({
++        decision: routeDecision(operation),
++        operation,
++      });
++
++      expect(result.status).toBe("succeeded");
++      expect(mocks.cmdCleanupMerged).toHaveBeenCalledWith(
++        expect.objectContaining({
++          taskIds: ["202607221852-71SCSW"],
++          base: "main",
++          finalize: true,
++          yes: true,
++          deleteRemoteBranches: true,
++        }),
++      );
++    },
++  );
+ });
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
+index f08d03bf6..925769972 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
+@@ -273,9 +273,9 @@ export async function executeBranchWorkflowOperation(opts: {
+         ctx: command,
+         cwd,
+         base: operation.params.base,
+-        yes: false,
++        yes: true,
+         archive: false,
+-        deleteRemoteBranches: false,
++        deleteRemoteBranches: true,
+         finalize: true,
+         fetch: false,
+         quiet: true,
