@@ -12,6 +12,7 @@ import type {
   TaskRepositoryEffect,
   TaskVerificationObservation,
 } from "@agentplaneorg/core/tasks";
+import { computeVerificationContractKernel } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
@@ -229,6 +230,43 @@ function requiredEvidence(opts: {
   ]);
 }
 
+function verificationContract(opts: {
+  declaration: TaskExecutionDeclaration;
+  changedFiles?: readonly string[];
+  observedRepositoryEffects?: readonly TaskRepositoryEffect[];
+  observedExternalEffects?: readonly TaskExternalEffect[];
+  changedComponents?: readonly string[];
+}): NonNullable<TaskExecutionContract["verification"]["contract"]> {
+  const computed = computeVerificationContractKernel({
+    phase: "task",
+    changedFiles: opts.changedFiles ?? [],
+    declaredRepositoryEffects: opts.declaration.repository_effects,
+    declaredExternalEffects: opts.declaration.external_effects,
+    observedRepositoryEffects: opts.observedRepositoryEffects ?? [],
+    observedExternalEffects: opts.observedExternalEffects ?? [],
+    changedComponents: opts.changedComponents ?? [],
+  });
+  return {
+    schema_version: computed.schema_version,
+    source: "execution_contract",
+    phase: computed.phase,
+    declared: structuredClone(computed.declared),
+    observed: {
+      repository_effects: [...computed.observed.repository_effects],
+      external_effects: [...computed.observed.external_effects],
+      changed_components: [...computed.observed.changed_components],
+      changed_files: [...computed.observed.changed_files],
+    },
+    policy_floor: structuredClone(computed.policy_floor),
+    selector: structuredClone(computed.selector),
+    selected_checks: [...computed.selected_checks],
+    escalation_reasons: [...computed.escalation_reasons],
+    requires_full_regression: computed.requires_full_regression,
+    requires_real_e2e: computed.requires_real_e2e,
+    digest: computed.digest,
+  };
+}
+
 function executionAuthority(
   declaration: TaskExecutionDeclaration,
 ): TaskExecutionContract["authority"] {
@@ -302,7 +340,10 @@ export function resolveTaskExecutionContract(opts: {
       requires_user_approval: approval_effects.length > 0,
       approval_effects,
     },
-    verification: { required_evidence: requiredEvidence({ declaration, selected_mode }) },
+    verification: {
+      required_evidence: requiredEvidence({ declaration, selected_mode }),
+      contract: verificationContract({ declaration }),
+    },
     observed: {
       repository_effects: [],
       external_effects: [],
@@ -491,6 +532,16 @@ export function reconcileTaskExecutionContract(opts: {
         observed_effects: observedEffects,
         observed_external_effects: observedExternalEffects,
         verification_results: observedVerificationResults,
+      }),
+      contract: verificationContract({
+        declaration: opts.contract.declaration,
+        changedFiles: changed_paths,
+        observedRepositoryEffects: observedEffects,
+        observedExternalEffects,
+        changedComponents: uniqueSorted([
+          ...opts.contract.observed.changed_components,
+          ...changed_paths.map((changedPath) => componentForPath(changedPath)),
+        ]),
       }),
     },
     observed: {

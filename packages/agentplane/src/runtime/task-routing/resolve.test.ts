@@ -10,6 +10,82 @@ import {
 } from "./resolve.js";
 
 describe("task execution route", () => {
+  it("computes one monotonic verification contract from declared and observed effects", () => {
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    const initial = resolveTaskExecutionContract({
+      config,
+      task: {},
+      requestedMode: "direct",
+      declaration: {
+        schema_version: 2,
+        preferred_mode: "direct",
+        scope_roots: ["packages/agentplane/src/feature"],
+        repository_effects: ["repository_write", "source_code", "tests"],
+        external_effects: [],
+        requirements_uncertainty: "bounded",
+        implementation_uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["localized reversible code change"],
+      },
+    });
+    expect(initial.verification.contract).toMatchObject({
+      schema_version: 1,
+      selected_checks: ["affected_unit_integration", "critical_paths", "task_outcome"],
+      requires_full_regression: false,
+      requires_real_e2e: false,
+    });
+
+    const escalated = reconcileTaskExecutionContract({
+      contract: initial,
+      changed_paths: ["schemas/task.json"],
+      observed_external_effects: ["deploy"],
+    }).contract;
+    expect(escalated.verification.contract).toMatchObject({
+      requires_full_regression: true,
+      requires_real_e2e: true,
+    });
+    expect(escalated.verification.contract?.selected_checks).toEqual(
+      expect.arrayContaining([
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+      ]),
+    );
+    expect(escalated.verification.contract?.declared.repository_effects).toContain("source_code");
+    expect(escalated.verification.contract?.observed.repository_effects).toContain("schema");
+  });
+
+  it("fails closed when an observed changed path has no effect mapping", () => {
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    const initial = resolveTaskExecutionContract({
+      config,
+      task: {},
+      requestedMode: "direct",
+      declaration: {
+        schema_version: 2,
+        preferred_mode: "direct",
+        scope_roots: ["assets"],
+        repository_effects: ["repository_write"],
+        external_effects: [],
+        requirements_uncertainty: "bounded",
+        implementation_uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["localized reversible artifact change"],
+      },
+    });
+    const reconciled = reconcileTaskExecutionContract({
+      contract: initial,
+      changed_paths: ["assets/opaque-model.unknown"],
+    });
+    expect(reconciled.contract.verification.contract).toMatchObject({
+      requires_full_regression: true,
+      escalation_reasons: ["unknown_path:assets/opaque-model.unknown"],
+    });
+  });
+
   it("keeps legacy task new behavior when repository mode is requested", () => {
     const config = defaultConfig();
     config.workflow_mode = "direct";

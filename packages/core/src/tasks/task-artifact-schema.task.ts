@@ -149,6 +149,46 @@ const TASK_VERIFICATION_OBSERVATION_SCHEMA = z
     result: z.enum(["pass", "fail", "unsupported"]),
   })
   .strict();
+const TASK_VERIFICATION_CONTRACT_SCHEMA = z
+  .object({
+    schema_version: z.literal(1),
+    source: z.literal("execution_contract"),
+    phase: z.enum(["task", "local", "pr", "release"]),
+    declared: z
+      .object({
+        repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
+        external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
+      })
+      .strict(),
+    observed: z
+      .object({
+        repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
+        external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
+        changed_components: z.array(NON_EMPTY_STRING),
+        changed_files: z.array(NON_EMPTY_STRING),
+      })
+      .strict(),
+    policy_floor: z
+      .object({
+        pr_full_regression: z.literal(true),
+        unknown_or_central_full_regression: z.literal(true),
+        monotonic_strengthening: z.literal(true),
+      })
+      .strict(),
+    selector: z
+      .object({
+        kind: NON_EMPTY_STRING,
+        reason: NON_EMPTY_STRING,
+        selected_test_files: z.array(NON_EMPTY_STRING),
+      })
+      .strict(),
+    selected_checks: z.array(NON_EMPTY_STRING).min(1),
+    escalation_reasons: z.array(NON_EMPTY_STRING),
+    requires_full_regression: z.boolean(),
+    requires_real_e2e: z.boolean(),
+    digest: z.string().regex(/^sha256:[0-9a-f]{64}$/u),
+  })
+  .strict();
 const TASK_EXECUTION_CONTRACT_SCHEMA = z
   .object({
     schema_version: z.literal(1),
@@ -173,7 +213,12 @@ const TASK_EXECUTION_CONTRACT_SCHEMA = z
         approval_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
       })
       .strict(),
-    verification: z.object({ required_evidence: z.array(NON_EMPTY_STRING).min(1) }).strict(),
+    verification: z
+      .object({
+        required_evidence: z.array(NON_EMPTY_STRING).min(1),
+        contract: TASK_VERIFICATION_CONTRACT_SCHEMA.optional(),
+      })
+      .strict(),
     observed: z
       .object({
         repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),

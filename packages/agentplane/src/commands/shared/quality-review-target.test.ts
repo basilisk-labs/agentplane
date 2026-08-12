@@ -284,6 +284,31 @@ describe("quality review target resolver", () => {
     );
   });
 
+  it("preserves a reviewed target when verify appends a structured finding atomically", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-VERIFY-FINDING";
+    const reviewedSha = await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      lifecycleTaskReadme({ taskId, revision: 1, status: "DOING" }),
+      "feat: establish reviewed implementation",
+    );
+    const withFinding = lifecycleTaskReadme({ taskId, revision: 2, status: "DOING" }).replace(
+      "## Findings\n",
+      "## Findings\n\n### Finding\n- Observation: atomic verify finding\n",
+    );
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      withFinding,
+      "test: record verification and finding",
+    );
+
+    await expect(resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha })).resolves.toBe(
+      reviewedSha,
+    );
+  });
+
   it("preserves a reviewed target across lifecycle evidence and direct supervision artifacts", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "202607240736-DIRECT-EVIDENCE";

@@ -266,6 +266,8 @@ async function recordVerificationResult(opts: {
           taskIds: qualityReviewTaskIds,
           targetSha: evaluatedSha,
           verifySteps: verificationScope,
+          verificationContractDigest:
+            current.execution_contract?.verification.contract?.digest ?? null,
           workflowMode: config.workflow_mode,
           verificationDetails: opts.details,
         });

@@ -127,19 +127,33 @@ function lifecycleComparableTaskReadme(markdown: string): string | null {
       frontmatter.sections = Object.fromEntries(
         Object.entries(frontmatter.sections).map(([key, value]) => [
           key,
-          typeof value === "string" ? stripManagedVerificationResults(value) : value,
+          key === "Findings" || key === "Notes"
+            ? ""
+            : typeof value === "string"
+              ? stripManagedVerificationResults(value)
+              : value,
         ]),
       );
     }
+    const bodyWithoutFindings = setTaskMetadataSectionEmpty(
+      setTaskMetadataSectionEmpty(stripManagedVerificationResults(parsed.body), "Findings"),
+      "Notes",
+    );
     return JSON.stringify(
       canonicalizeJson({
         frontmatter,
-        body: stripManagedVerificationResults(parsed.body),
+        body: bodyWithoutFindings,
       }),
     );
   } catch {
     return null;
   }
+}
+
+function setTaskMetadataSectionEmpty(markdown: string, heading: string): string {
+  const escapedHeading = heading.replaceAll(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+  const pattern = new RegExp(`(^|\\n)## ${escapedHeading}\\n[\\s\\S]*?(?=\\n## |$)`, "u");
+  return markdown.replace(pattern, `$1## ${heading}\n`);
 }
 
 export function taskReadmesHaveOnlyLifecycleDrift(before: string, after: string): boolean {

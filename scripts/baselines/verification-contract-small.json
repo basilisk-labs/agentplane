@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "kind": "verification_contract_benchmark_baseline",
+  "fixture": "small-localized-reversible-no-external-effects",
+  "anchor_commit": "e4ec4520ded988c60db3261714e68b5e22ac4e1f",
+  "route": "full-fast",
+  "full_cli_regression_selected": true,
+  "selected_groups": 18,
+  "duplicate_build_invocations": 3,
+  "lifecycle_control_commands": 1,
+  "measurement": {
+    "method": "detached-worktree-execution",
+    "command": "AGENTPLANE_FAST_CHANGED_FILES='<fixture paths>' bun run ci:local:fast",
+    "samples": 3,
+    "durations_ms": [338830, 367280, 639980],
+    "p50_ms": 367280,
+    "p95_ms": 639980,
+    "note": "The third sample ran while the host was contended. All samples completed the full historical fast route and passed 557 test files plus 12 critical CLI chunks."
+  }
+}

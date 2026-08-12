@@ -61,6 +61,16 @@ export {
 export { generateTaskId, TASK_ID_ALPHABET, timestampIdPrefix } from "./task-id.js";
 
 export {
+  componentForVerificationPath,
+  computeVerificationContractKernel,
+  isCentralVerificationPath,
+  repositoryEffectsForPath,
+  type VerificationContractKernelInput,
+  type VerificationContractPhase,
+  type VerificationContractKernelResult,
+} from "./verification-contract.js";
+
+export {
   isTaskStatus,
   normalizeTaskStatus,
   parseTaskStatus,
@@ -136,6 +146,7 @@ export {
   type TaskExecutionDeclarationV1,
   type TaskExecutionUncertainty,
   type TaskVerificationObservation,
+  type TaskVerificationContract,
   type TaskExternalEffect,
   type TaskRepositoryEffect,
   type TaskSyncConflict,

@@ -107,10 +107,13 @@ async function seedRepoLocalWebsiteNodeModules(root: string): Promise<void> {
 }
 
 async function seedRepoLocalCorePackage(root: string): Promise<void> {
+  await mkdir(path.join(root, "packages", "core"), { recursive: true });
   const packageDir = path.join(root, "packages", "agentplane", "node_modules", "@agentplaneorg");
   await mkdir(packageDir, { recursive: true });
+  const coreTarget =
+    process.platform === "win32" ? path.join(root, "packages", "core") : "../../../core";
   await symlink(
-    path.join(workspaceRoot, "packages", "core"),
+    coreTarget,
     path.join(packageDir, "core"),
     process.platform === "win32" ? "junction" : "dir",
   );
@@ -329,6 +332,18 @@ describe(
         expect(
           await pathExists(path.join(worktreePath, "packages", "agentplane", "node_modules")),
         ).toBe(true);
+        expect(
+          await realpath(
+            path.join(
+              worktreePath,
+              "packages",
+              "agentplane",
+              "node_modules",
+              "@agentplaneorg",
+              "core",
+            ),
+          ),
+        ).toBe(await realpath(path.join(worktreePath, "packages", "core")));
         expect(await pathExists(path.join(worktreePath, "website", "node_modules"))).toBe(true);
         expect(await pathExists(path.join(worktreePath, "agentplane-recipes", "index.json"))).toBe(
           true,

@@ -25,6 +25,7 @@ describe("Core CI workflow contract", () => {
       "windows",
       "coverage",
       "cli_critical",
+      "real_e2e",
       "package_runtime_core",
       "package_runtime_recipes",
       "security",
@@ -37,6 +38,9 @@ describe("Core CI workflow contract", () => {
     }
     expect(workflow).toContain("verify-tests:");
     expect(workflow).toContain("run: bun run test:fast:ci");
+    expect(workflow).toContain("verify-real-e2e:");
+    expect(workflow).toContain("needs.plan.outputs.real_e2e == 'true'");
+    expect(workflow).toContain("--scenario packaged-candidate-flow,hosted-boundary-matrix");
     expect(workflow).toContain("verify-docs:");
     expect(workflow).toContain("verify-security:");
     expect(workflow).not.toContain("verify-unit:");
@@ -50,6 +54,7 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("name: PR verification");
     expect(workflow).toContain("AGENTPLANE_CI_PLAN_JSON: ${{ needs.plan.outputs.plan_json }}");
     expect(workflow).toContain('"verify-security":"${{ needs.verify-security.result }}"');
+    expect(workflow).toContain('"verify-real-e2e":"${{ needs.verify-real-e2e.result }}"');
     expect(workflow).toContain("run: node scripts/checks/evaluate-github-ci.mjs");
   });
 
@@ -65,6 +70,7 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("name: Release-ready manifest");
     expect(workflow).toContain("needs.plan.outputs.release_ready == 'true'");
     expect(workflow).toContain("needs.verify-tests.result == 'success'");
+    expect(workflow).toContain("needs.verify-real-e2e.result == 'success'");
     expect(workflow).toContain("needs.verify-security.result == 'success'");
     expect(workflow).toContain("needs.verify-docs.result == 'success'");
     expect(workflow).toContain("node scripts/manifest.mjs release-ready");

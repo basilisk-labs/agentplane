@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import { appendFileSync, readFileSync } from "node:fs";
 
 import { buildGithubCiCapabilityPlan } from "../lib/github-ci-capabilities.mjs";
+import { readTaskVerificationEffects } from "../lib/task-verification-contracts.mjs";
 
 function runGit(args) {
   return execFileSync("git", args, {
@@ -59,12 +60,50 @@ const eventName = process.env.GITHUB_EVENT_NAME ?? "";
 const exactShaRecovery =
   eventName === "workflow_dispatch" &&
   Boolean(process.env.AGENTPLANE_RELEASE_RECOVERY_SHA || event.inputs?.sha);
+const headParent = eventName === "pull_request" ? runGit(["rev-parse", "HEAD^"]) : "";
+const headChangedFiles = headParent
+  ? runGit(["diff", "--name-only", headParent, "HEAD"]).split("\n").filter(Boolean)
+  : [];
+const lifecycleOnlyHead =
+  headChangedFiles.length > 0 &&
+  headChangedFiles.every((filePath) => /^\.agentplane\/tasks\//u.test(filePath));
+async function hasSuccessfulParentVerification(parentSha) {
+  const token = String(process.env.GITHUB_TOKEN ?? "").trim();
+  const repository = String(process.env.GITHUB_REPOSITORY ?? "").trim();
+  const apiUrl = String(process.env.GITHUB_API_URL ?? "https://api.github.com").replace(/\/$/u, "");
+  if (!token || !repository || !/^[0-9a-f]{40}$/u.test(parentSha)) return false;
+  const response = await fetch(`${apiUrl}/repos/${repository}/commits/${parentSha}/check-runs`, {
+    headers: {
+      Accept: "application/vnd.github+json",
+      Authorization: `Bearer ${token}`,
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
+  });
+  if (!response.ok) return false;
+  const payload = await response.json();
+  return Array.isArray(payload.check_runs)
+    ? payload.check_runs.some(
+        (check) => check?.name === "PR verification" && check?.conclusion === "success",
+      )
+    : false;
+}
+const canReuseVerifiedParent =
+  lifecycleOnlyHead && (await hasSuccessfulParentVerification(headParent));
+const headRef = process.env.GITHUB_HEAD_REF ?? event.pull_request?.head?.ref ?? "";
+const taskIdFromHead = /^task\/([^/]+)\//u.exec(headRef)?.[1] ?? null;
+const semanticEffects = readTaskVerificationEffects([
+  ...changedFiles,
+  ...(taskIdFromHead ? [`.agentplane/tasks/${taskIdFromHead}/README.md`] : []),
+]);
 const plan = buildGithubCiCapabilityPlan({
   changedFiles,
   eventName,
-  headRef: process.env.GITHUB_HEAD_REF ?? event.pull_request?.head?.ref ?? "",
+  headRef,
   ref: process.env.GITHUB_REF ?? "",
   exactShaRecovery,
+  lifecycleOnlyHead: canReuseVerifiedParent,
+  reuseSha: headParent,
+  semanticEffects,
 });
 const capabilities = plan.capabilities;
 
@@ -97,10 +136,14 @@ appendOutput(
 appendOutput("codeql_languages", plan.codeql_languages.join(","));
 appendOutput("release_ready", plan.release_ready ? "true" : "false");
 appendOutput("exact_sha_recovery", plan.exact_sha_recovery ? "true" : "false");
+appendOutput("lifecycle_only_head", plan.lifecycle_only_head ? "true" : "false");
+appendOutput("reuse_sha", plan.reuse_sha);
 appendOutput("changed_files", plan.changed_files.join("\n"));
 appendOutput("changed_files_count", String(plan.changed_files_count));
 appendOutput("expected_jobs", plan.expected_jobs.join(","));
 appendOutput("executing_jobs_count", String(plan.executing_jobs_count));
+appendOutput("verification_contract_digest", plan.verification_contract.digest);
+appendOutput("requires_real_e2e", plan.verification_contract.requires_real_e2e ? "true" : "false");
 const aggregatePlan = { ...plan };
 delete aggregatePlan.local_execution_plan;
 appendOutput("plan_json", JSON.stringify(aggregatePlan));

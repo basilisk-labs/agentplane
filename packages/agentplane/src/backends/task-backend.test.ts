@@ -1,4 +1,5 @@
 import type { TaskRecord } from "@agentplaneorg/core/tasks";
+import { computeVerificationContractKernel } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
@@ -626,6 +627,72 @@ describe("task-backend helpers", () => {
         verification_results: [],
         authority_violations: [],
       },
+    });
+  });
+
+  it("taskRecordToData preserves the versioned verification contract", () => {
+    const verificationContract = computeVerificationContractKernel({
+      phase: "task",
+      declaredRepositoryEffects: ["repository_write", "source_code"],
+    });
+    const record = {
+      id: "202608120001-CONTRACT",
+      frontmatter: {
+        id: "202608120001-CONTRACT",
+        title: "Verification contract",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        execution_contract: {
+          schema_version: 1,
+          source: "agent_declared",
+          declaration: {
+            schema_version: 2,
+            preferred_mode: "direct",
+            scope_roots: ["packages/app"],
+            repository_effects: ["repository_write", "source_code"],
+            external_effects: [],
+            requirements_uncertainty: "bounded",
+            implementation_uncertainty: "bounded",
+            reversibility: "reversible",
+            rationale: ["localized implementation"],
+          },
+          selected_mode: "direct",
+          repository_mode: "direct",
+          reason_codes: ["agent_preferred_direct_compatible"],
+          authority: {
+            writable_roots: ["packages/app"],
+            allowed_repository_effects: ["repository_write", "source_code"],
+            forbidden_repository_effects: [],
+            allowed_external_effects: [],
+            forbidden_external_effects: [],
+          },
+          safety: {
+            requires_worktree: false,
+            requires_user_approval: false,
+            approval_effects: [],
+          },
+          verification: {
+            required_evidence: ["task_outcome"],
+            contract: verificationContract,
+          },
+          observed: {
+            repository_effects: [],
+            external_effects: [],
+            changed_paths: [],
+            changed_components: [],
+            verification_results: [],
+            authority_violations: [],
+          },
+        },
+      },
+      body: "",
+    } as unknown as TaskRecord;
+
+    expect(taskRecordToData(record).execution_contract?.verification.contract).toMatchObject({
+      source: "execution_contract",
+      selected_checks: ["affected_unit_integration", "critical_paths", "task_outcome"],
+      requires_full_regression: false,
     });
   });
 

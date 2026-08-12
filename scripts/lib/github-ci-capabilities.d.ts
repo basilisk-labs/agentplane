@@ -8,6 +8,7 @@ export type GithubCiCapabilities = {
   windows: boolean;
   coverage: boolean;
   cli_critical: boolean;
+  real_e2e: boolean;
   package_runtime_core: boolean;
   package_runtime_recipes: boolean;
   codeql_javascript: boolean;
@@ -24,6 +25,8 @@ export type GithubCiCapabilityPlan = {
   changed_files: string[];
   changed_files_count: number;
   exact_sha_recovery: boolean;
+  lifecycle_only_head: boolean;
+  reuse_sha: string;
   release_ready: boolean;
   unknown_paths: boolean;
   capabilities: GithubCiCapabilities;
@@ -39,6 +42,14 @@ export function buildGithubCiCapabilityPlan(input: {
   headRef?: string;
   ref?: string;
   exactShaRecovery?: boolean;
+  lifecycleOnlyHead?: boolean;
+  reuseSha?: string;
+  semanticEffects?: {
+    declaredRepositoryEffects?: string[];
+    declaredExternalEffects?: string[];
+    observedRepositoryEffects?: string[];
+    observedExternalEffects?: string[];
+  };
 }): GithubCiCapabilityPlan;
 
 export function evaluateGithubCiAggregate(input: {
