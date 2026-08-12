@@ -86,7 +86,7 @@ function semanticInstruction(
 ): string {
   switch (purpose) {
     case "planning": {
-      return "Prepare a task-specific semantic plan and, when intent is unknown, return result.task_intent for explicit approval.";
+      return "Prepare a task-specific semantic plan and, when intent is unknown, return result.task_intent with result.task_intent.execution. Select direct or branch_pr semantically and declare scope roots, repository effects, external effects, uncertainty, reversibility, and rationale; do not infer them from title keywords.";
     }
     case "implementation": {
       return "Perform the scoped implementation from the prepared context and report a semantic outcome.";

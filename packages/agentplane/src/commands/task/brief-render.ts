@@ -54,6 +54,29 @@ export function reportTaskBriefText(brief: TaskBriefWithWorkflowStep, taskId: st
             },
           ]
         : []),
+      ...(brief.task.execution_contract
+        ? [
+            {
+              label: "execution_contract",
+              value:
+                `source=${brief.task.execution_contract.source} ` +
+                `preferred=${brief.task.execution_contract.declaration.preferred_mode} ` +
+                `selected=${brief.task.execution_contract.selected_mode}`,
+            },
+            {
+              label: "declared_effects",
+              value:
+                [
+                  ...brief.task.execution_contract.declaration.repository_effects,
+                  ...brief.task.execution_contract.declaration.external_effects,
+                ].join(", ") || "none",
+            },
+            {
+              label: "required_evidence",
+              value: brief.task.execution_contract.verification.required_evidence.join(", "),
+            },
+          ]
+        : []),
       { label: "phase", value: brief.route.phase },
       { label: "step_kind", value: brief.workflow_step.kind },
       { label: "step_id", value: brief.workflow_step.id },

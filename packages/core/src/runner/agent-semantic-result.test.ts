@@ -109,6 +109,16 @@ describe("agent semantic result contract", () => {
           risk_flags: ["security"],
           tags: ["cli", "parser"],
           blueprint_request: "code.branch_pr",
+          execution: {
+            schema_version: 1,
+            preferred_mode: "branch_pr",
+            scope_roots: ["packages/core"],
+            repository_effects: ["repository_write", "source_code", "security_boundary"],
+            external_effects: [],
+            uncertainty: "bounded",
+            reversibility: "reversible",
+            rationale: ["security boundary changes require isolated review"],
+          },
         },
       }).task_intent,
     ).toEqual({
@@ -117,6 +127,16 @@ describe("agent semantic result contract", () => {
       risk_flags: ["security"],
       tags: ["cli", "parser"],
       blueprint_request: "code.branch_pr",
+      execution: {
+        schema_version: 1,
+        preferred_mode: "branch_pr",
+        scope_roots: ["packages/core"],
+        repository_effects: ["repository_write", "source_code", "security_boundary"],
+        external_effects: [],
+        uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["security boundary changes require isolated review"],
+      },
     });
     expect(
       listAgentSemanticResultSchemaErrors({

@@ -40,6 +40,7 @@ import {
   branchSupervisorArtifactCommitMessage,
   commitBranchSupervisorTaskArtifacts,
 } from "./branch-task-supervisor-artifact-commit.js";
+import { recordObservedTaskExecutionContract } from "./task-execution-contract-observation.js";
 
 function operationId(decision: TaskRouteDecision): string | null {
   return decision.workflowStep.kind === "cli_operation" ? decision.workflowStep.operation.id : null;
@@ -297,6 +298,12 @@ async function executeBranchImplementationEpisode(opts: {
       });
     }
     const commit = implementation.evidence.implementation_commit;
+    await recordObservedTaskExecutionContract({
+      command,
+      task: currentTask,
+      changed_paths: implementation.evidence.changed_paths,
+      preserved_commit: commit,
+    });
     await cmdTaskSetStatus({
       ctx: command,
       cwd: checkout,

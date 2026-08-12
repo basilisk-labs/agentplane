@@ -11,6 +11,7 @@ import {
 
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
+import type { TaskExecutionDeclaration } from "@agentplaneorg/core/tasks";
 
 installRunCliIntegrationHarness();
 
@@ -41,6 +42,7 @@ async function writePlannerResult(opts: {
   packet: AgentPacket;
   summary: string;
   includeIntent: boolean;
+  execution?: TaskExecutionDeclaration;
 }): Promise<string> {
   const exchange = opts.packet.exchange;
   if (!exchange) throw new Error("expected external-agent exchange");
@@ -73,6 +75,16 @@ async function writePlannerResult(opts: {
                   mutation_scope: "code",
                   risk_flags: [],
                   tags: ["cli", "parser"],
+                  execution: opts.execution ?? {
+                    schema_version: 1,
+                    preferred_mode: "direct",
+                    scope_roots: ["packages/agentplane/src/cli"],
+                    repository_effects: ["repository_write", "source_code", "tests"],
+                    external_effects: [],
+                    uncertainty: "bounded",
+                    reversibility: "reversible",
+                    rationale: ["localized parser change with existing tests"],
+                  },
                 },
               }
             : {}),
@@ -162,8 +174,114 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
     expect(readme).toContain('task_kind: "code"');
     expect(readme).toContain('mutation_scope: "code"');
     expect(readme).toContain('requested_mode: "auto"');
+    expect(readme).toContain("execution_contract:");
+    expect(readme).toContain('preferred_mode: "direct"');
     expect(readme).not.toContain("mutation_scope_unknown");
     const brief = await runJson(root, ["task", "brief", taskId, "--json"]);
     expect((brief.blueprint as { blueprint_id: string }).blueprint_id).toBe("code.branch_pr");
+  });
+
+  it("keeps a localized product change direct even when its wording contains deployment terms", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    const created = await runJson(root, [
+      "task",
+      "create",
+      "Add the deployment badge to the local preview card",
+      "--description",
+      "Implement the badge component and its unit test without external effects.",
+      "--json",
+    ]);
+    const taskId = created.task_id as string;
+    const issued = (await runJson(root, [
+      "task",
+      "advance",
+      taskId,
+      "--agent-json",
+    ])) as AgentPacket;
+    const resultPath = await writePlannerResult({
+      packet: issued,
+      summary: "Implement the preview badge and verify the component test.",
+      includeIntent: true,
+      execution: {
+        schema_version: 1,
+        preferred_mode: "direct",
+        scope_roots: ["packages/app/src/components/preview-badge.tsx"],
+        repository_effects: ["repository_write", "source_code", "tests"],
+        external_effects: [],
+        uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["localized UI change with no provider or deployment action"],
+      },
+    });
+
+    await runJson(root, ["task", "advance", taskId, "--result", resultPath, "--agent-json"]);
+    const brief = await runJson(root, ["task", "brief", taskId, "--json"]);
+    expect(brief.workflow).toMatchObject({ mode: "direct" });
+    expect(brief.blueprint).toMatchObject({ blueprint_id: "code.direct" });
+    expect(brief.task).toMatchObject({
+      execution_contract: {
+        source: "agent_declared",
+        selected_mode: "direct",
+        reason_codes: ["agent_preferred_direct_compatible"],
+      },
+    });
+  });
+
+  it("escalates a user product SDK and schema change before implementation", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    const created = await runJson(root, [
+      "task",
+      "create",
+      "Expose a new SDK capability and persist its schema",
+      "--json",
+    ]);
+    const taskId = created.task_id as string;
+    const issued = (await runJson(root, [
+      "task",
+      "advance",
+      taskId,
+      "--agent-json",
+    ])) as AgentPacket;
+    const resultPath = await writePlannerResult({
+      packet: issued,
+      summary: "Update the SDK surface, schema, compatibility tests, and migration evidence.",
+      includeIntent: true,
+      execution: {
+        schema_version: 1,
+        preferred_mode: "direct",
+        scope_roots: ["packages/sdk", "schemas"],
+        repository_effects: ["repository_write", "source_code", "tests", "public_api", "schema"],
+        external_effects: [],
+        uncertainty: "bounded",
+        reversibility: "recovery_required",
+        rationale: ["public contract and persisted schema change atomically"],
+      },
+    });
+
+    await runJson(root, ["task", "advance", taskId, "--result", resultPath, "--agent-json"]);
+    const brief = await runJson(root, ["task", "brief", taskId, "--json"]);
+    expect(brief.workflow).toMatchObject({ mode: "branch_pr" });
+    expect(brief.task).toMatchObject({
+      execution_contract: {
+        selected_mode: "branch_pr",
+        safety: { requires_worktree: true, requires_user_approval: false },
+      },
+    });
+    const contract = (
+      brief.task as { execution_contract: { verification: { required_evidence: string[] } } }
+    ).execution_contract;
+    expect(contract.verification.required_evidence).toEqual(
+      expect.arrayContaining([
+        "repository_effect:public_api",
+        "repository_effect:schema",
+        "hosted_integration",
+      ]),
+    );
   });
 });

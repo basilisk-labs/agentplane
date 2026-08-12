@@ -31,61 +31,19 @@ const RISK_ROUTE: Partial<Record<RiskFlag, BlueprintId>> = {
   security: "ops.approval",
 };
 
-const POST_RUN_DOMAIN_TAGS = [
-  "post-run",
-  "post_run",
-  "retrospective",
-  "improvement",
-  "follow-up",
-] as const;
-const PERFORMANCE_DOMAIN_TAGS = [
-  "performance",
-  "benchmark",
-  "benchmarks",
-  "perf",
-  "speed",
-  "latency",
-] as const;
-const QUALITY_DOMAIN_TAGS = [
-  "ci",
-  "coverage",
-  "knip",
-  "lint",
-  "flaky",
-  "regression",
-  "testing",
-  "tests",
-] as const;
-
-function normalizeTags(tags: readonly string[]): Set<string> {
-  return new Set(tags.map((tag) => tag.trim().toLowerCase()).filter(Boolean));
-}
-
 function effectiveMutation(input: BlueprintResolveInput): MutationKind {
   return input.mutationScope ?? input.mutation;
 }
 
-function includesAny(values: Set<string>, candidates: readonly string[]): boolean {
-  return candidates.some((candidate) => values.has(candidate));
-}
-
 function inferTaskKind(input: BlueprintResolveInput): TaskKind {
   if (input.taskKind) return input.taskKind;
-  const tags = normalizeTags(input.tags);
-  const title = `${input.title ?? ""} ${input.description ?? ""}`.toLowerCase();
   const mutation = effectiveMutation(input);
 
-  if (mutation === "release" || includesAny(tags, ["release", "publish"])) return "release";
-  if (mutation === "ops" || includesAny(tags, ["ops", "deploy", "config"])) return "ops";
-  if (mutation === "code" || includesAny(tags, ["code", "backend", "frontend", "cli"])) {
-    return "code";
-  }
-  if (mutation === "docs" || includesAny(tags, ["docs", "documentation", "roadmap"])) {
-    return "docs";
-  }
-  if (includesAny(tags, ["content", "copy", "editorial", "marketing"])) return "content";
-  if (title.includes("write") || title.includes("draft") || title.includes("copy"))
-    return "content";
+  if (mutation === "release") return "release";
+  if (mutation === "ops") return "ops";
+  if (mutation === "code") return "code";
+  if (mutation === "docs") return "docs";
+  if (mutation === "context") return "context";
   return "analysis";
 }
 
@@ -126,53 +84,6 @@ function preferredBlueprintId(input: BlueprintResolveInput): BlueprintId | undef
       if (typeof id === "string" && id.trim()) return id.trim() as BlueprintId;
     }
     if (typeof value === "string" && value.trim()) return value.trim() as BlueprintId;
-  }
-  return undefined;
-}
-
-function textSignal(input: BlueprintResolveInput): string {
-  return `${input.title ?? ""} ${input.description ?? ""}`.toLowerCase();
-}
-
-function selectSpecializedCodeBlueprintId(opts: {
-  input: BlueprintResolveInput;
-  taskKind: TaskKind;
-}): { id: BlueprintId; reason: string } | undefined {
-  if (opts.taskKind !== "code") return undefined;
-  if (opts.input.workflowMode === "direct") return undefined;
-
-  const tags = normalizeTags(opts.input.tags);
-  const text = textSignal(opts.input);
-  if (
-    includesAny(tags, POST_RUN_DOMAIN_TAGS) ||
-    /\bpost[-_ ]run\b|\bafter[-_ ]action\b|\bretrospective\b|\bimprovement review\b|\bfollow[-_ ]up tasks\b/.test(
-      text,
-    )
-  ) {
-    return {
-      id: "post_run.improvement_review",
-      reason: "specialized code domain resolved to post_run.improvement_review",
-    };
-  }
-  if (
-    includesAny(tags, PERFORMANCE_DOMAIN_TAGS) ||
-    /\bbenchmark\b|\bperformance\b|\bfaster\b|\bslower\b|\blatency\b|\bthroughput\b/.test(text)
-  ) {
-    return {
-      id: "performance.benchmark",
-      reason: "specialized code domain resolved to performance.benchmark",
-    };
-  }
-  if (
-    includesAny(tags, QUALITY_DOMAIN_TAGS) ||
-    /\bfix ci\b|\bfailing check\b|\bfailing test\b|\bflaky\b|\bregression\b|\bcoverage\b|\bknip\b|\blint\b/.test(
-      text,
-    )
-  ) {
-    return {
-      id: "quality.regression",
-      reason: "specialized code domain resolved to quality.regression",
-    };
   }
   return undefined;
 }
@@ -230,7 +141,11 @@ function selectRiskBlueprintId(riskFlags: readonly RiskFlag[]): BlueprintId | un
   return undefined;
 }
 
-function selectBlueprint(opts: { input: BlueprintResolveInput; registry: BlueprintRegistry }): {
+function selectBlueprint(opts: {
+  input: BlueprintResolveInput;
+  registry: BlueprintRegistry;
+  projectBlueprintIds?: readonly BlueprintId[];
+}): {
   blueprint: Blueprint;
   reasons: string[];
   stopReasons: StopReason[];
@@ -238,16 +153,20 @@ function selectBlueprint(opts: { input: BlueprintResolveInput; registry: Bluepri
   const input = opts.input;
   const riskFlags = input.riskFlags ?? [];
   const riskBlueprintId = selectRiskBlueprintId(riskFlags);
-  const taskKind = inferTaskKind(input);
-  const specializedCodeBlueprint = selectSpecializedCodeBlueprintId({ input, taskKind });
-  const inferredBlueprintId =
-    riskBlueprintId ??
-    specializedCodeBlueprint?.id ??
-    blueprintForTaskKind(taskKind, input.workflowMode);
   const requestedBlueprintId = input.explicitBlueprintId ?? input.blueprintRequest;
   const preferredId =
     riskBlueprintId || requestedBlueprintId ? undefined : preferredBlueprintId(input);
   const preferredBlueprint = preferredId ? getBlueprint(preferredId, opts.registry) : undefined;
+  const preferredIsTrustedProjectBlueprint =
+    preferredId !== undefined && opts.projectBlueprintIds?.includes(preferredId) === true;
+  const semanticTaskKind = inferTaskKind(input);
+  const taskKind =
+    !input.taskKind &&
+    preferredIsTrustedProjectBlueprint &&
+    preferredBlueprint?.taskKinds.length === 1
+      ? preferredBlueprint.taskKinds[0]
+      : semanticTaskKind;
+  const inferredBlueprintId = riskBlueprintId ?? blueprintForTaskKind(taskKind, input.workflowMode);
   const selectedId: BlueprintId =
     requestedBlueprintId ??
     (preferredId &&
@@ -271,10 +190,11 @@ function selectBlueprint(opts: { input: BlueprintResolveInput; registry: Bluepri
     stopReasons.push(...explicitCompatibilityStop({ blueprint, input }));
   } else if (riskBlueprintId) {
     reasons.push(`risk flags require ${riskBlueprintId}: ${riskFlags.join(", ")}`);
-  } else if (selectedId === specializedCodeBlueprint?.id) {
-    reasons.push(specializedCodeBlueprint.reason);
   } else if (preferredId && selectedId === preferredId) {
     reasons.push(`recipe preferred compatible blueprint: ${preferredId}`);
+    if (!input.taskKind && preferredIsTrustedProjectBlueprint && taskKind !== semanticTaskKind) {
+      reasons.push(`trusted project blueprint declared task kind: ${taskKind}`);
+    }
   } else if (preferredId && !preferredBlueprint) {
     reasons.push(`recipe preferred unknown blueprint ignored: ${preferredId}`);
   } else if (preferredId) {
@@ -313,7 +233,11 @@ export function resolveBlueprint(opts: {
   projectBlueprintIds?: readonly BlueprintId[];
 }): ResolvedBlueprint {
   const registry = opts.registry ?? createBlueprintRegistry();
-  const { blueprint, reasons, stopReasons } = selectBlueprint({ input: opts.input, registry });
+  const { blueprint, reasons, stopReasons } = selectBlueprint({
+    input: opts.input,
+    registry,
+    projectBlueprintIds: opts.projectBlueprintIds,
+  });
   if (opts.projectBlueprintIds?.includes(blueprint.id)) {
     reasons.push(`trusted project-local blueprint selected: ${blueprint.id}`);
   }

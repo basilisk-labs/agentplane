@@ -110,6 +110,72 @@ const TASK_EXECUTION_ROUTE_SCHEMA = z
     frozen: z.literal(true),
   })
   .strict();
+const TASK_REPOSITORY_EFFECT_SCHEMA = z.enum([
+  "repository_write",
+  "documentation",
+  "source_code",
+  "tests",
+  "public_api",
+  "schema",
+  "dependencies",
+  "ci",
+  "release_metadata",
+  "security_boundary",
+]);
+const TASK_EXTERNAL_EFFECT_SCHEMA = z.enum([
+  "network_read",
+  "external_write",
+  "credentials",
+  "publish",
+  "deploy",
+  "destructive_git",
+]);
+const TASK_EXECUTION_DECLARATION_SCHEMA = z
+  .object({
+    schema_version: z.literal(1),
+    preferred_mode: z.enum(["direct", "branch_pr"]),
+    scope_roots: z.array(NON_EMPTY_STRING),
+    repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
+    external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
+    uncertainty: z.enum(["bounded", "material"]),
+    reversibility: z.enum(["reversible", "recovery_required", "irreversible"]),
+    rationale: z.array(NON_EMPTY_STRING).min(1),
+  })
+  .strict();
+const TASK_EXECUTION_CONTRACT_SCHEMA = z
+  .object({
+    schema_version: z.literal(1),
+    source: z.enum(["agent_declared", "legacy_compatibility"]),
+    declaration: TASK_EXECUTION_DECLARATION_SCHEMA,
+    selected_mode: z.enum(["direct", "branch_pr"]),
+    repository_mode: z.enum(["direct", "branch_pr"]),
+    reason_codes: z.array(NON_EMPTY_STRING).min(1),
+    safety: z
+      .object({
+        requires_worktree: z.boolean(),
+        requires_user_approval: z.boolean(),
+        approval_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
+      })
+      .strict(),
+    verification: z.object({ required_evidence: z.array(NON_EMPTY_STRING).min(1) }).strict(),
+    observed: z
+      .object({
+        repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
+        changed_paths: z.array(NON_EMPTY_STRING),
+      })
+      .strict(),
+    escalation: z
+      .object({
+        from: z.literal("direct"),
+        to: z.literal("branch_pr"),
+        reason_codes: z.array(NON_EMPTY_STRING).min(1),
+        preserved_changed_paths: z.array(NON_EMPTY_STRING).min(1),
+        preserved_commit: NON_EMPTY_STRING.optional(),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict();
 
 const TASK_ORIGIN_SCHEMA = z
   .object({
@@ -357,6 +423,7 @@ export const TASK_README_FRONTMATTER_ZOD_SCHEMA = z
     runner: RUNNER_OUTCOME_SCHEMA.optional(),
     token_usage: TASK_TOKEN_USAGE_SCHEMA.optional(),
     execution_route: TASK_EXECUTION_ROUTE_SCHEMA.optional(),
+    execution_contract: TASK_EXECUTION_CONTRACT_SCHEMA.optional(),
     sync: TASK_SYNC_ENVELOPE_SCHEMA.optional(),
     commit: TASK_COMMIT_SCHEMA.optional(),
     comments: z.array(TASK_COMMENT_SCHEMA),
@@ -387,6 +454,7 @@ const TASKS_EXPORT_TASK_SCHEMA = z
     runner: RUNNER_OUTCOME_SCHEMA.optional(),
     token_usage: TASK_TOKEN_USAGE_SCHEMA.optional(),
     execution_route: TASK_EXECUTION_ROUTE_SCHEMA.optional(),
+    execution_contract: TASK_EXECUTION_CONTRACT_SCHEMA.optional(),
     depends_on: z.array(NON_EMPTY_STRING),
     tags: z.array(NON_EMPTY_STRING),
     task_kind: TASK_KIND_SCHEMA.optional(),

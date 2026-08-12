@@ -209,6 +209,7 @@ describe("direct task finalization", () => {
     ).resolves.toEqual({
       artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/implementation-evidence.json`,
       implementation_commit: "def456",
+      changed_paths: ["packages/agentplane/src/index.ts"],
     });
     const evidence = mocks.writeJson.mock.calls[0]?.[1] as {
       implementation_commit: string;

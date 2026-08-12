@@ -108,7 +108,7 @@ describe("resolveBlueprint", () => {
   });
 
   it("resolves content-only work to content.light", () => {
-    const resolved = resolve({ tags: ["content"], mutation: "none" });
+    const resolved = resolve({ tags: ["content"], taskKind: "content", mutation: "none" });
 
     expect(resolved.blueprint.id).toBe("content.light");
   });
@@ -160,12 +160,13 @@ describe("resolveBlueprint", () => {
     );
   });
 
-  it("routes benchmark, post-run, and regression code domains to specialized branch PR blueprints", () => {
+  it("uses agent-selected specialized blueprints instead of classifying product language", () => {
     expect(
       resolve({
         mutation: "code",
         workflowMode: "branch_pr",
         title: "Add post-run improvement review follow-up tasks",
+        blueprintRequest: "post_run.improvement_review",
       }).blueprint.id,
     ).toBe("post_run.improvement_review");
     expect(
@@ -173,6 +174,7 @@ describe("resolveBlueprint", () => {
         mutation: "code",
         workflowMode: "branch_pr",
         tags: ["code", "performance"],
+        blueprintRequest: "performance.benchmark",
       }).blueprint.id,
     ).toBe("performance.benchmark");
     expect(
@@ -180,11 +182,12 @@ describe("resolveBlueprint", () => {
         mutation: "code",
         workflowMode: "branch_pr",
         title: "Fix flaky CI coverage regression",
+        blueprintRequest: "quality.regression",
       }).blueprint.id,
     ).toBe("quality.regression");
   });
 
-  it("keeps direct workflow code tasks on the direct route despite specialized domain hints", () => {
+  it("does not let misleading title or tag language override structured intent", () => {
     expect(
       resolve({
         mutation: "code",
@@ -308,6 +311,7 @@ describe("resolveBlueprint", () => {
   it("uses compatible recipe preferred blueprints as route hints", () => {
     const resolved = resolve({
       tags: ["content"],
+      taskKind: "content",
       mutation: "none",
       recipeHints: [
         {
@@ -480,6 +484,7 @@ describe("resolveBlueprint", () => {
       mutation: "code",
       mutationScope: "code",
       workflowMode: "branch_pr",
+      blueprintRequest: "performance.benchmark",
     };
     const output = explainResolvedBlueprint({
       resolved: resolve(input),
@@ -531,7 +536,9 @@ describe("resolveBlueprint", () => {
   });
 
   it("infers task kind without constructing a resolved blueprint", () => {
-    expect(inferBlueprintTaskKind({ mutation: "none", tags: ["editorial"] })).toBe("content");
+    expect(
+      inferBlueprintTaskKind({ mutation: "none", taskKind: "content", tags: ["editorial"] }),
+    ).toBe("content");
     expect(inferBlueprintTaskKind({ mutation: "release", tags: [] })).toBe("release");
   });
 });

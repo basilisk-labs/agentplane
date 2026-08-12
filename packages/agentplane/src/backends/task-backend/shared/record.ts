@@ -97,6 +97,150 @@ function normalizeExecutionRoute(value: unknown): TaskData["execution_route"] {
   };
 }
 
+const REPOSITORY_EFFECTS = new Set([
+  "repository_write",
+  "documentation",
+  "source_code",
+  "tests",
+  "public_api",
+  "schema",
+  "dependencies",
+  "ci",
+  "release_metadata",
+  "security_boundary",
+]);
+const EXTERNAL_EFFECTS = new Set([
+  "network_read",
+  "external_write",
+  "credentials",
+  "publish",
+  "deploy",
+  "destructive_git",
+]);
+
+function normalizeStringList(value: unknown): string[] | null {
+  if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || !item.trim())) {
+    return null;
+  }
+  return [...new Set(value as string[])];
+}
+
+function normalizeExecutionContract(value: unknown): TaskData["execution_contract"] {
+  if (!isRecord(value) || value.schema_version !== 1 || !isRecord(value.declaration)) {
+    return undefined;
+  }
+  const declaration = value.declaration;
+  const scopeRoots = normalizeStringList(declaration.scope_roots);
+  const repositoryEffects = normalizeStringList(declaration.repository_effects);
+  const externalEffects = normalizeStringList(declaration.external_effects);
+  const rationale = normalizeStringList(declaration.rationale);
+  const reasons = normalizeStringList(value.reason_codes);
+  if (
+    declaration.schema_version !== 1 ||
+    (declaration.preferred_mode !== "direct" && declaration.preferred_mode !== "branch_pr") ||
+    scopeRoots === null ||
+    repositoryEffects === null ||
+    repositoryEffects.some((item) => !REPOSITORY_EFFECTS.has(item)) ||
+    externalEffects === null ||
+    externalEffects.some((item) => !EXTERNAL_EFFECTS.has(item)) ||
+    (declaration.uncertainty !== "bounded" && declaration.uncertainty !== "material") ||
+    (declaration.reversibility !== "reversible" &&
+      declaration.reversibility !== "recovery_required" &&
+      declaration.reversibility !== "irreversible") ||
+    !rationale?.length ||
+    (value.source !== "agent_declared" && value.source !== "legacy_compatibility") ||
+    (value.selected_mode !== "direct" && value.selected_mode !== "branch_pr") ||
+    (value.repository_mode !== "direct" && value.repository_mode !== "branch_pr") ||
+    !reasons?.length ||
+    !isRecord(value.safety) ||
+    typeof value.safety.requires_worktree !== "boolean" ||
+    typeof value.safety.requires_user_approval !== "boolean" ||
+    !isRecord(value.verification) ||
+    !isRecord(value.observed)
+  ) {
+    return undefined;
+  }
+  const approvalEffects = normalizeStringList(value.safety.approval_effects);
+  const requiredEvidence = normalizeStringList(value.verification.required_evidence);
+  const observedEffects = normalizeStringList(value.observed.repository_effects);
+  const changedPaths = normalizeStringList(value.observed.changed_paths);
+  if (
+    approvalEffects === null ||
+    approvalEffects.some((item) => !EXTERNAL_EFFECTS.has(item)) ||
+    !requiredEvidence?.length ||
+    observedEffects === null ||
+    observedEffects.some((item) => !REPOSITORY_EFFECTS.has(item)) ||
+    changedPaths === null
+  ) {
+    return undefined;
+  }
+  const escalation = value.escalation;
+  if (escalation !== undefined && !isRecord(escalation)) return undefined;
+  const escalationReasons = escalation ? normalizeStringList(escalation.reason_codes) : null;
+  const preservedPaths = escalation
+    ? normalizeStringList(escalation.preserved_changed_paths)
+    : null;
+  if (
+    escalation &&
+    (escalation.from !== "direct" ||
+      escalation.to !== "branch_pr" ||
+      !escalationReasons?.length ||
+      !preservedPaths?.length ||
+      (escalation.preserved_commit !== undefined &&
+        typeof escalation.preserved_commit !== "string"))
+  ) {
+    return undefined;
+  }
+  return {
+    schema_version: 1,
+    source: value.source,
+    declaration: {
+      schema_version: 1,
+      preferred_mode: declaration.preferred_mode,
+      scope_roots: scopeRoots,
+      repository_effects: repositoryEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["declaration"]["repository_effects"],
+      external_effects: externalEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["declaration"]["external_effects"],
+      uncertainty: declaration.uncertainty,
+      reversibility: declaration.reversibility,
+      rationale,
+    },
+    selected_mode: value.selected_mode,
+    repository_mode: value.repository_mode,
+    reason_codes: reasons,
+    safety: {
+      requires_worktree: value.safety.requires_worktree,
+      requires_user_approval: value.safety.requires_user_approval,
+      approval_effects: approvalEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["safety"]["approval_effects"],
+    },
+    verification: { required_evidence: requiredEvidence },
+    observed: {
+      repository_effects: observedEffects as NonNullable<
+        TaskData["execution_contract"]
+      >["observed"]["repository_effects"],
+      changed_paths: changedPaths,
+    },
+    ...(escalation
+      ? {
+          escalation: {
+            from: "direct" as const,
+            to: "branch_pr" as const,
+            reason_codes: escalationReasons ?? [],
+            preserved_changed_paths: preservedPaths ?? [],
+            ...(typeof escalation.preserved_commit === "string"
+              ? { preserved_commit: escalation.preserved_commit }
+              : {}),
+          },
+        }
+      : {}),
+  };
+}
+
 export function taskRecordToData(record: TaskRecord): TaskData {
   const fm = record.frontmatter as unknown as Record<string, unknown>;
   const comments = Array.isArray(fm.comments)
@@ -167,6 +311,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     runner: runner ?? undefined,
     token_usage: tokenUsage ?? undefined,
     execution_route: normalizeExecutionRoute(fm.execution_route),
+    execution_contract: normalizeExecutionContract(fm.execution_contract),
     sync: isRecord(fm.sync) ? (fm.sync as TaskData["sync"]) : undefined,
     commit,
     comments,

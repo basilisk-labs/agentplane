@@ -81,6 +81,9 @@ function buildMaterializedTask(opts: {
     ...(opts.draftTask.execution_route
       ? { execution_route: structuredClone(opts.draftTask.execution_route) }
       : {}),
+    ...(opts.draftTask.execution_contract
+      ? { execution_contract: structuredClone(opts.draftTask.execution_contract) }
+      : {}),
     ...(opts.draftTask.extensions
       ? { extensions: structuredClone(opts.draftTask.extensions) }
       : {}),

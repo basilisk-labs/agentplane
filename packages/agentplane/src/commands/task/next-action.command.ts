@@ -359,6 +359,22 @@ export function makeRunTaskNextActionHandler(session: {
                     },
                   ]
                 : []),
+              ...(decision.task.execution_contract
+                ? [
+                    {
+                      label: "execution_contract",
+                      value:
+                        `source=${decision.task.execution_contract.source} ` +
+                        `preferred=${decision.task.execution_contract.declaration.preferred_mode} ` +
+                        `selected=${decision.task.execution_contract.selected_mode}`,
+                    },
+                    {
+                      label: "contract_evidence",
+                      value:
+                        decision.task.execution_contract.verification.required_evidence.join(", "),
+                    },
+                  ]
+                : []),
               { label: "checkout_role", value: decision.workspace.checkoutRole },
               { label: "branch", value: decision.workspace.branch ?? "unknown" },
               { label: "base_branch", value: decision.workspace.baseBranch ?? "unknown" },

@@ -15,6 +15,7 @@ import {
   type TaskRunnerTarget,
   type TaskTokenUsage,
   type TaskExecutionRoute,
+  type TaskExecutionContract,
   type TaskSyncEnvelope,
 } from "./task-store.js";
 
@@ -487,6 +488,7 @@ export type TasksExportTask = {
   runner?: TaskRunnerOutcome;
   token_usage?: TaskTokenUsage;
   execution_route?: TaskExecutionRoute;
+  execution_contract?: TaskExecutionContract;
   sync?: TaskSyncEnvelope;
   depends_on: string[];
   tags: string[];
@@ -642,6 +644,7 @@ export async function buildTasksExportSnapshot(opts: {
       runner: normalizeTaskRunnerOutcome(fm.runner),
       token_usage: t.frontmatter.token_usage,
       execution_route: t.frontmatter.execution_route,
+      execution_contract: t.frontmatter.execution_contract,
       sync: normalizeTaskSyncEnvelope(fm.sync),
       depends_on: dependsOn,
       tags,

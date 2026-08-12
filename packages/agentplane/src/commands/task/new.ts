@@ -38,7 +38,10 @@ import {
   formatTaskBlueprintCreationPreview,
   resolveTaskBlueprintLifecycleSummary,
 } from "./blueprint-summary.js";
-import { resolveTaskExecutionRoute } from "../../runtime/task-routing/index.js";
+import {
+  resolveTaskExecutionContract,
+  resolveTaskExecutionRoute,
+} from "../../runtime/task-routing/index.js";
 import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
 
 export type TaskNewParsed = {
@@ -283,6 +286,17 @@ export async function runTaskNewParsed(opts: {
       const clarification = createClarificationContract({
         context: intakeContext,
       });
+      const routeTask = {
+        task_kind: p.taskKind,
+        mutation_scope: p.mutationScope,
+        risk_flags: p.riskFlags,
+        blueprint_request: p.blueprintRequest,
+      };
+      const executionContract = resolveTaskExecutionContract({
+        config: ctx.config,
+        requestedMode: p.route,
+        task: routeTask,
+      });
       const draft = createTaskGraphDraft({
         context: intakeContext,
         clarification,
@@ -303,13 +317,9 @@ export async function runTaskNewParsed(opts: {
             execution_route: resolveTaskExecutionRoute({
               config: ctx.config,
               requestedMode: p.route,
-              task: {
-                task_kind: p.taskKind,
-                mutation_scope: p.mutationScope,
-                risk_flags: p.riskFlags,
-                blueprint_request: p.blueprintRequest,
-              },
+              task: routeTask,
             }),
+            execution_contract: executionContract,
             ...(p.extensions ? { extensions: p.extensions } : {}),
             depends_on: p.dependsOn,
             verify: p.verify,

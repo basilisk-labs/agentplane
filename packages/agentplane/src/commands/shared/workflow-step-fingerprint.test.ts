@@ -135,6 +135,8 @@ function task(overrides: Partial<TaskData> = {}): TaskData {
     revision: 3,
     depends_on: [],
     tags: ["code"],
+    task_kind: "code",
+    mutation_scope: "code",
     verify: ["bun test"],
     plan_approval: {
       state: "approved",

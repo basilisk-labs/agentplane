@@ -4,6 +4,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
+import type { TaskData } from "../../backends/task-backend.js";
 
 const mocks = { runProcess: vi.fn() };
 const ORIGINAL_AGENT_MODE = process.env.AGENTPLANE_AGENT_MODE;
@@ -19,6 +20,37 @@ function command(root: string) {
     config: { paths: { workflow_dir: ".agentplane/tasks" } },
     resolvedProject: { gitRoot: root },
   } as never;
+}
+
+function executionContract(
+  repositoryEffects: NonNullable<
+    TaskData["execution_contract"]
+  >["declaration"]["repository_effects"],
+): NonNullable<TaskData["execution_contract"]> {
+  return {
+    schema_version: 1,
+    source: "agent_declared",
+    declaration: {
+      schema_version: 1,
+      preferred_mode: "direct",
+      scope_roots: ["docs"],
+      repository_effects: repositoryEffects,
+      external_effects: [],
+      uncertainty: "bounded",
+      reversibility: "reversible",
+      rationale: ["task-specific semantic assessment"],
+    },
+    selected_mode: "direct",
+    repository_mode: "direct",
+    reason_codes: ["agent_preferred_direct_compatible"],
+    safety: {
+      requires_worktree: false,
+      requires_user_approval: false,
+      approval_effects: [],
+    },
+    verification: { required_evidence: ["task_outcome"] },
+    observed: { repository_effects: [], changed_paths: [] },
+  };
 }
 
 async function root(): Promise<string> {
@@ -272,6 +304,29 @@ describe("direct task verification", () => {
         cwd,
       }),
     );
+  });
+
+  it("uses declared effects instead of a misleading task kind to select docs policy checks", async () => {
+    const cwd = await root();
+    mocks.runProcess
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "routing ok", stderr: "" })
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "doctor ok", stderr: "" });
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: {
+        verify: [],
+        task_kind: "code",
+        mutation_scope: "code",
+        execution_contract: executionContract(["repository_write", "documentation"]),
+      },
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+
+    expect(result).toMatchObject({ status: "passed" });
+    expect(mocks.runProcess).toHaveBeenCalledTimes(2);
   });
 
   it("does not treat an empty code-task check contract as successful verification", async () => {

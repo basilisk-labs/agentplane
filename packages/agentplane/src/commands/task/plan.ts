@@ -32,7 +32,13 @@ export type TaskPlanSetResult = {
 
 type PlanningTaskFields = Pick<
   TaskData,
-  "task_kind" | "mutation_scope" | "risk_flags" | "blueprint_request" | "tags" | "execution_route"
+  | "task_kind"
+  | "mutation_scope"
+  | "risk_flags"
+  | "blueprint_request"
+  | "tags"
+  | "execution_route"
+  | "execution_contract"
 >;
 
 function planningTaskFieldsChanged(

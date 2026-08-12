@@ -208,6 +208,7 @@ function acceptanceCriteria(opts: {
   const candidates = uniqueSorted([
     ...opts.source_manifest.verification_context.task_verify,
     ...opts.source_manifest.verification_context.verify_steps,
+    ...(opts.task_envelope.task.metadata.execution_contract?.verification.required_evidence ?? []),
   ]);
   const descriptions =
     candidates.length > 0
@@ -222,10 +223,12 @@ function acceptanceCriteria(opts: {
 
 function verificationIntent(opts: {
   source_manifest: AgentWorkOrderSourceManifest;
+  execution_contract?: RunnerTaskContextEnvelope["task"]["metadata"]["execution_contract"];
 }): AgentWorkOrderV2["verification_intent"] {
   const candidates = uniqueSorted([
     ...opts.source_manifest.verification_context.task_verify,
     ...opts.source_manifest.verification_context.verify_steps,
+    ...(opts.execution_contract?.verification.required_evidence ?? []),
   ]);
   const descriptions =
     candidates.length > 0
@@ -333,6 +336,20 @@ export function buildCanonicalAgentWorkOrder(opts: {
   const stateFingerprint = structuredClone(decision.workflowStep.preconditionFingerprint);
   const mutationPath = decision.oracle.mutationPathHint;
   const canMutate = decision.executionPacket.safeToMutate && mutationPath !== null;
+  const declaredWritableRoots = (() => {
+    if (!canMutate || mutationPath === null) return [];
+    const roots = task.metadata.execution_contract?.declaration.scope_roots;
+    if (!roots || roots.length === 0) return [mutationPath];
+    const repositoryRoot = path.resolve(mutationPath);
+    return roots.map((root) => {
+      const resolved = root === "." ? repositoryRoot : path.resolve(repositoryRoot, root);
+      const relative = path.relative(repositoryRoot, resolved).replaceAll("\\", "/");
+      if (relative === ".." || relative.startsWith("../") || path.isAbsolute(relative)) {
+        throw new Error(`Execution declaration scope escapes the authoritative checkout: ${root}`);
+      }
+      return resolved;
+    });
+  })();
   const allowedToolClasses: AgentWorkOrderV2["authority"]["allowed_tool_classes"] = canMutate
     ? [
         "repository_read",
@@ -352,7 +369,10 @@ export function buildCanonicalAgentWorkOrder(opts: {
   const summary =
     episodeSectionText({ task_envelope: taskEnvelope, section: "Summary" }) ||
     task.narrative.description;
-  const verification = verificationIntent({ source_manifest: opts.source_manifest });
+  const verification = verificationIntent({
+    source_manifest: opts.source_manifest,
+    execution_contract: task.metadata.execution_contract,
+  });
   const stopRules = uniqueSorted([
     ...decision.executionPacket.mustNot,
     decision.executionPacket.returnControlWhen,
@@ -381,7 +401,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
     state_fingerprint_policy: AGENT_WORK_ORDER_STATE_FINGERPRINT_POLICY,
     authority: {
       mutation_scope: task.metadata.mutation_scope ?? "unknown",
-      writable_roots: canMutate ? [mutationPath] : [],
+      writable_roots: declaredWritableRoots,
       protected_paths: protectedPaths(executionContext),
       allowed_tool_classes: allowedToolClasses,
       // Hosted lifecycle evidence is collected by the CLI before delegation;
