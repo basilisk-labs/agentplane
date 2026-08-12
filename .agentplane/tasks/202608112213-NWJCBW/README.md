@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -66,7 +66,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-11T23:54:43.699Z"
+  updated_at: "2026-08-12T00:17:22.153Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -76,8 +76,8 @@ execution_route:
   schema_version: 1
   selected_mode: "branch_pr"
 commit:
-  hash: "1d8f7f6bae86b4ba4e7822a5d24b075a763a8f75"
-  message: "✅ NWJCBW task: review docs projection"
+  hash: "7f48bb971ddf3af63e8854e76feb7c9f9feca490"
+  message: "✅ NWJCBW task: review migration remediations"
 comments:
   -
     author: "CODER"
@@ -88,6 +88,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -187,8 +190,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS for dc33eaaeb: migration data is preserved and detailed init warnings are visible."
+  -
+    type: "status"
+    at: "2026-08-12T00:17:22.153Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "7f48bb971ddf3af63e8854e76feb7c9f9feca490"
 doc_version: 3
-doc_updated_at: "2026-08-12T00:16:21.658Z"
+doc_updated_at: "2026-08-12T00:17:22.183Z"
 doc_updated_by: "CODER"
 description: "Remove profile-driven process variants from init, config, and runtime. New and upgraded projects must resolve to one fixed execution policy while legacy profile inputs migrate compatibly without changing workflow, runner, integrations, or explicit project approvals. Preserve task flexibility by making lifecycle and safety invariants fixed instead of imposing arbitrary autonomy tiers."
 sections:
@@ -574,8 +585,8 @@ sections:
       Resolution: Recorded exact CLI mutations, legacy aliases, canonical workflow schema values, provenance, and planned release surface digest; added checker assertions and regression expectations.
 extensions:
   implementation_commit:
-    hash: "427ccd91a4182511a118e31baaefc44de69a4142"
-    message: "📚 NWJCBW task: refresh LLM reference"
+    hash: "dc33eaaeb3985b06cc40d40313f210c02151e982"
+    message: "🐛 NWJCBW task: preserve profile migration data"
   workflow_route_baseline:
     start_head_sha: "206b349e8dd08051f695d68f8558db94b2e23cb5"
     version: 1
@@ -986,4 +997,4 @@ Implementation finding: task creation omitted explicit structured intent and def
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-11T23:54:43.699Z`
+- Updated at: `2026-08-12T00:17:22.153Z`
