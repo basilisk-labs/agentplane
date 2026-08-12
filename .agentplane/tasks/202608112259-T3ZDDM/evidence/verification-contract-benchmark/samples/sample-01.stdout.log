@@ -1,0 +1,124 @@
+Local CI mode: fast
+Fast CI selector: targeted (colocated) [noncentral_colocated_tests]
+
+== build (9112ms) ==
+@agentplaneorg/core build:bundle: CLI Building entry: {"commit/index":"src/commit/index.ts","config/index":"src/config/index.ts","index":"src/index.ts","fs/index":"src/fs/index.ts","git/index":"src/git/index.ts","logger":"src/logger.ts","process/index":"src/process/index.ts","project/index":"src/project/index.ts","schemas/index":"src/schemas/index.ts","tasks/index":"src/tasks/index.ts","tasks/verification-contract-kernel":"src/tasks/verification-contract.ts"}
+@agentplaneorg/core build:bundle: CLI Using tsconfig: tsconfig.tsup.json
+@agentplaneorg/core build:bundle: CLI tsup v8.5.1
+@agentplaneorg/core build:bundle: CLI Using tsup config: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou/packages/core/tsup.config.ts
+@agentplaneorg/core build:bundle: CLI Target: node20
+@agentplaneorg/core build:bundle: ESM Build start
+@agentplaneorg/core build:bundle: ESM dist/tasks/index.js                        2.08 KB
+@agentplaneorg/core build:bundle: ESM dist/tasks/verification-contract-kernel.js 168.00 B
+@agentplaneorg/core build:bundle: ESM dist/commit/index.js                       310.00 B
+@agentplaneorg/core build:bundle: ESM dist/chunk-QKM6QK26.js                     3.65 KB
+@agentplaneorg/core build:bundle: ESM dist/chunk-W6DG7FPO.js                     1.06 KB
+@agentplaneorg/core build:bundle: ESM dist/git/index.js                          1.04 KB
+@agentplaneorg/core build:bundle: ESM dist/chunk-4GDDC7UF.js                     23.81 KB
+@agentplaneorg/core build:bundle: ESM dist/index.js                              9.72 KB
+@agentplaneorg/core build:bundle: ESM dist/chunk-GR4IIA5M.js                     2.66 KB
+@agentplaneorg/core build:bundle: ESM dist/logger.js                             74.00 B
+@agentplaneorg/core build:bundle: ESM dist/config/index.js                       1.09 KB
+@agentplaneorg/core build:bundle: ESM dist/chunk-ST5EXNT6.js                     972.00 B
+@agentplaneorg/core build:bundle: ESM dist/chunk-WRSJDOQ2.js                     4.59 KB
+@agentplaneorg/core build:bundle: ESM dist/process/index.js                      107.00 B
+@agentplaneorg/core build:bundle: ESM dist/chunk-5WLZLUMV.js                     28.18 KB
+@agentplaneorg/core build:bundle: ESM dist/project/index.js                      71.00 B
+@agentplaneorg/core build:bundle: ESM dist/chunk-BVX2EQM3.js                     527.00 B
+@agentplaneorg/core build:bundle: ESM dist/chunk-WGZEC3MB.js                     13.66 KB
+@agentplaneorg/core build:bundle: ESM dist/chunk-OUNIYGUI.js                     44.37 KB
+@agentplaneorg/core build:bundle: ESM dist/chunk-OK66W7BB.js                     90.26 KB
+@agentplaneorg/core build:bundle: ESM dist/chunk-TOHQE52A.js                     5.35 KB
+@agentplaneorg/core build:bundle: ESM dist/schemas/index.js                      8.17 KB
+@agentplaneorg/core build:bundle: ESM dist/fs/index.js                           74.00 B
+@agentplaneorg/core build:bundle: ESM ⚡️ Build success in 307ms
+@agentplaneorg/core build:bundle: Exited with code 0
+@agentplaneorg/recipes build:bundle: CLI Building entry: {"index":"src/index.ts"}
+@agentplaneorg/recipes build:bundle: CLI Using tsconfig: tsconfig.tsup.json
+@agentplaneorg/recipes build:bundle: CLI tsup v8.5.1
+@agentplaneorg/recipes build:bundle: CLI Using tsup config: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou/packages/recipes/tsup.config.ts
+@agentplaneorg/recipes build:bundle: CLI Target: node20
+@agentplaneorg/recipes build:bundle: ESM Build start
+@agentplaneorg/recipes build:bundle: ESM dist/index.js 27.42 KB
+@agentplaneorg/recipes build:bundle: ESM ⚡️ Build success in 93ms
+@agentplaneorg/recipes build:bundle: Exited with code 0
+agentplane build:bundle: CLI Building entry: {"cli-bun":"src/cli-bun.ts","cli":"src/cli.ts","command-catalog":"src/cli/run-cli/command-catalog.ts","command-catalog/core-fast":"src/cli/run-cli/command-catalog/core-fast.ts","command-catalog/task-read":"src/cli/run-cli/command-catalog/task-read.ts","deferred-runtime":"src/cli/run-cli/deferred-runtime.ts"}
+agentplane build:bundle: CLI Using tsconfig: tsconfig.tsup.json
+agentplane build:bundle: CLI tsup v8.5.1
+agentplane build:bundle: CLI Using tsup config: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou/packages/agentplane/tsup.config.ts
+agentplane build:bundle: CLI Target: node20
+agentplane build:bundle: ESM Build start
+agentplane build:bundle: "renderTaskFrontmatter" is imported from external module "@agentplaneorg/core/tasks" but never used in "dist/command-catalog/core-fast.js".
+agentplane build:bundle: "validateTasksExportSnapshot" is imported from external module "@agentplaneorg/core/schemas" but never used in "dist/command-catalog/core-fast.js".
+agentplane build:bundle: "parseWorkflowFrontMatter" is imported from external module "@agentplaneorg/core/config" but never used in "dist/command-catalog/core-fast.js".
+agentplane build:bundle: "createInterface" is imported from external module "readline/promises" but never used in "dist/command-catalog/core-fast.js".
+agentplane build:bundle: "execFileAsync" is imported from external module "@agentplaneorg/core/process" but never used in "dist/command-catalog/core-fast.js".
+agentplane build:bundle: "gitBranchExists", "gitAddPaths", "gitCommit", "gitListBranches", "gitEnv", "gitProofEnv", "gitStagedPaths", "setPinnedBaseBranch", "gitBranchUpstream", "gitProofIsAncestor", "gitRevParse", "gitInitRepo" and "resolveInitBaseBranch" are imported from external module "@agentplaneorg/core/git" but never used in "dist/command-catalog/core-fast.js".
+agentplane build:bundle: "componentForVerificationPath" and "repositoryEffectsForPath" are imported from external module "@agentplaneorg/core/tasks" but never used in "dist/cli.js".
+agentplane build:bundle: "validateTasksExportSnapshot" is imported from external module "@agentplaneorg/core/schemas" but never used in "dist/cli.js".
+agentplane build:bundle: "createReadStream" and "createWriteStream" are imported from external module "fs" but never used in "dist/cli.js".
+agentplane build:bundle: "symlink" and "access" are imported from external module "fs/promises" but never used in "dist/cli.js".
+agentplane build:bundle: "CANONICAL_EXECUTION_PROFILE" and "resolveExecutionProfilePreset" are imported from external module "@agentplaneorg/core/config" but never used in "dist/cli.js".
+agentplane build:bundle: "startProcess" is imported from external module "@agentplaneorg/core/process" but never used in "dist/cli.js".
+agentplane build:bundle: "pathToFileURL" is imported from external module "url" but never used in "dist/cli.js".
+agentplane build:bundle: "pipeline" is imported from external module "stream/promises" but never used in "dist/cli.js".
+agentplane build:bundle: "normalizeDocSectionName", "TASK_STATUS_VALUES", "taskReadmeDocBody", "ensureDocSections", "setMarkdownSection", "componentForVerificationPath" and "repositoryEffectsForPath" are imported from external module "@agentplaneorg/core/tasks" but never used in "dist/command-catalog/task-read.js".
+agentplane build:bundle: "validateTasksExportSnapshot" is imported from external module "@agentplaneorg/core/schemas" but never used in "dist/command-catalog/task-read.js".
+agentplane build:bundle: "access", "rename", "writeFile", "appendFile" and "mkdtemp" are imported from external module "fs/promises" but never used in "dist/command-catalog/task-read.js".
+agentplane build:bundle: "default" is imported from external module "os" but never used in "dist/command-catalog/task-read.js".
+agentplane build:bundle: "findWorktreeForBranch", "gitListTaskBranches", "gitShowFile", "parseTaskIdFromBranch", "toGitPath", "gitCurrentBranch", "gitRevParse", "gitBranchExists", "gitAddPaths", "gitCommit", "gitListBranches", "gitProofEnv", "gitStagedPaths", "setPinnedBaseBranch", "gitBranchUpstream", "gitProofIsAncestor", "gitInitRepo", "resolveInitBaseBranch", "resolveBaseBranch", "gitDiffStat" and "gitDiffNames" are imported from external module "@agentplaneorg/core/git" but never used in "dist/command-catalog/task-read.js".
+agentplane build:bundle: "startProcess" and "runProcess" are imported from external module "@agentplaneorg/core/process" but never used in "dist/command-catalog/task-read.js".
+agentplane build:bundle: "pathToFileURL" is imported from external module "url" but never used in "dist/command-catalog/task-read.js".
+agentplane build:bundle: "validateCommitSubject", "extractTaskSuffix", "isTaskArtifactRefreshCommitSubject" and "parseTaskSubjectTemplate" are imported from external module "@agentplaneorg/core/commit" but never used in "dist/command-catalog/task-read.js".
+agentplane build:bundle: "createInterface" is imported from external module "readline/promises" but never used in "dist/command-catalog/task-read.js".
+agentplane build:bundle: "generateKeyPairSync" and "sign" are imported from external module "crypto" but never used in "dist/command-catalog.js".
+agentplane build:bundle: "advanceSupervisorExecutionEpisodeState", "completeSupervisorExecutionEpisode", "migrateSupervisorExecutionEpisodeJournal", "prepareReplacementSupervisorExecutionEpisodeAfterFailure", "recoverSupervisorExecutionEpisodeJournal", "reopenCompletedSupervisorExecutionEpisodeAfterStaleState", "startSupervisorExecutionEpisode", "stopSupervisorExecutionEpisode", "assertAgentWorkOrderReadyForInvocation", "AGENT_SEMANTIC_RESULT_ZOD_SCHEMA", "validateAgentSemanticResultForWorkOrder", "EXECUTION_RECEIPT_SCHEMA_VERSION", "validateExecutionReceipt", "buildAgentSemanticResultV2ValidFixtures", "createRunnerEffectOperation", "digestRunnerEffectValue", "createRunnerEffectClaim", "createRunnerEffectJournal", "createRunnerEffectOperationRef", "validateRunnerEffectClaim", "validateRunnerEffectJournal", "validateRunnerEffectOperation", "StateFingerprintPreconditionError", "assertStateFingerprintPrecondition", "createRunnerEffectResolution", "createRunnerEffectResolutionIntent", "createRunnerEffectResolutionLease", "createRunnerEffectResolutionRef", "validateRunnerEffectResolution", "validateRunnerEffectResolutionIntent" and "validateRunnerEffectResolutionLease" are imported from external module "@agentplaneorg/core/schemas" but never used in "dist/command-catalog.js".
+agentplane build:bundle: "lstatSync" is imported from external module "fs" but never used in "dist/command-catalog.js".
+agentplane build:bundle: "gitAddPaths", "gitCommit", "gitListBranches", "gitStagedPaths", "gitInitRepo" and "resolveInitBaseBranch" are imported from external module "@agentplaneorg/core/git" but never used in "dist/command-catalog.js".
+agentplane build:bundle: "StringDecoder" is imported from external module "string_decoder" but never used in "dist/command-catalog.js".
+agentplane build:bundle: "performance" is imported from external module "perf_hooks" but never used in "dist/command-catalog.js".
+agentplane build:bundle: "lintTaskVerifyStepsSection", "lintTasksSnapshot" and "parseDocSections" are imported from external module "@agentplaneorg/core/tasks" but never used in "dist/deferred-runtime.js".
+agentplane build:bundle: "validateTasksExportSnapshot", "assertAgentWorkOrderReadyForInvocation" and "renderAcrSchemaJson" are imported from external module "@agentplaneorg/core/schemas" but never used in "dist/deferred-runtime.js".
+agentplane build:bundle: "parseWorkflowFrontMatter" is imported from external module "@agentplaneorg/core/config" but never used in "dist/deferred-runtime.js".
+agentplane build:bundle: "runProcessSync" is imported from external module "@agentplaneorg/core/process" but never used in "dist/deferred-runtime.js".
+agentplane build:bundle: "DEFAULT_TASK_BRANCH_PREFIX", "clearPinnedBaseBranch" and "getPinnedBaseBranch" are imported from external module "@agentplaneorg/core/git" but never used in "dist/deferred-runtime.js".
+agentplane build:bundle: "assertAgentWorkOrderReadyForInvocation" is imported from external module "@agentplaneorg/core/schemas" but never used in "dist/cli-bun.js".
+agentplane build:bundle: ESM dist/command-catalog/core-fast.js 167.89 KB
+agentplane build:bundle: ESM dist/command-catalog/task-read.js 226.82 KB
+agentplane build:bundle: ESM dist/cli.js                       350.51 KB
+agentplane build:bundle: ESM dist/deferred-runtime.js          2.02 MB
+agentplane build:bundle: ESM dist/command-catalog.js           2.05 MB
+agentplane build:bundle: ESM dist/cli-bun.js                   3.27 MB
+agentplane build:bundle: ESM ⚡️ Build success in 6234ms
+agentplane build:bundle: generated dist/command-help.json (262 commands)
+agentplane build:bundle: Exited with code 0
+
+== format (244ms) ==
+Checking formatting...
+All matched files use Prettier code style!
+
+== lint (7990ms) ==
+
+== tests (1466ms) ==
+
+ RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou
+
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  22:01:05
+   Duration  996ms (transform 350ms, setup 0ms, import 720ms, tests 100ms, environment 0ms)
+
+
+== critical-paths (6488ms) ==
+
+ RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou
+
+
+ Test Files  16 passed (16)
+      Tests  154 passed (154)
+   Start at  22:01:06
+   Duration  5.45s (transform 7.43s, setup 0ms, import 11.57s, tests 2.33s, environment 3ms)
+
+{"schema_version":1,"kind":"verification_metrics","route":"targeted:colocated","wall_clock_ms":17103,"selected_groups":5,"executed_groups":5,"verification_amplification":1,"lifecycle_control_commands":1,"lifecycle_control":{"schema_version":1,"kind":"agentplane.lifecycle_control_budget","provenance":"observed_command_events","call_count":1,"maximum":3,"commands":["ci:local"],"ok":true},"build_invocations":1,"ok":true}
+Reusable local verification receipt recorded for 98422e105741.
