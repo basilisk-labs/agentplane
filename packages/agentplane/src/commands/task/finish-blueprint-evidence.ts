@@ -6,7 +6,10 @@ import { gitIsAncestor } from "@agentplaneorg/core/git";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { isTaskSetLocalOnlyAdvance } from "../shared/task-local-freshness.js";
-import { hasAcceptedVerificationRecord } from "../shared/task-verification-records.js";
+import {
+  hasAcceptedVerificationRecord,
+  requiredVerificationContractChecks,
+} from "../shared/task-verification-records.js";
 
 import type { LoadedFinishTask, ResolvedCommitInfo } from "./finish-shared.js";
 import { assertEvaluatorQualityReviewPassed } from "./quality-review-gate.js";
@@ -83,8 +86,7 @@ export async function assertQualityReviewBeforeFinish(opts: {
         loaded.task.commit?.hash ??
         null,
     });
-    const selectedChecks =
-      loaded.task.execution_contract?.verification.contract?.selected_checks ?? [];
+    const selectedChecks = requiredVerificationContractChecks(loaded.task);
     if (selectedChecks.length > 0) {
       const accepted = await hasAcceptedVerificationRecord({
         taskRoot: path.join(

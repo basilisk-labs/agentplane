@@ -78,13 +78,16 @@ export type VerificationContractEvidenceCoverage = {
   accepted: boolean;
 };
 
+export function requiredVerificationContractChecks(task: TaskData): string[] {
+  if (task.execution_contract?.source === "legacy_compatibility") return [];
+  return [...(task.execution_contract?.verification.contract?.selected_checks ?? [])].toSorted();
+}
+
 export function verificationContractEvidenceCoverage(
   task: TaskData,
   details: unknown,
 ): VerificationContractEvidenceCoverage {
-  const requiredChecks = [
-    ...(task.execution_contract?.verification.contract?.selected_checks ?? []),
-  ].toSorted();
+  const requiredChecks = requiredVerificationContractChecks(task);
   const normalized = normalizedCheckIds(
     parseVerificationCheckDetails(details)?.map(({ checkId }) => checkId) ?? null,
   );

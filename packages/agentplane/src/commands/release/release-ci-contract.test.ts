@@ -120,9 +120,12 @@ describe("release CI contract", () => {
     const localCi = await readRootText("scripts/checks/run-local-ci.mjs");
 
     expect(localCi).toContain("AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS");
-    expect(localCi).toContain("DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS = 10 * 60 * 1000");
+    expect(localCi).toContain("DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS = 15 * 60 * 1000");
     expect(localCi).toContain("timeout: options.timeoutMs");
     expect(localCi).toContain('timeoutLabel: "Vitest suite"');
+    expect(localCi).toContain('"Concurrency invariants (isolated)"');
+    expect(localCi).toContain("FAST_CONCURRENCY_TEST_FILES");
+    expect(localCi).toContain('maxWorkers: "1"');
     expect(localCi.indexOf("timeout: options.timeoutMs")).toBeLessThan(
       localCi.indexOf("Set AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS"),
     );

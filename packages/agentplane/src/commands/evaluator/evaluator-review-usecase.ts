@@ -9,6 +9,7 @@ import {
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { withEvidenceMutationLock } from "../evidence/evidence-mutation-lock.js";
+import { requiredVerificationContractChecks } from "../shared/task-verification-records.js";
 
 import type { EvaluatorModule } from "../../evaluators/catalog.js";
 import {
@@ -206,9 +207,7 @@ async function prepareEvaluatorReviewLocked(
     taskIds: normalizeBranchPrBatchTaskIds(opts.task, opts.task.id),
     workflowMode: opts.ctx.config.workflow_mode,
   });
-  const selectedContractChecks = [
-    ...(opts.task.execution_contract?.verification.contract?.selected_checks ?? []),
-  ];
+  const selectedContractChecks = requiredVerificationContractChecks(opts.task);
   if (selectedContractChecks.length > 0 && recordPaths.length === 0) {
     throw new CliError({
       code: "E_VALIDATION",

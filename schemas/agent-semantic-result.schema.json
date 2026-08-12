@@ -138,14 +138,6 @@
                         ]
                       }
                     },
-                    "requirements_uncertainty": {
-                      "type": "string",
-                      "enum": ["bounded", "material"]
-                    },
-                    "implementation_uncertainty": {
-                      "type": "string",
-                      "enum": ["bounded", "material"]
-                    },
                     "reversibility": {
                       "type": "string",
                       "enum": ["reversible", "recovery_required", "irreversible"]
@@ -157,6 +149,14 @@
                         "type": "string",
                         "minLength": 1
                       }
+                    },
+                    "requirements_uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
+                    },
+                    "implementation_uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
                     }
                   },
                   "required": [
@@ -165,10 +165,10 @@
                     "scope_roots",
                     "repository_effects",
                     "external_effects",
-                    "requirements_uncertainty",
-                    "implementation_uncertainty",
                     "reversibility",
-                    "rationale"
+                    "rationale",
+                    "requirements_uncertainty",
+                    "implementation_uncertainty"
                   ],
                   "additionalProperties": false
                 },
@@ -222,10 +222,6 @@
                         ]
                       }
                     },
-                    "uncertainty": {
-                      "type": "string",
-                      "enum": ["bounded", "material"]
-                    },
                     "reversibility": {
                       "type": "string",
                       "enum": ["reversible", "recovery_required", "irreversible"]
@@ -237,6 +233,10 @@
                         "type": "string",
                         "minLength": 1
                       }
+                    },
+                    "uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
                     }
                   },
                   "required": [
@@ -245,9 +245,9 @@
                     "scope_roots",
                     "repository_effects",
                     "external_effects",
-                    "uncertainty",
                     "reversibility",
-                    "rationale"
+                    "rationale",
+                    "uncertainty"
                   ],
                   "additionalProperties": false
                 }
@@ -520,14 +520,6 @@
                         ]
                       }
                     },
-                    "requirements_uncertainty": {
-                      "type": "string",
-                      "enum": ["bounded", "material"]
-                    },
-                    "implementation_uncertainty": {
-                      "type": "string",
-                      "enum": ["bounded", "material"]
-                    },
                     "reversibility": {
                       "type": "string",
                       "enum": ["reversible", "recovery_required", "irreversible"]
@@ -539,6 +531,14 @@
                         "type": "string",
                         "minLength": 1
                       }
+                    },
+                    "requirements_uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
+                    },
+                    "implementation_uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
                     }
                   },
                   "required": [
@@ -547,10 +547,10 @@
                     "scope_roots",
                     "repository_effects",
                     "external_effects",
-                    "requirements_uncertainty",
-                    "implementation_uncertainty",
                     "reversibility",
-                    "rationale"
+                    "rationale",
+                    "requirements_uncertainty",
+                    "implementation_uncertainty"
                   ],
                   "additionalProperties": false
                 },
@@ -604,10 +604,6 @@
                         ]
                       }
                     },
-                    "uncertainty": {
-                      "type": "string",
-                      "enum": ["bounded", "material"]
-                    },
                     "reversibility": {
                       "type": "string",
                       "enum": ["reversible", "recovery_required", "irreversible"]
@@ -619,6 +615,10 @@
                         "type": "string",
                         "minLength": 1
                       }
+                    },
+                    "uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
                     }
                   },
                   "required": [
@@ -627,9 +627,9 @@
                     "scope_roots",
                     "repository_effects",
                     "external_effects",
-                    "uncertainty",
                     "reversibility",
-                    "rationale"
+                    "rationale",
+                    "uncertainty"
                   ],
                   "additionalProperties": false
                 }
@@ -902,14 +902,6 @@
                         ]
                       }
                     },
-                    "requirements_uncertainty": {
-                      "type": "string",
-                      "enum": ["bounded", "material"]
-                    },
-                    "implementation_uncertainty": {
-                      "type": "string",
-                      "enum": ["bounded", "material"]
-                    },
                     "reversibility": {
                       "type": "string",
                       "enum": ["reversible", "recovery_required", "irreversible"]
@@ -921,6 +913,14 @@
                         "type": "string",
                         "minLength": 1
                       }
+                    },
+                    "requirements_uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
+                    },
+                    "implementation_uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
                     }
                   },
                   "required": [
@@ -929,10 +929,10 @@
                     "scope_roots",
                     "repository_effects",
                     "external_effects",
-                    "requirements_uncertainty",
-                    "implementation_uncertainty",
                     "reversibility",
-                    "rationale"
+                    "rationale",
+                    "requirements_uncertainty",
+                    "implementation_uncertainty"
                   ],
                   "additionalProperties": false
                 },
@@ -986,10 +986,6 @@
                         ]
                       }
                     },
-                    "uncertainty": {
-                      "type": "string",
-                      "enum": ["bounded", "material"]
-                    },
                     "reversibility": {
                       "type": "string",
                       "enum": ["reversible", "recovery_required", "irreversible"]
@@ -1001,6 +997,10 @@
                         "type": "string",
                         "minLength": 1
                       }
+                    },
+                    "uncertainty": {
+                      "type": "string",
+                      "enum": ["bounded", "material"]
                     }
                   },
                   "required": [
@@ -1009,9 +1009,9 @@
                     "scope_roots",
                     "repository_effects",
                     "external_effects",
-                    "uncertainty",
                     "reversibility",
-                    "rationale"
+                    "rationale",
+                    "uncertainty"
                   ],
                   "additionalProperties": false
                 }

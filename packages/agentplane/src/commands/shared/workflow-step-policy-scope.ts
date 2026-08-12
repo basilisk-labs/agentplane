@@ -137,7 +137,13 @@ export async function observeWorkflowPolicyScope(opts: {
       const recordedHead = opts.state.resume.head_sha?.trim() ?? "";
       const head = recordedHead.length > 0 ? recordedHead : "HEAD";
       const committedPaths = baseline.start_head_sha
-        ? await gitDiffNames(opts.repositoryRoot, baseline.start_head_sha, head)
+        ? await gitDiffNames(opts.repositoryRoot, baseline.start_head_sha, head, {
+            // The recorded direct-workflow baseline is an exact source-tree
+            // checkpoint, not a branch comparison. Comparing the two trees
+            // directly preserves that contract and avoids a redundant
+            // merge-base subprocess on every route/preparation refresh.
+            range: "two-dot",
+          })
         : await rootCommitChangedPaths(opts.repositoryRoot).catch((error: unknown) => {
             if (dirtyPaths.length > 0) return [];
             throw error;

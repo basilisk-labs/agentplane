@@ -18,10 +18,15 @@ import {
 } from "./external-agent-blocked-result.js";
 import { recoversRecordedImplementationCommit } from "./external-agent-purpose.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
+import {
+  renderDirectTaskVerificationDetails,
+  runDirectTaskVerification,
+} from "./direct-task-verification.js";
 import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
 import { cmdTaskComment } from "./comment.js";
 import { cmdTaskSetStatus } from "./set-status.js";
 import { recordObservedTaskExecutionContract } from "./task-execution-contract-observation.js";
+import { cmdVerifyParsed } from "./verify-record.js";
 import { loadTaskFromContext } from "../shared/task-backend.js";
 
 function pathFromStatusLine(line: string): string {
@@ -82,6 +87,52 @@ async function assertRecoverableImplementationCommit(opts: {
 function hasChangedTaskArtifacts(statusLines: readonly string[], taskId: string): boolean {
   const prefix = `.agentplane/tasks/${taskId}/`;
   return statusLines.some((line) => pathFromStatusLine(line).startsWith(prefix));
+}
+
+async function recordExternalImplementationVerification(opts: {
+  command: CommandContext;
+  checkout: string;
+  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+  workflow: "direct" | "branch_pr";
+}): Promise<void> {
+  const checks = await runDirectTaskVerification({
+    command: opts.command,
+    task: opts.task,
+    task_id: opts.task.id,
+    cwd: opts.checkout,
+  });
+  if (checks.status !== "passed") {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: checks.reason ?? "Declared implementation verification did not pass.",
+    });
+  }
+  const exitCode = await cmdVerifyParsed({
+    ctx: opts.command,
+    cwd: opts.checkout,
+    rootOverride: undefined,
+    taskId: opts.task.id,
+    state: "ok",
+    by: "SUPERVISOR",
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+    details: renderDirectTaskVerificationDetails({
+      task: opts.task,
+      taskId: opts.task.id,
+      workflow: opts.workflow,
+      result: checks,
+    }),
+    localOnly: false,
+    repoFixable: false,
+    incidentTags: [],
+    incidentMatch: [],
+    quiet: true,
+  });
+  if (exitCode !== 0) {
+    throw new CliError({
+      code: "E_RUNTIME",
+      message: `External-agent implementation verification exited with ${exitCode}.`,
+    });
+  }
 }
 
 function assertExternalImplementationReturnState(opts: {
@@ -359,6 +410,12 @@ export async function applyExternalImplementationResult(opts: {
         authorityViolations.join(", "),
     });
   }
+  await recordExternalImplementationVerification({
+    command: opts.command,
+    checkout: opts.exchange.checkout,
+    task: reconciliation.task,
+    workflow: opts.decision.workflowMode === "branch_pr" ? "branch_pr" : "direct",
+  });
   if (opts.decision.workflowMode === "branch_pr") {
     opts.command.git.invalidateStatus();
     const currentStatus = await readDirectRepositoryStatus(opts.exchange.checkout);

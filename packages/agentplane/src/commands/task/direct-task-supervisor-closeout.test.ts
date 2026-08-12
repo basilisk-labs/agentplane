@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type * as DirectTaskVerificationModule from "./direct-task-verification.js";
 
 const mocks = vi.hoisted(() => ({
   finish: vi.fn(),
@@ -15,7 +16,10 @@ vi.mock("./direct-task-finalization.js", () => ({
 vi.mock("./direct-task-supervisor-formal-operation.js", () => ({
   recordDirectTaskFormalOperation: mocks.formalOperation,
 }));
-vi.mock("./direct-task-verification.js", () => ({ runDirectTaskVerification: mocks.runChecks }));
+vi.mock("./direct-task-verification.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof DirectTaskVerificationModule>();
+  return { ...actual, runDirectTaskVerification: mocks.runChecks };
+});
 vi.mock("./verify-record.js", () => ({ cmdVerifyParsed: mocks.verify }));
 
 import { closeDirectTask, verifyDirectTask } from "./direct-task-supervisor-closeout.js";
@@ -94,7 +98,10 @@ describe("direct task supervisor closeout", () => {
   it("records declared checks in the evaluator-accepted verification evidence shape", async () => {
     mocks.runChecks.mockResolvedValue({
       status: "passed",
-      checks: [{ command: "bun run test:critical" }, { command: "bun run test:scope" }],
+      checks: [
+        { command: "bun run test:critical", exit_code: 0 },
+        { command: "bun run test:scope", exit_code: 0 },
+      ],
       artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/declared-checks.json`,
     });
     mocks.verify.mockResolvedValue(0);
@@ -140,7 +147,7 @@ describe("direct task supervisor closeout", () => {
   it("classifies formal verification failures without exposing the error message", async () => {
     mocks.runChecks.mockResolvedValue({
       status: "passed",
-      checks: [{ command: "bun run test:critical" }],
+      checks: [{ command: "bun run test:critical", exit_code: 0 }],
       artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/declared-checks.json`,
     });
     mocks.formalOperation.mockRejectedValue(new Error("private provider token: secret-value"));
@@ -170,7 +177,7 @@ describe("direct task supervisor closeout", () => {
   it("passes structured check observations through one verification command", async () => {
     mocks.runChecks.mockResolvedValue({
       status: "passed",
-      checks: [{ command: "bun run test:critical" }],
+      checks: [{ command: "bun run test:critical", exit_code: 0 }],
       artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/declared-checks.json`,
     });
     mocks.verify.mockResolvedValue(0);
@@ -203,7 +210,7 @@ describe("direct task supervisor closeout", () => {
   it("stops after verification and before finish when committed EXECUTOR paths exceed work-order authority", async () => {
     mocks.runChecks.mockResolvedValue({
       status: "passed",
-      checks: [{ command: "bun run test:critical" }],
+      checks: [{ command: "bun run test:critical", exit_code: 0 }],
       artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/declared-checks.json`,
     });
     mocks.formalOperation.mockResolvedValue({

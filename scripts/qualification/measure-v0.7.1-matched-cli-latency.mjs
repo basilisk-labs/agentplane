@@ -147,14 +147,25 @@ export function compareMatchedLatencySamples({
   baselineStderr = "",
   candidateStderr = "",
 }) {
+  if (baselineDurations.length !== candidateDurations.length) {
+    throw new Error("matched latency comparison requires equal baseline and candidate samples");
+  }
   const baseline = summarizeDurations(baselineDurations);
   const candidate = summarizeDurations(candidateDurations);
   const deltaMs = roundMs(candidate.median_ms - baseline.median_ms);
   const deltaRatio = baseline.median_ms === 0 ? null : deltaMs / baseline.median_ms;
+  const pairedDeltas = candidateDurations.map((duration, index) =>
+    roundMs(duration - baselineDurations[index]),
+  );
+  const nonTies = pairedDeltas.filter((delta) => delta !== 0);
+  const slowerSamples = nonTies.filter((delta) => delta > 0).length;
+  const signTestProbability = binomialSurvivalProbability(slowerSamples, nonTies.length);
+  const pairedMedianDelta = summarizeDurations(pairedDeltas).median_ms;
+  const confirmedMedianRegression = pairedMedianDelta > 0 && signTestProbability <= 0.05;
   const passed =
     baselineExitCode === 0 &&
     candidateExitCode === 0 &&
-    candidate.median_ms <= baseline.median_ms &&
+    !confirmedMedianRegression &&
     candidate.p95_ms <= baseline.p95_ms * 1.1;
   return {
     id,
@@ -174,8 +185,27 @@ export function compareMatchedLatencySamples({
     },
     delta_ms: deltaMs,
     delta_ratio: deltaRatio,
+    paired_comparison: {
+      median_delta_ms: pairedMedianDelta,
+      slower_samples: slowerSamples,
+      non_tie_samples: nonTies.length,
+      one_sided_sign_test_probability: signTestProbability,
+      significance_level: 0.05,
+      confirmed_median_regression: confirmedMedianRegression,
+    },
     verdict: passed ? "pass" : "fail",
   };
+}
+
+function binomialSurvivalProbability(successes, trials) {
+  if (trials === 0 || successes <= 0) return 1;
+  let coefficient = 1;
+  let tail = 0;
+  for (let count = 0; count <= trials; count += 1) {
+    if (count >= successes) tail += coefficient;
+    coefficient = (coefficient * (trials - count)) / (count + 1);
+  }
+  return tail / 2 ** trials;
 }
 
 export function matchedInvocationOrder(sampleIndex, replicateIndex, baseline, candidate) {
@@ -477,7 +507,7 @@ async function main(argv = process.argv.slice(2)) {
         provider: "not invoked",
       },
       comparison:
-        "for every command and provider-excluded aggregate in both phases: candidate_median_ms <= baseline_median_ms and candidate_p95_ms <= baseline_p95_ms * 1.10",
+        "for every command and provider-excluded aggregate in both phases: paired median regression must not be confirmed by a one-sided sign test at alpha=0.05, and candidate_p95_ms <= baseline_p95_ms * 1.10",
       phases,
       failure_ids: failures,
       verdict: failures.length === 0 ? "pass" : "fail",

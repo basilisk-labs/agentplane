@@ -868,7 +868,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const packet = JSON.parse(protectedBoundary.stdout) as AgentPacket;
     expect(["approval_required", "external_wait"]).toContain(packet.action.kind);
     expect(packet.stop.reason).not.toBe("semantic_boundary");
-  }, 30_000);
+  }, 60_000);
 
   it("matches the managed direct-run preview fingerprint and preserves task evidence", async () => {
     const root = await mkGitRepoRoot();

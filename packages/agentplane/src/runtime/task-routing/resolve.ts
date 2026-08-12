@@ -17,6 +17,12 @@ import { computeVerificationContractKernel } from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import { gitPathIsUnderPrefix } from "../../shared/git-path.js";
+import {
+  ALL_EXTERNAL_EFFECTS,
+  ALL_REPOSITORY_EFFECTS,
+  ISOLATED_EXTERNAL_EFFECTS,
+  ISOLATED_REPOSITORY_EFFECTS,
+} from "./effects.js";
 import { componentForPath, structuralEffectsForPath } from "./observed-path.js";
 
 type RouteTaskInput = Pick<
@@ -24,41 +30,6 @@ type RouteTaskInput = Pick<
   "task_kind" | "mutation_scope" | "risk_flags" | "blueprint_request"
 >;
 
-const ISOLATED_REPOSITORY_EFFECTS = new Set<TaskRepositoryEffect>([
-  "public_api",
-  "schema",
-  "dependencies",
-  "ci",
-  "release_metadata",
-  "security_boundary",
-]);
-const ISOLATED_EXTERNAL_EFFECTS = new Set<TaskExternalEffect>([
-  "external_write",
-  "credentials",
-  "publish",
-  "deploy",
-  "destructive_git",
-]);
-const ALL_REPOSITORY_EFFECTS = [
-  "repository_write",
-  "documentation",
-  "source_code",
-  "tests",
-  "public_api",
-  "schema",
-  "dependencies",
-  "ci",
-  "release_metadata",
-  "security_boundary",
-] as const satisfies readonly TaskRepositoryEffect[];
-const ALL_EXTERNAL_EFFECTS = [
-  "network_read",
-  "external_write",
-  "credentials",
-  "publish",
-  "deploy",
-  "destructive_git",
-] as const satisfies readonly TaskExternalEffect[];
 const LEGACY_BRANCH_PR_RISK_FLAGS = new Set([
   "credentials",
   "deploy",
@@ -270,7 +241,10 @@ function verificationContract(opts: {
 function executionAuthority(
   declaration: TaskExecutionDeclaration,
 ): TaskExecutionContract["authority"] {
-  const allowedRepositoryEffects = uniqueSorted(declaration.repository_effects);
+  const allowedRepositoryEffects = uniqueSorted([
+    ...declaration.repository_effects,
+    ...(declaration.repository_effects.length > 0 ? (["repository_write"] as const) : []),
+  ]);
   const allowedExternalEffects: TaskExternalEffect[] = declaration.external_effects.filter(
     (effect): effect is "network_read" => effect === "network_read",
   );
@@ -479,7 +453,9 @@ export function reconcileTaskExecutionContract(opts: {
     ).values(),
   ].toSorted((left, right) => left.id.localeCompare(right.id));
   const undeclaredRepositoryEffects = observedEffects.filter(
-    (effect) => !opts.contract.authority.allowed_repository_effects.includes(effect),
+    (effect) =>
+      effect !== "repository_write" &&
+      !opts.contract.authority.allowed_repository_effects.includes(effect),
   );
   const outOfScopePaths =
     opts.contract.authority.writable_roots.length === 0
@@ -493,15 +469,14 @@ export function reconcileTaskExecutionContract(opts: {
   const unauthorizedExternalEffects = observedExternalEffects.filter(
     (effect) => !opts.contract.authority.allowed_external_effects.includes(effect),
   );
-  const failedVerificationResults = observedVerificationResults.filter(
-    (result) => result.result !== "pass",
-  );
   const authorityViolations = uniqueSorted([
     ...opts.contract.observed.authority_violations,
     ...undeclaredRepositoryEffects.map((effect) => `repository_effect:${effect}`),
     ...outOfScopePaths.map((changedPath) => `writable_scope:${changedPath}`),
     ...unauthorizedExternalEffects.map((effect) => `external_effect:${effect}`),
-    ...failedVerificationResults.map((result) => `verification:${result.id}:${result.result}`),
+    ...observedVerificationResults
+      .filter((result) => result.result !== "pass")
+      .map((result) => `verification:${result.id}:${result.result}`),
   ]);
   const newlyIsolatedEffects = observedEffects.filter(
     (effect) =>

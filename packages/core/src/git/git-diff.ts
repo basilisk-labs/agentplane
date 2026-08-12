@@ -90,10 +90,10 @@ async function gitDiffNamesWithEnv(
   cwd: string,
   base: string,
   branch: string,
-  opts: { timeoutMs?: number } | undefined,
+  opts: { range?: GitDiffRange; timeoutMs?: number } | undefined,
   env: NodeJS.ProcessEnv,
 ): Promise<string[]> {
-  const diffBase = await resolveDiffBase(cwd, base, branch, "three-dot", opts?.timeoutMs, env);
+  const diffBase = await resolveDiffBase(cwd, base, branch, opts?.range, opts?.timeoutMs, env);
   const { stdout } = await execFileAsync("git", ["diff", "--name-only", diffBase, branch], {
     cwd,
     env,
@@ -109,7 +109,7 @@ export async function gitDiffNames(
   cwd: string,
   base: string,
   branch: string,
-  opts?: { timeoutMs?: number },
+  opts?: { range?: GitDiffRange; timeoutMs?: number },
 ): Promise<string[]> {
   return await gitDiffNamesWithEnv(cwd, base, branch, opts, gitEnv());
 }
@@ -118,7 +118,7 @@ export async function gitProofDiffNames(
   cwd: string,
   base: string,
   branch: string,
-  opts?: { timeoutMs?: number },
+  opts?: { range?: GitDiffRange; timeoutMs?: number },
 ): Promise<string[]> {
   return await gitDiffNamesWithEnv(cwd, base, branch, opts, gitProofEnv());
 }

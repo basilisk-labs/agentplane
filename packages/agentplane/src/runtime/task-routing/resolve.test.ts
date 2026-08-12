@@ -10,6 +10,85 @@ import {
 } from "./resolve.js";
 
 describe("task execution route", () => {
+  it("derives general repository-write authority from concrete declared effects", () => {
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    const contract = resolveTaskExecutionContract({
+      config,
+      task: {},
+      requestedMode: "direct",
+      declaration: {
+        schema_version: 2,
+        preferred_mode: "direct",
+        scope_roots: ["packages/agentplane/src/feature"],
+        repository_effects: ["source_code", "tests"],
+        external_effects: [],
+        requirements_uncertainty: "bounded",
+        implementation_uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["localized reversible code change"],
+      },
+    });
+
+    expect(contract.authority.allowed_repository_effects).toEqual([
+      "repository_write",
+      "source_code",
+      "tests",
+    ]);
+    expect(contract.authority.forbidden_repository_effects).not.toContain("repository_write");
+  });
+
+  it("accepts general repository writes for compatible persisted concrete authority", () => {
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    const initial = resolveTaskExecutionContract({
+      config,
+      task: {},
+      requestedMode: "direct",
+      declaration: {
+        schema_version: 2,
+        preferred_mode: "direct",
+        scope_roots: ["src"],
+        repository_effects: ["source_code"],
+        external_effects: [],
+        requirements_uncertainty: "bounded",
+        implementation_uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["localized source change"],
+      },
+    });
+    const persisted = structuredClone(initial);
+    persisted.authority.allowed_repository_effects = ["source_code"];
+
+    const reconciled = reconcileTaskExecutionContract({
+      contract: persisted,
+      changed_paths: ["src/feature.ts"],
+    });
+
+    expect(reconciled.contract.observed.authority_violations).toEqual([]);
+  });
+
+  it("treats the general repository-write observation as an umbrella, not a separate effect", () => {
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    const initial = resolveTaskExecutionContract({
+      config,
+      task: {},
+      requestedMode: "direct",
+    });
+
+    const reconciled = reconcileTaskExecutionContract({
+      contract: initial,
+      changed_paths: ["artifact.unknown"],
+    });
+
+    expect(reconciled.contract.observed.authority_violations).toEqual([]);
+    expect(reconciled.contract.verification.contract).toMatchObject({
+      requires_full_regression: true,
+      escalation_reasons: ["unknown_path:artifact.unknown"],
+    });
+  });
+
   it("computes one monotonic verification contract from declared and observed effects", () => {
     const config = defaultConfig();
     config.workflow_mode = "direct";
