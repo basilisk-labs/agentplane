@@ -8,6 +8,23 @@
   "selected_groups": 18,
   "duplicate_build_invocations": 3,
   "lifecycle_control_commands": 1,
+  "collection": {
+    "collected_at": "2026-08-12",
+    "subject_sha": "e4ec4520ded988c60db3261714e68b5e22ac4e1f",
+    "hardware": {
+      "platform": "darwin",
+      "arch": "arm64",
+      "cpu_model": "Apple M4",
+      "logical_cpu_count": 10,
+      "total_memory_bytes": 25769803776,
+      "host_model": "Mac16,12"
+    },
+    "runtime": {
+      "node": "v26.7.0",
+      "bun": "1.3.6"
+    },
+    "note": "Collected in an isolated detached worktree on this pinned reference host during task T3ZDDM."
+  },
   "measurement": {
     "method": "detached-worktree-execution",
     "command": "AGENTPLANE_FAST_CHANGED_FILES='<fixture paths>' bun run ci:local:fast",

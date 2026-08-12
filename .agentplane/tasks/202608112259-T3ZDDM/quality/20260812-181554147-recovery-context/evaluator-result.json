@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The recorded performance qualification uses the planning-only benchmark, so it does not measure mandatory local verification.",
+      "broken_invariant": "Acceptance criteria require repeated before/after measurements of mandatory local verification on pinned reference hardware. The recorded command is `bun run bench:verification:check`, while the patch defines that command without `--execute`; its timed loop therefore requests JSON plans instead of executing the selected checks. The reported p50/p95 cannot prove the 60s/120s execution thresholds or that speedups preserve required evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/fa6040f58e26cbb69e73de62e8024819f9b43fa80ff04de4f4fd57c8ae2fe29c.patch",
+          "sha256": "sha256:fa6040f58e26cbb69e73de62e8024819f9b43fa80ff04de4f4fd57c8ae2fe29c",
+          "line": 324,
+          "section": "package.json and scripts/bench/measure-verification-contract.mjs"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260812180653436-1da08017f7d9e5b4.json",
+          "sha256": "sha256:48e7e2c7ed3cd013dfbf5acadc6897877500ae57920bdaf9f6e1370387f2f981",
+          "section": "details"
+        }
+      ]
+    },
+    {
+      "id": "RCI-002",
+      "severity": "medium",
+      "summary": "Lifecycle/control-plane command count is asserted as a constant rather than reproducibly collected.",
+      "broken_invariant": "Acceptance criteria require reproducible collection rules and a machine-readable command-count metric. Both benchmark and runtime metric output set `lifecycle_control_commands` to the literal value 1, so the threshold cannot detect additional lifecycle/control-plane commands.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/fa6040f58e26cbb69e73de62e8024819f9b43fa80ff04de4f4fd57c8ae2fe29c.patch",
+          "sha256": "sha256:fa6040f58e26cbb69e73de62e8024819f9b43fa80ff04de4f4fd57c8ae2fe29c",
+          "line": 7618,
+          "section": "scripts/bench/measure-verification-contract.mjs and scripts/checks/run-local-ci.mjs"
+        }
+      ]
+    },
+    {
+      "id": "RCI-003",
+      "severity": "medium",
+      "summary": "Frozen verification evidence does not provide traceable artifacts for several claimed mandatory checks.",
+      "broken_invariant": "The verification record claims hosted PR, real E2E, benchmark, failure-isolation, fixture, and duplication qualification, but its parsed evidence references are marked missing and the frozen observed-checks artifact contains no declared checks, runner history, or runtime evidence. This is insufficient to substantiate all positive, negative, and concurrency-sensitive Verify Steps from frozen evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/ee5e04dbea9400fc0db15f83ef13f29b6ecfb775d67d8104dc98cf6289f6ae1a.json",
+          "sha256": "sha256:ee5e04dbea9400fc0db15f83ef13f29b6ecfb775d67d8104dc98cf6289f6ae1a",
+          "section": "declared_checks, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260812180653436-1da08017f7d9e5b4.json",
+          "sha256": "sha256:48e7e2c7ed3cd013dfbf5acadc6897877500ae57920bdaf9f6e1370387f2f981",
+          "section": "input.evidence.references and details"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+          "sha256": "sha256:cca4279a1e67b82e3b12e22c08ee02961951abdc4a48ff3c816418ca33b4a70c",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Run `bench:verification:execute` for repeated samples on the declared pinned reference hardware and retain machine-readable raw outputs proving p50, p95, selected checks, and pass status.",
+    "Add a regression test that fails if benchmark qualification runs in planning mode while reporting mandatory-verification timing.",
+    "Test lifecycle/control-plane command counting from observed command events, including a fixture exceeding the threshold of three.",
+    "Freeze traceable outputs for risk-selected real E2E, forced multi-group failures and deterministic aggregation, fixture isolation/cleanup, and duplication regression checks."
+  ],
+  "hidden_assumptions": [
+    "Planning latency is assumed to represent end-to-end mandatory verification latency.",
+    "A literal command-count value of one is assumed to match actual lifecycle/control-plane activity.",
+    "Narrative verification summaries and an external run URL are assumed sufficient despite absent frozen runtime/check artifacts.",
+    "The benchmark environment is assumed to be pinned and comparable, but the frozen evidence does not identify the reference hardware or collection conditions."
+  ],
+  "recovery_context": "Replace the planning-only performance qualification with repeated executed-contract measurements, derive lifecycle command counts from observations, and freeze traceable artifacts for every mandatory hosted, E2E, concurrency, fixture-isolation, duplication, and metric check before reevaluation."
+}

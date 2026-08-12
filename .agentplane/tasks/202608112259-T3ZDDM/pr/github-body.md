@@ -15,19 +15,24 @@ Implement a versioned Verification Contract computed once from the semantic task
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verification Contract optimization passed exact-SHA local, hosted, benchmark, compatibility,
+documentation, platform, and failure-isolation qualification.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-12T08:35:41.656Z
+- Updated: 2026-08-12T17:03:52.714Z
 - Branch: task/202608112259-T3ZDDM/optimize-the-verification-and-test-pipeline-arou
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .github/workflows/ci.yml                           |   86 +-
+ .github/workflows/ci.yml                           |   88 +-
  docs/developer/code-quality.mdx                    |    2 +
  docs/developer/verification-contract.mdx           |   77 +
  package.json                                       |    6 +-
@@ -37,11 +42,11 @@ Implement a versioned Verification Contract computed once from the semantic task
  .../run-cli.core.hooks.pre-push-full-fast.test.ts  |   61 +
  .../run-cli.core.pr-flow.worktree-runtime.test.ts  |   17 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |   29 +-
- .../src/cli/verification-contract.test.ts          |  146 ++
+ .../src/cli/verification-contract.test.ts          |  169 ++
  .../src/commands/branch/work-start.materialize.ts  |   92 +-
  .../evaluator-qualification-packet.test.ts         |   14 +-
- .../commands/release/ci-workflow-contract.test.ts  |    6 +
- .../src/commands/release/github-ci-plan.test.ts    |   97 +-
+ .../commands/release/ci-workflow-contract.test.ts  |    7 +
+ .../src/commands/release/github-ci-plan.test.ts    |  113 +-
  .../commands/shared/quality-review-target.test.ts  |   25 +
  .../src/commands/shared/quality-review-target.ts   |   18 +-
  .../shared/task-verification-input.test.ts         |   29 +
@@ -71,25 +76,29 @@ Implement a versioned Verification Contract computed once from the semantic task
  scripts/baselines/verification-contract-small.json |   20 +
  scripts/bench/capture-compatibility-candidate.mjs  |  172 ++
  scripts/bench/measure-verification-contract.mjs    |  104 +
+ scripts/checks/check-cli-cold-baseline.mjs         |    8 +-
  .../check-compatibility-contract-baseline.mjs      |   19 +-
  scripts/checks/plan-github-ci.mjs                  |   45 +-
  scripts/checks/run-local-ci.mjs                    |  106 +-
  scripts/checks/run-pre-push-hook.mjs               |   17 +-
  scripts/checks/verify-reused-parent.mjs            |   50 +
  scripts/lib/github-ci-capabilities.d.ts            |   11 +
- scripts/lib/github-ci-capabilities.mjs             |   79 +-
+ scripts/lib/github-ci-capabilities.mjs             |   87 +-
  scripts/lib/local-ci-selection.d.ts                |   19 +
  scripts/lib/local-ci-selection.mjs                 |   98 +-
  scripts/lib/local-verification-receipt.d.ts        |   26 +
  scripts/lib/local-verification-receipt.mjs         |   94 +
  scripts/lib/task-verification-contracts.d.ts       |   12 +
- scripts/lib/task-verification-contracts.mjs        |  102 +
+ scripts/lib/task-verification-contracts.mjs        |  166 ++
  scripts/lib/verification-contract.d.ts             |   13 +
  scripts/lib/verification-contract.mjs              |   65 +
  scripts/lib/verification-scheduler.d.ts            |   33 +
  scripts/lib/verification-scheduler.mjs             |  102 +
  scripts/release/check-package-node-runtime.mjs     |   13 +-
- 62 files changed, 4866 insertions(+), 1544 deletions(-)
+ tsconfig.base.json                                 |    1 +
+ .../docs/developer/verification-contract.png       |  Bin 0 -> 59695 bytes
+ website/static/img/social/manifest.json            |    8 +
+ 66 files changed, 4994 insertions(+), 1547 deletions(-)
 ```
 
 </details>

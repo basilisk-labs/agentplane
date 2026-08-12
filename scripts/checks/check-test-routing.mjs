@@ -1,4 +1,6 @@
 import { pathToFileURL } from "node:url";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
 
 import {
   AGGREGATE_TEST_ROUTES,
@@ -16,6 +18,21 @@ function formatList(values) {
   return values.length === 0 ? "<none>" : values.join(", ");
 }
 
+const TEST_TITLE_PATTERN = /\b(?:it|test)\s*\(\s*(["'`])([^\n]*?)\1/gu;
+
+export function findDuplicateTestTitles(source) {
+  const counts = new Map();
+  for (const match of source.matchAll(TEST_TITLE_PATTERN)) {
+    const title = match[2].trim();
+    if (title === "") continue;
+    counts.set(title, (counts.get(title) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .filter(([, count]) => count > 1)
+    .map(([title, count]) => ({ title, count }))
+    .toSorted((left, right) => left.title.localeCompare(right.title));
+}
+
 export function validateTestRouting(entries) {
   const errors = [];
   const seenFiles = new Set();
@@ -27,6 +44,15 @@ export function validateTestRouting(entries) {
       continue;
     }
     seenFiles.add(entry.filePath);
+
+    const duplicateTitles = existsSync(entry.filePath)
+      ? findDuplicateTestTitles(readFileSync(entry.filePath, "utf8"))
+      : [];
+    for (const duplicate of duplicateTitles) {
+      errors.push(
+        `${entry.filePath}: duplicate test title (${duplicate.count}x): ${duplicate.title}`,
+      );
+    }
 
     const unknownPrimaryRoutes = entry.primaryRoutes.filter(
       (route) => !PRIMARY_ROUTE_SET.has(route),
@@ -112,8 +138,47 @@ export function renderTestRoutingReport(result) {
   return `${lines.join("\n")}\n`;
 }
 
-function main() {
+function parseReportJsonArg(argv) {
+  const index = argv.indexOf("--report-json");
+  const assignment = argv.find((arg) => arg.startsWith("--report-json="));
+  const hasSeparateValue = index !== -1;
+  let value = null;
+  if (hasSeparateValue) {
+    value = argv[index + 1] ?? "";
+  } else if (assignment) {
+    value = assignment.slice("--report-json=".length);
+  }
+  if (value === "") throw new Error("--report-json requires an output path");
+  const consumed = new Set(hasSeparateValue ? [index, index + 1] : []);
+  const unsupported = argv.filter(
+    (arg, argIndex) => !consumed.has(argIndex) && !arg.startsWith("--report-json="),
+  );
+  if (unsupported.length > 0) {
+    throw new Error(`unsupported test routing argument: ${unsupported.join(" ")}`);
+  }
+  return value;
+}
+
+function main(argv = process.argv.slice(2)) {
+  const reportJson = parseReportJsonArg(argv);
   const result = validateTestRouting(buildTestInventory());
+  if (reportJson) {
+    const reportPath = path.resolve(reportJson);
+    mkdirSync(path.dirname(reportPath), { recursive: true });
+    writeFileSync(
+      reportPath,
+      `${JSON.stringify(
+        {
+          schema_version: 1,
+          kind: "agentplane.test_routing_and_duplication_report",
+          ...result,
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+  }
   const report = renderTestRoutingReport(result);
   if (result.ok) {
     process.stdout.write(report);
