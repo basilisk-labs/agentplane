@@ -6,7 +6,7 @@ Created: 2026-08-12T00:34:37.819Z
 
 - Task: `202608112232-3NC7Y4`
 - Title: Make execution strategy risk-adaptive and agent-selected
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608112232-3NC7Y4/make-execution-strategy-risk-adaptive-and-agent`
 - Canonical task record: `.agentplane/tasks/202608112232-3NC7Y4/README.md`
 
