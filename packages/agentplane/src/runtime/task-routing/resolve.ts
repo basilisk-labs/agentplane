@@ -55,11 +55,7 @@ function normalizedScopeRoots(values: readonly string[]): string[] {
   const roots: string[] = [];
   for (const value of values) {
     const raw = value.trim().replaceAll("\\", "/");
-    if (
-      !raw ||
-      raw.startsWith("/") ||
-      /^(?:[A-Za-z]:|\\\\)/u.test(raw)
-    ) {
+    if (!raw || raw.startsWith("/") || /^(?:[A-Za-z]:|\\\\)/u.test(raw)) {
       throw new Error(`Execution declaration scope root must be repository-relative: ${value}`);
     }
     const root = path.posix.normalize(raw.replace(/^\.\//u, ""));
