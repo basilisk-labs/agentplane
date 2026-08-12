@@ -381,6 +381,7 @@ function validateReviewedCandidate({
     "202608080805-KPWPAV",
     "202608110235-WCJJRD",
     "202608112213-NWJCBW",
+    "202608112259-T3ZDDM",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -428,11 +429,11 @@ function validateReviewedCandidate({
   assert(
     hashJson(preReleasePackageDelta) ===
       hashJson({
-        source_tasks: ["202608021231-SHYJGK"],
+        source_tasks: ["202608021231-SHYJGK", "202608112259-T3ZDDM"],
         classification: "additive",
         section: "package_manifests",
         from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
-        to_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+        to_sha256: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
         allowed_json_paths: [
           "$.package_manifests[0].files[13]",
           "$.package_manifests[0].files[14]",
@@ -440,6 +441,10 @@ function validateReviewedCandidate({
           "$.package_manifests[0].files[16]",
           "$.package_manifests[0].files[17]",
           "$.package_manifests[0].normalized_sha256",
+          "$.package_manifests[1].exports[10][0]",
+          "$.package_manifests[1].exports[10][1]",
+          "$.package_manifests[1].exports[11]",
+          "$.package_manifests[1].normalized_sha256",
         ],
         evidence: {
           package: "agentplane",
@@ -451,6 +456,10 @@ function validateReviewedCandidate({
             "dist/deferred-runtime.js",
           ],
           removed_files: [],
+          core_package: {
+            package: "@agentplaneorg/core",
+            added_exports: ["./tasks/verification-contract-kernel"],
+          },
         },
       }),
     "compatibility pre-release package delta drift",
@@ -510,9 +519,9 @@ function validateReviewedCandidate({
         from_version: "0.6.24",
         to_version: "0.7.5",
         section: "package_manifests",
-        from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
-        to_sha256: "68d85075ead827909740cafc59eba72dc94c7e9a2e754d16bea85041ab875f53",
-        surface_sha256: "324aabe0f0296740ae6c2b309ca94694997a13bc7210cf48f9ce4b221899f691",
+        from_sha256: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
+        to_sha256: "7f42b57786f2a99ab19b626aa33469b37d86ccc9c09dbeccebea0e57e0f37d12",
+        surface_sha256: "712b618b2b9747f7dd1143167ffcaa8db09e8870c8a55804c11f30ad0f80b174",
         allowed_json_paths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
