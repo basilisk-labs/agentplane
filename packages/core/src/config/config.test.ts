@@ -403,6 +403,11 @@ approvals:
   require_plan: true
   require_verify: true
   require_network: true
+execution:
+  profile: aggressive
+  extension_flag: keep-execution
+  tool_budget:
+    custom_budget: keep-tool-budget
 workspace:
   agents_dir: .agentplane/agents
   tasks_path: .agentplane/tasks.json
@@ -444,6 +449,8 @@ last_known_good: .agentplane/workflows/last-known-good.md
     expect(text).toContain("version: 2");
     expect(text).toContain("mode: branch_pr");
     expect(text).toContain("extension_flag: keep-workflow");
+    expect(text).toContain("extension_flag: keep-execution");
+    expect(text).toContain("custom_budget: keep-tool-budget");
     expect(text).toContain("operator_note: keep-workspace");
     expect(text).toContain("custom_backoff: keep-scheduler");
     expect(text).toContain("max_attempts: 7");

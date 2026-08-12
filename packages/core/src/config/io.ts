@@ -27,7 +27,22 @@ function withCanonicalExecution(
   raw: Record<string, unknown>,
   config: AgentplaneConfig,
 ): Record<string, unknown> {
-  return { ...raw, execution: structuredClone(config.execution) };
+  const rawExecution = isConfigRecord(raw.execution) ? structuredClone(raw.execution) : {};
+  const rawToolBudget = isConfigRecord(rawExecution.tool_budget)
+    ? structuredClone(rawExecution.tool_budget)
+    : {};
+  const canonicalExecution = structuredClone(config.execution);
+  return {
+    ...raw,
+    execution: {
+      ...rawExecution,
+      ...canonicalExecution,
+      tool_budget: {
+        ...rawToolBudget,
+        ...canonicalExecution.tool_budget,
+      },
+    },
+  };
 }
 
 export async function loadConfig(agentplaneDir: string): Promise<LoadedConfig> {

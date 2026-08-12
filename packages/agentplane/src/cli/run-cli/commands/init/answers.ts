@@ -274,6 +274,7 @@ async function promptDetailedAnswers(opts: {
     executionProfile: advanced.executionProfile,
     evaluatorSkepticism: advanced.evaluatorSkepticism,
     strictUnsafeConfirm: advanced.strictUnsafeConfirm,
+    compatibilityWarnings: [...(opts.flags.compatibilityWarnings ?? [])],
     blueprints: blueprintSelection.blueprints,
     runnerProfile: toolDefaults.runnerProfile ?? "codex",
     decisionReasons: [
