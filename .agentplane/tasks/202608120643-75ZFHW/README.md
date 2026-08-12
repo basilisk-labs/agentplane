@@ -4,7 +4,7 @@ title: "Prevent worktree accumulation and clean obsolete task checkouts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -36,7 +36,11 @@ verification:
 execution_route:
   frozen: true
   reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_external_write"
+    - "effect_release_metadata"
     - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
   repository_mode: "branch_pr"
   requested_mode: "branch_pr"
   schema_version: 1
@@ -49,6 +53,7 @@ execution_contract:
       - "release_metadata"
       - "repository_write"
       - "source_code"
+      - "tests"
     forbidden_external_effects:
       - "external_write"
       - "credentials"
@@ -57,7 +62,6 @@ execution_contract:
       - "destructive_git"
     forbidden_repository_effects:
       - "documentation"
-      - "tests"
       - "public_api"
       - "schema"
       - "dependencies"
@@ -76,16 +80,35 @@ execution_contract:
       - "release_metadata"
       - "repository_write"
       - "source_code"
+      - "tests"
     requirements_uncertainty: "bounded"
     reversibility: "recovery_required"
     schema_version: 2
     scope_roots: []
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
+      - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
+      - "packages/agentplane/src/commands/branch/cleanup-merged.ts"
+      - "packages/agentplane/src/commands/branch/work-start.ts"
+      - "packages/agentplane/src/commands/doctor.run.ts"
+      - "packages/agentplane/src/commands/doctor/branch-pr.ts"
+      - "packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
+      - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+      - "packages/agentplane/src/commands/shared/worktree-topology.test.ts"
+      - "packages/agentplane/src/commands/shared/worktree-topology.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -110,12 +133,18 @@ execution_contract:
       - "repository_effect:release_metadata"
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
+      - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "e7e76d7855570667aca67e6e47bbca4822628cea"
+  message: "🚧 75ZFHW task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: e7e76d785557. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -124,9 +153,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-12T07:29:22.527Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: e7e76d785557. CLI accepted one state-bound external-agent semantic result."
+    commit: "e7e76d7855570667aca67e6e47bbca4822628cea"
 doc_version: 3
-doc_updated_at: "2026-08-12T06:44:59.708Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-12T07:29:22.527Z"
+doc_updated_by: "SUPERVISOR"
 description: "Implement lifecycle-owned worktree hygiene before the verification optimization task. Preserve parallel development by allowing one authoritative worktree for each active branch_pr task, while preventing duplicate worktrees for the same task. Automatically finalize clean task worktrees and local task branches after hosted-close or proven merge, and make queue/supervisor progression own this cleanup without requiring the coding agent to infer it. Prevent recovery/control checkouts from recursively registering or restoring nested historical task worktrees. Add deterministic inventory/readback that classifies active, merged, dirty, recovery, detached, remote-only, and ambiguous refs; delete only provider-proven merged or explicitly obsolete clean state, preserving dirty, open-PR, active, blocked, stashed, release archive, and uniquely unassimilated work. Apply the command to the current repository, reconcile local and remote branches, and record before/after counts and retained reasons. Cover parallel active tasks, duplicate same-task worktree rejection, hosted-close cleanup, recovery non-resurrection, dirty preservation, and idempotent cleanup with focused and realistic E2E tests."
 sections:
   Summary: |-
