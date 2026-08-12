@@ -363,7 +363,8 @@ describe("route operator guidance", () => {
       }),
       nextAction: {
         code: "sync_hosted_close",
-        command: "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
+        command:
+          "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --yes --delete-remote-branches --base main",
         summary:
           "hosted close-tail already landed upstream; finalize base sync and clean merged task branches/worktrees",
         requiresApproval: false,
@@ -375,7 +376,7 @@ describe("route operator guidance", () => {
         mutationPathHint: "/repo",
         blocker: null,
         nextCommand:
-          "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
+          "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --yes --delete-remote-branches --base main",
         summary:
           "hosted close-tail already landed upstream; finalize base sync and clean merged task branches/worktrees",
       },
@@ -390,6 +391,8 @@ describe("route operator guidance", () => {
           "--task-id",
           "202606080612-F8PTW7",
           "--finalize",
+          "--yes",
+          "--delete-remote-branches",
           "--base",
           "main",
         ],
@@ -403,14 +406,15 @@ describe("route operator guidance", () => {
 
     expect(deriveRouteOperatorGuidance(decision)).toMatchObject({
       canExecuteNow: true,
-      safeCommand: "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
+      safeCommand:
+        "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --yes --delete-remote-branches --base main",
       diagnosticCommand:
-        "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
+        "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --yes --delete-remote-branches --base main",
       risks: [
         {
           code: "hosted_close_finalize",
           mitigationCommand:
-            "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
+            "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --yes --delete-remote-branches --base main",
         },
       ],
     });
@@ -458,6 +462,8 @@ describe("route operator guidance", () => {
           "--task-id",
           "202606080612-F8PTW7",
           "--finalize",
+          "--yes",
+          "--delete-remote-branches",
           "--base",
           "main",
         ],
@@ -473,12 +479,12 @@ describe("route operator guidance", () => {
       canExecuteNow: true,
       operatorAction: "run_exact_argv",
       diagnosticCommand:
-        "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
+        "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --yes --delete-remote-branches --base main",
       risks: [
         {
           code: "hosted_close_finalize",
           mitigationCommand:
-            "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
+            "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --yes --delete-remote-branches --base main",
         },
       ],
     });

@@ -202,7 +202,8 @@ describe("DONE branch_pr route cleanup boundary", () => {
   it("emits exact targeted cleanup only for a proven MERGED candidate", () => {
     expect(nextAction(report("MERGED"), { state: "candidate", count: 1 })).toMatchObject({
       code: "cleanup",
-      command: "agentplane cleanup merged --task-id T-1 --finalize --base main",
+      command:
+        "agentplane cleanup merged --task-id T-1 --finalize --yes --delete-remote-branches --base main",
     });
   });
 
