@@ -36,7 +36,7 @@
  .../agentplane/src/runtime/task-intake/types.ts    |   7 +-
  .../agentplane/src/runtime/task-routing/index.ts   |   2 +
  .../src/runtime/task-routing/resolve.test.ts       | 196 +++++++++-
- .../agentplane/src/runtime/task-routing/resolve.ts | 410 ++++++++++++++++++---
+ .../agentplane/src/runtime/task-routing/resolve.ts | 406 ++++++++++++++++++---
  .../schemas/task-readme-frontmatter.schema.json    | 229 ++++++++++++
  packages/core/schemas/tasks-export.schema.json     | 229 ++++++++++++
  .../core/src/runner/agent-semantic-result.test.ts  |  20 +
@@ -52,4 +52,4 @@
  schemas/agent-semantic-result.schema.json          | 237 ++++++++++++
  schemas/task-readme-frontmatter.schema.json        | 229 ++++++++++++
  schemas/tasks-export.schema.json                   | 229 ++++++++++++
- 54 files changed, 3127 insertions(+), 200 deletions(-)
+ 54 files changed, 3123 insertions(+), 200 deletions(-)
