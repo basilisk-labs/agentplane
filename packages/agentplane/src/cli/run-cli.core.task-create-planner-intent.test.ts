@@ -261,7 +261,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
     expect((brief.blueprint as { blueprint_id: string }).blueprint_id).toBe("code.branch_pr");
   });
 
-  it("keeps a localized product change direct even when its wording contains deployment terms", async () => {
+  it("keeps a localized product change direct", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "direct";
@@ -272,7 +272,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       [
         "task",
         "create",
-        "Add the deployment badge to the local preview card",
+        "Add the status badge to the local preview card",
         "--description",
         "Implement the badge component and its unit test without external effects.",
         "--json",
@@ -324,9 +324,10 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       work_preserved: false,
       recovery_commands: 0,
     });
+    expect(metrics.lifecycle_transitions).toBe(0);
   });
 
-  it("escalates a user product SDK and schema change before implementation", async () => {
+  it("respects an agent-selected branch_pr route for broad multi-component work", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "direct";
@@ -334,7 +335,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
     const metrics = scenarioMetrics();
     const created = await runJson(
       root,
-      ["task", "create", "Expose a new SDK capability and persist its schema", "--json"],
+      ["task", "create", "Add one customer capability across the SDK and application", "--json"],
       metrics,
     );
     const taskId = created.task_id as string;
@@ -345,17 +346,17 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
     )) as AgentPacket;
     const resultPath = await writePlannerResult({
       packet: issued,
-      summary: "Update the SDK surface, schema, compatibility tests, and migration evidence.",
+      summary: "Update the SDK client, application integration, documentation, and focused tests.",
       includeIntent: true,
       execution: {
         schema_version: 1,
-        preferred_mode: "direct",
-        scope_roots: ["packages/sdk", "schemas"],
-        repository_effects: ["repository_write", "source_code", "tests", "public_api", "schema"],
+        preferred_mode: "branch_pr",
+        scope_roots: ["packages/sdk/src/client.ts", "packages/app/src/integration.ts", "docs/sdk"],
+        repository_effects: ["repository_write", "source_code", "tests", "documentation"],
         external_effects: [],
         uncertainty: "bounded",
-        reversibility: "recovery_required",
-        rationale: ["public contract and persisted schema change atomically"],
+        reversibility: "reversible",
+        rationale: ["broad coordinated product change is easier to review in an isolated branch"],
       },
     });
 
@@ -370,6 +371,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
     expect(brief.task).toMatchObject({
       execution_contract: {
         selected_mode: "branch_pr",
+        reason_codes: ["agent_preferred_branch_pr"],
         safety: { requires_worktree: true, requires_user_approval: false },
       },
     });
@@ -378,8 +380,9 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
     ).execution_contract;
     expect(contract.verification.required_evidence).toEqual(
       expect.arrayContaining([
-        "repository_effect:public_api",
-        "repository_effect:schema",
+        "repository_effect:documentation",
+        "repository_effect:source_code",
+        "repository_effect:tests",
         "hosted_integration",
       ]),
     );
@@ -390,6 +393,73 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       work_preserved: false,
       recovery_commands: 0,
     });
+    expect(metrics.lifecycle_transitions).toBe(0);
+  });
+
+  it("ignores misleading product language when the declared work is local documentation", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    const metrics = scenarioMetrics();
+    const created = await runJson(
+      root,
+      [
+        "task",
+        "create",
+        "Document the production server release and deployment vocabulary",
+        "--description",
+        "Edit one local glossary page without provider or publishing effects.",
+        "--json",
+      ],
+      metrics,
+    );
+    const taskId = created.task_id as string;
+    const issued = (await runJson(
+      root,
+      ["task", "advance", taskId, "--agent-json"],
+      metrics,
+    )) as AgentPacket;
+    const resultPath = await writePlannerResult({
+      packet: issued,
+      summary: "Update the local glossary and run its documentation check.",
+      includeIntent: true,
+      execution: {
+        schema_version: 1,
+        preferred_mode: "direct",
+        scope_roots: ["docs/glossary.mdx"],
+        repository_effects: ["repository_write", "documentation"],
+        external_effects: [],
+        uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["words in the request do not imply external effects"],
+      },
+    });
+
+    await runJson(
+      root,
+      ["task", "advance", taskId, "--result", resultPath, "--agent-json"],
+      metrics,
+    );
+    const brief = await runJson(root, ["task", "brief", taskId, "--json"], metrics);
+    await readLifecycleMetrics(root, taskId, metrics);
+
+    expect(brief.workflow).toMatchObject({ mode: "direct" });
+    expect(brief.task).toMatchObject({
+      execution_contract: {
+        selected_mode: "direct",
+        reason_codes: ["agent_preferred_direct_compatible"],
+        authority: { allowed_external_effects: [] },
+      },
+    });
+    expect(metrics).toMatchObject({
+      control_plane_commands: 4,
+      approval_boundaries: 1,
+      verification_time_ms: 0,
+      work_preserved: false,
+      recovery_commands: 0,
+    });
+    expect(metrics.lifecycle_transitions).toBe(0);
   });
 
   it("preserves underestimated direct work during one deterministic branch_pr escalation", async () => {
@@ -480,7 +550,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       work_preserved: true,
       recovery_commands: 0,
     });
-    expect(metrics.lifecycle_transitions).toBeGreaterThanOrEqual(2);
+    expect(metrics.lifecycle_transitions).toBe(2);
   }, 60_000);
 
   it("keeps declared deployment and destructive Git effects forbidden", async () => {
@@ -550,6 +620,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       work_preserved: false,
       recovery_commands: 0,
     });
+    expect(metrics.lifecycle_transitions).toBe(0);
   });
 
   it("issues network-read authority only after the configured user approval boundary", async () => {
@@ -635,6 +706,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       work_preserved: false,
       recovery_commands: 0,
     });
+    expect(metrics.lifecycle_transitions).toBe(1);
   }, 60_000);
 
   it("loads an existing contract without a migration command and completes direct work", async () => {
@@ -754,7 +826,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
     expect(finalContract.authority.writable_roots).toEqual(["status-label.txt"]);
     expect(metrics.control_plane_commands).toBe(7);
     expect(metrics.approval_boundaries).toBe(1);
-    expect(metrics.lifecycle_transitions).toBeGreaterThanOrEqual(4);
+    expect(metrics.lifecycle_transitions).toBe(4);
     expect(metrics.verification_time_ms).toBeGreaterThan(0);
     expect(metrics.work_preserved).toBe(true);
     expect(metrics.recovery_commands).toBe(0);

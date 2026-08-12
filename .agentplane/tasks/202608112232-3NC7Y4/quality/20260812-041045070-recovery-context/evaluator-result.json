@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The required broad agent-selected branch_pr E2E is absent. The scenario documented and verified as the broad branch_pr case declares preferred_mode as direct and only reaches branch_pr through deterministic override, so it does not prove that a compatible agent-selected branch_pr preference is respected end to end.",
+      "broken_invariant": "Acceptance criteria 2 and 8 require realistic E2E coverage for broad agent-selected branch_pr work and proof that each preferred workflow is respected when compatible.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/README.md",
+          "sha256": "sha256:0731485a6ee4d95fc9de66421d6dc2a7dbcc59b329e6622449a227830b8cba00",
+          "section": "Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/2256613fbfd6186cc65b095ffc3a94850e0db3c282c322041d42899e7a284cc0.patch",
+          "sha256": "sha256:2256613fbfd6186cc65b095ffc3a94850e0db3c282c322041d42899e7a284cc0",
+          "line": 887,
+          "lines": "887-952"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812041025439-8bd2ab0ef09e0963.json",
+          "sha256": "sha256:c0fd98b0b1e94f5e08397c2c301f2dfb07cfd81521c7c674020c9a57c1d390d4",
+          "section": "details"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "medium",
+      "summary": "The documented scenario measurements omit lifecycle-transition counts, and most routing scenarios collect lifecycle_transitions without asserting them. This leaves the required transition and ceremony comparison unproven for the five representative E2Es.",
+      "broken_invariant": "Acceptance criteria 8 and 10 require measuring lifecycle transitions and demonstrating reduced ceremony without weaker evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/README.md",
+          "sha256": "sha256:0731485a6ee4d95fc9de66421d6dc2a7dbcc59b329e6622449a227830b8cba00",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/2256613fbfd6186cc65b095ffc3a94850e0db3c282c322041d42899e7a284cc0.patch",
+          "sha256": "sha256:2256613fbfd6186cc65b095ffc3a94850e0db3c282c322041d42899e7a284cc0",
+          "line": 30,
+          "lines": "30-49"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812041025439-8bd2ab0ef09e0963.json",
+          "sha256": "sha256:c0fd98b0b1e94f5e08397c2c301f2dfb07cfd81521c7c674020c9a57c1d390d4",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add a realistic CLI E2E whose semantic declaration explicitly uses preferred_mode: branch_pr for broad multi-component work, then assert that branch_pr is retained for agent_preference rather than selected only by an effect or repository override.",
+    "Assert and report exact lifecycle-transition counts for each required representative scenario, including the localized direct, broad branch_pr, underestimated escalation, prohibited external/destructive, and misleading-language cases."
+  ],
+  "hidden_assumptions": [
+    "A deterministic direct-to-branch_pr override is assumed to be equivalent evidence for respecting an explicit agent-selected branch_pr preference.",
+    "Collecting lifecycle event counts without asserting or reporting them is assumed to satisfy the transition-measurement requirement.",
+    "The verification summary's claim of broad branch_pr E2E coverage is assumed accurate despite the scenario declaring preferred_mode: direct."
+  ],
+  "recovery_context": "Add the missing explicit branch_pr-preference E2E and make lifecycle-transition measurements asserted and visible for all required scenarios, then rerun the focused E2Es and relevant full CI."
+}
