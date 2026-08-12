@@ -15,8 +15,14 @@ Implement lifecycle-owned worktree hygiene before the verification optimization 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Implementation e7e76d785 passed focused worktree/cleanup/supervisor/authority/projection/CLI E2E
+coverage plus typecheck, build, lint, lifecycle invariants, policy routing, diff check, worktree
+prune dry-run, and real-repository cleanup readback.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

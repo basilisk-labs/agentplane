@@ -12,8 +12,8 @@ Created: 2026-08-12T06:44:59.797Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Implementation e7e76d785 passed focused worktree/cleanup/supervisor/authority/projection/CLI E2E coverage plus typecheck, build, lint, lifecycle invariants, policy routing, diff check, worktree prune dry-run, and real-repository cleanup readback.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
