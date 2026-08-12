@@ -751,7 +751,9 @@ describe("evaluator qualification packet", () => {
     });
     const semanticallyDriftedRootReadme = await readFile(rootReadmePath, "utf8");
     expect(parseTaskReadme(semanticallyDriftedRootReadme).frontmatter.depends_on).toEqual([leafId]);
-    expect(taskReadmesHaveOnlyLifecycleDrift(rootReadme, semanticallyDriftedRootReadme)).toBe(false);
+    expect(taskReadmesHaveOnlyLifecycleDrift(rootReadme, semanticallyDriftedRootReadme)).toBe(
+      false,
+    );
     await expect(
       cmdVerifyParsed({
         ctx,
