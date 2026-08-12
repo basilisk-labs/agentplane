@@ -25,6 +25,10 @@ const COMPATIBILITY_CANDIDATE = path.join(
   REPO_ROOT,
   "scripts/baselines/v0.7-compatibility-candidate.json",
 );
+const COMPATIBILITY_CANDIDATE_CAPTURE = path.join(
+  REPO_ROOT,
+  "scripts/bench/capture-compatibility-candidate.mjs",
+);
 const EFFICIENCY_BASELINE = path.join(
   REPO_ROOT,
   "scripts/baselines/agent-efficiency-pre-v0.7-main.json",
@@ -110,9 +114,11 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
     "keeps the full compatibility surface and ten RF-04 scenarios reproducible",
     async () => {
       const compatibility = await runNode([COMPATIBILITY_CHECK]);
+      const candidateFreshness = await runNode([COMPATIBILITY_CANDIDATE_CAPTURE, "--check"]);
       const efficiency = await runNode([EFFICIENCY_CHECK]);
 
       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
+      expect(candidateFreshness).toMatchObject({ exitCode: 0, stderr: "" });
       expect(compatibility.stdout).toContain("263commands/180args/849options");
       expect(compatibility.stdout).toContain(
         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
@@ -199,26 +205,27 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202608080805-KPWPAV",
           "202608110235-WCJJRD",
           "202608112213-NWJCBW",
+          "202608112259-T3ZDDM",
         ],
         candidate: {
-          surface_sha256: "f3feeb8f0e903d11cc79eaa38b1f0da6135f882bd0dca3f4b48688e7b17db2c9",
+          surface_sha256: "eb329963bb076054c7c8f1340ba5eb9a086d399e0b1d0f8dd09d20322ae5ee1a",
           section_digests: {
             agent_facing_context_contracts:
               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
             cli_topology: "049140adaeeec07e19c9ecba8d33831bb9b5784ca98e4a444d2246fe957eb9a4",
             machine_output_contract:
               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
-            package_manifests: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+            package_manifests: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
             tarball_policy: "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
             workflow_schema: "4714ecc43f394109cd5807ec5e544716abe7c67c20ea18554f8f2b559bf97b21",
           },
         },
         pre_release_package_delta: {
-          source_tasks: ["202608021231-SHYJGK"],
+          source_tasks: ["202608021231-SHYJGK", "202608112259-T3ZDDM"],
           classification: "additive",
           section: "package_manifests",
           from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
-          to_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+          to_sha256: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
           allowed_json_paths: [
             "$.package_manifests[0].files[13]",
             "$.package_manifests[0].files[14]",
@@ -226,6 +233,10 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
             "$.package_manifests[0].files[16]",
             "$.package_manifests[0].files[17]",
             "$.package_manifests[0].normalized_sha256",
+            "$.package_manifests[1].exports[10][0]",
+            "$.package_manifests[1].exports[10][1]",
+            "$.package_manifests[1].exports[11]",
+            "$.package_manifests[1].normalized_sha256",
           ],
         },
         release_version_delta: {
@@ -234,9 +245,9 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           from_version: "0.6.24",
           to_version: "0.7.5",
           section: "package_manifests",
-          from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
-          to_sha256: "68d85075ead827909740cafc59eba72dc94c7e9a2e754d16bea85041ab875f53",
-          surface_sha256: "324aabe0f0296740ae6c2b309ca94694997a13bc7210cf48f9ce4b221899f691",
+          from_sha256: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
+          to_sha256: "7f42b57786f2a99ab19b626aa33469b37d86ccc9c09dbeccebea0e57e0f37d12",
+          surface_sha256: "712b618b2b9747f7dd1143167ffcaa8db09e8870c8a55804c11f30ad0f80b174",
           allowed_json_paths: [
             "$.package_manifests[0].dependencies.@agentplaneorg/core",
             "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -601,8 +612,8 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       const result = await runNode(["--input-type=module", "--eval", source]);
       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
       expect(JSON.parse(result.stdout)).toEqual({
-        packageManifestDigest: "68d85075ead827909740cafc59eba72dc94c7e9a2e754d16bea85041ab875f53",
-        surfaceDigest: "324aabe0f0296740ae6c2b309ca94694997a13bc7210cf48f9ce4b221899f691",
+        packageManifestDigest: "7f42b57786f2a99ab19b626aa33469b37d86ccc9c09dbeccebea0e57e0f37d12",
+        surfaceDigest: "712b618b2b9747f7dd1143167ffcaa8db09e8870c8a55804c11f30ad0f80b174",
         changedPaths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",

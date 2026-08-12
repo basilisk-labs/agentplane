@@ -1,120 +1,36 @@
 {
-  "schema_version": 3,
-  "candidate_id": "agentplane.compatibility.v0.7.cumulative",
-  "source_tasks": [
-    "202607221846-4VB97J",
-    "202607221846-YGWMA2",
-    "202607230554-YFYT83",
-    "202607221846-9XC1H0",
-    "202607221848-ABG7SD",
-    "202607221848-0ZAB1F",
-    "202607221848-ER5H6N",
-    "202607221848-T9B3PS",
-    "202607221848-1HWR0R",
-    "202607221848-VC4VVS",
-    "202607221849-NWVCAG",
-    "202607221849-TBTX8X",
-    "202607221849-8YYZ9X",
-    "202607221850-8HBF4J",
-    "202607242158-QV09NA",
-    "202607260007-DQM6AW",
-    "202607260532-9M7RNH",
-    "202607281655-YMPY8Y",
-    "202607291449-FTHNAR",
-    "202607300150-MGCHE6",
-    "202607221852-YP9QCH",
-    "202607302125-Y61ZHN",
-    "202607221852-ECBY56",
-    "202608021231-PZGG3V",
-    "202608021231-SHYJGK",
-    "202608021534-YN84E1",
-    "202608022324-9VCYWG",
-    "202608021535-CNQKXP",
-    "202608061646-WCARQG",
-    "202608061646-30TKV4",
-    "202608062023-V3WHE9",
-    "202608080805-KPWPAV",
-    "202608110235-WCJJRD",
-    "202608112213-NWJCBW"
-  ],
   "base": {
     "baseline_id": "agentplane.compatibility.v0.6.24",
-    "reference": "exact_main",
     "commit_sha": "1a702e160ba9f0efe7067f2a22fc008defc89ffb",
+    "reference": "exact_main",
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "f3feeb8f0e903d11cc79eaa38b1f0da6135f882bd0dca3f4b48688e7b17db2c9",
     "section_digests": {
+      "agent_facing_context_contracts": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
       "cli_topology": "049140adaeeec07e19c9ecba8d33831bb9b5784ca98e4a444d2246fe957eb9a4",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
-      "workflow_schema": "4714ecc43f394109cd5807ec5e544716abe7c67c20ea18554f8f2b559bf97b21",
-      "agent_facing_context_contracts": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
-      "package_manifests": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
-      "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd"
-    }
+      "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
+      "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
+      "workflow_schema": "4714ecc43f394109cd5807ec5e544716abe7c67c20ea18554f8f2b559bf97b21"
+    },
+    "surface_sha256": "eb329963bb076054c7c8f1340ba5eb9a086d399e0b1d0f8dd09d20322ae5ee1a"
   },
-  "pre_release_package_delta": {
-    "source_tasks": ["202608021231-SHYJGK"],
-    "classification": "additive",
-    "section": "package_manifests",
-    "from_sha256": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
-    "to_sha256": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
-    "allowed_json_paths": [
-      "$.package_manifests[0].files[13]",
-      "$.package_manifests[0].files[14]",
-      "$.package_manifests[0].files[15]",
-      "$.package_manifests[0].files[16]",
-      "$.package_manifests[0].files[17]",
-      "$.package_manifests[0].normalized_sha256"
-    ],
-    "evidence": {
-      "package": "agentplane",
-      "added_files": [
-        "dist/command-catalog.js",
-        "dist/command-catalog/core-fast.js",
-        "dist/command-catalog/task-read.js",
-        "dist/command-help.json",
-        "dist/deferred-runtime.js"
-      ],
-      "removed_files": []
-    }
-  },
-  "release_version_delta": {
-    "source_task": "202608082119-P6SHBN",
-    "classification": "planned_version_parity",
-    "from_version": "0.6.24",
-    "to_version": "0.7.5",
-    "section": "package_manifests",
-    "from_sha256": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
-    "to_sha256": "68d85075ead827909740cafc59eba72dc94c7e9a2e754d16bea85041ab875f53",
-    "surface_sha256": "324aabe0f0296740ae6c2b309ca94694997a13bc7210cf48f9ce4b221899f691",
-    "allowed_json_paths": [
-      "$.package_manifests[0].dependencies.@agentplaneorg/core",
-      "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
-      "$.package_manifests[0].normalized_sha256",
-      "$.package_manifests[0].version",
-      "$.package_manifests[1].normalized_sha256",
-      "$.package_manifests[1].version",
-      "$.package_manifests[2].normalized_sha256",
-      "$.package_manifests[2].version"
-    ]
-  },
+  "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
     "agent_work_order_schema": {
+      "comparison": "canonical_json_exact",
       "path": "schemas/agent-work-order-v2.schema.json",
       "sha256": "a6d6fe52093b89d72ac08c16c9932cf41044bfa1e9ec4604f06f498c025d8249",
-      "comparison": "canonical_json_exact",
       "source_task": "202607221848-T9B3PS"
     },
     "core_agent_work_order_exports": {
       "comparison": "required_named_reexports",
-      "source_task": "202607221848-T9B3PS",
       "entrypoints": [
         {
-          "path": "packages/core/src/index.ts",
           "module": "./schemas/index.js",
+          "path": "packages/core/src/index.ts",
           "required_symbols": [
             "AGENT_WORK_CONTEXT_V1_KIND",
             "AGENT_WORK_CONTEXT_V1_VERSION",
@@ -164,8 +80,8 @@
           ]
         },
         {
-          "path": "packages/core/src/schemas/index.ts",
           "module": "../runner/agent-work-order.js",
+          "path": "packages/core/src/schemas/index.ts",
           "required_symbols": [
             "AGENT_WORK_ORDER_KIND",
             "AGENT_WORK_ORDER_NETWORK_POLICY_VALUES",
@@ -193,8 +109,8 @@
           ]
         },
         {
-          "path": "packages/core/src/schemas/index.ts",
           "module": "../runner/agent-work-order-fixtures.js",
+          "path": "packages/core/src/schemas/index.ts",
           "required_symbols": [
             "AGENT_WORK_ORDER_V2_VALID_FIXTURE",
             "buildAgentWorkOrderV2ValidFixture",
@@ -202,8 +118,8 @@
           ]
         },
         {
-          "path": "packages/core/src/schemas/index.ts",
           "module": "../runner/agent-work-order-compat.js",
+          "path": "packages/core/src/schemas/index.ts",
           "required_symbols": [
             "AGENT_WORK_CONTEXT_V1_KIND",
             "AGENT_WORK_CONTEXT_V1_VERSION",
@@ -226,21 +142,15 @@
             "toAgentWorkOrderV2CamelCase"
           ]
         }
-      ]
-    },
-    "execution_receipt_schema": {
-      "path": "schemas/execution-receipt.schema.json",
-      "sha256": "ebcdcda6d38e1b399696add88587e3a2a1a84246beebc656feccdfb357dfbddf",
-      "comparison": "canonical_json_exact",
-      "source_task": "202607221849-NWVCAG"
+      ],
+      "source_task": "202607221848-T9B3PS"
     },
     "core_execution_receipt_exports": {
       "comparison": "required_named_reexports",
-      "source_task": "202607221846-9XC1H0",
       "entrypoints": [
         {
-          "path": "packages/core/src/index.ts",
           "module": "./schemas/index.js",
+          "path": "packages/core/src/index.ts",
           "required_symbols": [
             "EXECUTION_RECEIPT_ARTIFACT_STATE_VALUES",
             "EXECUTION_RECEIPT_CHECK_STATUS_VALUES",
@@ -280,8 +190,8 @@
           ]
         },
         {
-          "path": "packages/core/src/schemas/index.ts",
           "module": "../runner/execution-receipt.js",
+          "path": "packages/core/src/schemas/index.ts",
           "required_symbols": [
             "EXECUTION_RECEIPT_ARTIFACT_STATE_VALUES",
             "EXECUTION_RECEIPT_CHECK_STATUS_VALUES",
@@ -320,21 +230,15 @@
             "validateExecutionReceipt"
           ]
         }
-      ]
-    },
-    "knowledge_ref_schema": {
-      "path": "schemas/knowledge-ref.schema.json",
-      "sha256": "4a898d1d8bb5a2d05c8e132170e44861630eb864d7329d515b04bdbfdf832ac7",
-      "comparison": "canonical_json_exact",
-      "source_task": "202607221848-ER5H6N"
+      ],
+      "source_task": "202607221846-9XC1H0"
     },
     "core_knowledge_ref_exports": {
       "comparison": "required_named_reexports",
-      "source_task": "202607221848-ER5H6N",
       "entrypoints": [
         {
-          "path": "packages/core/src/index.ts",
           "module": "./schemas/index.js",
+          "path": "packages/core/src/index.ts",
           "required_symbols": [
             "CanonicalKnowledgeSelector",
             "KNOWLEDGE_INDEX_FRESHNESS_VALUES",
@@ -366,8 +270,8 @@
           ]
         },
         {
-          "path": "packages/core/src/schemas/index.ts",
           "module": "../runner/knowledge-ref.js",
+          "path": "packages/core/src/schemas/index.ts",
           "required_symbols": [
             "CanonicalKnowledgeSelector",
             "KNOWLEDGE_INDEX_FRESHNESS_VALUES",
@@ -398,21 +302,1767 @@
             "validatePreparedKnowledgeExcerpt"
           ]
         }
-      ]
+      ],
+      "source_task": "202607221848-ER5H6N"
+    },
+    "execution_receipt_schema": {
+      "comparison": "canonical_json_exact",
+      "path": "schemas/execution-receipt.schema.json",
+      "sha256": "ebcdcda6d38e1b399696add88587e3a2a1a84246beebc656feccdfb357dfbddf",
+      "source_task": "202607221849-NWVCAG"
+    },
+    "knowledge_ref_schema": {
+      "comparison": "canonical_json_exact",
+      "path": "schemas/knowledge-ref.schema.json",
+      "sha256": "4a898d1d8bb5a2d05c8e132170e44861630eb864d7329d515b04bdbfdf832ac7",
+      "source_task": "202607221848-ER5H6N"
     }
-  },
-  "review": {
-    "state": "approved",
-    "reviewed_by": "ORCHESTRATOR",
-    "scope": "exact_delta_set",
-    "conditions": [
-      "final_focused_tests_pass",
-      "baseline_anchor_byte_identical",
-      "source_task_provenance_exact"
-    ]
   },
   "deltas": [
     {
+      "classification": "compatible_with_visibility_and_profile_simplification",
+      "evidence": {
+        "added_command_descriptors": [
+          {
+            "args": [
+              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Context",
+            "id": ["context", "supervise-task"],
+            "options": [
+              {
+                "kind": "string",
+                "name": "extraction",
+                "required": true,
+                "valueHint": "<sgr-json>"
+              },
+              { "kind": "string", "name": "smoke-query", "valueHint": "<query>" },
+              {
+                "default": "recovery-context",
+                "kind": "string",
+                "name": "evaluator",
+                "valueHint": "<id>"
+              },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "user"
+          },
+          {
+            "args": [],
+            "group": "Quality",
+            "id": ["doctor", "legacy"],
+            "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+            "visibility": "advanced"
+          },
+          {
+            "args": [
+              { "name": "taskId", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Evaluators",
+            "id": ["evaluator", "apply"],
+            "options": [
+              { "kind": "string", "name": "work-order", "valueHint": "<path>" },
+              { "kind": "string", "name": "result", "valueHint": "<path>" },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "user"
+          },
+          {
+            "args": [
+              { "name": "taskId", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Evaluators",
+            "id": ["evaluator", "execute"],
+            "options": [
+              {
+                "default": "recovery-context",
+                "kind": "string",
+                "name": "evaluator",
+                "valueHint": "<id>"
+              },
+              { "default": false, "kind": "boolean", "name": "replacement", "valueHint": null },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "user"
+          },
+          {
+            "args": [
+              { "name": "taskId", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Evaluators",
+            "id": ["evaluator", "prepare"],
+            "options": [
+              {
+                "default": "recovery-context",
+                "kind": "string",
+                "name": "evaluator",
+                "valueHint": "<id>"
+              },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "user"
+          },
+          {
+            "args": [],
+            "group": "Evidence",
+            "id": ["evidence", "compact"],
+            "options": [
+              { "default": false, "kind": "boolean", "name": "apply", "valueHint": null },
+              { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "user"
+          },
+          {
+            "args": [],
+            "group": "Evidence",
+            "id": ["evidence", "gc"],
+            "options": [
+              { "default": false, "kind": "boolean", "name": "apply", "valueHint": null },
+              { "default": false, "kind": "boolean", "name": "yes", "valueHint": null },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "user"
+          },
+          {
+            "args": [],
+            "group": "Evidence",
+            "id": ["evidence", "stats"],
+            "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+            "visibility": "user"
+          },
+          {
+            "args": [
+              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "PR",
+            "id": ["integrate", "queue", "adopt-legacy-protected-conflict"],
+            "options": [
+              { "kind": "string", "name": "expect-adoption-token", "valueHint": "<sha256:...>" }
+            ],
+            "visibility": "internal"
+          },
+          {
+            "args": [
+              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "PR",
+            "id": ["pr", "conflict-rework"],
+            "options": [
+              { "kind": "string", "name": "expect-freshness-token", "valueHint": "<sha256-token>" },
+              {
+                "default": false,
+                "kind": "boolean",
+                "name": "recover-diverged-head",
+                "valueHint": null
+              },
+              { "kind": "string", "name": "expected-local-head", "valueHint": "<full-sha>" },
+              { "kind": "string", "name": "expected-provider-head", "valueHint": "<full-sha>" },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "user"
+          },
+          {
+            "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+            "group": "Maintenance",
+            "id": ["repair"],
+            "options": [],
+            "visibility": "advanced"
+          },
+          {
+            "args": [
+              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Maintenance",
+            "id": ["repair", "adopt-legacy-conflict"],
+            "options": [
+              { "kind": "string", "name": "expect-adoption-token", "valueHint": "<sha256:...>" }
+            ],
+            "visibility": "advanced"
+          },
+          {
+            "args": [
+              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Task",
+            "id": ["task", "advance"],
+            "options": [
+              { "default": false, "kind": "boolean", "name": "agent-json", "valueHint": null },
+              { "default": false, "kind": "boolean", "name": "remote", "valueHint": null },
+              { "kind": "string", "name": "result", "valueHint": "<path>" },
+              { "default": false, "kind": "boolean", "name": "replacement", "valueHint": null }
+            ],
+            "visibility": "user"
+          },
+          {
+            "args": [
+              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Task",
+            "id": ["task", "authority", "grant"],
+            "options": [
+              {
+                "kind": "string",
+                "name": "operation",
+                "required": true,
+                "valueHint": "<operation-id>"
+              },
+              {
+                "kind": "string",
+                "name": "operation-digest",
+                "required": true,
+                "valueHint": "<sha256>"
+              },
+              {
+                "kind": "string",
+                "name": "state-fingerprint",
+                "required": true,
+                "valueHint": "<sha256>"
+              },
+              {
+                "kind": "string",
+                "name": "state-scope-digest",
+                "required": true,
+                "valueHint": "<sha256>"
+              },
+              { "kind": "string", "name": "by", "required": true, "valueHint": "<actor>" },
+              { "kind": "string", "name": "ttl-minutes", "valueHint": "<1-60>" },
+              { "default": false, "kind": "boolean", "name": "remote", "valueHint": null }
+            ],
+            "visibility": "advanced"
+          },
+          {
+            "args": [
+              { "name": "outcome", "required": true, "valueHint": "<outcome>", "variadic": false }
+            ],
+            "group": "Task",
+            "id": ["task", "create"],
+            "options": [
+              { "kind": "string", "name": "description", "valueHint": "<text>" },
+              { "default": "CODER", "kind": "string", "name": "owner", "valueHint": "<id>" },
+              {
+                "choices": ["low", "normal", "med", "high"],
+                "default": "med",
+                "kind": "string",
+                "name": "priority",
+                "valueHint": "<low|normal|med|high>"
+              },
+              {
+                "choices": ["auto", "direct", "branch_pr"],
+                "default": "auto",
+                "kind": "string",
+                "name": "route",
+                "valueHint": "<auto|direct|branch_pr>"
+              },
+              {
+                "choices": ["analysis", "content", "docs", "code", "release", "ops", "context"],
+                "kind": "string",
+                "name": "task-kind",
+                "valueHint": "<analysis|content|docs|code|release|ops|context>"
+              },
+              {
+                "choices": ["none", "docs", "code", "release", "ops", "context", "unknown"],
+                "kind": "string",
+                "name": "mutation-scope",
+                "valueHint": "<none|docs|code|release|ops|context|unknown>"
+              },
+              {
+                "choices": [
+                  "network",
+                  "credentials",
+                  "deploy",
+                  "publish",
+                  "merge",
+                  "security",
+                  "external_system"
+                ],
+                "kind": "string",
+                "name": "risk",
+                "repeatable": true,
+                "valueHint": "<risk>"
+              },
+              {
+                "choices": [
+                  "analysis.light",
+                  "content.light",
+                  "docs.change",
+                  "code.direct",
+                  "code.branch_pr",
+                  "performance.benchmark",
+                  "quality.regression",
+                  "context.assimilation",
+                  "context.maximum_assimilation",
+                  "post_run.improvement_review",
+                  "release.strict",
+                  "ops.approval"
+                ],
+                "kind": "string",
+                "name": "blueprint-request",
+                "valueHint": "<id>"
+              },
+              { "kind": "string", "name": "tag", "repeatable": true, "valueHint": "<tag>" },
+              { "kind": "string", "name": "verify", "repeatable": true, "valueHint": "<command>" },
+              { "default": false, "kind": "boolean", "name": "allow-duplicate", "valueHint": null },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "user"
+          },
+          {
+            "args": [
+              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Task",
+            "id": ["task", "run", "reconcile"],
+            "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+            "visibility": "internal"
+          },
+          {
+            "args": [
+              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Task",
+            "id": ["task", "run", "resolve-effect"],
+            "options": [
+              { "kind": "string", "name": "run-id", "required": true, "valueHint": "<run-id>" },
+              {
+                "choices": ["applied", "not_applied"],
+                "kind": "string",
+                "name": "verdict",
+                "required": true,
+                "valueHint": "<applied|not_applied>"
+              },
+              { "kind": "string", "name": "actor", "required": true, "valueHint": "<operator>" },
+              {
+                "kind": "string",
+                "name": "observed-at",
+                "required": true,
+                "valueHint": "<ISO-8601>"
+              },
+              { "kind": "string", "name": "authority-ref", "required": true, "valueHint": "<ref>" },
+              {
+                "kind": "string",
+                "name": "authority-digest",
+                "required": true,
+                "valueHint": "<sha256:...>"
+              },
+              {
+                "kind": "string",
+                "name": "precondition-fingerprint-digest",
+                "required": true,
+                "valueHint": "<sha256:...>"
+              },
+              {
+                "kind": "string",
+                "name": "precondition-policy-digest",
+                "required": true,
+                "valueHint": "<sha256:...>"
+              },
+              { "kind": "string", "name": "evidence-ref", "required": true, "valueHint": "<ref>" },
+              {
+                "kind": "string",
+                "name": "evidence-text",
+                "required": true,
+                "valueHint": "<text>"
+              },
+              {
+                "kind": "string",
+                "name": "claim-generation",
+                "required": true,
+                "valueHint": "<generation>"
+              },
+              { "default": false, "kind": "boolean", "name": "accept-legacy", "valueHint": null },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "internal"
+          },
+          {
+            "args": [
+              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Task",
+            "id": ["task", "run", "resume-effect"],
+            "options": [
+              { "kind": "string", "name": "run-id", "required": true, "valueHint": "<run-id>" },
+              { "kind": "string", "name": "new-run-id", "valueHint": "<run-id>" },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "internal"
+          },
+          {
+            "args": [
+              { "name": "tool", "required": true, "valueHint": "<tool-name>", "variadic": false }
+            ],
+            "group": "Task",
+            "id": ["task", "run", "tool"],
+            "options": [],
+            "visibility": "internal"
+          },
+          {
+            "args": [],
+            "group": "Workflow",
+            "id": ["workflow", "migrate"],
+            "options": [
+              { "default": false, "kind": "boolean", "name": "dry-run", "valueHint": null },
+              { "kind": "string", "name": "rollback", "valueHint": "<receipt-path>" }
+            ],
+            "visibility": "user"
+          }
+        ],
+        "added_commands": [
+          "context supervise-task",
+          "doctor legacy",
+          "evaluator apply",
+          "evaluator execute",
+          "evaluator prepare",
+          "evidence compact",
+          "evidence gc",
+          "evidence stats",
+          "integrate queue adopt-legacy-protected-conflict",
+          "pr conflict-rework",
+          "repair",
+          "repair adopt-legacy-conflict",
+          "task advance",
+          "task authority grant",
+          "task create",
+          "task run reconcile",
+          "task run resolve-effect",
+          "task run resume-effect",
+          "task run tool",
+          "workflow migrate"
+        ],
+        "added_options": [
+          {
+            "command": "backend sync",
+            "default": false,
+            "kind": "boolean",
+            "name": "adopt-projection-identity",
+            "valueHint": null
+          },
+          {
+            "command": "backend sync",
+            "default": false,
+            "kind": "boolean",
+            "name": "bootstrap-projection",
+            "valueHint": null
+          },
+          {
+            "command": "cleanup merged",
+            "kind": "string",
+            "name": "task-id",
+            "repeatable": true,
+            "valueHint": "<task-id>"
+          },
+          {
+            "command": "context supervise-task",
+            "default": "recovery-context",
+            "kind": "string",
+            "name": "evaluator",
+            "valueHint": "<id>"
+          },
+          {
+            "command": "context supervise-task",
+            "kind": "string",
+            "name": "extraction",
+            "required": true,
+            "valueHint": "<sgr-json>"
+          },
+          {
+            "command": "context supervise-task",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "context supervise-task",
+            "kind": "string",
+            "name": "smoke-query",
+            "valueHint": "<query>"
+          },
+          {
+            "command": "doctor legacy",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "evaluator apply",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "evaluator apply",
+            "kind": "string",
+            "name": "result",
+            "valueHint": "<path>"
+          },
+          {
+            "command": "evaluator apply",
+            "kind": "string",
+            "name": "work-order",
+            "valueHint": "<path>"
+          },
+          {
+            "command": "evaluator execute",
+            "default": "recovery-context",
+            "kind": "string",
+            "name": "evaluator",
+            "valueHint": "<id>"
+          },
+          {
+            "command": "evaluator execute",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "evaluator execute",
+            "default": false,
+            "kind": "boolean",
+            "name": "replacement",
+            "valueHint": null
+          },
+          {
+            "command": "evaluator prepare",
+            "default": "recovery-context",
+            "kind": "string",
+            "name": "evaluator",
+            "valueHint": "<id>"
+          },
+          {
+            "command": "evaluator prepare",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "choices": ["human_supplied", "evaluator_supplied"],
+            "command": "evaluator run",
+            "kind": "string",
+            "name": "provenance",
+            "valueHint": "<human_supplied|evaluator_supplied>"
+          },
+          {
+            "command": "evidence compact",
+            "default": false,
+            "kind": "boolean",
+            "name": "apply",
+            "valueHint": null
+          },
+          {
+            "command": "evidence compact",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "evidence compact",
+            "default": false,
+            "kind": "boolean",
+            "name": "yes",
+            "valueHint": null
+          },
+          {
+            "command": "evidence gc",
+            "default": false,
+            "kind": "boolean",
+            "name": "apply",
+            "valueHint": null
+          },
+          {
+            "command": "evidence gc",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "evidence gc",
+            "default": false,
+            "kind": "boolean",
+            "name": "yes",
+            "valueHint": null
+          },
+          {
+            "command": "evidence stats",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "hermes supervise",
+            "default": false,
+            "kind": "boolean",
+            "name": "remote",
+            "valueHint": null
+          },
+          {
+            "command": "integrate queue adopt-legacy-protected-conflict",
+            "kind": "string",
+            "name": "expect-adoption-token",
+            "valueHint": "<sha256:...>"
+          },
+          {
+            "command": "integrate queue release",
+            "kind": "string",
+            "name": "superseded-by",
+            "valueHint": "<task-id>"
+          },
+          {
+            "command": "pr conflict-rework",
+            "kind": "string",
+            "name": "expect-freshness-token",
+            "valueHint": "<sha256-token>"
+          },
+          {
+            "command": "pr conflict-rework",
+            "kind": "string",
+            "name": "expected-local-head",
+            "valueHint": "<full-sha>"
+          },
+          {
+            "command": "pr conflict-rework",
+            "kind": "string",
+            "name": "expected-provider-head",
+            "valueHint": "<full-sha>"
+          },
+          {
+            "command": "pr conflict-rework",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "pr conflict-rework",
+            "default": false,
+            "kind": "boolean",
+            "name": "recover-diverged-head",
+            "valueHint": null
+          },
+          {
+            "command": "repair adopt-legacy-conflict",
+            "kind": "string",
+            "name": "expect-adoption-token",
+            "valueHint": "<sha256:...>"
+          },
+          {
+            "command": "sync",
+            "default": false,
+            "kind": "boolean",
+            "name": "adopt-projection-identity",
+            "valueHint": null
+          },
+          {
+            "command": "sync",
+            "default": false,
+            "kind": "boolean",
+            "name": "bootstrap-projection",
+            "valueHint": null
+          },
+          {
+            "command": "task advance",
+            "default": false,
+            "kind": "boolean",
+            "name": "agent-json",
+            "valueHint": null
+          },
+          {
+            "command": "task advance",
+            "default": false,
+            "kind": "boolean",
+            "name": "remote",
+            "valueHint": null
+          },
+          {
+            "command": "task advance",
+            "default": false,
+            "kind": "boolean",
+            "name": "replacement",
+            "valueHint": null
+          },
+          { "command": "task advance", "kind": "string", "name": "result", "valueHint": "<path>" },
+          {
+            "command": "task authority grant",
+            "kind": "string",
+            "name": "by",
+            "required": true,
+            "valueHint": "<actor>"
+          },
+          {
+            "command": "task authority grant",
+            "kind": "string",
+            "name": "operation",
+            "required": true,
+            "valueHint": "<operation-id>"
+          },
+          {
+            "command": "task authority grant",
+            "kind": "string",
+            "name": "operation-digest",
+            "required": true,
+            "valueHint": "<sha256>"
+          },
+          {
+            "command": "task authority grant",
+            "default": false,
+            "kind": "boolean",
+            "name": "remote",
+            "valueHint": null
+          },
+          {
+            "command": "task authority grant",
+            "kind": "string",
+            "name": "state-fingerprint",
+            "required": true,
+            "valueHint": "<sha256>"
+          },
+          {
+            "command": "task authority grant",
+            "kind": "string",
+            "name": "state-scope-digest",
+            "required": true,
+            "valueHint": "<sha256>"
+          },
+          {
+            "command": "task authority grant",
+            "kind": "string",
+            "name": "ttl-minutes",
+            "valueHint": "<1-60>"
+          },
+          {
+            "command": "task complete",
+            "default": false,
+            "kind": "boolean",
+            "name": "accept-unobserved",
+            "valueHint": null
+          },
+          {
+            "command": "task create",
+            "default": false,
+            "kind": "boolean",
+            "name": "allow-duplicate",
+            "valueHint": null
+          },
+          {
+            "choices": [
+              "analysis.light",
+              "content.light",
+              "docs.change",
+              "code.direct",
+              "code.branch_pr",
+              "performance.benchmark",
+              "quality.regression",
+              "context.assimilation",
+              "context.maximum_assimilation",
+              "post_run.improvement_review",
+              "release.strict",
+              "ops.approval"
+            ],
+            "command": "task create",
+            "kind": "string",
+            "name": "blueprint-request",
+            "valueHint": "<id>"
+          },
+          {
+            "command": "task create",
+            "kind": "string",
+            "name": "description",
+            "valueHint": "<text>"
+          },
+          {
+            "command": "task create",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "choices": ["none", "docs", "code", "release", "ops", "context", "unknown"],
+            "command": "task create",
+            "kind": "string",
+            "name": "mutation-scope",
+            "valueHint": "<none|docs|code|release|ops|context|unknown>"
+          },
+          {
+            "command": "task create",
+            "default": "CODER",
+            "kind": "string",
+            "name": "owner",
+            "valueHint": "<id>"
+          },
+          {
+            "choices": ["low", "normal", "med", "high"],
+            "command": "task create",
+            "default": "med",
+            "kind": "string",
+            "name": "priority",
+            "valueHint": "<low|normal|med|high>"
+          },
+          {
+            "choices": [
+              "network",
+              "credentials",
+              "deploy",
+              "publish",
+              "merge",
+              "security",
+              "external_system"
+            ],
+            "command": "task create",
+            "kind": "string",
+            "name": "risk",
+            "repeatable": true,
+            "valueHint": "<risk>"
+          },
+          {
+            "choices": ["auto", "direct", "branch_pr"],
+            "command": "task create",
+            "default": "auto",
+            "kind": "string",
+            "name": "route",
+            "valueHint": "<auto|direct|branch_pr>"
+          },
+          {
+            "command": "task create",
+            "kind": "string",
+            "name": "tag",
+            "repeatable": true,
+            "valueHint": "<tag>"
+          },
+          {
+            "choices": ["analysis", "content", "docs", "code", "release", "ops", "context"],
+            "command": "task create",
+            "kind": "string",
+            "name": "task-kind",
+            "valueHint": "<analysis|content|docs|code|release|ops|context>"
+          },
+          {
+            "command": "task create",
+            "kind": "string",
+            "name": "verify",
+            "repeatable": true,
+            "valueHint": "<command>"
+          },
+          {
+            "choices": ["repository", "auto", "direct", "branch_pr"],
+            "command": "task new",
+            "default": "repository",
+            "kind": "string",
+            "name": "route",
+            "valueHint": "<repository|auto|direct|branch_pr>"
+          },
+          {
+            "command": "task run",
+            "default": false,
+            "kind": "boolean",
+            "name": "allow-danger-full-access",
+            "valueHint": null
+          },
+          {
+            "command": "task run",
+            "default": false,
+            "kind": "boolean",
+            "name": "remote",
+            "valueHint": null
+          },
+          {
+            "choices": ["read-only", "workspace-write", "danger-full-access"],
+            "command": "task run",
+            "kind": "string",
+            "name": "sandbox",
+            "valueHint": "<read-only|workspace-write|danger-full-access>"
+          },
+          {
+            "command": "task run reconcile",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "task run resolve-effect",
+            "default": false,
+            "kind": "boolean",
+            "name": "accept-legacy",
+            "valueHint": null
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "string",
+            "name": "actor",
+            "required": true,
+            "valueHint": "<operator>"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "string",
+            "name": "authority-digest",
+            "required": true,
+            "valueHint": "<sha256:...>"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "string",
+            "name": "authority-ref",
+            "required": true,
+            "valueHint": "<ref>"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "string",
+            "name": "claim-generation",
+            "required": true,
+            "valueHint": "<generation>"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "string",
+            "name": "evidence-ref",
+            "required": true,
+            "valueHint": "<ref>"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "string",
+            "name": "evidence-text",
+            "required": true,
+            "valueHint": "<text>"
+          },
+          {
+            "command": "task run resolve-effect",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "string",
+            "name": "observed-at",
+            "required": true,
+            "valueHint": "<ISO-8601>"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "string",
+            "name": "precondition-fingerprint-digest",
+            "required": true,
+            "valueHint": "<sha256:...>"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "string",
+            "name": "precondition-policy-digest",
+            "required": true,
+            "valueHint": "<sha256:...>"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "string",
+            "name": "run-id",
+            "required": true,
+            "valueHint": "<run-id>"
+          },
+          {
+            "choices": ["applied", "not_applied"],
+            "command": "task run resolve-effect",
+            "kind": "string",
+            "name": "verdict",
+            "required": true,
+            "valueHint": "<applied|not_applied>"
+          },
+          {
+            "command": "task run resume-effect",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "task run resume-effect",
+            "kind": "string",
+            "name": "new-run-id",
+            "valueHint": "<run-id>"
+          },
+          {
+            "command": "task run resume-effect",
+            "kind": "string",
+            "name": "run-id",
+            "required": true,
+            "valueHint": "<run-id>"
+          },
+          {
+            "command": "workflow migrate",
+            "default": false,
+            "kind": "boolean",
+            "name": "dry-run",
+            "valueHint": null
+          },
+          {
+            "command": "workflow migrate",
+            "kind": "string",
+            "name": "rollback",
+            "valueHint": "<receipt-path>"
+          }
+        ],
+        "addition_sources": [
+          {
+            "command": "context supervise-task",
+            "kind": "command",
+            "source_task": "202607221850-8HBF4J"
+          },
+          { "command": "doctor legacy", "kind": "command", "source_task": "202608021535-CNQKXP" },
+          { "command": "evaluator apply", "kind": "command", "source_task": "202607221849-TBTX8X" },
+          {
+            "command": "evaluator execute",
+            "kind": "command",
+            "source_task": "202607221849-8YYZ9X"
+          },
+          {
+            "command": "evaluator prepare",
+            "kind": "command",
+            "source_task": "202607221849-TBTX8X"
+          },
+          {
+            "command": "evidence compact",
+            "kind": "command",
+            "source_task": "202608062023-V3WHE9"
+          },
+          { "command": "evidence gc", "kind": "command", "source_task": "202608062023-V3WHE9" },
+          { "command": "evidence stats", "kind": "command", "source_task": "202608062023-V3WHE9" },
+          {
+            "command": "integrate queue adopt-legacy-protected-conflict",
+            "kind": "command",
+            "source_task": "202607260532-9M7RNH"
+          },
+          {
+            "command": "pr conflict-rework",
+            "kind": "command",
+            "source_task": "202607260007-DQM6AW"
+          },
+          { "command": "repair", "kind": "command", "source_task": "202608021535-CNQKXP" },
+          {
+            "command": "repair adopt-legacy-conflict",
+            "kind": "command",
+            "source_task": "202608021535-CNQKXP"
+          },
+          { "command": "task advance", "kind": "command", "source_task": "202608021231-PZGG3V" },
+          {
+            "command": "task authority grant",
+            "kind": "command",
+            "source_task": "202607221849-NWVCAG"
+          },
+          { "command": "task create", "kind": "command", "source_task": "202608061646-30TKV4" },
+          {
+            "command": "task run reconcile",
+            "kind": "command",
+            "source_task": "202607221846-9XC1H0"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "command",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "task run resume-effect",
+            "kind": "command",
+            "source_task": "202607242158-QV09NA"
+          },
+          { "command": "task run tool", "kind": "command", "source_task": "202607221852-ECBY56" },
+          {
+            "command": "workflow migrate",
+            "kind": "command",
+            "source_task": "202607221846-4VB97J"
+          },
+          {
+            "command": "backend sync",
+            "kind": "option",
+            "name": "adopt-projection-identity",
+            "source_task": "202607221848-0ZAB1F"
+          },
+          {
+            "command": "backend sync",
+            "kind": "option",
+            "name": "bootstrap-projection",
+            "source_task": "202607221848-0ZAB1F"
+          },
+          {
+            "command": "cleanup merged",
+            "kind": "option",
+            "name": "task-id",
+            "source_task": "202607230554-YFYT83"
+          },
+          {
+            "command": "context supervise-task",
+            "kind": "option",
+            "name": "evaluator",
+            "source_task": "202607221850-8HBF4J"
+          },
+          {
+            "command": "context supervise-task",
+            "kind": "option",
+            "name": "extraction",
+            "source_task": "202607221850-8HBF4J"
+          },
+          {
+            "command": "context supervise-task",
+            "kind": "option",
+            "name": "json",
+            "source_task": "202607221850-8HBF4J"
+          },
+          {
+            "command": "context supervise-task",
+            "kind": "option",
+            "name": "smoke-query",
+            "source_task": "202607221850-8HBF4J"
+          },
+          {
+            "command": "doctor legacy",
+            "kind": "option",
+            "name": "json",
+            "source_task": "202608021535-CNQKXP"
+          },
+          {
+            "command": "evaluator apply",
+            "kind": "option",
+            "name": "json",
+            "source_task": "202607221849-TBTX8X"
+          },
+          {
+            "command": "evaluator apply",
+            "kind": "option",
+            "name": "result",
+            "source_task": "202607221849-TBTX8X"
+          },
+          {
+            "command": "evaluator apply",
+            "kind": "option",
+            "name": "work-order",
+            "source_task": "202607221849-TBTX8X"
+          },
+          {
+            "command": "evaluator execute",
+            "kind": "option",
+            "name": "evaluator",
+            "source_task": "202607221849-8YYZ9X"
+          },
+          {
+            "command": "evaluator execute",
+            "kind": "option",
+            "name": "json",
+            "source_task": "202607221849-8YYZ9X"
+          },
+          {
+            "command": "evaluator execute",
+            "kind": "option",
+            "name": "replacement",
+            "source_task": "202607281655-YMPY8Y"
+          },
+          {
+            "command": "evaluator prepare",
+            "kind": "option",
+            "name": "evaluator",
+            "source_task": "202607221849-TBTX8X"
+          },
+          {
+            "command": "evaluator prepare",
+            "kind": "option",
+            "name": "json",
+            "source_task": "202607221849-TBTX8X"
+          },
+          {
+            "command": "evaluator run",
+            "kind": "option",
+            "name": "provenance",
+            "source_task": "202607221846-YGWMA2"
+          },
+          {
+            "command": "evidence compact",
+            "kind": "option",
+            "name": "apply",
+            "source_task": "202608062023-V3WHE9"
+          },
+          {
+            "command": "evidence compact",
+            "kind": "option",
+            "name": "json",
+            "source_task": "202608062023-V3WHE9"
+          },
+          {
+            "command": "evidence compact",
+            "kind": "option",
+            "name": "yes",
+            "source_task": "202608062023-V3WHE9"
+          },
+          {
+            "command": "evidence gc",
+            "kind": "option",
+            "name": "apply",
+            "source_task": "202608062023-V3WHE9"
+          },
+          {
+            "command": "evidence gc",
+            "kind": "option",
+            "name": "json",
+            "source_task": "202608062023-V3WHE9"
+          },
+          {
+            "command": "evidence gc",
+            "kind": "option",
+            "name": "yes",
+            "source_task": "202608062023-V3WHE9"
+          },
+          {
+            "command": "evidence stats",
+            "kind": "option",
+            "name": "json",
+            "source_task": "202608062023-V3WHE9"
+          },
+          {
+            "command": "hermes supervise",
+            "kind": "option",
+            "name": "remote",
+            "source_task": "202607221848-VC4VVS"
+          },
+          {
+            "command": "integrate queue adopt-legacy-protected-conflict",
+            "kind": "option",
+            "name": "expect-adoption-token",
+            "source_task": "202607260532-9M7RNH"
+          },
+          {
+            "command": "integrate queue release",
+            "kind": "option",
+            "name": "superseded-by",
+            "source_task": "202607302125-Y61ZHN"
+          },
+          {
+            "command": "pr conflict-rework",
+            "kind": "option",
+            "name": "expect-freshness-token",
+            "source_task": "202607260007-DQM6AW"
+          },
+          {
+            "command": "pr conflict-rework",
+            "kind": "option",
+            "name": "expected-local-head",
+            "source_task": "202607300150-MGCHE6"
+          },
+          {
+            "command": "pr conflict-rework",
+            "kind": "option",
+            "name": "expected-provider-head",
+            "source_task": "202607300150-MGCHE6"
+          },
+          {
+            "command": "pr conflict-rework",
+            "kind": "option",
+            "name": "json",
+            "source_task": "202607260007-DQM6AW"
+          },
+          {
+            "command": "pr conflict-rework",
+            "kind": "option",
+            "name": "recover-diverged-head",
+            "source_task": "202607300150-MGCHE6"
+          },
+          {
+            "command": "repair adopt-legacy-conflict",
+            "kind": "option",
+            "name": "expect-adoption-token",
+            "source_task": "202608021535-CNQKXP"
+          },
+          {
+            "command": "sync",
+            "kind": "option",
+            "name": "adopt-projection-identity",
+            "source_task": "202607221848-0ZAB1F"
+          },
+          {
+            "command": "sync",
+            "kind": "option",
+            "name": "bootstrap-projection",
+            "source_task": "202607221848-0ZAB1F"
+          },
+          {
+            "command": "task advance",
+            "kind": "option",
+            "name": "agent-json",
+            "source_task": "202608021231-PZGG3V"
+          },
+          {
+            "command": "task advance",
+            "kind": "option",
+            "name": "remote",
+            "source_task": "202608021231-PZGG3V"
+          },
+          {
+            "command": "task advance",
+            "kind": "option",
+            "name": "replacement",
+            "source_task": "202608080805-KPWPAV"
+          },
+          {
+            "command": "task advance",
+            "kind": "option",
+            "name": "result",
+            "source_task": "202608022324-9VCYWG"
+          },
+          {
+            "command": "task authority grant",
+            "kind": "option",
+            "name": "by",
+            "source_task": "202607221849-NWVCAG"
+          },
+          {
+            "command": "task authority grant",
+            "kind": "option",
+            "name": "operation",
+            "source_task": "202607221849-NWVCAG"
+          },
+          {
+            "command": "task authority grant",
+            "kind": "option",
+            "name": "operation-digest",
+            "source_task": "202607221849-NWVCAG"
+          },
+          {
+            "command": "task authority grant",
+            "kind": "option",
+            "name": "remote",
+            "source_task": "202607221849-NWVCAG"
+          },
+          {
+            "command": "task authority grant",
+            "kind": "option",
+            "name": "state-fingerprint",
+            "source_task": "202607221849-NWVCAG"
+          },
+          {
+            "command": "task authority grant",
+            "kind": "option",
+            "name": "state-scope-digest",
+            "source_task": "202607221849-NWVCAG"
+          },
+          {
+            "command": "task authority grant",
+            "kind": "option",
+            "name": "ttl-minutes",
+            "source_task": "202607221849-NWVCAG"
+          },
+          {
+            "command": "task complete",
+            "kind": "option",
+            "name": "accept-unobserved",
+            "source_task": "202608021534-YN84E1"
+          },
+          {
+            "command": "task create",
+            "kind": "option",
+            "name": "allow-duplicate",
+            "source_task": "202608061646-30TKV4"
+          },
+          {
+            "command": "task create",
+            "kind": "option",
+            "name": "blueprint-request",
+            "source_task": "202608110235-WCJJRD"
+          },
+          {
+            "command": "task create",
+            "kind": "option",
+            "name": "description",
+            "source_task": "202608061646-30TKV4"
+          },
+          {
+            "command": "task create",
+            "kind": "option",
+            "name": "json",
+            "source_task": "202608061646-30TKV4"
+          },
+          {
+            "command": "task create",
+            "kind": "option",
+            "name": "mutation-scope",
+            "source_task": "202608110235-WCJJRD"
+          },
+          {
+            "command": "task create",
+            "kind": "option",
+            "name": "owner",
+            "source_task": "202608061646-30TKV4"
+          },
+          {
+            "command": "task create",
+            "kind": "option",
+            "name": "priority",
+            "source_task": "202608061646-30TKV4"
+          },
+          {
+            "command": "task create",
+            "kind": "option",
+            "name": "risk",
+            "source_task": "202608110235-WCJJRD"
+          },
+          {
+            "command": "task create",
+            "kind": "option",
+            "name": "route",
+            "source_task": "202608061646-30TKV4"
+          },
+          {
+            "command": "task create",
+            "kind": "option",
+            "name": "tag",
+            "source_task": "202608110235-WCJJRD"
+          },
+          {
+            "command": "task create",
+            "kind": "option",
+            "name": "task-kind",
+            "source_task": "202608110235-WCJJRD"
+          },
+          {
+            "command": "task create",
+            "kind": "option",
+            "name": "verify",
+            "source_task": "202608061646-30TKV4"
+          },
+          {
+            "command": "task new",
+            "kind": "option",
+            "name": "route",
+            "source_task": "202608061646-WCARQG"
+          },
+          {
+            "command": "task run",
+            "kind": "option",
+            "name": "allow-danger-full-access",
+            "source_task": "202607221846-9XC1H0"
+          },
+          {
+            "command": "task run",
+            "kind": "option",
+            "name": "remote",
+            "source_task": "202607221848-VC4VVS"
+          },
+          {
+            "command": "task run",
+            "kind": "option",
+            "name": "sandbox",
+            "source_task": "202607221846-9XC1H0"
+          },
+          {
+            "command": "task run reconcile",
+            "kind": "option",
+            "name": "json",
+            "source_task": "202607221846-9XC1H0"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "option",
+            "name": "accept-legacy",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "option",
+            "name": "actor",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "option",
+            "name": "authority-digest",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "option",
+            "name": "authority-ref",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "option",
+            "name": "claim-generation",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "option",
+            "name": "evidence-ref",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "option",
+            "name": "evidence-text",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "option",
+            "name": "json",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "option",
+            "name": "observed-at",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "option",
+            "name": "precondition-fingerprint-digest",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "option",
+            "name": "precondition-policy-digest",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "option",
+            "name": "run-id",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "task run resolve-effect",
+            "kind": "option",
+            "name": "verdict",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "task run resume-effect",
+            "kind": "option",
+            "name": "json",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "task run resume-effect",
+            "kind": "option",
+            "name": "new-run-id",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "task run resume-effect",
+            "kind": "option",
+            "name": "run-id",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "command": "workflow migrate",
+            "kind": "option",
+            "name": "dry-run",
+            "source_task": "202607221846-4VB97J"
+          },
+          {
+            "command": "workflow migrate",
+            "kind": "option",
+            "name": "rollback",
+            "source_task": "202607221846-4VB97J"
+          }
+        ],
+        "command_count": { "from": 243, "to": 263 },
+        "mutated_command_shells": [
+          {
+            "after": {
+              "args": [
+                {
+                  "name": "profile",
+                  "required": true,
+                  "valueHint": "<standard>",
+                  "variadic": false
+                }
+              ],
+              "group": "Config",
+              "id": ["profile", "set"],
+              "visibility": "user"
+            },
+            "before": {
+              "args": [
+                {
+                  "name": "profile",
+                  "required": true,
+                  "valueHint": "<light|normal|full-harness>",
+                  "variadic": false
+                }
+              ],
+              "group": "Config",
+              "id": ["profile", "set"],
+              "visibility": "user"
+            },
+            "identity": "profile set"
+          },
+          {
+            "after": {
+              "args": [
+                { "name": "title", "required": true, "valueHint": "<title>", "variadic": false }
+              ],
+              "group": "Task",
+              "id": ["task", "begin"],
+              "visibility": "advanced"
+            },
+            "before": {
+              "args": [
+                { "name": "title", "required": true, "valueHint": "<title>", "variadic": false }
+              ],
+              "group": "Task",
+              "id": ["task", "begin"],
+              "visibility": "user"
+            },
+            "identity": "task begin"
+          },
+          {
+            "after": {
+              "args": [
+                { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+              ],
+              "group": "Task",
+              "id": ["task", "complete"],
+              "visibility": "advanced"
+            },
+            "before": {
+              "args": [
+                { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+              ],
+              "group": "Task",
+              "id": ["task", "complete"],
+              "visibility": "user"
+            },
+            "identity": "task complete"
+          },
+          {
+            "after": {
+              "args": [],
+              "group": "Task",
+              "id": ["task", "new"],
+              "visibility": "advanced"
+            },
+            "before": { "args": [], "group": "Task", "id": ["task", "new"], "visibility": "user" },
+            "identity": "task new"
+          },
+          {
+            "after": {
+              "args": [
+                { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+              ],
+              "group": "Task",
+              "id": ["task", "next-action"],
+              "visibility": "advanced"
+            },
+            "before": {
+              "args": [
+                { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+              ],
+              "group": "Task",
+              "id": ["task", "next-action"],
+              "visibility": "user"
+            },
+            "identity": "task next-action"
+          },
+          {
+            "after": {
+              "args": [
+                { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+              ],
+              "group": "Task",
+              "id": ["task", "run"],
+              "visibility": "user"
+            },
+            "before": {
+              "args": [
+                { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+              ],
+              "group": "Task",
+              "id": ["task", "run"],
+              "visibility": "internal"
+            },
+            "identity": "task run"
+          }
+        ],
+        "mutated_options": [
+          {
+            "after": {
+              "choices": ["standard", "conservative", "balanced", "aggressive"],
+              "command": "init",
+              "kind": "string",
+              "name": "execution-profile",
+              "valueHint": "<standard>"
+            },
+            "before": {
+              "choices": ["conservative", "balanced", "aggressive"],
+              "command": "init",
+              "kind": "string",
+              "name": "execution-profile",
+              "valueHint": "<conservative|balanced|aggressive>"
+            },
+            "identity": "init --execution-profile"
+          },
+          {
+            "after": {
+              "choices": [
+                "standard",
+                "light",
+                "normal",
+                "full-harness",
+                "developer",
+                "vibecoder",
+                "manager"
+              ],
+              "command": "init",
+              "kind": "string",
+              "name": "setup-profile",
+              "valueHint": "<standard>"
+            },
+            "before": {
+              "choices": ["light", "normal", "full-harness", "developer", "vibecoder", "manager"],
+              "command": "init",
+              "kind": "string",
+              "name": "setup-profile",
+              "valueHint": "<light|normal|full-harness>"
+            },
+            "identity": "init --setup-profile"
+          },
+          {
+            "after": {
+              "choices": ["queued", "done", "rework", "superseded"],
+              "command": "integrate queue release",
+              "default": "queued",
+              "kind": "string",
+              "name": "status",
+              "valueHint": "<queued|done|rework|superseded>"
+            },
+            "before": {
+              "choices": ["queued", "done", "rework"],
+              "command": "integrate queue release",
+              "default": "queued",
+              "kind": "string",
+              "name": "status",
+              "valueHint": "<queued|done|rework>"
+            },
+            "identity": "integrate queue release --status"
+          }
+        ],
+        "option_count": { "from": 767, "to": 849 },
+        "positional_count": { "from": 165, "to": 180 },
+        "removed_command_descriptors": [],
+        "removed_commands": [],
+        "removed_options": []
+      },
+      "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
       "section": "cli_topology",
       "source_tasks": [
         "202607221846-4VB97J",
@@ -443,2185 +2093,41 @@
         "202608110235-WCJJRD",
         "202608112213-NWJCBW"
       ],
-      "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "049140adaeeec07e19c9ecba8d33831bb9b5784ca98e4a444d2246fe957eb9a4",
-      "classification": "compatible_with_visibility_and_profile_simplification",
       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, compatibility retirement diagnostics, and safe local evidence statistics, compaction, and garbage collection; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; and canonicalizes setup and execution profile selection to standard while retaining legacy init aliases.",
-      "evidence": {
-        "command_count": { "from": 243, "to": 263 },
-        "positional_count": { "from": 165, "to": 180 },
-        "option_count": { "from": 767, "to": 849 },
-        "added_commands": [
-          "context supervise-task",
-          "doctor legacy",
-          "evaluator apply",
-          "evaluator execute",
-          "evaluator prepare",
-          "evidence compact",
-          "evidence gc",
-          "evidence stats",
-          "integrate queue adopt-legacy-protected-conflict",
-          "pr conflict-rework",
-          "repair",
-          "repair adopt-legacy-conflict",
-          "task advance",
-          "task authority grant",
-          "task create",
-          "task run reconcile",
-          "task run resolve-effect",
-          "task run resume-effect",
-          "task run tool",
-          "workflow migrate"
-        ],
-        "removed_commands": [],
-        "added_command_descriptors": [
-          {
-            "id": ["context", "supervise-task"],
-            "visibility": "user",
-            "group": "Context",
-            "args": [
-              {
-                "name": "task-id",
-                "required": true,
-                "variadic": false,
-                "valueHint": "<task-id>"
-              }
-            ],
-            "options": [
-              {
-                "name": "extraction",
-                "kind": "string",
-                "valueHint": "<sgr-json>",
-                "required": true
-              },
-              {
-                "name": "smoke-query",
-                "kind": "string",
-                "valueHint": "<query>"
-              },
-              {
-                "name": "evaluator",
-                "kind": "string",
-                "valueHint": "<id>",
-                "default": "recovery-context"
-              },
-              {
-                "name": "json",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              }
-            ]
-          },
-          {
-            "id": ["doctor", "legacy"],
-            "visibility": "advanced",
-            "group": "Quality",
-            "args": [],
-            "options": [
-              {
-                "name": "json",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              }
-            ]
-          },
-          {
-            "id": ["evaluator", "apply"],
-            "visibility": "user",
-            "group": "Evaluators",
-            "args": [
-              {
-                "name": "taskId",
-                "required": true,
-                "variadic": false,
-                "valueHint": "<task-id>"
-              }
-            ],
-            "options": [
-              { "name": "work-order", "kind": "string", "valueHint": "<path>" },
-              { "name": "result", "kind": "string", "valueHint": "<path>" },
-              {
-                "name": "json",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              }
-            ]
-          },
-          {
-            "id": ["evaluator", "execute"],
-            "visibility": "user",
-            "group": "Evaluators",
-            "args": [
-              {
-                "name": "taskId",
-                "required": true,
-                "variadic": false,
-                "valueHint": "<task-id>"
-              }
-            ],
-            "options": [
-              {
-                "name": "evaluator",
-                "kind": "string",
-                "valueHint": "<id>",
-                "default": "recovery-context"
-              },
-              {
-                "name": "replacement",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              },
-              {
-                "name": "json",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              }
-            ]
-          },
-          {
-            "id": ["evaluator", "prepare"],
-            "visibility": "user",
-            "group": "Evaluators",
-            "args": [
-              {
-                "name": "taskId",
-                "required": true,
-                "variadic": false,
-                "valueHint": "<task-id>"
-              }
-            ],
-            "options": [
-              {
-                "name": "evaluator",
-                "kind": "string",
-                "valueHint": "<id>",
-                "default": "recovery-context"
-              },
-              {
-                "name": "json",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              }
-            ]
-          },
-          {
-            "id": ["evidence", "compact"],
-            "visibility": "user",
-            "group": "Evidence",
-            "args": [],
-            "options": [
-              {
-                "name": "apply",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              },
-              {
-                "name": "yes",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              },
-              {
-                "name": "json",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              }
-            ]
-          },
-          {
-            "id": ["evidence", "gc"],
-            "visibility": "user",
-            "group": "Evidence",
-            "args": [],
-            "options": [
-              {
-                "name": "apply",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              },
-              {
-                "name": "yes",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              },
-              {
-                "name": "json",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              }
-            ]
-          },
-          {
-            "id": ["evidence", "stats"],
-            "visibility": "user",
-            "group": "Evidence",
-            "args": [],
-            "options": [
-              {
-                "name": "json",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              }
-            ]
-          },
-          {
-            "id": ["integrate", "queue", "adopt-legacy-protected-conflict"],
-            "visibility": "internal",
-            "group": "PR",
-            "args": [
-              {
-                "name": "task-id",
-                "required": true,
-                "variadic": false,
-                "valueHint": "<task-id>"
-              }
-            ],
-            "options": [
-              {
-                "name": "expect-adoption-token",
-                "kind": "string",
-                "valueHint": "<sha256:...>"
-              }
-            ]
-          },
-          {
-            "id": ["pr", "conflict-rework"],
-            "visibility": "user",
-            "group": "PR",
-            "args": [
-              {
-                "name": "task-id",
-                "required": true,
-                "variadic": false,
-                "valueHint": "<task-id>"
-              }
-            ],
-            "options": [
-              {
-                "name": "expect-freshness-token",
-                "kind": "string",
-                "valueHint": "<sha256-token>"
-              },
-              {
-                "name": "recover-diverged-head",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              },
-              {
-                "name": "expected-local-head",
-                "kind": "string",
-                "valueHint": "<full-sha>"
-              },
-              {
-                "name": "expected-provider-head",
-                "kind": "string",
-                "valueHint": "<full-sha>"
-              },
-              {
-                "name": "json",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              }
-            ]
-          },
-          {
-            "id": ["repair"],
-            "visibility": "advanced",
-            "group": "Maintenance",
-            "args": [
-              {
-                "name": "cmd",
-                "required": false,
-                "variadic": true,
-                "valueHint": "<cmd>"
-              }
-            ],
-            "options": []
-          },
-          {
-            "id": ["repair", "adopt-legacy-conflict"],
-            "visibility": "advanced",
-            "group": "Maintenance",
-            "args": [
-              {
-                "name": "task-id",
-                "required": true,
-                "variadic": false,
-                "valueHint": "<task-id>"
-              }
-            ],
-            "options": [
-              {
-                "name": "expect-adoption-token",
-                "kind": "string",
-                "valueHint": "<sha256:...>"
-              }
-            ]
-          },
-          {
-            "id": ["task", "advance"],
-            "visibility": "user",
-            "group": "Task",
-            "args": [
-              {
-                "name": "task-id",
-                "required": true,
-                "variadic": false,
-                "valueHint": "<task-id>"
-              }
-            ],
-            "options": [
-              {
-                "name": "agent-json",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              },
-              {
-                "name": "remote",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              },
-              {
-                "name": "result",
-                "kind": "string",
-                "valueHint": "<path>"
-              },
-              {
-                "name": "replacement",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              }
-            ]
-          },
-          {
-            "id": ["task", "authority", "grant"],
-            "visibility": "advanced",
-            "group": "Task",
-            "args": [
-              {
-                "name": "task-id",
-                "required": true,
-                "variadic": false,
-                "valueHint": "<task-id>"
-              }
-            ],
-            "options": [
-              {
-                "name": "operation",
-                "kind": "string",
-                "valueHint": "<operation-id>",
-                "required": true
-              },
-              {
-                "name": "operation-digest",
-                "kind": "string",
-                "valueHint": "<sha256>",
-                "required": true
-              },
-              {
-                "name": "state-fingerprint",
-                "kind": "string",
-                "valueHint": "<sha256>",
-                "required": true
-              },
-              {
-                "name": "state-scope-digest",
-                "kind": "string",
-                "valueHint": "<sha256>",
-                "required": true
-              },
-              {
-                "name": "by",
-                "kind": "string",
-                "valueHint": "<actor>",
-                "required": true
-              },
-              {
-                "name": "ttl-minutes",
-                "kind": "string",
-                "valueHint": "<1-60>"
-              },
-              {
-                "name": "remote",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              }
-            ]
-          },
-          {
-            "id": ["task", "create"],
-            "visibility": "user",
-            "group": "Task",
-            "args": [
-              {
-                "name": "outcome",
-                "required": true,
-                "variadic": false,
-                "valueHint": "<outcome>"
-              }
-            ],
-            "options": [
-              {
-                "name": "description",
-                "kind": "string",
-                "valueHint": "<text>"
-              },
-              {
-                "name": "owner",
-                "kind": "string",
-                "valueHint": "<id>",
-                "default": "CODER"
-              },
-              {
-                "name": "priority",
-                "kind": "string",
-                "valueHint": "<low|normal|med|high>",
-                "default": "med",
-                "choices": ["low", "normal", "med", "high"]
-              },
-              {
-                "name": "route",
-                "kind": "string",
-                "valueHint": "<auto|direct|branch_pr>",
-                "default": "auto",
-                "choices": ["auto", "direct", "branch_pr"]
-              },
-              {
-                "name": "task-kind",
-                "kind": "string",
-                "valueHint": "<analysis|content|docs|code|release|ops|context>",
-                "choices": ["analysis", "content", "docs", "code", "release", "ops", "context"]
-              },
-              {
-                "name": "mutation-scope",
-                "kind": "string",
-                "valueHint": "<none|docs|code|release|ops|context|unknown>",
-                "choices": ["none", "docs", "code", "release", "ops", "context", "unknown"]
-              },
-              {
-                "name": "risk",
-                "kind": "string",
-                "valueHint": "<risk>",
-                "choices": [
-                  "network",
-                  "credentials",
-                  "deploy",
-                  "publish",
-                  "merge",
-                  "security",
-                  "external_system"
-                ],
-                "repeatable": true
-              },
-              {
-                "name": "blueprint-request",
-                "kind": "string",
-                "valueHint": "<id>",
-                "choices": [
-                  "analysis.light",
-                  "content.light",
-                  "docs.change",
-                  "code.direct",
-                  "code.branch_pr",
-                  "performance.benchmark",
-                  "quality.regression",
-                  "context.assimilation",
-                  "context.maximum_assimilation",
-                  "post_run.improvement_review",
-                  "release.strict",
-                  "ops.approval"
-                ]
-              },
-              {
-                "name": "tag",
-                "kind": "string",
-                "valueHint": "<tag>",
-                "repeatable": true
-              },
-              {
-                "name": "verify",
-                "kind": "string",
-                "valueHint": "<command>",
-                "repeatable": true
-              },
-              {
-                "name": "allow-duplicate",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              },
-              {
-                "name": "json",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              }
-            ]
-          },
-          {
-            "id": ["task", "run", "reconcile"],
-            "visibility": "internal",
-            "group": "Task",
-            "args": [
-              {
-                "name": "task-id",
-                "required": true,
-                "variadic": false,
-                "valueHint": "<task-id>"
-              }
-            ],
-            "options": [
-              {
-                "name": "json",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              }
-            ]
-          },
-          {
-            "id": ["task", "run", "resolve-effect"],
-            "visibility": "internal",
-            "group": "Task",
-            "args": [
-              {
-                "name": "task-id",
-                "required": true,
-                "variadic": false,
-                "valueHint": "<task-id>"
-              }
-            ],
-            "options": [
-              {
-                "name": "run-id",
-                "kind": "string",
-                "valueHint": "<run-id>",
-                "required": true
-              },
-              {
-                "name": "verdict",
-                "kind": "string",
-                "valueHint": "<applied|not_applied>",
-                "required": true,
-                "choices": ["applied", "not_applied"]
-              },
-              {
-                "name": "actor",
-                "kind": "string",
-                "valueHint": "<operator>",
-                "required": true
-              },
-              {
-                "name": "observed-at",
-                "kind": "string",
-                "valueHint": "<ISO-8601>",
-                "required": true
-              },
-              {
-                "name": "authority-ref",
-                "kind": "string",
-                "valueHint": "<ref>",
-                "required": true
-              },
-              {
-                "name": "authority-digest",
-                "kind": "string",
-                "valueHint": "<sha256:...>",
-                "required": true
-              },
-              {
-                "name": "precondition-fingerprint-digest",
-                "kind": "string",
-                "valueHint": "<sha256:...>",
-                "required": true
-              },
-              {
-                "name": "precondition-policy-digest",
-                "kind": "string",
-                "valueHint": "<sha256:...>",
-                "required": true
-              },
-              {
-                "name": "evidence-ref",
-                "kind": "string",
-                "valueHint": "<ref>",
-                "required": true
-              },
-              {
-                "name": "evidence-text",
-                "kind": "string",
-                "valueHint": "<text>",
-                "required": true
-              },
-              {
-                "name": "claim-generation",
-                "kind": "string",
-                "valueHint": "<generation>",
-                "required": true
-              },
-              {
-                "name": "accept-legacy",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              },
-              {
-                "name": "json",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              }
-            ]
-          },
-          {
-            "id": ["task", "run", "resume-effect"],
-            "visibility": "internal",
-            "group": "Task",
-            "args": [
-              {
-                "name": "task-id",
-                "required": true,
-                "variadic": false,
-                "valueHint": "<task-id>"
-              }
-            ],
-            "options": [
-              {
-                "name": "run-id",
-                "kind": "string",
-                "valueHint": "<run-id>",
-                "required": true
-              },
-              {
-                "name": "new-run-id",
-                "kind": "string",
-                "valueHint": "<run-id>"
-              },
-              {
-                "name": "json",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              }
-            ]
-          },
-          {
-            "id": ["task", "run", "tool"],
-            "visibility": "internal",
-            "group": "Task",
-            "args": [
-              {
-                "name": "tool",
-                "required": true,
-                "variadic": false,
-                "valueHint": "<tool-name>"
-              }
-            ],
-            "options": []
-          },
-          {
-            "id": ["workflow", "migrate"],
-            "visibility": "user",
-            "group": "Workflow",
-            "args": [],
-            "options": [
-              {
-                "name": "dry-run",
-                "kind": "boolean",
-                "valueHint": null,
-                "default": false
-              },
-              {
-                "name": "rollback",
-                "kind": "string",
-                "valueHint": "<receipt-path>"
-              }
-            ]
-          }
-        ],
-        "removed_command_descriptors": [],
-        "mutated_command_shells": [
-          {
-            "identity": "profile set",
-            "before": {
-              "id": ["profile", "set"],
-              "visibility": "user",
-              "group": "Config",
-              "args": [
-                {
-                  "name": "profile",
-                  "required": true,
-                  "valueHint": "<light|normal|full-harness>",
-                  "variadic": false
-                }
-              ]
-            },
-            "after": {
-              "id": ["profile", "set"],
-              "visibility": "user",
-              "group": "Config",
-              "args": [
-                {
-                  "name": "profile",
-                  "required": true,
-                  "variadic": false,
-                  "valueHint": "<standard>"
-                }
-              ]
-            }
-          },
-          {
-            "identity": "task begin",
-            "before": {
-              "id": ["task", "begin"],
-              "visibility": "user",
-              "group": "Task",
-              "args": [
-                {
-                  "name": "title",
-                  "required": true,
-                  "variadic": false,
-                  "valueHint": "<title>"
-                }
-              ]
-            },
-            "after": {
-              "id": ["task", "begin"],
-              "visibility": "advanced",
-              "group": "Task",
-              "args": [
-                {
-                  "name": "title",
-                  "required": true,
-                  "variadic": false,
-                  "valueHint": "<title>"
-                }
-              ]
-            }
-          },
-          {
-            "identity": "task complete",
-            "before": {
-              "id": ["task", "complete"],
-              "visibility": "user",
-              "group": "Task",
-              "args": [
-                {
-                  "name": "task-id",
-                  "required": true,
-                  "variadic": false,
-                  "valueHint": "<task-id>"
-                }
-              ]
-            },
-            "after": {
-              "id": ["task", "complete"],
-              "visibility": "advanced",
-              "group": "Task",
-              "args": [
-                {
-                  "name": "task-id",
-                  "required": true,
-                  "variadic": false,
-                  "valueHint": "<task-id>"
-                }
-              ]
-            }
-          },
-          {
-            "identity": "task new",
-            "before": {
-              "id": ["task", "new"],
-              "visibility": "user",
-              "group": "Task",
-              "args": []
-            },
-            "after": {
-              "id": ["task", "new"],
-              "visibility": "advanced",
-              "group": "Task",
-              "args": []
-            }
-          },
-          {
-            "identity": "task next-action",
-            "before": {
-              "id": ["task", "next-action"],
-              "visibility": "user",
-              "group": "Task",
-              "args": [
-                {
-                  "name": "task-id",
-                  "required": true,
-                  "variadic": false,
-                  "valueHint": "<task-id>"
-                }
-              ]
-            },
-            "after": {
-              "id": ["task", "next-action"],
-              "visibility": "advanced",
-              "group": "Task",
-              "args": [
-                {
-                  "name": "task-id",
-                  "required": true,
-                  "variadic": false,
-                  "valueHint": "<task-id>"
-                }
-              ]
-            }
-          },
-          {
-            "identity": "task run",
-            "before": {
-              "id": ["task", "run"],
-              "visibility": "internal",
-              "group": "Task",
-              "args": [
-                {
-                  "name": "task-id",
-                  "required": true,
-                  "variadic": false,
-                  "valueHint": "<task-id>"
-                }
-              ]
-            },
-            "after": {
-              "id": ["task", "run"],
-              "visibility": "user",
-              "group": "Task",
-              "args": [
-                {
-                  "name": "task-id",
-                  "required": true,
-                  "variadic": false,
-                  "valueHint": "<task-id>"
-                }
-              ]
-            }
-          }
-        ],
-        "added_options": [
-          {
-            "command": "backend sync",
-            "name": "adopt-projection-identity",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "backend sync",
-            "name": "bootstrap-projection",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "cleanup merged",
-            "name": "task-id",
-            "kind": "string",
-            "valueHint": "<task-id>",
-            "repeatable": true
-          },
-          {
-            "command": "context supervise-task",
-            "name": "evaluator",
-            "kind": "string",
-            "valueHint": "<id>",
-            "default": "recovery-context"
-          },
-          {
-            "command": "context supervise-task",
-            "name": "extraction",
-            "kind": "string",
-            "valueHint": "<sgr-json>",
-            "required": true
-          },
-          {
-            "command": "context supervise-task",
-            "name": "json",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "context supervise-task",
-            "name": "smoke-query",
-            "kind": "string",
-            "valueHint": "<query>"
-          },
-          {
-            "command": "doctor legacy",
-            "name": "json",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "evaluator apply",
-            "name": "json",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "evaluator apply",
-            "name": "result",
-            "kind": "string",
-            "valueHint": "<path>"
-          },
-          {
-            "command": "evaluator apply",
-            "name": "work-order",
-            "kind": "string",
-            "valueHint": "<path>"
-          },
-          {
-            "command": "evaluator execute",
-            "name": "evaluator",
-            "kind": "string",
-            "valueHint": "<id>",
-            "default": "recovery-context"
-          },
-          {
-            "command": "evaluator execute",
-            "name": "json",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "evaluator execute",
-            "name": "replacement",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "evaluator prepare",
-            "name": "evaluator",
-            "kind": "string",
-            "valueHint": "<id>",
-            "default": "recovery-context"
-          },
-          {
-            "command": "evaluator prepare",
-            "name": "json",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "evaluator run",
-            "name": "provenance",
-            "kind": "string",
-            "valueHint": "<human_supplied|evaluator_supplied>",
-            "choices": ["human_supplied", "evaluator_supplied"]
-          },
-          {
-            "command": "evidence compact",
-            "name": "apply",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "evidence compact",
-            "name": "json",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "evidence compact",
-            "name": "yes",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "evidence gc",
-            "name": "apply",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "evidence gc",
-            "name": "json",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "evidence gc",
-            "name": "yes",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "evidence stats",
-            "name": "json",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "hermes supervise",
-            "name": "remote",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "integrate queue adopt-legacy-protected-conflict",
-            "name": "expect-adoption-token",
-            "kind": "string",
-            "valueHint": "<sha256:...>"
-          },
-          {
-            "command": "integrate queue release",
-            "name": "superseded-by",
-            "kind": "string",
-            "valueHint": "<task-id>"
-          },
-          {
-            "command": "pr conflict-rework",
-            "name": "expect-freshness-token",
-            "kind": "string",
-            "valueHint": "<sha256-token>"
-          },
-          {
-            "command": "pr conflict-rework",
-            "name": "expected-local-head",
-            "kind": "string",
-            "valueHint": "<full-sha>"
-          },
-          {
-            "command": "pr conflict-rework",
-            "name": "expected-provider-head",
-            "kind": "string",
-            "valueHint": "<full-sha>"
-          },
-          {
-            "command": "pr conflict-rework",
-            "name": "json",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "pr conflict-rework",
-            "name": "recover-diverged-head",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "repair adopt-legacy-conflict",
-            "name": "expect-adoption-token",
-            "kind": "string",
-            "valueHint": "<sha256:...>"
-          },
-          {
-            "command": "sync",
-            "name": "adopt-projection-identity",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "sync",
-            "name": "bootstrap-projection",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "task advance",
-            "name": "agent-json",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "task advance",
-            "name": "remote",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "task advance",
-            "name": "replacement",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "task advance",
-            "name": "result",
-            "kind": "string",
-            "valueHint": "<path>"
-          },
-          {
-            "command": "task authority grant",
-            "name": "by",
-            "kind": "string",
-            "valueHint": "<actor>",
-            "required": true
-          },
-          {
-            "command": "task authority grant",
-            "name": "operation",
-            "kind": "string",
-            "valueHint": "<operation-id>",
-            "required": true
-          },
-          {
-            "command": "task authority grant",
-            "name": "operation-digest",
-            "kind": "string",
-            "valueHint": "<sha256>",
-            "required": true
-          },
-          {
-            "command": "task authority grant",
-            "name": "remote",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "task authority grant",
-            "name": "state-fingerprint",
-            "kind": "string",
-            "valueHint": "<sha256>",
-            "required": true
-          },
-          {
-            "command": "task authority grant",
-            "name": "state-scope-digest",
-            "kind": "string",
-            "valueHint": "<sha256>",
-            "required": true
-          },
-          {
-            "command": "task authority grant",
-            "name": "ttl-minutes",
-            "kind": "string",
-            "valueHint": "<1-60>"
-          },
-          {
-            "command": "task complete",
-            "name": "accept-unobserved",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "task create",
-            "name": "allow-duplicate",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "task create",
-            "name": "blueprint-request",
-            "kind": "string",
-            "valueHint": "<id>",
-            "choices": [
-              "analysis.light",
-              "content.light",
-              "docs.change",
-              "code.direct",
-              "code.branch_pr",
-              "performance.benchmark",
-              "quality.regression",
-              "context.assimilation",
-              "context.maximum_assimilation",
-              "post_run.improvement_review",
-              "release.strict",
-              "ops.approval"
-            ]
-          },
-          {
-            "command": "task create",
-            "name": "description",
-            "kind": "string",
-            "valueHint": "<text>"
-          },
-          {
-            "command": "task create",
-            "name": "json",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "task create",
-            "name": "mutation-scope",
-            "kind": "string",
-            "valueHint": "<none|docs|code|release|ops|context|unknown>",
-            "choices": ["none", "docs", "code", "release", "ops", "context", "unknown"]
-          },
-          {
-            "command": "task create",
-            "name": "owner",
-            "kind": "string",
-            "valueHint": "<id>",
-            "default": "CODER"
-          },
-          {
-            "command": "task create",
-            "name": "priority",
-            "kind": "string",
-            "valueHint": "<low|normal|med|high>",
-            "default": "med",
-            "choices": ["low", "normal", "med", "high"]
-          },
-          {
-            "command": "task create",
-            "name": "risk",
-            "kind": "string",
-            "valueHint": "<risk>",
-            "choices": [
-              "network",
-              "credentials",
-              "deploy",
-              "publish",
-              "merge",
-              "security",
-              "external_system"
-            ],
-            "repeatable": true
-          },
-          {
-            "command": "task create",
-            "name": "route",
-            "kind": "string",
-            "valueHint": "<auto|direct|branch_pr>",
-            "default": "auto",
-            "choices": ["auto", "direct", "branch_pr"]
-          },
-          {
-            "command": "task create",
-            "name": "tag",
-            "kind": "string",
-            "valueHint": "<tag>",
-            "repeatable": true
-          },
-          {
-            "command": "task create",
-            "name": "task-kind",
-            "kind": "string",
-            "valueHint": "<analysis|content|docs|code|release|ops|context>",
-            "choices": ["analysis", "content", "docs", "code", "release", "ops", "context"]
-          },
-          {
-            "command": "task create",
-            "name": "verify",
-            "kind": "string",
-            "valueHint": "<command>",
-            "repeatable": true
-          },
-          {
-            "command": "task new",
-            "name": "route",
-            "kind": "string",
-            "valueHint": "<repository|auto|direct|branch_pr>",
-            "default": "repository",
-            "choices": ["repository", "auto", "direct", "branch_pr"]
-          },
-          {
-            "command": "task run",
-            "name": "allow-danger-full-access",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "task run",
-            "name": "remote",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "task run",
-            "name": "sandbox",
-            "kind": "string",
-            "valueHint": "<read-only|workspace-write|danger-full-access>",
-            "choices": ["read-only", "workspace-write", "danger-full-access"]
-          },
-          {
-            "command": "task run reconcile",
-            "name": "json",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "task run resolve-effect",
-            "name": "accept-legacy",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "task run resolve-effect",
-            "name": "actor",
-            "kind": "string",
-            "valueHint": "<operator>",
-            "required": true
-          },
-          {
-            "command": "task run resolve-effect",
-            "name": "authority-digest",
-            "kind": "string",
-            "valueHint": "<sha256:...>",
-            "required": true
-          },
-          {
-            "command": "task run resolve-effect",
-            "name": "authority-ref",
-            "kind": "string",
-            "valueHint": "<ref>",
-            "required": true
-          },
-          {
-            "command": "task run resolve-effect",
-            "name": "claim-generation",
-            "kind": "string",
-            "valueHint": "<generation>",
-            "required": true
-          },
-          {
-            "command": "task run resolve-effect",
-            "name": "evidence-ref",
-            "kind": "string",
-            "valueHint": "<ref>",
-            "required": true
-          },
-          {
-            "command": "task run resolve-effect",
-            "name": "evidence-text",
-            "kind": "string",
-            "valueHint": "<text>",
-            "required": true
-          },
-          {
-            "command": "task run resolve-effect",
-            "name": "json",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "task run resolve-effect",
-            "name": "observed-at",
-            "kind": "string",
-            "valueHint": "<ISO-8601>",
-            "required": true
-          },
-          {
-            "command": "task run resolve-effect",
-            "name": "precondition-fingerprint-digest",
-            "kind": "string",
-            "valueHint": "<sha256:...>",
-            "required": true
-          },
-          {
-            "command": "task run resolve-effect",
-            "name": "precondition-policy-digest",
-            "kind": "string",
-            "valueHint": "<sha256:...>",
-            "required": true
-          },
-          {
-            "command": "task run resolve-effect",
-            "name": "run-id",
-            "kind": "string",
-            "valueHint": "<run-id>",
-            "required": true
-          },
-          {
-            "command": "task run resolve-effect",
-            "name": "verdict",
-            "kind": "string",
-            "valueHint": "<applied|not_applied>",
-            "required": true,
-            "choices": ["applied", "not_applied"]
-          },
-          {
-            "command": "task run resume-effect",
-            "name": "json",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "task run resume-effect",
-            "name": "new-run-id",
-            "kind": "string",
-            "valueHint": "<run-id>"
-          },
-          {
-            "command": "task run resume-effect",
-            "name": "run-id",
-            "kind": "string",
-            "valueHint": "<run-id>",
-            "required": true
-          },
-          {
-            "command": "workflow migrate",
-            "name": "dry-run",
-            "kind": "boolean",
-            "valueHint": null,
-            "default": false
-          },
-          {
-            "command": "workflow migrate",
-            "name": "rollback",
-            "kind": "string",
-            "valueHint": "<receipt-path>"
-          }
-        ],
-        "removed_options": [],
-        "mutated_options": [
-          {
-            "identity": "init --execution-profile",
-            "before": {
-              "command": "init",
-              "choices": ["conservative", "balanced", "aggressive"],
-              "kind": "string",
-              "name": "execution-profile",
-              "valueHint": "<conservative|balanced|aggressive>"
-            },
-            "after": {
-              "command": "init",
-              "name": "execution-profile",
-              "kind": "string",
-              "valueHint": "<standard>",
-              "choices": ["standard", "conservative", "balanced", "aggressive"]
-            }
-          },
-          {
-            "identity": "init --setup-profile",
-            "before": {
-              "command": "init",
-              "choices": ["light", "normal", "full-harness", "developer", "vibecoder", "manager"],
-              "kind": "string",
-              "name": "setup-profile",
-              "valueHint": "<light|normal|full-harness>"
-            },
-            "after": {
-              "command": "init",
-              "name": "setup-profile",
-              "kind": "string",
-              "valueHint": "<standard>",
-              "choices": [
-                "standard",
-                "light",
-                "normal",
-                "full-harness",
-                "developer",
-                "vibecoder",
-                "manager"
-              ]
-            }
-          },
-          {
-            "identity": "integrate queue release --status",
-            "before": {
-              "command": "integrate queue release",
-              "name": "status",
-              "kind": "string",
-              "valueHint": "<queued|done|rework>",
-              "default": "queued",
-              "choices": ["queued", "done", "rework"]
-            },
-            "after": {
-              "command": "integrate queue release",
-              "name": "status",
-              "kind": "string",
-              "valueHint": "<queued|done|rework|superseded>",
-              "default": "queued",
-              "choices": ["queued", "done", "rework", "superseded"]
-            }
-          }
-        ],
-        "addition_sources": [
-          {
-            "kind": "command",
-            "command": "context supervise-task",
-            "source_task": "202607221850-8HBF4J"
-          },
-          {
-            "kind": "command",
-            "command": "doctor legacy",
-            "source_task": "202608021535-CNQKXP"
-          },
-          {
-            "kind": "command",
-            "command": "evaluator apply",
-            "source_task": "202607221849-TBTX8X"
-          },
-          {
-            "kind": "command",
-            "command": "evaluator execute",
-            "source_task": "202607221849-8YYZ9X"
-          },
-          {
-            "kind": "command",
-            "command": "evaluator prepare",
-            "source_task": "202607221849-TBTX8X"
-          },
-          {
-            "kind": "command",
-            "command": "evidence compact",
-            "source_task": "202608062023-V3WHE9"
-          },
-          {
-            "kind": "command",
-            "command": "evidence gc",
-            "source_task": "202608062023-V3WHE9"
-          },
-          {
-            "kind": "command",
-            "command": "evidence stats",
-            "source_task": "202608062023-V3WHE9"
-          },
-          {
-            "kind": "command",
-            "command": "integrate queue adopt-legacy-protected-conflict",
-            "source_task": "202607260532-9M7RNH"
-          },
-          {
-            "kind": "command",
-            "command": "pr conflict-rework",
-            "source_task": "202607260007-DQM6AW"
-          },
-          {
-            "kind": "command",
-            "command": "repair",
-            "source_task": "202608021535-CNQKXP"
-          },
-          {
-            "kind": "command",
-            "command": "repair adopt-legacy-conflict",
-            "source_task": "202608021535-CNQKXP"
-          },
-          {
-            "kind": "command",
-            "command": "task advance",
-            "source_task": "202608021231-PZGG3V"
-          },
-          {
-            "kind": "command",
-            "command": "task authority grant",
-            "source_task": "202607221849-NWVCAG"
-          },
-          {
-            "kind": "command",
-            "command": "task create",
-            "source_task": "202608061646-30TKV4"
-          },
-          {
-            "kind": "command",
-            "command": "task run reconcile",
-            "source_task": "202607221846-9XC1H0"
-          },
-          {
-            "kind": "command",
-            "command": "task run resolve-effect",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "command",
-            "command": "task run resume-effect",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "command",
-            "command": "task run tool",
-            "source_task": "202607221852-ECBY56"
-          },
-          {
-            "kind": "command",
-            "command": "workflow migrate",
-            "source_task": "202607221846-4VB97J"
-          },
-          {
-            "kind": "option",
-            "command": "backend sync",
-            "name": "adopt-projection-identity",
-            "source_task": "202607221848-0ZAB1F"
-          },
-          {
-            "kind": "option",
-            "command": "backend sync",
-            "name": "bootstrap-projection",
-            "source_task": "202607221848-0ZAB1F"
-          },
-          {
-            "kind": "option",
-            "command": "cleanup merged",
-            "name": "task-id",
-            "source_task": "202607230554-YFYT83"
-          },
-          {
-            "kind": "option",
-            "command": "context supervise-task",
-            "name": "evaluator",
-            "source_task": "202607221850-8HBF4J"
-          },
-          {
-            "kind": "option",
-            "command": "context supervise-task",
-            "name": "extraction",
-            "source_task": "202607221850-8HBF4J"
-          },
-          {
-            "kind": "option",
-            "command": "context supervise-task",
-            "name": "json",
-            "source_task": "202607221850-8HBF4J"
-          },
-          {
-            "kind": "option",
-            "command": "context supervise-task",
-            "name": "smoke-query",
-            "source_task": "202607221850-8HBF4J"
-          },
-          {
-            "kind": "option",
-            "command": "doctor legacy",
-            "name": "json",
-            "source_task": "202608021535-CNQKXP"
-          },
-          {
-            "kind": "option",
-            "command": "evaluator apply",
-            "name": "json",
-            "source_task": "202607221849-TBTX8X"
-          },
-          {
-            "kind": "option",
-            "command": "evaluator apply",
-            "name": "result",
-            "source_task": "202607221849-TBTX8X"
-          },
-          {
-            "kind": "option",
-            "command": "evaluator apply",
-            "name": "work-order",
-            "source_task": "202607221849-TBTX8X"
-          },
-          {
-            "kind": "option",
-            "command": "evaluator execute",
-            "name": "evaluator",
-            "source_task": "202607221849-8YYZ9X"
-          },
-          {
-            "kind": "option",
-            "command": "evaluator execute",
-            "name": "json",
-            "source_task": "202607221849-8YYZ9X"
-          },
-          {
-            "kind": "option",
-            "command": "evaluator execute",
-            "name": "replacement",
-            "source_task": "202607281655-YMPY8Y"
-          },
-          {
-            "kind": "option",
-            "command": "evaluator prepare",
-            "name": "evaluator",
-            "source_task": "202607221849-TBTX8X"
-          },
-          {
-            "kind": "option",
-            "command": "evaluator prepare",
-            "name": "json",
-            "source_task": "202607221849-TBTX8X"
-          },
-          {
-            "kind": "option",
-            "command": "evaluator run",
-            "name": "provenance",
-            "source_task": "202607221846-YGWMA2"
-          },
-          {
-            "kind": "option",
-            "command": "evidence compact",
-            "name": "apply",
-            "source_task": "202608062023-V3WHE9"
-          },
-          {
-            "kind": "option",
-            "command": "evidence compact",
-            "name": "json",
-            "source_task": "202608062023-V3WHE9"
-          },
-          {
-            "kind": "option",
-            "command": "evidence compact",
-            "name": "yes",
-            "source_task": "202608062023-V3WHE9"
-          },
-          {
-            "kind": "option",
-            "command": "evidence gc",
-            "name": "apply",
-            "source_task": "202608062023-V3WHE9"
-          },
-          {
-            "kind": "option",
-            "command": "evidence gc",
-            "name": "json",
-            "source_task": "202608062023-V3WHE9"
-          },
-          {
-            "kind": "option",
-            "command": "evidence gc",
-            "name": "yes",
-            "source_task": "202608062023-V3WHE9"
-          },
-          {
-            "kind": "option",
-            "command": "evidence stats",
-            "name": "json",
-            "source_task": "202608062023-V3WHE9"
-          },
-          {
-            "kind": "option",
-            "command": "hermes supervise",
-            "name": "remote",
-            "source_task": "202607221848-VC4VVS"
-          },
-          {
-            "kind": "option",
-            "command": "integrate queue adopt-legacy-protected-conflict",
-            "name": "expect-adoption-token",
-            "source_task": "202607260532-9M7RNH"
-          },
-          {
-            "kind": "option",
-            "command": "integrate queue release",
-            "name": "superseded-by",
-            "source_task": "202607302125-Y61ZHN"
-          },
-          {
-            "kind": "option",
-            "command": "pr conflict-rework",
-            "name": "expect-freshness-token",
-            "source_task": "202607260007-DQM6AW"
-          },
-          {
-            "kind": "option",
-            "command": "pr conflict-rework",
-            "name": "expected-local-head",
-            "source_task": "202607300150-MGCHE6"
-          },
-          {
-            "kind": "option",
-            "command": "pr conflict-rework",
-            "name": "expected-provider-head",
-            "source_task": "202607300150-MGCHE6"
-          },
-          {
-            "kind": "option",
-            "command": "pr conflict-rework",
-            "name": "json",
-            "source_task": "202607260007-DQM6AW"
-          },
-          {
-            "kind": "option",
-            "command": "pr conflict-rework",
-            "name": "recover-diverged-head",
-            "source_task": "202607300150-MGCHE6"
-          },
-          {
-            "kind": "option",
-            "command": "repair adopt-legacy-conflict",
-            "name": "expect-adoption-token",
-            "source_task": "202608021535-CNQKXP"
-          },
-          {
-            "kind": "option",
-            "command": "sync",
-            "name": "adopt-projection-identity",
-            "source_task": "202607221848-0ZAB1F"
-          },
-          {
-            "kind": "option",
-            "command": "sync",
-            "name": "bootstrap-projection",
-            "source_task": "202607221848-0ZAB1F"
-          },
-          {
-            "kind": "option",
-            "command": "task advance",
-            "name": "agent-json",
-            "source_task": "202608021231-PZGG3V"
-          },
-          {
-            "kind": "option",
-            "command": "task advance",
-            "name": "remote",
-            "source_task": "202608021231-PZGG3V"
-          },
-          {
-            "kind": "option",
-            "command": "task advance",
-            "name": "replacement",
-            "source_task": "202608080805-KPWPAV"
-          },
-          {
-            "kind": "option",
-            "command": "task advance",
-            "name": "result",
-            "source_task": "202608022324-9VCYWG"
-          },
-          {
-            "kind": "option",
-            "command": "task authority grant",
-            "name": "by",
-            "source_task": "202607221849-NWVCAG"
-          },
-          {
-            "kind": "option",
-            "command": "task authority grant",
-            "name": "operation",
-            "source_task": "202607221849-NWVCAG"
-          },
-          {
-            "kind": "option",
-            "command": "task authority grant",
-            "name": "operation-digest",
-            "source_task": "202607221849-NWVCAG"
-          },
-          {
-            "kind": "option",
-            "command": "task authority grant",
-            "name": "remote",
-            "source_task": "202607221849-NWVCAG"
-          },
-          {
-            "kind": "option",
-            "command": "task authority grant",
-            "name": "state-fingerprint",
-            "source_task": "202607221849-NWVCAG"
-          },
-          {
-            "kind": "option",
-            "command": "task authority grant",
-            "name": "state-scope-digest",
-            "source_task": "202607221849-NWVCAG"
-          },
-          {
-            "kind": "option",
-            "command": "task authority grant",
-            "name": "ttl-minutes",
-            "source_task": "202607221849-NWVCAG"
-          },
-          {
-            "kind": "option",
-            "command": "task complete",
-            "name": "accept-unobserved",
-            "source_task": "202608021534-YN84E1"
-          },
-          {
-            "kind": "option",
-            "command": "task create",
-            "name": "allow-duplicate",
-            "source_task": "202608061646-30TKV4"
-          },
-          {
-            "kind": "option",
-            "command": "task create",
-            "name": "blueprint-request",
-            "source_task": "202608110235-WCJJRD"
-          },
-          {
-            "kind": "option",
-            "command": "task create",
-            "name": "description",
-            "source_task": "202608061646-30TKV4"
-          },
-          {
-            "kind": "option",
-            "command": "task create",
-            "name": "json",
-            "source_task": "202608061646-30TKV4"
-          },
-          {
-            "kind": "option",
-            "command": "task create",
-            "name": "mutation-scope",
-            "source_task": "202608110235-WCJJRD"
-          },
-          {
-            "kind": "option",
-            "command": "task create",
-            "name": "owner",
-            "source_task": "202608061646-30TKV4"
-          },
-          {
-            "kind": "option",
-            "command": "task create",
-            "name": "priority",
-            "source_task": "202608061646-30TKV4"
-          },
-          {
-            "kind": "option",
-            "command": "task create",
-            "name": "risk",
-            "source_task": "202608110235-WCJJRD"
-          },
-          {
-            "kind": "option",
-            "command": "task create",
-            "name": "route",
-            "source_task": "202608061646-30TKV4"
-          },
-          {
-            "kind": "option",
-            "command": "task create",
-            "name": "tag",
-            "source_task": "202608110235-WCJJRD"
-          },
-          {
-            "kind": "option",
-            "command": "task create",
-            "name": "task-kind",
-            "source_task": "202608110235-WCJJRD"
-          },
-          {
-            "kind": "option",
-            "command": "task create",
-            "name": "verify",
-            "source_task": "202608061646-30TKV4"
-          },
-          {
-            "kind": "option",
-            "command": "task new",
-            "name": "route",
-            "source_task": "202608061646-WCARQG"
-          },
-          {
-            "kind": "option",
-            "command": "task run",
-            "name": "allow-danger-full-access",
-            "source_task": "202607221846-9XC1H0"
-          },
-          {
-            "kind": "option",
-            "command": "task run",
-            "name": "remote",
-            "source_task": "202607221848-VC4VVS"
-          },
-          {
-            "kind": "option",
-            "command": "task run",
-            "name": "sandbox",
-            "source_task": "202607221846-9XC1H0"
-          },
-          {
-            "kind": "option",
-            "command": "task run reconcile",
-            "name": "json",
-            "source_task": "202607221846-9XC1H0"
-          },
-          {
-            "kind": "option",
-            "command": "task run resolve-effect",
-            "name": "accept-legacy",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "option",
-            "command": "task run resolve-effect",
-            "name": "actor",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "option",
-            "command": "task run resolve-effect",
-            "name": "authority-digest",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "option",
-            "command": "task run resolve-effect",
-            "name": "authority-ref",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "option",
-            "command": "task run resolve-effect",
-            "name": "claim-generation",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "option",
-            "command": "task run resolve-effect",
-            "name": "evidence-ref",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "option",
-            "command": "task run resolve-effect",
-            "name": "evidence-text",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "option",
-            "command": "task run resolve-effect",
-            "name": "json",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "option",
-            "command": "task run resolve-effect",
-            "name": "observed-at",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "option",
-            "command": "task run resolve-effect",
-            "name": "precondition-fingerprint-digest",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "option",
-            "command": "task run resolve-effect",
-            "name": "precondition-policy-digest",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "option",
-            "command": "task run resolve-effect",
-            "name": "run-id",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "option",
-            "command": "task run resolve-effect",
-            "name": "verdict",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "option",
-            "command": "task run resume-effect",
-            "name": "json",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "option",
-            "command": "task run resume-effect",
-            "name": "new-run-id",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "option",
-            "command": "task run resume-effect",
-            "name": "run-id",
-            "source_task": "202607242158-QV09NA"
-          },
-          {
-            "kind": "option",
-            "command": "workflow migrate",
-            "name": "dry-run",
-            "source_task": "202607221846-4VB97J"
-          },
-          {
-            "kind": "option",
-            "command": "workflow migrate",
-            "name": "rollback",
-            "source_task": "202607221846-4VB97J"
-          }
-        ]
-      }
+      "to_sha256": "049140adaeeec07e19c9ecba8d33831bb9b5784ca98e4a444d2246fe957eb9a4"
     },
     {
-      "section": "agent_facing_context_contracts",
-      "source_tasks": [
-        "202607221848-1HWR0R",
-        "202607221849-8YYZ9X",
-        "202607291449-FTHNAR",
-        "202607221852-YP9QCH"
-      ],
-      "from_sha256": "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf",
-      "to_sha256": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
       "classification": "additive",
-      "summary": "Adds a CLI-owned immutable task-creation receipt, typed EVALUATOR human-review escalation, bounded deterministic-evidence recovery classification, and source-driven canonical reconciliation candidates.",
       "evidence": {
-        "contract_count": 4,
-        "unchanged_contract_paths": [
-          "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts",
-          "packages/agentplane/src/runtime/sgr/context-extraction-payloads.ts"
-        ],
         "changed_contracts": [
           {
-            "path": "packages/agentplane/src/runtime/sgr/contract-types.ts",
-            "before": {
-              "normalized_bytes": 6471,
-              "normalized_sha256": "e1b431c57a6e0a5db860b9f04d9a5cdc6f56be97deeea78c438d8017d03c1261"
-            },
             "after": {
               "normalized_bytes": 6538,
               "normalized_sha256": "e93f1584cd5af62de6ca9a5ff0971d62a871475c9fbae216df9be3e39ae7875c"
             },
-            "change": "adds evaluator human_review escalation and the deterministic_evidence_gap recovery classification"
+            "before": {
+              "normalized_bytes": 6471,
+              "normalized_sha256": "e1b431c57a6e0a5db860b9f04d9a5cdc6f56be97deeea78c438d8017d03c1261"
+            },
+            "change": "adds evaluator human_review escalation and the deterministic_evidence_gap recovery classification",
+            "path": "packages/agentplane/src/runtime/sgr/contract-types.ts"
           },
           {
-            "path": "packages/agentplane/src/context/ingest-task-pack.ts",
-            "before": {
-              "normalized_bytes": 19492,
-              "normalized_sha256": "66af4abcf7c1f9d58a90550ae116f1a9917b756140340e9552014cac28f52f63"
-            },
             "after": {
               "normalized_bytes": 19551,
               "normalized_sha256": "4930e3acdbaf99e41903faaf39705c5fa25b5df01538918455be449f48544a87"
             },
-            "change": "adds the CLI-owned immutable task-creation receipt and source-driven canonical reconciliation candidates"
+            "before": {
+              "normalized_bytes": 19492,
+              "normalized_sha256": "66af4abcf7c1f9d58a90550ae116f1a9917b756140340e9552014cac28f52f63"
+            },
+            "change": "adds the CLI-owned immutable task-creation receipt and source-driven canonical reconciliation candidates",
+            "path": "packages/agentplane/src/context/ingest-task-pack.ts"
           }
         ],
-        "task_creation_receipt": {
-          "path": ".agentplane/tasks/<task-id>/task-creation.json",
-          "version": 1,
-          "required_fields": ["task_id", "revision", "backend_id", "artifact_paths"],
-          "written_before_task_pack": true,
-          "agent_mutability": "cli_owned_read_only"
-        },
+        "contract_count": 4,
         "reconciliation_candidates": {
           "path": ".agentplane/tasks/<task-id>/canonical-reconciliation-candidates.json",
-          "version": 1,
           "required_fields": [
             "index",
             "query_terms",
@@ -2630,72 +2136,72 @@
             "candidate_digest",
             "semantic_decision_owner"
           ],
+          "semantic_decision_owner": "CURATOR",
           "source_term_origins": ["markdown_heading", "path_basename", "structured_field"],
-          "semantic_decision_owner": "CURATOR"
-        }
-      }
+          "version": 1
+        },
+        "task_creation_receipt": {
+          "agent_mutability": "cli_owned_read_only",
+          "path": ".agentplane/tasks/<task-id>/task-creation.json",
+          "required_fields": ["task_id", "revision", "backend_id", "artifact_paths"],
+          "version": 1,
+          "written_before_task_pack": true
+        },
+        "unchanged_contract_paths": [
+          "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts",
+          "packages/agentplane/src/runtime/sgr/context-extraction-payloads.ts"
+        ]
+      },
+      "from_sha256": "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf",
+      "section": "agent_facing_context_contracts",
+      "source_tasks": [
+        "202607221848-1HWR0R",
+        "202607221849-8YYZ9X",
+        "202607291449-FTHNAR",
+        "202607221852-YP9QCH"
+      ],
+      "summary": "Adds a CLI-owned immutable task-creation receipt, typed EVALUATOR human-review escalation, bounded deterministic-evidence recovery classification, and source-driven canonical reconciliation candidates.",
+      "to_sha256": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b"
     },
     {
+      "classification": "backward_compatible",
+      "evidence": {
+        "accepted_execution_profiles": ["standard", "conservative", "balanced", "aggressive"],
+        "execution_profile_default": "standard",
+        "schema_id": "https://agentplane.dev/schemas/workflow.schema.json",
+        "supported_input_versions": [1, 2],
+        "title": "Agentplane Workflow Contract"
+      },
+      "from_sha256": "f157b9f24020d353142f0eb511828d6fdb1f6b19c7c5a401c2736a8931423bf7",
       "section": "workflow_schema",
       "source_tasks": ["202607221846-4VB97J", "202608112213-NWJCBW"],
-      "from_sha256": "f157b9f24020d353142f0eb511828d6fdb1f6b19c7c5a401c2736a8931423bf7",
-      "to_sha256": "4714ecc43f394109cd5807ec5e544716abe7c67c20ea18554f8f2b559bf97b21",
-      "classification": "backward_compatible",
       "summary": "Replaces the v1-only schema with a v1-or-v2 input union, retaining the finite typed legacy v1 sections, requiring explicit v2 approval flags, preserving the public schema identity, and canonicalizing both versions on the standard execution profile while accepting legacy profile aliases during migration.",
-      "evidence": {
-        "schema_id": "https://agentplane.dev/schemas/workflow.schema.json",
-        "title": "Agentplane Workflow Contract",
-        "supported_input_versions": [1, 2],
-        "execution_profile_default": "standard",
-        "accepted_execution_profiles": ["standard", "conservative", "balanced", "aggressive"]
-      }
+      "to_sha256": "4714ecc43f394109cd5807ec5e544716abe7c67c20ea18554f8f2b559bf97b21"
     },
     {
-      "section": "machine_output_contract",
-      "source_tasks": ["202607221848-ABG7SD"],
-      "from_sha256": "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613",
-      "to_sha256": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "classification": "behavior_preserving_hardening",
-      "summary": "Projects next_action and reason_decode onto their documented keys so structurally compatible objects cannot leak undeclared fields; the published envelope schema and current payloads are unchanged.",
       "evidence": {
         "envelope_contract_unchanged": true,
-        "source_contract": {
-          "path": "packages/agentplane/src/shared/errors.ts",
-          "marker": "formatJsonError",
-          "from_sha256": "21224231c4b7e84e69432130463e188c960e1b0ae26a51f0305833b01de60562",
-          "to_sha256": "a8283f4bfb97f5c6333294c5ef36f8ff5209a786907b2c3871eeeea37854120a"
-        },
         "projected_nested_fields": {
           "next_action": ["command", "reason", "reasonCode"],
           "reason_decode": ["code", "category", "summary", "action"]
+        },
+        "source_contract": {
+          "from_sha256": "21224231c4b7e84e69432130463e188c960e1b0ae26a51f0305833b01de60562",
+          "marker": "formatJsonError",
+          "path": "packages/agentplane/src/shared/errors.ts",
+          "to_sha256": "a8283f4bfb97f5c6333294c5ef36f8ff5209a786907b2c3871eeeea37854120a"
         }
-      }
+      },
+      "from_sha256": "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613",
+      "section": "machine_output_contract",
+      "source_tasks": ["202607221848-ABG7SD"],
+      "summary": "Projects next_action and reason_decode onto their documented keys so structurally compatible objects cannot leak undeclared fields; the published envelope schema and current payloads are unchanged.",
+      "to_sha256": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1"
     },
     {
-      "section": "tarball_policy",
-      "source_tasks": [
-        "202607221846-4VB97J",
-        "202607221848-ER5H6N",
-        "202607221848-T9B3PS",
-        "202607221849-8YYZ9X",
-        "202608021231-SHYJGK",
-        "202608021535-CNQKXP"
-      ],
-      "from_sha256": "c37264a69d57cd40bd519115b084430c590a71b0df3fe6b541b44bad02e4b61d",
-      "to_sha256": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
       "classification": "additive",
-      "summary": "Publishes the generated workflow, KnowledgeRef, and AgentWorkOrder v2 schemas from the core package, requires the compatibility retirement manifest, and explicitly permits and requires the split AgentPlane runtime artifacts; no package source file is removed.",
       "evidence": {
-        "core_package": {
-          "package": "@agentplaneorg/core",
-          "source_file_count": { "from": 17, "to": 20 },
-          "added_source_files": [
-            "schemas/agent-work-order-v2.schema.json",
-            "schemas/knowledge-ref.schema.json",
-            "schemas/workflow.schema.json"
-          ],
-          "removed_source_files": []
-        },
         "agentplane_runtime_policy": {
           "allowed_exact_files_added": [
             "dist/command-catalog.js",
@@ -2713,8 +2219,132 @@
             "dist/command-help.json",
             "dist/deferred-runtime.js"
           ]
+        },
+        "core_package": {
+          "added_source_files": [
+            "schemas/agent-work-order-v2.schema.json",
+            "schemas/knowledge-ref.schema.json",
+            "schemas/workflow.schema.json"
+          ],
+          "package": "@agentplaneorg/core",
+          "removed_source_files": [],
+          "source_file_count": { "from": 17, "to": 20 }
         }
-      }
+      },
+      "from_sha256": "c37264a69d57cd40bd519115b084430c590a71b0df3fe6b541b44bad02e4b61d",
+      "section": "tarball_policy",
+      "source_tasks": [
+        "202607221846-4VB97J",
+        "202607221848-ER5H6N",
+        "202607221848-T9B3PS",
+        "202607221849-8YYZ9X",
+        "202608021231-SHYJGK",
+        "202608021535-CNQKXP"
+      ],
+      "summary": "Publishes the generated workflow, KnowledgeRef, and AgentWorkOrder v2 schemas from the core package, requires the compatibility retirement manifest, and explicitly permits and requires the split AgentPlane runtime artifacts; no package source file is removed.",
+      "to_sha256": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd"
     }
+  ],
+  "pre_release_package_delta": {
+    "allowed_json_paths": [
+      "$.package_manifests[0].files[13]",
+      "$.package_manifests[0].files[14]",
+      "$.package_manifests[0].files[15]",
+      "$.package_manifests[0].files[16]",
+      "$.package_manifests[0].files[17]",
+      "$.package_manifests[0].normalized_sha256",
+      "$.package_manifests[1].exports[10][0]",
+      "$.package_manifests[1].exports[10][1]",
+      "$.package_manifests[1].exports[11]",
+      "$.package_manifests[1].normalized_sha256"
+    ],
+    "classification": "additive",
+    "evidence": {
+      "added_files": [
+        "dist/command-catalog.js",
+        "dist/command-catalog/core-fast.js",
+        "dist/command-catalog/task-read.js",
+        "dist/command-help.json",
+        "dist/deferred-runtime.js"
+      ],
+      "core_package": {
+        "added_exports": ["./tasks/verification-contract-kernel"],
+        "package": "@agentplaneorg/core"
+      },
+      "package": "agentplane",
+      "removed_files": []
+    },
+    "from_sha256": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+    "section": "package_manifests",
+    "source_tasks": ["202608021231-SHYJGK", "202608112259-T3ZDDM"],
+    "to_sha256": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff"
+  },
+  "release_version_delta": {
+    "allowed_json_paths": [
+      "$.package_manifests[0].dependencies.@agentplaneorg/core",
+      "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+      "$.package_manifests[0].normalized_sha256",
+      "$.package_manifests[0].version",
+      "$.package_manifests[1].normalized_sha256",
+      "$.package_manifests[1].version",
+      "$.package_manifests[2].normalized_sha256",
+      "$.package_manifests[2].version"
+    ],
+    "classification": "planned_version_parity",
+    "from_sha256": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
+    "from_version": "0.6.24",
+    "section": "package_manifests",
+    "source_task": "202608082119-P6SHBN",
+    "surface_sha256": "712b618b2b9747f7dd1143167ffcaa8db09e8870c8a55804c11f30ad0f80b174",
+    "to_sha256": "7f42b57786f2a99ab19b626aa33469b37d86ccc9c09dbeccebea0e57e0f37d12",
+    "to_version": "0.7.5"
+  },
+  "review": {
+    "conditions": [
+      "final_focused_tests_pass",
+      "baseline_anchor_byte_identical",
+      "source_task_provenance_exact"
+    ],
+    "reviewed_by": "ORCHESTRATOR",
+    "scope": "exact_delta_set",
+    "state": "approved"
+  },
+  "schema_version": 3,
+  "source_tasks": [
+    "202607221846-4VB97J",
+    "202607221846-YGWMA2",
+    "202607230554-YFYT83",
+    "202607221846-9XC1H0",
+    "202607221848-ABG7SD",
+    "202607221848-0ZAB1F",
+    "202607221848-ER5H6N",
+    "202607221848-T9B3PS",
+    "202607221848-1HWR0R",
+    "202607221848-VC4VVS",
+    "202607221849-NWVCAG",
+    "202607221849-TBTX8X",
+    "202607221849-8YYZ9X",
+    "202607221850-8HBF4J",
+    "202607242158-QV09NA",
+    "202607260007-DQM6AW",
+    "202607260532-9M7RNH",
+    "202607281655-YMPY8Y",
+    "202607291449-FTHNAR",
+    "202607300150-MGCHE6",
+    "202607221852-YP9QCH",
+    "202607302125-Y61ZHN",
+    "202607221852-ECBY56",
+    "202608021231-PZGG3V",
+    "202608021231-SHYJGK",
+    "202608021534-YN84E1",
+    "202608022324-9VCYWG",
+    "202608021535-CNQKXP",
+    "202608061646-WCARQG",
+    "202608061646-30TKV4",
+    "202608062023-V3WHE9",
+    "202608080805-KPWPAV",
+    "202608110235-WCJJRD",
+    "202608112213-NWJCBW",
+    "202608112259-T3ZDDM"
   ]
 }
