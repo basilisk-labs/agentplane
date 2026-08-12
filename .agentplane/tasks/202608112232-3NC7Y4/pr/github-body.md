@@ -16,7 +16,12 @@ Use one canonical lifecycle while letting the agent semantically choose direct o
 ## Verification
 
 - State: ok
-- Note: Verified implementation commit 1d7a807eb: complete local CI and realistic user-flow E2Es passed.
+- Note:
+
+```text
+Verified implementation commit 9ef72a552: complete local CI and explicit agent-selected branch_pr
+E2E evidence passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,14 +32,14 @@ Use one canonical lifecycle while letting the agent semantically choose direct o
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/user/workflow.mdx                             |  41 ++
+ docs/user/workflow.mdx                             |  42 ++
  .../agentplane/src/backends/task-backend.test.ts   |  52 ++
- .../src/backends/task-backend/shared/record.ts     | 229 ++++++++
+ .../src/backends/task-backend/shared/record.ts     | 229 +++++++
  .../src/backends/task-backend/shared/types.ts      |   2 +
  packages/agentplane/src/blueprints/resolve.test.ts |  15 +-
- packages/agentplane/src/blueprints/resolve.ts      | 132 +----
- ...run-cli.core.task-create-planner-intent.test.ts | 601 ++++++++++++++++++++-
- .../src/commands/blueprint/task-input.test.ts      |  32 ++
+ packages/agentplane/src/blueprints/resolve.ts      | 132 +---
+ ...run-cli.core.task-create-planner-intent.test.ts | 673 ++++++++++++++++++++-
+ .../src/commands/blueprint/task-input.test.ts      |  32 +
  .../src/commands/blueprint/task-input.ts           |  73 ++-
  .../src/commands/shared/reconcile-check.test.ts    |  26 +
  .../src/commands/shared/reconcile-check.ts         |  38 +-
@@ -61,37 +66,37 @@ Use one canonical lifecycle while letting the agent semantically choose direct o
  packages/agentplane/src/commands/task/plan.ts      |   8 +-
  .../src/commands/task/run-execution-preview.ts     |   9 +-
  .../agentplane/src/commands/task/status.command.ts |   5 +-
- .../task-execution-contract-observation.test.ts    |  93 ++++
+ .../task-execution-contract-observation.test.ts    |  93 +++
  .../task/task-execution-contract-observation.ts    |  80 +++
  .../src/commands/task/verify-record-execute.ts     |  19 +
  .../task/verify-record.durability.unit.test.ts     |  68 +++
  .../agentplane/src/runner/context/task-context.ts  |   3 +
  packages/agentplane/src/runner/types/context.ts    |   2 +
  .../src/runner/usecases/agent-work-order-build.ts  |  35 +-
- .../usecases/agent-work-order.integration.test.ts  | 127 +++++
+ .../usecases/agent-work-order.integration.test.ts  | 127 ++++
  .../src/runtime/task-intake/resolve-materialize.ts |   3 +
  .../src/runtime/task-intake/resolve-normalize.ts   |   3 +
  .../agentplane/src/runtime/task-intake/types.ts    |   7 +-
  .../agentplane/src/runtime/task-routing/index.ts   |   2 +
- .../src/runtime/task-routing/resolve.test.ts       | 290 +++++++++-
- .../agentplane/src/runtime/task-routing/resolve.ts | 537 ++++++++++++++++--
- .../schemas/task-readme-frontmatter.schema.json    | 367 +++++++++++++
- packages/core/schemas/tasks-export.schema.json     | 367 +++++++++++++
+ .../src/runtime/task-routing/resolve.test.ts       | 290 ++++++++-
+ .../agentplane/src/runtime/task-routing/resolve.ts | 537 ++++++++++++++--
+ .../schemas/task-readme-frontmatter.schema.json    | 367 +++++++++++
+ packages/core/schemas/tasks-export.schema.json     | 367 +++++++++++
  .../core/src/runner/agent-semantic-result.test.ts  |  20 +
  packages/core/src/runner/agent-semantic-result.ts  |  36 ++
  packages/core/src/tasks/index.ts                   |   5 +
- .../core/src/tasks/task-artifact-schema.task.ts    | 168 ++++++
- .../tasks/task-execution-contract-compat.test.ts   |  65 +++
+ .../core/src/tasks/task-artifact-schema.task.ts    | 168 +++++
+ .../tasks/task-execution-contract-compat.test.ts   |  65 ++
  .../src/tasks/task-provider-safe-projection.ts     |   5 +
  packages/core/src/tasks/task-readme.ts             |   1 +
  packages/core/src/tasks/task-store.ts              |  76 +++
  packages/core/src/tasks/tasks-export.ts            |   3 +
- .../schemas/task-readme-frontmatter.schema.json    | 367 +++++++++++++
- packages/spec/schemas/tasks-export.schema.json     | 367 +++++++++++++
+ .../schemas/task-readme-frontmatter.schema.json    | 367 +++++++++++
+ packages/spec/schemas/tasks-export.schema.json     | 367 +++++++++++
  schemas/agent-semantic-result.schema.json          | 237 ++++++++
- schemas/task-readme-frontmatter.schema.json        | 367 +++++++++++++
- schemas/tasks-export.schema.json                   | 367 +++++++++++++
- 64 files changed, 5538 insertions(+), 209 deletions(-)
+ schemas/task-readme-frontmatter.schema.json        | 367 +++++++++++
+ schemas/tasks-export.schema.json                   | 367 +++++++++++
+ 64 files changed, 5611 insertions(+), 209 deletions(-)
 ```
 
 </details>

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-12T04:10:25.439Z"
+  updated_at: "2026-08-12T04:20:23.781Z"
   updated_by: "CODER"
-  note: "Verified implementation commit 1d7a807eb: complete local CI and realistic user-flow E2Es passed."
+  note: "Verified implementation commit 9ef72a552: complete local CI and explicit agent-selected branch_pr E2E evidence passed."
   attempts: 0
 quality_review:
   state: "rework"
@@ -168,8 +168,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified implementation commit 1d7a807eb: complete local CI and realistic user-flow E2Es passed."
+  -
+    type: "verify"
+    at: "2026-08-12T04:20:23.781Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified implementation commit 9ef72a552: complete local CI and explicit agent-selected branch_pr E2E evidence passed."
 doc_version: 3
-doc_updated_at: "2026-08-12T04:11:54.008Z"
+doc_updated_at: "2026-08-12T04:20:26.244Z"
 doc_updated_by: "CODER"
 description: "Use one canonical lifecycle while letting the agent semantically choose direct or branch_pr through a structured risk/effect declaration. AgentPlane must compile and enforce one deterministic execution contract, compare it with observed effects, escalate monotonically when required, and never use product-language keyword heuristics as lifecycle authority."
 sections:
@@ -469,6 +475,46 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-12T04:20:23.781Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified implementation commit 9ef72a552: complete local CI and explicit agent-selected branch_pr E2E evidence passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:dca184be90fa3ce8f32f16e9f1a157c5f2a648692b107ebd2119d23831c66570, input_digest=sha256:9c15adea0ccffb1fc8b683f79a7b67851b69bcb4c94315fcde3dffc5eb867f8f
+
+    Details:
+
+    Command: bun run ci:local:fast
+    Result: pass
+    Evidence: Format, schemas, templates, routing, release parity, build, cold-start, documentation freshness, hotspot, project routing and lint passed; 555 test files passed with 4059 tests passed and 1 skipped; all 12 critical CLI shards passed.
+    Scope: Full fast repository CI for implementation commit 9ef72a552 after evaluator rework.
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts --reporter=verbose
+    Result: pass
+    Evidence: 8 of 8 realistic CLI cases passed. The broad case explicitly declares preferred_mode branch_pr and resolves through agent_preferred_branch_pr; exact lifecycle transitions are asserted for localized direct, broad branch_pr, misleading language, underestimated escalation, prohibited external effects, network approval and legacy completion.
+    Scope: Agent-selected strategy, transition measurements, ceremony metrics and compatibility.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112232-3NC7Y4-make-execution-strategy-risk-adaptive-and-agent/.agentplane/tasks/202608112232-3NC7Y4/blueprint/resolved-snapshot.json
+    - old_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+    - current_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608112232-3NC7Y4
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -477,6 +523,10 @@ sections:
     - Observation: The full local CI and realistic workflow E2Es passed on the committed implementation; execution authority is consistent with configured network approval, observed external-agent paths are recorded, and legacy contracts normalize automatically.
       Impact: Agent-selected routing remains flexible while AgentPlane deterministically enforces authority, escalation, verification and compatibility without keyword classification or redundant lifecycle recovery.
       Resolution: Accept the implementation candidate for independent evaluator review and hosted integration.
+
+    - Observation: The explicit agent-selected branch_pr scenario and exact transition counts now pass alongside the complete local CI.
+      Impact: The test evidence distinguishes agent preference from deterministic safety escalation and quantifies lifecycle ceremony for representative product-development workflows.
+      Resolution: Accept this exact implementation identity for independent evaluator review and hosted integration.
 extensions:
   implementation_commit:
     hash: "12f447c63ce5c78b152d461dcc1e00517a04f149"
@@ -791,6 +841,46 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-12T04:20:23.781Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified implementation commit 9ef72a552: complete local CI and explicit agent-selected branch_pr E2E evidence passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:dca184be90fa3ce8f32f16e9f1a157c5f2a648692b107ebd2119d23831c66570, input_digest=sha256:9c15adea0ccffb1fc8b683f79a7b67851b69bcb4c94315fcde3dffc5eb867f8f
+
+Details:
+
+Command: bun run ci:local:fast
+Result: pass
+Evidence: Format, schemas, templates, routing, release parity, build, cold-start, documentation freshness, hotspot, project routing and lint passed; 555 test files passed with 4059 tests passed and 1 skipped; all 12 critical CLI shards passed.
+Scope: Full fast repository CI for implementation commit 9ef72a552 after evaluator rework.
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts --reporter=verbose
+Result: pass
+Evidence: 8 of 8 realistic CLI cases passed. The broad case explicitly declares preferred_mode branch_pr and resolves through agent_preferred_branch_pr; exact lifecycle transitions are asserted for localized direct, broad branch_pr, misleading language, underestimated escalation, prohibited external effects, network approval and legacy completion.
+Scope: Agent-selected strategy, transition measurements, ceremony metrics and compatibility.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112232-3NC7Y4-make-execution-strategy-risk-adaptive-and-agent/.agentplane/tasks/202608112232-3NC7Y4/blueprint/resolved-snapshot.json
+- old_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+- current_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608112232-3NC7Y4
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -803,6 +893,10 @@ DecisionContextRef:
 - Observation: The full local CI and realistic workflow E2Es passed on the committed implementation; execution authority is consistent with configured network approval, observed external-agent paths are recorded, and legacy contracts normalize automatically.
   Impact: Agent-selected routing remains flexible while AgentPlane deterministically enforces authority, escalation, verification and compatibility without keyword classification or redundant lifecycle recovery.
   Resolution: Accept the implementation candidate for independent evaluator review and hosted integration.
+
+- Observation: The explicit agent-selected branch_pr scenario and exact transition counts now pass alongside the complete local CI.
+  Impact: The test evidence distinguishes agent preference from deterministic safety escalation and quantifies lifecycle ceremony for representative product-development workflows.
+  Resolution: Accept this exact implementation identity for independent evaluator review and hosted integration.
 
 ## Token Usage
 
