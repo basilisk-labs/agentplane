@@ -358,9 +358,7 @@ export async function superviseDirectTaskRun(
     });
     if (
       reconciliation.escalated ||
-      reconciliation.task.execution_contract?.observed.authority_violations.some((violation) =>
-        violation.startsWith("external_effect:"),
-      )
+      reconciliation.task.execution_contract?.observed.authority_violations.length
     ) {
       return stoppedResult({
         decision: current,

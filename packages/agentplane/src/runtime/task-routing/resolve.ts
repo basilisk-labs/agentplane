@@ -14,6 +14,7 @@ import type {
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
+import { gitPathIsUnderPrefix } from "../../shared/git-path.js";
 
 type RouteTaskInput = Pick<
   TaskData,
@@ -472,6 +473,15 @@ export function reconcileTaskExecutionContract(opts: {
   const undeclaredRepositoryEffects = observedEffects.filter(
     (effect) => !opts.contract.authority.allowed_repository_effects.includes(effect),
   );
+  const outOfScopePaths =
+    opts.contract.authority.writable_roots.length === 0
+      ? []
+      : changed_paths.filter(
+          (changedPath) =>
+            !opts.contract.authority.writable_roots.some((root) =>
+              gitPathIsUnderPrefix(changedPath, root),
+            ),
+        );
   const unauthorizedExternalEffects = observedExternalEffects.filter(
     (effect) => !opts.contract.authority.allowed_external_effects.includes(effect),
   );
@@ -481,6 +491,7 @@ export function reconcileTaskExecutionContract(opts: {
   const authorityViolations = uniqueSorted([
     ...opts.contract.observed.authority_violations,
     ...undeclaredRepositoryEffects.map((effect) => `repository_effect:${effect}`),
+    ...outOfScopePaths.map((changedPath) => `writable_scope:${changedPath}`),
     ...unauthorizedExternalEffects.map((effect) => `external_effect:${effect}`),
     ...failedVerificationResults.map((result) => `verification:${result.id}:${result.result}`),
   ]);
@@ -491,10 +502,13 @@ export function reconcileTaskExecutionContract(opts: {
   );
   const escalated =
     opts.contract.selected_mode === "direct" &&
-    (newlyIsolatedEffects.length > 0 || unauthorizedExternalEffects.length > 0);
+    (newlyIsolatedEffects.length > 0 ||
+      outOfScopePaths.length > 0 ||
+      unauthorizedExternalEffects.length > 0);
   const selected_mode = escalated ? "branch_pr" : opts.contract.selected_mode;
   const escalationReasons = [
     ...newlyIsolatedEffects.map((effect) => `observed_effect_${effect}`),
+    ...outOfScopePaths.map((changedPath) => `observed_path_outside_scope:${changedPath}`),
     ...unauthorizedExternalEffects.map((effect) => `observed_external_effect_${effect}`),
   ];
   const reason_codes = uniqueSorted([...opts.contract.reason_codes, ...escalationReasons]);

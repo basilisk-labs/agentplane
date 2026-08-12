@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608112232-3NC7Y4-3d2d5a32d7632d2a9bd55031",
+  "task_id": "202608112232-3NC7Y4",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Enforce observed changed paths/components against declared writable scope, then extend the localized direct and agent-selected branch_pr scenarios through work, verification, and finish/evaluator boundaries with explicit ceremony and evidence comparisons.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "Observed changes are compared only by effect category, not against the declaration's writable scope. A change outside authority.writable_roots is accepted when its structural effect was declared, so the compiled contract does not enforce its own path authority or detect component drift.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/ef041548ca51db681b579a95e76aad0b1b468b8dd69dd53ab76a766298320a9f.patch",
+          "sha256": "sha256:ef041548ca51db681b579a95e76aad0b1b468b8dd69dd53ab76a766298320a9f",
+          "section": "reconcileTaskExecutionContract"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/README.md",
+          "sha256": "sha256:db66f9a63da0f524dce8f6f6532ea15e793a7662a9cea43891fe8e2d67d03afd",
+          "section": "Plan items 1, 2, and 4"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "The localized direct and broad branch_pr scenarios stop after planning and route readback. They execute no work, verification, evaluator, or finish path; verification_time_ms is asserted as zero. Consequently they do not provide the requested realistic end-to-end ceremony and evidence comparison, despite the verification record describing them as realistic CLI cases.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/ef041548ca51db681b579a95e76aad0b1b468b8dd69dd53ab76a766298320a9f.patch",
+          "sha256": "sha256:ef041548ca51db681b579a95e76aad0b1b468b8dd69dd53ab76a766298320a9f",
+          "section": "run-cli.core.task-create-planner-intent.test.ts localized direct and broad branch_pr scenarios"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812042023781-2f0397ef68cb6177.json",
+          "sha256": "sha256:133c3847af35b12dd815cc5fcc2f6cfe8ded7ead0a8c131ada0ca80e301fbd8a",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202608112232-3NC7Y4/README.md",
+          "sha256": "sha256:db66f9a63da0f524dce8f6f6532ea15e793a7662a9cea43891fe8e2d67d03afd",
+          "section": "Plan items 7, 8, and 10; Verify Steps 2 and 5"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-042046844-recovery-context/evaluator-result.json"
+}

@@ -286,6 +286,43 @@ describe("task execution route", () => {
     );
   });
 
+  it("records path authority drift even when the observed effect category was declared", () => {
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    const initial = resolveTaskExecutionContract({
+      config,
+      task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
+      declaration: {
+        schema_version: 1,
+        preferred_mode: "direct",
+        scope_roots: ["packages/app"],
+        repository_effects: ["repository_write", "source_code"],
+        external_effects: [],
+        uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["localized application implementation"],
+      },
+    });
+    const reconciled = reconcileTaskExecutionContract({
+      contract: initial,
+      changed_paths: ["packages/other/src/feature.ts"],
+      preserved_commit: "abc123",
+    });
+
+    expect(reconciled.escalated).toBe(true);
+    expect(reconciled.contract.selected_mode).toBe("branch_pr");
+    expect(reconciled.contract.observed.changed_components).toEqual(["packages/other"]);
+    expect(reconciled.contract.observed.authority_violations).toContain(
+      "writable_scope:packages/other/src/feature.ts",
+    );
+    expect(reconciled.contract.escalation).toMatchObject({
+      from: "direct",
+      to: "branch_pr",
+      preserved_commit: "abc123",
+      reason_codes: ["observed_path_outside_scope:packages/other/src/feature.ts"],
+    });
+  });
+
   it("never self-authorizes external or destructive effects", () => {
     const config = defaultConfig();
     config.workflow_mode = "direct";

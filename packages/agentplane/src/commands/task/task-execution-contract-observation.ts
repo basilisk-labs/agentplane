@@ -14,10 +14,14 @@ export async function recordObservedTaskExecutionContract(opts: {
 }): Promise<{ task: TaskData; escalated: boolean }> {
   const current = opts.task.execution_contract;
   if (!current) return { task: opts.task, escalated: false };
+  const taskArtifactPrefix = `.agentplane/tasks/${opts.task.id}/`;
+  const productChangedPaths = opts.changed_paths.filter(
+    (changedPath) => !changedPath.replaceAll("\\", "/").startsWith(taskArtifactPrefix),
+  );
 
   const reconciled = reconcileTaskExecutionContract({
     contract: current,
-    changed_paths: opts.changed_paths,
+    changed_paths: productChangedPaths,
     ...(opts.observed_external_effects
       ? { observed_external_effects: opts.observed_external_effects }
       : {}),

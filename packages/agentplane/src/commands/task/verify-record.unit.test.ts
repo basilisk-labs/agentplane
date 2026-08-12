@@ -115,7 +115,7 @@ describe("task verify record (unit)", () => {
     mocks.writeJsonStableIfChanged.mockReset().mockResolvedValue(true);
     mocks.ensureReconciledBeforeMutation.mockReset();
     mocks.loadCommandContext.mockReset();
-    mocks.loadTaskFromContext.mockReset();
+    mocks.loadTaskFromContext.mockReset().mockResolvedValue(mkTask({}));
     mocks.backendIsLocalFileBackend.mockReset();
     mocks.getTaskStore.mockReset();
     mocks.collectTaskIncidents.mockReset();

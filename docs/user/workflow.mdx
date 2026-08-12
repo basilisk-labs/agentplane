@@ -57,19 +57,19 @@ implementation commit and changed paths, strengthens evidence, and emits one `br
 It does not require the agent to run reclaim, reconcile, or repair commands. Once branch-specific
 state exists, the route never downgrades to `direct`.
 
-The realistic CLI contract suite records the following control-plane measurements. Verification
-time is `0 ms` for routing-only scenarios; executable checks are timed and retained separately in
-the task verification record rather than being rerun for every routing assertion.
+The realistic CLI contract suite records the following control-plane measurements. The two full
+lifecycle scenarios execute and time their declared checks; smaller contract scenarios stop at the
+specific behavior they qualify.
 
-| Scenario                                               | Control-plane commands | Lifecycle transitions |                              Approval boundaries | Work preserved          | Recovery commands |
-| ------------------------------------------------------ | ---------------------: | --------------------: | -----------------------------------------------: | ----------------------- | ----------------: |
-| Local reversible `direct` route                        |                      4 |                     0 |                                      1 plan gate | not applicable          |                 0 |
-| Agent-selected broad `branch_pr` route                 |                      4 |                     0 |                                      1 plan gate | not applicable          |                 0 |
-| Misleading-language local documentation route          |                      4 |                     0 |                                      1 plan gate | not applicable          |                 0 |
-| Underestimated `direct` route                          |                      6 |                     2 |                                      1 plan gate | commit and changed path |                 0 |
-| Prohibited deploy/destructive effects                  |                      4 |                     0 | 1 plan gate, external authority remains required | not executed            |                 0 |
-| Approved read-only network access                      |                      5 |                     1 |                             1 user approval gate | not executed            |                 0 |
-| Existing contract through completed `direct` lifecycle |                      7 |                     4 |                                      1 plan gate | changed path recorded   |                 0 |
+| Scenario                                               | Control-plane commands | Lifecycle transitions |                              Approval boundaries | Work preserved               | Recovery commands |
+| ------------------------------------------------------ | ---------------------: | --------------------: | -----------------------------------------------: | ---------------------------- | ----------------: |
+| Local reversible `direct` lifecycle                    |                      7 |                     4 |                                      1 plan gate | changed path recorded        |                 0 |
+| Agent-selected broad `branch_pr` through review        |                     10 |                     3 |     1 plan gate, 2 external authority boundaries | three changed paths recorded |                 0 |
+| Misleading-language local documentation route          |                      4 |                     0 |                                      1 plan gate | not applicable               |                 0 |
+| Underestimated `direct` route                          |                      6 |                     2 |                                      1 plan gate | commit and changed path      |                 0 |
+| Prohibited deploy/destructive effects                  |                      4 |                     0 | 1 plan gate, external authority remains required | not executed                 |                 0 |
+| Approved read-only network access                      |                      5 |                     1 |                             1 user approval gate | not executed                 |                 0 |
+| Existing contract through completed `direct` lifecycle |                      7 |                     4 |                                      1 plan gate | changed path recorded        |                 0 |
 
 Compared with manually choosing task kind, process profile, mutation class, risk flags, and route,
 the normal path has no manual mode-selection command and no recovery-command sequence. Significant

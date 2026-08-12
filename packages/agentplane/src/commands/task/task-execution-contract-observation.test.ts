@@ -90,4 +90,61 @@ describe("task execution contract observation", () => {
       }),
     ).toEqual(["deploy", "network_read"]);
   });
+
+  it("excludes CLI-owned current-task artifacts from product scope reconciliation", async () => {
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    const task = {
+      id: "202608120000-SCOPE1",
+      title: "Scoped fixture",
+      description: "Observe one product file and one CLI-owned lifecycle file.",
+      status: "DOING",
+      priority: "med",
+      owner: "CODER",
+      revision: 2,
+      depends_on: [],
+      tags: [],
+      verify: [],
+      task_kind: "code",
+      mutation_scope: "code",
+      execution_contract: resolveTaskExecutionContract({
+        config,
+        task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
+        declaration: {
+          schema_version: 1,
+          preferred_mode: "direct",
+          scope_roots: ["status-label.txt"],
+          repository_effects: ["repository_write"],
+          external_effects: [],
+          uncertainty: "bounded",
+          reversibility: "reversible",
+          rationale: ["one scoped product file"],
+        },
+      }),
+    } satisfies TaskData;
+    let persistedTask: TaskData | null = null;
+    const command = {
+      config,
+      backendId: "local",
+      resolvedProject: { gitRoot: "/repo" },
+      taskBackend: {
+        writeTask: (nextTask: TaskData) => {
+          persistedTask = nextTask;
+          return Promise.resolve();
+        },
+        getTask: () => Promise.resolve(persistedTask),
+      },
+    } as unknown as CommandContext;
+
+    const result = await recordObservedTaskExecutionContract({
+      command,
+      task,
+      changed_paths: ["status-label.txt", `.agentplane/tasks/${task.id}/README.md`],
+      preserved_commit: "abc123",
+    });
+
+    expect(result.escalated).toBe(false);
+    expect(result.task.execution_contract?.observed.changed_paths).toEqual(["status-label.txt"]);
+    expect(result.task.execution_contract?.observed.authority_violations).toEqual([]);
+  });
 });

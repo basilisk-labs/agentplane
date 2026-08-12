@@ -308,16 +308,12 @@ async function executeBranchImplementationEpisode(opts: {
       observed_external_effects: observedExternalEffectsFromRunnerResult(lifecycle.result),
       preserved_commit: commit,
     });
-    if (
-      reconciliation.task.execution_contract?.observed.authority_violations.some((violation) =>
-        violation.startsWith("external_effect:"),
-      )
-    ) {
+    if (reconciliation.task.execution_contract?.observed.authority_violations.length) {
       return stoppedEpisode({
         decision: opts.decision,
         code: "implementation_scope_violation",
         reason:
-          "Supervisor-observed external effects exceeded the execution contract authority; preserve the committed work and require explicit side-effect authority before continuing.",
+          "Supervisor-observed changes exceeded the execution contract authority; preserve the committed work and require a corrected scope or explicit side-effect authority before continuing.",
         journal: journalRef,
         provider_episodes: 1,
         executor_lifecycle_event_delta: eventDelta,

@@ -343,13 +343,24 @@ export async function applyExternalImplementationResult(opts: {
     ctx: opts.command,
     taskId: opts.exchange.task_id,
   });
-  await recordObservedTaskExecutionContract({
+  const reconciliation = await recordObservedTaskExecutionContract({
     command: opts.command,
     task: currentTask,
     changed_paths: implementation.evidence.changed_paths,
     preserved_commit: implementation.evidence.implementation_commit,
   });
+  const authorityViolations =
+    reconciliation.task.execution_contract?.observed.authority_violations ?? [];
+  if (authorityViolations.length > 0 && !reconciliation.escalated) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message:
+        "Supervisor-observed changes exceeded the execution contract authority: " +
+        authorityViolations.join(", "),
+    });
+  }
   if (opts.decision.workflowMode === "branch_pr") {
+    opts.command.git.invalidateStatus();
     const currentStatus = await readDirectRepositoryStatus(opts.exchange.checkout);
     if (!hasChangedTaskArtifacts(currentStatus?.lines ?? [], opts.exchange.task_id)) return;
     const evidenceExitCode = await cmdCommit({

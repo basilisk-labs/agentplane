@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -33,31 +33,31 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-12T04:11:53.982Z"
+  updated_at: "2026-08-12T04:21:49.670Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "1d7a807eba17ca96c212eb25660ba3a86a372d66"
+  evaluated_sha: "9ef72a552043bae4d00b171a3038923803c193b8"
   blueprint_digest: "9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6"
   evidence_refs:
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-041045070-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-041045070-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/8a8ec81e89828ddf4712ddd8b1e4dbcc81db923ffb4bbe1bebc839329ef39c38.md"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-041045070-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-041045070-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-041045070-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-041045070-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-042046844-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-042046844-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/5b229e8d7ee1c255b4b0ad87ca7708292a6353db6f2ff9cc4104b52458f17fa8.md"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-042046844-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-042046844-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-042046844-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-042046844-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608112232-3NC7Y4/README.md"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/2256613fbfd6186cc65b095ffc3a94850e0db3c282c322041d42899e7a284cc0.patch"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/9d034afe564b14fdb9d5c6ce4d1b30936acf23290a6a49ea8fcf8ff16633b1c8.json"
-    - ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812041025439-8bd2ab0ef09e0963.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/ef041548ca51db681b579a95e76aad0b1b468b8dd69dd53ab76a766298320a9f.patch"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/d494864c77b93870f664cd2de602dbcae8d520b84b89c6569c9d81bcb90aaab7.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812042023781-2f0397ef68cb6177.json"
     - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/713d635b887c7c585dcaacdf90acc3b66adefd80a7316bf2f3f88328352bd276.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The required broad agent-selected branch_pr E2E is absent. The scenario documented and verified as the broad branch_pr case declares preferred_mode as direct and only reaches branch_pr through deterministic override, so it does not prove that a compatible agent-selected branch_pr preference is respected end to end."
-    - "The documented scenario measurements omit lifecycle-transition counts, and most routing scenarios collect lifecycle_transitions without asserting them. This leaves the required transition and ceremony comparison unproven for the five representative E2Es."
+    - "Observed changes are compared only by effect category, not against the declaration's writable scope. A change outside authority.writable_roots is accepted when its structural effect was declared, so the compiled contract does not enforce its own path authority or detect component drift."
+    - "The localized direct and broad branch_pr scenarios stop after planning and route readback. They execute no work, verification, evaluator, or finish path; verification_time_ms is asserted as zero. Consequently they do not provide the requested realistic end-to-end ceremony and evidence comparison, despite the verification record describing them as realistic CLI cases."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -175,7 +175,7 @@ events:
     state: "ok"
     note: "Verified implementation commit 9ef72a552: complete local CI and explicit agent-selected branch_pr E2E evidence passed."
 doc_version: 3
-doc_updated_at: "2026-08-12T04:20:26.244Z"
+doc_updated_at: "2026-08-12T04:21:49.695Z"
 doc_updated_by: "CODER"
 description: "Use one canonical lifecycle while letting the agent semantically choose direct or branch_pr through a structured risk/effect declaration. AgentPlane must compile and enforce one deterministic execution contract, compare it with observed effects, escalate monotonically when required, and never use product-language keyword heuristics as lifecycle authority."
 sections:
