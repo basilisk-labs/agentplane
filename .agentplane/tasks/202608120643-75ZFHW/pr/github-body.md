@@ -19,15 +19,15 @@ Implement lifecycle-owned worktree hygiene before the verification optimization 
 - Note:
 
 ```text
-Final implementation 2733cdf8a passed the full-fast local CI route plus focused lifecycle and
-realistic cleanup E2E coverage.
+Final implementation 5e7636a06 passed the complete fast unit suite, the full-fast local CI route,
+and focused worktree/cleanup lifecycle tests.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-12T06:44:59.797Z
+- Updated: 2026-08-12T07:51:13.755Z
 - Branch: task/202608120643-75ZFHW/prevent-worktree-accumulation-and-clean-obsolete
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -38,6 +38,8 @@ realistic cleanup E2E coverage.
  .../agentplane/src/commands/branch/work-start.ts   |  13 ++
  packages/agentplane/src/commands/doctor.run.ts     |   2 +
  .../agentplane/src/commands/doctor/branch-pr.ts    |  73 +++++++++++
+ .../shared/route-decision-next-action.test.ts      |   3 +-
+ .../src/commands/shared/route-guidance.test.ts     |  20 ++-
  .../commands/shared/side-effect-authority.test.ts  |   2 +-
  .../src/commands/shared/side-effect-authority.ts   |   9 +-
  .../workflow-operation-projection.registry.test.ts |   4 +
@@ -46,7 +48,7 @@ realistic cleanup E2E coverage.
  .../src/commands/shared/worktree-topology.ts       | 146 +++++++++++++++++++++
  .../task/branch-task-supervisor-operations.test.ts |  38 ++++++
  .../task/branch-task-supervisor-operations.ts      |   4 +-
- 14 files changed, 576 insertions(+), 9 deletions(-)
+ 16 files changed, 591 insertions(+), 17 deletions(-)
 ```
 
 </details>

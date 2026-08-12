@@ -1,0 +1,104 @@
+{
+  "details": "Command: bun run test:fast:ci\nResult: pass\nEvidence: complete agentplane/core/recipes/testkit unit suite passed locally after hosted contract repair; the three previously failing route-command assertions are included.\nScope: final branch diff at 5e7636a06.\n\nCommand: AGENTPLANE_FAST_CHANGED_FILES=<origin/main..2733cdf8a paths> bun run ci:local:fast\nResult: pass\nEvidence: full-fast selector completed format, schemas, agent templates, policy routing, release parity, build, CLI cold-start, generated docs/inventories, onboarding, hotspot/baseline, Vitest routing, core lint, and remaining selected checks with exit code 0.\nScope: final implementation before route-contract assertion-only correction.\n\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts packages/agentplane/src/commands/shared/route-guidance.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts\nResult: pass\nEvidence: 25 exact projection, guidance, authority, and supervisor tests passed.\nScope: explicit --yes and --delete-remote-branches contract propagation.\n\nCommand: real repository cleanup inventory\nResult: pass\nEvidence: 69 to 28 worktrees and 83 to 44 local branches; 36 provider-proven merged task registrations removed in the recorded batch; protected state retained.\nScope: approved repository worktree hygiene.",
+  "digest": "sha256:05cd341849961760296853f68d879f9355ce1644c9803fcc87495d4297b1810b",
+  "implementation_sha": "5e7636a065ee379db747190f8c67594b90487fa1",
+  "input": {
+    "context": {
+      "digest": "sha256:cc7062753f698932f289ad1b5334207df3e1c81233ebf17c591c3b5370091508",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:e51196b9681bd5f7fef1383c78318bbecf960ef853c498cbea84590f3bbc6dec",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:0cdc9f32852a4c7dc17a308aff9476cdffc667cc5365d3a2e71df054ae0787d2",
+      "digest": "sha256:19b7f709847b13e24271bc3dfea56a85121d3bc813a2561a7e7dd311ef9000e9",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "agentplane/core/recipes/testkit",
+          "reference": "agentplane/core/recipes/testkit",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "docs/inventories",
+          "reference": "docs/inventories",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "hotspot/baseline",
+          "reference": "hotspot/baseline",
+          "source": "missing"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "4efbe19bb2aed31d9b6beb6f01288906b823d8bb",
+      "digest": "sha256:c3d9f99bb5da8e27a8d345af2d1b05ce544c9f1aa2a0381ad0282806abeca51b",
+      "strategy": "branch_diff",
+      "target_sha": "5e7636a065ee379db747190f8c67594b90487fa1"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 2,
+    "verify_steps_digest": "sha256:841c3068db6bc34da584a40a2dbfcf74ec7ab97e68fda59f50cc690ce3691db3"
+  },
+  "kind": "task_verification_record",
+  "note": "Final implementation 5e7636a06 passed the complete fast unit suite, the full-fast local CI route, and focused worktree/cleanup lifecycle tests.",
+  "recorded_at": "2026-08-12T07:51:12.037Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run the worktree invariant matrix. Expected: different active branch_pr tasks can each own one worktree concurrently; a duplicate worktree for the same task is rejected with the authoritative checkout; direct tasks do not receive a mandatory worktree.\n2. Exercise hosted-close and queue progression on a merged task fixture. Expected: the supervisor advances the queue and removes the clean task worktree plus ordinary local/remote task refs exactly once; a second run is a no-op; merge success remains recorded if cleanup is blocked.\n3. Exercise dirty, blocked, open-PR, stashed, archived, detached, unique-commit, recovery, and ambiguous fixtures. Expected: no protected work is deleted; every retained item has a deterministic reason and safe next action.\n4. Create and resume recovery/control fixtures containing historical nested .agentplane/worktrees directories. Expected: no nested worktree becomes registered in the primary repository; doctor/inventory identifies any legacy recursive registration.\n5. Apply cleanup to the real repository after fetching hosted truth. Expected: before/after counts and every removed/retained ref are recorded; origin/main is current; only proven obsolete clean state is deleted; active tasks, open PRs, dirty state, stashes, release/archive refs, and unique commits are preserved.\n6. Run focused lifecycle/cleanup unit and integration tests, realistic CLI E2E, typecheck, lint, schema/contract checks, and full hosted PR verification. Expected: all pass on the exact reviewed SHA and final git worktree prune dry-run reports no stale registrations.",
+  "scope_digest": "sha256:841c3068db6bc34da584a40a2dbfcf74ec7ab97e68fda59f50cc690ce3691db3",
+  "task_id": "202608120643-75ZFHW",
+  "verification_command": "agentplane verify 202608120643-75ZFHW --ok --by TESTER",
+  "verifier": "TESTER"
+}

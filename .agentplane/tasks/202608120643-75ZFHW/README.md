@@ -4,7 +4,7 @@ title: "Prevent worktree accumulation and clean obsolete task checkouts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -29,9 +29,9 @@ plan_approval:
   note: "Approved as the previously agreed worktree/branch lifecycle step before final verification optimization."
 verification:
   state: "ok"
-  updated_at: "2026-08-12T07:41:41.987Z"
+  updated_at: "2026-08-12T07:51:12.037Z"
   updated_by: "TESTER"
-  note: "Final implementation 2733cdf8a passed the full-fast local CI route plus focused lifecycle and realistic cleanup E2E coverage."
+  note: "Final implementation 5e7636a06 passed the complete fast unit suite, the full-fast local CI route, and focused worktree/cleanup lifecycle tests."
   attempts: 0
 execution_route:
   frozen: true
@@ -148,8 +148,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "2733cdf8a41df54870f413421827d01117410693"
-  message: "🧹 75ZFHW cleanup: keep regression coverage below hotspot limit"
+  hash: "5e7636a065ee379db747190f8c67594b90487fa1"
+  message: "🧹 75ZFHW cleanup: align exact route command contracts"
 comments:
   -
     author: "CODER"
@@ -163,6 +163,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation finalized at 2733cdf8a41d after the full-fast gate caught and the task fixed an oversized test-file regression."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation finalized at 5e7636a06 after aligning all hosted-close route readback contracts with the exact cleanup argv."
 events:
   -
     type: "status"
@@ -207,8 +210,22 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Final implementation 2733cdf8a passed the full-fast local CI route plus focused lifecycle and realistic cleanup E2E coverage."
+  -
+    type: "status"
+    at: "2026-08-12T07:51:07.192Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation finalized at 5e7636a06 after aligning all hosted-close route readback contracts with the exact cleanup argv."
+    commit: "5e7636a065ee379db747190f8c67594b90487fa1"
+  -
+    type: "verify"
+    at: "2026-08-12T07:51:12.037Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Final implementation 5e7636a06 passed the complete fast unit suite, the full-fast local CI route, and focused worktree/cleanup lifecycle tests."
 doc_version: 3
-doc_updated_at: "2026-08-12T07:41:43.546Z"
+doc_updated_at: "2026-08-12T07:51:13.690Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement lifecycle-owned worktree hygiene before the verification optimization task. Preserve parallel development by allowing one authoritative worktree for each active branch_pr task, while preventing duplicate worktrees for the same task. Automatically finalize clean task worktrees and local task branches after hosted-close or proven merge, and make queue/supervisor progression own this cleanup without requiring the coding agent to infer it. Prevent recovery/control checkouts from recursively registering or restoring nested historical task worktrees. Add deterministic inventory/readback that classifies active, merged, dirty, recovery, detached, remote-only, and ambiguous refs; delete only provider-proven merged or explicitly obsolete clean state, preserving dirty, open-PR, active, blocked, stashed, release archive, and uniquely unassimilated work. Apply the command to the current repository, reconcile local and remote branches, and record before/after counts and retained reasons. Cover parallel active tasks, duplicate same-task worktree rejection, hosted-close cleanup, recovery non-resurrection, dirty preservation, and idempotent cleanup with focused and realistic E2E tests."
 sections:
@@ -311,6 +328,56 @@ sections:
     Command: real repository cleanup inventory
     Result: pass
     Evidence: 69 to 28 worktrees and 83 to 44 local branches; 36 provider-proven merged task registrations removed in the recorded batch; active, dirty, recovery, ambiguous, and unique state retained.
+    Scope: approved repository worktree hygiene.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608120643-75ZFHW-prevent-worktree-accumulation-and-clean-obsolete/.agentplane/tasks/202608120643-75ZFHW/blueprint/resolved-snapshot.json
+    - old_digest: 576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5
+    - current_digest: 576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608120643-75ZFHW
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-12T07:51:12.037Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Final implementation 5e7636a06 passed the complete fast unit suite, the full-fast local CI route, and focused worktree/cleanup lifecycle tests.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:841c3068db6bc34da584a40a2dbfcf74ec7ab97e68fda59f50cc690ce3691db3, input_digest=sha256:e51196b9681bd5f7fef1383c78318bbecf960ef853c498cbea84590f3bbc6dec
+
+    Details:
+
+    Command: bun run test:fast:ci
+    Result: pass
+    Evidence: complete agentplane/core/recipes/testkit unit suite passed locally after hosted contract repair; the three previously failing route-command assertions are included.
+    Scope: final branch diff at 5e7636a06.
+
+    Command: AGENTPLANE_FAST_CHANGED_FILES=<origin/main..2733cdf8a paths> bun run ci:local:fast
+    Result: pass
+    Evidence: full-fast selector completed format, schemas, agent templates, policy routing, release parity, build, CLI cold-start, generated docs/inventories, onboarding, hotspot/baseline, Vitest routing, core lint, and remaining selected checks with exit code 0.
+    Scope: final implementation before route-contract assertion-only correction.
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts packages/agentplane/src/commands/shared/route-guidance.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+    Result: pass
+    Evidence: 25 exact projection, guidance, authority, and supervisor tests passed.
+    Scope: explicit --yes and --delete-remote-branches contract propagation.
+
+    Command: real repository cleanup inventory
+    Result: pass
+    Evidence: 69 to 28 worktrees and 83 to 44 local branches; 36 provider-proven merged task registrations removed in the recorded batch; protected state retained.
     Scope: approved repository worktree hygiene.
 
     BlueprintSnapshotRef:
@@ -451,6 +518,56 @@ Scope: worktree ownership, recovery non-resurrection, hosted-close cleanup, batc
 Command: real repository cleanup inventory
 Result: pass
 Evidence: 69 to 28 worktrees and 83 to 44 local branches; 36 provider-proven merged task registrations removed in the recorded batch; active, dirty, recovery, ambiguous, and unique state retained.
+Scope: approved repository worktree hygiene.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608120643-75ZFHW-prevent-worktree-accumulation-and-clean-obsolete/.agentplane/tasks/202608120643-75ZFHW/blueprint/resolved-snapshot.json
+- old_digest: 576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5
+- current_digest: 576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608120643-75ZFHW
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-12T07:51:12.037Z — VERIFY — ok
+
+By: TESTER
+
+Note: Final implementation 5e7636a06 passed the complete fast unit suite, the full-fast local CI route, and focused worktree/cleanup lifecycle tests.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:841c3068db6bc34da584a40a2dbfcf74ec7ab97e68fda59f50cc690ce3691db3, input_digest=sha256:e51196b9681bd5f7fef1383c78318bbecf960ef853c498cbea84590f3bbc6dec
+
+Details:
+
+Command: bun run test:fast:ci
+Result: pass
+Evidence: complete agentplane/core/recipes/testkit unit suite passed locally after hosted contract repair; the three previously failing route-command assertions are included.
+Scope: final branch diff at 5e7636a06.
+
+Command: AGENTPLANE_FAST_CHANGED_FILES=<origin/main..2733cdf8a paths> bun run ci:local:fast
+Result: pass
+Evidence: full-fast selector completed format, schemas, agent templates, policy routing, release parity, build, CLI cold-start, generated docs/inventories, onboarding, hotspot/baseline, Vitest routing, core lint, and remaining selected checks with exit code 0.
+Scope: final implementation before route-contract assertion-only correction.
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts packages/agentplane/src/commands/shared/route-guidance.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+Result: pass
+Evidence: 25 exact projection, guidance, authority, and supervisor tests passed.
+Scope: explicit --yes and --delete-remote-branches contract propagation.
+
+Command: real repository cleanup inventory
+Result: pass
+Evidence: 69 to 28 worktrees and 83 to 44 local branches; 36 provider-proven merged task registrations removed in the recorded batch; protected state retained.
 Scope: approved repository worktree hygiene.
 
 BlueprintSnapshotRef:
