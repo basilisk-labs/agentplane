@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:2c8d9a5f49f432ca39ea78605dad13bb9a35906f0ae1877e77aa8083d8ef68e7",
   "pr_number": 4829,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4829",
+  "pre_merge_closure": {
+    "basis_commit": "5df631a0fcf90ec0c0fae0a30749a916726e36d2",
+    "branch": "task/202608120643-75ZFHW/prevent-worktree-accumulation-and-clean-obsolete",
+    "pr_number": 4829,
+    "recorded_at": "2026-08-12T07:55:53.158Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608120643-75ZFHW",

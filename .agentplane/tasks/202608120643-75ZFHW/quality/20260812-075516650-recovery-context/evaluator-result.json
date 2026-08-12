@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Different active tasks remain independently parallel while duplicate worktrees for the same task are rejected at creation.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/6b6255b73530117c8d35523d309fcfd34e21af8844fe0b9905f23b064831b945.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Hosted-close cleanup now performs the authorized local and remote cleanup operation instead of a dry-run, while batch cleanup preserves unresolved targets.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/6b6255b73530117c8d35523d309fcfd34e21af8844fe0b9905f23b064831b945.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

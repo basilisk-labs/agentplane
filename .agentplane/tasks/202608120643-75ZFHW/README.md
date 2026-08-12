@@ -1,10 +1,11 @@
 ---
 id: "202608120643-75ZFHW"
 title: "Prevent worktree accumulation and clean obsolete task checkouts"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -33,6 +34,47 @@ verification:
   updated_by: "TESTER"
   note: "Final implementation 5e7636a06 passed the complete fast unit suite, the full-fast local CI route, and focused worktree/cleanup lifecycle tests."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-12T07:55:17.253Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "5e7636a065ee379db747190f8c67594b90487fa1"
+  blueprint_digest: "576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5"
+  evidence_refs:
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/20260812-075516650-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/20260812-075516650-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/7a565bfa8d3d0b95d1a9750addcd3bb97906b97e371b71d898f52994d239ab8a.md"
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/20260812-075516650-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/20260812-075516650-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/20260812-075516650-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608120643-75ZFHW/README.md"
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/6b6255b73530117c8d35523d309fcfd34e21af8844fe0b9905f23b064831b945.patch"
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/cfe2ce021c780721253bf07a0b4a54e9c476aace065c0a46ffda3b9ab504e20e.json"
+    - ".agentplane/tasks/202608120643-75ZFHW/verification/20260812075112037-05cd341849961760.json"
+    - ".agentplane/tasks/202608120643-75ZFHW/quality/objects/sha256/1ff932c7fd5c45ad498732c9c1003f19e0e7ce473a6e70fa96d5e33cde954e4e.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Different active tasks remain independently parallel while duplicate worktrees for the same task are rejected at creation."
+    - "Hosted-close cleanup now performs the authorized local and remote cleanup operation instead of a dry-run, while batch cleanup preserves unresolved targets."
+token_usage:
+  agent_runs: 1
+  input_tokens: null
+  journal_digest: "sha256:6ce45672f0a42f80738af2416150b21af6e71d8ca4258ab6fbf39920af2ce841"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-12T07:55:53.076Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -148,8 +190,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "5e7636a065ee379db747190f8c67594b90487fa1"
-  message: "🧹 75ZFHW cleanup: align exact route command contracts"
+  hash: "5df631a0fcf90ec0c0fae0a30749a916726e36d2"
+  message: "✅ 75ZFHW task: bind hosted-repair verification"
 comments:
   -
     author: "CODER"
@@ -166,6 +208,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation finalized at 5e7636a06 after aligning all hosted-close route readback contracts with the exact cleanup argv."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -224,9 +269,17 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Final implementation 5e7636a06 passed the complete fast unit suite, the full-fast local CI route, and focused worktree/cleanup lifecycle tests."
+  -
+    type: "status"
+    at: "2026-08-12T07:55:53.076Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "5df631a0fcf90ec0c0fae0a30749a916726e36d2"
 doc_version: 3
-doc_updated_at: "2026-08-12T07:51:13.690Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-12T07:55:53.089Z"
+doc_updated_by: "CODER"
 description: "Implement lifecycle-owned worktree hygiene before the verification optimization task. Preserve parallel development by allowing one authoritative worktree for each active branch_pr task, while preventing duplicate worktrees for the same task. Automatically finalize clean task worktrees and local task branches after hosted-close or proven merge, and make queue/supervisor progression own this cleanup without requiring the coding agent to infer it. Prevent recovery/control checkouts from recursively registering or restoring nested historical task worktrees. Add deterministic inventory/readback that classifies active, merged, dirty, recovery, detached, remote-only, and ambiguous refs; delete only provider-proven merged or explicitly obsolete clean state, preserving dirty, open-PR, active, blocked, stashed, release archive, and uniquely unassimilated work. Apply the command to the current repository, reconcile local and remote branches, and record before/after counts and retained reasons. Cover parallel active tasks, duplicate same-task worktree rejection, hosted-close cleanup, recovery non-resurrection, dirty preservation, and idempotent cleanup with focused and realistic E2E tests."
 sections:
   Summary: |-
@@ -405,6 +458,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "5e7636a065ee379db747190f8c67594b90487fa1"
+    message: "🧹 75ZFHW cleanup: align exact route command contracts"
   workflow_route_baseline:
     start_head_sha: "4efbe19bb2aed31d9b6beb6f01288906b823d8bb"
     version: 1
@@ -597,3 +653,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/1` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:6ce45672f0a42f80738af2416150b21af6e71d8ca4258ab6fbf39920af2ce841`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-12T07:55:53.076Z`
