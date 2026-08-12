@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-12T02:25:34.184Z"
-  updated_by: "TESTER"
-  note: "Execution strategy contract and verification-race fix pass full and focused validation for implementation 9ad25f443."
+  updated_at: "2026-08-12T03:27:04.488Z"
+  updated_by: "CODER"
+  note: "Execution authority rework and compatibility paths verified."
   attempts: 0
 quality_review:
   state: "rework"
@@ -156,8 +156,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Execution strategy contract and verification-race fix pass full and focused validation for implementation 9ad25f443."
+  -
+    type: "verify"
+    at: "2026-08-12T03:27:04.488Z"
+    author: "CODER"
+    state: "ok"
+    note: "Execution authority rework and compatibility paths verified."
 doc_version: 3
-doc_updated_at: "2026-08-12T02:27:50.047Z"
+doc_updated_at: "2026-08-12T03:27:06.908Z"
 doc_updated_by: "CODER"
 description: "Use one canonical lifecycle while letting the agent semantically choose direct or branch_pr through a structured risk/effect declaration. AgentPlane must compile and enforce one deterministic execution contract, compare it with observed effects, escalate monotonically when required, and never use product-language keyword heuristics as lifecycle authority."
 sections:
@@ -362,6 +368,41 @@ sections:
     Result: pass
     Evidence: 2 test files passed; 19 tests passed; concurrent verification test passed after one exact task reread.
     Scope: fail-closed reconciliation and transient task README read race handling.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112232-3NC7Y4-make-execution-strategy-risk-adaptive-and-agent/.agentplane/tasks/202608112232-3NC7Y4/blueprint/resolved-snapshot.json
+    - old_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+    - current_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608112232-3NC7Y4
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-12T03:27:04.488Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Execution authority rework and compatibility paths verified.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:dca184be90fa3ce8f32f16e9f1a157c5f2a648692b107ebd2119d23831c66570, input_digest=sha256:6bd77954e91ea85e33aa123035826a0c63ccaf7454763c72718651b6365bcdd1
+
+    Details:
+
+    Command: bun run ci:local:fast
+    Result: pass
+    Evidence: 555 test files passed; 4058 tests passed, 1 skipped; all 12 critical CLI chunks passed
+    Scope: execution contract schemas, authority enforcement, observed effects, verification ordering, compatibility, full fast CI
 
     BlueprintSnapshotRef:
     - state: current
@@ -606,6 +647,41 @@ Command: bun x vitest run packages/agentplane/src/commands/shared/reconcile-chec
 Result: pass
 Evidence: 2 test files passed; 19 tests passed; concurrent verification test passed after one exact task reread.
 Scope: fail-closed reconciliation and transient task README read race handling.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112232-3NC7Y4-make-execution-strategy-risk-adaptive-and-agent/.agentplane/tasks/202608112232-3NC7Y4/blueprint/resolved-snapshot.json
+- old_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+- current_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608112232-3NC7Y4
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-12T03:27:04.488Z — VERIFY — ok
+
+By: CODER
+
+Note: Execution authority rework and compatibility paths verified.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:dca184be90fa3ce8f32f16e9f1a157c5f2a648692b107ebd2119d23831c66570, input_digest=sha256:6bd77954e91ea85e33aa123035826a0c63ccaf7454763c72718651b6365bcdd1
+
+Details:
+
+Command: bun run ci:local:fast
+Result: pass
+Evidence: 555 test files passed; 4058 tests passed, 1 skipped; all 12 critical CLI chunks passed
+Scope: execution contract schemas, authority enforcement, observed effects, verification ordering, compatibility, full fast CI
 
 BlueprintSnapshotRef:
 - state: current
