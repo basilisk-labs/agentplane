@@ -4,7 +4,7 @@ title: "Prevent worktree accumulation and clean obsolete task checkouts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -29,9 +29,9 @@ plan_approval:
   note: "Approved as the previously agreed worktree/branch lifecycle step before final verification optimization."
 verification:
   state: "ok"
-  updated_at: "2026-08-12T07:34:54.508Z"
+  updated_at: "2026-08-12T07:41:41.987Z"
   updated_by: "TESTER"
-  note: "Implementation e7e76d785 passed focused worktree/cleanup/supervisor/authority/projection/CLI E2E coverage plus typecheck, build, lint, lifecycle invariants, policy routing, diff check, worktree prune dry-run, and real-repository cleanup readback."
+  note: "Final implementation 2733cdf8a passed the full-fast local CI route plus focused lifecycle and realistic cleanup E2E coverage."
   attempts: 0
 execution_route:
   frozen: true
@@ -148,8 +148,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "33a325f05e8cedf0870d340c749cbe5e354e90f9"
-  message: "🚧 75ZFHW task: record external implementation evidence"
+  hash: "2733cdf8a41df54870f413421827d01117410693"
+  message: "🧹 75ZFHW cleanup: keep regression coverage below hotspot limit"
 comments:
   -
     author: "CODER"
@@ -160,6 +160,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 33a325f05e8c. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation finalized at 2733cdf8a41d after the full-fast gate caught and the task fixed an oversized test-file regression."
 events:
   -
     type: "status"
@@ -190,8 +193,22 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Implementation e7e76d785 passed focused worktree/cleanup/supervisor/authority/projection/CLI E2E coverage plus typecheck, build, lint, lifecycle invariants, policy routing, diff check, worktree prune dry-run, and real-repository cleanup readback."
+  -
+    type: "status"
+    at: "2026-08-12T07:41:39.097Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation finalized at 2733cdf8a41d after the full-fast gate caught and the task fixed an oversized test-file regression."
+    commit: "2733cdf8a41df54870f413421827d01117410693"
+  -
+    type: "verify"
+    at: "2026-08-12T07:41:41.987Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Final implementation 2733cdf8a passed the full-fast local CI route plus focused lifecycle and realistic cleanup E2E coverage."
 doc_version: 3
-doc_updated_at: "2026-08-12T07:34:55.810Z"
+doc_updated_at: "2026-08-12T07:41:43.546Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement lifecycle-owned worktree hygiene before the verification optimization task. Preserve parallel development by allowing one authoritative worktree for each active branch_pr task, while preventing duplicate worktrees for the same task. Automatically finalize clean task worktrees and local task branches after hosted-close or proven merge, and make queue/supervisor progression own this cleanup without requiring the coding agent to infer it. Prevent recovery/control checkouts from recursively registering or restoring nested historical task worktrees. Add deterministic inventory/readback that classifies active, merged, dirty, recovery, detached, remote-only, and ambiguous refs; delete only provider-proven merged or explicitly obsolete clean state, preserving dirty, open-PR, active, blocked, stashed, release archive, and uniquely unassimilated work. Apply the command to the current repository, reconcile local and remote branches, and record before/after counts and retained reasons. Cover parallel active tasks, duplicate same-task worktree rejection, hosted-close cleanup, recovery non-resurrection, dirty preservation, and idempotent cleanup with focused and realistic E2E tests."
 sections:
@@ -269,6 +286,51 @@ sections:
     - repeat_allowed: true
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
+
+    ### 2026-08-12T07:41:41.987Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Final implementation 2733cdf8a passed the full-fast local CI route plus focused lifecycle and realistic cleanup E2E coverage.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:841c3068db6bc34da584a40a2dbfcf74ec7ab97e68fda59f50cc690ce3691db3, input_digest=sha256:d4e4701b3a60b7dc79cc1258cb40a2e07ff3c2f23b2be03ff36f7a3a1d93c7b9
+
+    Details:
+
+    Command: AGENTPLANE_FAST_CHANGED_FILES=<origin/main..2733cdf8a paths> bun run ci:local:fast
+    Result: pass
+    Evidence: full-fast selector completed format, schemas, agent templates, policy routing, release parity, build, CLI cold-start, generated docs/inventories, onboarding, hotspot/baseline, Vitest routing, core lint, and remaining selected checks with exit code 0.
+    Scope: final branch diff at 2733cdf8a.
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/worktree-topology.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/branch/cleanup-merged.batch.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
+    Result: pass
+    Evidence: focused lifecycle, batch-isolation, and realistic CLI E2E suites exited 0; targeted lint and typecheck passed.
+    Scope: worktree ownership, recovery non-resurrection, hosted-close cleanup, batch retention, authority, projection, and topology diagnostics.
+
+    Command: real repository cleanup inventory
+    Result: pass
+    Evidence: 69 to 28 worktrees and 83 to 44 local branches; 36 provider-proven merged task registrations removed in the recorded batch; active, dirty, recovery, ambiguous, and unique state retained.
+    Scope: approved repository worktree hygiene.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608120643-75ZFHW-prevent-worktree-accumulation-and-clean-obsolete/.agentplane/tasks/202608120643-75ZFHW/blueprint/resolved-snapshot.json
+    - old_digest: 576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5
+    - current_digest: 576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608120643-75ZFHW
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
 
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -364,6 +426,51 @@ DecisionContextRef:
 - repeat_allowed: true
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
+
+### 2026-08-12T07:41:41.987Z — VERIFY — ok
+
+By: TESTER
+
+Note: Final implementation 2733cdf8a passed the full-fast local CI route plus focused lifecycle and realistic cleanup E2E coverage.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:841c3068db6bc34da584a40a2dbfcf74ec7ab97e68fda59f50cc690ce3691db3, input_digest=sha256:d4e4701b3a60b7dc79cc1258cb40a2e07ff3c2f23b2be03ff36f7a3a1d93c7b9
+
+Details:
+
+Command: AGENTPLANE_FAST_CHANGED_FILES=<origin/main..2733cdf8a paths> bun run ci:local:fast
+Result: pass
+Evidence: full-fast selector completed format, schemas, agent templates, policy routing, release parity, build, CLI cold-start, generated docs/inventories, onboarding, hotspot/baseline, Vitest routing, core lint, and remaining selected checks with exit code 0.
+Scope: final branch diff at 2733cdf8a.
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/worktree-topology.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/branch/cleanup-merged.batch.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
+Result: pass
+Evidence: focused lifecycle, batch-isolation, and realistic CLI E2E suites exited 0; targeted lint and typecheck passed.
+Scope: worktree ownership, recovery non-resurrection, hosted-close cleanup, batch retention, authority, projection, and topology diagnostics.
+
+Command: real repository cleanup inventory
+Result: pass
+Evidence: 69 to 28 worktrees and 83 to 44 local branches; 36 provider-proven merged task registrations removed in the recorded batch; active, dirty, recovery, ambiguous, and unique state retained.
+Scope: approved repository worktree hygiene.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608120643-75ZFHW-prevent-worktree-accumulation-and-clean-obsolete/.agentplane/tasks/202608120643-75ZFHW/blueprint/resolved-snapshot.json
+- old_digest: 576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5
+- current_digest: 576e053b67d4e020214f55a4b43bff4a26905e11552f05e46553404178f16fa5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608120643-75ZFHW
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
 
 <!-- END VERIFICATION RESULTS -->
 

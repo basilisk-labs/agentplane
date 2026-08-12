@@ -13,7 +13,7 @@ Created: 2026-08-12T06:44:59.797Z
 ## Verification
 
 - State: ok
-- Note: Implementation e7e76d785 passed focused worktree/cleanup/supervisor/authority/projection/CLI E2E coverage plus typecheck, build, lint, lifecycle invariants, policy routing, diff check, worktree prune dry-run, and real-repository cleanup readback.
+- Note: Final implementation 2733cdf8a passed the full-fast local CI route plus focused lifecycle and realistic cleanup E2E coverage.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,7 +30,7 @@ Created: 2026-08-12T06:44:59.797Z
 
 ```text
  .../src/cli/run-cli.core.pr-flow.test.ts           |  83 ++++++++++++
- .../branch/cleanup-merged.targeted.test.ts         |  61 ++++++++-
+ .../commands/branch/cleanup-merged.batch.test.ts   |  92 +++++++++++++
  .../src/commands/branch/cleanup-merged.ts          |  20 ++-
  .../agentplane/src/commands/branch/work-start.ts   |  13 ++
  packages/agentplane/src/commands/doctor.run.ts     |   2 +
@@ -43,7 +43,7 @@ Created: 2026-08-12T06:44:59.797Z
  .../src/commands/shared/worktree-topology.ts       | 146 +++++++++++++++++++++
  .../task/branch-task-supervisor-operations.test.ts |  38 ++++++
  .../task/branch-task-supervisor-operations.ts      |   4 +-
- 14 files changed, 544 insertions(+), 10 deletions(-)
+ 14 files changed, 576 insertions(+), 9 deletions(-)
 ```
 
 </details>

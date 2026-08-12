@@ -1,5 +1,5 @@
  .../src/cli/run-cli.core.pr-flow.test.ts           |  83 ++++++++++++
- .../branch/cleanup-merged.targeted.test.ts         |  61 ++++++++-
+ .../commands/branch/cleanup-merged.batch.test.ts   |  92 +++++++++++++
  .../src/commands/branch/cleanup-merged.ts          |  20 ++-
  .../agentplane/src/commands/branch/work-start.ts   |  13 ++
  packages/agentplane/src/commands/doctor.run.ts     |   2 +
@@ -12,4 +12,4 @@
  .../src/commands/shared/worktree-topology.ts       | 146 +++++++++++++++++++++
  .../task/branch-task-supervisor-operations.test.ts |  38 ++++++
  .../task/branch-task-supervisor-operations.ts      |   4 +-
- 14 files changed, 544 insertions(+), 10 deletions(-)
+ 14 files changed, 576 insertions(+), 9 deletions(-)

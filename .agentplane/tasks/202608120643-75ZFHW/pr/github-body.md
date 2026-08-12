@@ -19,9 +19,8 @@ Implement lifecycle-owned worktree hygiene before the verification optimization 
 - Note:
 
 ```text
-Implementation e7e76d785 passed focused worktree/cleanup/supervisor/authority/projection/CLI E2E
-coverage plus typecheck, build, lint, lifecycle invariants, policy routing, diff check, worktree
-prune dry-run, and real-repository cleanup readback.
+Final implementation 2733cdf8a passed the full-fast local CI route plus focused lifecycle and
+realistic cleanup E2E coverage.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -34,7 +33,7 @@ prune dry-run, and real-repository cleanup readback.
 
 ```text
  .../src/cli/run-cli.core.pr-flow.test.ts           |  83 ++++++++++++
- .../branch/cleanup-merged.targeted.test.ts         |  61 ++++++++-
+ .../commands/branch/cleanup-merged.batch.test.ts   |  92 +++++++++++++
  .../src/commands/branch/cleanup-merged.ts          |  20 ++-
  .../agentplane/src/commands/branch/work-start.ts   |  13 ++
  packages/agentplane/src/commands/doctor.run.ts     |   2 +
@@ -47,7 +46,7 @@ prune dry-run, and real-repository cleanup readback.
  .../src/commands/shared/worktree-topology.ts       | 146 +++++++++++++++++++++
  .../task/branch-task-supervisor-operations.test.ts |  38 ++++++
  .../task/branch-task-supervisor-operations.ts      |   4 +-
- 14 files changed, 544 insertions(+), 10 deletions(-)
+ 14 files changed, 576 insertions(+), 9 deletions(-)
 ```
 
 </details>
