@@ -4,7 +4,7 @@ title: "Make execution strategy risk-adaptive and agent-selected"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -29,6 +29,36 @@ verification:
   updated_by: "TESTER"
   note: "PASS: agent-selected risk-adaptive routing, deterministic safety enforcement, preserved-work escalation, and realistic user E2Es verified."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-08-12T01:40:28.981Z"
+  updated_by: "HUMAN"
+  note: "Execution strategy is now selected semantically by the agent and enforced through one deterministic, persisted contract; observed effects can only strengthen routing and evidence."
+  evaluated_sha: "13559201918e82ed10fd775bb6163be1822e8e37"
+  blueprint_digest: "9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6"
+  evidence_refs:
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-014028345-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-014028345-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/d969beb5f05bdeb74d3fa03e1d8c57a7155c49129cf14a7f482a073c499607b0.md"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-014028345-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-014028345-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/README.md"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/21a635867fd3b517bda07a72c49b1fb4e44c8f47510d93e83b9f4491e8843b5a.patch"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/128dc0a1fa4f47c282c2b3103b8007bdfda212d15106e2bfafe851fb7e745207.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812013932590-ba7082a84a1f310c.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/713d635b887c7c585dcaacdf90acc3b66adefd80a7316bf2f3f88328352bd276.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - "packages/agentplane/src/runtime/task-routing/resolve.ts"
+    - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+    - "packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+  findings:
+    - "Natural-language keyword routing was removed from authoritative blueprint and mutation inference; explicit structured intent and trusted project blueprints remain supported."
+    - "Direct-to-branch_pr escalation is monotonic, idempotent, preserves the implementation commit and changed paths, and returns one canonical next action."
+    - "External writes, credentials, publish, deploy, destructive Git, security boundaries, public API, schema, dependency, CI, and release effects retain deterministic isolation or approval floors."
 execution_route:
   frozen: true
   reason_codes:
