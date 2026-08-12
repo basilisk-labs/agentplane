@@ -1,0 +1,603 @@
+{
+  "schemaVersion": 1,
+  "artifactKind": "agentplane.blueprint.resolved_snapshot",
+  "resolverInput": {
+    "taskId": "202608112259-T3ZDDM",
+    "title": "Optimize the verification and test pipeline around one computed Verification Contract",
+    "description": "Implement a versioned Verification Contract computed once from the semantic task assessment introduced by 202608112232-3NC7Y4 and strengthened monotonically by deterministic observed effects. Make that contract the single authority for local, PR, release, evaluator, finish, and recovery verification. Add change-aware test selection so local development runs only affected unit/integration suites plus mandatory critical-path checks; run the full CLI regression on PR; run real E2E on PR and release according to risk and observed effects. Add a conservative fallback that selects full regression whenever central components, shared contracts, routing, lifecycle, verification policy, schemas, package/lockfiles, CI, or unknown/unmapped effects are touched. The LLM may propose semantic scope and explain results but must not remove, downgrade, or bypass mandatory checks selected by deterministic policy. Audit duplicate behavioral coverage and move assertions to the cheapest sufficient level, retaining higher-level tests only for observable cross-boundary contracts. Profile fixture creation and process startup; replace repeated mutable setup with reusable immutable fixtures and cheap isolated repository copies where hermeticity is preserved. Execute independent core, runtime, CLI, and docs/schema groups in parallel with deterministic aggregation, failure reporting, and cancellation semantics. Instrument and report verification amplification, wall-clock verification time, test duplication, and the number of AgentPlane lifecycle/control-plane commands. Define small direct work as localized, reversible, non-central, with no external effects; on pinned reference hardware target mandatory local verification at no more than 60 seconds p50 and 120 seconds p95, no more than three lifecycle/control-plane commands, and no local full CLI regression unless the deterministic fallback triggers. Establish a reproducible before/after benchmark, document metric definitions and residual risk, and prove that speedups do not weaken required evidence.",
+    "tags": [
+      "architecture",
+      "performance",
+      "test",
+      "verification",
+      "workflow"
+    ],
+    "owner": "CODER",
+    "taskKind": "code",
+    "workflowMode": "branch_pr",
+    "workflowGitCapabilities": {
+      "workflowMode": "branch_pr",
+      "implementationCommitLocation": "task_worktree",
+      "finishCommitSource": "explicit_hash",
+      "closeTailRequired": true,
+      "lifecycleCommentCommitLocation": "task_worktree",
+      "finishCommitFromComment": false
+    },
+    "mutation": "code",
+    "mutationScope": "code",
+    "touchedPaths": [],
+    "recipeHints": [],
+    "riskFlags": [],
+    "blueprintRequest": "performance.benchmark"
+  },
+  "selectedBlueprint": {
+    "id": "performance.benchmark",
+    "version": 1,
+    "title": "Performance benchmark",
+    "taskKinds": [
+      "code"
+    ],
+    "workflowModes": [
+      "branch_pr"
+    ]
+  },
+  "plan": {
+    "schemaVersion": 1,
+    "blueprintId": "performance.benchmark",
+    "blueprintVersion": 1,
+    "title": "Performance benchmark",
+    "taskId": "202608112259-T3ZDDM",
+    "workflowMode": "branch_pr",
+    "workflowGitCapabilities": {
+      "workflowMode": "branch_pr",
+      "implementationCommitLocation": "task_worktree",
+      "finishCommitSource": "explicit_hash",
+      "closeTailRequired": true,
+      "lifecycleCommentCommitLocation": "task_worktree",
+      "finishCommitFromComment": false
+    },
+    "taskIntent": {
+      "taskKind": "code",
+      "mutationScope": "code",
+      "blueprintRequest": "performance.benchmark"
+    },
+    "whySelected": [
+      "explicit blueprint requested: performance.benchmark",
+      "task intent kind: code",
+      "workflow mode: branch_pr",
+      "task intent mutation scope: code"
+    ],
+    "states": [
+      {
+        "id": "intake",
+        "kind": "intake",
+        "mode": "agentic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": []
+      },
+      {
+        "id": "scope",
+        "kind": "scope",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "assumptions"
+        ]
+      },
+      {
+        "id": "approval_gate",
+        "kind": "approval_gate",
+        "mode": "approval",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "approval"
+        ]
+      },
+      {
+        "id": "context_resolve",
+        "kind": "context_resolve",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [
+          ".agentplane/policy/security.must.md",
+          ".agentplane/policy/dod.core.md",
+          ".agentplane/policy/dod.code.md",
+          ".agentplane/policy/workflow.branch_pr.md"
+        ],
+        "evidenceKinds": [
+          "context_manifest"
+        ]
+      },
+      {
+        "id": "worktree_start",
+        "kind": "worktree_start",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [
+          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
+        ],
+        "policyModules": [],
+        "evidenceKinds": [
+          "changed_paths"
+        ]
+      },
+      {
+        "id": "work_unit",
+        "kind": "work_unit",
+        "mode": "agentic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "changed_paths",
+          "artifact"
+        ]
+      },
+      {
+        "id": "fast_local_checks",
+        "kind": "fast_local_checks",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [
+          "agentplane task verify-show <task-id>",
+          "project focused checks"
+        ],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result"
+        ]
+      },
+      {
+        "id": "pr_artifact",
+        "kind": "pr_artifact",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [
+          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
+        ],
+        "policyModules": [],
+        "evidenceKinds": [
+          "artifact",
+          "external_link"
+        ]
+      },
+      {
+        "id": "verify_record",
+        "kind": "verify_record",
+        "mode": "record",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result",
+          "final_output"
+        ]
+      },
+      {
+        "id": "quality_gate",
+        "kind": "quality_gate",
+        "mode": "agentic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [
+          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
+        ],
+        "policyModules": [],
+        "evidenceKinds": [
+          "quality_report"
+        ]
+      },
+      {
+        "id": "hosted_checks",
+        "kind": "hosted_checks",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result",
+          "external_link"
+        ]
+      },
+      {
+        "id": "publish_or_integrate",
+        "kind": "publish_or_integrate",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [
+          "agentplane integrate <task-id> --branch <branch> --run-verify"
+        ],
+        "policyModules": [],
+        "evidenceKinds": [
+          "commit",
+          "external_link"
+        ]
+      },
+      {
+        "id": "finish",
+        "kind": "finish",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "commit"
+        ]
+      }
+    ],
+    "requiredEvidence": [
+      {
+        "id": "benchmark.baseline",
+        "kind": "artifact",
+        "producedBy": "work_unit",
+        "required": true,
+        "description": "Baseline measurement artifact."
+      },
+      {
+        "id": "benchmark.method",
+        "kind": "assumptions",
+        "producedBy": "scope",
+        "required": true,
+        "description": "Benchmark method, environment, and warm/cold mode."
+      },
+      {
+        "id": "benchmark.runs",
+        "kind": "check_result",
+        "producedBy": "fast_local_checks",
+        "required": true,
+        "description": "Run count and raw measurement results."
+      },
+      {
+        "id": "benchmark.threshold",
+        "kind": "assumptions",
+        "producedBy": "scope",
+        "required": true,
+        "description": "Accepted threshold or noise tolerance."
+      },
+      {
+        "id": "benchmark.comparison",
+        "kind": "check_result",
+        "producedBy": "hosted_checks",
+        "required": true,
+        "description": "Before/after comparison result."
+      },
+      {
+        "id": "benchmark.verdict",
+        "kind": "final_output",
+        "producedBy": "verify_record",
+        "required": true,
+        "description": "Faster, slower, unchanged, or noisy verdict."
+      },
+      {
+        "id": "benchmark.quality",
+        "kind": "quality_report",
+        "producedBy": "quality_gate",
+        "required": true,
+        "description": "EVALUATOR quality verdict."
+      },
+      {
+        "id": "benchmark.commit",
+        "kind": "commit",
+        "producedBy": "publish_or_integrate",
+        "required": true,
+        "description": "Integration commit."
+      }
+    ],
+    "policyModules": [
+      ".agentplane/policy/dod.code.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/workflow.branch_pr.md"
+    ],
+    "allowedCommands": [
+      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
+      "agentplane integrate <task-id> --branch <branch> --run-verify",
+      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
+      "agentplane task verify-show <task-id>",
+      "agentplane verify <task-id> --ok|--rework",
+      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
+      "benchmark baseline command",
+      "benchmark comparison command",
+      "project focused checks"
+    ],
+    "contextBudget": {
+      "maxPolicyModules": 4,
+      "maxPromptBlocks": 16,
+      "rationale": "Benchmark work needs normal branch_pr code policy plus room for baseline and comparison artifacts."
+    },
+    "contextManifest": [],
+    "acceptedRecipeExtensions": [],
+    "rejectedRecipeExtensions": [],
+    "stopReasons": []
+  },
+  "nodes": [
+    {
+      "id": "intake",
+      "kind": "intake",
+      "mode": "agentic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": []
+    },
+    {
+      "id": "scope",
+      "kind": "scope",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "assumptions"
+      ]
+    },
+    {
+      "id": "approval_gate",
+      "kind": "approval_gate",
+      "mode": "approval",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "approval"
+      ]
+    },
+    {
+      "id": "context_resolve",
+      "kind": "context_resolve",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [
+        ".agentplane/policy/security.must.md",
+        ".agentplane/policy/dod.core.md",
+        ".agentplane/policy/dod.code.md",
+        ".agentplane/policy/workflow.branch_pr.md"
+      ],
+      "evidenceKinds": [
+        "context_manifest"
+      ]
+    },
+    {
+      "id": "worktree_start",
+      "kind": "worktree_start",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [
+        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
+      ],
+      "policyModules": [],
+      "evidenceKinds": [
+        "changed_paths"
+      ]
+    },
+    {
+      "id": "work_unit",
+      "kind": "work_unit",
+      "mode": "agentic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "changed_paths",
+        "artifact"
+      ]
+    },
+    {
+      "id": "fast_local_checks",
+      "kind": "fast_local_checks",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [
+        "agentplane task verify-show <task-id>",
+        "project focused checks"
+      ],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result"
+      ]
+    },
+    {
+      "id": "pr_artifact",
+      "kind": "pr_artifact",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [
+        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
+      ],
+      "policyModules": [],
+      "evidenceKinds": [
+        "artifact",
+        "external_link"
+      ]
+    },
+    {
+      "id": "verify_record",
+      "kind": "verify_record",
+      "mode": "record",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result",
+        "final_output"
+      ]
+    },
+    {
+      "id": "quality_gate",
+      "kind": "quality_gate",
+      "mode": "agentic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [
+        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
+      ],
+      "policyModules": [],
+      "evidenceKinds": [
+        "quality_report"
+      ]
+    },
+    {
+      "id": "hosted_checks",
+      "kind": "hosted_checks",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result",
+        "external_link"
+      ]
+    },
+    {
+      "id": "publish_or_integrate",
+      "kind": "publish_or_integrate",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [
+        "agentplane integrate <task-id> --branch <branch> --run-verify"
+      ],
+      "policyModules": [],
+      "evidenceKinds": [
+        "commit",
+        "external_link"
+      ]
+    },
+    {
+      "id": "finish",
+      "kind": "finish",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "commit"
+      ]
+    }
+  ],
+  "requiredEvidence": [
+    {
+      "id": "benchmark.baseline",
+      "kind": "artifact",
+      "producedBy": "work_unit",
+      "required": true,
+      "description": "Baseline measurement artifact."
+    },
+    {
+      "id": "benchmark.method",
+      "kind": "assumptions",
+      "producedBy": "scope",
+      "required": true,
+      "description": "Benchmark method, environment, and warm/cold mode."
+    },
+    {
+      "id": "benchmark.runs",
+      "kind": "check_result",
+      "producedBy": "fast_local_checks",
+      "required": true,
+      "description": "Run count and raw measurement results."
+    },
+    {
+      "id": "benchmark.threshold",
+      "kind": "assumptions",
+      "producedBy": "scope",
+      "required": true,
+      "description": "Accepted threshold or noise tolerance."
+    },
+    {
+      "id": "benchmark.comparison",
+      "kind": "check_result",
+      "producedBy": "hosted_checks",
+      "required": true,
+      "description": "Before/after comparison result."
+    },
+    {
+      "id": "benchmark.verdict",
+      "kind": "final_output",
+      "producedBy": "verify_record",
+      "required": true,
+      "description": "Faster, slower, unchanged, or noisy verdict."
+    },
+    {
+      "id": "benchmark.quality",
+      "kind": "quality_report",
+      "producedBy": "quality_gate",
+      "required": true,
+      "description": "EVALUATOR quality verdict."
+    },
+    {
+      "id": "benchmark.commit",
+      "kind": "commit",
+      "producedBy": "publish_or_integrate",
+      "required": true,
+      "description": "Integration commit."
+    }
+  ],
+  "policyModules": [
+    ".agentplane/policy/dod.code.md",
+    ".agentplane/policy/dod.core.md",
+    ".agentplane/policy/security.must.md",
+    ".agentplane/policy/workflow.branch_pr.md"
+  ],
+  "allowedCommands": [
+    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
+    "agentplane integrate <task-id> --branch <branch> --run-verify",
+    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
+    "agentplane task verify-show <task-id>",
+    "agentplane verify <task-id> --ok|--rework",
+    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
+    "benchmark baseline command",
+    "benchmark comparison command",
+    "project focused checks"
+  ],
+  "contextBudget": {
+    "maxPolicyModules": 4,
+    "maxPromptBlocks": 16,
+    "rationale": "Benchmark work needs normal branch_pr code policy plus room for baseline and comparison artifacts."
+  },
+  "contextManifest": [],
+  "acceptedRecipeExtensions": [],
+  "rejectedRecipeExtensions": [],
+  "stopReasons": [],
+  "selectionReasons": [
+    "explicit blueprint requested: performance.benchmark",
+    "task intent kind: code",
+    "workflow mode: branch_pr",
+    "task intent mutation scope: code"
+  ],
+  "digest": {
+    "algorithm": "sha256",
+    "value": "ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb"
+  }
+}

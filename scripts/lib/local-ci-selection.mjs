@@ -1,4 +1,6 @@
 import { LOCAL_CI_TARGET_TEST_FILES } from "./test-route-registry.mjs";
+import { computeVerificationContract } from "./verification-contract.mjs";
+import { existsSync } from "node:fs";
 
 const {
   backend: BACKEND_TEST_FILES,
@@ -398,6 +400,39 @@ function collectCombinedTargetedPlan(files, effectiveFiles) {
   };
 }
 
+function collectColocatedTargetedPlan(files, effectiveFiles) {
+  if (
+    effectiveFiles.length === 0 ||
+    effectiveFiles.some(
+      (filePath) =>
+        !/^packages\/[^/]+\/src\/.+\.[cm]?[jt]sx?$/u.test(filePath) ||
+        BROAD_FALLBACK_PATTERNS.some((pattern) => pattern.test(filePath)),
+    )
+  ) {
+    return null;
+  }
+  const testFiles = uniqueSorted(
+    effectiveFiles.flatMap((filePath) => {
+      if (/\.(?:test|spec)\.[cm]?[jt]sx?$/u.test(filePath)) return [filePath];
+      const candidates = [
+        filePath.replace(/\.[cm]?[jt]sx?$/u, ".test.ts"),
+        filePath.replace(/\.[cm]?[jt]sx?$/u, ".spec.ts"),
+      ];
+      return candidates.filter((candidate) => existsSync(candidate));
+    }),
+  );
+  if (testFiles.length === 0) return null;
+  return {
+    kind: "targeted",
+    bucket: "colocated",
+    reason: "noncentral_colocated_tests",
+    files,
+    lintTargets: effectiveFiles,
+    testFiles,
+    vitestPool: "threads",
+  };
+}
+
 export function selectFastCiPlan(changedFiles) {
   const files = [...new Set(changedFiles.map((value) => value.trim()).filter(Boolean))];
   if (files.length === 0) {
@@ -652,6 +687,9 @@ export function selectFastCiPlan(changedFiles) {
   const combinedPlan = collectCombinedTargetedPlan(files, effectiveFiles);
   if (combinedPlan) return combinedPlan;
 
+  const colocatedPlan = collectColocatedTargetedPlan(files, effectiveFiles);
+  if (colocatedPlan) return colocatedPlan;
+
   if (anyPathMatches(effectiveFiles, BROAD_FALLBACK_PATTERNS)) {
     return { kind: "full-fast", reason: "broad_or_infra_sensitive_change", files };
   }
@@ -695,11 +733,8 @@ function baselineStepReports({ includeBuild, runCliDocsCheck }) {
     commandStep("Release parity (check)", "bun run release:parity"),
     ...(includeBuild
       ? [
+          commandStep("Build", "bun run build"),
           commandStep("CLI cold-start baseline (check)", "bun run bench:cli:cold:check"),
-          commandStep(
-            "Build",
-            "bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && bun run build",
-          ),
         ]
       : []),
     commandStep("CLI docs freshness (check)", "bun run docs:cli:check", {
@@ -714,8 +749,8 @@ function baselineStepReports({ includeBuild, runCliDocsCheck }) {
   ];
 }
 
-function targetedStepReports(plan) {
-  const steps = [];
+function targetedStepReports(plan, { includeBuild, includeCriticalPaths, includeFormat }) {
+  const steps = includeBuild ? [commandStep("Build", "bun run build")] : [];
   const includesWorkflow = plan.bucket === "workflow" || plan.buckets?.includes("workflow");
   const lintTargets = includesWorkflow
     ? plan.lintTargets.filter(
@@ -724,6 +759,14 @@ function targetedStepReports(plan) {
     : plan.lintTargets;
 
   if (lintTargets.length > 0) {
+    if (includeFormat) {
+      steps.push(
+        commandStep(
+          `Format (targeted:${plan.bucket})`,
+          `bunx prettier ${lintTargets.join(" ")} --check`,
+        ),
+      );
+    }
     steps.push(
       commandStep(`Lint (targeted:${plan.bucket})`, `bunx eslint ${lintTargets.join(" ")}`),
     );
@@ -738,6 +781,9 @@ function targetedStepReports(plan) {
         `bunx vitest run ${plan.testFiles.join(" ")} --pool=${plan.vitestPool}`,
       ),
     );
+  }
+  if (includeCriticalPaths) {
+    steps.push(commandStep("Critical paths", "bun run test:precommit"));
   }
   return steps;
 }
@@ -779,7 +825,15 @@ function fullOnlyStepReports() {
   ];
 }
 
-export function buildLocalCiExecutionPlan({ mode, changedFiles }) {
+export function buildLocalCiExecutionPlan({
+  mode,
+  changedFiles,
+  phase = "local",
+  declaredRepositoryEffects = [],
+  declaredExternalEffects = [],
+  observedRepositoryEffects = [],
+  observedExternalEffects = [],
+}) {
   const plan = selectFastCiPlan(changedFiles);
   const runCliDocsCheck = shouldRunCliDocsCheck(changedFiles);
   let route = "full-fast";
@@ -790,7 +844,14 @@ export function buildLocalCiExecutionPlan({ mode, changedFiles }) {
     steps = [commandStep("Format (check)", "bun run format:check")];
   } else if (mode === "smoke" && plan.kind === "targeted") {
     route = "targeted-smoke";
-    steps = [commandStep("Format (check)", "bun run format:check"), ...targetedStepReports(plan)];
+    steps = [
+      commandStep("Format (check)", "bun run format:check"),
+      ...targetedStepReports(plan, {
+        includeBuild: false,
+        includeCriticalPaths: false,
+        includeFormat: false,
+      }),
+    ];
   } else if (mode === "smoke") {
     route = "fallback-smoke";
     steps = smokeFallbackStepReports();
@@ -799,10 +860,11 @@ export function buildLocalCiExecutionPlan({ mode, changedFiles }) {
     steps = baselineStepReports({ includeBuild: false, runCliDocsCheck });
   } else if (mode === "fast" && plan.kind === "targeted") {
     route = "targeted-fast";
-    steps = [
-      ...baselineStepReports({ includeBuild: true, runCliDocsCheck }),
-      ...targetedStepReports(plan),
-    ];
+    steps = targetedStepReports(plan, {
+      includeBuild: true,
+      includeCriticalPaths: true,
+      includeFormat: true,
+    });
   } else {
     route = mode === "full" ? "full" : "full-fast";
     steps = fastStepReports({ runCliDocsCheck });
@@ -812,6 +874,17 @@ export function buildLocalCiExecutionPlan({ mode, changedFiles }) {
     steps = [...steps, ...fullOnlyStepReports()];
   }
 
+  const verificationContract = computeVerificationContract({
+    phase,
+    changedFiles,
+    declaredRepositoryEffects,
+    declaredExternalEffects,
+    observedRepositoryEffects,
+    observedExternalEffects,
+    selectorKind: plan.kind,
+    selectorReason: plan.reason,
+    selectedTestFiles: plan.kind === "targeted" ? plan.testFiles : [],
+  });
   return {
     schema_version: 1,
     mode,
@@ -822,6 +895,7 @@ export function buildLocalCiExecutionPlan({ mode, changedFiles }) {
     run_cli_docs_check: runCliDocsCheck,
     steps,
     skipped_steps: steps.filter((step) => step.skipped),
+    verification_contract: verificationContract,
   };
 }
 

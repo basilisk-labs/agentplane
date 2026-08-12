@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- TypeScript does not associate sibling declaration files with repository-root .mjs test helpers. */
 import { execFile, execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
@@ -6,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 import { mkGitRepoRoot, pathExists } from "@agentplane/testkit";
+import { writeLocalVerificationReceipt } from "../../../../scripts/lib/local-verification-receipt.mjs";
 
 const PRE_PUSH_HOOK_SCRIPT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -13,6 +15,65 @@ const PRE_PUSH_HOOK_SCRIPT = path.resolve(
 );
 
 describe("pre-push full-fast guard", () => {
+  it("reuses exact local verification for the same clean outgoing commit", async () => {
+    const root = await mkGitRepoRoot();
+    await mkdir(path.join(root, ".agentplane", "tasks", "202601010101-ABCDEF"), {
+      recursive: true,
+    });
+    await mkdir(path.join(root, "scripts"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "tasks", "202601010101-ABCDEF", "README.md"),
+      "# Task\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "package.json"),
+      JSON.stringify({
+        name: "hook-test",
+        private: true,
+        scripts: {
+          "format:check": "node scripts/fail-if-run.mjs",
+          "ci:local:fast": "node scripts/fail-if-run.mjs",
+        },
+      }),
+      "utf8",
+    );
+    await writeFile(path.join(root, "scripts", "fail-if-run.mjs"), "process.exit(9);\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed hook scripts"], { cwd: root });
+    const remoteSha = readFileSync(path.join(root, ".git", "refs", "heads", "main"), "utf8").trim();
+
+    const changedFiles = ["package.json"];
+    const pkg = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
+    pkg.description = "verified change";
+    await writeFile(path.join(root, "package.json"), `${JSON.stringify(pkg)}\n`, "utf8");
+    await execFileAsync("git", ["add", "package.json"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "✨ ABCDEF hooks: verified metadata"], {
+      cwd: root,
+    });
+    const localSha = readFileSync(path.join(root, ".git", "refs", "heads", "main"), "utf8").trim();
+    expect(
+      writeLocalVerificationReceipt({
+        cwd: root,
+        mode: "fast",
+        changedFiles,
+        route: "full-fast",
+        contractDigest: `sha256:${"a".repeat(64)}`,
+      }),
+    ).not.toBeNull();
+
+    const output = execFileSync("node", [PRE_PUSH_HOOK_SCRIPT], {
+      cwd: root,
+      input: `refs/heads/main ${localSha} refs/heads/main ${remoteSha}\n`,
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
+    });
+    expect(output).toContain(
+      "Skipping duplicate pre-push checks: exact local verification receipt",
+    );
+  });
+
   it("blocks unknown multi-branch push scopes before running local checks", async () => {
     const root = await mkGitRepoRoot();
     await mkdir(path.join(root, "scripts"), { recursive: true });

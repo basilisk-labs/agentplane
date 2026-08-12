@@ -70,7 +70,7 @@ async function importPublicExports(packageRoot, manifest) {
   return imported;
 }
 
-function exercisePublicApi(name, rootModule) {
+function exercisePublicApi(name, rootModule, publicExports) {
   if (name === "@agentplaneorg/core") {
     assert.equal(typeof rootModule.defaultConfig, "function");
     assert.equal(typeof rootModule.renderExecutionReceiptSchemaJson, "function");
@@ -85,6 +85,15 @@ function exercisePublicApi(name, rootModule) {
       "https://agentplane.org/schemas/execution-receipt.schema.json",
     );
     assert.equal(executionReceiptSchema.oneOf?.length, 2);
+    const verificationKernel = publicExports.get("./tasks/verification-contract-kernel");
+    assert.equal(typeof verificationKernel?.computeVerificationContractKernel, "function");
+    assert.equal(
+      verificationKernel.computeVerificationContractKernel({
+        phase: "pr",
+        changedFiles: ["packages/example/src/example.test.ts"],
+      }).requires_full_regression,
+      true,
+    );
     return;
   }
 
@@ -150,7 +159,7 @@ const main = defineCheck({
       assert.equal(installedManifest.engines?.node, engine);
 
       const publicExports = await importPublicExports(packageRoot, installedManifest);
-      exercisePublicApi(installedManifest.name, publicExports.get("."));
+      exercisePublicApi(installedManifest.name, publicExports.get("."), publicExports);
       stdout.write(
         `package Node runtime smoke OK (${installedManifest.name}@${installedManifest.version}; ` +
           `node=${process.versions.node}; exports=${publicExports.size})\n`,

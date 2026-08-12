@@ -6,6 +6,7 @@ export const GITHUB_CI_GATE_JOBS = [
   "verify-contract",
   "verify-static",
   "verify-tests",
+  "verify-real-e2e",
   "verify-package-node-runtime",
   "verify-docs",
   "verify-security",
@@ -162,6 +163,7 @@ function expectedGateJobs({ capabilities, exactShaRecovery, releaseReady, route 
     jobs.push("verify-security");
   }
   if (capabilities.windows) jobs.push("test-windows");
+  if (capabilities.real_e2e) jobs.push("verify-real-e2e");
   if (releaseReady) jobs.push("release-ready");
   return jobs;
 }
@@ -172,6 +174,9 @@ export function buildGithubCiCapabilityPlan({
   headRef = "",
   ref = "",
   exactShaRecovery = false,
+  lifecycleOnlyHead = false,
+  reuseSha = "",
+  semanticEffects = {},
 }) {
   const files = asUniqueSorted(changedFiles);
   const effectiveFiles = files.filter(
@@ -185,39 +190,66 @@ export function buildGithubCiCapabilityPlan({
   const releaseMainPush =
     eventName === "push" && ref === "refs/heads/main" && isReleasePackageSet(effectiveFiles);
   const releaseReady = exactShaRecovery || releaseRef || releaseMainPush;
-  const localPlan = buildLocalCiExecutionPlan({ mode: "fast", changedFiles: files });
+  const localPlan = buildLocalCiExecutionPlan({
+    mode: "fast",
+    changedFiles: files,
+    phase: exactShaRecovery || releaseRef || releaseMainPush ? "release" : "pr",
+    declaredRepositoryEffects: semanticEffects.declaredRepositoryEffects ?? [],
+    declaredExternalEffects: semanticEffects.declaredExternalEffects ?? [],
+    observedRepositoryEffects: semanticEffects.observedRepositoryEffects ?? [],
+    observedExternalEffects: semanticEffects.observedExternalEffects ?? [],
+  });
   const forceFull =
     exactShaRecovery ||
     releaseRef ||
     releaseMainPush ||
     routingSensitive ||
     unknown ||
-    missingScope;
-  const route = exactShaRecovery ? "recovery" : forceFull ? "full-fast" : localPlan.route;
+    missingScope ||
+    eventName === "pull_request";
+  const route = lifecycleOnlyHead
+    ? "reuse-verified-parent"
+    : exactShaRecovery
+      ? "recovery"
+      : forceFull
+        ? "full-fast"
+        : localPlan.route;
   const failClosedFull = releaseRef || routingSensitive || unknown || missingScope;
-  const core = onlyTaskArtifacts ? false : failClosedFull || isCoreRelevant(files);
+  const core =
+    lifecycleOnlyHead ||
+    (eventName === "pull_request" ? !onlyTaskArtifacts : failClosedFull || isCoreRelevant(files));
 
   const capabilities = {
     core,
-    docs: failClosedFull || anyMatch(effectiveFiles, DOCS_PATTERNS),
+    docs: !lifecycleOnlyHead && (failClosedFull || anyMatch(effectiveFiles, DOCS_PATTERNS)),
     dependency_review:
+      !lifecycleOnlyHead &&
       eventName === "pull_request" &&
       (failClosedFull || anyMatch(effectiveFiles, DEPENDENCY_PATTERNS)),
-    workflow_lint: failClosedFull || anyMatch(effectiveFiles, WORKFLOW_PATTERNS),
-    windows: !onlyTaskArtifacts && (failClosedFull || anyMatch(effectiveFiles, WINDOWS_PATTERNS)),
-    coverage: !onlyTaskArtifacts && (failClosedFull || route === "full-fast"),
-    cli_critical: !onlyTaskArtifacts && (failClosedFull || route === "full-fast"),
+    workflow_lint:
+      !lifecycleOnlyHead && (failClosedFull || anyMatch(effectiveFiles, WORKFLOW_PATTERNS)),
+    windows:
+      !lifecycleOnlyHead &&
+      !onlyTaskArtifacts &&
+      (failClosedFull || anyMatch(effectiveFiles, WINDOWS_PATTERNS)),
+    coverage: !lifecycleOnlyHead && !onlyTaskArtifacts && (failClosedFull || route === "full-fast"),
+    cli_critical:
+      !lifecycleOnlyHead && !onlyTaskArtifacts && (failClosedFull || route === "full-fast"),
+    real_e2e: !lifecycleOnlyHead && localPlan.verification_contract.requires_real_e2e,
     package_runtime_core:
+      !lifecycleOnlyHead &&
       !onlyTaskArtifacts &&
       (failClosedFull ||
         anyMatch(effectiveFiles, CORE_RUNTIME_PATTERNS) ||
         anyMatch(effectiveFiles, SHARED_RUNTIME_PATTERNS)),
     package_runtime_recipes:
+      !lifecycleOnlyHead &&
       !onlyTaskArtifacts &&
       (failClosedFull ||
         anyMatch(effectiveFiles, RECIPES_RUNTIME_PATTERNS) ||
         anyMatch(effectiveFiles, SHARED_RUNTIME_PATTERNS)),
     codeql_javascript:
+      !lifecycleOnlyHead &&
       !onlyTaskArtifacts &&
       (failClosedFull ||
         effectiveFiles.some(
@@ -226,7 +258,9 @@ export function buildGithubCiCapabilityPlan({
             /\.(?:[cm]?js|tsx?)$/u.test(filePath),
         )),
     codeql_actions:
-      !onlyTaskArtifacts && (failClosedFull || anyMatch(effectiveFiles, CODEQL_ACTION_PATTERNS)),
+      !lifecycleOnlyHead &&
+      !onlyTaskArtifacts &&
+      (failClosedFull || anyMatch(effectiveFiles, CODEQL_ACTION_PATTERNS)),
   };
 
   if (exactShaRecovery) {
@@ -249,21 +283,27 @@ export function buildGithubCiCapabilityPlan({
     route,
     route_reason: exactShaRecovery
       ? "exact_sha_recovery"
-      : releaseRef
-        ? "release_ref_full"
-        : routingSensitive
-          ? "routing_change_full"
-          : unknown
-            ? "unknown_path_full"
-            : missingScope
-              ? "missing_change_scope_full"
-              : localPlan.selector.reason,
+      : lifecycleOnlyHead
+        ? "lifecycle_only_head_reuses_verified_parent"
+        : releaseRef
+          ? "release_ref_full"
+          : routingSensitive
+            ? "routing_change_full"
+            : unknown
+              ? "unknown_path_full"
+              : missingScope
+                ? "missing_change_scope_full"
+                : eventName === "pull_request"
+                  ? "pr_full_regression_floor"
+                  : localPlan.selector.reason,
     selector_kind: localPlan.selector.kind,
     bucket: localPlan.selector.bucket ?? "",
     buckets: localPlan.selector.buckets ?? [],
     changed_files: files,
     changed_files_count: files.length,
     exact_sha_recovery: exactShaRecovery,
+    lifecycle_only_head: lifecycleOnlyHead,
+    reuse_sha: lifecycleOnlyHead ? reuseSha : "",
     release_ready: releaseReady,
     unknown_paths: unknown,
     capabilities,
@@ -271,6 +311,7 @@ export function buildGithubCiCapabilityPlan({
     expected_jobs: expectedJobs,
     executing_jobs_count: expectedJobs.length + 1,
     local_execution_plan: localPlan,
+    verification_contract: localPlan.verification_contract,
   };
 }
 

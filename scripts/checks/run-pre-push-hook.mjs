@@ -13,6 +13,7 @@ import {
   selectBranchDiffRange,
 } from "../lib/pre-push-scope.mjs";
 import { selectFastCiPlan } from "../lib/local-ci-selection.mjs";
+import { readReusableLocalVerificationReceipt } from "../lib/local-verification-receipt.mjs";
 
 function pushUnique(entries, value) {
   const candidate = String(value ?? "").trim();
@@ -530,10 +531,24 @@ function main() {
     newBranchFallbackRef: resolveDefaultBaseRef(),
   });
   enforceTaskBoundOutgoingCommits(diffRange);
+  const key = proofKey({ updates, mode, ciScript, changedFiles });
+  if (!isReleasePush && !trackedChangesShort()) {
+    const localReceipt = readReusableLocalVerificationReceipt({
+      mode: envFull ? "full" : "fast",
+      changedFiles,
+      headShas: updates.map((update) => update.localSha),
+    });
+    if (localReceipt) {
+      process.stdout.write(
+        `Skipping duplicate pre-push checks: exact local verification receipt exists for ${localReceipt.head_sha.slice(0, 12)} (${localReceipt.created_at}).\n`,
+      );
+      writeReusableProof(key);
+      return;
+    }
+  }
   if (!isReleasePush) {
     failIfStandardPrePushRequiresFullFast({ updates, changedFiles, diffRange });
   }
-  const key = proofKey({ updates, mode, ciScript, changedFiles });
   if (!trackedChangesShort()) {
     const proof = readReusableProof(key);
     if (proof) {

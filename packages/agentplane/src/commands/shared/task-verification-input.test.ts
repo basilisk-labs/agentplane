@@ -168,6 +168,35 @@ describe("task verification input identity", () => {
     );
   });
 
+  it("binds the receipt to the deterministic verification contract digest", async () => {
+    const { root, implementationSha } = await makeTaskBranch();
+    const base = {
+      gitRoot: root,
+      workflowDir: ".agentplane/tasks",
+      taskIds: [TASK_ID],
+      targetSha: implementationSha,
+      verifySteps: "Run tests.",
+      workflowMode: "branch_pr" as const,
+      environment: ENVIRONMENT,
+      baseRef: "main",
+    };
+    const before = await resolveVerificationInputIdentity({
+      ...base,
+      verificationContractDigest: `sha256:${"a".repeat(64)}`,
+    });
+    const after = await resolveVerificationInputIdentity({
+      ...base,
+      verificationContractDigest: `sha256:${"b".repeat(64)}`,
+    });
+    if (!before || !after) throw new Error("expected contract-bound verification inputs");
+
+    expect(before.schema_version).toBe(3);
+    expect(before.digest).not.toBe(after.digest);
+    expect(verificationInputInvalidationReason({ recorded: before, current: after })).toBe(
+      "verification_contract_changed",
+    );
+  });
+
   it("invalidates the receipt when implementation-significant whitespace changes", async () => {
     const { root } = await makeTaskBranch();
     const indentedSha = await commitPath(

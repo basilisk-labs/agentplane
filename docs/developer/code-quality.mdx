@@ -19,6 +19,8 @@ This is the default first gate for Agentplane framework development. It is inten
 than hosted CI: it selects the cheapest useful checks for the current diff and catches formatting,
 lint, workflow, docs, and focused test failures before a remote run is needed.
 
+The selector and every hosted phase use the same [verification contract](verification-contract).
+
 Escalate only when the cheaper tier is clean or when the touched scope requires a broader gate:
 
 | Tier | When to use it                                                    | Commands                                                                             |

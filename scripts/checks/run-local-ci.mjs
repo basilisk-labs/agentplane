@@ -8,6 +8,8 @@ import {
   shouldRunCliDocsCheck,
 } from "../lib/local-ci-selection.mjs";
 import { withFrameworkBuildLock } from "../lib/framework-build-lock.mjs";
+import { runVerificationGroups } from "../lib/verification-scheduler.mjs";
+import { writeLocalVerificationReceipt } from "../lib/local-verification-receipt.mjs";
 
 function sanitizeGitProcessEnv(env) {
   const nextEnv = { ...env };
@@ -203,8 +205,6 @@ function createBaselineStepEntries({ includeBuild, includeRecipesInventory = tru
             "Build",
             () => {
               withFrameworkBuildLock(process.cwd(), "local-ci-build", () => {
-                runCommand("bun", ["run", "--filter=@agentplaneorg/core", "build"]);
-                runCommand("bun", ["run", "--filter=agentplane", "build"]);
                 runCommand("bun", ["run", "build"]);
               });
             },
@@ -324,9 +324,92 @@ function runDocsOnlySmokePath() {
   runStep("Format (check)", () => runCommand("bun", ["run", "format:check"]));
 }
 
-function runTargetedFastPath(plan) {
-  runStepEntries(createBaselineStepEntries({ includeBuild: true }));
-  runTargetedPlanSteps(plan);
+async function runTargetedFastPath(plan) {
+  const startedAt = performance.now();
+  const includesWorkflow = plan.bucket === "workflow" || plan.buckets?.includes("workflow");
+  const lintTargets = existingLintTargets(
+    plan.lintTargets.filter(
+      (target) => !target.startsWith(".github/workflows/") && !target.endsWith(".yml"),
+    ),
+  );
+  const buildResult = await runVerificationGroups(
+    [{ id: "build", command: "bun", args: ["run", "build"] }],
+    { concurrency: 1, cwd: process.cwd(), env: baseEnv },
+  );
+  for (const group of buildResult.results) {
+    process.stdout.write(`\n== ${group.id} (${group.duration_ms}ms) ==\n`);
+    if (group.stdout) process.stdout.write(group.stdout);
+    if (group.stderr) process.stderr.write(group.stderr);
+  }
+  if (!buildResult.ok) throw new Error("Targeted verification build prerequisite failed.");
+  const groups = [
+    ...(lintTargets.length > 0
+      ? [
+          {
+            id: "format",
+            command: "bunx",
+            args: ["prettier", ...lintTargets, "--check"],
+          },
+          {
+            id: "lint",
+            command: "bunx",
+            args: ["eslint", ...lintTargets],
+          },
+        ]
+      : []),
+    ...(includesWorkflow
+      ? [{ id: "workflow", command: "bun", args: ["run", "workflows:lint"] }]
+      : []),
+    ...(plan.testFiles.length > 0
+      ? [
+          {
+            id: "tests",
+            command: "bunx",
+            args: buildVitestRunArgs({
+              testFiles: plan.testFiles,
+              pool: plan.vitestPool,
+            }),
+            env: testEnv,
+          },
+        ]
+      : []),
+    {
+      id: "critical-paths",
+      command: "bun",
+      args: ["run", "test:precommit"],
+      env: testEnv,
+    },
+  ];
+  const result = await runVerificationGroups(groups, {
+    concurrency: Math.min(3, groups.length),
+    cwd: process.cwd(),
+    env: baseEnv,
+  });
+  for (const group of result.results) {
+    process.stdout.write(`\n== ${group.id} (${group.duration_ms}ms) ==\n`);
+    if (group.stdout) process.stdout.write(group.stdout);
+    if (group.stderr) process.stderr.write(group.stderr);
+  }
+  const wallClockMs = Math.round(performance.now() - startedAt);
+  process.stdout.write(
+    `${JSON.stringify({
+      schema_version: 1,
+      kind: "verification_metrics",
+      route: `targeted:${plan.bucket}`,
+      wall_clock_ms: wallClockMs,
+      selected_groups: groups.length + 1,
+      executed_groups: result.results.length + buildResult.results.length,
+      verification_amplification: Number(
+        (
+          (result.results.length + buildResult.results.length) /
+          Math.max(1, groups.length + 1)
+        ).toFixed(2),
+      ),
+      lifecycle_control_commands: 1,
+      ok: result.ok,
+    })}\n`,
+  );
+  if (!result.ok) throw new Error("Targeted verification group failed.");
 }
 
 function runTargetedSmokePath(plan) {
@@ -386,11 +469,22 @@ if (shouldExecuteChecks) {
   } else if (mode === "fast" && fastPlan.kind === "docs-only") {
     runDocsOnlyFastPath();
   } else if (mode === "fast" && fastPlan.kind === "targeted") {
-    runTargetedFastPath(fastPlan);
+    await runTargetedFastPath(fastPlan);
   } else {
     runStepEntries(fastSteps);
   }
   if (mode === "full") {
     runStepEntries(fullOnlySteps);
+  }
+  const receipt = writeLocalVerificationReceipt({
+    mode,
+    changedFiles,
+    route: executionPlan.route,
+    contractDigest: executionPlan.verification_contract.digest,
+  });
+  if (receipt) {
+    process.stdout.write(
+      `Reusable local verification receipt recorded for ${receipt.head_sha.slice(0, 12)}.\n`,
+    );
   }
 }

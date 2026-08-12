@@ -31,6 +31,7 @@ type FastCiPlan =
         | "release"
         | "upgrade"
         | "guard"
+        | "colocated"
         | "hosted-close-pr"
         | "pr-flow-status"
         | "mixed";
@@ -128,6 +129,60 @@ function commitFile(repoPath: string, filePath: string, contents: string, messag
 }
 
 describe("local CI fast selection", () => {
+  it("routes localized non-central source through colocated tests", () => {
+    const plan = selectFastCiPlan([
+      "packages/agentplane/src/shared/write-if-changed.ts",
+      "packages/agentplane/src/shared/write-if-changed.test.ts",
+    ]);
+    expect(plan).toMatchObject({
+      kind: "targeted",
+      bucket: "colocated",
+      reason: "noncentral_colocated_tests",
+    });
+    if (plan.kind !== "targeted") throw new Error("expected targeted plan");
+    expect(plan.testFiles).toEqual(["packages/agentplane/src/shared/write-if-changed.test.ts"]);
+  });
+
+  it("emits a versioned local verification contract and keeps PR full regression", () => {
+    const changedFiles = [
+      "packages/agentplane/src/shared/write-if-changed.ts",
+      "packages/agentplane/src/shared/write-if-changed.test.ts",
+    ];
+    const local = buildLocalCiExecutionPlan({ mode: "fast", changedFiles });
+    expect(local.verification_contract).toMatchObject({
+      schema_version: 1,
+      phase: "local",
+      requires_full_regression: false,
+    });
+    const pr = buildLocalCiExecutionPlan({ mode: "fast", phase: "pr", changedFiles });
+    expect(pr.verification_contract).toMatchObject({
+      phase: "pr",
+      requires_full_regression: true,
+    });
+  });
+
+  it("keeps explained targeted smoke and fast plans aligned with their executors", () => {
+    const changedFiles = [
+      "packages/agentplane/src/shared/write-if-changed.ts",
+      "packages/agentplane/src/shared/write-if-changed.test.ts",
+    ];
+    const smoke = buildLocalCiExecutionPlan({ mode: "smoke", changedFiles });
+    expect(smoke.steps.map((step) => step.label)).toEqual([
+      "Format (check)",
+      "Lint (targeted:colocated)",
+      "Unit tests (targeted:colocated)",
+    ]);
+
+    const fast = buildLocalCiExecutionPlan({ mode: "fast", changedFiles });
+    expect(fast.steps.map((step) => step.label)).toEqual([
+      "Build",
+      "Format (targeted:colocated)",
+      "Lint (targeted:colocated)",
+      "Unit tests (targeted:colocated)",
+      "Critical paths",
+    ]);
+  });
+
   it("treats docs and policy changes as docs-only", () => {
     const plan = selectFastCiPlan(["docs/user/setup.mdx", ".agentplane/policy/workflow.direct.md"]);
     expect(plan.kind).toBe("docs-only");
@@ -362,7 +417,7 @@ describe("local CI fast selection", () => {
       mode: "fast",
       changedFiles: [".github/workflows/ci.yml"],
     });
-    expect(workflowPlan.prerequisites.recipesInventory).toBe(true);
+    expect(workflowPlan.prerequisites.recipesInventory).toBe(false);
     expect(workflowPlan.prerequisites.workflowLint).toBe(true);
   });
 
@@ -710,9 +765,9 @@ describe("local CI fast selection", () => {
       "Lint (targeted:task)",
       "Unit tests (targeted:task)",
     ]);
-    expect(report.steps.at(-1)?.command).toContain(
-      "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
-    );
+    expect(
+      report.steps.find((step) => step.label === "Unit tests (targeted:task)")?.command,
+    ).toContain("packages/agentplane/src/commands/task/finish.validation.unit.test.ts");
   });
 
   it("marks CLI docs freshness as skipped in explainable non-CLI fast plans", () => {
@@ -722,13 +777,7 @@ describe("local CI fast selection", () => {
     });
 
     expect(report.route).toBe("targeted-fast");
-    expect(report.skipped_steps).toContainEqual({
-      command: "bun run docs:cli:check",
-      kind: "check",
-      label: "CLI docs freshness (check)",
-      reason: "changed files do not touch CLI docs surfaces",
-      skipped: true,
-    });
+    expect(report.steps.some((step) => step.command === "bun run docs:cli:check")).toBe(false);
   });
 });
 

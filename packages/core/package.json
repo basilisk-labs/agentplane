@@ -78,6 +78,11 @@
       "import": "./dist/tasks/index.js",
       "default": "./dist/tasks/index.js"
     },
+    "./tasks/verification-contract-kernel": {
+      "types": "./dist/tasks/verification-contract.d.ts",
+      "import": "./dist/tasks/verification-contract-kernel.js",
+      "default": "./dist/tasks/verification-contract-kernel.js"
+    },
     "./package.json": "./package.json"
   },
   "types": "./dist/index.d.ts",

@@ -10,6 +10,7 @@ type GithubCiCapabilities = Record<
   | "windows"
   | "coverage"
   | "cli_critical"
+  | "real_e2e"
   | "package_runtime_core"
   | "package_runtime_recipes"
   | "codeql_javascript"
@@ -24,6 +25,13 @@ type GithubCiPlan = {
   capabilities: GithubCiCapabilities;
   expected_jobs: string[];
   executing_jobs_count: number;
+  lifecycle_only_head: boolean;
+  reuse_sha: string;
+  verification_contract: {
+    phase: string;
+    requires_full_regression: boolean;
+    requires_real_e2e: boolean;
+  };
 };
 
 const { GITHUB_CI_GATE_JOBS, buildGithubCiCapabilityPlan } = githubCiCapabilitiesModule as {
@@ -34,6 +42,14 @@ const { GITHUB_CI_GATE_JOBS, buildGithubCiCapabilityPlan } = githubCiCapabilitie
     headRef?: string;
     ref?: string;
     exactShaRecovery?: boolean;
+    lifecycleOnlyHead?: boolean;
+    reuseSha?: string;
+    semanticEffects?: {
+      declaredRepositoryEffects?: string[];
+      declaredExternalEffects?: string[];
+      observedRepositoryEffects?: string[];
+      observedExternalEffects?: string[];
+    };
   }) => GithubCiPlan;
 };
 
@@ -46,21 +62,67 @@ function plan(changedFiles: string[], options: { headRef?: string } = {}) {
 }
 
 describe("GitHub CI capability planning", () => {
-  it("runs only docs and the aggregate for docs-only changes", () => {
+  it("requires full regression on every PR even for localized source", () => {
+    const result = plan(["packages/testkit/src/helper.test.ts"]);
+    expect(result.route).toBe("full-fast");
+    expect(result.route_reason).toBe("pr_full_regression_floor");
+    expect(result.verification_contract).toMatchObject({
+      phase: "pr",
+      requires_full_regression: true,
+    });
+  });
+
+  it("adds real E2E only when the semantic execution contract requires it", () => {
+    const ordinary = plan(["packages/testkit/src/helper.test.ts"]);
+    expect(ordinary.capabilities.real_e2e).toBe(false);
+    expect(ordinary.expected_jobs).not.toContain("verify-real-e2e");
+
+    const external = buildGithubCiCapabilityPlan({
+      changedFiles: ["packages/testkit/src/helper.test.ts"],
+      eventName: "pull_request",
+      semanticEffects: { declaredExternalEffects: ["deploy"] },
+    });
+    expect(external.capabilities.real_e2e).toBe(true);
+    expect(external.expected_jobs).toContain("verify-real-e2e");
+    expect(external.verification_contract).toMatchObject({ requires_real_e2e: true });
+  });
+
+  it("routes lifecycle-only heads to verified-parent reuse", () => {
+    const parent = "a".repeat(40);
+    const result = buildGithubCiCapabilityPlan({
+      changedFiles: [
+        "packages/agentplane/src/shared/write-if-changed.ts",
+        ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+      ],
+      eventName: "pull_request",
+      lifecycleOnlyHead: true,
+      reuseSha: parent,
+    });
+    expect(result).toMatchObject({
+      route: "reuse-verified-parent",
+      route_reason: "lifecycle_only_head_reuses_verified_parent",
+      lifecycle_only_head: true,
+      reuse_sha: parent,
+    });
+    expect(result.expected_jobs).toEqual(["plan", "verify-routed"]);
+  });
+
+  it("keeps the PR full-regression floor for docs-only changes", () => {
     const result = plan(["docs/user/setup.mdx"]);
 
-    expect(result.route).toBe("docs-only-fast");
+    expect(result.route).toBe("full-fast");
     expect(result.capabilities).toMatchObject({
-      core: false,
+      core: true,
       docs: true,
       dependency_review: false,
       windows: false,
-      coverage: false,
+      coverage: true,
       codeql_javascript: false,
       codeql_actions: false,
     });
-    expect(result.expected_jobs).toEqual(["plan", "verify-docs"]);
-    expect(result.executing_jobs_count).toBe(3);
+    expect(result.expected_jobs).toEqual(
+      expect.arrayContaining(["plan", "verify-contract", "verify-static", "verify-tests"]),
+    );
   });
 
   it("keeps task-lifecycle artifacts neutral", () => {
@@ -87,10 +149,10 @@ describe("GitHub CI capability planning", () => {
     expect(result.expected_jobs).toContain("verify-tests");
   });
 
-  it("routes an ordinary AgentPlane implementation through targeted checks plus relevant gates", () => {
+  it("runs full regression for an ordinary AgentPlane implementation PR", () => {
     const result = plan(["packages/agentplane/src/runner/adapters/codex.ts"]);
 
-    expect(result.route).toBe("targeted-fast");
+    expect(result.route).toBe("full-fast");
     expect(result.capabilities).toMatchObject({
       core: true,
       docs: false,
@@ -98,9 +160,9 @@ describe("GitHub CI capability planning", () => {
       package_runtime_core: false,
       package_runtime_recipes: false,
     });
-    expect(result.expected_jobs).toContain("verify-routed");
+    expect(result.expected_jobs).toContain("verify-tests");
     expect(result.expected_jobs).not.toContain("verify-docs");
-    expect(result.expected_jobs).not.toContain("verify-contract");
+    expect(result.expected_jobs).toContain("verify-contract");
     expect(result.expected_jobs).not.toContain("verify-package-node-runtime");
   });
 
@@ -170,7 +232,20 @@ describe("GitHub CI capability planning", () => {
 
     expect(result.route_reason).toBe("missing_change_scope_full");
     expect(result.executing_jobs_count).toBeLessThanOrEqual(8);
-    expect(Object.values(result.capabilities).every((value) => value === true)).toBe(true);
+    expect(result.capabilities).toMatchObject({
+      core: true,
+      docs: true,
+      dependency_review: true,
+      workflow_lint: true,
+      windows: true,
+      coverage: true,
+      cli_critical: true,
+      real_e2e: false,
+      package_runtime_core: true,
+      package_runtime_recipes: true,
+      codeql_javascript: true,
+      codeql_actions: true,
+    });
   });
 
   it("declares every aggregate dependency in the shared gate registry", () => {

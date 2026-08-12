@@ -1,4 +1,4 @@
-import { copyFile, cp, mkdir, readdir, rm, symlink } from "node:fs/promises";
+import { copyFile, cp, lstat, mkdir, readdir, readlink, rm, symlink } from "node:fs/promises";
 import path from "node:path";
 
 import { LocalBackend } from "../../backends/task-backend.js";
@@ -121,20 +121,96 @@ async function linkDirectoryIntoWorktree(opts: {
   return true;
 }
 
+async function cloneInstallLayoutEntry(opts: {
+  sourcePath: string;
+  sourceRoot: string;
+  targetPath: string;
+  worktreePath: string;
+}): Promise<void> {
+  const stats = await lstat(opts.sourcePath);
+  if (stats.isSymbolicLink()) {
+    const linkTarget = await readlink(opts.sourcePath);
+    const resolvedSourceTarget = path.resolve(path.dirname(opts.sourcePath), linkTarget);
+    const targetWithinSourceRoot = isPathWithin(opts.sourceRoot, resolvedSourceTarget);
+    const mappedTarget = targetWithinSourceRoot
+      ? path.join(opts.worktreePath, path.relative(opts.sourceRoot, resolvedSourceTarget))
+      : resolvedSourceTarget;
+    const resolvedTargetStats = await lstat(resolvedSourceTarget).catch(() => null);
+    const linkType =
+      process.platform === "win32"
+        ? resolvedTargetStats?.isDirectory()
+          ? "junction"
+          : "file"
+        : undefined;
+    const portableTarget =
+      process.platform === "win32"
+        ? mappedTarget
+        : path.relative(path.dirname(opts.targetPath), mappedTarget);
+    await symlink(portableTarget, opts.targetPath, linkType);
+    return;
+  }
+  if (stats.isDirectory()) {
+    await mkdir(opts.targetPath, { recursive: true });
+    for (const entry of await readdir(opts.sourcePath)) {
+      await cloneInstallLayoutEntry({
+        ...opts,
+        sourcePath: path.join(opts.sourcePath, entry),
+        targetPath: path.join(opts.targetPath, entry),
+      });
+    }
+    return;
+  }
+  if (stats.isFile()) {
+    await copyFile(opts.sourcePath, opts.targetPath);
+  }
+}
+
+async function materializePackageLocalInstallLayout(opts: {
+  sourceRoots: string[];
+  worktreePath: string;
+  relativePath: string;
+}): Promise<boolean> {
+  let sourceRoot = "";
+  let sourcePath = "";
+  for (const candidateRoot of opts.sourceRoots) {
+    const candidate = path.join(candidateRoot, opts.relativePath);
+    if (await fileExists(candidate)) {
+      sourceRoot = candidateRoot;
+      sourcePath = candidate;
+      break;
+    }
+  }
+  if (!sourcePath) return false;
+
+  const targetPath = path.join(opts.worktreePath, opts.relativePath);
+  if (await fileExists(targetPath)) return false;
+  await mkdir(path.dirname(targetPath), { recursive: true });
+  await cloneInstallLayoutEntry({
+    sourcePath,
+    sourceRoot,
+    targetPath,
+    worktreePath: opts.worktreePath,
+  });
+  return true;
+}
+
 export async function materializeRepoLocalInstallLayoutForWorktree(opts: {
   repoRoot: string;
   worktreePath: string;
 }): Promise<void> {
   const sourceRoots = resolveRuntimeSourceRoots(opts.repoRoot);
-  const linkTargets = [
-    "node_modules",
-    path.join("packages", "core", "node_modules"),
-    path.join("packages", "agentplane", "node_modules"),
-    path.join("website", "node_modules"),
-    "agentplane-recipes",
-  ];
+  const linkTargets = ["node_modules", path.join("website", "node_modules"), "agentplane-recipes"];
   for (const relativePath of linkTargets) {
     await linkDirectoryIntoWorktree({
+      sourceRoots,
+      worktreePath: opts.worktreePath,
+      relativePath,
+    });
+  }
+  for (const relativePath of ["core", "agentplane", "testkit", "recipes"].map((packageName) =>
+    path.join("packages", packageName, "node_modules"),
+  )) {
+    await materializePackageLocalInstallLayout({
       sourceRoots,
       worktreePath: opts.worktreePath,
       relativePath,

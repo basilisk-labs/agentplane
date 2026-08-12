@@ -14,6 +14,7 @@ export default defineConfig({
     "project/index": "src/project/index.ts",
     "schemas/index": "src/schemas/index.ts",
     "tasks/index": "src/tasks/index.ts",
+    "tasks/verification-contract-kernel": "src/tasks/verification-contract.ts",
   },
   external: ["execa", "yaml", "zod"],
   format: ["esm"],

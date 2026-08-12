@@ -69,7 +69,7 @@ export type VerificationEnvironment = {
 };
 
 export type VerificationInputIdentity = {
-  schema_version: 2;
+  schema_version: 2 | 3;
   kind: "task_verification_input";
   implementation: {
     strategy: "branch_diff" | "tree";
@@ -78,6 +78,7 @@ export type VerificationInputIdentity = {
     base_sha: string | null;
   };
   verify_steps_digest: `sha256:${string}`;
+  verification_contract_digest?: `sha256:${string}`;
   context: {
     digest: `sha256:${string}`;
     paths: string[];
@@ -406,6 +407,7 @@ function currentVerificationEnvironment(): VerificationEnvironment {
 export function verificationInputDigest(opts: {
   implementationDigest: string;
   verifyStepsDigest: string;
+  verificationContractDigest?: string | null;
   contextDigest: string;
   environmentDigest: string;
   evidenceDigest: string;
@@ -415,6 +417,9 @@ export function verificationInputDigest(opts: {
       canonicalizeJson({
         implementation_digest: opts.implementationDigest,
         verify_steps_digest: opts.verifyStepsDigest,
+        ...(opts.verificationContractDigest
+          ? { verification_contract_digest: opts.verificationContractDigest }
+          : {}),
         context_digest: opts.contextDigest,
         environment_digest: opts.environmentDigest,
         evidence_digest: opts.evidenceDigest,
@@ -429,6 +434,7 @@ export async function resolveVerificationInputIdentity(opts: {
   taskIds: readonly string[];
   targetSha: string | null;
   verifySteps: string;
+  verificationContractDigest?: string | null;
   workflowMode: "direct" | "branch_pr";
   environment?: VerificationEnvironment;
   baseRef?: string | null;
@@ -459,18 +465,23 @@ export async function resolveVerificationInputIdentity(opts: {
     runtime,
   };
   const verifyStepsDigest = sha256(opts.verifySteps.trim());
+  const verificationContractDigest = opts.verificationContractDigest?.trim() ?? null;
   const digest = verificationInputDigest({
     implementationDigest: implementation.digest,
     verifyStepsDigest,
+    verificationContractDigest,
     contextDigest: context.digest,
     environmentDigest: environment.digest,
     evidenceDigest: evidence.digest,
   });
   return {
-    schema_version: 2,
+    schema_version: verificationContractDigest ? 3 : 2,
     kind: "task_verification_input",
     implementation,
     verify_steps_digest: verifyStepsDigest,
+    ...(verificationContractDigest
+      ? { verification_contract_digest: verificationContractDigest as `sha256:${string}` }
+      : {}),
     context,
     environment,
     evidence,
@@ -485,6 +496,7 @@ export function verificationInputInvalidationReason(opts: {
   | "verification_current"
   | "verification_implementation_changed"
   | "verification_steps_changed"
+  | "verification_contract_changed"
   | "verification_context_changed"
   | "verification_environment_changed"
   | "verification_evidence_changed"
@@ -495,6 +507,9 @@ export function verificationInputInvalidationReason(opts: {
   }
   if (opts.recorded.verify_steps_digest !== opts.current.verify_steps_digest) {
     return "verification_steps_changed";
+  }
+  if (opts.recorded.verification_contract_digest !== opts.current.verification_contract_digest) {
+    return "verification_contract_changed";
   }
   if (opts.recorded.context.digest !== opts.current.context.digest) {
     return "verification_context_changed";

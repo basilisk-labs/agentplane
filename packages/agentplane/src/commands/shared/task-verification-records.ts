@@ -34,6 +34,7 @@ type VerificationRecordAssessmentReason =
   | "verification_details_missing"
   | "verification_implementation_changed"
   | "verification_steps_changed"
+  | "verification_contract_changed"
   | "verification_context_changed"
   | "verification_environment_changed"
   | "verification_evidence_changed"
@@ -98,7 +99,7 @@ function parseVerificationInput(value: unknown): VerificationInputIdentity | nul
   const environment = input.environment;
   const evidence = input.evidence;
   if (
-    input.schema_version !== 2 ||
+    (input.schema_version !== 2 && input.schema_version !== 3) ||
     input.kind !== "task_verification_input" ||
     !implementation ||
     typeof implementation !== "object" ||
@@ -130,6 +131,8 @@ function parseVerificationInput(value: unknown): VerificationInputIdentity | nul
       (typeof implementationRecord.base_sha !== "string" ||
         !/^[0-9a-f]{40,64}$/u.test(implementationRecord.base_sha))) ||
     !isSha256(input.verify_steps_digest) ||
+    (input.schema_version === 3 && !isSha256(input.verification_contract_digest)) ||
+    (input.schema_version === 2 && input.verification_contract_digest !== undefined) ||
     !isSha256(contextRecord.digest) ||
     !Array.isArray(contextRecord.paths) ||
     !contextRecord.paths.every((item) => typeof item === "string") ||
@@ -161,6 +164,10 @@ function parseVerificationInput(value: unknown): VerificationInputIdentity | nul
       verificationInputDigest({
         implementationDigest: String(implementationRecord.digest),
         verifyStepsDigest: String(input.verify_steps_digest),
+        verificationContractDigest:
+          typeof input.verification_contract_digest === "string"
+            ? input.verification_contract_digest
+            : null,
         contextDigest: String(contextRecord.digest),
         environmentDigest: String(environmentRecord.digest),
         evidenceDigest: String(evidenceRecord.digest),
@@ -242,6 +249,7 @@ async function assessCurrentVerification(
       taskIds: targetContext.taskIds ?? [task.id],
       targetSha: evaluatedSha,
       verifySteps: task.sections?.["Verify Steps"] ?? "",
+      verificationContractDigest: task.execution_contract?.verification.contract?.digest ?? null,
       workflowMode: targetContext.workflowMode ?? "direct",
       baseRef: targetContext.baseRef,
       verificationDetails: typeof record.details === "string" ? record.details : null,

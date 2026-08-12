@@ -81,6 +81,19 @@ export function reportTaskBriefText(brief: TaskBriefWithWorkflowStep, taskId: st
               label: "required_evidence",
               value: brief.task.execution_contract.verification.required_evidence.join(", "),
             },
+            ...(brief.task.execution_contract.verification.contract
+              ? [
+                  {
+                    label: "verification_contract",
+                    value:
+                      `phase=${brief.task.execution_contract.verification.contract.phase}` +
+                      ` checks=${brief.task.execution_contract.verification.contract.selected_checks.join(",")}` +
+                      ` full=${String(brief.task.execution_contract.verification.contract.requires_full_regression)}` +
+                      ` e2e=${String(brief.task.execution_contract.verification.contract.requires_real_e2e)}` +
+                      ` digest=${brief.task.execution_contract.verification.contract.digest}`,
+                  },
+                ]
+              : []),
           ]
         : []),
       { label: "phase", value: brief.route.phase },

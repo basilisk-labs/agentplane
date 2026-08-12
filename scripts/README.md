@@ -150,6 +150,8 @@ Implementation layout: canonical script implementations live under `scripts/chec
 | `bench:cli:time:diff`                    | `node scripts/bench/compare-cli-walltime.mjs`                                                                                                                                      | Run bench workflow: cli time diff.                    |
 | `bench:compatibility:capture`            | `node scripts/bench/capture-compatibility-contract.mjs`                                                                                                                            | Run bench workflow: compatibility capture.            |
 | `bench:compatibility:check`              | `node scripts/checks/check-compatibility-contract-baseline.mjs`                                                                                                                    | Run bench workflow: compatibility check.              |
+| `bench:verification:check`               | `node scripts/bench/measure-verification-contract.mjs --samples 5`                                                                                                                 | Run bench workflow: verification check.               |
+| `bench:verification:execute`             | `node scripts/bench/measure-verification-contract.mjs --samples 5 --execute`                                                                                                       | Run bench workflow: verification execute.             |
 
 ## Clone Detection
 

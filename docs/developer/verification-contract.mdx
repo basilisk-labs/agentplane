@@ -1,0 +1,77 @@
+---
+title: "Verification contract"
+description: "How AgentPlane selects, executes, reuses, and measures development checks."
+---
+
+# Verification contract
+
+AgentPlane computes one versioned verification contract from the task execution declaration and
+deterministic observed effects. An agent may describe scope and risk, but it cannot remove a check
+selected by policy. New observed effects only strengthen the contract.
+
+## Phase policy
+
+- Local development selects affected tests plus critical paths. Unknown, central, schema,
+  dependency, CI, release, public API, and security changes fall back to full regression.
+- Every pull request requires the full CLI regression for its semantic implementation.
+- A lifecycle-only task-artifact commit may reuse the exact successful aggregate from its parent.
+  Reuse is allowed only when the parent SHA is exact, the current diff contains only
+  `.agentplane/tasks/**`, and GitHub reports a successful `PR verification` for that parent.
+- Release qualification retains the full regression floor and requires real E2E when external
+  effects or release policy demand it.
+
+## Metrics
+
+- `wall_clock_ms`: elapsed time from the start of the selected local contract until all required
+  groups finish.
+- `verification_amplification`: executed required groups divided by selected required groups.
+  The optimized local target is `1.0`; lifecycle-only reuse is represented by a separate exact-SHA
+  receipt rather than by replaying groups.
+- `lifecycle_control_commands`: AgentPlane control-plane commands needed to select and run the local
+  verification. The small-change target is at most three.
+- `duplicate coverage`: the same observable behavior asserted at multiple layers. A higher-layer
+  copy is retained only when it proves a process, filesystem, CLI, provider, or other boundary that
+  the cheaper layer cannot observe.
+
+Run the reproducible selector benchmark:
+
+```bash
+bun run bench:verification:check
+```
+
+Run the measured small-change contract itself:
+
+```bash
+bun run bench:verification:execute
+```
+
+The acceptance thresholds are p50 at most 60 seconds, p95 at most 120 seconds, at most three
+control-plane commands, and no local full CLI regression for the pinned localized reversible
+fixture.
+
+On the pinned `e4ec4520d` baseline, three isolated executions took 338.83 s, 367.28 s, and
+639.98 s (p50 367.28 s, p95 639.98 s). The final five-sample optimized run took 15.75-19.13 s
+(p50 19.06 s, p95 19.13 s): 19.27x faster at p50 and 33.46x at p95. The baseline selected 18
+groups and three build invocations; the optimized fixture selects five groups and one build. The
+high third baseline sample was host-contended and is retained rather than discarded.
+
+## Duplication and startup audit
+
+The previous fast lane built core and AgentPlane separately and then invoked the repository build,
+which repeated the TypeScript/bundle work. The selected local lane now runs the repository build
+once. Independent build, format, lint, workflow, and selected-test groups execute concurrently and
+report every failure in deterministic group order.
+
+The full unit project and `test:critical` remain separate on PR because they cover different test
+inventories. Lifecycle-only closure commits no longer reinstall dependencies, rebuild packages, or
+repeat those suites; they prove the exact verified parent and the lifecycle-only diff instead.
+
+The test harness already caches one immutable Git template and copies it into isolated temporary
+repositories. Recipe archives use a separate immutable cache. Those fixtures retain per-test
+cleanup and failure isolation; process pooling was not added because it would allow mutable CLI or
+environment state to cross test boundaries.
+
+Framework task worktrees reuse third-party dependency bytes, but their package-local link layout is
+materialized in the worktree. Workspace links such as `@agentplaneorg/core` therefore resolve to
+the task checkout, not to the base checkout. This prevents fast checks from silently building or
+testing a different revision.

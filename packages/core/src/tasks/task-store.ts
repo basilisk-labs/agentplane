@@ -231,6 +231,37 @@ export type TaskVerificationObservation = {
   result: "pass" | "fail" | "unsupported";
 };
 
+export type TaskVerificationContract = {
+  schema_version: 1;
+  source: "execution_contract";
+  phase: "task" | "local" | "pr" | "release";
+  declared: {
+    repository_effects: TaskRepositoryEffect[];
+    external_effects: TaskExternalEffect[];
+  };
+  observed: {
+    repository_effects: TaskRepositoryEffect[];
+    external_effects: TaskExternalEffect[];
+    changed_components: string[];
+    changed_files: string[];
+  };
+  policy_floor: {
+    pr_full_regression: true;
+    unknown_or_central_full_regression: true;
+    monotonic_strengthening: true;
+  };
+  selector: {
+    kind: string;
+    reason: string;
+    selected_test_files: string[];
+  };
+  selected_checks: string[];
+  escalation_reasons: string[];
+  requires_full_regression: boolean;
+  requires_real_e2e: boolean;
+  digest: `sha256:${string}`;
+};
+
 export type TaskExecutionContract = {
   schema_version: 1;
   source: "agent_declared" | "legacy_compatibility";
@@ -252,6 +283,8 @@ export type TaskExecutionContract = {
   };
   verification: {
     required_evidence: string[];
+    /** Present on contracts created or reconciled by AgentPlane >=0.7.6. */
+    contract?: TaskVerificationContract;
   };
   observed: {
     repository_effects: TaskRepositoryEffect[];

@@ -144,6 +144,8 @@
     "bench:agent-efficiency:check": "node scripts/checks/check-agent-efficiency-baseline.mjs",
     "bench:agent-efficiency:replay:capture": "node scripts/bench/capture-agent-efficiency-replay.mjs",
     "bench:agent-efficiency:replay:check": "node scripts/checks/check-agent-efficiency-replay.mjs",
+    "bench:verification:check": "node scripts/bench/measure-verification-contract.mjs --samples 5",
+    "bench:verification:execute": "node scripts/bench/measure-verification-contract.mjs --samples 5 --execute",
     "runner:codex:approval-probe": "bun scripts/workflow/run-runner-codex-approval-probe.mjs",
     "runner:codex:smoke": "bun scripts/run-runner-codex-smoke.mjs",
     "docs:cli:generate": "node packages/agentplane/dist/cli.js docs cli --out docs/user/cli-reference.generated.mdx",
