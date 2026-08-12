@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-12T01:39:32.590Z"
+  updated_at: "2026-08-12T01:57:43.942Z"
   updated_by: "TESTER"
-  note: "PASS: agent-selected risk-adaptive routing, deterministic safety enforcement, preserved-work escalation, and realistic user E2Es verified."
+  note: "Implementation 12f447c63 verified after P1 rework."
   attempts: 0
 quality_review:
   state: "pass"
@@ -135,8 +135,14 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Rework: address two valid P1 review findings without scope expansion."
+  -
+    type: "verify"
+    at: "2026-08-12T01:57:43.942Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Implementation 12f447c63 verified after P1 rework."
 doc_version: 3
-doc_updated_at: "2026-08-12T01:42:28.481Z"
+doc_updated_at: "2026-08-12T01:57:45.305Z"
 doc_updated_by: "CODER"
 description: "Use one canonical lifecycle while letting the agent semantically choose direct or branch_pr through a structured risk/effect declaration. AgentPlane must compile and enforce one deterministic execution contract, compare it with observed effects, escalate monotonically when required, and never use product-language keyword heuristics as lifecycle authority."
 sections:
@@ -251,6 +257,51 @@ sections:
     Result: pass
     Evidence: generated schemas current; policy routing valid; no diff whitespace errors
     Scope: persisted execution-contract schema, routing policy, and final branch integrity
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112232-3NC7Y4-make-execution-strategy-risk-adaptive-and-agent/.agentplane/tasks/202608112232-3NC7Y4/blueprint/resolved-snapshot.json
+    - old_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+    - current_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608112232-3NC7Y4
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608112232-3NC7Y4
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-12T01:57:43.942Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Implementation 12f447c63 verified after P1 rework.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:dca184be90fa3ce8f32f16e9f1a157c5f2a648692b107ebd2119d23831c66570, input_digest=sha256:bd1f22a2231309ca5e15c9dc2863fbce6ce39d66abef8dc3b7ce38cb4e7e23c0
+
+    Details:
+
+    Command: bunx vitest run <focused execution-contract matrix>
+    Result: pass
+    Evidence: 7 test files passed; 81 tests passed
+    Scope: execution declarations, deterministic routing, semantic result, work-order authority, direct escalation, task creation compatibility
+
+    Command: bun run ci:local:fast
+    Result: pass
+    Evidence: 554 test files passed; 4050 tests passed; 1 skipped; all 12 critical CLI shards passed
+    Scope: formatting, schemas, templates, policy routing, release parity, build, typecheck, lint, cold-start, unit and critical CLI regressions
+
+    Command: focused P1 regression tests
+    Result: pass
+    Evidence: explicit empty agent scope is read-only; direct-to-branch escalation persists code.branch_pr; legacy empty scope remains compatible
+    Scope: writable authority least privilege and monotonic workflow escalation
 
     BlueprintSnapshotRef:
     - state: current
@@ -405,6 +456,51 @@ Command: bun scripts/generate/sync-schemas.mjs check && node scripts/checks/chec
 Result: pass
 Evidence: generated schemas current; policy routing valid; no diff whitespace errors
 Scope: persisted execution-contract schema, routing policy, and final branch integrity
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112232-3NC7Y4-make-execution-strategy-risk-adaptive-and-agent/.agentplane/tasks/202608112232-3NC7Y4/blueprint/resolved-snapshot.json
+- old_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+- current_digest: 9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608112232-3NC7Y4
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608112232-3NC7Y4
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-12T01:57:43.942Z — VERIFY — ok
+
+By: TESTER
+
+Note: Implementation 12f447c63 verified after P1 rework.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:dca184be90fa3ce8f32f16e9f1a157c5f2a648692b107ebd2119d23831c66570, input_digest=sha256:bd1f22a2231309ca5e15c9dc2863fbce6ce39d66abef8dc3b7ce38cb4e7e23c0
+
+Details:
+
+Command: bunx vitest run <focused execution-contract matrix>
+Result: pass
+Evidence: 7 test files passed; 81 tests passed
+Scope: execution declarations, deterministic routing, semantic result, work-order authority, direct escalation, task creation compatibility
+
+Command: bun run ci:local:fast
+Result: pass
+Evidence: 554 test files passed; 4050 tests passed; 1 skipped; all 12 critical CLI shards passed
+Scope: formatting, schemas, templates, policy routing, release parity, build, typecheck, lint, cold-start, unit and critical CLI regressions
+
+Command: focused P1 regression tests
+Result: pass
+Evidence: explicit empty agent scope is read-only; direct-to-branch escalation persists code.branch_pr; legacy empty scope remains compatible
+Scope: writable authority least privilege and monotonic workflow escalation
 
 BlueprintSnapshotRef:
 - state: current

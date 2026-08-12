@@ -1,0 +1,82 @@
+{
+  "details": "Command: bunx vitest run <focused execution-contract matrix>\nResult: pass\nEvidence: 7 test files passed; 81 tests passed\nScope: execution declarations, deterministic routing, semantic result, work-order authority, direct escalation, task creation compatibility\n\nCommand: bun run ci:local:fast\nResult: pass\nEvidence: 554 test files passed; 4050 tests passed; 1 skipped; all 12 critical CLI shards passed\nScope: formatting, schemas, templates, policy routing, release parity, build, typecheck, lint, cold-start, unit and critical CLI regressions\n\nCommand: focused P1 regression tests\nResult: pass\nEvidence: explicit empty agent scope is read-only; direct-to-branch escalation persists code.branch_pr; legacy empty scope remains compatible\nScope: writable authority least privilege and monotonic workflow escalation",
+  "digest": "sha256:150180079fdf6c3e57bd0511eca15345bba8f65ae1b16cf9df03c04cd31880e3",
+  "implementation_sha": "12f447c63ce5c78b152d461dcc1e00517a04f149",
+  "input": {
+    "context": {
+      "digest": "sha256:cc7062753f698932f289ad1b5334207df3e1c81233ebf17c591c3b5370091508",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:bd1f22a2231309ca5e15c9dc2863fbce6ce39d66abef8dc3b7ce38cb4e7e23c0",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:04a257d7f2af385bd26800d3d7f54ca0b050ba2cd7395bdf4db77917d22e8c75",
+      "digest": "sha256:225186e0c516f9d886b7e65b23df85ee0bcf1d01984da7ad794340e0559bc5e0",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "106662505177833ff8ededb1ad621baf342c3a88",
+      "digest": "sha256:1dc0d69bf7220a34b22ebc4256b33a93ee7c0fb49e0d6a9d186ab39c8b5075c4",
+      "strategy": "branch_diff",
+      "target_sha": "12f447c63ce5c78b152d461dcc1e00517a04f149"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 2,
+    "verify_steps_digest": "sha256:dca184be90fa3ce8f32f16e9f1a157c5f2a648692b107ebd2119d23831c66570"
+  },
+  "kind": "task_verification_record",
+  "note": "Implementation 12f447c63 verified after P1 rework.",
+  "recorded_at": "2026-08-12T01:57:43.942Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Validate the structured declaration and compiled execution-contract schemas, migrations, explain output, and cross-subsystem consumption. Expected: one versioned contract carries agent assessment, declared effects, deterministic resolution, and observed effects without keyword classification.\n2. Run E2E scenarios for localized direct work and broad agent-selected branch_pr work. Expected: each preferred workflow is respected when compatible, targeted evidence is sufficient for low-risk work, and no redundant approval or manual lifecycle command is required.\n3. Run an underestimated direct-work E2E. Expected: deterministic observed effects produce one direct-to-branch_pr escalation action, completed changes survive, required evidence strengthens monotonically, and neither effect_in_doubt nor manual reclaim/reconcile/repair is needed.\n4. Run external/destructive-effect and misleading-language E2Es. Expected: safety authority cannot be self-granted, and words such as production, release, docs, server, or deployment do not determine task kind or workflow.\n5. Run routing, writable-scope, commit-policy, verification, evaluator, finish, recovery, compatibility, formatting, type, lint, and relevant full test shards. Expected: all pass; existing projects load without manual migration; representative before/after traces show fewer commands/approvals/transitions for low-risk direct work without weaker significant-task evidence.",
+  "scope_digest": "sha256:dca184be90fa3ce8f32f16e9f1a157c5f2a648692b107ebd2119d23831c66570",
+  "task_id": "202608112232-3NC7Y4",
+  "verification_command": "agentplane verify 202608112232-3NC7Y4 --ok --by TESTER",
+  "verifier": "TESTER"
+}

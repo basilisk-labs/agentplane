@@ -16,12 +16,7 @@ Use one canonical lifecycle while letting the agent semantically choose direct o
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-PASS: agent-selected risk-adaptive routing, deterministic safety enforcement, preserved-work
-escalation, and realistic user E2Es verified.
-```
+- Note: Implementation 12f447c63 verified after P1 rework.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -60,11 +55,12 @@ escalation, and realistic user E2Es verified.
  packages/agentplane/src/commands/task/plan.ts      |   8 +-
  .../src/commands/task/run-execution-preview.ts     |   9 +-
  .../agentplane/src/commands/task/status.command.ts |   5 +-
- .../task/task-execution-contract-observation.ts    |  41 +++
+ .../task-execution-contract-observation.test.ts    |  77 ++++
+ .../task/task-execution-contract-observation.ts    |  46 +++
  .../agentplane/src/runner/context/task-context.ts  |   3 +
  packages/agentplane/src/runner/types/context.ts    |   2 +
- .../src/runner/usecases/agent-work-order-build.ts  |  24 +-
- .../usecases/agent-work-order.integration.test.ts  |  39 ++
+ .../src/runner/usecases/agent-work-order-build.ts  |  30 +-
+ .../usecases/agent-work-order.integration.test.ts  |  76 ++++
  .../src/runtime/task-intake/resolve-materialize.ts |   3 +
  .../src/runtime/task-intake/resolve-normalize.ts   |   3 +
  .../agentplane/src/runtime/task-intake/types.ts    |   7 +-
@@ -86,7 +82,7 @@ escalation, and realistic user E2Es verified.
  schemas/agent-semantic-result.schema.json          | 237 ++++++++++++
  schemas/task-readme-frontmatter.schema.json        | 229 ++++++++++++
  schemas/tasks-export.schema.json                   | 229 ++++++++++++
- 54 files changed, 3123 insertions(+), 200 deletions(-)
+ 55 files changed, 3247 insertions(+), 201 deletions(-)
 ```
 
 </details>
