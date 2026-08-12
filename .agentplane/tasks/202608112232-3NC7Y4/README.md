@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -33,33 +33,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-12T01:40:28.981Z"
+  updated_at: "2026-08-12T01:59:12.913Z"
   updated_by: "HUMAN"
-  note: "Execution strategy is now selected semantically by the agent and enforced through one deterministic, persisted contract; observed effects can only strengthen routing and evidence."
-  evaluated_sha: "13559201918e82ed10fd775bb6163be1822e8e37"
+  note: "The reworked execution strategy closes both reviewed authority gaps without weakening legacy compatibility or monotonic escalation."
+  evaluated_sha: "12f447c63ce5c78b152d461dcc1e00517a04f149"
   blueprint_digest: "9f39851dd9a8fca64e3b84754396f2edbeab4c6b719d641a99e5a5263646c6b6"
   evidence_refs:
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-014028345-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-014028345-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/d969beb5f05bdeb74d3fa03e1d8c57a7155c49129cf14a7f482a073c499607b0.md"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-014028345-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-014028345-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-015912495-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-015912495-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/2d1094cd3d2f463153396d893ddcadca3c1bee2b3b2fa1c117f84a828eba4ca4.md"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-015912495-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/20260812-015912495-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608112232-3NC7Y4/README.md"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/21a635867fd3b517bda07a72c49b1fb4e44c8f47510d93e83b9f4491e8843b5a.patch"
-    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/128dc0a1fa4f47c282c2b3103b8007bdfda212d15106e2bfafe851fb7e745207.json"
-    - ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812013932590-ba7082a84a1f310c.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/7e7cb078ae9a2f19dc0ed49d3d32ba21e378ecf9d5a24d2976adbb87632eec0d.patch"
+    - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/c0ec1e2a0e72a5da6af12616db5c74c731742547572edc5d8ea9401106ac3c6f.json"
+    - ".agentplane/tasks/202608112232-3NC7Y4/verification/20260812015743942-150180079fdf6c3e.json"
     - ".agentplane/tasks/202608112232-3NC7Y4/quality/objects/sha256/713d635b887c7c585dcaacdf90acc3b66adefd80a7316bf2f3f88328352bd276.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
-    - "packages/agentplane/src/runtime/task-routing/resolve.ts"
-    - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
-    - "packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+    - "commit:12f447c63ce5c78b152d461dcc1e00517a04f149"
+    - "packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts"
+    - "packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
   findings:
-    - "Natural-language keyword routing was removed from authoritative blueprint and mutation inference; explicit structured intent and trusted project blueprints remain supported."
-    - "Direct-to-branch_pr escalation is monotonic, idempotent, preserves the implementation commit and changed paths, and returns one canonical next action."
-    - "External writes, credentials, publish, deploy, destructive Git, security boundaries, public API, schema, dependency, CI, and release effects retain deterministic isolation or approval floors."
+    - "Agent-declared scope_roots: [] is distinguished from absent or legacy scope and produces read-only work-order authority; integration coverage asserts writable roots, sandbox, and tool classes."
+    - "Observed direct-to-branch escalation atomically replaces code.direct with code.branch_pr, preventing an incompatible blueprint from blocking the deterministic handoff."
+    - "The changes remain within the approved risk-adaptive execution contract and preserve the rule that semantic classification belongs to the agent while enforcement remains deterministic."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -142,7 +142,7 @@ events:
     state: "ok"
     note: "Implementation 12f447c63 verified after P1 rework."
 doc_version: 3
-doc_updated_at: "2026-08-12T01:57:45.305Z"
+doc_updated_at: "2026-08-12T01:59:12.935Z"
 doc_updated_by: "CODER"
 description: "Use one canonical lifecycle while letting the agent semantically choose direct or branch_pr through a structured risk/effect declaration. AgentPlane must compile and enforce one deterministic execution contract, compare it with observed effects, escalate monotonically when required, and never use product-language keyword heuristics as lifecycle authority."
 sections:
