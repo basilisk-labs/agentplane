@@ -227,6 +227,17 @@ function workspacePackageRoots(checkoutRoot) {
     .map((packageRoot) => path.resolve(realpathSync(packageRoot)));
 }
 
+function resolveExistingSeedRealPath(seed) {
+  const stats = lstatSync(seed.path, { throwIfNoEntry: false });
+  if (!stats) return null;
+  try {
+    return path.resolve(realpathSync(seed.path));
+  } catch (error) {
+    if (stats.isSymbolicLink() && error?.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
 export function replayDependencySeeds(repoRoot) {
   const root = path.resolve(repoRoot);
   const modulesRoot = path.resolve(realpathSync(path.join(root, "node_modules")));
@@ -249,7 +260,8 @@ export function replayDependencySeeds(repoRoot) {
   return candidates
     .filter((seed) => {
       if (workspaceSeeds.has(seed.label)) return false;
-      const real = path.resolve(realpathSync(seed.path));
+      const real = resolveExistingSeedRealPath(seed);
+      if (real === null) return false;
       return !workspaceRoots.some((workspaceRoot) => isInside(workspaceRoot, real));
     })
     .toSorted((left, right) => left.label.localeCompare(right.label));
