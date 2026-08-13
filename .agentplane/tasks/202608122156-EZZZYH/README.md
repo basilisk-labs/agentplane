@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -37,31 +37,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-13T16:35:52.852Z"
+  updated_at: "2026-08-13T17:09:58.846Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 3 typed finding(s)."
-  evaluated_sha: "ab7abe4d1d0676340aa1820aaa9e6728d4126af9"
+  evaluated_sha: "207a86ab5bcb897a9032edcc4f35bc1e4f5ae092"
   blueprint_digest: "72867270b7cf279c96932125ddc698ff2ebf2308c32b7a560ec02c9e4b6dd025"
   evidence_refs:
-    - ".agentplane/tasks/202608122156-EZZZYH/quality/20260813-163552563-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608122156-EZZZYH/quality/20260813-163552563-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608122156-EZZZYH/quality/objects/sha256/db5855e6e8f7a986f62c56369b86e6cb5170570c77b2142cb29bb739cc93b5c9.md"
-    - ".agentplane/tasks/202608122156-EZZZYH/quality/20260813-163552563-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608122156-EZZZYH/quality/20260813-163552563-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608122156-EZZZYH/quality/20260813-163552563-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608122156-EZZZYH/quality/20260813-170958434-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608122156-EZZZYH/quality/20260813-170958434-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608122156-EZZZYH/quality/objects/sha256/1d9c3da5818cdbf306ec50913e48b86b60c447eaec93ad7fd1cf7be30c196e5b.md"
+    - ".agentplane/tasks/202608122156-EZZZYH/quality/20260813-170958434-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608122156-EZZZYH/quality/20260813-170958434-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608122156-EZZZYH/quality/20260813-170958434-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608122156-EZZZYH/README.md"
-    - ".agentplane/tasks/202608122156-EZZZYH/quality/objects/sha256/9f39dfc47fc1f9168452d702623df758c1cf8ca584eb984ea196b1685d4899f9.patch"
-    - ".agentplane/tasks/202608122156-EZZZYH/quality/objects/sha256/2e066d8cb93f18cd7773b174925704edef2c6c2811519f67070b8928b42c49ab.json"
-    - ".agentplane/tasks/202608122156-EZZZYH/verification/20260813163452060-ff633d06bdec024a.json"
+    - ".agentplane/tasks/202608122156-EZZZYH/quality/objects/sha256/7a1351a9a8555ad8caaf4c71477ce5618be66a09df5da789d39882c495b66192.patch"
+    - ".agentplane/tasks/202608122156-EZZZYH/quality/objects/sha256/fd392c8db6202cf20b066c5d6bee9f90cc8d47b3560a0b478b2a5077475912dd.json"
+    - ".agentplane/tasks/202608122156-EZZZYH/verification/20260813170834348-f2e51b1280f03de4.json"
     - ".agentplane/tasks/202608122156-EZZZYH/quality/objects/sha256/3b5b11dd4af383725481722d5ea9081132edf0464c4c96fd6f4b151d5bdf941d.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The 5080-byte plan crosses the exact 0.7.5 failure boundary while remaining bounded and language-neutral at the protocol layer."
-    - "Exact accepted-envelope replay is asserted idempotent, a modified fingerprint is rejected, and the harness resumes from fresh public state."
-    - "Evaluator acceptance is derived from changed paths, an independent product test, product content, public verification state, final Git object existence, terminal readback, and cleanup."
+    - "The black-box scenario installs exact candidate tarballs, uses only the public CLI, crosses the former plan-size failure at 5080 bytes, proves exact replay idempotency and stale rejection, and completes verification, evaluator, finish, final consumer readback, and cleanup."
+    - "CI audit mode now fails explicitly on scenario failure; post-terminal product behavior is read back; commit ancestry and product-tree identity are proven across lifecycle-only tail commits."
+    - "Task-owned AgentPlane artifacts are excluded from the product policy-scope fingerprint, so verification and evaluator persistence do not invalidate their own evidence."
 token_usage:
   agent_runs: 2
   input_tokens: null
@@ -371,7 +371,7 @@ events:
     state: "ok"
     note: "Verified exact published SHA 207a86ab5 with hosted Core CI run 31723346838; review fixes, installed-package lifecycle, and every selected verification group passed."
 doc_version: 3
-doc_updated_at: "2026-08-13T17:08:36.908Z"
+doc_updated_at: "2026-08-13T17:09:58.869Z"
 doc_updated_by: "CODER"
 description: "Add a mandatory black-box installed-package E2E scenario to the AgentPlane release qualification used for 0.7.6. The scenario must pack the exact clean candidate, install the tarball into an isolated prefix, create a clean temporary Git repository, use only the public installed CLI, run init and semantic task intake, execute a real mixed-scope change spanning source code, tests, documentation, and repository metadata such as .gitignore, perform deterministic verification and evaluator review, and reach an equivalent completed lifecycle with commit and branch/PR-ready outcome. The scenario must not read or mutate internal runtime, quality, recovery, or task artifacts directly and must fail the release gate if any required phase is skipped or simulated. Preserve every existing qualification scenario and add manifest, runner, CI-routing, contract tests, cleanup, and operator documentation needed to make this a blocking 0.7.6 release check."
 sections:

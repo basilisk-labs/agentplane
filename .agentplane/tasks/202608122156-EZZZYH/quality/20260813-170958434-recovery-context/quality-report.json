@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608122156-EZZZYH",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-13T17:09:58.846Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "207a86ab5bcb897a9032edcc4f35bc1e4f5ae092",
+  "blueprint_digest": "72867270b7cf279c96932125ddc698ff2ebf2308c32b7a560ec02c9e4b6dd025",
+  "findings": [
+    "The black-box scenario installs exact candidate tarballs, uses only the public CLI, crosses the former plan-size failure at 5080 bytes, proves exact replay idempotency and stale rejection, and completes verification, evaluator, finish, final consumer readback, and cleanup.",
+    "CI audit mode now fails explicitly on scenario failure; post-terminal product behavior is read back; commit ancestry and product-tree identity are proven across lifecycle-only tail commits.",
+    "Task-owned AgentPlane artifacts are excluded from the product policy-scope fingerprint, so verification and evaluator persistence do not invalidate their own evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608122156-EZZZYH/quality/objects/sha256/7a1351a9a8555ad8caaf4c71477ce5618be66a09df5da789d39882c495b66192.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "GitHub aggregate required-check routing is accepted as the hosted integration boundary; the final release gate will rerun the complete provider-enabled qualification after merge."
+  ],
+  "residual_risks": []
+}
