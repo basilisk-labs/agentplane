@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -34,31 +34,32 @@ verification:
   note: "Exact candidate 8b5fe5e67 passed local, provider, and hosted release qualification."
   attempts: 0
 quality_review:
-  state: "pass"
-  provenance: "human_supplied"
-  updated_at: "2026-08-13T22:05:40.975Z"
-  updated_by: "HUMAN"
-  note: "Human owner explicitly approved the 0.7.6 candidate's required repository effects after evaluator escalation; exact-SHA verification and all hosted publication gates remain mandatory."
-  evaluated_sha: "95a6d46c5cd6af4c4bfd2e61c79a9d4606dca12e"
+  state: "blocked"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-13T23:27:43.097Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "8b5fe5e6789ec8a43e5c430c3132c78df03cc2e4"
   blueprint_digest: "1899fc9e16ece1a5840f337f0c3b3222aac692041c82a0acb222673a31e94a1f"
   evidence_refs:
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220540187-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220540187-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/0646d64f66b67e6a4cac490cce996b89fe151bb8807c17a5a93c370dabe566bd.md"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220540187-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220540187-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-232651123-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-232651123-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/1e36e4bd48fcc589b1d977309bd8204605339c5b64318b7a3ce1af4d5e3830ac.md"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-232651123-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-232651123-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-232651123-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-232651123-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608131730-BHEAQT/README.md"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/8d1fe4ed0ce8e696c804bf13f6c0e6544c502f5994e352426606aca4c437b78d.patch"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/fba8557f3b542bff7b24ea124dcb3a7c53256fea1a6bf8c45119855516cdf611.json"
-    - ".agentplane/tasks/202608131730-BHEAQT/verification/20260813220007775-1c4ec2c7aba44828.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/5bcaba696d010a62fbcc8212ed832ce4caa6c8007e8509737a2cdb6d59125342.patch"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/ecf19ea0319b91a2bd42036e11bba0d5c95a4dd9dfe24a0b9c4168d952728ab3.json"
     - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/eb74ab4402f4753e2b0d2142968f0e82ce7d90ace408a962c30ee82f82215476.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220303255-recovery-context/evaluator-result.json"
   findings:
-    - "The legacy frozen contract under-declared documentation, dependency, public-API, source-code, and test effects, but the owner explicitly re-approved those bounded 0.7.6 changes in response to the evaluator question."
+    - "The frozen evidence proves candidate qualification and hosted PR checks, but does not prove protected-main integration, GitHub-only publication, public package identities, or final cleanup required by the acceptance criteria."
+  recovery_reason: "deterministic_evidence_gap"
 token_usage:
   agent_runs: 2
   input_tokens: 262463
@@ -559,7 +560,7 @@ events:
     state: "ok"
     note: "Exact candidate 8b5fe5e67 passed local, provider, and hosted release qualification."
 doc_version: 3
-doc_updated_at: "2026-08-13T23:25:42.509Z"
+doc_updated_at: "2026-08-13T23:27:43.122Z"
 doc_updated_by: "INTEGRATOR"
 description: "Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact protected-main release scope; generate the patch plan and English release notes from actual changes since v0.7.5; run the complete 20-scenario provider-enabled release qualification on the exact clean candidate; run canonical release prepublish gates; prepare a branch_pr release candidate without creating a tag; require exact-SHA hosted checks and no unresolved reviews; integrate through the protected main lane; dispatch GitHub-only publication for the exact merged release SHA; verify release-ready and publish-result artifacts, tag, GitHub Release, and all three public npm packages; then clean the release worktree and report efficiency and residual lifecycle debt."
 sections:

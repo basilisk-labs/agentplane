@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "202608131730-BHEAQT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-13T23:27:43.097Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "8b5fe5e6789ec8a43e5c430c3132c78df03cc2e4",
+  "blueprint_digest": "1899fc9e16ece1a5840f337f0c3b3222aac692041c82a0acb222673a31e94a1f",
+  "findings": [
+    "The frozen evidence proves candidate qualification and hosted PR checks, but does not prove protected-main integration, GitHub-only publication, public package identities, or final cleanup required by the acceptance criteria."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608131730-BHEAQT/README.md",
+    ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/ecf19ea0319b91a2bd42036e11bba0d5c95a4dd9dfe24a0b9c4168d952728ab3.json"
+  ],
+  "missing_tests": [
+    "Deterministic exact-SHA readback proving protected-main merge and hosted close with no unresolved review threads.",
+    "Deterministic validation of release-ready and publish-result artifacts against version 0.7.6, the merged SHA, and tag v0.7.6.",
+    "Independent GitHub and npm readback proving the latest GitHub Release and agentplane, @agentplaneorg/core, and @agentplaneorg/recipes at 0.7.6 with expected dependency pins.",
+    "Final repository-state check proving local main equals origin/main, the release worktree and branch are cleaned, and git status --short --untracked-files=all has no unintended artifacts."
+  ],
+  "hidden_assumptions": [
+    "Successful candidate and hosted PR qualification is being treated as sufficient evidence for later merge, publication, registry propagation, and cleanup.",
+    "The task's DONE/pre-merge-closure state is assumed to satisfy an acceptance contract whose required post-merge publication outcomes are not present in the frozen evidence."
+  ],
+  "residual_risks": [
+    "Provide frozen deterministic evidence for the exact merged main SHA, hosted close, release-ready and publish-result artifact identities, v0.7.6 tag and latest GitHub Release, all three npm package identities and pins, and final main/worktree cleanliness; then rerun evaluation against that evidence."
+  ]
+}

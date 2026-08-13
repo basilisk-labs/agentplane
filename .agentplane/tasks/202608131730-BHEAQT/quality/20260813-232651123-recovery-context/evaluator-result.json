@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen evidence proves candidate qualification and hosted PR checks, but does not prove protected-main integration, GitHub-only publication, public package identities, or final cleanup required by the acceptance criteria.",
+      "broken_invariant": "A release may pass only when exact merged-SHA release-ready and publish-result artifacts, tag and GitHub Release state, all three npm registry identities and dependency pins, hosted close, and clean final main/worktree state are recorded. The observed-checks artifact contains no verification records or runtime evidence for those post-merge outcomes.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608131730-BHEAQT/README.md",
+          "sha256": "sha256:3410ae9bfd20b4cafc2784b562f59608e1ec84944d8d71947699ceee31391eb7",
+          "section": "Verify Steps and Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/ecf19ea0319b91a2bd42036e11bba0d5c95a4dd9dfe24a0b9c4168d952728ab3.json",
+          "sha256": "sha256:ecf19ea0319b91a2bd42036e11bba0d5c95a4dd9dfe24a0b9c4168d952728ab3",
+          "section": "verification_records and runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Deterministic exact-SHA readback proving protected-main merge and hosted close with no unresolved review threads.",
+    "Deterministic validation of release-ready and publish-result artifacts against version 0.7.6, the merged SHA, and tag v0.7.6.",
+    "Independent GitHub and npm readback proving the latest GitHub Release and agentplane, @agentplaneorg/core, and @agentplaneorg/recipes at 0.7.6 with expected dependency pins.",
+    "Final repository-state check proving local main equals origin/main, the release worktree and branch are cleaned, and git status --short --untracked-files=all has no unintended artifacts."
+  ],
+  "hidden_assumptions": [
+    "Successful candidate and hosted PR qualification is being treated as sufficient evidence for later merge, publication, registry propagation, and cleanup.",
+    "The task's DONE/pre-merge-closure state is assumed to satisfy an acceptance contract whose required post-merge publication outcomes are not present in the frozen evidence."
+  ],
+  "recovery_context": "Provide frozen deterministic evidence for the exact merged main SHA, hosted close, release-ready and publish-result artifact identities, v0.7.6 tag and latest GitHub Release, all three npm package identities and pins, and final main/worktree cleanliness; then rerun evaluation against that evidence.",
+  "recovery_reason": "deterministic_evidence_gap"
+}
