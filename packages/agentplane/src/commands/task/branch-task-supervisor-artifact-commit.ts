@@ -21,6 +21,10 @@ export async function commitBranchSupervisorTaskArtifacts(opts: {
   task_id: string;
   message: string;
 }): Promise<void> {
+  // Verification and evaluator operations write task artifacts through the
+  // backend after route construction may already have populated the Git status
+  // cache. Refresh it before deciding whether there is anything to commit.
+  opts.command.git.invalidateStatus();
   const exitCode = await cmdCommit({
     ctx: opts.command,
     cwd: opts.cwd,
