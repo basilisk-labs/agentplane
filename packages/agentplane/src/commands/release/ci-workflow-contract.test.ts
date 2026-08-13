@@ -12,10 +12,12 @@ const DEPENDENCY_REVIEW_PATH = path.resolve(
 );
 const PREPUBLISH_WORKFLOW_PATH = path.resolve(process.cwd(), ".github/workflows/prepublish.yml");
 const PATH_FILTERS_PATH = path.resolve(process.cwd(), ".github/path-filters.yml");
+const CODEQL_CONFIG_PATH = path.resolve(process.cwd(), ".github/codeql/codeql-config.yml");
 
 describe("Core CI workflow contract", () => {
   it("routes every relevant capability through one fail-closed PR aggregate", async () => {
     const workflow = await readFile(CI_WORKFLOW_PATH, "utf8");
+    const codeqlConfig = await readFile(CODEQL_CONFIG_PATH, "utf8");
 
     expect(workflow).toContain("node scripts/checks/plan-github-ci.mjs");
     expect(workflow).toContain("run: bun run bench:compatibility:candidate:check");
@@ -52,6 +54,10 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("github/codeql-action/init@v4");
     expect(workflow).toContain("github/codeql-action/analyze@v4");
     expect(workflow).toContain("config-file: ./.github/codeql/codeql-config.yml");
+    expect(codeqlConfig).toContain("uses: security-extended");
+    expect(codeqlConfig).toContain('- "**/*.test.ts"');
+    expect(codeqlConfig).toContain('- "**/*.spec.ts"');
+    expect(codeqlConfig).not.toContain("query-filters:");
     expect(workflow).toContain("name: PR verification");
     expect(workflow).toContain("AGENTPLANE_CI_PLAN_JSON: ${{ needs.plan.outputs.plan_json }}");
     expect(workflow).toContain('"verify-security":"${{ needs.verify-security.result }}"');

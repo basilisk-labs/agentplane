@@ -5,6 +5,12 @@ queries:
 
 paths-ignore:
   - ".agentplane/**"
+  # Test fixtures intentionally exercise unsafe inputs and spawn many temporary
+  # repositories. They are linted and executed by the test gates, while CodeQL
+  # stays focused on code that is shipped to users.
+  - "**/*.test.ts"
+  - "**/*.spec.ts"
+  - "**/__tests__/**"
   - "**/dist/**"
   - "**/coverage/**"
   - "scripts/bench/agent-efficiency-replay-evidence/**"

@@ -104,6 +104,11 @@ GitHub CI runs explicit gates on pull requests and pushes to `main`:
 - `test:critical`
 - significant coverage guard for critical files
 
+CodeQL runs the complete `security-extended` suite against shipped source and workflow code.
+Test and fixture files are excluded from its database because they deliberately model unsafe inputs,
+temporary repositories, and process boundaries; their correctness is enforced by lint, the executable
+test gates, and the repository-specific trust-boundary ratchet instead.
+
 ## Tests
 
 - Any new behavior MUST include tests.
