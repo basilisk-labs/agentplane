@@ -158,6 +158,18 @@ function longMixedScopePlan() {
       "Prove cleanup and release-gate behavior.",
       "Remove the isolated prefix, packed tarballs, npm cache, exchange files, fixture repository, and all temporary state even on failure. Report a stable phase-specific diagnostic for any missing evidence and block qualification instead of downgrading the scenario to an informational warning.",
     ],
+    [
+      "Keep public readback as the only lifecycle truth used by the harness.",
+      "Use task show and task advance output for the final status, verification state, quality state, task commit, terminal action, and recovery decision. The harness may inspect ordinary product files and Git history, but it must never derive success by opening AgentPlane task documents or runtime-owned evidence files.",
+    ],
+    [
+      "Bind the release assertion to observable product behavior.",
+      "After finish, execute the same Node test command again as an independent consumer check and inspect the committed guide, source, test, and ignore metadata. This final readback protects against a process that records green lifecycle evidence while losing the user-visible product change.",
+    ],
+    [
+      "Preserve every pre-existing release qualification scenario.",
+      "Register this scenario as an additional full-tier blocking gate with a bounded timeout and no hidden dependency on another explicit selection. Keep the older packaged-candidate and hosted-boundary flows intact because they validate different install, migration, and provider boundaries.",
+    ],
   ];
   const text = steps
     .map(([title, detail], index) => `${index + 1}. ${title}\n   ${detail}`)
