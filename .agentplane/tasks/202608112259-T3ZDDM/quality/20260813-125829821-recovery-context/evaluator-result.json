@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "human_review",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen task record reports changes to CI, dependencies, documentation, schemas, and tests as authority violations, while the execution contract explicitly forbids those repository effects; no owner re-approval resolving this contradiction is present.",
+      "broken_invariant": "Repository mutations must remain within the approved execution authority, and material scope drift must be explicitly re-approved before completion.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+          "sha256": "sha256:519bb2a67c224c5ebbdd61ca8d625baec8a3caca0a80f562bd2d1c51901de142",
+          "line": 80,
+          "lines": "80-125",
+          "section": "execution_contract"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/7cdbc68133e7d7ae0e19725d600d4cadb158d69d737ef2e87f5de88b496ca620.patch",
+          "sha256": "sha256:7cdbc68133e7d7ae0e19725d600d4cadb158d69d737ef2e87f5de88b496ca620",
+          "line": 1,
+          "lines": "1-17960",
+          "section": "actual diff"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "line": 31,
+          "lines": "31-38",
+          "section": "Material drift criteria"
+        },
+        {
+          "path": ".agentplane/policy/workflow.branch_pr.md",
+          "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+          "line": 44,
+          "lines": "44-52",
+          "section": "Constraints"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "An enforcement test proving that a task cannot reach DONE or pass quality review while execution_contract.observed.authority_violations is non-empty without recorded owner re-approval."
+  ],
+  "hidden_assumptions": [
+    "Approval of the broad task acceptance criteria was treated as implicitly overriding the narrower execution-contract authority, although the frozen evidence does not record that interpretation or an explicit re-approval."
+  ],
+  "recovery_context": "Does the human owner explicitly approve the recorded CI, dependency, documentation, schema, and test mutations despite their classification as execution-authority violations?"
+}

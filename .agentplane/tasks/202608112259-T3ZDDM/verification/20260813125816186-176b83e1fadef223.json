@@ -1,0 +1,91 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest run <four focused verification and CI contract suites>\nResult: pass\nEvidence: 122/122 focused tests passed, including closure implementation metadata and negative lifecycle evidence validation.\nScope: exact implementation SHA 7606801ffb16318f53e128a846077ffa327e8929\n\nCheck: critical_paths\nCommand: bun run lint:core; bunx prettier <changed files> --check; git diff --check\nResult: pass\nEvidence: lint, format, and diff integrity passed on the final two-line implementation delta; prior exact-tree full-fast remained unchanged outside the comparator and its regression fixture.\nScope: lifecycle semantic comparator and CI planning regression\n\nCheck: hosted_integration\nCommand: GitHub Actions run https://github.com/basilisk-labs/agentplane/actions/runs/31701843433 for PR #4830\nResult: pass\nEvidence: Exact head 7606801ffb16318f53e128a846077ffa327e8929; plan 30s, package 42s, Windows 3m41s, contract 2m53s, static 4m58s, tests 7m36s, security 2m51s, CodeQL 3s, PR verification 16s; all required jobs succeeded.\nScope: hosted full regression on exact reviewed SHA\n\nCheck: task_outcome\nCommand: inspect final semantic reuse comparator, exact-SHA hosted evidence, prior full-fast evidence, and .agentplane/reports/T3ZDDM-010baa0-final/report.json\nResult: pass\nEvidence: The final implementation preserves the verified optimization and makes normal finish-generated implementation_commit metadata explicitly lifecycle-neutral without weakening exact-SHA, verdict, digest, content-address, single-task, or semantic-body checks.\nScope: approved verification optimization outcome and final closure reuse behavior",
+  "digest": "sha256:176b83e1fadef223d521e9b996923212e2b2655c34865bbca0b285caae9668ed",
+  "implementation_sha": "7606801ffb16318f53e128a846077ffa327e8929",
+  "input": {
+    "context": {
+      "digest": "sha256:09a7dd19858326cb007a6cee89a42cde93ea4c88b505642a07eeef2d61325617",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:56e8e197e7bc3bdd6e9bbabb8ba95ef41cb0957e50c42543bdb75310d70d8281",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:dcd676a9a9869d1ab16bcf1bf8575cfa63b864abb865ad7f960736cb8bbefde1",
+      "digest": "sha256:2c5276f74609262420e86f6b31856941fab231854a28cc9f0290736a4fd2b03a",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "122/122",
+          "reference": "122/122",
+          "source": "missing"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "e4ec4520ded988c60db3261714e68b5e22ac4e1f",
+      "digest": "sha256:968cd21e16f50940d67faf8cefb9212a625252e8efafad3b52c15f145bdb0040",
+      "strategy": "branch_diff",
+      "target_sha": "7606801ffb16318f53e128a846077ffa327e8929"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:591d47c645fe9b551ed1fd2369648773f9557112d94b53726793ea03255194d4",
+    "verify_steps_digest": "sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified exact final implementation 7606801ffb16318f53e128a846077ffa327e8929; focused, lint, and hosted full regression passed.",
+  "recorded_at": "2026-08-13T12:58:16.186Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Validate the versioned Verification Contract schema and every consumer. Expected: local, PR, release, evaluator, finish, and recovery read the same contract; deterministic observed effects can only add requirements; an LLM-supplied assessment or explanation cannot remove, waive, downgrade, or bypass a mandatory check.\n2. Run the selector matrix for localized code, cross-package dependencies, lifecycle/routing/verification policy, schemas/migrations, manifests/lockfiles, CI/public contracts, external effects, and unknown paths. Expected: ordinary local work selects only affected unit/integration groups plus critical paths; every central or unmapped case deterministically falls back to full regression with an explainable reason.\n3. Run the pinned small-direct benchmark before and after the change across enough repeated samples to report p50 and p95. Expected: localized reversible non-central work with no external effects completes mandatory local verification in <=60 seconds p50 and <=120 seconds p95, uses <=3 AgentPlane lifecycle/control-plane commands, and does not run the full CLI regression unless fallback is triggered.\n4. Exercise hosted phase routing on a PR and a risk-bearing PR/release fixture. Expected: every PR runs the complete CLI regression on the exact reviewed SHA; real E2E is required on PR and/or release by contract risk/effects; missing hosted evidence blocks completion.\n5. Produce the test-duplication inventory and fixture/startup profile. Expected: duplicated assertions are removed or justified at the cheapest sufficient level; immutable reusable fixtures and cheap isolated repo copies measurably reduce setup/startup cost while hermeticity, cleanup, and failure isolation tests pass.\n6. Run core, runtime, CLI, and docs/schema groups with forced independent failures. Expected: independent groups execute concurrently, aggregation is deterministic, required evidence from every group is retained, cancellation/cleanup semantics are bounded, and no secondary required failure is hidden.\n7. Validate metric output and regression guards. Expected: verification amplification, wall-clock time, test duplication, and lifecycle/control-plane command count have documented reproducible definitions, machine-readable results, a baseline/comparison/verdict, and thresholds that fail when the optimized path regresses.\n8. Run focused selector/contract/scheduler/fixture tests, full CLI regression, risk-selected real E2E, typecheck, lint, schema/docs parity, and benchmark quality checks. Expected: all required checks pass and the final evidence shows the speedup did not weaken observable behavior or safety coverage.",
+  "scope_digest": "sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e",
+  "task_id": "202608112259-T3ZDDM",
+  "verification_command": "agentplane verify 202608112259-T3ZDDM --ok --by TESTER",
+  "verifier": "TESTER"
+}
