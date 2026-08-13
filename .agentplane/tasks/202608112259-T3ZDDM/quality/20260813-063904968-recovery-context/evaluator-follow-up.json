@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608112259-T3ZDDM-4413426e9df77e1e004ab631",
+  "task_id": "202608112259-T3ZDDM",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Ensure evaluator and recovery preparation reconcile or fail closed on missing persisted Verification Contracts, then regenerate frozen exact-SHA evidence showing a non-null contract and contract-derived verification coverage.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The frozen evaluator readback contains no Verification Contract, so the contract is not authoritative for evaluator and recovery verification at the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/7c80c424cb46b62e2f079ff376cd447c21ebb2eacf0b5188c787f6837ed009ed.json",
+          "sha256": "sha256:7c80c424cb46b62e2f079ff376cd447c21ebb2eacf0b5188c787f6837ed009ed",
+          "line": 5,
+          "section": "verification_contract"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+          "sha256": "sha256:3489b388663d031da534fb6d8a2a65d086f775a41c4e79dfaaa6d7e5fd3ede87",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813063841498-26fac15396bac3bc.json",
+          "sha256": "sha256:330c192dde5a135548b873cac87da248058645a68e666348d3d367c4b4fb3d65",
+          "section": "result"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-063904968-recovery-context/evaluator-result.json"
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202608112259-T3ZDDM",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-13T06:40:19.668Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "ed8524e2131f261120e0a6b94f6c005ff15de2fc",
+  "blueprint_digest": "ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb",
+  "findings": [
+    "The frozen evaluator readback contains no Verification Contract, so the contract is not authoritative for evaluator and recovery verification at the evaluated SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/7c80c424cb46b62e2f079ff376cd447c21ebb2eacf0b5188c787f6837ed009ed.json",
+    ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+    ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813063841498-26fac15396bac3bc.json"
+  ],
+  "missing_tests": [
+    "Add an evaluator/recovery integration test using a legacy or already-active task that lacks a persisted contract; preparation must reconcile and expose a non-null contract or fail closed before accepting verification.",
+    "Add an exact-SHA assertion that observed-checks.selected checks and accepted verification evidence are derived from the persisted contract digest."
+  ],
+  "hidden_assumptions": [
+    "All tasks reaching evaluator or recovery were started after Verification Contract materialization was introduced.",
+    "An accepted verification record remains sufficient when the evaluator readback cannot identify the contract that selected its mandatory checks."
+  ],
+  "residual_risks": [
+    "Ensure evaluator and recovery preparation reconcile or fail closed on missing persisted Verification Contracts, then regenerate frozen exact-SHA evidence showing a non-null contract and contract-derived verification coverage."
+  ]
+}

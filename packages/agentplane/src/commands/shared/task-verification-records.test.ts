@@ -135,14 +135,15 @@ describe("task verification records", () => {
     await expect(verificationRecordPaths(taskRoot, task, null)).resolves.toEqual([]);
   });
 
-  it("accepts a current metadata-only record when both target SHAs are null", async () => {
+  it("rejects a passing record when no persisted Verification Contract exists", async () => {
     const gitRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-verification-record-"));
     tempRoots.push(gitRoot);
     const task = makeTask("T-METADATA");
     const taskRoot = path.join(gitRoot, ".agentplane", "tasks", task.id);
     const recordPath = await writeValidRecord({ taskRoot, task, implementationSha: null });
 
-    await expect(verificationRecordPaths(taskRoot, task, null)).resolves.toEqual([recordPath]);
+    await expect(verificationRecordPaths(taskRoot, task, null)).resolves.toEqual([]);
+    expect(recordPath).toContain("record.json");
   });
 
   it.each([

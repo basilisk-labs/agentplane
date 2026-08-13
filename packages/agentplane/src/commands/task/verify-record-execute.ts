@@ -35,6 +35,7 @@ import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { resolveVerificationInputIdentity } from "../shared/task-verification-input.js";
 import {
   reconcileTaskExecutionContract,
+  resolveTaskExecutionContract,
   withEffectiveTaskWorkflowMode,
 } from "../../runtime/task-routing/index.js";
 
@@ -206,6 +207,19 @@ async function recordVerificationResult(opts: {
       policyAction: "task_verify",
       phase: "verify",
       build: async (current) => {
+        const executionContract =
+          current.execution_contract ??
+          resolveTaskExecutionContract({
+            config,
+            task: current,
+            requestedMode:
+              current.execution_route?.requested_mode ??
+              current.execution_route?.selected_mode ??
+              "repository",
+          });
+        const contractTask = current.execution_contract
+          ? current
+          : { ...current, execution_contract: executionContract };
         const doc =
           (typeof current.doc === "string" ? current.doc : "") ||
           (await backend.getTaskDoc!(current.id));
@@ -261,7 +275,7 @@ async function recordVerificationResult(opts: {
             },
           });
         }
-        const contractCoverage = verificationContractEvidenceCoverage(current, opts.details);
+        const contractCoverage = verificationContractEvidenceCoverage(contractTask, opts.details);
         if (
           opts.state === "ok" &&
           contractCoverage.requiredChecks.length > 0 &&
@@ -289,8 +303,7 @@ async function recordVerificationResult(opts: {
           taskIds: qualityReviewTaskIds,
           targetSha: evaluatedSha,
           verifySteps: verificationScope,
-          verificationContractDigest:
-            current.execution_contract?.verification.contract?.digest ?? null,
+          verificationContractDigest: executionContract.verification.contract?.digest ?? null,
           workflowMode: config.workflow_mode,
           verificationDetails: opts.details,
         });
@@ -385,24 +398,22 @@ async function recordVerificationResult(opts: {
           verificationInputDigest: verificationInput?.digest ?? null,
         });
         const intents = [...execution.intents];
-        if (current.execution_contract) {
-          const verificationResults = (parsedDetails ?? []).map((check, index) => ({
-            id: `recorded-check-${String(index + 1)}`,
-            result: check.result,
-          }));
-          if (verificationResults.length === 0) {
-            verificationResults.push({
-              id: "verification-record",
-              result: opts.state === "ok" ? "pass" : "fail",
-            });
-          }
-          const reconciledContract = reconcileTaskExecutionContract({
-            contract: current.execution_contract,
-            changed_paths: [],
-            verification_results: verificationResults,
-          }).contract;
-          intents.push(setTaskFieldsIntent({ execution_contract: reconciledContract }));
+        const verificationResults = (parsedDetails ?? []).map((check, index) => ({
+          id: `recorded-check-${String(index + 1)}`,
+          result: check.result,
+        }));
+        if (verificationResults.length === 0) {
+          verificationResults.push({
+            id: "verification-record",
+            result: opts.state === "ok" ? "pass" : "fail",
+          });
         }
+        const reconciledContract = reconcileTaskExecutionContract({
+          contract: executionContract,
+          changed_paths: [],
+          verification_results: verificationResults,
+        }).contract;
+        intents.push(setTaskFieldsIntent({ execution_contract: reconciledContract }));
         if (opts.by === "EVALUATOR") {
           const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx, task: current }).catch(
             () => null,

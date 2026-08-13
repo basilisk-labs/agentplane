@@ -13,7 +13,7 @@ Created: 2026-08-12T08:35:41.656Z
 ## Verification
 
 - State: ok
-- Note: Exact-SHA 7836b00df passes full local, hosted, latency, provider, recovery, and verification-contract qualification with zero blocking defects.
+- Note: Exact-SHA ed8524e2131f passes full local, hosted, provider, efficiency, recovery, contract, and platform qualification with zero blocking defects.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -35,15 +35,17 @@ Created: 2026-08-12T08:35:41.656Z
  docs/user/cli-reference.generated.mdx              |    8 +-
  package.json                                       |    7 +-
  .../agentplane/src/backends/task-backend.test.ts   |   67 +
- .../src/backends/task-backend/shared/record.ts     |  133 +-
- .../agentplane/src/cli/local-ci-selection.test.ts  |   71 +-
+ .../shared/normalize-verification-contract.test.ts |   27 +
+ .../shared/normalize-verification-contract.ts      |  171 ++
+ .../src/backends/task-backend/shared/record.ts     |   12 +-
+ .../agentplane/src/cli/local-ci-selection.test.ts  |   98 +-
  .../run-cli.core.hooks.pre-push-full-fast.test.ts  |   61 +
  .../run-cli.core.pr-flow.worktree-runtime.test.ts  |  250 +--
  .../src/cli/run-cli.core.task-advance.test.ts      |    2 +-
  .../src/cli/run-cli.core.task-run.test.ts          |    4 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |   29 +-
  .../agentplane/src/cli/test-routing-check.test.ts  |   79 +-
- .../src/cli/verification-contract.test.ts          |  247 +++
+ .../src/cli/verification-contract.test.ts          |  313 +++
  .../src/commands/branch/work-start.materialize.ts  |   94 +-
  .../evaluator-qualification-packet.test.ts         |   14 +-
  .../commands/evaluator/evaluator-review-usecase.ts |   15 +
@@ -51,7 +53,7 @@ Created: 2026-08-12T08:35:41.656Z
  .../evaluator/evaluator-verification-records.ts    |   11 +-
  .../commands/release/ci-workflow-contract.test.ts  |    7 +
  .../src/commands/release/github-ci-plan.test.ts    |  113 +-
- .../commands/release/release-ci-contract.test.ts   |    5 +-
+ .../commands/release/release-ci-contract.test.ts   |   11 +-
  .../commands/shared/quality-review-target.test.ts  |   25 +
  .../src/commands/shared/quality-review-target.ts   |   18 +-
  .../shared/task-verification-input.test.ts         |   29 +
@@ -61,6 +63,8 @@ Created: 2026-08-12T08:35:41.656Z
  .../commands/shared/verification-details.test.ts   |   26 +
  .../src/commands/shared/verification-details.ts    |   15 +-
  .../commands/shared/workflow-step-policy-scope.ts  |    8 +-
+ .../branch-task-supervisor-artifact-commit.test.ts |   32 +
+ .../task/branch-task-supervisor-artifact-commit.ts |    4 +
  .../task/branch-task-supervisor-episodes.ts        |   21 +-
  .../agentplane/src/commands/task/brief-render.ts   |   13 +
  .../task/direct-task-supervisor-closeout.test.ts   |   17 +-
@@ -76,26 +80,27 @@ Created: 2026-08-12T08:35:41.656Z
  packages/agentplane/src/commands/verify.spec.ts    |    4 +-
  .../agentplane/src/runtime/task-routing/effects.ts |   37 +
  .../src/runtime/task-routing/observed-path.ts      |   67 +-
- .../src/runtime/task-routing/resolve.test.ts       |  155 ++
- .../agentplane/src/runtime/task-routing/resolve.ts |  110 +-
+ .../src/runtime/task-routing/resolve.test.ts       |  208 ++
+ .../agentplane/src/runtime/task-routing/resolve.ts |  124 +-
  packages/core/package.json                         |    5 +
- .../schemas/task-readme-frontmatter.schema.json    |  199 ++
- packages/core/schemas/tasks-export.schema.json     |  199 ++
+ .../schemas/task-readme-frontmatter.schema.json    |  501 +++++
+ packages/core/schemas/tasks-export.schema.json     |  501 +++++
  packages/core/src/git/git-diff.test.ts             |   14 +
  packages/core/src/git/git-diff.ts                  |    8 +-
  packages/core/src/runner/agent-semantic-result.ts  |   92 +-
- packages/core/src/tasks/index.ts                   |   11 +
- .../core/src/tasks/task-artifact-schema.task.ts    |   47 +-
- packages/core/src/tasks/task-store.ts              |   33 +
- .../src/tasks/verification-contract-kernel.d.ts    |   50 +
- .../core/src/tasks/verification-contract-kernel.js |  205 ++
- packages/core/src/tasks/verification-contract.ts   |   62 +
+ packages/core/src/tasks/index.ts                   |   13 +
+ .../core/src/tasks/task-artifact-schema.task.ts    |   89 +-
+ .../tasks/task-execution-contract-compat.test.ts   |  108 +
+ packages/core/src/tasks/task-store.ts              |   78 +
+ .../src/tasks/verification-contract-kernel.d.ts    |   95 +
+ .../core/src/tasks/verification-contract-kernel.js |  325 +++
+ packages/core/src/tasks/verification-contract.ts   |   73 +
  packages/core/tsup.config.ts                       |    1 +
- .../schemas/task-readme-frontmatter.schema.json    |  199 ++
- packages/spec/schemas/tasks-export.schema.json     |  199 ++
+ .../schemas/task-readme-frontmatter.schema.json    |  501 +++++
+ packages/spec/schemas/tasks-export.schema.json     |  501 +++++
  schemas/agent-semantic-result.schema.json          |  102 +-
- schemas/task-readme-frontmatter.schema.json        |  199 ++
- schemas/tasks-export.schema.json                   |  199 ++
+ schemas/task-readme-frontmatter.schema.json        |  501 +++++
+ schemas/tasks-export.schema.json                   |  501 +++++
  scripts/README.md                                  |   43 +-
  scripts/baselines/clone-baseline.json              |  249 +--
  .../baselines/v0.7-compatibility-candidate.json    | 2344 +++++++++-----------
@@ -107,7 +112,8 @@ Created: 2026-08-12T08:35:41.656Z
  .../check-compatibility-contract-baseline.mjs      |   19 +-
  scripts/checks/check-test-routing.mjs              |   67 +-
  scripts/checks/plan-github-ci.mjs                  |   45 +-
- scripts/checks/run-local-ci.mjs                    |  180 +-
+ scripts/checks/run-local-ci-group.mjs              |   72 +
+ scripts/checks/run-local-ci.mjs                    |  252 ++-
  scripts/checks/run-pre-push-hook.mjs               |   17 +-
  scripts/checks/verify-reused-parent.mjs            |   50 +
  scripts/lib/github-ci-capabilities.d.ts            |   11 +
@@ -116,7 +122,7 @@ Created: 2026-08-12T08:35:41.656Z
  scripts/lib/lifecycle-control-metrics.d.ts         |   30 +
  scripts/lib/lifecycle-control-metrics.mjs          |   66 +
  scripts/lib/local-ci-selection.d.ts                |   19 +
- scripts/lib/local-ci-selection.mjs                 |  104 +-
+ scripts/lib/local-ci-selection.mjs                 |  143 +-
  scripts/lib/local-verification-receipt.d.ts        |   26 +
  scripts/lib/local-verification-receipt.mjs         |   94 +
  scripts/lib/task-verification-contracts.d.ts       |   12 +
@@ -124,16 +130,16 @@ Created: 2026-08-12T08:35:41.656Z
  scripts/lib/verification-benchmark.d.ts            |   30 +
  scripts/lib/verification-benchmark.mjs             |   36 +
  scripts/lib/verification-contract.d.ts             |   13 +
- scripts/lib/verification-contract.mjs              |   65 +
- scripts/lib/verification-scheduler.d.ts            |   33 +
- scripts/lib/verification-scheduler.mjs             |  102 +
+ scripts/lib/verification-contract.mjs              |  119 +
+ scripts/lib/verification-scheduler.d.ts            |   35 +
+ scripts/lib/verification-scheduler.mjs             |  107 +
  .../measure-v0.7.1-matched-cli-latency.mjs         |   34 +-
  .../qualification/release-qualification.test.mjs   |   24 +-
  scripts/release/check-package-node-runtime.mjs     |   13 +-
  tsconfig.base.json                                 |    1 +
  .../docs/developer/verification-contract.png       |  Bin 0 -> 59695 bytes
  website/static/img/social/manifest.json            |    8 +
- 104 files changed, 6541 insertions(+), 2125 deletions(-)
+ 110 files changed, 9213 insertions(+), 2161 deletions(-)
 ```
 
 </details>

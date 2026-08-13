@@ -820,7 +820,7 @@ describe("evaluator run command", () => {
       by: "TESTER",
       note: "Focused evaluator checks passed.",
       details:
-        "Command: bunx vitest run evaluator-run.command.test.ts\nResult: pass\nEvidence: 1 test file passed\nScope: evaluator evidence",
+        "Check: task_outcome\nCommand: bunx vitest run evaluator-run.command.test.ts\nResult: pass\nEvidence: 1 test file passed\nScope: evaluator evidence",
       quiet: true,
     });
     const verificationDir = path.join(root, `.agentplane/tasks/${taskId}/verification`);
@@ -847,7 +847,7 @@ describe("evaluator run command", () => {
       `${JSON.stringify({
         ...supportedRecord,
         details:
-          "Command: bunx vitest run evaluator-run.command.test.ts\nResult: pass\nScope: evaluator evidence",
+          "Check: task_outcome\nCommand: bunx vitest run evaluator-run.command.test.ts\nResult: pass\nScope: evaluator evidence",
       })}\n`,
       "utf8",
     );
@@ -906,10 +906,51 @@ describe("evaluator run command", () => {
       task_id: taskId,
       result: "ok",
       verifier: "TESTER",
+      input: { schema_version: 3 },
+    });
+    const observedChecksPath = prepared.work_order.evidence.find(
+      (entry) => entry.kind === "observed_checks",
+    )?.path;
+    if (!observedChecksPath) throw new Error("Missing observed checks evidence.");
+    const observedChecks = JSON.parse(
+      await readFile(path.join(root, observedChecksPath), "utf8"),
+    ) as { verification_contract?: { digest?: string; selected_checks?: string[] } };
+    expect(observedChecks.verification_contract).toMatchObject({
+      digest: (record.input as { verification_contract_digest?: string })
+        .verification_contract_digest,
+      selected_checks: ["task_outcome"],
     });
     expect(typeof record.implementation_sha).toBe("string");
     expect(record.scope_digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
     expect(record.digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
+  });
+
+  it("fails closed when legacy passing verification has no persisted contract", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV24";
+    await addTask(root, taskId);
+    await commitPath(root, "src/evaluated.ts", "export const evaluated = true;\n", "feat: target");
+    const command = await loadCommandContext({ cwd: root, rootOverride: root });
+    await applyTaskMutation({
+      ctx: command,
+      taskId,
+      build: () => ({
+        intents: setTaskFieldsIntent({
+          verification: {
+            state: "ok",
+            updated_at: "2026-01-02T00:00:00.000Z",
+            updated_by: "TESTER",
+            note: "Legacy verification",
+          },
+        }),
+      }),
+    });
+
+    await expect(prepareTypedReview(root, taskId)).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { reason_code: "verification_contract_missing" },
+    });
   });
 
   it("rejects stale evaluator work orders after the evaluated SHA advances", async () => {

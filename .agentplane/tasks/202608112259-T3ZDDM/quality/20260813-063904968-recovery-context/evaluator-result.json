@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The frozen evaluator readback contains no Verification Contract, so the contract is not authoritative for evaluator and recovery verification at the evaluated SHA.",
+      "broken_invariant": "Acceptance criteria 1 and 3 require one versioned Verification Contract to be consumed by evaluator and recovery paths and to govern selected checks. The frozen observed-checks artifact reports verification_contract as null while verification is accepted as ok, allowing those consumers to proceed without the required authority.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/7c80c424cb46b62e2f079ff376cd447c21ebb2eacf0b5188c787f6837ed009ed.json",
+          "sha256": "sha256:7c80c424cb46b62e2f079ff376cd447c21ebb2eacf0b5188c787f6837ed009ed",
+          "line": 5,
+          "section": "verification_contract"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+          "sha256": "sha256:3489b388663d031da534fb6d8a2a65d086f775a41c4e79dfaaa6d7e5fd3ede87",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813063841498-26fac15396bac3bc.json",
+          "sha256": "sha256:330c192dde5a135548b873cac87da248058645a68e666348d3d367c4b4fb3d65",
+          "section": "result"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add an evaluator/recovery integration test using a legacy or already-active task that lacks a persisted contract; preparation must reconcile and expose a non-null contract or fail closed before accepting verification.",
+    "Add an exact-SHA assertion that observed-checks.selected checks and accepted verification evidence are derived from the persisted contract digest."
+  ],
+  "hidden_assumptions": [
+    "All tasks reaching evaluator or recovery were started after Verification Contract materialization was introduced.",
+    "An accepted verification record remains sufficient when the evaluator readback cannot identify the contract that selected its mandatory checks."
+  ],
+  "recovery_context": "Ensure evaluator and recovery preparation reconcile or fail closed on missing persisted Verification Contracts, then regenerate frozen exact-SHA evidence showing a non-null contract and contract-derived verification coverage."
+}

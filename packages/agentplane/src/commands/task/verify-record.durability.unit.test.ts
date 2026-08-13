@@ -68,6 +68,8 @@ describe("task verification durability", () => {
         state: "ok",
         by: "REVIEWER",
         note: "Looks good",
+        details:
+          "Check: task_outcome\nCommand: bun test\nResult: pass\nEvidence: focused tests passed\nScope: task outcome",
         quiet: true,
       }),
     ).rejects.toThrow("disk full");
@@ -109,6 +111,8 @@ describe("task verification durability", () => {
         state: "ok",
         by: "REVIEWER",
         note: "Looks good",
+        details:
+          "Check: task_outcome\nCommand: bun test\nResult: pass\nEvidence: focused tests passed\nScope: task outcome",
         quiet: true,
       }),
     ).rejects.toThrow("task write failed");
@@ -186,6 +190,38 @@ describe("task verification durability", () => {
             { id: "recorded-check-2", result: "pass" },
             { id: "recorded-check-3", result: "pass" },
           ],
+        },
+      },
+    });
+  });
+
+  it("materializes a Verification Contract for an already-active legacy task", async () => {
+    const root = await makeRepo();
+    const taskId = "202602050900-V1F4";
+    await addTask(root, taskId);
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+    ctx.config.workflow_mode = "direct";
+
+    await cmdVerifyParsed({
+      ctx,
+      cwd: root,
+      rootOverride: undefined,
+      taskId,
+      state: "ok",
+      by: "REVIEWER",
+      note: "Legacy task outcome passed.",
+      details:
+        "Check: task_outcome\nCommand: bun test\nResult: pass\nEvidence: focused tests passed\nScope: task outcome",
+      quiet: true,
+    });
+
+    const task = await ctx.taskBackend.getTask(taskId);
+    expect(task?.execution_contract).toMatchObject({
+      source: "legacy_compatibility",
+      verification: {
+        contract: {
+          schema_version: 2,
+          selected_checks: ["task_outcome"],
         },
       },
     });
