@@ -247,11 +247,7 @@ function measureSequence({ cliPath, commands, cwd, probeBin, logPath, surfaceId 
   let signal = null;
   for (const argv of commands) {
     const result = invoke(cliPath, argv, cwd, {
-      env: {
-        AGENTPLANE_BENCH_PROCESS_LOG: logPath,
-        AGENTPLANE_TRACE: "1",
-        PATH: `${probeBin}:/usr/bin:/bin`,
-      },
+      env: supervisorLatencyMeasurementEnvironment(logPath, probeBin),
     });
     outputs.push(result.stdout ?? "");
     stderr.push(result.stderr ?? "");
@@ -350,18 +346,27 @@ function summarizeSamples(samples) {
   };
 }
 
-function compareSurface(id, baselineSamples, candidateSamples) {
+export function compareSupervisorLatencySamples(id, baselineSamples, candidateSamples) {
   const baseline = summarizeSamples(baselineSamples);
   const candidate = summarizeSamples(candidateSamples);
-  const ceiling = baseline.median_ms * 1.1;
-  const p95Ceiling = baseline.p95_ms * 1.1;
+  const maximumIncreaseRatio = 0.1;
+  const pairedRatioSamples = candidateSamples.map((sample, index) => {
+    const baselineDuration = baselineSamples[index]?.duration_ms ?? 0;
+    return baselineDuration === 0 ? null : sample.duration_ms / baselineDuration - 1;
+  });
+  if (pairedRatioSamples.includes(null)) {
+    throw new Error(`supervisor latency ${id} cannot compare a zero-duration baseline sample`);
+  }
+  const pairedRatios = pairedRatioSamples;
+  const pairedRatio = summarizeNumbers(pairedRatios);
+  const pairedRatioThresholdTolerance = 1e-9;
   const passed =
     baseline.exit_codes.length === 1 &&
     baseline.exit_codes[0] === 0 &&
     candidate.exit_codes.length === 1 &&
     candidate.exit_codes[0] === 0 &&
-    candidate.median_ms <= ceiling &&
-    candidate.p95_ms <= p95Ceiling;
+    pairedRatio.median_ms <= maximumIncreaseRatio + pairedRatioThresholdTolerance &&
+    pairedRatio.p95_ms <= maximumIncreaseRatio + pairedRatioThresholdTolerance;
   return {
     id,
     baseline,
@@ -372,11 +377,27 @@ function compareSurface(id, baselineSamples, candidateSamples) {
         ? null
         : (candidate.median_ms - baseline.median_ms) / baseline.median_ms,
     threshold: {
-      median_ms_maximum: roundMs(ceiling),
-      p95_ms_maximum: roundMs(p95Ceiling),
-      maximum_increase_ratio: 0.1,
+      paired_median_increase_ratio_maximum: maximumIncreaseRatio,
+      paired_p95_increase_ratio_maximum: maximumIncreaseRatio,
+      maximum_increase_ratio: maximumIncreaseRatio,
+    },
+    paired_comparison: {
+      ratio_samples: pairedRatios,
+      median_increase_ratio: pairedRatio.median_ms,
+      p95_increase_ratio: pairedRatio.p95_ms,
     },
     verdict: passed ? "pass" : "fail",
+  };
+}
+
+export function supervisorLatencyMeasurementEnvironment(logPath, probeBin) {
+  return {
+    AGENTPLANE_BENCH_PROCESS_LOG: logPath,
+    // Preparation tracing serializes and hashes the candidate graph, while the v0.6.26
+    // baseline has no equivalent instrumentation. Keep it outside the user-facing timer;
+    // graph semantics are covered by the dedicated supervisor parity and tracing suites.
+    AGENTPLANE_TRACE: "0",
+    PATH: `${probeBin}:/usr/bin:/bin`,
   };
 }
 
@@ -447,7 +468,7 @@ function measurePhase({
         if (phase === "cold") rmSync(cwd, { recursive: true, force: true });
       }
     }
-    result.push(compareSurface(surface, samples.baseline, samples.candidate));
+    result.push(compareSupervisorLatencySamples(surface, samples.baseline, samples.candidate));
   }
   return result;
 }
@@ -593,7 +614,7 @@ async function main(argv = process.argv.slice(2)) {
         },
         provider: "not invoked",
         threshold:
-          "candidate median and p95 must each be no more than 10% above the semantic-equivalent v0.6.26 preparation path",
+          "paired candidate/baseline median and p95 increase ratios must each be no more than 10% for the semantic-equivalent v0.6.26 preparation path",
       },
       sample_contract: {
         cold_runs: options.coldRuns,
@@ -605,7 +626,7 @@ async function main(argv = process.argv.slice(2)) {
         subprocesses:
           "logical count equals CLI launches plus Git commands observed through the isolated PATH probe",
         cache:
-          "preparation graph statuses are observed from AGENTPLANE_TRACE; no cross-process result cache is inferred",
+          "preparation tracing is excluded from timed samples because v0.6.26 has no equivalent instrumentation; graph semantics are verified by dedicated supervisor parity and tracing suites",
       },
       phases,
       failure_ids: failures,

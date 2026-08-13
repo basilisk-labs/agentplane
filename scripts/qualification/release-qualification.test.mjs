@@ -33,7 +33,9 @@ import {
   validateMatchedLatencyReport,
 } from "./measure-v0.7.1-matched-cli-latency.mjs";
 import {
+  compareSupervisorLatencySamples,
   summarizeGitCommandHistogram,
+  supervisorLatencyMeasurementEnvironment,
   validateSupervisorLatencyReport,
 } from "./measure-v0.7.1-supervisor-latency.mjs";
 import {
@@ -149,7 +151,52 @@ function supervisorLatencySurfaces(count) {
   }));
 }
 
+function supervisorLatencySample(duration_ms) {
+  return {
+    duration_ms,
+    exit_code: 0,
+    git_commands: [],
+    logical_subprocess_count: 1,
+    git_subprocess_count: 0,
+    repository_scan_count: 0,
+    git_snapshot_count: 0,
+    preparation_cache: {},
+    packet_bytes: 1,
+    prepared_context_bytes: 1,
+    stderr: "",
+  };
+}
+
 describe("v0.7.1 release qualification contract", () => {
+  it("gates supervisor latency on paired ratios instead of unrelated host-load tails", () => {
+    const hostLoad = [100, 100, 100, 100, 100, 500, 500, 500, 500, 500];
+    const stable = compareSupervisorLatencySamples(
+      "managed_run_preparation",
+      hostLoad.map((duration) => supervisorLatencySample(duration)),
+      hostLoad.map((duration) => supervisorLatencySample(duration * 1.05)),
+    );
+    const regressed = compareSupervisorLatencySamples(
+      "managed_run_preparation",
+      hostLoad.map((duration) => supervisorLatencySample(duration)),
+      hostLoad.map((duration, index) =>
+        supervisorLatencySample(duration * (index === 0 ? 1.05 : 1.15)),
+      ),
+    );
+
+    assert.equal(stable.verdict, "pass");
+    assert.equal(stable.paired_comparison.median_increase_ratio, 0.05);
+    assert.equal(stable.paired_comparison.p95_increase_ratio, 0.05);
+    assert.equal(regressed.verdict, "fail");
+    assert.equal(regressed.paired_comparison.p95_increase_ratio, 0.15);
+  });
+
+  it("excludes candidate-only preparation tracing from supervisor latency samples", () => {
+    const environment = supervisorLatencyMeasurementEnvironment("/tmp/probe.log", "/tmp/probe");
+    assert.equal(environment.AGENTPLANE_TRACE, "0");
+    assert.equal(environment.AGENTPLANE_BENCH_PROCESS_LOG, "/tmp/probe.log");
+    assert.equal(environment.PATH, "/tmp/probe:/usr/bin:/bin");
+  });
+
   it("pins the canonical provider gate to the reviewed Codex runtime", () => {
     const packageJson = JSON.parse(readFileSync(path.join(repoRoot, "package.json"), "utf8"));
     assert.equal(
