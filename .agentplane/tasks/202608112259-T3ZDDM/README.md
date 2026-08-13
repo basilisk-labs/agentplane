@@ -1,11 +1,11 @@
 ---
 id: "202608112259-T3ZDDM"
 title: "Optimize the verification and test pipeline around one computed Verification Contract"
-result_summary: "pre-merge closure"
+result_summary: "pre-merge closure after review fixes"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 24
 origin:
   system: "manual"
 depends_on:
@@ -28,50 +28,50 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-13T11:45:24.441Z"
+  updated_at: "2026-08-13T12:44:57.089Z"
   updated_by: "TESTER"
-  note: "Verified exact implementation 010baa075cf40e400747d255140f6f03a04032eb; all blocking local, provider, benchmark, and hosted checks passed."
+  note: "Verified exact review-fix implementation d4e26ce7433df38969c36c0df554ee532fd37c92; all blocking focused, local full-fast, and hosted checks passed."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-13T11:46:53.990Z"
+  updated_at: "2026-08-13T12:45:55.064Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "010baa075cf40e400747d255140f6f03a04032eb"
+  evaluated_sha: "d4e26ce7433df38969c36c0df554ee532fd37c92"
   blueprint_digest: "ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb"
   evidence_refs:
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-114606606-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-114606606-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/6470b4798be31ce8328fa374f994515b0eff2bf9d85ef4b2e7da8beffb6285ae.md"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-114606606-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-114606606-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-114606606-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-124512372-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-124512372-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/efd69a0c606d2e7597f9695dd73a058322a1f2855dd4fd690069baddabf50435.md"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-124512372-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-124512372-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-124512372-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608112259-T3ZDDM/README.md"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/7b0d385efa86f109510d5d6431890a12eeb45b380fac2459cd6dbfb8fd2c8b45.patch"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/11c30351744cd16b55752100c2fbd891bb0f3423d1c92d11856e7ddd1fe97a53.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813114524441-d1bf42d99defc8b7.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/44cd8c19e72a031c1a0509a92bb1a300f9750f533058af26fa6c196893bef15d.patch"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/c5c614dcbdf53d2877b948abecbb17abc6695999f71f2cf10ef4c9f93756050a.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813124457089-e18c7df6e87ddb78.json"
     - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/478fe6fd0549b9c5f29594800dcc6351fe24c8d2b80ecb1bb3e98d5c1600c1ea.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The standalone risk-E2E audit artifact is tied to an earlier SHA and reports an incomplete overall qualification, although the frozen verification record reports the final exact-SHA hosted and release-qualification gates as passing."
+    - "The final exact-SHA verification reuses the earlier 18/19 performance qualification instead of rerunning the full benchmark after the review fixes; exact-SHA focused and hosted regression evidence covers the behavioral delta, but benchmark freshness remains a residual risk."
 token_usage:
-  agent_runs: 6
-  input_tokens: 1501682
-  journal_digest: "sha256:7e14ba0721dacd191f5f786df417e95c1992c49e44d1a72841add2520a602eac"
-  observed_agent_runs: 6
+  agent_runs: 7
+  input_tokens: 1624615
+  journal_digest: "sha256:9b2e547071bc0bd16231bf9549b4e1b8b34480d4e681d849bd88684773374758"
+  observed_agent_runs: 7
   observed_by: "agentplane"
-  output_tokens: 17000
-  reasoning_tokens: 3552
+  output_tokens: 18823
+  reasoning_tokens: 4278
   schema_version: 1
   source: "supervisor_journal"
   state: "observed"
-  total_tokens: 1522234
+  total_tokens: 1647716
   unavailable_reason: null
-  updated_at: "2026-08-13T11:47:28.231Z"
+  updated_at: "2026-08-13T12:46:48.810Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -231,6 +231,7 @@ execution_contract:
       - "scripts/lib/github-ci-capabilities.d.ts"
       - "scripts/lib/github-ci-capabilities.mjs"
       - "scripts/lib/installed-migration-matrix.mjs"
+      - "scripts/lib/lifecycle-artifact-reuse.mjs"
       - "scripts/lib/lifecycle-control-metrics.d.ts"
       - "scripts/lib/lifecycle-control-metrics.mjs"
       - "scripts/lib/local-ci-selection.d.ts"
@@ -313,7 +314,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:eb93e527da410de788c1d216543498118964d2c4914d31a7407f78f481535089"
+      digest: "sha256:591d47c645fe9b551ed1fd2369648773f9557112d94b53726793ea03255194d4"
       escalation_reasons:
         - "central_path:.github/codeql/codeql-config.yml"
         - "central_path:.github/workflows/ci.yml"
@@ -368,6 +369,7 @@ execution_contract:
         - "central_path:scripts/lib/github-ci-capabilities.d.ts"
         - "central_path:scripts/lib/github-ci-capabilities.mjs"
         - "central_path:scripts/lib/installed-migration-matrix.mjs"
+        - "central_path:scripts/lib/lifecycle-artifact-reuse.mjs"
         - "central_path:scripts/lib/lifecycle-control-metrics.d.ts"
         - "central_path:scripts/lib/lifecycle-control-metrics.mjs"
         - "central_path:scripts/lib/local-ci-selection.d.ts"
@@ -505,6 +507,7 @@ execution_contract:
           - "scripts/lib/github-ci-capabilities.d.ts"
           - "scripts/lib/github-ci-capabilities.mjs"
           - "scripts/lib/installed-migration-matrix.mjs"
+          - "scripts/lib/lifecycle-artifact-reuse.mjs"
           - "scripts/lib/lifecycle-control-metrics.d.ts"
           - "scripts/lib/lifecycle-control-metrics.mjs"
           - "scripts/lib/local-ci-selection.d.ts"
@@ -572,8 +575,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "010baa075cf40e400747d255140f6f03a04032eb"
-  message: "⚡ T3ZDDM performance: focus CodeQL on shipped code"
+  hash: "d4e26ce7433df38969c36c0df554ee532fd37c92"
+  message: "🚧 T3ZDDM task: fix verification routing review findings"
 comments:
   -
     author: "CODER"
@@ -584,6 +587,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: exact review-fix implementation d4e26ce7433df38969c36c0df554ee532fd37c92 passed focused 126/126, local full-fast 5/5, independent evaluator pass, and hosted PR verification run 31700891966."
 events:
   -
     type: "status"
@@ -644,9 +650,23 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "010baa075cf40e400747d255140f6f03a04032eb"
+  -
+    type: "verify"
+    at: "2026-08-13T12:44:57.089Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified exact review-fix implementation d4e26ce7433df38969c36c0df554ee532fd37c92; all blocking focused, local full-fast, and hosted checks passed."
+  -
+    type: "status"
+    at: "2026-08-13T12:46:48.810Z"
+    author: "INTEGRATOR"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: exact review-fix implementation d4e26ce7433df38969c36c0df554ee532fd37c92 passed focused 126/126, local full-fast 5/5, independent evaluator pass, and hosted PR verification run 31700891966."
+    commit: "d4e26ce7433df38969c36c0df554ee532fd37c92"
 doc_version: 3
-doc_updated_at: "2026-08-13T11:47:28.241Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-13T12:46:48.841Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement a versioned Verification Contract computed once from the semantic task assessment introduced by 202608112232-3NC7Y4 and strengthened monotonically by deterministic observed effects. Make that contract the single authority for local, PR, release, evaluator, finish, and recovery verification. Add change-aware test selection so local development runs only affected unit/integration suites plus mandatory critical-path checks; run the full CLI regression on PR; run real E2E on PR and release according to risk and observed effects. Add a conservative fallback that selects full regression whenever central components, shared contracts, routing, lifecycle, verification policy, schemas, package/lockfiles, CI, or unknown/unmapped effects are touched. The LLM may propose semantic scope and explain results but must not remove, downgrade, or bypass mandatory checks selected by deterministic policy. Audit duplicate behavioral coverage and move assertions to the cheapest sufficient level, retaining higher-level tests only for observable cross-boundary contracts. Profile fixture creation and process startup; replace repeated mutable setup with reusable immutable fixtures and cheap isolated repository copies where hermeticity is preserved. Execute independent core, runtime, CLI, and docs/schema groups in parallel with deterministic aggregation, failure reporting, and cancellation semantics. Instrument and report verification amplification, wall-clock verification time, test duplication, and the number of AgentPlane lifecycle/control-plane commands. Define small direct work as localized, reversible, non-central, with no external effects; on pinned reference hardware target mandatory local verification at no more than 60 seconds p50 and 120 seconds p95, no more than three lifecycle/control-plane commands, and no local full CLI regression unless the deterministic fallback triggers. Establish a reproducible before/after benchmark, document metric definitions and residual risk, and prove that speedups do not weaken required evidence."
 sections:
   Summary: |-
@@ -997,12 +1017,69 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-13T12:44:57.089Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified exact review-fix implementation d4e26ce7433df38969c36c0df554ee532fd37c92; all blocking focused, local full-fast, and hosted checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e, input_digest=sha256:a51a27f84660fcac570e4b8c107b08ad3a7546723264617b8bab9b97d41040e2
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run <five focused verification and CI contract suites>; node scripts/checks/run-local-ci.mjs --mode fast --changed-files <review-fix files>
+    Result: pass
+    Evidence: 126/126 focused tests passed. Exact committed tree completed five full-fast groups with one build, runtime 18/18, critical CLI 91/91, and aggregate wall_clock_ms=280471 with ok=true.
+    Scope: exact implementation SHA d4e26ce7433df38969c36c0df554ee532fd37c92
+
+    Check: critical_paths
+    Command: bun run typecheck; bun run lint:core; bun run workflows:lint; bun run docs:scripts:check; git diff --check
+    Result: pass
+    Evidence: TypeScript, lint, formatting, workflow command contract, lifecycle parity, critical route, scripts inventory, and diff integrity all passed before commit; commit d4e26ce7433df38969c36c0df554ee532fd37c92 contains the unchanged verified tree.
+    Scope: Verification Contract authority, monotonic reconciliation, CI head selection, lifecycle evidence validation, and executor routing
+
+    Check: hosted_integration
+    Command: GitHub Actions run https://github.com/basilisk-labs/agentplane/actions/runs/31700891966 for PR #4830
+    Result: pass
+    Evidence: Exact head d4e26ce7433df38969c36c0df554ee532fd37c92; plan 23s, package 41s, Windows 3m10s, contract 2m52s, static 4m59s, tests 5m47s, security 2m47s, CodeQL 6s, PR verification 15s; all required jobs succeeded.
+    Scope: hosted full regression on the exact reviewed SHA
+
+    Check: task_outcome
+    Command: inspect review fixes, regression tests, prior final qualification .agentplane/reports/T3ZDDM-010baa0-final/report.json, and exact-SHA hosted evidence
+    Result: pass
+    Evidence: Four blocking review findings are fixed: contract escalation controls execution, observed path escalation is monotonic, lifecycle reuse is semantic and evidence-bound, and PR routing uses the real head SHA. Prior provider qualification remains ready with 18/19 passed and zero blocking diagnostics; current exact-SHA tests prove the review delta without weakening its measured efficiency gains.
+    Scope: approved verification optimization outcome and review-fix delta
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou/.agentplane/tasks/202608112259-T3ZDDM/blueprint/resolved-snapshot.json
+    - old_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+    - current_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608112259-T3ZDDM
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "d4e26ce7433df38969c36c0df554ee532fd37c92"
+    message: "🚧 T3ZDDM task: fix verification routing review findings"
   workflow_route_baseline:
     start_head_sha: "e4ec4520ded988c60db3261714e68b5e22ac4e1f"
     version: 1
@@ -1365,6 +1442,60 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-13T12:44:57.089Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified exact review-fix implementation d4e26ce7433df38969c36c0df554ee532fd37c92; all blocking focused, local full-fast, and hosted checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e, input_digest=sha256:a51a27f84660fcac570e4b8c107b08ad3a7546723264617b8bab9b97d41040e2
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run <five focused verification and CI contract suites>; node scripts/checks/run-local-ci.mjs --mode fast --changed-files <review-fix files>
+Result: pass
+Evidence: 126/126 focused tests passed. Exact committed tree completed five full-fast groups with one build, runtime 18/18, critical CLI 91/91, and aggregate wall_clock_ms=280471 with ok=true.
+Scope: exact implementation SHA d4e26ce7433df38969c36c0df554ee532fd37c92
+
+Check: critical_paths
+Command: bun run typecheck; bun run lint:core; bun run workflows:lint; bun run docs:scripts:check; git diff --check
+Result: pass
+Evidence: TypeScript, lint, formatting, workflow command contract, lifecycle parity, critical route, scripts inventory, and diff integrity all passed before commit; commit d4e26ce7433df38969c36c0df554ee532fd37c92 contains the unchanged verified tree.
+Scope: Verification Contract authority, monotonic reconciliation, CI head selection, lifecycle evidence validation, and executor routing
+
+Check: hosted_integration
+Command: GitHub Actions run https://github.com/basilisk-labs/agentplane/actions/runs/31700891966 for PR #4830
+Result: pass
+Evidence: Exact head d4e26ce7433df38969c36c0df554ee532fd37c92; plan 23s, package 41s, Windows 3m10s, contract 2m52s, static 4m59s, tests 5m47s, security 2m47s, CodeQL 6s, PR verification 15s; all required jobs succeeded.
+Scope: hosted full regression on the exact reviewed SHA
+
+Check: task_outcome
+Command: inspect review fixes, regression tests, prior final qualification .agentplane/reports/T3ZDDM-010baa0-final/report.json, and exact-SHA hosted evidence
+Result: pass
+Evidence: Four blocking review findings are fixed: contract escalation controls execution, observed path escalation is monotonic, lifecycle reuse is semantic and evidence-bound, and PR routing uses the real head SHA. Prior provider qualification remains ready with 18/19 passed and zero blocking diagnostics; current exact-SHA tests prove the review delta without weakening its measured efficiency gains.
+Scope: approved verification optimization outcome and review-fix delta
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou/.agentplane/tasks/202608112259-T3ZDDM/blueprint/resolved-snapshot.json
+- old_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+- current_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608112259-T3ZDDM
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1377,12 +1508,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `observed`
-- Completeness: `6/6` agent runs
-- Input tokens: `1501682`
-- Output tokens: `17000`
-- Reasoning tokens: `3552`
-- Total tokens: `1522234`
+- Completeness: `7/7` agent runs
+- Input tokens: `1624615`
+- Output tokens: `18823`
+- Reasoning tokens: `4278`
+- Total tokens: `1647716`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:7e14ba0721dacd191f5f786df417e95c1992c49e44d1a72841add2520a602eac`
+- Journal digest: `sha256:9b2e547071bc0bd16231bf9549b4e1b8b34480d4e681d849bd88684773374758`
 - Unavailable reason: `none`
-- Updated at: `2026-08-13T11:47:28.231Z`
+- Updated at: `2026-08-13T12:46:48.810Z`

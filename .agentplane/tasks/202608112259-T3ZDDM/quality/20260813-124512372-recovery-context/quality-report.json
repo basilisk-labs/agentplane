@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608112259-T3ZDDM",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-13T12:45:55.064Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "d4e26ce7433df38969c36c0df554ee532fd37c92",
+  "blueprint_digest": "ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb",
+  "findings": [
+    "The final exact-SHA verification reuses the earlier 18/19 performance qualification instead of rerunning the full benchmark after the review fixes; exact-SHA focused and hosted regression evidence covers the behavioral delta, but benchmark freshness remains a residual risk."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813124457089-e18c7df6e87ddb78.json"
+  ],
+  "missing_tests": [
+    "A complete pinned before/after benchmark rerun on evaluated SHA d4e26ce7433df38969c36c0df554ee532fd37c92 would remove the remaining performance-evidence freshness risk."
+  ],
+  "hidden_assumptions": [
+    "The review fixes do not materially change the previously measured small-direct latency, lifecycle-command count, fixture/startup profile, or duplication metrics.",
+    "The frozen hosted-check summary accurately represents the complete required CLI regression on the exact reviewed SHA."
+  ],
+  "residual_risks": []
+}
