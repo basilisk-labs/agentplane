@@ -614,13 +614,6 @@ function runFixture({ run, cli, packages, tempRoot }) {
   );
   packetExchange(evaluator, "EVALUATOR");
 
-  const afterVerification = runInstalledJson(
-    run,
-    cli,
-    repo,
-    ["task", "show", taskId],
-    "task show after verification",
-  );
   const changedPaths = git(run, repo, ["diff", "--name-only", executionBase, "HEAD", "--"])
     .split("\n")
     .filter(Boolean)
@@ -631,11 +624,15 @@ function runFixture({ run, cli, packages, tempRoot }) {
     docs: readTracked(accessLog, path.join(repo, "docs", "guide.md"), "evaluator_review"),
     metadata: readTracked(accessLog, path.join(repo, ".gitignore"), "evaluator_review"),
   };
+  const evaluatorTestResult = runInstalledFailure("node", repo, [
+    "--test",
+    "test/greeting.test.mjs",
+  ]);
   const reviewReady =
     PACKAGED_MIXED_SCOPE_REQUIRED_PATHS.every((requiredPath) =>
       changedPaths.includes(requiredPath),
     ) &&
-    afterVerification.verification?.state === "ok" &&
+    evaluatorTestResult.status === 0 &&
     evaluatorProductSnapshot.source.includes("Hello, ${name}!") &&
     evaluatorProductSnapshot.test.includes("personalized greeting") &&
     evaluatorProductSnapshot.docs.includes("Hello, Ada!") &&
