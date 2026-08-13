@@ -561,7 +561,8 @@ export function renderDefectLedger(report) {
   return `${lines.join("\n")}\n`;
 }
 
-export function qualificationExitCode(report) {
+export function qualificationExitCode(report, opts = {}) {
+  if (opts.failOnScenarioFailure === true && report.summary.failed > 0) return 1;
   if (report.mode === "audit") return 0;
   return report.release_ready ? 0 : 1;
 }

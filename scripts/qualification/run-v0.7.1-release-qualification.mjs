@@ -69,6 +69,7 @@ function helpText() {
     "  --subject <sha>           Exact candidate commit. Defaults to current HEAD in audit mode.",
     "  --codex-version <version> Exact Codex CLI version; required with --provider.",
     "  --scenario <id>           Select one scenario; repeatable through comma-separated ids.",
+    "  --fail-on-scenario-failure  Exit nonzero when any selected scenario fails, including in audit mode.",
     "  --manifest <path>         Override the versioned manifest.",
     "  --out-dir <path>          Evidence directory under the repository.",
     "  --dry-run                 Validate and print the selected commands without executing them.",
@@ -115,7 +116,7 @@ function parseArgs(argv) {
       "concurrency",
       "provider-concurrency",
     ],
-    booleanFlags: ["provider", "dry-run", "help"],
+    booleanFlags: ["provider", "dry-run", "fail-on-scenario-failure", "help"],
     aliases: { h: "help" },
   });
   if (positionals.length > 0) {
@@ -157,6 +158,7 @@ function parseArgs(argv) {
     codexVersion: flags["codex-version"] ?? "",
     concurrency,
     dryRun: flags["dry-run"] === true,
+    failOnScenarioFailure: flags["fail-on-scenario-failure"] === true,
     help: flags.help === true,
     manifestPath: path.resolve(flags.manifest ?? defaultManifestPath),
     mode,
@@ -482,7 +484,9 @@ async function main(argv = process.argv.slice(2)) {
       `qualification defects: ${path.relative(repoRoot, ledgerPath)}\n` +
       `qualification verdict: ${report.verdict} (${report.summary.passed}/${report.summary.selected} passed; ${report.summary.blocking} blocking)\n`,
   );
-  process.exitCode = qualificationExitCode(report);
+  process.exitCode = qualificationExitCode(report, {
+    failOnScenarioFailure: options.failOnScenarioFailure,
+  });
 }
 
 if (isDirectRun(import.meta.url)) {
