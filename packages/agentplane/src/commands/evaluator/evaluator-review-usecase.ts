@@ -57,6 +57,7 @@ import {
   isWithinRoot,
   relative,
   uniqueStrings,
+  type PreparedEvaluatorReview,
 } from "./evaluator-review-shared.js";
 import type { EvaluatorRunProvenance } from "./evaluator.spec.js";
 import { renderEvaluatorResultOutputSchemaJson } from "./evaluator-result-schema.js";
@@ -72,6 +73,7 @@ export {
   relative,
   uniqueStrings,
   type HumanEvaluatorReviewInput,
+  type PreparedEvaluatorReview,
 } from "./evaluator-review-shared.js";
 export {
   renderActualDiff,
@@ -85,16 +87,6 @@ export type { EvaluatorWorkOrder } from "./evaluator-work-order.js";
 const EVALUATOR_WORK_ORDER_FILE = "evaluator-work-order.json";
 const EVALUATOR_RESULT_FILE = "evaluator-result.json";
 const EVALUATOR_PACKET_MANIFEST_FILE = "evaluator-evidence-manifest.json";
-export type PreparedEvaluatorReview = {
-  work_order: EvaluatorWorkOrder;
-  work_order_path: string;
-  report_path: string;
-  prompt_path: string;
-  output_schema_path: string;
-  packet_manifest_path: string;
-  opinion_path: string;
-  result_path: string;
-};
 
 async function assertTaskReviewWorkspaceClean(opts: {
   ctx: CommandContext;

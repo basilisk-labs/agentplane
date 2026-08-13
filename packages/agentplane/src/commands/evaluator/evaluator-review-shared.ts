@@ -2,6 +2,7 @@ import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { EvaluatorRunVerdict } from "./evaluator.spec.js";
+import type { EvaluatorWorkOrder } from "./evaluator-work-order.js";
 
 export type HumanEvaluatorReviewInput = {
   verdict: EvaluatorRunVerdict;
@@ -11,6 +12,17 @@ export type HumanEvaluatorReviewInput = {
   missing_tests: string[];
   hidden_assumptions: string[];
   residual_risks: string[];
+};
+
+export type PreparedEvaluatorReview = {
+  work_order: EvaluatorWorkOrder;
+  work_order_path: string;
+  report_path: string;
+  prompt_path: string;
+  output_schema_path: string;
+  packet_manifest_path: string;
+  opinion_path: string;
+  result_path: string;
 };
 
 export function relative(gitRoot: string, target: string): string {
