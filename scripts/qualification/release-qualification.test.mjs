@@ -208,7 +208,7 @@ describe("v0.7.1 release qualification contract", () => {
   it("fails the installed mixed-scope contract for every omitted lifecycle proof", () => {
     const fixtureRepo = path.join(tmpdir(), "agentplane-mixed-scope-contract-fixture");
     const valid = {
-      plan_bytes: 4_219,
+      plan_bytes: 4219,
       phase_roles: ["PLANNER", "EXECUTOR", "TESTER:supervisor_owned", "EVALUATOR"],
       fixture_repo: fixtureRepo,
       changed_paths: [".gitignore", "docs/guide.md", "src/greeting.mjs", "test/greeting.test.mjs"],
@@ -225,7 +225,7 @@ describe("v0.7.1 release qualification contract", () => {
     assert.equal(assertPackagedMixedScopeEvidence(valid), valid);
 
     const cases = [
-      ["missing_planner", (value) => (value.plan_bytes = 3_072)],
+      ["missing_planner", (value) => (value.plan_bytes = 3072)],
       ["missing_executor", (value) => (value.phase_roles = ["PLANNER", "EVALUATOR"])],
       ["missing_code", (value) => value.changed_paths.splice(2, 1)],
       ["missing_tests", (value) => value.changed_paths.pop()],
