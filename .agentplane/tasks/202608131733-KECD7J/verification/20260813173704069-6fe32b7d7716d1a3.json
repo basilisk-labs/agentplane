@@ -1,0 +1,83 @@
+{
+  "details": "Check: docs_contract\nCommand: inspect incident archive, active registry, and installed asset mirror; bunx prettier affected files --check\nResult: pass\nEvidence: both incident IDs appear exactly once in the archive with final fix and enforcement evidence; active registry and asset mirror contain no open entries and match exactly\nScope: incident source-of-truth migration and installed policy parity\n\nCheck: full_regression\nCommand: bunx vitest run packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/release/shared-worktree-dependency-manifest.test.ts\nResult: pass\nEvidence: 3 files and 37 tests passed on committed implementation 4d9f3f3de\nScope: declared-check validation/execution parity and RF-04 shared-worktree dependency discovery\n\nCheck: policy_routing\nCommand: node .agentplane/policy/check-routing.mjs; bun run release:incidents:check\nResult: pass\nEvidence: policy routing OK; release incident gate reports no active entries\nScope: policy graph, archive authority, and 0.7.6 release unblock\n\nCheck: task_outcome\nCommand: git diff origin/main...4d9f3f3de; git status --short --untracked-files=all\nResult: pass\nEvidence: product change is limited to the two mirrored active registries and historical archive plus AgentPlane-owned task artifacts; no unrelated tracked paths changed\nScope: approved KECD7J policy-only outcome",
+  "digest": "sha256:6fe32b7d7716d1a31544ab1b07163425206e74ef4d08dfac3229ae2b86db3052",
+  "implementation_sha": "4d9f3f3deb925e253f1fb6843b098f51da4388d4",
+  "input": {
+    "context": {
+      "digest": "sha256:a091ea549c57faa46dc355a05133574fc1901a9d898c1a95ca13d006cf6b5b98",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:1d014c4693ddf16d9eabeff244aa4b5acb7084010fba2dfe9deccb84b63cd7fb",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:f45294492a50a91d13abc2dad980b4878a34b1653e34a39365402e329ac8f74d",
+      "digest": "sha256:d72b57f050932ec8adbfcc26c100048500ede820bf3066bedde89e4f13d2a879",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "bc0afaea7a7be909fc93374a195c73da3f697d85",
+      "digest": "sha256:e617ebd25839795a816f336201f7ca081c9968bb1fd65ff1f0fce01132190f81",
+      "strategy": "branch_diff",
+      "target_sha": "4d9f3f3deb925e253f1fb6843b098f51da4388d4"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:188d527d8a3bb0f884efb575a5a65e1b59c501a6414528e3200f2771f4c34747",
+    "verify_steps_digest": "sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4"
+  },
+  "kind": "task_verification_record",
+  "note": "Both incident failure classes are fixed and enforced on current main; focused 37/37 regressions, policy routing, formatting, mirror parity, and the release incident gate passed.",
+  "recorded_at": "2026-08-13T17:37:04.069Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run bun test packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/release/shared-worktree-dependency-manifest.test.ts. Expected: all tests pass, accepted checks use the execution parser, and RF-04 shared-worktree dependency discovery remains valid.\n2. Inspect W4ZM7J, 7XGP97, T3ZDDM and their merged evidence. Expected: both incident fixes are on main, quality/hosted evidence passed, and no unresolved engineering or operator action remains for either failure class.\n3. Inspect docs/developer/incident-archive.mdx. Expected: both IDs appear exactly once as complete archived records with final evidence, enforcement, archived_by, and archive_reason.\n4. Inspect .agentplane/policy/incidents.md and packages/agentplane/assets/policy/incidents.md. Expected: both active entries are absent, the two mirrors agree, and no unrelated incident text changes.\n5. Run bun run format:check, node .agentplane/policy/check-routing.mjs, and bun run release:incidents:check. Expected: formatting and policy graph pass, active incident count is zero, and 0.7.6 release planning is unblocked.\n6. Inspect the PR, hosted checks, merged main, Hosted Close, cleanup, and git status. Expected: exact policy-only diff is merged through the protected lane, task is DONE, its worktree/branch are cleaned, and no unintended tracked files remain.",
+  "scope_digest": "sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4",
+  "task_id": "202608131733-KECD7J",
+  "verification_command": "agentplane verify 202608131733-KECD7J --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -12,8 +12,8 @@ Created: 2026-08-13T17:34:20.627Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Both incident failure classes are fixed and enforced on current main; focused 37/37 regressions, policy routing, formatting, mirror parity, and the release incident gate passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,10 @@ Created: 2026-08-13T17:34:20.627Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/policy/incidents.md                | 2 --
+ docs/developer/incident-archive.mdx            | 6 ++++++
+ packages/agentplane/assets/policy/incidents.md | 2 --
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 ```
 
 </details>
