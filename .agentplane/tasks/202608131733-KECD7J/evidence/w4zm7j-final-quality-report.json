@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "task_id": "202608111922-W4ZM7J",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-11T21:42:43.737Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Commit 656f84c44 is formatting-only: it wraps a long predicate without changing tokens, control flow, accepted commands, or rejected commands. The semantic review for d1a7fbcf6 remains applicable.",
+  "evaluated_sha": "656f84c44be81e48d339bf5b15db9ccfce221a03",
+  "findings": [
+    "Evidence reuse is valid because git diff d1a7fbcf6..656f84c44 contains only Prettier line wrapping and the file-specific format check passes."
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": ["None beyond the already recorded repository-script supervision boundary."],
+  "source_path": ".agentplane/tasks/202608111922-W4ZM7J/quality/20260811-214243335-recovery-context/quality-report.json"
+}

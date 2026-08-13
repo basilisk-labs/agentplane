@@ -1,0 +1,10 @@
+{
+  "captured_at": "2026-08-13T18:12:00.000Z",
+  "source_tasks": [
+    { "task_id": "202608111922-W4ZM7J", "status": "DONE", "remaining_operator_action": null },
+    { "task_id": "202608102115-7XGP97", "status": "DONE", "remaining_operator_action": null },
+    { "task_id": "202608112259-T3ZDDM", "status": "DONE", "remaining_operator_action": null }
+  ],
+  "active_release_incidents": 0,
+  "release_incident_gate": "pass"
+}

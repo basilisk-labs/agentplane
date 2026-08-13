@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The frozen runtime evidence summarizes the source tasks and hosted outcomes but does not include independently reviewable records from W4ZM7J, 7XGP97, or T3ZDDM that prove their final quality, hosted checks, qualification results, and absence of remaining operator work.",
+      "broken_invariant": "Acceptance criterion 2 requires inspection of W4ZM7J, 7XGP97, T3ZDDM and their merged evidence; the evaluator stop rule requires blocked when required task or recovery context is missing, and pass requires evidence covering the relevant recovery-sensitive paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/README.md",
+          "sha256": "sha256:5ec7f43a27a371c565e3e24a614f9908ca0aa761185fde4c1f44bc68b11287a9",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/evidence/incident-closeout-source-evidence.md",
+          "sha256": "sha256:2d9891dce5e4f544b866abf29666e9923a80e878c9ce59581c3d4d9f276c7721",
+          "section": "INC-20260810-01 — declared-check validation and execution parity; INC-20260811-01 — RF-04 shared-worktree dependency seed; Release-qualification hardening"
+        },
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/fe498c5057f12b5f5224198b29269b6e77fcff275cdb9daf97fe9b890bdcd8a7.json",
+          "sha256": "sha256:fe498c5057f12b5f5224198b29269b6e77fcff275cdb9daf97fe9b890bdcd8a7",
+          "section": "runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Freeze digest-bound source-task README/status records, final quality reports, hosted-check results, and T3ZDDM qualification output for W4ZM7J, 7XGP97, and T3ZDDM, then verify that each cited task and commit matches the archived record and that no unresolved operator action remains."
+  ],
+  "hidden_assumptions": [
+    "A task-local narrative summary is assumed to be equivalent to independently reviewable source-task and hosted evidence.",
+    "The assertion that no operator or engineering action remains is assumed without frozen underlying task-state or closeout records."
+  ],
+  "recovery_context": "Provide frozen, digest-bound underlying evidence for W4ZM7J, 7XGP97, and T3ZDDM covering task completion, final quality, hosted integration/closeout, qualification results, and remaining operator state; the current task-local summary alone cannot establish acceptance criterion 2.",
+  "recovery_reason": "deterministic_evidence_gap"
+}
