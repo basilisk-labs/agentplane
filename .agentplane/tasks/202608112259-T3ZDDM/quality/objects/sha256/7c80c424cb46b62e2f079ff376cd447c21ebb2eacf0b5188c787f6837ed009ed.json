@@ -1,0 +1,25 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification_contract": null,
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-13T06:38:41.498Z",
+    "updated_by": "TESTER",
+    "note": "Exact-SHA ed8524e2131f passes full local, hosted, provider, efficiency, recovery, contract, and platform qualification with zero blocking defects."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813063841498-26fac15396bac3bc.json",
+      "sha256": "sha256:330c192dde5a135548b873cac87da248058645a68e666348d3d367c4b4fb3d65"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

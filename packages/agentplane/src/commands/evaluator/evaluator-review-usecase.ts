@@ -170,6 +170,17 @@ async function prepareEvaluatorReviewLocked(
   opts: PrepareEvaluatorReviewOptions,
   gitRoot: string,
 ): Promise<PreparedEvaluatorReview> {
+  if (
+    opts.task.verification?.state === "ok" &&
+    !opts.task.execution_contract?.verification.contract
+  ) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message:
+        "evaluator cannot accept passing verification without a persisted Verification Contract; record verification again so AgentPlane materializes the contract and binds evidence to its digest.",
+      context: { task_id: opts.task.id, reason_code: "verification_contract_missing" },
+    });
+  }
   const at = opts.at ?? new Date().toISOString();
   const reviewDir = evaluatorQualityDir({
     gitRoot,
