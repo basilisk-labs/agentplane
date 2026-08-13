@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -75,7 +75,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-13T16:36:23.071Z"
+  updated_at: "2026-08-13T17:11:23.534Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -322,8 +322,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "ab7abe4d1d0676340aa1820aaa9e6728d4126af9"
-  message: "🐛 EZZZYH qualification: satisfy static contract"
+  hash: "23ff0daa09590fbfcf195c4a7d7a8ca7f1a3e26d"
+  message: "🚧 EZZZYH task: record final quality review"
 comments:
   -
     author: "CODER"
@@ -334,6 +334,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -370,8 +373,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified exact published SHA 207a86ab5 with hosted Core CI run 31723346838; review fixes, installed-package lifecycle, and every selected verification group passed."
+  -
+    type: "status"
+    at: "2026-08-13T17:11:23.534Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "23ff0daa09590fbfcf195c4a7d7a8ca7f1a3e26d"
 doc_version: 3
-doc_updated_at: "2026-08-13T17:09:58.869Z"
+doc_updated_at: "2026-08-13T17:11:23.564Z"
 doc_updated_by: "CODER"
 description: "Add a mandatory black-box installed-package E2E scenario to the AgentPlane release qualification used for 0.7.6. The scenario must pack the exact clean candidate, install the tarball into an isolated prefix, create a clean temporary Git repository, use only the public installed CLI, run init and semantic task intake, execute a real mixed-scope change spanning source code, tests, documentation, and repository metadata such as .gitignore, perform deterministic verification and evaluator review, and reach an equivalent completed lifecycle with commit and branch/PR-ready outcome. The scenario must not read or mutate internal runtime, quality, recovery, or task artifacts directly and must fail the release gate if any required phase is skipped or simulated. Preserve every existing qualification scenario and add manifest, runner, CI-routing, contract tests, cleanup, and operator documentation needed to make this a blocking 0.7.6 release check."
 sections:
@@ -544,6 +555,9 @@ sections:
     - Do not rewrite published tags, release evidence, or PR #4830 history.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "207a86ab5bcb897a9032edcc4f35bc1e4f5ae092"
+    message: "🎨 EZZZYH qualification: format review fixes"
   workflow_route_baseline:
     start_head_sha: "89dfabe89424ae6b69911a7174b9876f2713f24e"
     version: 1
@@ -741,4 +755,4 @@ DecisionContextRef:
 - Provenance: `supervisor_journal/agentplane`
 - Journal digest: `sha256:4d0511c8b46d51691b0e9251e65cc32e0944a8efd1076840a4cd97249958b2a2`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-13T16:36:23.071Z`
+- Updated at: `2026-08-13T17:11:23.534Z`
