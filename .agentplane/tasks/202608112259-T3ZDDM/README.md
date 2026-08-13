@@ -2,10 +2,10 @@
 id: "202608112259-T3ZDDM"
 title: "Optimize the verification and test pipeline around one computed Verification Contract"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 43
 origin:
   system: "manual"
 depends_on:
@@ -28,51 +28,51 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-13T14:32:48.549Z"
+  updated_at: "2026-08-13T14:53:19.033Z"
   updated_by: "TESTER"
-  note: "Verified chained lifecycle reuse fix on exact SHA 2b5166e3: 22/22 focused tests, lint, typecheck, full-fast 5/5 with one build, and hosted run 31710007412 pass."
+  note: "Verified final reuse invariants on b223ead8: 24/24 focused tests, lint, typecheck, full-fast 5/5 with one build, and hosted run 31711516858 pass."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-13T14:34:01.633Z"
+  updated_at: "2026-08-13T14:53:34.939Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "2b5166e325cd08731195c25ed2ae5b53eccab279"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "b223ead8fbb3b77bdd369b9018f0974cadbd2217"
   blueprint_digest: "ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb"
   evidence_refs:
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-143401232-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-143401232-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/70928c9a56d381eb0f4d862bd660ffaed64a9295de2f468b96f0414eec1b1bbd.md"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-143401232-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-143401232-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-143401232-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-143401232-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-145334427-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-145334427-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/4d37b3d76921abacddb7e7e6941e3105c7d97f4ca90fa22b66717430e72e7752.md"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-145334427-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-145334427-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-145334427-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608112259-T3ZDDM/README.md"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/cf2af8647ed2afb0c512d69c5b7d4f51549eef0b05539bca2a12a19896c37ec5.patch"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/a035e49b77e93acaa039d56af3f64a84a9be46d9c370ee9e8707a99cf1ae00b7.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813143248549-270c085d6f098388.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/5516041ef940422199bb426b9323bf373833956597bda1d777c896c776b8ddaf.patch"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/43004a137cd621f54c180250f01da3b1c1deaf7f8ad9c4e2c264c2c5f52409c3.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813145319033-1b078719f75849b6.json"
     - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/478fe6fd0549b9c5f29594800dcc6351fe24c8d2b80ecb1bb3e98d5c1600c1ea.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The comparator preserves the old extensions.implementation_commit across lifecycle-only descendants but rejects the required one-time rotation to the exact verified parent after new non-task implementation changes. Without that rotation, the next closure cannot bind current verification to the new implementation. Permit rotation only to parentSha when oldImplementation..parentSha contains non-task implementation paths; keep arbitrary ancestor substitution rejected."
+    - "The comparator now distinguishes three safe cases: initial identity binding, unchanged identity across lifecycle-only descendants, and rotation to a verified new implementation only when old-to-new history contains non-task changes and new-to-parent history is task-artifact-only."
+    - "Negative regression coverage rejects arbitrary identity substitution and task-artifact-only promotion; exact-SHA local full-fast and hosted PR verification pass."
 token_usage:
-  agent_runs: 10
+  agent_runs: 11
   input_tokens: 2103219
-  journal_digest: "sha256:09220fc632879fd3215ff97e925595b00b3c161e130ec669c36cc13b407976ce"
+  journal_digest: "sha256:03e6fa53f280c7e0e892ae6fd512478d296a02ef4e003494abd7ed49bdef51f7"
   observed_agent_runs: 10
   observed_by: "agentplane"
-  output_tokens: 26499
-  reasoning_tokens: 6096
+  output_tokens: null
+  reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
-  state: "observed"
+  state: "partial"
   total_tokens: 2135814
-  unavailable_reason: null
-  updated_at: "2026-08-13T14:07:53.169Z"
+  unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
+  updated_at: "2026-08-13T14:54:59.128Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -583,7 +583,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "b223ead8fbb3b77bdd369b9018f0974cadbd2217"
+  message: "🚧 T3ZDDM task: support verified identity rotation"
 comments:
   -
     author: "CODER"
@@ -612,6 +614,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -750,8 +755,22 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified chained lifecycle reuse fix on exact SHA 2b5166e3: 22/22 focused tests, lint, typecheck, full-fast 5/5 with one build, and hosted run 31710007412 pass."
+  -
+    type: "verify"
+    at: "2026-08-13T14:53:19.033Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified final reuse invariants on b223ead8: 24/24 focused tests, lint, typecheck, full-fast 5/5 with one build, and hosted run 31711516858 pass."
+  -
+    type: "status"
+    at: "2026-08-13T14:54:59.128Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "b223ead8fbb3b77bdd369b9018f0974cadbd2217"
 doc_version: 3
-doc_updated_at: "2026-08-13T14:34:01.658Z"
+doc_updated_at: "2026-08-13T14:54:59.161Z"
 doc_updated_by: "CODER"
 description: "Implement a versioned Verification Contract computed once from the semantic task assessment introduced by 202608112232-3NC7Y4 and strengthened monotonically by deterministic observed effects. Make that contract the single authority for local, PR, release, evaluator, finish, and recovery verification. Add change-aware test selection so local development runs only affected unit/integration suites plus mandatory critical-path checks; run the full CLI regression on PR; run real E2E on PR and release according to risk and observed effects. Add a conservative fallback that selects full regression whenever central components, shared contracts, routing, lifecycle, verification policy, schemas, package/lockfiles, CI, or unknown/unmapped effects are touched. The LLM may propose semantic scope and explain results but must not remove, downgrade, or bypass mandatory checks selected by deterministic policy. Audit duplicate behavioral coverage and move assertions to the cheapest sufficient level, retaining higher-level tests only for observable cross-boundary contracts. Profile fixture creation and process startup; replace repeated mutable setup with reusable immutable fixtures and cheap isolated repository copies where hermeticity is preserved. Execute independent core, runtime, CLI, and docs/schema groups in parallel with deterministic aggregation, failure reporting, and cancellation semantics. Instrument and report verification amplification, wall-clock verification time, test duplication, and the number of AgentPlane lifecycle/control-plane commands. Define small direct work as localized, reversible, non-central, with no external effects; on pinned reference hardware target mandatory local verification at no more than 60 seconds p50 and 120 seconds p95, no more than three lifecycle/control-plane commands, and no local full CLI regression unless the deterministic fallback triggers. Establish a reproducible before/after benchmark, document metric definitions and residual risk, and prove that speedups do not weaken required evidence."
 sections:
@@ -1409,6 +1428,72 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-13T14:53:19.033Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified final reuse invariants on b223ead8: 24/24 focused tests, lint, typecheck, full-fast 5/5 with one build, and hosted run 31711516858 pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e, input_digest=sha256:9ea53150d1e730bc3545024dafc20096a76c156664bfbb381a1f711f50f0e793
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/release/github-ci-plan.test.ts
+    Result: pass
+    Evidence: 24/24 tests passed, covering chained reuse, verified implementation identity rotation, arbitrary identity rejection, and task-only rotation rejection.
+    Scope: lifecycle reuse comparator and CI planning regression surface
+
+    Check: critical_paths
+    Command: bunx eslint scripts/lib/lifecycle-artifact-reuse.mjs packages/agentplane/src/commands/release/github-ci-plan.test.ts && bun run typecheck
+    Result: pass
+    Evidence: no lint findings; TypeScript build completed successfully.
+    Scope: changed runtime script and typed release test contract
+
+    Check: docs_contract
+    Command: node scripts/checks/run-local-ci.mjs --mode full
+    Result: pass
+    Evidence: docs-schema, generated documentation, site build, workflow, schema, template, and policy routing checks passed.
+    Scope: documentation, schema, workflow, and generated-contract parity
+
+    Check: full_regression
+    Command: node scripts/checks/run-local-ci.mjs --mode full
+    Result: pass
+    Evidence: full-fast passed 5/5 groups in 256788ms with one build; Windows 97/97 and significant coverage 101/101 passed.
+    Scope: complete local PR-equivalent regression for SHA b223ead8fbb3b77bdd369b9018f0974cadbd2217
+
+    Check: hosted_integration
+    Command: gh run view 31711516858 --json status,conclusion,headSha,jobs
+    Result: pass
+    Evidence: Core CI and PR verification completed success on exact SHA b223ead8fbb3b77bdd369b9018f0974cadbd2217.
+    Scope: exact hosted PR verification
+
+    Check: task_outcome
+    Command: inspect comparator invariants, 24-case regression suite, local full-fast metrics, and exact hosted run 31711516858
+    Result: pass
+    Evidence: verification reuse now supports unchanged lifecycle chains and a one-time rotation to a verified new implementation through task-only descendants, while rejecting arbitrary and task-only identity promotion.
+    Scope: final verification reuse correctness and safety outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou/.agentplane/tasks/202608112259-T3ZDDM/blueprint/resolved-snapshot.json
+    - old_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+    - current_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608112259-T3ZDDM
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608112259-T3ZDDM
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1437,8 +1522,8 @@ extensions:
         question: "Does the human owner explicitly approve the observed CI, dependency, documentation, schema, and test changes despite their exclusion from the task's execution authority?"
     openQuestion: null
   implementation_commit:
-    hash: "9766c12d8519a4f797fa46538871a776238bad5b"
-    message: "🚧 T3ZDDM task: validate lifecycle review history"
+    hash: "b223ead8fbb3b77bdd369b9018f0974cadbd2217"
+    message: "🚧 T3ZDDM task: support verified identity rotation"
   workflow_route_baseline:
     start_head_sha: "e4ec4520ded988c60db3261714e68b5e22ac4e1f"
     version: 1
@@ -2107,6 +2192,72 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-13T14:53:19.033Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified final reuse invariants on b223ead8: 24/24 focused tests, lint, typecheck, full-fast 5/5 with one build, and hosted run 31711516858 pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e, input_digest=sha256:9ea53150d1e730bc3545024dafc20096a76c156664bfbb381a1f711f50f0e793
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/release/github-ci-plan.test.ts
+Result: pass
+Evidence: 24/24 tests passed, covering chained reuse, verified implementation identity rotation, arbitrary identity rejection, and task-only rotation rejection.
+Scope: lifecycle reuse comparator and CI planning regression surface
+
+Check: critical_paths
+Command: bunx eslint scripts/lib/lifecycle-artifact-reuse.mjs packages/agentplane/src/commands/release/github-ci-plan.test.ts && bun run typecheck
+Result: pass
+Evidence: no lint findings; TypeScript build completed successfully.
+Scope: changed runtime script and typed release test contract
+
+Check: docs_contract
+Command: node scripts/checks/run-local-ci.mjs --mode full
+Result: pass
+Evidence: docs-schema, generated documentation, site build, workflow, schema, template, and policy routing checks passed.
+Scope: documentation, schema, workflow, and generated-contract parity
+
+Check: full_regression
+Command: node scripts/checks/run-local-ci.mjs --mode full
+Result: pass
+Evidence: full-fast passed 5/5 groups in 256788ms with one build; Windows 97/97 and significant coverage 101/101 passed.
+Scope: complete local PR-equivalent regression for SHA b223ead8fbb3b77bdd369b9018f0974cadbd2217
+
+Check: hosted_integration
+Command: gh run view 31711516858 --json status,conclusion,headSha,jobs
+Result: pass
+Evidence: Core CI and PR verification completed success on exact SHA b223ead8fbb3b77bdd369b9018f0974cadbd2217.
+Scope: exact hosted PR verification
+
+Check: task_outcome
+Command: inspect comparator invariants, 24-case regression suite, local full-fast metrics, and exact hosted run 31711516858
+Result: pass
+Evidence: verification reuse now supports unchanged lifecycle chains and a one-time rotation to a verified new implementation through task-only descendants, while rejecting arbitrary and task-only identity promotion.
+Scope: final verification reuse correctness and safety outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou/.agentplane/tasks/202608112259-T3ZDDM/blueprint/resolved-snapshot.json
+- old_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+- current_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608112259-T3ZDDM
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608112259-T3ZDDM
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -2118,13 +2269,13 @@ DecisionContextRef:
 
 ## Token Usage
 
-- State: `observed`
-- Completeness: `10/10` agent runs
+- State: `partial`
+- Completeness: `10/11` agent runs
 - Input tokens: `2103219`
-- Output tokens: `26499`
-- Reasoning tokens: `6096`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
 - Total tokens: `2135814`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:09220fc632879fd3215ff97e925595b00b3c161e130ec669c36cc13b407976ce`
-- Unavailable reason: `none`
-- Updated at: `2026-08-13T14:07:53.169Z`
+- Journal digest: `sha256:03e6fa53f280c7e0e892ae6fd512478d296a02ef4e003494abd7ed49bdef51f7`
+- Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
+- Updated at: `2026-08-13T14:54:59.128Z`

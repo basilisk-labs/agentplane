@@ -19,8 +19,8 @@ Implement a versioned Verification Contract computed once from the semantic task
 - Note:
 
 ```text
-Verified chained lifecycle reuse fix on exact SHA 2b5166e3: 22/22 focused tests, lint, typecheck,
-full-fast 5/5 with one build, and hosted run 31710007412 pass.
+Verified final reuse invariants on b223ead8: 24/24 focused tests, lint, typecheck, full-fast 5/5
+with one build, and hosted run 31711516858 pass.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -60,7 +60,7 @@ full-fast 5/5 with one build, and hosted run 31710007412 pass.
  .../evaluator-verification-contract.test.ts        |   76 +
  .../evaluator/evaluator-verification-records.ts    |   11 +-
  .../commands/release/ci-workflow-contract.test.ts  |   15 +
- .../src/commands/release/github-ci-plan.test.ts    |  424 +++-
+ .../src/commands/release/github-ci-plan.test.ts    |  551 ++++-
  .../commands/release/release-ci-contract.test.ts   |   13 +-
  .../commands/shared/quality-review-target.test.ts  |   25 +
  .../src/commands/shared/quality-review-target.ts   |   18 +-
@@ -128,7 +128,7 @@ full-fast 5/5 with one build, and hosted run 31710007412 pass.
  scripts/lib/github-ci-capabilities.d.ts            |   11 +
  scripts/lib/github-ci-capabilities.mjs             |   87 +-
  scripts/lib/installed-migration-matrix.mjs         |   22 +
- scripts/lib/lifecycle-artifact-reuse.mjs           |  492 ++++
+ scripts/lib/lifecycle-artifact-reuse.mjs           |  505 +++++
  scripts/lib/lifecycle-control-metrics.d.ts         |   30 +
  scripts/lib/lifecycle-control-metrics.mjs          |   66 +
  scripts/lib/local-ci-selection.d.ts                |   19 +
@@ -150,7 +150,7 @@ full-fast 5/5 with one build, and hosted run 31710007412 pass.
  tsconfig.base.json                                 |    1 +
  .../docs/developer/verification-contract.png       |  Bin 0 -> 59695 bytes
  website/static/img/social/manifest.json            |    8 +
- 118 files changed, 10784 insertions(+), 2238 deletions(-)
+ 118 files changed, 10924 insertions(+), 2238 deletions(-)
 ```
 
 </details>

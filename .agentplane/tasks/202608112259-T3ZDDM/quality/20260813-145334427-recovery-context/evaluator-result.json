@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The comparator now distinguishes three safe cases: initial identity binding, unchanged identity across lifecycle-only descendants, and rotation to a verified new implementation only when old-to-new history contains non-task changes and new-to-parent history is task-artifact-only.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/5516041ef940422199bb426b9323bf373833956597bda1d777c896c776b8ddaf.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Negative regression coverage rejects arbitrary identity substitution and task-artifact-only promotion; exact-SHA local full-fast and hosted PR verification pass.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/5516041ef940422199bb426b9323bf373833956597bda1d777c896c776b8ddaf.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
