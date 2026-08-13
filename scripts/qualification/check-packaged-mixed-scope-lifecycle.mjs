@@ -91,7 +91,7 @@ function runPacketCommand(run, cli, cwd, argv, label) {
   return run(process.execPath, [cli, ...argv.slice(1)], { cwd });
 }
 
-function runInstalledFailure(cli, cwd, argv) {
+function runNodeCliResult(cli, cwd, argv) {
   const result = spawnSync(process.execPath, [cli, ...argv], {
     cwd,
     encoding: "utf8",
@@ -538,7 +538,7 @@ function runFixture({ run, cli, packages, tempRoot }) {
   assert.equal(approval.action?.kind, "approval_required");
   assert.equal(approval.operator_action?.kind, "approve_plan");
 
-  const exactReplay = runInstalledFailure(cli, repo, plannerExchange.resume_argv.slice(1));
+  const exactReplay = runNodeCliResult(cli, repo, plannerExchange.resume_argv.slice(1));
   const exactReplayPacket = parseJson(exactReplay.stdout, "exact accepted-envelope replay");
   if (
     exactReplay.status !== 0 ||
@@ -563,7 +563,7 @@ function runFixture({ run, cli, packages, tempRoot }) {
     `${JSON.stringify(staleEnvelope, null, 2)}\n`,
     "stale_exchange_probe_write",
   );
-  const stale = runInstalledFailure(cli, repo, plannerExchange.resume_argv.slice(1));
+  const stale = runNodeCliResult(cli, repo, plannerExchange.resume_argv.slice(1));
   const staleDiagnostic = `${stale.stderr}\n${stale.stdout}`.trim();
   if (
     stale.status === 0 ||
@@ -624,10 +624,14 @@ function runFixture({ run, cli, packages, tempRoot }) {
     docs: readTracked(accessLog, path.join(repo, "docs", "guide.md"), "evaluator_review"),
     metadata: readTracked(accessLog, path.join(repo, ".gitignore"), "evaluator_review"),
   };
-  const evaluatorTestResult = runInstalledFailure("node", repo, [
-    "--test",
-    "test/greeting.test.mjs",
-  ]);
+  const evaluatorTestResult = spawnSync(process.execPath, ["--test", "test/greeting.test.mjs"], {
+    cwd: repo,
+    encoding: "utf8",
+    env: { ...process.env, AGENTPLANE_NO_UPDATE_CHECK: "1" },
+    maxBuffer: 128 * 1024 * 1024,
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  if (evaluatorTestResult.error) throw evaluatorTestResult.error;
   const reviewReady =
     PACKAGED_MIXED_SCOPE_REQUIRED_PATHS.every((requiredPath) =>
       changedPaths.includes(requiredPath),
