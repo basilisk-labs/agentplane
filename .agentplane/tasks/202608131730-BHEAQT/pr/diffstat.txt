@@ -53,6 +53,9 @@
  .../src/cli/run-cli.core.incidents.test.ts         |   2 +-
  ...-cli.core.lifecycle.finish-close-commit.test.ts |   1 +
  ...-cli.core.pr-flow.integrate-rebase-race.test.ts |  23 +-
+ .../run-cli.core.route-decision.pre-merge.test.ts  |  15 +-
+ .../src/cli/run-cli.core.route-decision.test.ts    |  22 +-
+ ...un-cli.core.route-decision.verification.test.ts |  25 ++
  ...-cli.critical.agent-efficiency-baseline.test.ts |  57 +++-
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
@@ -63,4 +66,4 @@
  .../check-compatibility-contract-baseline.mjs      |  59 ++--
  website/static/img/social/docs/releases/v0.7.6.png | Bin 0 -> 53331 bytes
  website/static/img/social/manifest.json            |   8 +
- 65 files changed, 567 insertions(+), 1362 deletions(-)
+ 68 files changed, 611 insertions(+), 1380 deletions(-)

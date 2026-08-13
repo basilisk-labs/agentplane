@@ -41,6 +41,12 @@ async function createBranchPrTask(root: string): Promise<string> {
       "med",
       "--owner",
       "CODER",
+      "--task-kind",
+      "code",
+      "--mutation-scope",
+      "code",
+      "--blueprint-request",
+      "code.branch_pr",
       "--tag",
       "code",
       "--allow-duplicate",
@@ -738,7 +744,7 @@ describe("runCli route decision commands", () => {
       };
       expect(parsed.nextAction).toMatchObject({
         code: "sync_hosted_close",
-        command: `agentplane cleanup merged --task-id ${taskId} --finalize --base main`,
+        command: `agentplane cleanup merged --task-id ${taskId} --finalize --yes --delete-remote-branches --base main`,
       });
       expect(parsed.oracle).toMatchObject({
         phase: "hosted_close_recorded_upstream",
@@ -746,16 +752,10 @@ describe("runCli route decision commands", () => {
       });
       expect(parsed.executionPacket).toMatchObject({
         actionKind: "local_command",
-        exactArgv: [
-          "agentplane",
-          "cleanup",
-          "merged",
-          "--task-id",
-          taskId,
-          "--finalize",
-          "--base",
-          "main",
-        ],
+        exactArgv:
+          `agentplane cleanup merged --task-id ${taskId} --finalize --yes --delete-remote-branches --base main`.split(
+            " ",
+          ),
         recommendedRole: "INTEGRATOR",
         safeToMutate: true,
       });

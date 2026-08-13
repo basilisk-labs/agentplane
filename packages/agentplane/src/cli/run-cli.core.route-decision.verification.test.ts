@@ -44,6 +44,12 @@ async function createBranchPrTask(root: string): Promise<string> {
         "med",
         "--owner",
         "CODER",
+        "--task-kind",
+        "code",
+        "--mutation-scope",
+        "code",
+        "--blueprint-request",
+        "code.branch_pr",
         "--tag",
         "code",
         "--allow-duplicate",
@@ -64,6 +70,9 @@ describe("runCli route decision verification freshness", () => {
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "base.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed verification base"], { cwd: root });
 
     const taskId = await createBranchPrTask(root);
     await runCliSilent([
@@ -126,6 +135,9 @@ describe("runCli route decision verification freshness", () => {
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "base.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed verification base"], { cwd: root });
 
     const taskId = await createBranchPrTask(root);
     await runCliSilent([
@@ -164,6 +176,16 @@ describe("runCli route decision verification freshness", () => {
     await writeFile(path.join(root, "impl.txt"), "first implementation\n", "utf8");
     await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "feat: first implementation"], { cwd: root });
+    const { stdout: firstImplementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(
+      path.join(prDir, "meta.json"),
+      `${JSON.stringify({ base: "main", branch: `task/${taskId}/verification-freshness`, created_at: "2026-01-01T00:00:00.000Z", head_sha: firstImplementationHead.trim(), pr_number: 123, pr_url: "https://github.com/example/repo/pull/123", schema_version: 1, status: "OPEN", task_id: taskId, updated_at: "2026-01-01T00:00:00.000Z" }, null, 2)}\n`,
+      "utf8",
+    );
     await recordVerificationOk(root, taskId);
     await execFileAsync("git", ["add", "--all"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "task: record fresh verification"], { cwd: root });
@@ -205,6 +227,9 @@ describe("runCli route decision verification freshness", () => {
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "base.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed verification base"], { cwd: root });
 
     const taskId = await createBranchPrTask(root);
     await runCliSilent([
