@@ -181,10 +181,9 @@ describe("v0.7.1 release qualification contract", () => {
   it("prints bounded child output for failed qualification scenarios", () => {
     assert.equal(
       formatQualificationScenarioFailure("hosted-boundary-matrix", "first\nsecond\n", 8),
-      [
-        "qualification: hosted-boundary-matrix failure output (last 8 characters)",
-        "second",
-      ].join("\n"),
+      ["qualification: hosted-boundary-matrix failure output (last 8 characters)", "second"].join(
+        "\n",
+      ),
     );
     assert.match(
       formatQualificationScenarioFailure("hosted-boundary-matrix", ""),
