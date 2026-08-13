@@ -1,6 +1,8 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import {
+  gitCommitChangedPaths,
+  gitDiffNames,
   gitIsAncestor,
   gitMergeBase,
   gitRevParse,
@@ -143,21 +145,10 @@ export async function resolveActualDiffNames(
 ): Promise<string[]> {
   if (!evaluatedSha) return [];
   try {
-    const { stdout } = await execFileAsync(
-      "git",
-      diffBaseSha
-        ? ["diff", "--name-only", "--find-renames", diffBaseSha, evaluatedSha]
-        : ["show", "--name-only", "--format=", "--root", "--find-renames", evaluatedSha],
-      { cwd: gitRoot },
-    );
-    return [
-      ...new Set(
-        stdout
-          .split(/\r?\n/u)
-          .map((entry) => entry.trim())
-          .filter(Boolean),
-      ),
-    ].toSorted();
+    const changedPaths = diffBaseSha
+      ? await gitDiffNames(gitRoot, diffBaseSha, evaluatedSha, { range: "two-dot" })
+      : await gitCommitChangedPaths(gitRoot, evaluatedSha);
+    return [...new Set(changedPaths)].toSorted();
   } catch (error) {
     throw new CliError({
       code: "E_VALIDATION",
