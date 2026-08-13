@@ -13,7 +13,7 @@ Created: 2026-08-13T17:32:00.151Z
 ## Verification
 
 - State: ok
-- Note: Exact candidate 8b5fe5e67 passed local, provider, and hosted release qualification.
+- Note: Candidate 8965c6f03 preserves the fully qualified 0.7.6 implementation and restores all raw evidence referenced by retained reports.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,38 +30,6 @@ Created: 2026-08-13T17:32:00.151Z
 
 ```text
  .agentplane/WORKFLOW.md                            |  23 +-
- .../risk-e2e/logs/hosted-boundary-matrix.log       |   7 -
- .../risk-e2e/logs/packaged-candidate-flow.log      |   5 -
- .../samples/sample-01.events.jsonl                 |   1 -
- .../samples/sample-01.stderr.log                   |   2 -
- .../samples/sample-01.stdout.log                   | 123 -------
- .../samples/sample-02.events.jsonl                 |   1 -
- .../samples/sample-02.stderr.log                   |   2 -
- .../samples/sample-02.stdout.log                   | 123 -------
- .../samples/sample-03.events.jsonl                 |   1 -
- .../samples/sample-03.stderr.log                   |   2 -
- .../samples/sample-03.stdout.log                   | 123 -------
- .../samples/sample-04.events.jsonl                 |   1 -
- .../samples/sample-04.stderr.log                   |   2 -
- .../samples/sample-04.stdout.log                   | 123 -------
- .../samples/sample-05.events.jsonl                 |   1 -
- .../samples/sample-05.stderr.log                   |   2 -
- .../samples/sample-05.stdout.log                   | 123 -------
- .../samples/sample-01.events.jsonl                 |   1 -
- .../samples/sample-01.stderr.log                   |   2 -
- .../samples/sample-01.stdout.log                   | 124 -------
- .../samples/sample-02.events.jsonl                 |   1 -
- .../samples/sample-02.stderr.log                   |   2 -
- .../samples/sample-02.stdout.log                   | 124 -------
- .../samples/sample-03.events.jsonl                 |   1 -
- .../samples/sample-03.stderr.log                   |   2 -
- .../samples/sample-03.stdout.log                   | 124 -------
- .../samples/sample-04.events.jsonl                 |   1 -
- .../samples/sample-04.stderr.log                   |   2 -
- .../samples/sample-04.stdout.log                   | 124 -------
- .../samples/sample-05.events.jsonl                 |   1 -
- .../samples/sample-05.stderr.log                   |   2 -
- .../samples/sample-05.stdout.log                   | 124 -------
  .agentplane/workflows/last-known-good.md           |  23 +-
  docs/assets/header.svg                             |   4 +-
  docs/assets/readme-headers/adr.svg                 |   4 +-
@@ -115,7 +83,7 @@ Created: 2026-08-13T17:32:00.151Z
  .../run-v0.7.1-release-qualification.mjs           |  11 +
  website/static/img/social/docs/releases/v0.7.6.png | Bin 0 -> 53331 bytes
  website/static/img/social/manifest.json            |   8 +
- 86 files changed, 837 insertions(+), 1448 deletions(-)
+ 54 files changed, 837 insertions(+), 171 deletions(-)
 ```
 
 </details>
