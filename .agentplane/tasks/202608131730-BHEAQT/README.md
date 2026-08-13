@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -36,33 +36,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-13T23:48:09.518Z"
+  updated_at: "2026-08-13T23:53:01.579Z"
   updated_by: "HUMAN"
-  note: "Pre-merge quality passes for candidate 8965c6f03: the qualified 0.7.6 implementation is unchanged and every retained raw evidence reference is auditable again."
-  evaluated_sha: null
+  note: "Pre-merge quality passes for exact evidence candidate 8965c6f03; qualified 0.7.6 implementation bytes are unchanged and retained raw evidence is auditable."
+  evaluated_sha: "8965c6f03b8c617b9b63a04d6c39ad366b1f54f9"
   blueprint_digest: "1899fc9e16ece1a5840f337f0c3b3222aac692041c82a0acb222673a31e94a1f"
   evidence_refs:
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-234809222-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-234809222-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/8419e15eec908889a4eb13c0e8881db95767c66f9a7272ec8fa7adad3fd17d2d.md"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-234809222-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-234809222-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-235300824-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-235300824-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/4ecdc068d519459022cd33be991ce96a4cb07bbe4e974985724b41afa96588ab.md"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-235300824-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-235300824-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608131730-BHEAQT/README.md"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/991a2e65beadd74b29a5cf13a6eea0786446c22272bc321aa9d255396c54e352.patch"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/420839abb37da0f1cb72fc6f6d37ebdd551df65fb3c3f6139e35d6759faba00d.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/1feaba9570f54bc78e8372bd1c2a57252845fc7610124322aa34d4ec0b25145a.patch"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/b9c7319b498f5018acc2a92169da50fe3efb94073ef150ebf6bef8b6bce2090f.json"
     - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/eb74ab4402f4753e2b0d2142968f0e82ce7d90ace408a962c30ee82f82215476.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
-    - ".agentplane/tasks/202608131730-BHEAQT/verification/20260813234731069-ab9fb9e1ec7e42a9.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/verification/20260813235202954-d45a6a78e4c2fa07.json"
     - ".agentplane/tasks/202608112259-T3ZDDM/evidence/risk-e2e/report.json"
     - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/report.json"
     - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/report.json"
-    - "GitHub Core CI 31754140408 succeeded for the previous lifecycle head with identical implementation bytes"
+    - "GitHub Core CI 31750633484 and 31754140408 succeeded for identical implementation bytes"
   findings:
-    - "The review-thread concern was valid: 32 raw evidence files had been removed while retained reports still referenced them. Commit 8965c6f03 restores the original bytes without changing source code, package metadata, workflows, tests, or generated release surfaces."
-    - "The incremental verification proves all restored paths exist and all 30 benchmark stdout, stderr, and command-event SHA-256 values match the retained reports; earlier full local, provider, and hosted qualification remains applicable to unchanged implementation SHA 8b5fe5e6789e."
+    - "The review-thread concern was valid: 32 raw evidence files had been removed while retained reports still referenced them. Commit 8965c6f03 restores their original bytes without changing source, package metadata, workflows, tests, or generated release surfaces."
+    - "Incremental verification proves all restored paths exist and all 30 benchmark stdout, stderr, and command-event SHA-256 values match the retained reports. Full prepublish, provider, parity, and hosted qualification remains reusable for unchanged implementation SHA 8b5fe5e6789e."
 token_usage:
   agent_runs: 3
   input_tokens: 490474
@@ -603,7 +603,7 @@ events:
     state: "ok"
     note: "Evidence candidate 8965c6f03 preserves qualified 0.7.6 code and restores every raw artifact referenced by retained reports."
 doc_version: 3
-doc_updated_at: "2026-08-13T23:52:05.848Z"
+doc_updated_at: "2026-08-13T23:53:01.605Z"
 doc_updated_by: "INTEGRATOR"
 description: "Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact protected-main release scope; generate the patch plan and English release notes from actual changes since v0.7.5; run the complete 20-scenario provider-enabled release qualification on the exact clean candidate; run canonical release prepublish gates; prepare a branch_pr release candidate without creating a tag; require exact-SHA hosted checks and no unresolved reviews; integrate through the protected main lane; dispatch GitHub-only publication for the exact merged release SHA; verify release-ready and publish-result artifacts, tag, GitHub Release, and all three public npm packages; then clean the release worktree and report efficiency and residual lifecycle debt."
 sections:
