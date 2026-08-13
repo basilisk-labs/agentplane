@@ -186,6 +186,23 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
         metrics,
       )) as AgentPacket;
     }
+    if (implementation.exchange) {
+      const initialExchange = JSON.parse(
+        await readFile(path.join(implementation.exchange.directory, "exchange.json"), "utf8"),
+      ) as { purpose: string };
+      if (initialExchange.purpose === "task_worktree_resolution") {
+        const resolutionResult = await writePlannerResult({
+          packet: implementation,
+          summary: "Persist the deterministic task-worktree state before implementation.",
+          includeIntent: false,
+        });
+        implementation = (await runJson(
+          implementationCheckout,
+          ["task", "advance", taskId, "--result", resolutionResult, "--agent-json"],
+          metrics,
+        )) as AgentPacket;
+      }
+    }
     expect(implementation.action.kind, JSON.stringify(implementation, null, 2)).toBe(
       "agent_episode",
     );
@@ -403,7 +420,8 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
     process.env.AGENTPLANE_GH_ARGS = JSON.stringify([fakeGh]);
     const exchangeState = JSON.parse(
       await readFile(path.join(implementation.exchange.directory, "exchange.json"), "utf8"),
-    ) as { baseline: { changed_paths: string[] } };
+    ) as { purpose: string; baseline: { changed_paths: string[] } };
+    expect(exchangeState.purpose).toBe("implementation");
     const currentStatus = await execFileAsync(
       "git",
       ["status", "--short", "--untracked-files=all"],
@@ -610,7 +628,14 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
     const metrics = scenarioMetrics();
     const created = await runJson(
       root,
-      ["task", "create", "Add local package metadata used by the product", "--json"],
+      [
+        "task",
+        "create",
+        "Add local package metadata used by the product",
+        "--verify",
+        "git diff --check",
+        "--json",
+      ],
       metrics,
     );
     const taskId = created.task_id as string;
@@ -690,7 +715,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       work_preserved: true,
       recovery_commands: 0,
     });
-    expect(metrics.lifecycle_transitions).toBe(2);
+    expect(metrics.lifecycle_transitions).toBe(3);
   }, 60_000);
 
   it("keeps declared deployment and destructive Git effects forbidden", async () => {

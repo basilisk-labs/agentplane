@@ -43,7 +43,8 @@ export async function resolveEvaluatorReviewTarget(opts: {
         workflowDir,
         taskId: opts.task.id,
         taskIds: normalizeBranchPrBatchTaskIds(opts.task, opts.task.id),
-        previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
+        previousEvaluatedSha:
+          opts.task.quality_review?.evaluated_sha ?? opts.task.commit?.hash ?? null,
         workflowMode: opts.ctx.config.workflow_mode,
       });
   return {

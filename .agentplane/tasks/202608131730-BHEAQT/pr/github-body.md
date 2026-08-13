@@ -85,7 +85,13 @@ Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact
  .../run-cli.core.route-decision.pre-merge.test.ts  |  15 +-
  .../src/cli/run-cli.core.route-decision.test.ts    |  22 +-
  ...un-cli.core.route-decision.verification.test.ts |  25 ++
+ ...i.core.task-advance.worktree-resolution.test.ts |   2 +-
+ ...run-cli.core.task-create-planner-intent.test.ts |  31 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |  57 +++-
+ .../src/cli/task-create-planner-intent.testkit.ts  |   2 +
+ .../evaluator/evaluator-qualification-review.ts    |   3 +-
+ .../commands/evaluator/evaluator-review-usecase.ts |  30 +-
+ packages/agentplane/src/commands/pr/open.ts        |  17 +-
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
@@ -95,7 +101,7 @@ Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact
  .../check-compatibility-contract-baseline.mjs      |  59 ++--
  website/static/img/social/docs/releases/v0.7.6.png | Bin 0 -> 53331 bytes
  website/static/img/social/manifest.json            |   8 +
- 68 files changed, 611 insertions(+), 1380 deletions(-)
+ 74 files changed, 682 insertions(+), 1394 deletions(-)
 ```
 
 </details>
