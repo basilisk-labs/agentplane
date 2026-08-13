@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608131733-KECD7J",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-13T18:17:19.366Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "b6b5f5e57797cf0429eb8758abc3dcfdc73388c8",
+  "blueprint_digest": "8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece",
+  "findings": [
+    "The archived incident records now contain the required exact task and commit identities; the active registries are empty and mirrored, and frozen evidence covers focused regressions, formatting, routing, hosted checks, qualification, and operator-state closure."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/a44732d9cc4b7a4d62d6bf4238a65bc55736d25c5b57eeacb4a84145c0d792cc.patch",
+    ".agentplane/tasks/202608131733-KECD7J/README.md",
+    ".agentplane/tasks/202608131733-KECD7J/evidence/hosted-checks.json",
+    ".agentplane/tasks/202608131733-KECD7J/evidence/operator-state.json",
+    ".agentplane/tasks/202608131733-KECD7J/evidence/qualification-outcome.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

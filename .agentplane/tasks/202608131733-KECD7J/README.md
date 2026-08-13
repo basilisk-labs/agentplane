@@ -4,7 +4,7 @@ title: "Archive resolved release incidents before 0.7.6"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -31,25 +31,24 @@ verification:
   note: "Exact archive identity rework passed with primary frozen evidence."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-13T18:14:25.774Z"
+  updated_at: "2026-08-13T18:17:19.366Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "d0135b104218422ca56f064389bb3d56f5e3bf76"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "b6b5f5e57797cf0429eb8758abc3dcfdc73388c8"
   blueprint_digest: "8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece"
   evidence_refs:
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181345686-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181345686-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/6e56875b6b9e2f06ea3f9af7a5d7ff98743792b33d8af3d4fb166910d48e57c2.md"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181345686-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181345686-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181345686-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181345686-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181557201-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181557201-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/e25ab2c0cd7bc9676f7d8937dfd2e2c542e3940ac2bd7096369af2ef40772b5c.md"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181557201-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181557201-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181557201-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608131733-KECD7J/README.md"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/6f82337e880eb1aa5e4d986d2271cb945232b8f40280edd568973d2b80cdcf94.patch"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/8a47ca7b5f0f89950b2c4fac78c5c9d7bde2983e41f2e0cc1b52dba8de6cd557.json"
-    - ".agentplane/tasks/202608131733-KECD7J/verification/20260813181328361-38dd86355c6eecb5.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/a44732d9cc4b7a4d62d6bf4238a65bc55736d25c5b57eeacb4a84145c0d792cc.patch"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/fff0303f3285cf50f9be1041a65ff9b09c063f063caeee30a22148a2c9c062c3.json"
+    - ".agentplane/tasks/202608131733-KECD7J/verification/20260813181548929-a5fa3e17e783066e.json"
     - ".agentplane/tasks/202608131733-KECD7J/evidence/hosted-checks.json"
     - ".agentplane/tasks/202608131733-KECD7J/evidence/operator-state.json"
     - ".agentplane/tasks/202608131733-KECD7J/evidence/qualification-outcome.json"
@@ -61,7 +60,7 @@ quality_review:
     - ".agentplane/policy/dod.docs.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The INC-20260811-01 archived record names T3ZDDM as required qualification hardening but omits its exact implementation and merged commit identities, so the archive does not contain the complete exact task-and-commit evidence required by the approved contract."
+    - "The archived incident records now contain the required exact task and commit identities; the active registries are empty and mirrored, and frozen evidence covers focused regressions, formatting, routing, hosted checks, qualification, and operator-state closure."
 execution_route:
   frozen: true
   reason_codes:
