@@ -690,8 +690,12 @@ function runFixture({ run, cli, packages, tempRoot }) {
   const taskCommit = String(finalTask.commit ?? "");
   try {
     git(run, repo, ["cat-file", "-e", `${taskCommit}^{commit}`]);
-  } catch {
-    fail("missing_commit", "recorded task commit is absent from Git");
+  } catch (error) {
+    fail(
+      "missing_commit",
+      `recorded task commit is absent from Git: value=${JSON.stringify(taskCommit)} ` +
+        `status=${finalTask.status} head=${finalHead} error=${error.message}`,
+    );
   }
 
   return {
