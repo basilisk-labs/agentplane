@@ -638,7 +638,14 @@ function runFixture({ run, cli, packages, tempRoot }) {
     evaluatorProductSnapshot.docs.includes("Hello, Ada!") &&
     evaluatorProductSnapshot.metadata.includes("fixture-dist/");
   if (!reviewReady) {
-    fail("missing_evaluator_evidence", "public diff or deterministic verification was incomplete");
+    fail(
+      "missing_evaluator_evidence",
+      `public diff or deterministic verification was incomplete: paths=${changedPaths.join(",")} ` +
+        `test_status=${evaluatorTestResult.status} source=${evaluatorProductSnapshot.source.includes("Hello, ${name}!")} ` +
+        `tests=${evaluatorProductSnapshot.test.includes("personalized greeting")} ` +
+        `docs=${evaluatorProductSnapshot.docs.includes("Hello, Ada!")} ` +
+        `metadata=${evaluatorProductSnapshot.metadata.includes("fixture-dist/")}`,
+    );
   }
 
   const evaluatorExchange = writePacketResult(accessLog, evaluator, "EVALUATOR", {
