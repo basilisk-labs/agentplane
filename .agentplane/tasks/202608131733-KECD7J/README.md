@@ -4,7 +4,7 @@ title: "Archive resolved release incidents before 0.7.6"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -30,6 +30,33 @@ verification:
   updated_by: "TESTER"
   note: "Both incident failure classes are fixed and enforced on current main; focused 37/37 regressions, policy routing, formatting, mirror parity, and the release incident gate passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-13T17:37:19.109Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "4d9f3f3deb925e253f1fb6843b098f51da4388d4"
+  blueprint_digest: "8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece"
+  evidence_refs:
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-173718731-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-173718731-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/f147b58f80c4aa976646e4fc424514d01d7444e5e451eacc4581231c1128c703.md"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-173718731-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-173718731-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-173718731-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608131733-KECD7J/README.md"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/3d4f13fde6d1e5e97c1e857b3cdf252df84f0313744270e4953684716bf97a3c.patch"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/7080b63b8c078b5f99ca33297e1622110125e66f8e43eb2dd48eb095fa302dd0.json"
+    - ".agentplane/tasks/202608131733-KECD7J/verification/20260813173704069-6fe32b7d7716d1a3.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/9725fea52c72eb583a16956bddbcdee3dffdb127944db9dffeef4bb507cabe04.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/dod.docs.md"
+    - ".agentplane/policy/security.must.md"
+  findings:
+    - "INC-20260810-01 is enforced by one declared-check grammar shared across persistence and execution; the original bun test path and invalid-command boundaries are covered."
+    - "INC-20260811-01 is enforced by shared-worktree dependency discovery tests and provider-enabled qualification; the optimized final qualification passed with zero blocking defects."
+    - "The active registry and installed mirror are empty and identical, while each incident remains preserved exactly once in the historical archive."
 execution_route:
   frozen: true
   reason_codes:
