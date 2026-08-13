@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane 0.7.6"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -32,6 +32,33 @@ verification:
   updated_by: "TESTER"
   note: "Exact candidate 95a6d46c5 passed the complete local release contract."
   attempts: 0
+quality_review:
+  state: "human_review"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-13T22:01:48.340Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned human_review with 1 typed finding(s)."
+  evaluated_sha: "95a6d46c5cd6af4c4bfd2e61c79a9d4606dca12e"
+  blueprint_digest: "1899fc9e16ece1a5840f337f0c3b3222aac692041c82a0acb222673a31e94a1f"
+  evidence_refs:
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220056536-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220056536-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/f8ae12fdb1a05dc91f4239b353d61537beaeea3e394fa955ac88a203760abe34.md"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220056536-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220056536-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220056536-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220056536-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/README.md"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/8d1fe4ed0ce8e696c804bf13f6c0e6544c502f5994e352426606aca4c437b78d.patch"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/fba8557f3b542bff7b24ea124dcb3a7c53256fea1a6bf8c45119855516cdf611.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/verification/20260813220007775-1c4ec2c7aba44828.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/eb74ab4402f4753e2b0d2142968f0e82ce7d90ace408a962c30ee82f82215476.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.release.md"
+  findings:
+    - "The frozen execution contract forbids documentation, source-code, test, public-API, and dependency mutations, but the evaluated candidate contains all five classes and records them as authority violations."
 execution_route:
   frozen: true
   reason_codes:
@@ -452,6 +479,9 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "USER"
+    body: "User answer: Yes. The approved 0.7.6 plan and subsequent explicit user instructions authorize the candidate's documentation, source-code, test, public-API, and dependency changes needed to complete the discussed AgentPlane fixes before release. This approval does not extend beyond the approved 0.7.6 scope or waive verification, hosted integration, or publication gates."
 events:
   -
     type: "status"
@@ -473,9 +503,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Exact candidate 95a6d46c5 passed the complete local release contract."
+  -
+    type: "comment"
+    at: "2026-08-13T22:02:30.721Z"
+    author: "USER"
+    body: "User answer: Yes. The approved 0.7.6 plan and subsequent explicit user instructions authorize the candidate's documentation, source-code, test, public-API, and dependency changes needed to complete the discussed AgentPlane fixes before release. This approval does not extend beyond the approved 0.7.6 scope or waive verification, hosted integration, or publication gates."
 doc_version: 3
-doc_updated_at: "2026-08-13T22:00:09.031Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-08-13T22:02:30.721Z"
+doc_updated_by: "USER"
 description: "Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact protected-main release scope; generate the patch plan and English release notes from actual changes since v0.7.5; run the complete 20-scenario provider-enabled release qualification on the exact clean candidate; run canonical release prepublish gates; prepare a branch_pr release candidate without creating a tag; require exact-SHA hosted checks and no unresolved reviews; integrate through the protected main lane; dispatch GitHub-only publication for the exact merged release SHA; verify release-ready and publish-result artifacts, tag, GitHub Release, and all three public npm packages; then clean the release worktree and report efficiency and residual lifecycle debt."
 sections:
   Summary: |-
@@ -546,6 +581,18 @@ sections:
   Rollback Plan: "Before publication, close the release PR and revert only the candidate commit through a new task; do not create or push v0.7.6. After tag, GitHub Release, or npm publication, immutable registries make rollback unsafe: stop, preserve evidence, and prepare a forward-fix 0.7.7 task instead of rewriting tags, releases, or package versions."
   Findings: ""
 extensions:
+  agentplane.human_input:
+    history:
+      -
+        answer: "Yes. The approved 0.7.6 plan and subsequent explicit user instructions authorize the candidate's documentation, source-code, test, public-API, and dependency changes needed to complete the discussed AgentPlane fixes before release. This approval does not extend beyond the approved 0.7.6 scope or waive verification, hosted integration, or publication gates."
+        answeredAt: "2026-08-13T22:02:30.721Z"
+        answeredBy: "USER"
+        askedAt: "2026-08-13T22:01:48.340Z"
+        askedBy: "EVALUATOR"
+        id: "evaluator-evaluator-work-order-202608131730-BHEAQT-0ca20e0d82941e479de82855"
+        previousStatus: "DOING"
+        question: "Does the human owner explicitly approve the candidate’s recorded documentation, source-code, test, public-API, and dependency mutations despite the frozen execution contract forbidding those repository effects?"
+    openQuestion: null
   workflow_route_baseline:
     start_head_sha: "bc0afaea7a7be909fc93374a195c73da3f697d85"
     version: 1

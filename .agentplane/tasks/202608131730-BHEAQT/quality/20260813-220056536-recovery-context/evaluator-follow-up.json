@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608131730-BHEAQT-0ca20e0d82941e479de82855",
+  "task_id": "202608131730-BHEAQT",
+  "verdict": "human_review",
+  "next_owner": "USER",
+  "instruction": "Does the human owner explicitly approve the candidate’s recorded documentation, source-code, test, public-API, and dependency mutations despite the frozen execution contract forbidding those repository effects?",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The frozen execution contract forbids documentation, source-code, test, public-API, and dependency mutations, but the evaluated candidate contains all five classes and records them as authority violations.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608131730-BHEAQT/README.md",
+          "sha256": "sha256:bca8f5603cb426fa5626dfa433bccc56d0fe8c92398d748eede55895d2a77600",
+          "line": 55,
+          "lines": "execution_contract.authority forbids documentation, source_code, tests, public_api, and dependencies; execution_contract.observed records violations for those effects.",
+          "section": "execution_contract"
+        },
+        {
+          "path": ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/8d1fe4ed0ce8e696c804bf13f6c0e6544c502f5994e352426606aca4c437b78d.patch",
+          "sha256": "sha256:8d1fe4ed0ce8e696c804bf13f6c0e6544c502f5994e352426606aca4c437b78d",
+          "line": 2233,
+          "lines": "The candidate patch changes package dependencies and versions, tests, implementation files, public exports, and documentation.",
+          "section": "actual diff"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "line": 47,
+          "lines": "Files outside approved scope are material drift and require re-approval.",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220056536-recovery-context/evaluator-result.json"
+}

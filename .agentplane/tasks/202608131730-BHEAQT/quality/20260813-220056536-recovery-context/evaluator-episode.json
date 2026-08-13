@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202608131730-BHEAQT-0ca20e0d82941e479de82855",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131730-BHEAQT-qualify-and-publish-agentplane-0-7-6",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131730-BHEAQT-qualify-and-publish-agentplane-0-7-6/.agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-08-13T22:00:57.135Z",
+  "ended_at": "2026-08-13T22:01:47.904Z",
+  "stdout_bytes": 186515,
+  "stderr_bytes": 134,
+  "provider_usage": {
+    "input_tokens": 181230,
+    "output_tokens": 3064,
+    "total_tokens": 184294,
+    "visible_output_tokens": 2504,
+    "reasoning_tokens": 560
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:f98ea7741bd1b6475b2c9c809ca011c9219e77327956c90ffafb13e93d39bdf5"
+}

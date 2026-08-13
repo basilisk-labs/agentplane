@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "human_review",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The frozen execution contract forbids documentation, source-code, test, public-API, and dependency mutations, but the evaluated candidate contains all five classes and records them as authority violations.",
+      "broken_invariant": "Repository mutations must remain within approved authority; material scope drift requires explicit re-approval, and the evaluator must not infer owner acceptance for a contradictory authority boundary.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608131730-BHEAQT/README.md",
+          "sha256": "sha256:bca8f5603cb426fa5626dfa433bccc56d0fe8c92398d748eede55895d2a77600",
+          "line": 55,
+          "lines": "execution_contract.authority forbids documentation, source_code, tests, public_api, and dependencies; execution_contract.observed records violations for those effects.",
+          "section": "execution_contract"
+        },
+        {
+          "path": ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/8d1fe4ed0ce8e696c804bf13f6c0e6544c502f5994e352426606aca4c437b78d.patch",
+          "sha256": "sha256:8d1fe4ed0ce8e696c804bf13f6c0e6544c502f5994e352426606aca4c437b78d",
+          "line": 2233,
+          "lines": "The candidate patch changes package dependencies and versions, tests, implementation files, public exports, and documentation.",
+          "section": "actual diff"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "line": 47,
+          "lines": "Files outside approved scope are material drift and require re-approval.",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "An authority-conformance gate that fails a candidate when observed repository effects intersect execution_contract.authority.forbidden_repository_effects."
+  ],
+  "hidden_assumptions": [
+    "The broad plan approval note is assumed to authorize later implementation, test, documentation, public-API, and dependency changes despite the frozen execution contract explicitly forbidding them.",
+    "The recorded local release checks are assumed to supersede authority violations, although verification success does not grant mutation authority."
+  ],
+  "recovery_context": "Does the human owner explicitly approve the candidate’s recorded documentation, source-code, test, public-API, and dependency mutations despite the frozen execution contract forbidding those repository effects?"
+}
