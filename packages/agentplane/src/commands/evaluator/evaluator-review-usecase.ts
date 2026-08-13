@@ -69,7 +69,11 @@ export {
   uniqueStrings,
   type HumanEvaluatorReviewInput,
 } from "./evaluator-review-shared.js";
-export { renderActualDiff, resolveEvaluatorDiffBase } from "./evaluator-diff-evidence.js";
+export {
+  renderActualDiff,
+  resolveActualDiffNames,
+  resolveEvaluatorDiffBase,
+} from "./evaluator-diff-evidence.js";
 export { validateStrictEvaluatorResult } from "./evaluator-result-validation.js";
 export { assertResultEvidenceIsFrozen, readWorkOrder } from "./evaluator-work-order.js";
 export type { EvaluatorWorkOrder } from "./evaluator-work-order.js";

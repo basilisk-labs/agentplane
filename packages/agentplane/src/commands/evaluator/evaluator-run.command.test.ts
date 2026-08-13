@@ -13,6 +13,7 @@ import { cmdVerifyParsed } from "../task/verify-record.js";
 import { runEvaluatorRun } from "./evaluator.command.js";
 import {
   renderActualDiff,
+  resolveActualDiffNames,
   resolveEvaluatorDiffBase,
   type PreparedEvaluatorReview,
 } from "./evaluator-review-usecase.js";
@@ -802,6 +803,11 @@ describe("evaluator run command", () => {
         allowSingleCommitFallback: true,
       }),
     ).resolves.toBeNull();
+
+    await expect(resolveActualDiffNames(root, rootSha, null)).resolves.toEqual(["README.md"]);
+    await expect(resolveActualDiffNames(root, "HEAD", null)).rejects.toMatchObject({
+      code: "E_VALIDATION",
+    });
   });
 
   it("freezes the durable verification record created through the supported verification path", async () => {

@@ -1,8 +1,9 @@
+import { execFile } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 import {
-  gitCommitChangedPaths,
-  gitDiffNames,
+  gitEnv,
   gitIsAncestor,
   gitMergeBase,
   gitRevParse,
@@ -13,6 +14,14 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import { CliError } from "../../shared/errors.js";
 import { parsePrMetaForwardCompatible } from "../shared/pr-meta.js";
 import type { CommandContext } from "../shared/task-backend.js";
+
+const execFileNative = promisify(execFile);
+
+function assertGitObjectId(value: string): void {
+  if (!/^[0-9a-f]{40}(?:[0-9a-f]{24})?$/u.test(value)) {
+    throw new Error(`expected a full Git object ID, received: ${value}`);
+  }
+}
 
 export async function resolveEvaluatorDiffBase(opts: {
   gitRoot: string;
@@ -145,10 +154,23 @@ export async function resolveActualDiffNames(
 ): Promise<string[]> {
   if (!evaluatedSha) return [];
   try {
-    const changedPaths = diffBaseSha
-      ? await gitDiffNames(gitRoot, diffBaseSha, evaluatedSha, { range: "two-dot" })
-      : await gitCommitChangedPaths(gitRoot, evaluatedSha);
-    return [...new Set(changedPaths)].toSorted();
+    assertGitObjectId(evaluatedSha);
+    if (diffBaseSha) assertGitObjectId(diffBaseSha);
+    const { stdout } = await execFileNative(
+      "git",
+      diffBaseSha
+        ? ["diff", "--name-only", "--find-renames", diffBaseSha, evaluatedSha]
+        : ["show", "--name-only", "--format=", "--root", "--find-renames", evaluatedSha],
+      { cwd: gitRoot, env: gitEnv(), encoding: "utf8" },
+    );
+    return [
+      ...new Set(
+        stdout
+          .split(/\r?\n/u)
+          .map((entry) => entry.trim())
+          .filter(Boolean),
+      ),
+    ].toSorted();
   } catch (error) {
     throw new CliError({
       code: "E_VALIDATION",
