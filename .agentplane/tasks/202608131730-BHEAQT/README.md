@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane 0.7.6"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -33,21 +33,19 @@ verification:
   note: "Exact candidate 95a6d46c5 passed the complete local release contract."
   attempts: 0
 quality_review:
-  state: "human_review"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-08-13T22:03:37.314Z"
-  updated_by: "EVALUATOR"
-  note: "EVALUATOR returned human_review with 1 typed finding(s)."
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-08-13T22:05:40.975Z"
+  updated_by: "HUMAN"
+  note: "Human owner explicitly approved the 0.7.6 candidate's required repository effects after evaluator escalation; exact-SHA verification and all hosted publication gates remain mandatory."
   evaluated_sha: "95a6d46c5cd6af4c4bfd2e61c79a9d4606dca12e"
   blueprint_digest: "1899fc9e16ece1a5840f337f0c3b3222aac692041c82a0acb222673a31e94a1f"
   evidence_refs:
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220303255-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220303255-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/e2673277dea700c977482a9bd324ca817eb6afa16e4c056c3fd0838ffb8bcfc8.md"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220303255-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220303255-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220303255-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220303255-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220540187-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220540187-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/0646d64f66b67e6a4cac490cce996b89fe151bb8807c17a5a93c370dabe566bd.md"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220540187-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220540187-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608131730-BHEAQT/README.md"
     - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/8d1fe4ed0ce8e696c804bf13f6c0e6544c502f5994e352426606aca4c437b78d.patch"
     - ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/fba8557f3b542bff7b24ea124dcb3a7c53256fea1a6bf8c45119855516cdf611.json"
@@ -57,8 +55,9 @@ quality_review:
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
+    - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220303255-recovery-context/evaluator-result.json"
   findings:
-    - "The approved release objective requires release notes, package version changes, internal dependency-pin updates, and related candidate changes, while the frozen execution contract forbids documentation, dependencies, public API, source-code, and test effects and records the candidate as violating that authority."
+    - "The legacy frozen contract under-declared documentation, dependency, public-API, source-code, and test effects, but the owner explicitly re-approved those bounded 0.7.6 changes in response to the evaluator question."
 execution_route:
   frozen: true
   reason_codes:
