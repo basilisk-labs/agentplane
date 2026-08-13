@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "INC-20260810-01 is enforced by one declared-check grammar shared across persistence and execution; the original bun test path and invalid-command boundaries are covered.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/3d4f13fde6d1e5e97c1e857b3cdf252df84f0313744270e4953684716bf97a3c.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "INC-20260811-01 is enforced by shared-worktree dependency discovery tests and provider-enabled qualification; the optimized final qualification passed with zero blocking defects.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/3d4f13fde6d1e5e97c1e857b3cdf252df84f0313744270e4953684716bf97a3c.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "The active registry and installed mirror are empty and identical, while each incident remains preserved exactly once in the historical archive.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/3d4f13fde6d1e5e97c1e857b3cdf252df84f0313744270e4953684716bf97a3c.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
