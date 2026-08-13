@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608112259-T3ZDDM-00b8ff4d0f36f3376a025745",
+  "task_id": "202608112259-T3ZDDM",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Recompute and persist the Verification Contract from the exact evaluated diff so deterministic observed paths/components trigger the required central/unmapped fallback, then record exact-SHA verification against the strengthened digest and regenerate frozen evaluator evidence.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The persisted Verification Contract was not strengthened from the evaluated diff: it records no changed files or components and does not require full regression despite changes to CI, package manifests, schemas, routing, lifecycle, verification policy, and previously unmapped paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/8fd6209c2f8bb5830e68c2168ef7f6d2a9c1be6aff4610f7778e10ff78c3009c.patch",
+          "sha256": "sha256:8fd6209c2f8bb5830e68c2168ef7f6d2a9c1be6aff4610f7778e10ff78c3009c",
+          "section": "Changed paths include .github/workflows/ci.yml, package.json, package manifests, schemas, routing, lifecycle, evaluator, verification, and scheduler code"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/1cabe36d131c3ba8156174a88d89100d4aa35fb15c57a397737948417168e386.json",
+          "sha256": "sha256:1cabe36d131c3ba8156174a88d89100d4aa35fb15c57a397737948417168e386",
+          "section": "verification_contract.observed, selector, requires_full_regression, and escalation_reasons"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+          "sha256": "sha256:13d47ce5179a5c8933e2cf4e1bb3716d2f7f1dea0a24a02d4388a0b76938a8af",
+          "section": "Acceptance criteria 2–4 and Verify Steps 1–4"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813074722992-6ad656c6781aca9e.json",
+          "sha256": "sha256:c5f5d1b1dd551d3b17047f51bfa8b6f48cd607537e19c6e0b1beb9e0b203270e",
+          "section": "input.verification_contract_digest and details"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-074739093-recovery-context/evaluator-result.json"
+}

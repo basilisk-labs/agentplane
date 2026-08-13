@@ -915,11 +915,10 @@ describe("evaluator run command", () => {
     const observedChecks = JSON.parse(
       await readFile(path.join(root, observedChecksPath), "utf8"),
     ) as { verification_contract?: { digest?: string; selected_checks?: string[] } };
-    expect(observedChecks.verification_contract).toMatchObject({
-      digest: (record.input as { verification_contract_digest?: string })
-        .verification_contract_digest,
-      selected_checks: ["task_outcome"],
-    });
+    expect(observedChecks.verification_contract?.digest).toBe(
+      (record.input as { verification_contract_digest?: string }).verification_contract_digest,
+    );
+    expect(observedChecks.verification_contract?.selected_checks).toContain("task_outcome");
     expect(typeof record.implementation_sha).toBe("string");
     expect(record.scope_digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
     expect(record.digest).toMatch(/^sha256:[a-f0-9]{64}$/u);

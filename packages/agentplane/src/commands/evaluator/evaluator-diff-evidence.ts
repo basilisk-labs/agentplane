@@ -135,3 +135,35 @@ export async function renderActualDiff(
     });
   }
 }
+
+export async function resolveActualDiffNames(
+  gitRoot: string,
+  evaluatedSha: string | null,
+  diffBaseSha: string | null,
+): Promise<string[]> {
+  if (!evaluatedSha) return [];
+  try {
+    const { stdout } = await execFileAsync(
+      "git",
+      diffBaseSha
+        ? ["diff", "--name-only", "--find-renames", diffBaseSha, evaluatedSha]
+        : ["show", "--name-only", "--format=", "--root", "--find-renames", evaluatedSha],
+      { cwd: gitRoot },
+    );
+    return [
+      ...new Set(
+        stdout
+          .split(/\r?\n/u)
+          .map((entry) => entry.trim())
+          .filter(Boolean),
+      ),
+    ].toSorted();
+  } catch (error) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Unable to resolve the evaluated diff paths: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    });
+  }
+}
