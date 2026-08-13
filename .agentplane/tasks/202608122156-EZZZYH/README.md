@@ -4,7 +4,7 @@ title: "Add installed-package mixed-scope lifecycle E2E to release qualification
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -127,11 +127,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "83a4f814d75a56c5da3341fd8ea329cf8e8e9618"
+  message: "🐛 EZZZYH qualification: read structured commit identity"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed: installed-package mixed-scope qualification, CI wiring, contract shields, and evaluator fingerprint stabilization are ready for TESTER verification."
 events:
   -
     type: "status"
@@ -140,8 +145,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-13T16:08:48.991Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: installed-package mixed-scope qualification, CI wiring, contract shields, and evaluator fingerprint stabilization are ready for TESTER verification."
+    commit: "83a4f814d75a56c5da3341fd8ea329cf8e8e9618"
 doc_version: 3
-doc_updated_at: "2026-08-13T15:34:09.216Z"
+doc_updated_at: "2026-08-13T16:08:48.991Z"
 doc_updated_by: "CODER"
 description: "Add a mandatory black-box installed-package E2E scenario to the AgentPlane release qualification used for 0.7.6. The scenario must pack the exact clean candidate, install the tarball into an isolated prefix, create a clean temporary Git repository, use only the public installed CLI, run init and semantic task intake, execute a real mixed-scope change spanning source code, tests, documentation, and repository metadata such as .gitignore, perform deterministic verification and evaluator review, and reach an equivalent completed lifecycle with commit and branch/PR-ready outcome. The scenario must not read or mutate internal runtime, quality, recovery, or task artifacts directly and must fail the release gate if any required phase is skipped or simulated. Preserve every existing qualification scenario and add manifest, runner, CI-routing, contract tests, cleanup, and operator documentation needed to make this a blocking 0.7.6 release check."
 sections:
