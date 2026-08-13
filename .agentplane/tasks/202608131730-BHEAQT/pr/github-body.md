@@ -22,7 +22,7 @@ Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-13T17:32:00.151Z
+- Updated: 2026-08-13T22:08:12.433Z
 - Branch: task/202608131730-BHEAQT/qualify-and-publish-agentplane-0-7-6
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

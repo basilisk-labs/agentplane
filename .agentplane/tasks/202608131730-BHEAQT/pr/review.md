@@ -6,7 +6,7 @@ Created: 2026-08-13T17:32:00.151Z
 
 - Task: `202608131730-BHEAQT`
 - Title: Qualify and publish AgentPlane 0.7.6
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608131730-BHEAQT/qualify-and-publish-agentplane-0-7-6`
 - Canonical task record: `.agentplane/tasks/202608131730-BHEAQT/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-13T17:32:00.151Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-13T17:32:00.151Z
+- Updated: 2026-08-13T22:08:12.433Z
 - Branch: task/202608131730-BHEAQT/qualify-and-publish-agentplane-0-7-6
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
