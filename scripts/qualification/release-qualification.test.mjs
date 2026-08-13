@@ -217,6 +217,7 @@ describe("v0.7.1 release qualification contract", () => {
       commit: { task_commit: "a".repeat(40) },
       finish: { status: "DONE", terminal: true },
       stale_exchange: { rejected: true },
+      exact_replay: { idempotent: true, action: "approval_required" },
       access_log: [],
       temp_cleanup: true,
       final_git_status: "",
@@ -235,6 +236,7 @@ describe("v0.7.1 release qualification contract", () => {
       ["missing_commit", (value) => (value.commit.task_commit = "")],
       ["missing_finish", (value) => (value.finish.terminal = false)],
       ["stale_exchange_accepted", (value) => (value.stale_exchange.rejected = false)],
+      ["accepted_exchange_not_idempotent", (value) => (value.exact_replay.idempotent = false)],
       [
         "internal_artifact_access",
         (value) =>
