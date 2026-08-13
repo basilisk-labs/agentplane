@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:94c00ff80640012b88ed6a17f9ac02a6fbef94a7bf668e4a4a082aaa8734d028",
   "pr_number": 4832,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4832",
+  "pre_merge_closure": {
+    "basis_commit": "c6922d42e58cd245976281dfe6faa839f3b6c0c8",
+    "branch": "task/202608131733-KECD7J/archive-resolved-release-incidents-before-0-7-6",
+    "pr_number": 4832,
+    "recorded_at": "2026-08-13T18:19:01.166Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608131733-KECD7J",
