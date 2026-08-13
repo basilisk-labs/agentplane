@@ -465,6 +465,7 @@ export {
 
 export {
   gitAheadBehind,
+  gitCommitChangedPaths,
   gitDiffNames,
   gitDiffNameStatus,
   gitDiffNumstat,

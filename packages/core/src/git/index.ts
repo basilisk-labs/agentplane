@@ -29,6 +29,7 @@ export {
 
 export {
   gitAheadBehind,
+  gitCommitChangedPaths,
   gitDiffNames,
   gitProofDiffNames,
   gitDiffNameStatus,
