@@ -217,20 +217,19 @@ async function prepareEvaluatorReviewLocked(
   );
   const contractChangedPaths =
     opts.task.execution_contract?.verification.contract?.observed.changed_files ?? [];
-  if (
-    opts.task.verification?.state === "ok" &&
-    implementationChangedPaths.some((changedPath) => !contractChangedPaths.includes(changedPath))
-  ) {
+  const missingContractPaths = implementationChangedPaths.filter(
+    (changedPath) => !contractChangedPaths.includes(changedPath),
+  );
+  if (opts.task.verification?.state === "ok" && missingContractPaths.length > 0) {
     throw new CliError({
       code: "E_VALIDATION",
-      message:
-        "evaluator cannot accept a Verification Contract whose observed changed files do not cover the exact evaluated diff; record verification again so AgentPlane strengthens the contract from deterministic Git evidence.",
+      message: `evaluator cannot accept a Verification Contract whose observed changed files do not cover the exact evaluated diff (missing: ${missingContractPaths.join(
+        ", ",
+      )}); record verification again so AgentPlane strengthens the contract from deterministic Git evidence.`,
       context: {
         task_id: opts.task.id,
         reason_code: "verification_contract_diff_incomplete",
-        missing_paths: implementationChangedPaths.filter(
-          (changedPath) => !contractChangedPaths.includes(changedPath),
-        ),
+        missing_paths: missingContractPaths,
       },
     });
   }
