@@ -859,6 +859,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
           taskId,
           "DOING",
           "--force",
+          "--yes",
           "--root",
           root,
         ]);
@@ -880,6 +881,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
         taskId,
         "DONE",
         "--force",
+        "--yes",
         "--commit",
         commitSha.trim(),
         "--author",

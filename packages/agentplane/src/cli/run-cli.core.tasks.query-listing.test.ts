@@ -1015,8 +1015,8 @@ describe(
         ]);
         expect(code).toBe(0);
         expect(io.stdout).toBe(
-          `${firstTaskId} [TODO] Alpha ready (owner=CODER, prio=med, deps=none, tags=docs, blueprint=docs.change)\n` +
-            `${secondTaskId} [TODO] Beta blocked (owner=CODER, prio=med, deps=wait:${firstTaskId}, tags=docs, blueprint=docs.change)\n`,
+          `${firstTaskId} [TODO] Alpha ready (owner=CODER, prio=med, deps=none, tags=docs, blueprint=analysis.light)\n` +
+            `${secondTaskId} [TODO] Beta blocked (owner=CODER, prio=med, deps=wait:${firstTaskId}, tags=docs, blueprint=analysis.light)\n`,
         );
         expect(io.stderr).toBe("");
       } finally {

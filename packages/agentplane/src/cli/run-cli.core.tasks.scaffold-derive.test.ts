@@ -18,7 +18,7 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["task", "scaffold", taskId, "--force", "--root", root]);
+      const code = await runCli(["task", "scaffold", taskId, "--force", "--yes", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("wrote");
     } finally {
@@ -72,6 +72,7 @@ describe("runCli", () => {
         "--title",
         "Custom title",
         "--force",
+        "--yes",
         "--quiet",
         "--root",
         root,
