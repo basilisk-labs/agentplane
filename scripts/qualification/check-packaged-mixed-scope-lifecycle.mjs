@@ -81,6 +81,11 @@ function runPacketArgv(run, cli, cwd, argv, label) {
   return runInstalledJson(run, cli, cwd, argv.slice(1), label);
 }
 
+function runPacketCommand(run, cli, cwd, argv, label) {
+  assertPublicArgv(argv, label);
+  return run(process.execPath, [cli, ...argv.slice(1)], { cwd });
+}
+
 function runInstalledFailure(cli, cwd, argv) {
   const result = spawnSync(process.execPath, [cli, ...argv], {
     cwd,
@@ -563,7 +568,7 @@ function runFixture({ run, cli, packages, tempRoot }) {
     );
   }
 
-  runPacketArgv(
+  runPacketCommand(
     run,
     cli,
     approval.operator_action.cwd ?? repo,
