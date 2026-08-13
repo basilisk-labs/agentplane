@@ -925,34 +925,6 @@ describe("evaluator run command", () => {
     expect(record.digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
   });
 
-  it("fails closed when legacy passing verification has no persisted contract", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const taskId = "202605240900-EV24";
-    await addTask(root, taskId);
-    await commitPath(root, "src/evaluated.ts", "export const evaluated = true;\n", "feat: target");
-    const command = await loadCommandContext({ cwd: root, rootOverride: root });
-    await applyTaskMutation({
-      ctx: command,
-      taskId,
-      build: () => ({
-        intents: setTaskFieldsIntent({
-          verification: {
-            state: "ok",
-            updated_at: "2026-01-02T00:00:00.000Z",
-            updated_by: "TESTER",
-            note: "Legacy verification",
-          },
-        }),
-      }),
-    });
-
-    await expect(prepareTypedReview(root, taskId)).rejects.toMatchObject({
-      code: "E_VALIDATION",
-      context: { reason_code: "verification_contract_missing" },
-    });
-  });
-
   it("rejects stale evaluator work orders after the evaluated SHA advances", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

@@ -79,6 +79,7 @@ export type VerificationContractEvidenceCoverage = {
 };
 
 export function requiredVerificationContractChecks(task: TaskData): string[] {
+  if (task.execution_contract?.source === "legacy_compatibility") return [];
   return [...(task.execution_contract?.verification.contract?.selected_checks ?? [])].toSorted();
 }
 
@@ -276,7 +277,11 @@ async function assessCurrentVerification(
   if (!recordMetadataMatches(record, task)) {
     return rejectedAssessment("verification_metadata_changed");
   }
-  if (record.result === "ok" && !task.execution_contract?.verification.contract) {
+  if (
+    record.result === "ok" &&
+    record.schema_version === 1 &&
+    !task.execution_contract?.verification.contract
+  ) {
     return rejectedAssessment("verification_contract_changed");
   }
   if (requireConcreteCheckDetails && !hasConcreteCheckDetails(record.details)) {

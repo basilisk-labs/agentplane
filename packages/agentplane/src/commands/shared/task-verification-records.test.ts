@@ -135,7 +135,7 @@ describe("task verification records", () => {
     await expect(verificationRecordPaths(taskRoot, task, null)).resolves.toEqual([]);
   });
 
-  it("rejects a passing record when no persisted Verification Contract exists", async () => {
+  it("rejects a legacy metadata-only passing record when no Verification Contract exists", async () => {
     const gitRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-verification-record-"));
     tempRoots.push(gitRoot);
     const task = makeTask("T-METADATA");
