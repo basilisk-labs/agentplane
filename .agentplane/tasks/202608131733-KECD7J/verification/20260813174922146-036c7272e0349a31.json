@@ -1,0 +1,83 @@
+{
+  "details": "Command: bun test packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/release/shared-worktree-dependency-manifest.test.ts\nResult: pass\nEvidence: 37 tests passed, 0 failed, across 3 focused files.\nScope: declared-check parser parity, direct verification, and RF-04 shared-worktree dependency discovery.\n\nCommand: node .agentplane/policy/check-routing.mjs && bun run release:incidents:check\nResult: pass\nEvidence: policy routing OK; release incident gate reports no active entries.\nScope: canonical policy mirrors, routing budget, and release incident blocker removal.\n\nCommand: bunx prettier --check docs/developer/incident-archive.mdx .agentplane/policy/incidents.md packages/agentplane/assets/policy/incidents.md && git cat-file -e <corrected-shas>^{commit}\nResult: pass\nEvidence: affected files formatted; both corrected implementation and merge SHA objects resolve as commits.\nScope: archive documentation quality and auditable resolution evidence.",
+  "digest": "sha256:036c7272e0349a311207061eb9f5ad41fd944c5477fc68959ed543c3afcfc48c",
+  "implementation_sha": "d0135b104218422ca56f064389bb3d56f5e3bf76",
+  "input": {
+    "context": {
+      "digest": "sha256:a091ea549c57faa46dc355a05133574fc1901a9d898c1a95ca13d006cf6b5b98",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:f23489b6a8797a7f60aea72a7d1fa6028e114c25c2c9f5000908bbde4ae8b214",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:8e8f2c3eea87dde40e044b21d02f7576dcc6617072d7e70c8dd10b89f28b2ce0",
+      "digest": "sha256:68ba843054b9027eb93d3323d08eea910750dc0574b0985133f85e46ba738987",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "bc0afaea7a7be909fc93374a195c73da3f697d85",
+      "digest": "sha256:f09945e6c68723129a5565775e905d5e0a8c5a00379e5f70251aa6c9f93e6add",
+      "strategy": "branch_diff",
+      "target_sha": "d0135b104218422ca56f064389bb3d56f5e3bf76"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:188d527d8a3bb0f884efb575a5a65e1b59c501a6414528e3200f2771f4c34747",
+    "verify_steps_digest": "sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4"
+  },
+  "kind": "task_verification_record",
+  "note": "Exact d0135b104 verification passed; prior full-fast evidence remains applicable to unchanged policy/archive scope.",
+  "recorded_at": "2026-08-13T17:49:22.146Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run bun test packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/release/shared-worktree-dependency-manifest.test.ts. Expected: all tests pass, accepted checks use the execution parser, and RF-04 shared-worktree dependency discovery remains valid.\n2. Inspect W4ZM7J, 7XGP97, T3ZDDM and their merged evidence. Expected: both incident fixes are on main, quality/hosted evidence passed, and no unresolved engineering or operator action remains for either failure class.\n3. Inspect docs/developer/incident-archive.mdx. Expected: both IDs appear exactly once as complete archived records with final evidence, enforcement, archived_by, and archive_reason.\n4. Inspect .agentplane/policy/incidents.md and packages/agentplane/assets/policy/incidents.md. Expected: both active entries are absent, the two mirrors agree, and no unrelated incident text changes.\n5. Run bun run format:check, node .agentplane/policy/check-routing.mjs, and bun run release:incidents:check. Expected: formatting and policy graph pass, active incident count is zero, and 0.7.6 release planning is unblocked.\n6. Inspect the PR, hosted checks, merged main, Hosted Close, cleanup, and git status. Expected: exact policy-only diff is merged through the protected lane, task is DONE, its worktree/branch are cleaned, and no unintended tracked files remain.",
+  "scope_digest": "sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4",
+  "task_id": "202608131733-KECD7J",
+  "verification_command": "agentplane verify 202608131733-KECD7J --ok --by TESTER",
+  "verifier": "TESTER"
+}

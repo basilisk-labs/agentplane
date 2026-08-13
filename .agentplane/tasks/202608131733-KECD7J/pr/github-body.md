@@ -19,15 +19,15 @@ Review INC-20260810-01 and INC-20260811-01 against their merged fixes and curren
 - Note:
 
 ```text
-Both incident failure classes are fixed and enforced on current main; focused 37/37 regressions,
-policy routing, formatting, mirror parity, and the release incident gate passed.
+Exact d0135b104 verification passed; prior full-fast evidence remains applicable to unchanged
+policy/archive scope.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-13T17:34:20.627Z
+- Updated: 2026-08-13T17:39:03.323Z
 - Branch: task/202608131733-KECD7J/archive-resolved-release-incidents-before-0-7-6
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
