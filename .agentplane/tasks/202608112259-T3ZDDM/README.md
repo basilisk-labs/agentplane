@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 43
+revision: 46
 origin:
   system: "manual"
 depends_on:
@@ -28,37 +28,36 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-13T14:53:19.033Z"
+  updated_at: "2026-08-13T15:15:39.296Z"
   updated_by: "TESTER"
-  note: "Verified final reuse invariants on b223ead8: 24/24 focused tests, lint, typecheck, full-fast 5/5 with one build, and hosted run 31711516858 pass."
+  note: "Verified setup-bun immutable pin on d3cc2ce7: 28/28 focused tests, workflow lint/contracts, exact hosted full CI and security pass."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-13T14:53:34.939Z"
+  updated_at: "2026-08-13T15:15:44.902Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 2 typed finding(s)."
-  evaluated_sha: "b223ead8fbb3b77bdd369b9018f0974cadbd2217"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "d3cc2ce785dde5e9e93c221c3196768b32167326"
   blueprint_digest: "ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb"
   evidence_refs:
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-145334427-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-145334427-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/4d37b3d76921abacddb7e7e6941e3105c7d97f4ca90fa22b66717430e72e7752.md"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-145334427-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-145334427-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-145334427-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-151544510-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-151544510-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/e65e4fe8db5007b176c00f4bd2e160ee40b00a4ea0d7eadba704365ca8d65e3b.md"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-151544510-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-151544510-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-151544510-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608112259-T3ZDDM/README.md"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/5516041ef940422199bb426b9323bf373833956597bda1d777c896c776b8ddaf.patch"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/43004a137cd621f54c180250f01da3b1c1deaf7f8ad9c4e2c264c2c5f52409c3.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813145319033-1b078719f75849b6.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/a27dfe7f14835a0d349a45f4c2842940d2f7d11c38a1fa59c9d56ba9b389d79f.patch"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/09600da09d491141170920c741701e693bf685923c6a565d31b59427dbb81bb7.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813151539296-457d563347635516.json"
     - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/478fe6fd0549b9c5f29594800dcc6351fe24c8d2b80ecb1bb3e98d5c1600c1ea.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The comparator now distinguishes three safe cases: initial identity binding, unchanged identity across lifecycle-only descendants, and rotation to a verified new implementation only when old-to-new history contains non-task changes and new-to-parent history is task-artifact-only."
-    - "Negative regression coverage rejects arbitrary identity substitution and task-artifact-only promotion; exact-SHA local full-fast and hosted PR verification pass."
+    - "All ten Core CI setup-bun uses now reference the exact commit behind v2; workflow lint, focused CI tests, CodeQL, and exact-SHA full hosted regression pass."
 token_usage:
   agent_runs: 11
   input_tokens: 2103219
@@ -72,7 +71,7 @@ token_usage:
   state: "partial"
   total_tokens: 2135814
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
-  updated_at: "2026-08-13T14:54:59.128Z"
+  updated_at: "2026-08-13T15:17:31.561Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -584,8 +583,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "b223ead8fbb3b77bdd369b9018f0974cadbd2217"
-  message: "🚧 T3ZDDM task: support verified identity rotation"
+  hash: "d3cc2ce785dde5e9e93c221c3196768b32167326"
+  message: "🔒 T3ZDDM task: pin setup-bun action in core CI"
 comments:
   -
     author: "CODER"
@@ -617,6 +616,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: exact implementation d3cc2ce7 passed focused workflow contracts, full hosted regression, security review, and independent evaluator review."
 events:
   -
     type: "status"
@@ -769,9 +771,23 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "b223ead8fbb3b77bdd369b9018f0974cadbd2217"
+  -
+    type: "verify"
+    at: "2026-08-13T15:15:39.296Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified setup-bun immutable pin on d3cc2ce7: 28/28 focused tests, workflow lint/contracts, exact hosted full CI and security pass."
+  -
+    type: "status"
+    at: "2026-08-13T15:17:31.561Z"
+    author: "INTEGRATOR"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: exact implementation d3cc2ce7 passed focused workflow contracts, full hosted regression, security review, and independent evaluator review."
+    commit: "d3cc2ce785dde5e9e93c221c3196768b32167326"
 doc_version: 3
-doc_updated_at: "2026-08-13T14:54:59.161Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-13T15:17:31.591Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement a versioned Verification Contract computed once from the semantic task assessment introduced by 202608112232-3NC7Y4 and strengthened monotonically by deterministic observed effects. Make that contract the single authority for local, PR, release, evaluator, finish, and recovery verification. Add change-aware test selection so local development runs only affected unit/integration suites plus mandatory critical-path checks; run the full CLI regression on PR; run real E2E on PR and release according to risk and observed effects. Add a conservative fallback that selects full regression whenever central components, shared contracts, routing, lifecycle, verification policy, schemas, package/lockfiles, CI, or unknown/unmapped effects are touched. The LLM may propose semantic scope and explain results but must not remove, downgrade, or bypass mandatory checks selected by deterministic policy. Audit duplicate behavioral coverage and move assertions to the cheapest sufficient level, retaining higher-level tests only for observable cross-boundary contracts. Profile fixture creation and process startup; replace repeated mutable setup with reusable immutable fixtures and cheap isolated repository copies where hermeticity is preserved. Execute independent core, runtime, CLI, and docs/schema groups in parallel with deterministic aggregation, failure reporting, and cancellation semantics. Instrument and report verification amplification, wall-clock verification time, test duplication, and the number of AgentPlane lifecycle/control-plane commands. Define small direct work as localized, reversible, non-central, with no external effects; on pinned reference hardware target mandatory local verification at no more than 60 seconds p50 and 120 seconds p95, no more than three lifecycle/control-plane commands, and no local full CLI regression unless the deterministic fallback triggers. Establish a reproducible before/after benchmark, document metric definitions and residual risk, and prove that speedups do not weaken required evidence."
 sections:
   Summary: |-
@@ -1494,6 +1510,72 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-13T15:15:39.296Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified setup-bun immutable pin on d3cc2ce7: 28/28 focused tests, workflow lint/contracts, exact hosted full CI and security pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e, input_digest=sha256:6d7d24f3fe5efeeee533dbbbc778a031cc72bed070c4e1056e833b76fca6569f
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/release/ci-workflow-contract.test.ts packages/agentplane/src/commands/release/github-ci-plan.test.ts
+    Result: pass
+    Evidence: 28/28 workflow and CI planning tests passed.
+    Scope: workflow action pin and CI route contracts
+
+    Check: critical_paths
+    Command: node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs
+    Result: pass
+    Evidence: actionlint and workflow command guidance contract passed.
+    Scope: executable GitHub Actions syntax and command routing
+
+    Check: docs_contract
+    Command: bunx prettier --check .github/workflows/ci.yml
+    Result: pass
+    Evidence: workflow file matches repository formatting contract.
+    Scope: workflow formatting contract
+
+    Check: full_regression
+    Command: gh run view 31713667670 --json status,conclusion,headSha,jobs
+    Result: pass
+    Evidence: hosted full regression completed success on exact SHA d3cc2ce785dde5e9e93c221c3196768b32167326.
+    Scope: complete PR regression after immutable setup-bun pin
+
+    Check: hosted_integration
+    Command: gh run view 31713667670 --json status,conclusion,headSha,jobs
+    Result: pass
+    Evidence: PR verification and security job passed on exact SHA d3cc2ce785dde5e9e93c221c3196768b32167326.
+    Scope: hosted workflow and CodeQL review fix
+
+    Check: task_outcome
+    Command: git ls-remote https://github.com/oven-sh/setup-bun.git refs/tags/v2 and inspect .github/workflows/ci.yml
+    Result: pass
+    Evidence: all ten Core CI setup-bun invocations are pinned to immutable SHA 0c5077e51419868618aeaa5fe8019c62421857d6 corresponding to v2.
+    Scope: supply-chain fix required by unresolved CodeQL review
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou/.agentplane/tasks/202608112259-T3ZDDM/blueprint/resolved-snapshot.json
+    - old_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+    - current_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608112259-T3ZDDM
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1522,8 +1604,8 @@ extensions:
         question: "Does the human owner explicitly approve the observed CI, dependency, documentation, schema, and test changes despite their exclusion from the task's execution authority?"
     openQuestion: null
   implementation_commit:
-    hash: "b223ead8fbb3b77bdd369b9018f0974cadbd2217"
-    message: "🚧 T3ZDDM task: support verified identity rotation"
+    hash: "d3cc2ce785dde5e9e93c221c3196768b32167326"
+    message: "🔒 T3ZDDM task: pin setup-bun action in core CI"
   workflow_route_baseline:
     start_head_sha: "e4ec4520ded988c60db3261714e68b5e22ac4e1f"
     version: 1
@@ -2258,6 +2340,72 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-13T15:15:39.296Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified setup-bun immutable pin on d3cc2ce7: 28/28 focused tests, workflow lint/contracts, exact hosted full CI and security pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e, input_digest=sha256:6d7d24f3fe5efeeee533dbbbc778a031cc72bed070c4e1056e833b76fca6569f
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/release/ci-workflow-contract.test.ts packages/agentplane/src/commands/release/github-ci-plan.test.ts
+Result: pass
+Evidence: 28/28 workflow and CI planning tests passed.
+Scope: workflow action pin and CI route contracts
+
+Check: critical_paths
+Command: node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs
+Result: pass
+Evidence: actionlint and workflow command guidance contract passed.
+Scope: executable GitHub Actions syntax and command routing
+
+Check: docs_contract
+Command: bunx prettier --check .github/workflows/ci.yml
+Result: pass
+Evidence: workflow file matches repository formatting contract.
+Scope: workflow formatting contract
+
+Check: full_regression
+Command: gh run view 31713667670 --json status,conclusion,headSha,jobs
+Result: pass
+Evidence: hosted full regression completed success on exact SHA d3cc2ce785dde5e9e93c221c3196768b32167326.
+Scope: complete PR regression after immutable setup-bun pin
+
+Check: hosted_integration
+Command: gh run view 31713667670 --json status,conclusion,headSha,jobs
+Result: pass
+Evidence: PR verification and security job passed on exact SHA d3cc2ce785dde5e9e93c221c3196768b32167326.
+Scope: hosted workflow and CodeQL review fix
+
+Check: task_outcome
+Command: git ls-remote https://github.com/oven-sh/setup-bun.git refs/tags/v2 and inspect .github/workflows/ci.yml
+Result: pass
+Evidence: all ten Core CI setup-bun invocations are pinned to immutable SHA 0c5077e51419868618aeaa5fe8019c62421857d6 corresponding to v2.
+Scope: supply-chain fix required by unresolved CodeQL review
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou/.agentplane/tasks/202608112259-T3ZDDM/blueprint/resolved-snapshot.json
+- old_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+- current_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608112259-T3ZDDM
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -2278,4 +2426,4 @@ DecisionContextRef:
 - Provenance: `supervisor_journal/agentplane`
 - Journal digest: `sha256:03e6fa53f280c7e0e892ae6fd512478d296a02ef4e003494abd7ed49bdef51f7`
 - Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
-- Updated at: `2026-08-13T14:54:59.128Z`
+- Updated at: `2026-08-13T15:17:31.561Z`
