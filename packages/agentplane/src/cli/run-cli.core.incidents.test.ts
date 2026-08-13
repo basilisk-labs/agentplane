@@ -1040,6 +1040,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         "--commit",
         headSha,
         "--force",
+        "--yes",
         "--observation",
         "Closeout repeatedly surfaced a reusable workflow failure only after implementation was complete.",
         "--impact",
