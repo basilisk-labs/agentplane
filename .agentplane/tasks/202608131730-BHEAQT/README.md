@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane 0.7.6"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -167,7 +167,9 @@ execution_contract:
       - "repository_effect:release_metadata"
       - "repository_effect:repository_write"
       - "task_outcome"
-commit: null
+commit:
+  hash: "95a6d46c5cd6af4c4bfd2e61c79a9d4606dca12e"
+  message: "🐛 BHEAQT release: tolerate stale dependency links"
 comments:
   -
     author: "INTEGRATOR"
@@ -180,8 +182,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-13T21:59:16.530Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DOING"
+    commit: "95a6d46c5cd6af4c4bfd2e61c79a9d4606dca12e"
 doc_version: 3
-doc_updated_at: "2026-08-13T17:32:00.043Z"
+doc_updated_at: "2026-08-13T21:59:16.530Z"
 doc_updated_by: "INTEGRATOR"
 description: "Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact protected-main release scope; generate the patch plan and English release notes from actual changes since v0.7.5; run the complete 20-scenario provider-enabled release qualification on the exact clean candidate; run canonical release prepublish gates; prepare a branch_pr release candidate without creating a tag; require exact-SHA hosted checks and no unresolved reviews; integrate through the protected main lane; dispatch GitHub-only publication for the exact merged release SHA; verify release-ready and publish-result artifacts, tag, GitHub Release, and all three public npm packages; then clean the release worktree and report efficiency and residual lifecycle debt."
 sections:
