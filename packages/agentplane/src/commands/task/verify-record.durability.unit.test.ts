@@ -244,6 +244,7 @@ describe("task verification durability", () => {
     await execFileAsync("git", ["commit", "-m", "test: seed contract diff fixture"], {
       cwd: root,
     });
+    await execFileAsync("git", ["branch", "-M", baseBranch], { cwd: root });
     const taskBranch = `task/${taskId}/contract-diff`;
     await execFileAsync("git", ["config", "--local", "agentplane.baseBranch", baseBranch], {
       cwd: root,
