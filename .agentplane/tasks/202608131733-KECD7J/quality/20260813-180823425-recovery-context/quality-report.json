@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608131733-KECD7J",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-13T18:09:09.868Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "d0135b104218422ca56f064389bb3d56f5e3bf76",
+  "blueprint_digest": "8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece",
+  "findings": [
+    "The frozen packet still does not contain independently reviewable source-task, hosted-check, qualification, or operator-state evidence for W4ZM7J, 7XGP97, and T3ZDDM."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608131733-KECD7J/verification/20260813180750705-d3eed6a426db875c.json",
+    ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/ed5cfa996ecf2fbe3fa0c87022cbcc03f14ce2fe488222eede514d6bf4b67b26.json",
+    ".agentplane/tasks/202608131733-KECD7J/README.md"
+  ],
+  "missing_tests": [
+    "Freeze the referenced incident-closeout-source-evidence.md, or the underlying W4ZM7J, 7XGP97, and T3ZDDM task/PR/hosted artifacts, as explicit work_order.evidence entries so their DONE states, SHAs, hosted results, qualification disposition, and absence of active operator work can be independently checked."
+  ],
+  "hidden_assumptions": [
+    "A digest reference inside the verification record is assumed to make an omitted source artifact independently reviewable.",
+    "The TESTER summary is assumed to satisfy the hosted_integration evidence requirement without frozen hosted-check output."
+  ],
+  "residual_risks": [
+    "Regenerate the frozen evaluator packet with the referenced incident closeout source evidence, or its underlying task and hosted artifacts, included explicitly in work_order.evidence; retain the already-recorded exact focused tests, repository-wide format check, routing check, and incident gate evidence."
+  ]
+}
