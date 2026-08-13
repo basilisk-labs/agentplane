@@ -4,7 +4,7 @@ title: "Archive resolved release incidents before 0.7.6"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -25,10 +25,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved as the mandatory incident closeout discovered by the already-approved 0.7.6 release preflight."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-13T17:37:04.069Z"
+  updated_by: "TESTER"
+  note: "Both incident failure classes are fixed and enforced on current main; focused 37/37 regressions, policy routing, formatting, mirror parity, and the release incident gate passed."
   attempts: 0
 execution_route:
   frozen: true
@@ -76,11 +76,31 @@ execution_contract:
     scope_roots: []
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - ".agentplane"
+      - "docs"
+      - "packages/agentplane"
+    changed_paths:
+      - ".agentplane/policy/incidents.md"
+      - "docs/developer/incident-archive.mdx"
+      - "packages/agentplane/assets/policy/incidents.md"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -109,16 +129,24 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:46e8e6a03a4ea4d7c638abdde8e8d6f8967115a665d9e8d5fbfc16cb70848bf3"
+      digest: "sha256:188d527d8a3bb0f884efb575a5a65e1b59c501a6414528e3200f2771f4c34747"
       escalation_reasons: []
       execution_groups:
         - "docs-schema"
         - "core"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - ".agentplane"
+          - "docs"
+          - "packages/agentplane"
+        changed_files:
+          - ".agentplane/policy/incidents.md"
+          - "docs/developer/incident-archive.mdx"
+          - "packages/agentplane/assets/policy/incidents.md"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -147,11 +175,16 @@ execution_contract:
       - "repository_effect:documentation"
       - "repository_effect:repository_write"
       - "task_outcome"
-commit: null
+commit:
+  hash: "4d9f3f3deb925e253f1fb6843b098f51da4388d4"
+  message: "🧹 KECD7J policy: archive resolved release incidents"
 comments:
   -
     author: "CODER"
     body: "Start: archive two resolved release incidents with current enforcement evidence."
+  -
+    author: "CODER"
+    body: "Implementation: archived both resolved release incidents after 37 focused regressions, routing, and the release incident gate passed."
 events:
   -
     type: "status"
@@ -160,8 +193,22 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: archive two resolved release incidents with current enforcement evidence."
+  -
+    type: "status"
+    at: "2026-08-13T17:36:38.829Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: archived both resolved release incidents after 37 focused regressions, routing, and the release incident gate passed."
+    commit: "4d9f3f3deb925e253f1fb6843b098f51da4388d4"
+  -
+    type: "verify"
+    at: "2026-08-13T17:37:04.069Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Both incident failure classes are fixed and enforced on current main; focused 37/37 regressions, policy routing, formatting, mirror parity, and the release incident gate passed."
 doc_version: 3
-doc_updated_at: "2026-08-13T17:34:20.507Z"
+doc_updated_at: "2026-08-13T17:37:05.032Z"
 doc_updated_by: "CODER"
 description: "Review INC-20260810-01 and INC-20260811-01 against their merged fixes and current enforcement tests. If both failure classes are fixed and no active operator work remains, remove them from the active incidents registry and its installed asset mirror, append complete archived records with exact task, commit, test, and enforcement evidence to docs/developer/incident-archive.mdx, run policy routing and focused incident/regression checks, integrate the policy-only change, then unblock release task 202608131730-BHEAQT without changing its sequence or release scope."
 sections:
@@ -182,6 +229,60 @@ sections:
     6. Inspect the PR, hosted checks, merged main, Hosted Close, cleanup, and git status. Expected: exact policy-only diff is merged through the protected lane, task is DONE, its worktree/branch are cleaned, and no unintended tracked files remain.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-13T17:37:04.069Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Both incident failure classes are fixed and enforced on current main; focused 37/37 regressions, policy routing, formatting, mirror parity, and the release incident gate passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4, input_digest=sha256:1d014c4693ddf16d9eabeff244aa4b5acb7084010fba2dfe9deccb84b63cd7fb
+
+    Details:
+
+    Check: docs_contract
+    Command: inspect incident archive, active registry, and installed asset mirror; bunx prettier affected files --check
+    Result: pass
+    Evidence: both incident IDs appear exactly once in the archive with final fix and enforcement evidence; active registry and asset mirror contain no open entries and match exactly
+    Scope: incident source-of-truth migration and installed policy parity
+
+    Check: full_regression
+    Command: bunx vitest run packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/release/shared-worktree-dependency-manifest.test.ts
+    Result: pass
+    Evidence: 3 files and 37 tests passed on committed implementation 4d9f3f3de
+    Scope: declared-check validation/execution parity and RF-04 shared-worktree dependency discovery
+
+    Check: policy_routing
+    Command: node .agentplane/policy/check-routing.mjs; bun run release:incidents:check
+    Result: pass
+    Evidence: policy routing OK; release incident gate reports no active entries
+    Scope: policy graph, archive authority, and 0.7.6 release unblock
+
+    Check: task_outcome
+    Command: git diff origin/main...4d9f3f3de; git status --short --untracked-files=all
+    Result: pass
+    Evidence: product change is limited to the two mirrored active registries and historical archive plus AgentPlane-owned task artifacts; no unrelated tracked paths changed
+    Scope: approved KECD7J policy-only outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131733-KECD7J-archive-resolved-release-incidents-before-0-7-6/.agentplane/tasks/202608131733-KECD7J/blueprint/resolved-snapshot.json
+    - old_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+    - current_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608131733-KECD7J
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the archive commit through a new policy task, restoring both active registry entries and removing their archive records together; rerun focused tests, routing, mirror parity, and the release incident gate."
   Findings: ""
@@ -218,6 +319,60 @@ Review INC-20260810-01 and INC-20260811-01 against their merged fixes and curren
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-13T17:37:04.069Z — VERIFY — ok
+
+By: TESTER
+
+Note: Both incident failure classes are fixed and enforced on current main; focused 37/37 regressions, policy routing, formatting, mirror parity, and the release incident gate passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4, input_digest=sha256:1d014c4693ddf16d9eabeff244aa4b5acb7084010fba2dfe9deccb84b63cd7fb
+
+Details:
+
+Check: docs_contract
+Command: inspect incident archive, active registry, and installed asset mirror; bunx prettier affected files --check
+Result: pass
+Evidence: both incident IDs appear exactly once in the archive with final fix and enforcement evidence; active registry and asset mirror contain no open entries and match exactly
+Scope: incident source-of-truth migration and installed policy parity
+
+Check: full_regression
+Command: bunx vitest run packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/release/shared-worktree-dependency-manifest.test.ts
+Result: pass
+Evidence: 3 files and 37 tests passed on committed implementation 4d9f3f3de
+Scope: declared-check validation/execution parity and RF-04 shared-worktree dependency discovery
+
+Check: policy_routing
+Command: node .agentplane/policy/check-routing.mjs; bun run release:incidents:check
+Result: pass
+Evidence: policy routing OK; release incident gate reports no active entries
+Scope: policy graph, archive authority, and 0.7.6 release unblock
+
+Check: task_outcome
+Command: git diff origin/main...4d9f3f3de; git status --short --untracked-files=all
+Result: pass
+Evidence: product change is limited to the two mirrored active registries and historical archive plus AgentPlane-owned task artifacts; no unrelated tracked paths changed
+Scope: approved KECD7J policy-only outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131733-KECD7J-archive-resolved-release-incidents-before-0-7-6/.agentplane/tasks/202608131733-KECD7J/blueprint/resolved-snapshot.json
+- old_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+- current_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608131733-KECD7J
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

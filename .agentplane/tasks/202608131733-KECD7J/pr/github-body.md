@@ -15,8 +15,13 @@ Review INC-20260810-01 and INC-20260811-01 against their merged fixes and curren
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Both incident failure classes are fixed and enforced on current main; focused 37/37 regressions,
+policy routing, formatting, mirror parity, and the release incident gate passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +32,10 @@ Review INC-20260810-01 and INC-20260811-01 against their merged fixes and curren
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/policy/incidents.md                | 2 --
+ docs/developer/incident-archive.mdx            | 6 ++++++
+ packages/agentplane/assets/policy/incidents.md | 2 --
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 ```
 
 </details>
