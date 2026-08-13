@@ -29,7 +29,17 @@ Created: 2026-08-13T17:32:00.151Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/WORKFLOW.md                  |  23 +-
+ .agentplane/workflows/last-known-good.md |  23 +-
+ docs/reference/generated-reference.mdx   |   6 +-
+ docs/releases/v0.7.6.md                  | 363 +++++++++++++++++++++++++++++++
+ packages/agentplane/package.json         |   6 +-
+ packages/core/package.json               |   2 +-
+ packages/recipes/package.json            |   2 +-
+ packages/recipes/src/index.ts            |   2 +-
+ packages/spec/examples/acr.json          |  22 +-
+ packages/testkit/package.json            |   2 +-
+ 10 files changed, 433 insertions(+), 18 deletions(-)
 ```
 
 </details>
