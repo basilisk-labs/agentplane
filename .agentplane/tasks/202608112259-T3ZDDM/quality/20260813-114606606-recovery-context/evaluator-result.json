@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The standalone risk-E2E audit artifact is tied to an earlier SHA and reports an incomplete overall qualification, although the frozen verification record reports the final exact-SHA hosted and release-qualification gates as passing.",
+      "broken_invariant": "Supporting benchmark and E2E artifacts should remain clearly attributable to the exact evaluated implementation so stale recovery evidence cannot be mistaken for final qualification evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/7b0d385efa86f109510d5d6431890a12eeb45b380fac2459cd6dbfb8fd2c8b45.patch",
+          "sha256": "sha256:7b0d385efa86f109510d5d6431890a12eeb45b380fac2459cd6dbfb8fd2c8b45",
+          "section": "risk-E2E evidence artifact"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813114524441-d1bf42d99defc8b7.json",
+          "sha256": "sha256:77a58300b5291011b4a56332b044fda7c440ee4eae9baa0d2ecd12f37303f29e",
+          "section": "critical_paths and hosted_integration"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The exact-SHA release qualification and hosted-check summaries in the frozen verification record accurately identify the provider evidence and full regression executed for SHA 010baa075cf40e400747d255140f6f03a04032eb.",
+    "The task's observed effects do not require real E2E for this specific PR; real-E2E routing is therefore proven by risk-bearing fixtures rather than by selection on the evaluated task itself."
+  ]
+}
