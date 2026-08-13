@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608112259-T3ZDDM-7070e238f1fcb67adf78f751",
+  "task_id": "202608112259-T3ZDDM",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Make the persisted Verification Contract complete and executable: include semantic risk, declared components, and evidence requirements; derive every phase's runnable checks from that contract alone; then implement and verify the required named parallel groups before repeating exact-SHA qualification.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "Local execution remains authoritative over the Verification Contract: the code selects a local plan and constructs executable steps before computing the contract, then executes the original plan rather than deriving execution from contract.selected_checks.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/b9dde49f363707885d7276347d030ccceaa5002b687282dd0e2491cc6684e810.patch",
+          "sha256": "sha256:b9dde49f363707885d7276347d030ccceaa5002b687282dd0e2491cc6684e810",
+          "lines": "11474-11672",
+          "section": "scripts/lib/local-ci-selection.mjs"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+          "sha256": "sha256:494a89ef6405bb1f2a74ae2ed90f7ff5f46817b523a089fdb61f577ca7970c00",
+          "line": 128,
+          "section": "Scope"
+        }
+      ]
+    },
+    {
+      "id": "RCI-002",
+      "summary": "The computed contract does not record declared risk, declared components, or evidence requirements and exposes no inputs for them, so it cannot consume the full semantic assessment or govern risk-selected verification as specified.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/b9dde49f363707885d7276347d030ccceaa5002b687282dd0e2491cc6684e810.patch",
+          "sha256": "sha256:b9dde49f363707885d7276347d030ccceaa5002b687282dd0e2491cc6684e810",
+          "lines": "4612-4825",
+          "section": "packages/core/src/tasks/verification-contract-kernel.js"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+          "sha256": "sha256:494a89ef6405bb1f2a74ae2ed90f7ff5f46817b523a089fdb61f577ca7970c00",
+          "line": 128,
+          "section": "Scope"
+        }
+      ]
+    },
+    {
+      "id": "RCI-003",
+      "summary": "The parallel runner is used for build, format, lint, selected tests, and critical paths, but the implementation does not create the required independent core, runtime, CLI, and docs/schema execution groups; the full verification route remains sequential.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/b9dde49f363707885d7276347d030ccceaa5002b687282dd0e2491cc6684e810.patch",
+          "sha256": "sha256:b9dde49f363707885d7276347d030ccceaa5002b687282dd0e2491cc6684e810",
+          "lines": "10742-10985",
+          "section": "scripts/checks/run-local-ci.mjs"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+          "sha256": "sha256:494a89ef6405bb1f2a74ae2ed90f7ff5f46817b523a089fdb61f577ca7970c00",
+          "line": 134,
+          "section": "Scope"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-041858257-recovery-context/evaluator-result.json"
+}

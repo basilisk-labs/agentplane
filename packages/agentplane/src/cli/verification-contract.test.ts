@@ -19,6 +19,11 @@ import {
 import { evaluateVerificationBenchmarkQualification } from "../../../../scripts/lib/verification-benchmark.mjs";
 import { tempRepo } from "@agentplane/testkit";
 
+const delayAndExit = (exitCode: number): string[] => [
+  "-e",
+  `setTimeout(() => process.exit(${String(exitCode)}), 120)`,
+];
+
 describe("verification contract", () => {
   it("fails closed for central, unknown, PR, release, and external effects", () => {
     expect(
@@ -40,6 +45,39 @@ describe("verification contract", () => {
         declaredExternalEffects: ["deploy"],
       }),
     ).toMatchObject({ requires_real_e2e: true });
+  });
+
+  it("persists semantic risk, components, evidence, and named execution groups", () => {
+    const contract = computeVerificationContract({
+      phase: "local",
+      changedFiles: ["packages/testkit/src/helper.test.ts"],
+      declaredComponents: ["packages/testkit"],
+      requirementsUncertainty: "material",
+      implementationUncertainty: "bounded",
+      reversibility: "recovery_required",
+      evidenceRequirements: ["task_outcome", "hosted_integration"],
+      selectorKind: "targeted",
+      selectorReason: "noncentral_colocated_tests",
+      selectedTestFiles: ["packages/testkit/src/helper.test.ts"],
+    });
+
+    expect(contract).toMatchObject({
+      schema_version: 2,
+      declared: {
+        components: ["packages/testkit"],
+        risk: {
+          requirements_uncertainty: "material",
+          reversibility: "recovery_required",
+        },
+        evidence_requirements: ["hosted_integration", "task_outcome"],
+      },
+      requires_full_regression: true,
+      requires_real_e2e: true,
+      execution_groups: ["docs-schema", "core", "runtime", "cli"],
+    });
+    expect(contract.selected_checks).toEqual(
+      expect.arrayContaining(["full_regression", "hosted_integration", "real_e2e"]),
+    );
   });
 
   it("never weakens a previously selected full contract", () => {
@@ -156,6 +194,34 @@ describe("verification contract", () => {
       ["second", 3],
       ["third", 0],
     ]);
+  });
+
+  it("overlaps named verification groups while preserving simultaneous failures", async () => {
+    const result = await runVerificationGroups(
+      [
+        { id: "core", command: process.execPath, args: delayAndExit(2) },
+        { id: "runtime", command: process.execPath, args: delayAndExit(3) },
+        { id: "cli", command: process.execPath, args: delayAndExit(0) },
+        { id: "docs-schema", command: process.execPath, args: delayAndExit(0) },
+      ],
+      { concurrency: 2 },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.results.map(({ id, exit_code }) => [id, exit_code])).toEqual([
+      ["core", 2],
+      ["runtime", 3],
+      ["cli", 0],
+      ["docs-schema", 0],
+    ]);
+    const [core, runtime] = result.results as {
+      started_at_ms: number;
+      finished_at_ms: number;
+    }[];
+    expect(core).toBeDefined();
+    expect(runtime).toBeDefined();
+    expect(core!.started_at_ms).toBeLessThan(runtime!.finished_at_ms);
+    expect(runtime!.started_at_ms).toBeLessThan(core!.finished_at_ms);
   });
 
   it("bounds a stalled group without hiding an independent failure", async () => {

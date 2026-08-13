@@ -838,15 +838,46 @@ export function buildLocalCiExecutionPlan({
   observedRepositoryEffects = [],
   observedExternalEffects = [],
 }) {
-  const plan = selectFastCiPlan(changedFiles);
+  const semanticSelection = selectFastCiPlan(changedFiles);
   const runCliDocsCheck = shouldRunCliDocsCheck(changedFiles);
+  const verificationContract = computeVerificationContract({
+    phase,
+    changedFiles,
+    declaredRepositoryEffects,
+    declaredExternalEffects,
+    observedRepositoryEffects,
+    observedExternalEffects,
+    selectorKind: semanticSelection.kind,
+    selectorReason: semanticSelection.reason,
+    selectorExecutionMode: mode,
+    selectorBucket: semanticSelection.bucket ?? null,
+    selectorBuckets: semanticSelection.buckets ?? [],
+    selectorLintTargets: semanticSelection.lintTargets ?? [],
+    selectorVitestPool: semanticSelection.vitestPool ?? "forks",
+    selectorRunCliDocsCheck: runCliDocsCheck,
+    selectedTestFiles: semanticSelection.kind === "targeted" ? semanticSelection.testFiles : [],
+  });
+  const plan = {
+    kind: verificationContract.selector.kind,
+    reason: verificationContract.selector.reason,
+    files: [...verificationContract.observed.changed_files],
+    ...(verificationContract.selector.bucket
+      ? { bucket: verificationContract.selector.bucket }
+      : {}),
+    ...(verificationContract.selector.buckets.length > 0
+      ? { buckets: [...verificationContract.selector.buckets] }
+      : {}),
+    lintTargets: [...verificationContract.selector.lint_targets],
+    testFiles: [...verificationContract.selector.selected_test_files],
+    vitestPool: verificationContract.selector.vitest_pool,
+  };
   let route = "full-fast";
   let steps;
 
-  if (mode === "smoke" && plan.kind === "docs-only") {
+  if (verificationContract.selector.execution_mode === "smoke" && plan.kind === "docs-only") {
     route = "docs-only-smoke";
     steps = [commandStep("Format (check)", "bun run format:check")];
-  } else if (mode === "smoke" && plan.kind === "targeted") {
+  } else if (verificationContract.selector.execution_mode === "smoke" && plan.kind === "targeted") {
     route = "targeted-smoke";
     steps = [
       commandStep("Format (check)", "bun run format:check"),
@@ -856,13 +887,13 @@ export function buildLocalCiExecutionPlan({
         includeFormat: false,
       }),
     ];
-  } else if (mode === "smoke") {
+  } else if (verificationContract.selector.execution_mode === "smoke") {
     route = "fallback-smoke";
     steps = smokeFallbackStepReports();
-  } else if (mode === "fast" && plan.kind === "docs-only") {
+  } else if (verificationContract.selector.execution_mode === "fast" && plan.kind === "docs-only") {
     route = "docs-only-fast";
     steps = baselineStepReports({ includeBuild: false, runCliDocsCheck });
-  } else if (mode === "fast" && plan.kind === "targeted") {
+  } else if (verificationContract.selector.execution_mode === "fast" && plan.kind === "targeted") {
     route = "targeted-fast";
     steps = targetedStepReports(plan, {
       includeBuild: true,
@@ -870,25 +901,14 @@ export function buildLocalCiExecutionPlan({
       includeFormat: true,
     });
   } else {
-    route = mode === "full" ? "full" : "full-fast";
+    route = verificationContract.selector.execution_mode === "full" ? "full" : "full-fast";
     steps = fastStepReports({ runCliDocsCheck });
   }
 
-  if (mode === "full") {
+  if (verificationContract.selector.execution_mode === "full") {
     steps = [...steps, ...fullOnlyStepReports()];
   }
 
-  const verificationContract = computeVerificationContract({
-    phase,
-    changedFiles,
-    declaredRepositoryEffects,
-    declaredExternalEffects,
-    observedRepositoryEffects,
-    observedExternalEffects,
-    selectorKind: plan.kind,
-    selectorReason: plan.reason,
-    selectedTestFiles: plan.kind === "targeted" ? plan.testFiles : [],
-  });
   return {
     schema_version: 1,
     mode,
@@ -896,7 +916,8 @@ export function buildLocalCiExecutionPlan({
     selector: plan,
     route,
     prerequisites: routePrerequisites(steps),
-    run_cli_docs_check: runCliDocsCheck,
+    execution_groups: [...verificationContract.execution_groups],
+    run_cli_docs_check: verificationContract.selector.run_cli_docs_check,
     steps,
     skipped_steps: steps.filter((step) => step.skipped),
     verification_contract: verificationContract,

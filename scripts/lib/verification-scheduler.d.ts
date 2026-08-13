@@ -11,6 +11,8 @@ export type VerificationGroupResult = {
   exit_code: number;
   timed_out: boolean;
   duration_ms: number;
+  started_at_ms: number;
+  finished_at_ms: number;
   stdout: string;
   stderr: string;
 };

@@ -1,12 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
 
-import {
-  buildLocalCiExecutionPlan,
-  parseChangedFilesEnv,
-  selectFastCiPlan,
-  shouldRunCliDocsCheck,
-} from "../lib/local-ci-selection.mjs";
+import { buildLocalCiExecutionPlan, parseChangedFilesEnv } from "../lib/local-ci-selection.mjs";
 import { withFrameworkBuildLock } from "../lib/framework-build-lock.mjs";
 import { runVerificationGroups } from "../lib/verification-scheduler.mjs";
 import { writeLocalVerificationReceipt } from "../lib/local-verification-receipt.mjs";
@@ -52,16 +47,6 @@ const LOCAL_VITEST_SUITE_TIMEOUT_MS = parsePositiveIntegerEnv(
 );
 const LOCAL_FAST_VITEST_MAX_WORKERS =
   String(baseEnv.AGENTPLANE_FAST_VITEST_MAX_WORKERS ?? "").trim() || "4";
-const FAST_CONCURRENCY_TEST_FILES = [
-  "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
-  "packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts",
-];
-const FAST_TEST_EXCLUDES = [
-  "**/cli-smoke.test.ts",
-  "**/run-cli*.test.ts",
-  ...FAST_CONCURRENCY_TEST_FILES,
-];
-
 function parsePositiveIntegerEnv(rawValue, fallback) {
   const value = Number.parseInt(String(rawValue ?? "").trim(), 10);
   return Number.isInteger(value) && value > 0 ? value : fallback;
@@ -297,28 +282,6 @@ if (parsedArgs.lifecycleEventLog) {
   });
 }
 
-const fastSteps = [
-  ...createBaselineStepEntries({ includeBuild: true }),
-  ["Lint (core)", () => run("bun", ["run", "lint:core"])],
-  [
-    "Unit tests (fast)",
-    () => runVitestSuite({ excludes: FAST_TEST_EXCLUDES, pool: "forks" }, testEnv),
-  ],
-  [
-    "Concurrency invariants (isolated)",
-    () =>
-      runVitestSuite(
-        {
-          testFiles: FAST_CONCURRENCY_TEST_FILES,
-          pool: "forks",
-          maxWorkers: "1",
-        },
-        testEnv,
-      ),
-  ],
-  ["CLI E2E (critical)", () => run("bun", ["run", "test:critical"], testEnv)],
-];
-
 const fullOnlySteps = [
   [
     "Docs site pipeline (generate + typecheck + build + design)",
@@ -352,9 +315,9 @@ const changedFiles =
   parsedArgs.changedFiles.length > 0
     ? [...new Set(parsedArgs.changedFiles)].toSorted((a, b) => a.localeCompare(b))
     : parseChangedFilesEnv(baseEnv.AGENTPLANE_FAST_CHANGED_FILES);
-const fastPlan = selectFastCiPlan(changedFiles);
-const runCliDocsCheck = shouldRunCliDocsCheck(changedFiles);
 const executionPlan = buildLocalCiExecutionPlan({ mode, changedFiles });
+const fastPlan = executionPlan.selector;
+const runCliDocsCheck = executionPlan.verification_contract.selector.run_cli_docs_check;
 const shouldExecuteChecks = !parsedArgs.explain;
 
 if (parsedArgs.explain) {
@@ -482,6 +445,58 @@ async function runTargetedFastPath(plan) {
   if (!result.ok) throw new Error("Targeted verification group failed.");
 }
 
+async function runFullFastPath() {
+  const startedAt = performance.now();
+  const buildResult = await runVerificationGroups(
+    [{ id: "build", command: "bun", args: ["run", "build"] }],
+    { concurrency: 1, cwd: process.cwd(), env: baseEnv },
+  );
+  renderVerificationGroupResults(buildResult.results);
+  if (!buildResult.ok) throw new Error("Full verification build prerequisite failed.");
+
+  const groupEnv = {
+    ...testEnv,
+    AGENTPLANE_LOCAL_CI_RUN_CLI_DOCS: runCliDocsCheck ? "1" : "0",
+    AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS: String(LOCAL_VITEST_SUITE_TIMEOUT_MS),
+    AGENTPLANE_FAST_VITEST_MAX_WORKERS: LOCAL_FAST_VITEST_MAX_WORKERS,
+  };
+  const groups = executionPlan.execution_groups.map((id) => ({
+    id,
+    command: process.execPath,
+    args: ["scripts/checks/run-local-ci-group.mjs", id],
+    env: groupEnv,
+    timeoutMs: LOCAL_VITEST_SUITE_TIMEOUT_MS,
+  }));
+  const result = await runVerificationGroups(groups, {
+    concurrency: Math.min(2, groups.length),
+    cwd: process.cwd(),
+    env: baseEnv,
+  });
+  renderVerificationGroupResults(result.results);
+  process.stdout.write(
+    `${JSON.stringify({
+      schema_version: 1,
+      kind: "verification_metrics",
+      route: "full-fast",
+      wall_clock_ms: Math.round(performance.now() - startedAt),
+      selected_groups: groups.length + 1,
+      executed_groups: result.results.length + buildResult.results.length,
+      parallel_group_concurrency: 2,
+      build_invocations: 1,
+      ok: result.ok,
+    })}\n`,
+  );
+  if (!result.ok) throw new Error("Full verification group failed.");
+}
+
+function renderVerificationGroupResults(results) {
+  for (const group of results) {
+    process.stdout.write(`\n== ${group.id} (${group.duration_ms}ms) ==\n`);
+    if (group.stdout) process.stdout.write(group.stdout);
+    if (group.stderr) process.stderr.write(group.stderr);
+  }
+}
+
 function runTargetedSmokePath(plan) {
   runStep("Format (check)", () => runCommand("bun", ["run", "format:check"]));
   runTargetedPlanSteps(plan);
@@ -523,27 +538,28 @@ function runSmokeFallbackPath() {
 }
 
 if (shouldExecuteChecks) {
-  process.stdout.write(`Local CI mode: ${mode}\n`);
-  if (mode === "smoke" || mode === "fast") {
+  const executionMode = executionPlan.verification_contract.selector.execution_mode;
+  process.stdout.write(`Local CI mode: ${executionMode}\n`);
+  if (executionMode === "smoke" || executionMode === "fast") {
     process.stdout.write(
       `Fast CI selector: ${fastPlan.kind}${fastPlan.bucket ? ` (${fastPlan.bucket}${fastPlan.buckets ? `:${fastPlan.buckets.join("+")}` : ""})` : ""} [${fastPlan.reason}]\n`,
     );
   }
 
-  if (mode === "smoke" && fastPlan.kind === "docs-only") {
+  if (executionMode === "smoke" && fastPlan.kind === "docs-only") {
     runDocsOnlySmokePath();
-  } else if (mode === "smoke" && fastPlan.kind === "targeted") {
+  } else if (executionMode === "smoke" && fastPlan.kind === "targeted") {
     runTargetedSmokePath(fastPlan);
-  } else if (mode === "smoke") {
+  } else if (executionMode === "smoke") {
     runSmokeFallbackPath();
-  } else if (mode === "fast" && fastPlan.kind === "docs-only") {
+  } else if (executionMode === "fast" && fastPlan.kind === "docs-only") {
     runDocsOnlyFastPath();
-  } else if (mode === "fast" && fastPlan.kind === "targeted") {
+  } else if (executionMode === "fast" && fastPlan.kind === "targeted") {
     await runTargetedFastPath(fastPlan);
   } else {
-    runStepEntries(fastSteps);
+    await runFullFastPath();
   }
-  if (mode === "full") {
+  if (executionMode === "full") {
     runStepEntries(fullOnlySteps);
   }
   const receipt = writeLocalVerificationReceipt({

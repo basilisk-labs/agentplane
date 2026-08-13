@@ -118,14 +118,20 @@ describe("release CI contract", () => {
 
   it("bounds local CI Vitest subprocesses with an operator-tunable suite timeout", async () => {
     const localCi = await readRootText("scripts/checks/run-local-ci.mjs");
+    const localCiGroup = await readRootText("scripts/checks/run-local-ci-group.mjs");
 
     expect(localCi).toContain("AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS");
     expect(localCi).toContain("DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS = 15 * 60 * 1000");
     expect(localCi).toContain("timeout: options.timeoutMs");
     expect(localCi).toContain('timeoutLabel: "Vitest suite"');
-    expect(localCi).toContain('"Concurrency invariants (isolated)"');
-    expect(localCi).toContain("FAST_CONCURRENCY_TEST_FILES");
-    expect(localCi).toContain('maxWorkers: "1"');
+    expect(localCi).toContain('args: ["scripts/checks/run-local-ci-group.mjs", id]');
+    expect(localCiGroup).toContain(
+      '"packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"',
+    );
+    expect(localCiGroup).toContain(
+      '"packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts"',
+    );
+    expect(localCiGroup).toContain('"--maxWorkers",\n      "1"');
     expect(localCi.indexOf("timeout: options.timeoutMs")).toBeLessThan(
       localCi.indexOf("Set AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS"),
     );

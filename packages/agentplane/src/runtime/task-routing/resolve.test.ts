@@ -109,7 +109,15 @@ describe("task execution route", () => {
       },
     });
     expect(initial.verification.contract).toMatchObject({
-      schema_version: 1,
+      schema_version: 2,
+      declared: {
+        components: ["packages/agentplane/src/feature"],
+        risk: {
+          requirements_uncertainty: "bounded",
+          implementation_uncertainty: "bounded",
+          reversibility: "reversible",
+        },
+      },
       selected_checks: ["affected_unit_integration", "critical_paths", "task_outcome"],
       requires_full_regression: false,
       requires_real_e2e: false,
@@ -134,6 +142,51 @@ describe("task execution route", () => {
     );
     expect(escalated.verification.contract?.declared.repository_effects).toContain("source_code");
     expect(escalated.verification.contract?.observed.repository_effects).toContain("schema");
+  });
+
+  it("strengthens verification monotonically from semantic risk and observed effects", () => {
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    const initial = resolveTaskExecutionContract({
+      config,
+      task: {},
+      declaration: {
+        schema_version: 2,
+        preferred_mode: "direct",
+        scope_roots: ["packages/app"],
+        repository_effects: ["source_code"],
+        external_effects: [],
+        requirements_uncertainty: "material",
+        implementation_uncertainty: "bounded",
+        reversibility: "recovery_required",
+        rationale: ["recovery-sensitive change with open requirements"],
+      },
+    });
+    expect(initial.verification.contract).toMatchObject({
+      requires_full_regression: true,
+      requires_real_e2e: true,
+      declared: {
+        components: ["packages/app"],
+        evidence_requirements: [
+          "hosted_integration",
+          "repository_effect:source_code",
+          "requirements_resolution",
+          "task_outcome",
+        ],
+      },
+    });
+
+    const observed = reconcileTaskExecutionContract({
+      contract: initial,
+      changed_paths: ["packages/app/src/feature.ts"],
+      observed_external_effects: ["deploy"],
+    }).contract;
+    expect(observed.verification.contract?.requires_full_regression).toBe(true);
+    expect(observed.verification.contract?.requires_real_e2e).toBe(true);
+    expect(observed.verification.contract?.observed.external_effects).toContain("deploy");
+    expect(observed.verification.contract?.selected_checks).toEqual(
+      expect.arrayContaining(["full_regression", "real_e2e", "requirements_resolution"]),
+    );
   });
 
   it("fails closed when an observed changed path has no effect mapping", () => {
