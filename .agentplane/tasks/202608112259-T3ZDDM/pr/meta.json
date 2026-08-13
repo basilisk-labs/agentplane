@@ -2,23 +2,16 @@
   "base": "main",
   "branch": "task/202608112259-T3ZDDM/optimize-the-verification-and-test-pipeline-arou",
   "created_at": "2026-08-12T08:35:41.656Z",
-  "diffstat_sha256": "sha256:b962e898e76662e0b867cf95801d60abe011cb4256237e3d684167e30fd18e16",
-  "last_verified_at": "2026-08-13T13:40:42.401Z",
-  "last_verified_diffstat_sha256": "sha256:b962e898e76662e0b867cf95801d60abe011cb4256237e3d684167e30fd18e16",
+  "diffstat_sha256": "sha256:bdffc63af4b41c3ea3228e3c7e3a5e81c235c0923b1a18ed28d8ab9bc3a33220",
+  "last_verified_at": "2026-08-13T14:12:39.247Z",
+  "last_verified_diffstat_sha256": "sha256:bdffc63af4b41c3ea3228e3c7e3a5e81c235c0923b1a18ed28d8ab9bc3a33220",
   "pr_number": 4830,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4830",
-  "pre_merge_closure": {
-    "basis_commit": "9a6b8c93cfe2a42e8e74e092d228d3d8424c1a1b",
-    "branch": "task/202608112259-T3ZDDM/optimize-the-verification-and-test-pipeline-arou",
-    "pr_number": 4830,
-    "recorded_at": "2026-08-13T14:07:53.243Z",
-    "state": "closed_before_merge"
-  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608112259-T3ZDDM",
   "updated_at": "2026-08-12T17:03:52.714Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }
