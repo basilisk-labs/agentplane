@@ -192,6 +192,18 @@ describe("local CI fast selection", () => {
     ]);
   });
 
+  it("overrides a targeted selector when the contract escalates a central path", () => {
+    const result = buildLocalCiExecutionPlan({
+      mode: "fast",
+      changedFiles: ["packages/agentplane/src/cli/prompts.ts"],
+    });
+
+    expect(result.verification_contract).toMatchObject({ requires_full_regression: true });
+    expect(result.route).toBe("full-fast");
+    expect(result.steps.map((step) => step.label)).toContain("Unit tests (fast)");
+    expect(result.steps.map((step) => step.label)).not.toContain("Unit tests (targeted:cli-help)");
+  });
+
   it("treats docs and policy changes as docs-only", () => {
     const plan = selectFastCiPlan(["docs/user/setup.mdx", ".agentplane/policy/workflow.direct.md"]);
     expect(plan.kind).toBe("docs-only");
@@ -426,7 +438,8 @@ describe("local CI fast selection", () => {
       mode: "fast",
       changedFiles: [".github/workflows/ci.yml"],
     });
-    expect(workflowPlan.prerequisites.recipesInventory).toBe(false);
+    expect(workflowPlan.route).toBe("full-fast");
+    expect(workflowPlan.prerequisites.recipesInventory).toBe(true);
     expect(workflowPlan.prerequisites.workflowLint).toBe(true);
   });
 

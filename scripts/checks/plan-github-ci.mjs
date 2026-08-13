@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import { appendFileSync, readFileSync } from "node:fs";
 
 import { buildGithubCiCapabilityPlan } from "../lib/github-ci-capabilities.mjs";
+import { evaluateLifecycleArtifactReuse } from "../lib/lifecycle-artifact-reuse.mjs";
 import { readTaskVerificationEffects } from "../lib/task-verification-contracts.mjs";
 
 function runGit(args) {
@@ -28,7 +29,7 @@ function listChangedFiles() {
 
   if (eventName === "pull_request" && event.pull_request) {
     const baseSha = event.pull_request.base?.sha;
-    const headSha = process.env.GITHUB_SHA ?? event.pull_request.head?.sha;
+    const headSha = event.pull_request.head?.sha ?? process.env.GITHUB_SHA;
     if (!baseSha || !headSha) return [];
     return runGit(["diff", "--name-only", baseSha, headSha]).split("\n").filter(Boolean);
   }
@@ -60,13 +61,15 @@ const eventName = process.env.GITHUB_EVENT_NAME ?? "";
 const exactShaRecovery =
   eventName === "workflow_dispatch" &&
   Boolean(process.env.AGENTPLANE_RELEASE_RECOVERY_SHA || event.inputs?.sha);
-const headParent = eventName === "pull_request" ? runGit(["rev-parse", "HEAD^"]) : "";
-const headChangedFiles = headParent
-  ? runGit(["diff", "--name-only", headParent, "HEAD"]).split("\n").filter(Boolean)
-  : [];
-const lifecycleOnlyHead =
-  headChangedFiles.length > 0 &&
-  headChangedFiles.every((filePath) => /^\.agentplane\/tasks\//u.test(filePath));
+const pullRequestHead = event.pull_request?.head?.sha ?? "";
+const headParent =
+  eventName === "pull_request" && pullRequestHead
+    ? runGit(["rev-parse", `${pullRequestHead}^`])
+    : "";
+const lifecycleReuse =
+  headParent && pullRequestHead
+    ? evaluateLifecycleArtifactReuse({ parentSha: headParent, currentSha: pullRequestHead })
+    : { eligible: false };
 async function hasSuccessfulParentVerification(parentSha) {
   const token = String(process.env.GITHUB_TOKEN ?? "").trim();
   const repository = String(process.env.GITHUB_REPOSITORY ?? "").trim();
@@ -88,7 +91,7 @@ async function hasSuccessfulParentVerification(parentSha) {
     : false;
 }
 const canReuseVerifiedParent =
-  lifecycleOnlyHead && (await hasSuccessfulParentVerification(headParent));
+  lifecycleReuse.eligible === true && (await hasSuccessfulParentVerification(headParent));
 const headRef = process.env.GITHUB_HEAD_REF ?? event.pull_request?.head?.ref ?? "";
 const taskIdFromHead = /^task\/([^/]+)\//u.exec(headRef)?.[1] ?? null;
 const semanticEffects = readTaskVerificationEffects([

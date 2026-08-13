@@ -546,18 +546,35 @@ if (shouldExecuteChecks) {
     );
   }
 
-  if (executionMode === "smoke" && fastPlan.kind === "docs-only") {
-    runDocsOnlySmokePath();
-  } else if (executionMode === "smoke" && fastPlan.kind === "targeted") {
-    runTargetedSmokePath(fastPlan);
-  } else if (executionMode === "smoke") {
-    runSmokeFallbackPath();
-  } else if (executionMode === "fast" && fastPlan.kind === "docs-only") {
-    runDocsOnlyFastPath();
-  } else if (executionMode === "fast" && fastPlan.kind === "targeted") {
-    await runTargetedFastPath(fastPlan);
-  } else {
-    await runFullFastPath();
+  switch (executionPlan.route) {
+    case "docs-only-smoke": {
+      runDocsOnlySmokePath();
+      break;
+    }
+    case "targeted-smoke": {
+      runTargetedSmokePath(fastPlan);
+      break;
+    }
+    case "fallback-smoke": {
+      runSmokeFallbackPath();
+      break;
+    }
+    case "docs-only-fast": {
+      runDocsOnlyFastPath();
+      break;
+    }
+    case "targeted-fast": {
+      await runTargetedFastPath(fastPlan);
+      break;
+    }
+    case "full-fast":
+    case "full": {
+      await runFullFastPath();
+      break;
+    }
+    default: {
+      throw new Error(`Unsupported local CI route: ${executionPlan.route}`);
+    }
   }
   if (executionMode === "full") {
     runStepEntries(fullOnlySteps);

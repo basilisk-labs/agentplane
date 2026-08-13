@@ -15,8 +15,9 @@ selected by policy. New observed effects only strengthen the contract.
   dependency, CI, release, public API, and security changes fall back to full regression.
 - Every pull request requires the full CLI regression for its semantic implementation.
 - A lifecycle-only task-artifact commit may reuse the exact successful aggregate from its parent.
-  Reuse is allowed only when the parent SHA is exact, the current diff contains only
-  `.agentplane/tasks/**`, and GitHub reports a successful `PR verification` for that parent.
+  Reuse is allowed only when the parent SHA is exact, the current PR-head diff passes the same
+  semantic lifecycle-drift comparison used by local verification, all changed JSON artifacts parse,
+  and GitHub reports a successful `PR verification` for that parent. A path-only match is not enough.
 - Release qualification retains the full regression floor and requires real E2E when external
   effects or release policy demand it.
 
@@ -75,7 +76,8 @@ repositories. Recipe archives use a separate immutable cache. Those fixtures ret
 cleanup and failure isolation; process pooling was not added because it would allow mutable CLI or
 environment state to cross test boundaries.
 
-Framework task worktrees reuse third-party dependency bytes, but their package-local link layout is
+Lifecycle-only hosted reuse installs the locked dependency graph so its task README can be parsed
+semantically, but it skips package builds and test suites. Framework task worktrees reuse third-party dependency bytes, but their package-local link layout is
 materialized in the worktree. Workspace links such as `@agentplaneorg/core` therefore resolve to
 the task checkout, not to the base checkout. This prevents fast checks from silently building or
 testing a different revision.

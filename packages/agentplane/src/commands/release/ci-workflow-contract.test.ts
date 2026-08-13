@@ -20,6 +20,8 @@ describe("Core CI workflow contract", () => {
     const codeqlConfig = await readFile(CODEQL_CONFIG_PATH, "utf8");
 
     expect(workflow).toContain("node scripts/checks/plan-github-ci.mjs");
+    expect(workflow).toContain("github.event.pull_request.head.sha");
+    expect(workflow).toContain("bun install --frozen-lockfile --ignore-scripts");
     expect(workflow).toContain("run: bun run bench:compatibility:candidate:check");
     for (const output of [
       "docs",
