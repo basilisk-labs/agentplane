@@ -28,13 +28,15 @@ const BASELINE_VERSION = "0.6.26";
 const PACKAGES = ["core", "recipes", "agentplane"];
 const DEFAULT_COLD_RUNS = 60;
 const DEFAULT_WARM_RUNS = 60;
+const DEFAULT_REPLICATES = 3;
+const MINIMUM_LOGICAL_SAMPLES = 20;
 const DEFAULT_WARMUPS = 2;
 const REPOSITORY_SCAN_PATTERN =
   /^(?:branch|diff|for-each-ref|ls-files|merge-base|rev-list|rev-parse|show|status|symbolic-ref|worktree)\b/u;
 
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
-    valueFlags: ["subject", "out", "cold-runs", "warm-runs", "warmups"],
+    valueFlags: ["subject", "out", "cold-runs", "warm-runs", "replicates", "warmups"],
   });
   if (positionals.length > 0) {
     throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
@@ -45,12 +47,21 @@ function parseArgs(argv) {
   }
   const coldRuns = Number.parseInt(flags["cold-runs"] ?? String(DEFAULT_COLD_RUNS), 10);
   const warmRuns = Number.parseInt(flags["warm-runs"] ?? String(DEFAULT_WARM_RUNS), 10);
+  const replicates = Number.parseInt(flags.replicates ?? String(DEFAULT_REPLICATES), 10);
   const warmups = Number.parseInt(flags.warmups ?? String(DEFAULT_WARMUPS), 10);
-  if (!Number.isInteger(coldRuns) || coldRuns < DEFAULT_COLD_RUNS) {
-    throw new Error(`--cold-runs must be an integer >= ${DEFAULT_COLD_RUNS}`);
+  if (!Number.isInteger(replicates) || replicates < 3 || replicates % 2 === 0) {
+    throw new Error("--replicates must be an odd integer >= 3");
   }
-  if (!Number.isInteger(warmRuns) || warmRuns < DEFAULT_WARM_RUNS) {
-    throw new Error(`--warm-runs must be an integer >= ${DEFAULT_WARM_RUNS}`);
+  const minimumRuns = MINIMUM_LOGICAL_SAMPLES * replicates;
+  if (!Number.isInteger(coldRuns) || coldRuns < minimumRuns || coldRuns % replicates !== 0) {
+    throw new Error(
+      `--cold-runs must be an integer >= ${minimumRuns} and divisible by --replicates`,
+    );
+  }
+  if (!Number.isInteger(warmRuns) || warmRuns < minimumRuns || warmRuns % replicates !== 0) {
+    throw new Error(
+      `--warm-runs must be an integer >= ${minimumRuns} and divisible by --replicates`,
+    );
   }
   if (!Number.isInteger(warmups) || warmups < 1) {
     throw new Error("--warmups must be an integer >= 1");
@@ -58,6 +69,7 @@ function parseArgs(argv) {
   return {
     coldRuns,
     outputPath: path.resolve(flags.out),
+    replicates,
     subject: flags.subject,
     warmRuns,
     warmups,
@@ -346,9 +358,27 @@ function summarizeSamples(samples) {
   };
 }
 
-export function compareSupervisorLatencySamples(id, baselineSamples, candidateSamples) {
+export function compareSupervisorLatencySamples(
+  id,
+  baselineSamples,
+  candidateSamples,
+  {
+    baselineInvocations = baselineSamples,
+    candidateInvocations = candidateSamples,
+    replicates = 1,
+  } = {},
+) {
+  if (baselineSamples.length !== candidateSamples.length) {
+    throw new Error("supervisor latency comparison requires equal logical samples");
+  }
   const baseline = summarizeSamples(baselineSamples);
   const candidate = summarizeSamples(candidateSamples);
+  baseline.raw_invocation_count = baselineInvocations.length;
+  baseline.raw_invocation_durations_ms = baselineInvocations.map((sample) => sample.duration_ms);
+  baseline.replicates_per_logical_sample = replicates;
+  candidate.raw_invocation_count = candidateInvocations.length;
+  candidate.raw_invocation_durations_ms = candidateInvocations.map((sample) => sample.duration_ms);
+  candidate.replicates_per_logical_sample = replicates;
   const maximumIncreaseRatio = 0.1;
   const pairedRatioSamples = candidateSamples.map((sample, index) => {
     const baselineDuration = baselineSamples[index]?.duration_ms ?? 0;
@@ -401,8 +431,21 @@ export function supervisorLatencyMeasurementEnvironment(logPath, probeBin) {
   };
 }
 
-function invocationOrder(index) {
-  return index % 2 === 0 ? ["baseline", "candidate"] : ["candidate", "baseline"];
+export function supervisorInvocationOrder(sampleIndex, replicateIndex, baseline, candidate) {
+  return (sampleIndex + replicateIndex) % 2 === 0 ? [baseline, candidate] : [candidate, baseline];
+}
+
+export function collapseSupervisorLatencyReplicates(results) {
+  if (!Array.isArray(results) || results.length < 3 || results.length % 2 === 0) {
+    throw new Error(
+      "supervisor latency logical samples require an odd number of at least 3 replicates",
+    );
+  }
+  const failed = results.find((result) => result.exit_code !== 0);
+  if (failed) return failed;
+  return results.toSorted((left, right) => left.duration_ms - right.duration_ms)[
+    Math.floor(results.length / 2)
+  ];
 }
 
 function commandsFor(kind, surfaceId, taskId) {
@@ -420,6 +463,7 @@ function commandsFor(kind, surfaceId, taskId) {
 function measurePhase({
   phase,
   runs,
+  replicates,
   warmups,
   tempRoot,
   probeBin,
@@ -428,8 +472,10 @@ function measurePhase({
   seeds,
 }) {
   const result = [];
+  const logicalRuns = runs / replicates;
   for (const surface of ["external_advance", "managed_run_preparation"]) {
     const samples = { baseline: [], candidate: [] };
+    const invocations = { baseline: [], candidate: [] };
     const roots = {};
     if (phase === "warm") {
       for (const kind of ["baseline", "candidate"]) {
@@ -447,28 +493,47 @@ function measurePhase({
         }
       }
     }
-    for (let index = 0; index < runs; index += 1) {
-      for (const kind of invocationOrder(index)) {
-        const cliPath = kind === "baseline" ? baselineCli : candidateCli;
-        let cwd = roots[kind];
-        if (phase === "cold") {
-          cwd = path.join(tempRoot, `${phase}-${surface}-${index}-${kind}`);
-          cpSync(seeds[kind][surface].root, cwd, { recursive: true });
-        }
-        samples[kind].push(
-          measureSequence({
+    for (let index = 0; index < logicalRuns; index += 1) {
+      const logicalSample = { baseline: [], candidate: [] };
+      for (let replicateIndex = 0; replicateIndex < replicates; replicateIndex += 1) {
+        for (const kind of supervisorInvocationOrder(
+          index,
+          replicateIndex,
+          "baseline",
+          "candidate",
+        )) {
+          const cliPath = kind === "baseline" ? baselineCli : candidateCli;
+          let cwd = roots[kind];
+          if (phase === "cold") {
+            cwd = path.join(tempRoot, `${phase}-${surface}-${index}-${replicateIndex}-${kind}`);
+            cpSync(seeds[kind][surface].root, cwd, { recursive: true });
+          }
+          const sample = measureSequence({
             cliPath,
             commands: commandsFor(kind, surface, seeds[kind][surface].taskId),
             cwd,
             probeBin,
-            logPath: path.join(tempRoot, `probe-${phase}-${surface}-${index}-${kind}.log`),
+            logPath: path.join(
+              tempRoot,
+              `probe-${phase}-${surface}-${index}-${replicateIndex}-${kind}.log`,
+            ),
             surfaceId: kind === "baseline" ? "baseline_manual_preparation" : surface,
-          }),
-        );
-        if (phase === "cold") rmSync(cwd, { recursive: true, force: true });
+          });
+          logicalSample[kind].push(sample);
+          invocations[kind].push(sample);
+          if (phase === "cold") rmSync(cwd, { recursive: true, force: true });
+        }
       }
+      samples.baseline.push(collapseSupervisorLatencyReplicates(logicalSample.baseline));
+      samples.candidate.push(collapseSupervisorLatencyReplicates(logicalSample.candidate));
     }
-    result.push(compareSupervisorLatencySamples(surface, samples.baseline, samples.candidate));
+    result.push(
+      compareSupervisorLatencySamples(surface, samples.baseline, samples.candidate, {
+        baselineInvocations: invocations.baseline,
+        candidateInvocations: invocations.candidate,
+        replicates,
+      }),
+    );
   }
   return result;
 }
@@ -478,15 +543,33 @@ export function validateSupervisorLatencyReport(report) {
     throw new Error("supervisor latency report must use the v1 contract");
   }
   for (const phaseName of ["cold", "warm"]) {
-    const expected = phaseName === "cold" ? DEFAULT_COLD_RUNS : DEFAULT_WARM_RUNS;
+    const expectedInvocations = phaseName === "cold" ? DEFAULT_COLD_RUNS : DEFAULT_WARM_RUNS;
     const surfaces = report.phases?.[phaseName];
     if (!Array.isArray(surfaces) || surfaces.length !== 2) {
       throw new Error(`supervisor latency report omits ${phaseName} surfaces`);
     }
     for (const surface of surfaces) {
       for (const side of ["baseline", "candidate"]) {
-        if (surface[side]?.sample_count < expected || surface[side].samples.length < expected) {
-          throw new Error(`${phaseName}.${surface.id}.${side} requires ${expected} samples`);
+        const measurement = surface[side];
+        if (
+          measurement?.sample_count < MINIMUM_LOGICAL_SAMPLES ||
+          measurement.samples.length < MINIMUM_LOGICAL_SAMPLES
+        ) {
+          throw new Error(
+            `${phaseName}.${surface.id}.${side} requires ${MINIMUM_LOGICAL_SAMPLES} logical samples`,
+          );
+        }
+        if (
+          measurement.replicates_per_logical_sample < DEFAULT_REPLICATES ||
+          measurement.replicates_per_logical_sample % 2 === 0 ||
+          measurement.raw_invocation_count < expectedInvocations ||
+          measurement.raw_invocation_durations_ms.length < expectedInvocations ||
+          measurement.raw_invocation_count <
+            measurement.sample_count * measurement.replicates_per_logical_sample
+        ) {
+          throw new Error(
+            `${phaseName}.${surface.id}.${side} requires at least ${expectedInvocations} raw invocations across odd replicated logical samples`,
+          );
         }
         const histogram = surface[side].git_command_histogram;
         const gitSamples = surface[side].git_subprocess_count?.samples;
@@ -559,6 +642,7 @@ async function main(argv = process.argv.slice(2)) {
       cold: measurePhase({
         phase: "cold",
         runs: options.coldRuns,
+        replicates: options.replicates,
         warmups: options.warmups,
         tempRoot,
         probeBin,
@@ -569,6 +653,7 @@ async function main(argv = process.argv.slice(2)) {
       warm: measurePhase({
         phase: "warm",
         runs: options.warmRuns,
+        replicates: options.replicates,
         warmups: options.warmups,
         tempRoot,
         probeBin,
@@ -619,8 +704,13 @@ async function main(argv = process.argv.slice(2)) {
       sample_contract: {
         cold_runs: options.coldRuns,
         warm_runs: options.warmRuns,
+        logical_cold_samples: options.coldRuns / options.replicates,
+        logical_warm_samples: options.warmRuns / options.replicates,
+        replicates_per_logical_sample: options.replicates,
         warmups: options.warmups,
-        order: "baseline/candidate order alternates by sample index",
+        order: "baseline/candidate order alternates by logical sample and replicate index",
+        aggregation:
+          "each paired logical sample uses the median of odd replicated invocations; any failed invocation fails closed",
         cold: "fresh recursive fixture copy per invocation; copy time excluded",
         warm: "persistent fixture per side after explicit unmeasured warmups",
         subprocesses:
