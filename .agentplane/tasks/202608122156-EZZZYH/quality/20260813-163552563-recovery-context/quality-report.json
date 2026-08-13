@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608122156-EZZZYH",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-13T16:35:52.852Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "ab7abe4d1d0676340aa1820aaa9e6728d4126af9",
+  "blueprint_digest": "72867270b7cf279c96932125ddc698ff2ebf2308c32b7a560ec02c9e4b6dd025",
+  "findings": [
+    "The 5080-byte plan crosses the exact 0.7.5 failure boundary while remaining bounded and language-neutral at the protocol layer.",
+    "Exact accepted-envelope replay is asserted idempotent, a modified fingerprint is rejected, and the harness resumes from fresh public state.",
+    "Evaluator acceptance is derived from changed paths, an independent product test, product content, public verification state, final Git object existence, terminal readback, and cleanup."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608122156-EZZZYH/quality/objects/sha256/9f39dfc47fc1f9168452d702623df758c1cf8ca584eb984ea196b1685d4899f9.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -6,14 +6,14 @@ Created: 2026-08-13T15:34:09.778Z
 
 - Task: `202608122156-EZZZYH`
 - Title: Add installed-package mixed-scope lifecycle E2E to release qualification
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608122156-EZZZYH/add-installed-package-mixed-scope-lifecycle-e2e`
 - Canonical task record: `.agentplane/tasks/202608122156-EZZZYH/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified exact published SHA ab7abe4d1 and hosted Core CI run 31720631534; installed-package mixed-scope lifecycle and every Verification Contract group passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-13T15:34:09.778Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-13T15:34:09.778Z
+- Updated: 2026-08-13T16:14:38.568Z
 - Branch: task/202608122156-EZZZYH/add-installed-package-mixed-scope-lifecycle-e2e
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
