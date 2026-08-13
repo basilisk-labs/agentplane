@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.fixture_startup_profile",
+  "suite": "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
+  "collection": {
+    "baseline_sha": "e4ec4520ded988c60db3261714e68b5e22ac4e1f",
+    "candidate_sha": "9766c12d8519a4f797fa46538871a776238bad5b",
+    "samples_per_subject": 5,
+    "alternating_order": true,
+    "process": "fresh bunx vitest process per sample",
+    "prerequisite": "dependencies installed and workspace built outside measured interval",
+    "includes": [
+      "fixture_template_construction",
+      "isolated_repository_copy",
+      "test_process_startup",
+      "test_cleanup"
+    ],
+    "excludes": [
+      "dependency_installation",
+      "workspace_build"
+    ]
+  },
+  "baseline": {
+    "samples_ms": [
+      10809,
+      8524,
+      8648,
+      8528,
+      8490
+    ],
+    "p50_ms": 8528,
+    "p95_ms": 10809
+  },
+  "candidate": {
+    "samples_ms": [
+      7038,
+      6402,
+      6518,
+      6467,
+      6486
+    ],
+    "p50_ms": 6486,
+    "p95_ms": 7038
+  },
+  "comparison": {
+    "p50_speedup": 1.31,
+    "p95_speedup": 1.54,
+    "p50_reduction_ratio": 0.2394,
+    "p95_reduction_ratio": 0.3489
+  },
+  "results": [
+    {
+      "sample": 1,
+      "kind": "baseline",
+      "duration_ms": 10809,
+      "exit_code": 0,
+      "signal": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /private/tmp/agentplane-t3-baseline.NCsgxA\n\n\n Test Files  1 passed (1)\n      Tests  6 passed (6)\n   Start at  16:35:55\n   Duration  9.72s (transform 1.33s, setup 0ms, import 1.15s, tests 8.49s, environment 0ms)\n\n"
+    },
+    {
+      "sample": 1,
+      "kind": "candidate",
+      "duration_ms": 7038,
+      "exit_code": 0,
+      "signal": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  16:36:05\n   Duration  6.72s (transform 1.51s, setup 0ms, import 1.31s, tests 5.34s, environment 0ms)\n\n"
+    },
+    {
+      "sample": 2,
+      "kind": "candidate",
+      "duration_ms": 6402,
+      "exit_code": 0,
+      "signal": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  16:36:12\n   Duration  6.18s (transform 1.33s, setup 0ms, import 1.16s, tests 4.96s, environment 0ms)\n\n"
+    },
+    {
+      "sample": 2,
+      "kind": "baseline",
+      "duration_ms": 8524,
+      "exit_code": 0,
+      "signal": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /private/tmp/agentplane-t3-baseline.NCsgxA\n\n\n Test Files  1 passed (1)\n      Tests  6 passed (6)\n   Start at  16:36:19\n   Duration  8.31s (transform 1.35s, setup 0ms, import 1.16s, tests 7.09s, environment 0ms)\n\n"
+    },
+    {
+      "sample": 3,
+      "kind": "baseline",
+      "duration_ms": 8648,
+      "exit_code": 0,
+      "signal": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /private/tmp/agentplane-t3-baseline.NCsgxA\n\n\n Test Files  1 passed (1)\n      Tests  6 passed (6)\n   Start at  16:36:27\n   Duration  8.43s (transform 1.43s, setup 0ms, import 1.17s, tests 7.20s, environment 0ms)\n\n"
+    },
+    {
+      "sample": 3,
+      "kind": "candidate",
+      "duration_ms": 6518,
+      "exit_code": 0,
+      "signal": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  16:36:36\n   Duration  6.29s (transform 1.35s, setup 0ms, import 1.17s, tests 5.06s, environment 0ms)\n\n"
+    },
+    {
+      "sample": 4,
+      "kind": "candidate",
+      "duration_ms": 6467,
+      "exit_code": 0,
+      "signal": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  16:36:43\n   Duration  6.24s (transform 1.35s, setup 0ms, import 1.17s, tests 5.01s, environment 0ms)\n\n"
+    },
+    {
+      "sample": 4,
+      "kind": "baseline",
+      "duration_ms": 8528,
+      "exit_code": 0,
+      "signal": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /private/tmp/agentplane-t3-baseline.NCsgxA\n\n\n Test Files  1 passed (1)\n      Tests  6 passed (6)\n   Start at  16:36:49\n   Duration  8.31s (transform 1.35s, setup 0ms, import 1.16s, tests 7.09s, environment 0ms)\n\n"
+    },
+    {
+      "sample": 5,
+      "kind": "baseline",
+      "duration_ms": 8490,
+      "exit_code": 0,
+      "signal": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /private/tmp/agentplane-t3-baseline.NCsgxA\n\n\n Test Files  1 passed (1)\n      Tests  6 passed (6)\n   Start at  16:36:58\n   Duration  8.28s (transform 1.33s, setup 0ms, import 1.15s, tests 7.06s, environment 0ms)\n\n"
+    },
+    {
+      "sample": 5,
+      "kind": "candidate",
+      "duration_ms": 6486,
+      "exit_code": 0,
+      "signal": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  16:37:06\n   Duration  6.26s (transform 1.34s, setup 0ms, import 1.16s, tests 5.04s, environment 0ms)\n\n"
+    }
+  ],
+  "verdict": "pass"
+}

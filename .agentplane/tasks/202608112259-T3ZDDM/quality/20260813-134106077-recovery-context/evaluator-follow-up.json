@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608112259-T3ZDDM-f47afdef78d36376a401cdec",
+  "task_id": "202608112259-T3ZDDM",
+  "verdict": "human_review",
+  "next_owner": "USER",
+  "instruction": "Does the human owner explicitly approve the observed CI, dependency, documentation, schema, and test changes despite their exclusion from the task's execution authority?",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The implementation records repository effects explicitly forbidden by the approved execution authority, with no frozen evidence of owner re-approval for that material drift.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+          "sha256": "sha256:ce6d0704a3ae395160e73fbaff65037253cc906265be5fa665b8bd5c179fd8f8",
+          "section": "execution_contract.authority and execution_contract.observed.authority_violations"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-134106077-recovery-context/evaluator-result.json"
+}

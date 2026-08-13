@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen verification evidence does not contain an executed before/after benchmark or current p50/p95 results proving the mandatory small-direct performance thresholds. The patch records only the historical baseline, whose p50 and p95 exceed those thresholds, while the verification record reports focused tests, lint, hosted regression, and outcome inspection without a benchmark execution.",
+      "broken_invariant": "Acceptance criteria 3, 7, 8, and 10 require repeated current measurements on pinned reference hardware, p50 <=60 seconds, p95 <=120 seconds, <=3 lifecycle/control-plane commands, no local full regression absent fallback, and a machine-readable baseline/comparison/verdict demonstrating that optimization did not weaken evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+          "sha256": "sha256:635ae7c3da22ec278a8f13a9c0f7a8bf7d560e2714c7efc7ecc4a0a8a6789cdd",
+          "section": "Acceptance Criteria and Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/a7379973a3716348ca081879697727f14bc48ee6ed3785b908c295a1eaeabd01.patch",
+          "sha256": "sha256:a7379973a3716348ca081879697727f14bc48ee6ed3785b908c295a1eaeabd01",
+          "section": "docs/developer/verification-contract.mdx and scripts/baselines/verification-contract-small.json"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813131655825-b44f8fe961b27594.json",
+          "sha256": "sha256:b6a3f33d9b591163ece745fe4243d5618af4801d9658b8d009f50925993893ca",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/53bd45403f53793ab028f018ceb28c1146c2d4db5cefe1d8f9d9535aa9b782d7.json",
+          "sha256": "sha256:53bd45403f53793ab028f018ceb28c1146c2d4db5cefe1d8f9d9535aa9b782d7",
+          "section": "verification_contract"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "medium",
+      "summary": "The frozen evidence does not provide measured fixture-construction or process-startup results, so the claimed setup/startup reduction and preserved hermeticity are not demonstrated as an end-to-end performance outcome.",
+      "broken_invariant": "Acceptance criteria 5, 6, and 10 require a fixture/startup profile, measurable reduction from reusable immutable fixtures or cheap isolated copies, and passing hermeticity, cleanup, and failure-isolation evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+          "sha256": "sha256:635ae7c3da22ec278a8f13a9c0f7a8bf7d560e2714c7efc7ecc4a0a8a6789cdd",
+          "section": "Acceptance Criteria and Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/a7379973a3716348ca081879697727f14bc48ee6ed3785b908c295a1eaeabd01.patch",
+          "sha256": "sha256:a7379973a3716348ca081879697727f14bc48ee6ed3785b908c295a1eaeabd01",
+          "section": "docs/developer/verification-contract.mdx"
+        },
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813131655825-b44f8fe961b27594.json",
+          "sha256": "sha256:b6a3f33d9b591163ece745fe4243d5618af4801d9658b8d009f50925993893ca",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Execute the authoritative small-direct benchmark for enough repeated current samples on the pinned reference hardware and record raw durations, p50, p95, lifecycle/control-plane command count, selected groups, full-regression selection, comparison, and verdict.",
+    "Record an executable fixture/startup profile comparing before and after costs, with explicit hermeticity, cleanup, and failure-isolation results."
+  ],
+  "hidden_assumptions": [
+    "Passing hosted regression is assumed to substitute for the separately required performance benchmark, but it does not establish the local p50/p95 or command-count thresholds.",
+    "The documented fixture reuse is assumed to be measurably faster without frozen before/after setup or startup measurements.",
+    "The benchmark implementation is assumed to pass merely because its threshold logic exists; no current execution result is present in the frozen evidence."
+  ],
+  "recovery_context": "Run and freeze the required current benchmark and fixture/startup profile, then record machine-readable before/after results proving every performance and isolation threshold before reevaluation."
+}
