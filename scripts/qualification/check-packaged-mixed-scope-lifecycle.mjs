@@ -185,7 +185,7 @@ function longMixedScopePlan() {
     .map(([title, detail], index) => `${index + 1}. ${title}\n   ${detail}`)
     .join("\n\n");
   assert.ok(
-    Buffer.byteLength(text, "utf8") > 4_218,
+    Buffer.byteLength(text, "utf8") > 4218,
     "fixture plan must exceed the 0.7.5 failure size",
   );
   assert.ok(Buffer.byteLength(text, "utf8") < 64 * 1024, "fixture plan must remain bounded");
@@ -295,13 +295,13 @@ function invalidInternalAccesses(evidence) {
 }
 
 export function assertPackagedMixedScopeEvidence(evidence) {
-  if (!Number.isSafeInteger(evidence.plan_bytes) || evidence.plan_bytes <= 4_218) {
+  if (!Number.isSafeInteger(evidence.plan_bytes) || evidence.plan_bytes <= 4218) {
     fail("missing_planner", "accepted semantic plan did not cross the 0.7.5 failure boundary");
   }
   if (!evidence.phase_roles?.includes("EXECUTOR")) {
     fail("missing_executor", "public supervisor did not issue the implementation episode");
   }
-  const changed = new Set(evidence.changed_paths ?? []);
+  const changed = new Set(evidence.changed_paths);
   for (const requiredPath of PACKAGED_MIXED_SCOPE_REQUIRED_PATHS) {
     if (changed.has(requiredPath)) continue;
     if (requiredPath === "src/greeting.mjs") fail("missing_code", "source change was omitted");
@@ -617,7 +617,7 @@ function runFixture({ run, cli, packages, tempRoot }) {
   const changedPaths = git(run, repo, ["diff", "--name-only", executionBase, "HEAD", "--"])
     .split("\n")
     .filter(Boolean)
-    .sort();
+    .toSorted();
   const evaluatorProductSnapshot = {
     source: readTracked(accessLog, path.join(repo, "src", "greeting.mjs"), "evaluator_review"),
     test: readTracked(accessLog, path.join(repo, "test", "greeting.test.mjs"), "evaluator_review"),
