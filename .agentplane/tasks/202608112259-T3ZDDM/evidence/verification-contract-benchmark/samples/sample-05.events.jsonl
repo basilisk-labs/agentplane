@@ -1,0 +1,1 @@
+{"schema_version":1,"kind":"agentplane.lifecycle_control_command","observed_at":"2026-08-12T19:02:10.719Z","pid":36668,"command":"ci:local","phase":"execute","mode":"fast","argv":["--mode","fast","--changed-files","packages/agentplane/src/shared/write-if-changed.ts,packages/agentplane/src/shared/write-if-changed.test.ts"]}
