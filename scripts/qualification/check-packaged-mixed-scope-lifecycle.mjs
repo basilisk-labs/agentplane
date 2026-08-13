@@ -151,8 +151,8 @@ function longMixedScopePlan() {
       "Require a real implementation commit, a completed task state, a passing quality review, and a clean tracked worktree. Validate that the recorded task commit resolves to an actual Git commit and that the final repository contains every intended product path.",
     ],
     [
-      "Exercise the stale-envelope recovery boundary explicitly.",
-      "After a valid planning envelope is accepted, replay the exact public resume command and require a non-zero stale or already-consumed diagnostic. Continue with a fresh supervisor packet so the negative probe cannot corrupt or prematurely terminate the task lifecycle.",
+      "Exercise exact replay and stale-envelope recovery explicitly.",
+      "After a valid planning envelope is accepted, replay the exact public resume command and require the same current approval boundary as an idempotent no-op. Then alter the envelope fingerprint and require a non-zero stale diagnostic before continuing from a fresh supervisor packet.",
     ],
     [
       "Prove cleanup and release-gate behavior.",
@@ -313,6 +313,15 @@ export function assertPackagedMixedScopeEvidence(evidence) {
   }
   if (evidence.stale_exchange?.rejected !== true) {
     fail("stale_exchange_accepted", "an accepted envelope was replayed without a stable rejection");
+  }
+  if (
+    evidence.exact_replay?.idempotent !== true ||
+    evidence.exact_replay?.action !== "approval_required"
+  ) {
+    fail(
+      "accepted_exchange_not_idempotent",
+      "exact accepted-envelope replay did not preserve the current lifecycle boundary",
+    );
   }
   const internal = invalidInternalAccesses(evidence);
   if (internal.length > 0) {
@@ -519,15 +528,35 @@ function runFixture({ run, cli, packages, tempRoot }) {
   assert.equal(approval.action?.kind, "approval_required");
   assert.equal(approval.operator_action?.kind, "approve_plan");
 
-  const stale = runInstalledFailure(cli, repo, plannerExchange.resume_argv.slice(1));
-  const staleDiagnostic = `${stale.stderr}\n${stale.stdout}`.trim();
+  const exactReplay = runInstalledFailure(cli, repo, plannerExchange.resume_argv.slice(1));
+  const exactReplayPacket = parseJson(exactReplay.stdout, "exact accepted-envelope replay");
   if (
-    stale.status === 0 ||
-    !/accepted|consumed|current|retired|stale|already/iu.test(staleDiagnostic)
+    exactReplay.status !== 0 ||
+    exactReplayPacket.action?.kind !== "approval_required" ||
+    exactReplayPacket.state_fingerprint !== approval.state_fingerprint
   ) {
     fail(
+      "accepted_exchange_not_idempotent",
+      `exact accepted-envelope replay did not return the current approval boundary: status=${exactReplay.status}`,
+    );
+  }
+  const staleEnvelope = parseJson(
+    readTracked(accessLog, plannerExchange.result_path, "stale_exchange_probe_read"),
+    "accepted planning result",
+  );
+  staleEnvelope.state_fingerprint = `sha256:${"0".repeat(64)}`;
+  writeTracked(
+    accessLog,
+    plannerExchange.result_path,
+    `${JSON.stringify(staleEnvelope, null, 2)}\n`,
+    "stale_exchange_probe_write",
+  );
+  const stale = runInstalledFailure(cli, repo, plannerExchange.resume_argv.slice(1));
+  const staleDiagnostic = `${stale.stderr}\n${stale.stdout}`.trim();
+  if (stale.status === 0 || !/fingerprint|stale|accepted result/iu.test(staleDiagnostic)) {
+    fail(
       "stale_exchange_accepted",
-      `accepted planning envelope replay did not fail stably: status=${stale.status} ${staleDiagnostic}`,
+      `modified planning envelope did not fail stably: status=${stale.status} ${staleDiagnostic}`,
     );
   }
 
@@ -652,6 +681,11 @@ function runFixture({ run, cli, packages, tempRoot }) {
       rejected: stale.status !== 0,
       status: stale.status,
       diagnostic: staleDiagnostic,
+    },
+    exact_replay: {
+      idempotent: exactReplay.status === 0,
+      action: exactReplayPacket.action?.kind ?? null,
+      state_fingerprint: exactReplayPacket.state_fingerprint ?? null,
     },
     access_log: accessLog,
     final_git_status: git(run, repo, ["status", "--short", "--untracked-files=all"]),
