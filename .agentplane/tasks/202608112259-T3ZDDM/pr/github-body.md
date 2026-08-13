@@ -16,12 +16,7 @@ Implement a versioned Verification Contract computed once from the semantic task
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Exact-SHA ed8524e2131f passes full local, hosted, provider, efficiency, recovery, contract, and
-platform qualification with zero blocking defects.
-```
+- Note: Exact-SHA local, hosted, provider, benchmark, and regression qualification passed.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -50,9 +45,12 @@ platform qualification with zero blocking defects.
  .../agentplane/src/cli/test-routing-check.test.ts  |   79 +-
  .../src/cli/verification-contract.test.ts          |  313 +++
  .../src/commands/branch/work-start.materialize.ts  |   94 +-
+ .../evaluator-episode.calibration.test.ts          |    8 +-
  .../evaluator-qualification-packet.test.ts         |   14 +-
- .../commands/evaluator/evaluator-review-usecase.ts |   15 +
+ .../commands/evaluator/evaluator-review-usecase.ts |   26 +
+ .../evaluator/evaluator-run.command.test.ts        |   17 +-
  .../evaluator/evaluator-runtime-evidence.test.ts   |   53 +-
+ .../evaluator-verification-contract.test.ts        |   38 +
  .../evaluator/evaluator-verification-records.ts    |   11 +-
  .../commands/release/ci-workflow-contract.test.ts  |    7 +
  .../src/commands/release/github-ci-plan.test.ts    |  113 +-
@@ -61,8 +59,8 @@ platform qualification with zero blocking defects.
  .../src/commands/shared/quality-review-target.ts   |   18 +-
  .../shared/task-verification-input.test.ts         |   29 +
  .../src/commands/shared/task-verification-input.ts |   19 +-
- .../shared/task-verification-records.test.ts       |   48 +-
- .../commands/shared/task-verification-records.ts   |   59 +-
+ .../shared/task-verification-records.test.ts       |   53 +-
+ .../commands/shared/task-verification-records.ts   |   66 +-
  .../commands/shared/verification-details.test.ts   |   26 +
  .../src/commands/shared/verification-details.ts    |   15 +-
  .../commands/shared/workflow-step-policy-scope.ts  |    8 +-
@@ -78,8 +76,8 @@ platform qualification with zero blocking defects.
  .../src/commands/task/finish-blueprint-evidence.ts |   37 +
  .../task/finish.quality-review-target.unit.test.ts |   37 +
  .../src/commands/task/verify-command-shared.ts     |    2 +-
- .../src/commands/task/verify-record-execute.ts     |   25 +
- .../task/verify-record.durability.unit.test.ts     |    8 +-
+ .../src/commands/task/verify-record-execute.ts     |   70 +-
+ .../task/verify-record.durability.unit.test.ts     |   44 +-
  packages/agentplane/src/commands/verify.spec.ts    |    4 +-
  .../agentplane/src/runtime/task-routing/effects.ts |   37 +
  .../src/runtime/task-routing/observed-path.ts      |   67 +-
@@ -142,7 +140,7 @@ platform qualification with zero blocking defects.
  tsconfig.base.json                                 |    1 +
  .../docs/developer/verification-contract.png       |  Bin 0 -> 59695 bytes
  website/static/img/social/manifest.json            |    8 +
- 110 files changed, 9213 insertions(+), 2161 deletions(-)
+ 113 files changed, 9358 insertions(+), 2183 deletions(-)
 ```
 
 </details>

@@ -14,6 +14,7 @@ import { requiredVerificationContractChecks } from "../shared/task-verification-
 import type { EvaluatorModule } from "../../evaluators/catalog.js";
 import {
   renderActualDiff,
+  resolveActualDiffNames,
   resolveEvaluatorDiffBase,
   resolveEvaluatorDiffBaseRef,
 } from "./evaluator-diff-evidence.js";
@@ -207,6 +208,32 @@ async function prepareEvaluatorReviewLocked(
       : null,
     allowSingleCommitFallback: opts.ctx.config.workflow_mode !== "branch_pr",
   });
+  const taskArtifactPrefixes = normalizeBranchPrBatchTaskIds(opts.task, opts.task.id).map(
+    (taskId) => `${opts.ctx.config.paths.workflow_dir.replaceAll("\\", "/")}/${taskId}/`,
+  );
+  const exactChangedPaths = await resolveActualDiffNames(gitRoot, evaluatedSha, diffBaseSha);
+  const implementationChangedPaths = exactChangedPaths.filter(
+    (changedPath) => !taskArtifactPrefixes.some((prefix) => changedPath.startsWith(prefix)),
+  );
+  const contractChangedPaths =
+    opts.task.execution_contract?.verification.contract?.observed.changed_files ?? [];
+  if (
+    opts.task.verification?.state === "ok" &&
+    implementationChangedPaths.some((changedPath) => !contractChangedPaths.includes(changedPath))
+  ) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message:
+        "evaluator cannot accept a Verification Contract whose observed changed files do not cover the exact evaluated diff; record verification again so AgentPlane strengthens the contract from deterministic Git evidence.",
+      context: {
+        task_id: opts.task.id,
+        reason_code: "verification_contract_diff_incomplete",
+        missing_paths: implementationChangedPaths.filter(
+          (changedPath) => !contractChangedPaths.includes(changedPath),
+        ),
+      },
+    });
+  }
   const blueprint = await buildTaskBlueprintResolvedSnapshot({
     ctx: opts.ctx,
     task: opts.task,

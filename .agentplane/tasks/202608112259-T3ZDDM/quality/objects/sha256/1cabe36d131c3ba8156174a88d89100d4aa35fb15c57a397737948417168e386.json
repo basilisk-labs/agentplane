@@ -1,0 +1,84 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "source_code"
+      ],
+      "external_effects": [],
+      "components": [],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [],
+      "external_effects": [],
+      "changed_components": [],
+      "changed_files": []
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "core",
+      "cli"
+    ],
+    "escalation_reasons": [],
+    "requires_full_regression": false,
+    "requires_real_e2e": false,
+    "digest": "sha256:5cce438a0252ecd96091bc582c42af2d777ee0f2a627b7930089252831afd436"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-13T07:47:22.992Z",
+    "updated_by": "TESTER",
+    "note": "Exact-SHA local, hosted, provider, benchmark, and regression qualification passed."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813074722992-6ad656c6781aca9e.json",
+      "sha256": "sha256:c5f5d1b1dd551d3b17047f51bfa8b6f48cd607537e19c6e0b1beb9e0b203270e"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

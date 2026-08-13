@@ -24,6 +24,11 @@ import { buildVerifiedPrMeta, parsePrMeta } from "../shared/pr-meta.js";
 import { resolvePrPaths } from "../pr/internal/pr-paths.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
+import {
+  resolveActualDiffNames,
+  resolveEvaluatorDiffBase,
+  resolveEvaluatorDiffBaseRef,
+} from "../evaluator/evaluator-diff-evidence.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import {
   loadCommandContext,
@@ -207,7 +212,7 @@ async function recordVerificationResult(opts: {
       policyAction: "task_verify",
       phase: "verify",
       build: async (current) => {
-        const executionContract =
+        const baseExecutionContract =
           current.execution_contract ??
           resolveTaskExecutionContract({
             config,
@@ -217,9 +222,6 @@ async function recordVerificationResult(opts: {
               current.execution_route?.selected_mode ??
               "repository",
           });
-        const contractTask = current.execution_contract
-          ? current
-          : { ...current, execution_contract: executionContract };
         const doc =
           (typeof current.doc === "string" ? current.doc : "") ||
           (await backend.getTaskDoc!(current.id));
@@ -249,6 +251,35 @@ async function recordVerificationResult(opts: {
           previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
           workflowMode: config.workflow_mode,
         });
+        const observedChangedPaths = await (async (): Promise<string[]> => {
+          if (!evaluatedSha) return [];
+          const baseRef =
+            config.workflow_mode === "branch_pr"
+              ? await resolveEvaluatorDiffBaseRef({ ctx, taskId: current.id })
+              : null;
+          const diffBaseSha = await resolveEvaluatorDiffBase({
+            gitRoot: resolved.gitRoot,
+            evaluatedSha,
+            baseRef,
+            allowSingleCommitFallback: true,
+          });
+          const taskArtifactPrefixes = qualityReviewTaskIds.map(
+            (taskId) => `${config.paths.workflow_dir.replaceAll("\\", "/")}/${taskId}/`,
+          );
+          const exactChangedPaths = await resolveActualDiffNames(
+            resolved.gitRoot,
+            evaluatedSha,
+            diffBaseSha,
+          );
+          return exactChangedPaths.filter(
+            (changedPath) => !taskArtifactPrefixes.some((prefix) => changedPath.startsWith(prefix)),
+          );
+        })();
+        const observedExecutionContract = reconcileTaskExecutionContract({
+          contract: baseExecutionContract,
+          changed_paths: observedChangedPaths,
+        }).contract;
+        const contractTask = { ...current, execution_contract: observedExecutionContract };
         const parsedDetails = parseVerificationCheckDetails(opts.details);
         const requiresConcreteDetails =
           config.workflow_mode === "branch_pr" &&
@@ -303,7 +334,8 @@ async function recordVerificationResult(opts: {
           taskIds: qualityReviewTaskIds,
           targetSha: evaluatedSha,
           verifySteps: verificationScope,
-          verificationContractDigest: executionContract.verification.contract?.digest ?? null,
+          verificationContractDigest:
+            observedExecutionContract.verification.contract?.digest ?? null,
           workflowMode: config.workflow_mode,
           verificationDetails: opts.details,
         });
@@ -409,8 +441,8 @@ async function recordVerificationResult(opts: {
           });
         }
         const reconciledContract = reconcileTaskExecutionContract({
-          contract: executionContract,
-          changed_paths: [],
+          contract: observedExecutionContract,
+          changed_paths: observedChangedPaths,
           verification_results: verificationResults,
         }).contract;
         intents.unshift(setTaskFieldsIntent({ execution_contract: reconciledContract }));
