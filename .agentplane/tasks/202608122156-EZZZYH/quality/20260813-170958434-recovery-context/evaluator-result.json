@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The black-box scenario installs exact candidate tarballs, uses only the public CLI, crosses the former plan-size failure at 5080 bytes, proves exact replay idempotency and stale rejection, and completes verification, evaluator, finish, final consumer readback, and cleanup.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608122156-EZZZYH/quality/objects/sha256/7a1351a9a8555ad8caaf4c71477ce5618be66a09df5da789d39882c495b66192.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "CI audit mode now fails explicitly on scenario failure; post-terminal product behavior is read back; commit ancestry and product-tree identity are proven across lifecycle-only tail commits.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608122156-EZZZYH/quality/objects/sha256/7a1351a9a8555ad8caaf4c71477ce5618be66a09df5da789d39882c495b66192.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "Task-owned AgentPlane artifacts are excluded from the product policy-scope fingerprint, so verification and evaluator persistence do not invalidate their own evidence.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608122156-EZZZYH/quality/objects/sha256/7a1351a9a8555ad8caaf4c71477ce5618be66a09df5da789d39882c495b66192.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "GitHub aggregate required-check routing is accepted as the hosted integration boundary; the final release gate will rerun the complete provider-enabled qualification after merge."
+  ]
+}
