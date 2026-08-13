@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on:
@@ -75,7 +75,7 @@ token_usage:
   state: "observed"
   total_tokens: 2135814
   unavailable_reason: null
-  updated_at: "2026-08-13T13:45:04.186Z"
+  updated_at: "2026-08-13T14:07:53.169Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -579,8 +579,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "e74ec86ffde9dde4953b2345f0e15a45c5257e93"
-  message: "✅ T3ZDDM task: record final quality pass"
+  hash: "9a6b8c93cfe2a42e8e74e092d228d3d8424c1a1b"
+  message: "✅ T3ZDDM task: freeze final verified closure"
 comments:
   -
     author: "CODER"
@@ -606,6 +606,9 @@ comments:
   -
     author: "USER"
     body: "User answer: Approved: the task plan and subsequent instructions explicitly authorize the recorded CI, dependency, documentation, schema, and test mutations required before the patch release."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -724,9 +727,17 @@ events:
     at: "2026-08-13T13:46:49.531Z"
     author: "USER"
     body: "User answer: Approved: the task plan and subsequent instructions explicitly authorize the recorded CI, dependency, documentation, schema, and test mutations required before the patch release."
+  -
+    type: "status"
+    at: "2026-08-13T14:07:53.169Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "9a6b8c93cfe2a42e8e74e092d228d3d8424c1a1b"
 doc_version: 3
-doc_updated_at: "2026-08-13T13:46:49.576Z"
-doc_updated_by: "USER"
+doc_updated_at: "2026-08-13T14:07:53.203Z"
+doc_updated_by: "CODER"
 description: "Implement a versioned Verification Contract computed once from the semantic task assessment introduced by 202608112232-3NC7Y4 and strengthened monotonically by deterministic observed effects. Make that contract the single authority for local, PR, release, evaluator, finish, and recovery verification. Add change-aware test selection so local development runs only affected unit/integration suites plus mandatory critical-path checks; run the full CLI regression on PR; run real E2E on PR and release according to risk and observed effects. Add a conservative fallback that selects full regression whenever central components, shared contracts, routing, lifecycle, verification policy, schemas, package/lockfiles, CI, or unknown/unmapped effects are touched. The LLM may propose semantic scope and explain results but must not remove, downgrade, or bypass mandatory checks selected by deterministic policy. Audit duplicate behavioral coverage and move assertions to the cheapest sufficient level, retaining higher-level tests only for observable cross-boundary contracts. Profile fixture creation and process startup; replace repeated mutable setup with reusable immutable fixtures and cheap isolated repository copies where hermeticity is preserved. Execute independent core, runtime, CLI, and docs/schema groups in parallel with deterministic aggregation, failure reporting, and cancellation semantics. Instrument and report verification amplification, wall-clock verification time, test duplication, and the number of AgentPlane lifecycle/control-plane commands. Define small direct work as localized, reversible, non-central, with no external effects; on pinned reference hardware target mandatory local verification at no more than 60 seconds p50 and 120 seconds p95, no more than three lifecycle/control-plane commands, and no local full CLI regression unless the deterministic fallback triggers. Establish a reproducible before/after benchmark, document metric definitions and residual risk, and prove that speedups do not weaken required evidence."
 sections:
   Summary: |-
@@ -1909,4 +1920,4 @@ DecisionContextRef:
 - Provenance: `supervisor_journal/agentplane`
 - Journal digest: `sha256:09220fc632879fd3215ff97e925595b00b3c161e130ec669c36cc13b407976ce`
 - Unavailable reason: `none`
-- Updated at: `2026-08-13T13:45:04.186Z`
+- Updated at: `2026-08-13T14:07:53.169Z`
