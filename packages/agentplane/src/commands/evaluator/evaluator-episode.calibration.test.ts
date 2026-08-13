@@ -29,6 +29,7 @@ import {
 } from "./evaluator-review-usecase.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
+import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -394,8 +395,13 @@ describe("evaluator episode calibration", () => {
       taskId,
       policyAction: "task_verify",
       phase: "verify",
-      build: () => ({
+      build: (current) => ({
         intents: setTaskFieldsIntent({
+          execution_contract: resolveTaskExecutionContract({
+            config: initialCommand.config,
+            task: current,
+            requestedMode: "repository",
+          }),
           status: "DOING",
           plan_approval: {
             state: "approved",

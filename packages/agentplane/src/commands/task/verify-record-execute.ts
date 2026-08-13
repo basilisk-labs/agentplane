@@ -413,7 +413,7 @@ async function recordVerificationResult(opts: {
           changed_paths: [],
           verification_results: verificationResults,
         }).contract;
-        intents.push(setTaskFieldsIntent({ execution_contract: reconciledContract }));
+        intents.unshift(setTaskFieldsIntent({ execution_contract: reconciledContract }));
         if (opts.by === "EVALUATOR") {
           const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx, task: current }).catch(
             () => null,
