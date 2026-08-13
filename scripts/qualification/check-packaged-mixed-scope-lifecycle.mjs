@@ -545,10 +545,12 @@ function runFixture({ run, cli, packages, tempRoot }) {
       `exact accepted-envelope replay did not return the current approval boundary: status=${exactReplay.status}`,
     );
   }
-  const staleEnvelope = parseJson(
-    readTracked(accessLog, plannerExchange.result_path, "stale_exchange_probe_read"),
-    "accepted planning result",
+  const acceptedEnvelopeText = readTracked(
+    accessLog,
+    plannerExchange.result_path,
+    "stale_exchange_probe_read",
   );
+  const staleEnvelope = parseJson(acceptedEnvelopeText, "accepted planning result");
   staleEnvelope.state_fingerprint = `sha256:${"0".repeat(64)}`;
   writeTracked(
     accessLog,
@@ -567,6 +569,12 @@ function runFixture({ run, cli, packages, tempRoot }) {
       `modified planning envelope did not fail stably: status=${stale.status} ${staleDiagnostic}`,
     );
   }
+  writeTracked(
+    accessLog,
+    plannerExchange.result_path,
+    acceptedEnvelopeText,
+    "stale_exchange_probe_restore",
+  );
 
   runPacketCommand(
     run,
