@@ -19,8 +19,8 @@ Implement a versioned Verification Contract computed once from the semantic task
 - Note:
 
 ```text
-Verified exact implementation 010baa075cf40e400747d255140f6f03a04032eb; all blocking local,
-provider, benchmark, and hosted checks passed.
+Verified exact review-fix implementation d4e26ce7433df38969c36c0df554ee532fd37c92; all blocking
+focused, local full-fast, and hosted checks passed.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -33,16 +33,16 @@ provider, benchmark, and hosted checks passed.
 
 ```text
  .github/codeql/codeql-config.yml                   |    6 +
- .github/workflows/ci.yml                           |   88 +-
+ .github/workflows/ci.yml                           |   90 +-
  docs/developer/code-quality.mdx                    |    7 +
- docs/developer/verification-contract.mdx           |   81 +
+ docs/developer/verification-contract.mdx           |   83 +
  docs/user/cli-reference.generated.mdx              |    8 +-
  package.json                                       |    7 +-
  .../agentplane/src/backends/task-backend.test.ts   |   67 +
  .../shared/normalize-verification-contract.test.ts |   27 +
  .../shared/normalize-verification-contract.ts      |  171 ++
  .../src/backends/task-backend/shared/record.ts     |   12 +-
- .../agentplane/src/cli/local-ci-selection.test.ts  |   98 +-
+ .../agentplane/src/cli/local-ci-selection.test.ts  |  109 +-
  .../run-cli.core.hooks.pre-push-full-fast.test.ts  |   61 +
  .../run-cli.core.pr-flow.worktree-runtime.test.ts  |  250 +--
  .../src/cli/run-cli.core.task-advance.test.ts      |    2 +-
@@ -59,9 +59,9 @@ provider, benchmark, and hosted checks passed.
  .../evaluator/evaluator-runtime-evidence.test.ts   |   53 +-
  .../evaluator-verification-contract.test.ts        |   76 +
  .../evaluator/evaluator-verification-records.ts    |   11 +-
- .../commands/release/ci-workflow-contract.test.ts  |   13 +
- .../src/commands/release/github-ci-plan.test.ts    |  113 +-
- .../commands/release/release-ci-contract.test.ts   |   11 +-
+ .../commands/release/ci-workflow-contract.test.ts  |   15 +
+ .../src/commands/release/github-ci-plan.test.ts    |  301 ++-
+ .../commands/release/release-ci-contract.test.ts   |   13 +-
  .../commands/shared/quality-review-target.test.ts  |   25 +
  .../src/commands/shared/quality-review-target.ts   |   18 +-
  .../shared/task-verification-input.test.ts         |   29 +
@@ -89,8 +89,8 @@ provider, benchmark, and hosted checks passed.
  packages/agentplane/src/commands/verify.spec.ts    |    4 +-
  .../agentplane/src/runtime/task-routing/effects.ts |   37 +
  .../src/runtime/task-routing/observed-path.ts      |   67 +-
- .../src/runtime/task-routing/resolve.test.ts       |  208 ++
- .../agentplane/src/runtime/task-routing/resolve.ts |  124 +-
+ .../src/runtime/task-routing/resolve.test.ts       |  243 ++
+ .../agentplane/src/runtime/task-routing/resolve.ts |  130 +-
  packages/core/package.json                         |    5 +
  .../schemas/task-readme-frontmatter.schema.json    |  501 +++++
  packages/core/schemas/tasks-export.schema.json     |  501 +++++
@@ -120,18 +120,19 @@ provider, benchmark, and hosted checks passed.
  scripts/checks/check-clone-baseline.mjs            |    1 +
  .../check-compatibility-contract-baseline.mjs      |   19 +-
  scripts/checks/check-test-routing.mjs              |   67 +-
- scripts/checks/plan-github-ci.mjs                  |   45 +-
+ scripts/checks/plan-github-ci.mjs                  |   50 +-
  scripts/checks/run-local-ci-group.mjs              |   72 +
- scripts/checks/run-local-ci.mjs                    |  252 ++-
+ scripts/checks/run-local-ci.mjs                    |  279 ++-
  scripts/checks/run-pre-push-hook.mjs               |   17 +-
- scripts/checks/verify-reused-parent.mjs            |   50 +
+ scripts/checks/verify-reused-parent.mjs            |   51 +
  scripts/lib/github-ci-capabilities.d.ts            |   11 +
  scripts/lib/github-ci-capabilities.mjs             |   87 +-
  scripts/lib/installed-migration-matrix.mjs         |   22 +
+ scripts/lib/lifecycle-artifact-reuse.mjs           |  375 ++++
  scripts/lib/lifecycle-control-metrics.d.ts         |   30 +
  scripts/lib/lifecycle-control-metrics.mjs          |   66 +
  scripts/lib/local-ci-selection.d.ts                |   19 +
- scripts/lib/local-ci-selection.mjs                 |  143 +-
+ scripts/lib/local-ci-selection.mjs                 |  155 +-
  scripts/lib/local-verification-receipt.d.ts        |   26 +
  scripts/lib/local-verification-receipt.mjs         |   94 +
  scripts/lib/task-verification-contracts.d.ts       |   12 +
@@ -149,7 +150,7 @@ provider, benchmark, and hosted checks passed.
  tsconfig.base.json                                 |    1 +
  .../docs/developer/verification-contract.png       |  Bin 0 -> 59695 bytes
  website/static/img/social/manifest.json            |    8 +
- 117 files changed, 9882 insertions(+), 2232 deletions(-)
+ 118 files changed, 10544 insertions(+), 2238 deletions(-)
 ```
 
 </details>
