@@ -294,6 +294,24 @@ function invalidInternalAccesses(evidence) {
   return evidence.access_log.filter((entry) => isInside(internalRoot, entry.path));
 }
 
+function productSnapshot(accessLog, repo, purpose) {
+  return {
+    source: readTracked(accessLog, path.join(repo, "src", "greeting.mjs"), purpose),
+    test: readTracked(accessLog, path.join(repo, "test", "greeting.test.mjs"), purpose),
+    docs: readTracked(accessLog, path.join(repo, "docs", "guide.md"), purpose),
+    metadata: readTracked(accessLog, path.join(repo, ".gitignore"), purpose),
+  };
+}
+
+function productSnapshotMatches(snapshot) {
+  return (
+    snapshot.source.includes("Hello, ${name}!") &&
+    snapshot.test.includes("personalized greeting") &&
+    snapshot.docs.includes("Hello, Ada!") &&
+    snapshot.metadata.includes("fixture-dist/")
+  );
+}
+
 export function assertPackagedMixedScopeEvidence(evidence) {
   if (!Number.isSafeInteger(evidence.plan_bytes) || evidence.plan_bytes <= 4218) {
     fail("missing_planner", "accepted semantic plan did not cross the 0.7.5 failure boundary");
@@ -320,6 +338,19 @@ export function assertPackagedMixedScopeEvidence(evidence) {
   }
   if (evidence.finish?.status !== "DONE" || evidence.finish?.terminal !== true) {
     fail("missing_finish", "public supervisor did not complete the lifecycle");
+  }
+  if (
+    evidence.final_consumer?.test_status !== 0 ||
+    evidence.final_consumer?.product_matches !== true
+  ) {
+    fail("missing_final_readback", "completed lifecycle did not preserve the product behavior");
+  }
+  if (
+    evidence.commit?.task_commit !== evidence.commit?.final_head ||
+    evidence.commit?.after_execution_base !== true ||
+    evidence.commit?.count_after <= evidence.commit?.count_before
+  ) {
+    fail("wrong_lifecycle_commit", "recorded task commit is not the completed product commit");
   }
   if (evidence.stale_exchange?.rejected !== true) {
     fail("stale_exchange_accepted", "an accepted envelope was replayed without a stable rejection");
@@ -618,12 +649,7 @@ function runFixture({ run, cli, packages, tempRoot }) {
     .split("\n")
     .filter(Boolean)
     .toSorted();
-  const evaluatorProductSnapshot = {
-    source: readTracked(accessLog, path.join(repo, "src", "greeting.mjs"), "evaluator_review"),
-    test: readTracked(accessLog, path.join(repo, "test", "greeting.test.mjs"), "evaluator_review"),
-    docs: readTracked(accessLog, path.join(repo, "docs", "guide.md"), "evaluator_review"),
-    metadata: readTracked(accessLog, path.join(repo, ".gitignore"), "evaluator_review"),
-  };
+  const evaluatorProductSnapshot = productSnapshot(accessLog, repo, "evaluator_review");
   const evaluatorTestResult = spawnSync(process.execPath, ["--test", "test/greeting.test.mjs"], {
     cwd: repo,
     encoding: "utf8",
@@ -637,10 +663,7 @@ function runFixture({ run, cli, packages, tempRoot }) {
       changedPaths.includes(requiredPath),
     ) &&
     evaluatorTestResult.status === 0 &&
-    evaluatorProductSnapshot.source.includes("Hello, ${name}!") &&
-    evaluatorProductSnapshot.test.includes("personalized greeting") &&
-    evaluatorProductSnapshot.docs.includes("Hello, Ada!") &&
-    evaluatorProductSnapshot.metadata.includes("fixture-dist/");
+    productSnapshotMatches(evaluatorProductSnapshot);
   if (!reviewReady) {
     fail(
       "missing_evaluator_evidence",
@@ -701,7 +724,33 @@ function runFixture({ run, cli, packages, tempRoot }) {
     fail(
       "missing_commit",
       `recorded task commit is absent from Git: value=${JSON.stringify(taskCommit)} ` +
-        `status=${finalTask.status} head=${finalHead} error=${error.message}`,
+      `status=${finalTask.status} head=${finalHead} error=${error.message}`,
+    );
+  }
+  const afterExecutionBase =
+    taskCommit !== executionBase &&
+    git(run, repo, ["merge-base", "--is-ancestor", executionBase, taskCommit]) === "";
+  if (taskCommit !== finalHead || !afterExecutionBase || commitCountAfter <= commitCountBefore) {
+    fail(
+      "wrong_lifecycle_commit",
+      `recorded task commit is not the completed product commit: task=${taskCommit} ` +
+        `head=${finalHead} base=${executionBase} before=${commitCountBefore} after=${commitCountAfter}`,
+    );
+  }
+  const finalProductSnapshot = productSnapshot(accessLog, repo, "final_consumer_readback");
+  const finalConsumerTest = spawnSync(process.execPath, ["--test", "test/greeting.test.mjs"], {
+    cwd: repo,
+    encoding: "utf8",
+    env: { ...process.env, AGENTPLANE_NO_UPDATE_CHECK: "1" },
+    maxBuffer: 128 * 1024 * 1024,
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  if (finalConsumerTest.error) throw finalConsumerTest.error;
+  if (finalConsumerTest.status !== 0 || !productSnapshotMatches(finalProductSnapshot)) {
+    fail(
+      "missing_final_readback",
+      `completed product readback failed: test_status=${finalConsumerTest.status} ` +
+        `product_matches=${productSnapshotMatches(finalProductSnapshot)}`,
     );
   }
 
@@ -729,6 +778,11 @@ function runFixture({ run, cli, packages, tempRoot }) {
       final_head: finalHead,
       count_before: commitCountBefore,
       count_after: commitCountAfter,
+      after_execution_base: afterExecutionBase,
+    },
+    final_consumer: {
+      test_status: finalConsumerTest.status,
+      product_matches: productSnapshotMatches(finalProductSnapshot),
     },
     finish: { status: finalTask.status, terminal: terminal.action?.kind === "terminal" },
     stale_exchange: {

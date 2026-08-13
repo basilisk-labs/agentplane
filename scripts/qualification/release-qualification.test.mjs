@@ -214,8 +214,15 @@ describe("v0.7.1 release qualification contract", () => {
       changed_paths: [".gitignore", "docs/guide.md", "src/greeting.mjs", "test/greeting.test.mjs"],
       verification: { phase: "TESTER", state: "ok" },
       evaluator: { phase: "EVALUATOR", state: "pass" },
-      commit: { task_commit: "a".repeat(40) },
+      commit: {
+        task_commit: "a".repeat(40),
+        final_head: "a".repeat(40),
+        count_before: 2,
+        count_after: 3,
+        after_execution_base: true,
+      },
       finish: { status: "DONE", terminal: true },
+      final_consumer: { test_status: 0, product_matches: true },
       stale_exchange: { rejected: true },
       exact_replay: { idempotent: true, action: "approval_required" },
       access_log: [],
@@ -234,7 +241,9 @@ describe("v0.7.1 release qualification contract", () => {
       ["missing_verification", (value) => (value.verification.state = "missing")],
       ["missing_evaluator", (value) => (value.evaluator.state = "missing")],
       ["missing_commit", (value) => (value.commit.task_commit = "")],
+      ["wrong_lifecycle_commit", (value) => (value.commit.final_head = "b".repeat(40))],
       ["missing_finish", (value) => (value.finish.terminal = false)],
+      ["missing_final_readback", (value) => (value.final_consumer.product_matches = false)],
       ["stale_exchange_accepted", (value) => (value.stale_exchange.rejected = false)],
       ["accepted_exchange_not_idempotent", (value) => (value.exact_replay.idempotent = false)],
       [
@@ -837,6 +846,7 @@ describe("v0.7.1 release qualification contract", () => {
     assert.equal(report.defects.length, 1);
     assert.equal(report.defects[0].owner_task, "202608021231-PZGG3V");
     assert.equal(qualificationExitCode(report), 0);
+    assert.equal(qualificationExitCode(report, { failOnScenarioFailure: true }), 1);
     assert.equal(validateQualificationReport(report), report);
   });
 
