@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608112259-T3ZDDM",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-13T14:53:34.939Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "b223ead8fbb3b77bdd369b9018f0974cadbd2217",
+  "blueprint_digest": "ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb",
+  "findings": [
+    "The comparator now distinguishes three safe cases: initial identity binding, unchanged identity across lifecycle-only descendants, and rotation to a verified new implementation only when old-to-new history contains non-task changes and new-to-parent history is task-artifact-only.",
+    "Negative regression coverage rejects arbitrary identity substitution and task-artifact-only promotion; exact-SHA local full-fast and hosted PR verification pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/5516041ef940422199bb426b9323bf373833956597bda1d777c896c776b8ddaf.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
