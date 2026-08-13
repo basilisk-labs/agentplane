@@ -196,26 +196,42 @@ function executionContractStrengthened(before, after) {
   return /^sha256:[0-9a-f]{64}$/u.test(String(afterContract.digest ?? ""));
 }
 
-function readmeLifecycleAdvance(beforeMarkdown, afterMarkdown, parentSha) {
+function readmeImplementationSha(cwd, after, parentSha) {
+  const declared = after.frontmatter.extensions?.implementation_commit?.hash;
+  const implementationSha = /^[0-9a-f]{40}$/u.test(String(declared ?? "")) ? declared : parentSha;
+  try {
+    execFileSync("git", ["merge-base", "--is-ancestor", implementationSha, parentSha], {
+      cwd,
+      stdio: "ignore",
+    });
+    return implementationSha;
+  } catch {
+    return null;
+  }
+}
+
+function readmeLifecycleAdvance(cwd, beforeMarkdown, afterMarkdown, parentSha) {
   const before = splitFrontmatter(beforeMarkdown);
   const after = splitFrontmatter(afterMarkdown);
   if (!before || !after || comparableReadme(beforeMarkdown) !== comparableReadme(afterMarkdown)) {
-    return false;
+    return null;
   }
+  const implementationSha = readmeImplementationSha(cwd, after, parentSha);
+  if (!implementationSha) return null;
   if (
     !executionContractStrengthened(
       before.frontmatter.execution_contract,
       after.frontmatter.execution_contract,
     )
   ) {
-    return false;
+    return null;
   }
-  return (
-    after.frontmatter.commit?.hash === parentSha &&
+  return after.frontmatter.commit?.hash === parentSha &&
     after.frontmatter.verification?.state === "ok" &&
     after.frontmatter.quality_review?.state === "pass" &&
-    after.frontmatter.quality_review?.evaluated_sha === parentSha
-  );
+    after.frontmatter.quality_review?.evaluated_sha === implementationSha
+    ? implementationSha
+    : null;
 }
 
 function readBlob(cwd, revision, filePath) {
@@ -307,7 +323,15 @@ function validateCurrentEvidenceBindings({ cwd, currentSha, taskId, parentSha, r
   return null;
 }
 
-function validBoundJsonArtifact({ cwd, currentSha, taskId, relativePath, filePath, parentSha }) {
+function validBoundJsonArtifact({
+  cwd,
+  currentSha,
+  taskId,
+  relativePath,
+  filePath,
+  parentSha,
+  implementationSha,
+}) {
   const objectMatch = /^quality\/objects\/sha256\/([0-9a-f]{64})\.[^/]+$/u.exec(relativePath);
   if (objectMatch) {
     const contents = readBlobBuffer(cwd, currentSha, filePath);
@@ -325,24 +349,26 @@ function validBoundJsonArtifact({ cwd, currentSha, taskId, relativePath, filePat
     return "malformed_managed_artifact";
   }
   if (relativePath.startsWith("verification/")) {
-    return validVerificationArtifact(artifact, taskId, parentSha)
+    return validVerificationArtifact(artifact, taskId, implementationSha)
       ? null
       : "invalid_verification_evidence";
   }
   if (/^quality\/[^/]+\/evaluator-work-order\.json$/u.test(relativePath)) {
-    return artifact.task?.id === taskId && artifact.evaluated_sha === parentSha
+    return artifact.task?.id === taskId && artifact.evaluated_sha === implementationSha
       ? null
       : "invalid_evaluator_work_order";
   }
   if (/^quality\/[^/]+\/quality-report\.json$/u.test(relativePath)) {
-    return validQualityReport(artifact, taskId, parentSha) ? null : "invalid_quality_report";
+    return validQualityReport(artifact, taskId, implementationSha)
+      ? null
+      : "invalid_quality_report";
   }
   if (/^quality\/[^/]+\/evaluator-result\.json$/u.test(relativePath)) {
     const workOrderPath = filePath.replace(/evaluator-result\.json$/u, "evaluator-work-order.json");
     const workOrder = readJsonBlob(cwd, currentSha, workOrderPath);
     return ["pass", "rework", "blocked", "human_review"].includes(artifact.verdict) &&
       workOrder?.task?.id === taskId &&
-      workOrder.evaluated_sha === parentSha
+      workOrder.evaluated_sha === implementationSha
       ? null
       : "invalid_evaluator_result";
   }
@@ -374,6 +400,7 @@ export function evaluateLifecycleArtifactReuse({
   let lifecycleTaskId = null;
   let readmeCount = 0;
   let readmePath = null;
+  let implementationSha = null;
   for (const filePath of changedFiles) {
     const parsedPath = taskPath(filePath);
     if (!parsedPath) {
@@ -388,9 +415,14 @@ export function evaluateLifecycleArtifactReuse({
       readmePath = filePath;
       const before = readBlob(cwd, parentSha, filePath);
       const after = readBlob(cwd, currentSha, filePath);
-      if (before === null || after === null || !readmeLifecycleAdvance(before, after, parentSha)) {
+      const readmeImplementation =
+        before === null || after === null
+          ? null
+          : readmeLifecycleAdvance(cwd, before, after, parentSha);
+      if (!readmeImplementation) {
         return { eligible: false, reason: "semantic_readme_drift", changed_files: changedFiles };
       }
+      implementationSha = readmeImplementation;
       continue;
     }
     if (MANAGED_DIRECTORIES.some((directory) => parsedPath.relativePath.startsWith(directory))) {
@@ -401,6 +433,7 @@ export function evaluateLifecycleArtifactReuse({
         relativePath: parsedPath.relativePath,
         filePath,
         parentSha,
+        implementationSha: implementationSha ?? parentSha,
       });
       if (invalidReason) {
         return {
@@ -423,7 +456,7 @@ export function evaluateLifecycleArtifactReuse({
     cwd,
     currentSha,
     taskId: lifecycleTaskId,
-    parentSha,
+    parentSha: implementationSha ?? parentSha,
     readmePath,
   });
   if (invalidBinding) {
@@ -437,6 +470,7 @@ export function evaluateLifecycleArtifactReuse({
     reason: "semantic_lifecycle_drift_only",
     parent_sha: parentSha,
     current_sha: currentSha,
+    implementation_sha: implementationSha,
     changed_files: changedFiles,
     comparison_digest: `sha256:${createHash("sha256")
       .update(JSON.stringify({ parentSha, currentSha, changedFiles }))

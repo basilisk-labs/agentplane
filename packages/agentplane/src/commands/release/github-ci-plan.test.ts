@@ -80,10 +80,12 @@ function taskReadme({
   title = "Lifecycle task",
   status,
   parentSha = null,
+  implementationSha = parentSha,
 }: {
   title?: string;
   status: "DOING" | "DONE";
   parentSha?: string | null;
+  implementationSha?: string | null;
 }): string {
   const terminal = status === "DONE";
   return `---
@@ -92,9 +94,9 @@ title: "${title}"
 status: "${status}"
 revision: ${terminal ? 2 : 1}
 verification: ${terminal ? '{ state: "ok" }' : '{ state: "pending" }'}
-quality_review: ${terminal ? `{ state: "pass", evaluated_sha: "${parentSha}", evidence_refs: [".agentplane/tasks/202608131200-ABC123/quality/final/quality-report.json", ".agentplane/tasks/202608131200-ABC123/verification/result.json"] }` : '{ state: "pending" }'}
+quality_review: ${terminal ? `{ state: "pass", evaluated_sha: "${implementationSha}", evidence_refs: [".agentplane/tasks/202608131200-ABC123/quality/final/quality-report.json", ".agentplane/tasks/202608131200-ABC123/verification/result.json"] }` : '{ state: "pending" }'}
 commit: ${terminal ? `{ hash: "${parentSha}" }` : "null"}
-extensions: { ${terminal ? `implementation_commit: { hash: "${parentSha}" }, ` : ""}"agentplane.human_input": { openQuestion: null, history: [{ id: "owner-review", question: "Approve effects?", askedAt: "2026-08-13T12:00:00Z", askedBy: "EVALUATOR", answeredAt: "2026-08-13T12:01:00Z", answeredBy: "USER", answer: "Approved.", previousStatus: "DONE" }] } }
+extensions: { ${terminal ? `implementation_commit: { hash: "${implementationSha}" }, ` : ""}"agentplane.human_input": { openQuestion: null, history: [{ id: "owner-review", question: "Approve effects?", askedAt: "2026-08-13T12:00:00Z", askedBy: "EVALUATOR", answeredAt: "2026-08-13T12:01:00Z", answeredBy: "USER", answer: "Approved.", previousStatus: "DONE" }] } }
 execution_contract:
   schema_version: 1
   source: "agent_declaration"
@@ -308,6 +310,67 @@ describe("GitHub CI capability planning", () => {
       eligible: true,
       reason: "semantic_lifecycle_drift_only",
     });
+  });
+
+  it("reuses verification across consecutive lifecycle-only closure commits", () => {
+    const repo = mkdtempSync(path.join(os.tmpdir(), "agentplane-lifecycle-chain-"));
+    try {
+      git(repo, ["init", "-b", "main"]);
+      git(repo, ["config", "user.name", "CI Test"]);
+      git(repo, ["config", "user.email", "ci@example.com"]);
+      const taskRoot = ".agentplane/tasks/202608131200-ABC123";
+      const readmePath = `${taskRoot}/README.md`;
+      mkdirSync(path.join(repo, taskRoot), { recursive: true });
+      writeFileSync(path.join(repo, readmePath), taskReadme({ status: "DOING" }));
+      git(repo, ["add", "."]);
+      git(repo, ["commit", "-m", "implementation"]);
+      const implementationSha = git(repo, ["rev-parse", "HEAD"]);
+
+      writeFileSync(
+        path.join(repo, readmePath),
+        taskReadme({ status: "DONE", parentSha: implementationSha, implementationSha }),
+      );
+      const verificationPath = path.join(repo, taskRoot, "verification/result.json");
+      mkdirSync(path.dirname(verificationPath), { recursive: true });
+      writeFileSync(
+        verificationPath,
+        `${JSON.stringify({ task_id: "202608131200-ABC123", result: "ok", implementation_sha: implementationSha, input: { digest: `sha256:${"b".repeat(64)}` } })}\n`,
+      );
+      const qualityPath = path.join(repo, taskRoot, "quality/final/quality-report.json");
+      mkdirSync(path.dirname(qualityPath), { recursive: true });
+      writeFileSync(
+        qualityPath,
+        `${JSON.stringify({ task_id: "202608131200-ABC123", evaluated_sha: implementationSha, verdict: "pass" })}\n`,
+      );
+      git(repo, ["add", "."]);
+      git(repo, ["commit", "-m", "first lifecycle closure"]);
+      const verifiedParentSha = git(repo, ["rev-parse", "HEAD"]);
+
+      writeFileSync(
+        path.join(repo, readmePath),
+        taskReadme({
+          status: "DONE",
+          parentSha: verifiedParentSha,
+          implementationSha,
+        }).replace("revision: 2", "revision: 3"),
+      );
+      git(repo, ["add", "."]);
+      git(repo, ["commit", "-m", "second lifecycle closure"]);
+
+      expect(
+        evaluateLifecycleArtifactReuse({
+          cwd: repo,
+          parentSha: verifiedParentSha,
+          currentSha: git(repo, ["rev-parse", "HEAD"]),
+        }),
+      ).toMatchObject({
+        eligible: true,
+        reason: "semantic_lifecycle_drift_only",
+        implementation_sha: implementationSha,
+      });
+    } finally {
+      rmSync(repo, { recursive: true, force: true });
+    }
   });
 
   it("rejects semantic README drift and malformed managed evidence", () => {
