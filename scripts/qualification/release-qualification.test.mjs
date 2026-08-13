@@ -33,8 +33,10 @@ import {
   validateMatchedLatencyReport,
 } from "./measure-v0.7.1-matched-cli-latency.mjs";
 import {
+  collapseSupervisorLatencyReplicates,
   compareSupervisorLatencySamples,
   summarizeGitCommandHistogram,
+  supervisorInvocationOrder,
   supervisorLatencyMeasurementEnvironment,
   validateSupervisorLatencyReport,
 } from "./measure-v0.7.1-supervisor-latency.mjs";
@@ -131,6 +133,9 @@ function supervisorLatencySide(count) {
   return {
     sample_count: count,
     samples: Array.from({ length: count }, () => 100),
+    raw_invocation_count: count * 3,
+    raw_invocation_durations_ms: Array.from({ length: count * 3 }, () => 100),
+    replicates_per_logical_sample: 3,
     git_subprocess_count: { samples: Array.from({ length: count }, () => 2) },
     git_command_histogram: {
       total_count: count * 2,
@@ -195,6 +200,34 @@ describe("v0.7.1 release qualification contract", () => {
     assert.equal(environment.AGENTPLANE_TRACE, "0");
     assert.equal(environment.AGENTPLANE_BENCH_PROCESS_LOG, "/tmp/probe.log");
     assert.equal(environment.PATH, "/tmp/probe:/usr/bin:/bin");
+  });
+
+  it("uses balanced replicated supervisor samples and fails closed on any invocation", () => {
+    const baseline = ["baseline"];
+    const candidate = ["candidate"];
+    assert.deepEqual(supervisorInvocationOrder(0, 0, baseline, candidate), [baseline, candidate]);
+    assert.deepEqual(supervisorInvocationOrder(0, 1, baseline, candidate), [candidate, baseline]);
+    assert.deepEqual(supervisorInvocationOrder(1, 0, baseline, candidate), [candidate, baseline]);
+
+    const median = collapseSupervisorLatencyReplicates([
+      supervisorLatencySample(100),
+      supervisorLatencySample(900),
+      supervisorLatencySample(101),
+    ]);
+    assert.equal(median.duration_ms, 101);
+    const failedSample = { ...supervisorLatencySample(102), exit_code: 1, stderr: "boom" };
+    assert.equal(
+      collapseSupervisorLatencyReplicates([
+        supervisorLatencySample(100),
+        failedSample,
+        supervisorLatencySample(101),
+      ]),
+      failedSample,
+    );
+    assert.throws(
+      () => collapseSupervisorLatencyReplicates([supervisorLatencySample(100)]),
+      /odd number of at least 3 replicates/u,
+    );
   });
 
   it("pins the canonical provider gate to the reviewed Codex runtime", () => {
@@ -988,11 +1021,11 @@ describe("v0.7.1 release qualification contract", () => {
     );
   });
 
-  it("requires 60 cold and 60 warm supervisor samples for both public frontends", () => {
+  it("requires 20 replicated logical samples and 60 raw invocations per supervisor side", () => {
     const report = {
       schema_version: 1,
       kind: "agentplane.v0.7.1_supervisor_latency",
-      phases: { cold: supervisorLatencySurfaces(60), warm: supervisorLatencySurfaces(60) },
+      phases: { cold: supervisorLatencySurfaces(20), warm: supervisorLatencySurfaces(20) },
     };
 
     assert.equal(validateSupervisorLatencyReport(report), report);
@@ -1001,13 +1034,13 @@ describe("v0.7.1 release qualification contract", () => {
     insufficientCold.phases.cold[0].candidate.samples = Array.from({ length: 10 }, () => 100);
     assert.throws(
       () => validateSupervisorLatencyReport(insufficientCold),
-      /cold\.external_advance\.candidate requires 60 samples/u,
+      /cold\.external_advance\.candidate requires 20 logical samples/u,
     );
     const insufficient = structuredClone(report);
-    insufficient.phases.warm[0].candidate.sample_count = 59;
+    insufficient.phases.warm[0].candidate.raw_invocation_count = 59;
     assert.throws(
       () => validateSupervisorLatencyReport(insufficient),
-      /warm\.external_advance\.candidate requires 60 samples/u,
+      /warm\.external_advance\.candidate requires at least 60 raw invocations/u,
     );
   });
 
