@@ -13,7 +13,7 @@ Created: 2026-08-13T17:32:00.151Z
 ## Verification
 
 - State: ok
-- Note: Exact candidate 95a6d46c5 passed the complete local release contract.
+- Note: Exact candidate 8b5fe5e67 passed local, provider, and hosted release qualification.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -105,13 +105,17 @@ Created: 2026-08-13T17:32:00.151Z
  packages/recipes/src/index.ts                      |   2 +-
  packages/spec/examples/acr.json                    |   4 +-
  packages/testkit/package.json                      |   2 +-
+ packages/testkit/src/cli-harness.ts                |   5 +-
+ packages/testkit/src/cli.test.ts                   |  16 +-
  .../baselines/v0.7-compatibility-candidate.json    |   6 +-
  .../internal/agent-efficiency-anchor-runtime.mjs   |  11 +-
  .../agent-efficiency-dependency-manifest.mjs       |  14 +-
  .../check-compatibility-contract-baseline.mjs      |  59 ++--
+ .../qualification/release-qualification.test.mjs   |  14 +
+ .../run-v0.7.1-release-qualification.mjs           |  11 +
  website/static/img/social/docs/releases/v0.7.6.png | Bin 0 -> 53331 bytes
  website/static/img/social/manifest.json            |   8 +
- 82 files changed, 793 insertions(+), 1446 deletions(-)
+ 86 files changed, 837 insertions(+), 1448 deletions(-)
 ```
 
 </details>

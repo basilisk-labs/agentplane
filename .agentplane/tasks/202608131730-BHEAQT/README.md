@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -29,9 +29,9 @@ plan_approval:
   note: "Approved by the user as the final 0.7.6 qualification and publication stage after all planned fixes and verification optimization."
 verification:
   state: "ok"
-  updated_at: "2026-08-13T22:00:07.775Z"
+  updated_at: "2026-08-13T23:25:39.628Z"
   updated_by: "TESTER"
-  note: "Exact candidate 95a6d46c5 passed the complete local release contract."
+  note: "Exact candidate 8b5fe5e67 passed local, provider, and hosted release qualification."
   attempts: 0
 quality_review:
   state: "pass"
@@ -213,10 +213,14 @@ execution_contract:
       - "packages/recipes/src/index.ts"
       - "packages/spec/examples/acr.json"
       - "packages/testkit/package.json"
+      - "packages/testkit/src/cli-harness.ts"
+      - "packages/testkit/src/cli.test.ts"
       - "scripts/baselines/v0.7-compatibility-candidate.json"
       - "scripts/bench/internal/agent-efficiency-anchor-runtime.mjs"
       - "scripts/bench/internal/agent-efficiency-dependency-manifest.mjs"
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
+      - "scripts/qualification/release-qualification.test.mjs"
+      - "scripts/qualification/run-v0.7.1-release-qualification.mjs"
       - "website/static/img/social/docs/releases/v0.7.6.png"
       - "website/static/img/social/manifest.json"
     external_effects: []
@@ -237,6 +241,9 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
         result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -281,7 +288,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:44af65f0fb4a7ea3304a478ce5b22eb8dda33c93933984fa4754e7f54809274d"
+      digest: "sha256:9357e386b29b712260ef2a373709ceaef3742a60d7e2b9fab28c65dea839d6df"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.blueprint.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.incidents.test.ts"
@@ -432,10 +439,14 @@ execution_contract:
           - "packages/recipes/src/index.ts"
           - "packages/spec/examples/acr.json"
           - "packages/testkit/package.json"
+          - "packages/testkit/src/cli-harness.ts"
+          - "packages/testkit/src/cli.test.ts"
           - "scripts/baselines/v0.7-compatibility-candidate.json"
           - "scripts/bench/internal/agent-efficiency-anchor-runtime.mjs"
           - "scripts/bench/internal/agent-efficiency-dependency-manifest.mjs"
           - "scripts/checks/check-compatibility-contract-baseline.mjs"
+          - "scripts/qualification/release-qualification.test.mjs"
+          - "scripts/qualification/run-v0.7.1-release-qualification.mjs"
           - "website/static/img/social/docs/releases/v0.7.6.png"
           - "website/static/img/social/manifest.json"
         external_effects: []
@@ -541,8 +552,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "78b9354e40d8db1129f916f1112c4f17aa1dcdc8"
+  -
+    type: "verify"
+    at: "2026-08-13T23:25:39.628Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Exact candidate 8b5fe5e67 passed local, provider, and hosted release qualification."
 doc_version: 3
-doc_updated_at: "2026-08-13T22:09:11.378Z"
+doc_updated_at: "2026-08-13T23:25:42.509Z"
 doc_updated_by: "INTEGRATOR"
 description: "Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact protected-main release scope; generate the patch plan and English release notes from actual changes since v0.7.5; run the complete 20-scenario provider-enabled release qualification on the exact clean candidate; run canonical release prepublish gates; prepare a branch_pr release candidate without creating a tag; require exact-SHA hosted checks and no unresolved reviews; integrate through the protected main lane; dispatch GitHub-only publication for the exact merged release SHA; verify release-ready and publish-result artifacts, tag, GitHub Release, and all three public npm packages; then clean the release worktree and report efficiency and residual lifecycle debt."
 sections:
@@ -601,6 +618,56 @@ sections:
 
     DecisionContextRef:
     - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-13T23:25:39.628Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Exact candidate 8b5fe5e67 passed local, provider, and hosted release qualification.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:77b801a2249a30d49b4cc54c7efa46a6b160daada92d0eb56aa4ba92553aa06e, input_digest=sha256:f3efd5d0626350d4e864e8f3cf803ea80c5b77f861db1ab9727b5155941a3a73
+
+    Details:
+
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: release-ci-base 104/104 chunks; workflow coverage 50/50; significant coverage 204/204; release-critical 16/16; installed migration matrix 8/8
+    Scope: exact-SHA build, package, migration, workflow, CLI, regression, coverage, compatibility, efficiency, and release-critical gates
+
+    Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1 --subject 8b5fe5e6789ec8a43e5c430c3132c78df03cc2e4
+    Result: pass
+    Evidence: report .agentplane/reports/v0.7.1-qualification/2026-08-13T22-59-12-627Z/report.json; 20 scenarios executed; 19 passed; one non-blocking absolute-latency advisory; paired latency and provider matrix passed; zero blocking defects; verdict ready
+    Scope: real user workflows, installed CLI, provider-enabled lifecycle, first-task, mixed-scope, recovery, hosted boundary, and efficiency behavior
+
+    Command: bun run release:parity
+    Result: pass
+    Evidence: agentplane, core, recipes, internal pins, ACR example, README header, and release surfaces agree on 0.7.6
+    Scope: version and generated release metadata consistency
+
+    Command: GitHub Core CI run 31750633484
+    Result: pass
+    Evidence: exact head 8b5fe5e6789ec8a43e5c430c3132c78df03cc2e4; verify-real-e2e, verify-tests, verify-static, verify-contract, test-windows, package runtime, security, and PR verification all succeeded
+    Scope: clean Ubuntu and Windows hosted checks, including deterministic hosted-boundary fixtures
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131730-BHEAQT-qualify-and-publish-agentplane-0-7-6/.agentplane/tasks/202608131730-BHEAQT/blueprint/resolved-snapshot.json
+    - old_digest: 1899fc9e16ece1a5840f337f0c3b3222aac692041c82a0acb222673a31e94a1f
+    - current_digest: 1899fc9e16ece1a5840f337f0c3b3222aac692041c82a0acb222673a31e94a1f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608131730-BHEAQT
+
+    DecisionContextRef:
+    - operator_action: stop
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
@@ -708,6 +775,56 @@ BlueprintSnapshotRef:
 
 DecisionContextRef:
 - operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-13T23:25:39.628Z — VERIFY — ok
+
+By: TESTER
+
+Note: Exact candidate 8b5fe5e67 passed local, provider, and hosted release qualification.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:77b801a2249a30d49b4cc54c7efa46a6b160daada92d0eb56aa4ba92553aa06e, input_digest=sha256:f3efd5d0626350d4e864e8f3cf803ea80c5b77f861db1ab9727b5155941a3a73
+
+Details:
+
+Command: bun run release:prepublish
+Result: pass
+Evidence: release-ci-base 104/104 chunks; workflow coverage 50/50; significant coverage 204/204; release-critical 16/16; installed migration matrix 8/8
+Scope: exact-SHA build, package, migration, workflow, CLI, regression, coverage, compatibility, efficiency, and release-critical gates
+
+Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1 --subject 8b5fe5e6789ec8a43e5c430c3132c78df03cc2e4
+Result: pass
+Evidence: report .agentplane/reports/v0.7.1-qualification/2026-08-13T22-59-12-627Z/report.json; 20 scenarios executed; 19 passed; one non-blocking absolute-latency advisory; paired latency and provider matrix passed; zero blocking defects; verdict ready
+Scope: real user workflows, installed CLI, provider-enabled lifecycle, first-task, mixed-scope, recovery, hosted boundary, and efficiency behavior
+
+Command: bun run release:parity
+Result: pass
+Evidence: agentplane, core, recipes, internal pins, ACR example, README header, and release surfaces agree on 0.7.6
+Scope: version and generated release metadata consistency
+
+Command: GitHub Core CI run 31750633484
+Result: pass
+Evidence: exact head 8b5fe5e6789ec8a43e5c430c3132c78df03cc2e4; verify-real-e2e, verify-tests, verify-static, verify-contract, test-windows, package runtime, security, and PR verification all succeeded
+Scope: clean Ubuntu and Windows hosted checks, including deterministic hosted-boundary fixtures
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131730-BHEAQT-qualify-and-publish-agentplane-0-7-6/.agentplane/tasks/202608131730-BHEAQT/blueprint/resolved-snapshot.json
+- old_digest: 1899fc9e16ece1a5840f337f0c3b3222aac692041c82a0acb222673a31e94a1f
+- current_digest: 1899fc9e16ece1a5840f337f0c3b3222aac692041c82a0acb222673a31e94a1f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608131730-BHEAQT
+
+DecisionContextRef:
+- operator_action: stop
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
