@@ -4,7 +4,7 @@ title: "Archive resolved release incidents before 0.7.6"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ plan_approval:
   note: "Approved as the mandatory incident closeout discovered by the already-approved 0.7.6 release preflight."
 verification:
   state: "ok"
-  updated_at: "2026-08-13T17:49:22.146Z"
+  updated_at: "2026-08-13T18:07:50.705Z"
   updated_by: "TESTER"
-  note: "Exact d0135b104 verification passed; prior full-fast evidence remains applicable to unchanged policy/archive scope."
+  note: "Exact bdedc99ea source-evidence closeout passed all approved deterministic gates."
   attempts: 0
 quality_review:
   state: "blocked"
@@ -102,7 +102,8 @@ execution_contract:
     schema_version: 2
     scope_roots: []
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - ".agentplane"
       - "docs"
@@ -128,6 +129,9 @@ execution_contract:
       -
         id: "recorded-check-4"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -202,9 +206,8 @@ execution_contract:
       - "repository_effect:documentation"
       - "repository_effect:repository_write"
       - "task_outcome"
-commit:
-  hash: "4d9f3f3deb925e253f1fb6843b098f51da4388d4"
-  message: "🧹 KECD7J policy: archive resolved release incidents"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -240,8 +243,20 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Exact d0135b104 verification passed; prior full-fast evidence remains applicable to unchanged policy/archive scope."
+  -
+    type: "verify"
+    at: "2026-08-13T18:07:31.620Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "EVALUATOR blocked because the frozen packet lacked source task/hosted evidence and verification had used a narrower formatting command than approved. Added exact source evidence and ran bun run format:check successfully; rerun verification and evaluation."
+  -
+    type: "verify"
+    at: "2026-08-13T18:07:50.705Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Exact bdedc99ea source-evidence closeout passed all approved deterministic gates."
 doc_version: 3
-doc_updated_at: "2026-08-13T17:49:23.355Z"
+doc_updated_at: "2026-08-13T18:07:51.749Z"
 doc_updated_by: "CODER"
 description: "Review INC-20260810-01 and INC-20260811-01 against their merged fixes and current enforcement tests. If both failure classes are fixed and no active operator work remains, remove them from the active incidents registry and its installed asset mirror, append complete archived records with exact task, commit, test, and enforcement evidence to docs/developer/incident-archive.mdx, run policy routing and focused incident/regression checks, integrate the policy-only change, then unblock release task 202608131730-BHEAQT without changing its sequence or release scope."
 sections:
@@ -361,9 +376,92 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-13T18:07:31.620Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: EVALUATOR blocked because the frozen packet lacked source task/hosted evidence and verification had used a narrower formatting command than approved. Added exact source evidence and ran bun run format:check successfully; rerun verification and evaluation.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4, input_digest=sha256:99b5b9f2de41844d1f5fc590ff666f0e7bbddbce30db4ce7f979a0db2f27973b
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131733-KECD7J-archive-resolved-release-incidents-before-0-7-6/.agentplane/tasks/202608131733-KECD7J/blueprint/resolved-snapshot.json
+    - old_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+    - current_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608131733-KECD7J
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-13T18:07:50.705Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Exact bdedc99ea source-evidence closeout passed all approved deterministic gates.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4, input_digest=sha256:c663d9712cdd601ad23756bb07db409391bd6f165d7cce27905d03c8da26023d
+
+    Details:
+
+    Command: bun test packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/release/shared-worktree-dependency-manifest.test.ts
+    Result: pass
+    Evidence: 37 tests passed, 0 failed, across 3 focused files.
+    Scope: declared-check parser parity, direct verification, and RF-04 shared-worktree dependency discovery.
+
+    Command: bun run format:check
+    Result: pass
+    Evidence: repository-wide Prettier check completed with all matched files formatted.
+    Scope: exact approved formatting gate for the full repository.
+
+    Command: node .agentplane/policy/check-routing.mjs && bun run release:incidents:check
+    Result: pass
+    Evidence: policy routing OK; release incident gate reports no active entries.
+    Scope: canonical policy mirrors, routing budget, and release incident blocker removal.
+
+    Command: inspect .agentplane/tasks/202608111922-W4ZM7J, .agentplane/tasks/202608102115-7XGP97, .agentplane/tasks/202608112259-T3ZDDM and GitHub PRs 4825, 4824, 4830
+    Result: pass
+    Evidence: .agentplane/tasks/202608131733-KECD7J/evidence/incident-closeout-source-evidence.md freezes DONE states, exact implementation/merge SHA values, successful hosted checks, final evaluator pass, and the 18-pass/1-advisory/0-blocking qualification disposition.
+    Scope: independent traceability for both incident fixes, the optimized qualification, and absence of remaining operator work.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131733-KECD7J-archive-resolved-release-incidents-before-0-7-6/.agentplane/tasks/202608131733-KECD7J/blueprint/resolved-snapshot.json
+    - old_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+    - current_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608131733-KECD7J
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the archive commit through a new policy task, restoring both active registry entries and removing their archive records together; rerun focused tests, routing, mirror parity, and the release incident gate."
-  Findings: ""
+  Findings: |-
+    - Observation: Incident closeout quality review lacked frozen source and exact format evidence.
+      Impact: Archival could not be independently audited from the evaluator packet.
+      Resolution: Freeze the task, PR, merge, hosted, qualification, advisory disposition, and exact full-format evidence before reevaluation.
 extensions:
   workflow_route_baseline:
     start_head_sha: "bc0afaea7a7be909fc93374a195c73da3f697d85"
@@ -496,6 +594,86 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-13T18:07:31.620Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: EVALUATOR blocked because the frozen packet lacked source task/hosted evidence and verification had used a narrower formatting command than approved. Added exact source evidence and ran bun run format:check successfully; rerun verification and evaluation.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4, input_digest=sha256:99b5b9f2de41844d1f5fc590ff666f0e7bbddbce30db4ce7f979a0db2f27973b
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131733-KECD7J-archive-resolved-release-incidents-before-0-7-6/.agentplane/tasks/202608131733-KECD7J/blueprint/resolved-snapshot.json
+- old_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+- current_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608131733-KECD7J
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-13T18:07:50.705Z — VERIFY — ok
+
+By: TESTER
+
+Note: Exact bdedc99ea source-evidence closeout passed all approved deterministic gates.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4, input_digest=sha256:c663d9712cdd601ad23756bb07db409391bd6f165d7cce27905d03c8da26023d
+
+Details:
+
+Command: bun test packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/release/shared-worktree-dependency-manifest.test.ts
+Result: pass
+Evidence: 37 tests passed, 0 failed, across 3 focused files.
+Scope: declared-check parser parity, direct verification, and RF-04 shared-worktree dependency discovery.
+
+Command: bun run format:check
+Result: pass
+Evidence: repository-wide Prettier check completed with all matched files formatted.
+Scope: exact approved formatting gate for the full repository.
+
+Command: node .agentplane/policy/check-routing.mjs && bun run release:incidents:check
+Result: pass
+Evidence: policy routing OK; release incident gate reports no active entries.
+Scope: canonical policy mirrors, routing budget, and release incident blocker removal.
+
+Command: inspect .agentplane/tasks/202608111922-W4ZM7J, .agentplane/tasks/202608102115-7XGP97, .agentplane/tasks/202608112259-T3ZDDM and GitHub PRs 4825, 4824, 4830
+Result: pass
+Evidence: .agentplane/tasks/202608131733-KECD7J/evidence/incident-closeout-source-evidence.md freezes DONE states, exact implementation/merge SHA values, successful hosted checks, final evaluator pass, and the 18-pass/1-advisory/0-blocking qualification disposition.
+Scope: independent traceability for both incident fixes, the optimized qualification, and absence of remaining operator work.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131733-KECD7J-archive-resolved-release-incidents-before-0-7-6/.agentplane/tasks/202608131733-KECD7J/blueprint/resolved-snapshot.json
+- old_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+- current_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608131733-KECD7J
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -503,3 +681,7 @@ DecisionContextRef:
 Revert the archive commit through a new policy task, restoring both active registry entries and removing their archive records together; rerun focused tests, routing, mirror parity, and the release incident gate.
 
 ## Findings
+
+- Observation: Incident closeout quality review lacked frozen source and exact format evidence.
+  Impact: Archival could not be independently audited from the evaluator packet.
+  Resolution: Freeze the task, PR, merge, hosted, qualification, advisory disposition, and exact full-format evidence before reevaluation.

@@ -16,12 +16,7 @@ Review INC-20260810-01 and INC-20260811-01 against their merged fixes and curren
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Exact d0135b104 verification passed; prior full-fast evidence remains applicable to unchanged
-policy/archive scope.
-```
+- Note: Exact bdedc99ea source-evidence closeout passed all approved deterministic gates.
 - Canonical workflow state lives in the task README.
 
 <details>
