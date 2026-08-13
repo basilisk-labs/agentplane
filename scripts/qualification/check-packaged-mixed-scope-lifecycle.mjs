@@ -687,7 +687,14 @@ function runFixture({ run, cli, packages, tempRoot }) {
   const finalTask = runInstalledJson(run, cli, repo, ["task", "show", taskId], "final task show");
   const finalHead = git(run, repo, ["rev-parse", "HEAD"]);
   const commitCountAfter = Number(git(run, repo, ["rev-list", "--count", "HEAD"]));
-  const taskCommit = String(finalTask.commit ?? "");
+  const taskCommit =
+    typeof finalTask.commit === "string"
+      ? finalTask.commit
+      : typeof finalTask.commit?.sha === "string"
+        ? finalTask.commit.sha
+        : typeof finalTask.commit?.hash === "string"
+          ? finalTask.commit.hash
+          : "";
   try {
     git(run, repo, ["cat-file", "-e", `${taskCommit}^{commit}`]);
   } catch (error) {
