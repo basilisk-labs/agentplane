@@ -4,7 +4,7 @@ title: "Archive resolved release incidents before 0.7.6"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -31,33 +31,37 @@ verification:
   note: "Primary digest-bound task, quality, hosted, qualification, and operator evidence frozen for EVALUATOR."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-13T18:11:11.875Z"
+  updated_at: "2026-08-13T18:14:25.774Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
   evaluated_sha: "d0135b104218422ca56f064389bb3d56f5e3bf76"
   blueprint_digest: "8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece"
   evidence_refs:
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181034780-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181034780-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/1dd286c7f4e0e5f2d91c8eeb42ef7a49ccde9d20ee20762543bc3f67deceb761.md"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181034780-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181034780-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181034780-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181034780-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181345686-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181345686-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/6e56875b6b9e2f06ea3f9af7a5d7ff98743792b33d8af3d4fb166910d48e57c2.md"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181345686-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181345686-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181345686-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181345686-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608131733-KECD7J/README.md"
     - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/6f82337e880eb1aa5e4d986d2271cb945232b8f40280edd568973d2b80cdcf94.patch"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/fe498c5057f12b5f5224198b29269b6e77fcff275cdb9daf97fe9b890bdcd8a7.json"
-    - ".agentplane/tasks/202608131733-KECD7J/verification/20260813181018343-045c82dad89e2ac5.json"
-    - ".agentplane/tasks/202608131733-KECD7J/evidence/incident-closeout-source-evidence.md"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/8a47ca7b5f0f89950b2c4fac78c5c9d7bde2983e41f2e0cc1b52dba8de6cd557.json"
+    - ".agentplane/tasks/202608131733-KECD7J/verification/20260813181328361-38dd86355c6eecb5.json"
+    - ".agentplane/tasks/202608131733-KECD7J/evidence/hosted-checks.json"
+    - ".agentplane/tasks/202608131733-KECD7J/evidence/operator-state.json"
+    - ".agentplane/tasks/202608131733-KECD7J/evidence/qualification-outcome.json"
+    - ".agentplane/tasks/202608131733-KECD7J/evidence/source-task-readme-digests.txt"
+    - ".agentplane/tasks/202608131733-KECD7J/evidence/t3zddm-final-quality-report.json"
+    - ".agentplane/tasks/202608131733-KECD7J/evidence/w4zm7j-final-quality-report.json"
     - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/9725fea52c72eb583a16956bddbcdee3dffdb127944db9dffeef4bb507cabe04.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/dod.docs.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The frozen runtime evidence summarizes the source tasks and hosted outcomes but does not include independently reviewable records from W4ZM7J, 7XGP97, or T3ZDDM that prove their final quality, hosted checks, qualification results, and absence of remaining operator work."
-  recovery_reason: "deterministic_evidence_gap"
+    - "The INC-20260811-01 archived record names T3ZDDM as required qualification hardening but omits its exact implementation and merged commit identities, so the archive does not contain the complete exact task-and-commit evidence required by the approved contract."
 execution_route:
   frozen: true
   reason_codes:

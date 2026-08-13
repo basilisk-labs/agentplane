@@ -1,0 +1,122 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun test packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/release/shared-worktree-dependency-manifest.test.ts",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "documentation",
+        "repository_write"
+      ],
+      "external_effects": [],
+      "components": [],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:documentation",
+        "repository_effect:repository_write",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "documentation",
+        "repository_write"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        ".agentplane",
+        "docs",
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        ".agentplane/policy/incidents.md",
+        "docs/developer/incident-archive.mdx",
+        "packages/agentplane/assets/policy/incidents.md"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "docs_contract",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core"
+    ],
+    "escalation_reasons": [],
+    "requires_full_regression": false,
+    "requires_real_e2e": false,
+    "digest": "sha256:188d527d8a3bb0f884efb575a5a65e1b59c501a6414528e3200f2771f4c34747"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-13T18:13:28.361Z",
+    "updated_by": "TESTER",
+    "note": "Primary digest-bound task, quality, hosted, qualification, and operator evidence frozen for EVALUATOR."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608131733-KECD7J/verification/20260813181328361-38dd86355c6eecb5.json",
+      "sha256": "sha256:46b960dd712d7a8949da1b54a164af2fac88be46928bcf81770f33605e9b1ad6"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [
+    {
+      "path": ".agentplane/tasks/202608131733-KECD7J/evidence/hosted-checks.json",
+      "sha256": "sha256:6318d60bd967bb2214f9481dcaffccfbf05ba3f65e661827b94db91931cdee22"
+    },
+    {
+      "path": ".agentplane/tasks/202608131733-KECD7J/evidence/operator-state.json",
+      "sha256": "sha256:bdb633afecab8c27b034d179079869ccb00ee6b48d6595a83b346ed98d616a2f"
+    },
+    {
+      "path": ".agentplane/tasks/202608131733-KECD7J/evidence/qualification-outcome.json",
+      "sha256": "sha256:2dbf451681cf32d4661d5afc74c86375c180bddb98e56a4a65ed8f8f79d44c95"
+    },
+    {
+      "path": ".agentplane/tasks/202608131733-KECD7J/evidence/source-task-readme-digests.txt",
+      "sha256": "sha256:c3ac7013fd9a6f6a9f0ea4e28f806b10e3a4a9473a55139e15cc76744d1ede41"
+    },
+    {
+      "path": ".agentplane/tasks/202608131733-KECD7J/evidence/t3zddm-final-quality-report.json",
+      "sha256": "sha256:c11d152fe01adfadc56881faeb0ed4fb32e1b8b6ca5e5ef355a5d9ef5ff1c03e"
+    },
+    {
+      "path": ".agentplane/tasks/202608131733-KECD7J/evidence/w4zm7j-final-quality-report.json",
+      "sha256": "sha256:72beb9685f925d8266cf91a6712b973b2c7f49cfecc9a49c1b150fa3483c4a4e"
+    }
+  ],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
