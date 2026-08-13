@@ -1,0 +1,102 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun test packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/release/shared-worktree-dependency-manifest.test.ts",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "documentation",
+        "repository_write"
+      ],
+      "external_effects": [],
+      "components": [],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:documentation",
+        "repository_effect:repository_write",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "documentation",
+        "repository_write"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        ".agentplane",
+        "docs",
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        ".agentplane/policy/incidents.md",
+        "docs/developer/incident-archive.mdx",
+        "packages/agentplane/assets/policy/incidents.md"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "docs_contract",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core"
+    ],
+    "escalation_reasons": [],
+    "requires_full_regression": false,
+    "requires_real_e2e": false,
+    "digest": "sha256:188d527d8a3bb0f884efb575a5a65e1b59c501a6414528e3200f2771f4c34747"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-13T18:10:18.343Z",
+    "updated_by": "TESTER",
+    "note": "Exact incident closeout verification with an explicit frozen runtime-evidence reference."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608131733-KECD7J/verification/20260813181018343-045c82dad89e2ac5.json",
+      "sha256": "sha256:76786911cf9272e5d9342f2f0c97b76d3a640511bb5be1e83652e08c9f151588"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [
+    {
+      "path": ".agentplane/tasks/202608131733-KECD7J/evidence/incident-closeout-source-evidence.md",
+      "sha256": "sha256:2d9891dce5e4f544b866abf29666e9923a80e878c9ce59581c3d4d9f276c7721"
+    }
+  ],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

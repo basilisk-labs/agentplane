@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "task_id": "202608112259-T3ZDDM",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-13T15:15:44.902Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "d3cc2ce785dde5e9e93c221c3196768b32167326",
+  "findings": [
+    "All ten Core CI setup-bun uses now reference the exact commit behind v2; workflow lint, focused CI tests, CodeQL, and exact-SHA full hosted regression pass."
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [],
+  "source_path": ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-151544510-recovery-context/quality-report.json",
+  "source_sha256": "sha256:43308f70db8e15028753540b8badf3a98bd0fc061207d19541e6dcf985619ea4"
+}

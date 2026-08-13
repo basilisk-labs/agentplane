@@ -1,0 +1,126 @@
+{
+  "details": "Command: verify source task identities\nResult: pass\nEvidence: .agentplane/tasks/202608131733-KECD7J/evidence/source-task-readme-digests.txt\nScope: digest-bound canonical README/status records for W4ZM7J, 7XGP97, and T3ZDDM.\n\nCommand: inspect final semantic quality\nResult: pass\nEvidence: .agentplane/tasks/202608131733-KECD7J/evidence/w4zm7j-final-quality-report.json | .agentplane/tasks/202608131733-KECD7J/evidence/t3zddm-final-quality-report.json\nScope: final quality verdicts for the declared-check fix and qualification optimization.\n\nCommand: inspect GitHub PR and Core CI readback\nResult: pass\nEvidence: .agentplane/tasks/202608131733-KECD7J/evidence/hosted-checks.json\nScope: exact merged PRs, merge commits, successful hosted gates, and hosted close.\n\nCommand: inspect provider qualification disposition\nResult: pass\nEvidence: .agentplane/tasks/202608131733-KECD7J/evidence/qualification-outcome.json\nScope: 18 pass, one superseded diagnostic advisory, zero blockers, provider improvements, and final quality identity.\n\nCommand: inspect remaining lifecycle work and release incident gate\nResult: pass\nEvidence: .agentplane/tasks/202608131733-KECD7J/evidence/operator-state.json\nScope: all three source tasks DONE, no remaining operator action, and zero active release incidents.\n\nCommand: bun test focused-regressions && bun run format:check && policy/incident gates\nResult: pass\nEvidence: 37 focused tests passed; repository-wide format, policy routing, and zero-active-incident gate passed.\nScope: current implementation and approved deterministic closeout checks.",
+  "digest": "sha256:38dd86355c6eecb5696a49fe256e7b67b990a0ae90b6fc62207d657db907a209",
+  "implementation_sha": "d0135b104218422ca56f064389bb3d56f5e3bf76",
+  "input": {
+    "context": {
+      "digest": "sha256:a091ea549c57faa46dc355a05133574fc1901a9d898c1a95ca13d006cf6b5b98",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:9ec1d5a1bac66daf544e0f02bf2e3d6cf280eb3c7030d7a7dabfe141b6e477a9",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:9462d31c12cc3beec7ee5216f6cca87e5145bc047f9cd8caa42eafa26bb6e4ab",
+      "digest": "sha256:d7c8c6a1fd3603953149ab09a07b3b25b87c5aff8f081eb1da75939020230d58",
+      "references": [
+        {
+          "digest": "sha256:6318d60bd967bb2214f9481dcaffccfbf05ba3f65e661827b94db91931cdee22",
+          "fragment": null,
+          "path": ".agentplane/tasks/202608131733-KECD7J/evidence/hosted-checks.json",
+          "reference": ".agentplane/tasks/202608131733-KECD7J/evidence/hosted-checks.json",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:bdb633afecab8c27b034d179079869ccb00ee6b48d6595a83b346ed98d616a2f",
+          "fragment": null,
+          "path": ".agentplane/tasks/202608131733-KECD7J/evidence/operator-state.json",
+          "reference": ".agentplane/tasks/202608131733-KECD7J/evidence/operator-state.json",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:2dbf451681cf32d4661d5afc74c86375c180bddb98e56a4a65ed8f8f79d44c95",
+          "fragment": null,
+          "path": ".agentplane/tasks/202608131733-KECD7J/evidence/qualification-outcome.json",
+          "reference": ".agentplane/tasks/202608131733-KECD7J/evidence/qualification-outcome.json",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:c3ac7013fd9a6f6a9f0ea4e28f806b10e3a4a9473a55139e15cc76744d1ede41",
+          "fragment": null,
+          "path": ".agentplane/tasks/202608131733-KECD7J/evidence/source-task-readme-digests.txt",
+          "reference": ".agentplane/tasks/202608131733-KECD7J/evidence/source-task-readme-digests.txt",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:c11d152fe01adfadc56881faeb0ed4fb32e1b8b6ca5e5ef355a5d9ef5ff1c03e",
+          "fragment": null,
+          "path": ".agentplane/tasks/202608131733-KECD7J/evidence/t3zddm-final-quality-report.json",
+          "reference": ".agentplane/tasks/202608131733-KECD7J/evidence/t3zddm-final-quality-report.json",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:72beb9685f925d8266cf91a6712b973b2c7f49cfecc9a49c1b150fa3483c4a4e",
+          "fragment": null,
+          "path": ".agentplane/tasks/202608131733-KECD7J/evidence/w4zm7j-final-quality-report.json",
+          "reference": ".agentplane/tasks/202608131733-KECD7J/evidence/w4zm7j-final-quality-report.json",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "bc0afaea7a7be909fc93374a195c73da3f697d85",
+      "digest": "sha256:f09945e6c68723129a5565775e905d5e0a8c5a00379e5f70251aa6c9f93e6add",
+      "strategy": "branch_diff",
+      "target_sha": "d0135b104218422ca56f064389bb3d56f5e3bf76"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:188d527d8a3bb0f884efb575a5a65e1b59c501a6414528e3200f2771f4c34747",
+    "verify_steps_digest": "sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4"
+  },
+  "kind": "task_verification_record",
+  "note": "Primary digest-bound task, quality, hosted, qualification, and operator evidence frozen for EVALUATOR.",
+  "recorded_at": "2026-08-13T18:13:28.361Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run bun test packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/release/shared-worktree-dependency-manifest.test.ts. Expected: all tests pass, accepted checks use the execution parser, and RF-04 shared-worktree dependency discovery remains valid.\n2. Inspect W4ZM7J, 7XGP97, T3ZDDM and their merged evidence. Expected: both incident fixes are on main, quality/hosted evidence passed, and no unresolved engineering or operator action remains for either failure class.\n3. Inspect docs/developer/incident-archive.mdx. Expected: both IDs appear exactly once as complete archived records with final evidence, enforcement, archived_by, and archive_reason.\n4. Inspect .agentplane/policy/incidents.md and packages/agentplane/assets/policy/incidents.md. Expected: both active entries are absent, the two mirrors agree, and no unrelated incident text changes.\n5. Run bun run format:check, node .agentplane/policy/check-routing.mjs, and bun run release:incidents:check. Expected: formatting and policy graph pass, active incident count is zero, and 0.7.6 release planning is unblocked.\n6. Inspect the PR, hosted checks, merged main, Hosted Close, cleanup, and git status. Expected: exact policy-only diff is merged through the protected lane, task is DONE, its worktree/branch are cleaned, and no unintended tracked files remain.",
+  "scope_digest": "sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4",
+  "task_id": "202608131733-KECD7J",
+  "verification_command": "agentplane verify 202608131733-KECD7J --ok --by TESTER",
+  "verifier": "TESTER"
+}

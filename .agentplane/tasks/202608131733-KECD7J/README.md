@@ -4,7 +4,7 @@ title: "Archive resolved release incidents before 0.7.6"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -26,36 +26,37 @@ plan_approval:
   note: "Approved as the mandatory incident closeout discovered by the already-approved 0.7.6 release preflight."
 verification:
   state: "ok"
-  updated_at: "2026-08-13T18:10:18.343Z"
+  updated_at: "2026-08-13T18:13:28.361Z"
   updated_by: "TESTER"
-  note: "Exact incident closeout verification with an explicit frozen runtime-evidence reference."
+  note: "Primary digest-bound task, quality, hosted, qualification, and operator evidence frozen for EVALUATOR."
   attempts: 0
 quality_review:
   state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-13T18:09:09.868Z"
+  updated_at: "2026-08-13T18:11:11.875Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned blocked with 1 typed finding(s)."
   evaluated_sha: "d0135b104218422ca56f064389bb3d56f5e3bf76"
   blueprint_digest: "8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece"
   evidence_refs:
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-180823425-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-180823425-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/5bf5696884c530a4bcef5fcf6188b986bc5e7768b1cda5c42183dcfb9c307a77.md"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-180823425-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-180823425-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-180823425-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-180823425-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181034780-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181034780-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/1dd286c7f4e0e5f2d91c8eeb42ef7a49ccde9d20ee20762543bc3f67deceb761.md"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181034780-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181034780-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181034780-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181034780-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608131733-KECD7J/README.md"
     - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/6f82337e880eb1aa5e4d986d2271cb945232b8f40280edd568973d2b80cdcf94.patch"
-    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/ed5cfa996ecf2fbe3fa0c87022cbcc03f14ce2fe488222eede514d6bf4b67b26.json"
-    - ".agentplane/tasks/202608131733-KECD7J/verification/20260813180750705-d3eed6a426db875c.json"
+    - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/fe498c5057f12b5f5224198b29269b6e77fcff275cdb9daf97fe9b890bdcd8a7.json"
+    - ".agentplane/tasks/202608131733-KECD7J/verification/20260813181018343-045c82dad89e2ac5.json"
+    - ".agentplane/tasks/202608131733-KECD7J/evidence/incident-closeout-source-evidence.md"
     - ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/9725fea52c72eb583a16956bddbcdee3dffdb127944db9dffeef4bb507cabe04.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/dod.docs.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The frozen packet still does not contain independently reviewable source-task, hosted-check, qualification, or operator-state evidence for W4ZM7J, 7XGP97, and T3ZDDM."
+    - "The frozen runtime evidence summarizes the source tasks and hosted outcomes but does not include independently reviewable records from W4ZM7J, 7XGP97, or T3ZDDM that prove their final quality, hosted checks, qualification results, and absence of remaining operator work."
   recovery_reason: "deterministic_evidence_gap"
 execution_route:
   frozen: true
@@ -128,6 +129,12 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
         result: "pass"
       -
         id: "verification-record"
@@ -261,8 +268,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Exact incident closeout verification with an explicit frozen runtime-evidence reference."
+  -
+    type: "verify"
+    at: "2026-08-13T18:13:28.361Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Primary digest-bound task, quality, hosted, qualification, and operator evidence frozen for EVALUATOR."
 doc_version: 3
-doc_updated_at: "2026-08-13T18:10:19.812Z"
+doc_updated_at: "2026-08-13T18:13:29.861Z"
 doc_updated_by: "CODER"
 description: "Review INC-20260810-01 and INC-20260811-01 against their merged fixes and current enforcement tests. If both failure classes are fixed and no active operator work remains, remove them from the active incidents registry and its installed asset mirror, append complete archived records with exact task, commit, test, and enforcement evidence to docs/developer/incident-archive.mdx, run policy routing and focused incident/regression checks, integrate the policy-only change, then unblock release task 202608131730-BHEAQT without changing its sequence or release scope."
 sections:
@@ -492,6 +505,66 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608131733-KECD7J/evidence/incident-closeout-source-evidence.md
     Scope: frozen independent traceability for both incident fixes, the optimized qualification, and absence of remaining operator work.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131733-KECD7J-archive-resolved-release-incidents-before-0-7-6/.agentplane/tasks/202608131733-KECD7J/blueprint/resolved-snapshot.json
+    - old_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+    - current_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608131733-KECD7J
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608131733-KECD7J
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-13T18:13:28.361Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Primary digest-bound task, quality, hosted, qualification, and operator evidence frozen for EVALUATOR.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4, input_digest=sha256:9ec1d5a1bac66daf544e0f02bf2e3d6cf280eb3c7030d7a7dabfe141b6e477a9
+
+    Details:
+
+    Command: verify source task identities
+    Result: pass
+    Evidence: .agentplane/tasks/202608131733-KECD7J/evidence/source-task-readme-digests.txt
+    Scope: digest-bound canonical README/status records for W4ZM7J, 7XGP97, and T3ZDDM.
+
+    Command: inspect final semantic quality
+    Result: pass
+    Evidence: .agentplane/tasks/202608131733-KECD7J/evidence/w4zm7j-final-quality-report.json | .agentplane/tasks/202608131733-KECD7J/evidence/t3zddm-final-quality-report.json
+    Scope: final quality verdicts for the declared-check fix and qualification optimization.
+
+    Command: inspect GitHub PR and Core CI readback
+    Result: pass
+    Evidence: .agentplane/tasks/202608131733-KECD7J/evidence/hosted-checks.json
+    Scope: exact merged PRs, merge commits, successful hosted gates, and hosted close.
+
+    Command: inspect provider qualification disposition
+    Result: pass
+    Evidence: .agentplane/tasks/202608131733-KECD7J/evidence/qualification-outcome.json
+    Scope: 18 pass, one superseded diagnostic advisory, zero blockers, provider improvements, and final quality identity.
+
+    Command: inspect remaining lifecycle work and release incident gate
+    Result: pass
+    Evidence: .agentplane/tasks/202608131733-KECD7J/evidence/operator-state.json
+    Scope: all three source tasks DONE, no remaining operator action, and zero active release incidents.
+
+    Command: bun test focused-regressions && bun run format:check && policy/incident gates
+    Result: pass
+    Evidence: 37 focused tests passed; repository-wide format, policy routing, and zero-active-incident gate passed.
+    Scope: current implementation and approved deterministic closeout checks.
 
     BlueprintSnapshotRef:
     - state: current
@@ -760,6 +833,66 @@ Command: inspect source task, PR, merge, hosted, qualification, and operator-sta
 Result: pass
 Evidence: .agentplane/tasks/202608131733-KECD7J/evidence/incident-closeout-source-evidence.md
 Scope: frozen independent traceability for both incident fixes, the optimized qualification, and absence of remaining operator work.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131733-KECD7J-archive-resolved-release-incidents-before-0-7-6/.agentplane/tasks/202608131733-KECD7J/blueprint/resolved-snapshot.json
+- old_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+- current_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608131733-KECD7J
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608131733-KECD7J
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-13T18:13:28.361Z — VERIFY — ok
+
+By: TESTER
+
+Note: Primary digest-bound task, quality, hosted, qualification, and operator evidence frozen for EVALUATOR.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4, input_digest=sha256:9ec1d5a1bac66daf544e0f02bf2e3d6cf280eb3c7030d7a7dabfe141b6e477a9
+
+Details:
+
+Command: verify source task identities
+Result: pass
+Evidence: .agentplane/tasks/202608131733-KECD7J/evidence/source-task-readme-digests.txt
+Scope: digest-bound canonical README/status records for W4ZM7J, 7XGP97, and T3ZDDM.
+
+Command: inspect final semantic quality
+Result: pass
+Evidence: .agentplane/tasks/202608131733-KECD7J/evidence/w4zm7j-final-quality-report.json | .agentplane/tasks/202608131733-KECD7J/evidence/t3zddm-final-quality-report.json
+Scope: final quality verdicts for the declared-check fix and qualification optimization.
+
+Command: inspect GitHub PR and Core CI readback
+Result: pass
+Evidence: .agentplane/tasks/202608131733-KECD7J/evidence/hosted-checks.json
+Scope: exact merged PRs, merge commits, successful hosted gates, and hosted close.
+
+Command: inspect provider qualification disposition
+Result: pass
+Evidence: .agentplane/tasks/202608131733-KECD7J/evidence/qualification-outcome.json
+Scope: 18 pass, one superseded diagnostic advisory, zero blockers, provider improvements, and final quality identity.
+
+Command: inspect remaining lifecycle work and release incident gate
+Result: pass
+Evidence: .agentplane/tasks/202608131733-KECD7J/evidence/operator-state.json
+Scope: all three source tasks DONE, no remaining operator action, and zero active release incidents.
+
+Command: bun test focused-regressions && bun run format:check && policy/incident gates
+Result: pass
+Evidence: 37 focused tests passed; repository-wide format, policy routing, and zero-active-incident gate passed.
+Scope: current implementation and approved deterministic closeout checks.
 
 BlueprintSnapshotRef:
 - state: current

@@ -1,0 +1,40 @@
+{
+  "captured_at": "2026-08-13T18:12:00.000Z",
+  "repository": "basilisk-labs/agentplane",
+  "pull_requests": [
+    {
+      "number": 4824,
+      "task_id": "202608102115-7XGP97",
+      "state": "MERGED",
+      "merge_commit": "95308cce1419451193d18ce55c4b1e18a3a3ace5",
+      "successful_checks": ["PR verification", "verify-static", "verify-tests", "Package runtime", "test-windows", "verify-security", "CodeQL", "hosted-close"]
+    },
+    {
+      "number": 4825,
+      "task_id": "202608111922-W4ZM7J",
+      "state": "MERGED",
+      "merge_commit": "206b349e8dd08051f695d68f8558db94b2e23cb5",
+      "successful_checks": ["PR verification", "verify-static", "verify-tests", "test-windows", "verify-security", "CodeQL", "hosted-close"]
+    },
+    {
+      "number": 4830,
+      "task_id": "202608112259-T3ZDDM",
+      "state": "MERGED",
+      "merge_commit": "89dfabe89424ae6b69911a7174b9876f2713f24e",
+      "successful_checks": ["PR verification", "verify-routed", "hosted-close"]
+    }
+  ],
+  "core_ci": [
+    {
+      "run_id": 31715693508,
+      "head_sha": "89dfabe89424ae6b69911a7174b9876f2713f24e",
+      "conclusion": "success"
+    },
+    {
+      "run_id": 31714796502,
+      "head_sha": "652753c17170fe98b58615e3f8e4d07abaaa3446",
+      "conclusion": "success",
+      "purpose": "closure evidence reuse"
+    }
+  ]
+}

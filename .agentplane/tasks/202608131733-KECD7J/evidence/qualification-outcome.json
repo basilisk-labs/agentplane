@@ -1,0 +1,27 @@
+{
+  "task_id": "202608112259-T3ZDDM",
+  "implementation_sha": "010baa075cf40e400747d255140f6f03a04032eb",
+  "source_report": ".agentplane/reports/T3ZDDM-010baa0-final/report.json",
+  "release_ready": true,
+  "local_ready": true,
+  "passed": 18,
+  "advisory": 1,
+  "blocking": 0,
+  "advisory_disposition": {
+    "id": "absolute-cli-latency-threshold",
+    "reason": "diagnostic-only absolute threshold",
+    "superseded_by": "passing matched-baseline CLI latency gate"
+  },
+  "provider": {
+    "passed": true,
+    "token_reduction_percent": 54.91,
+    "verified_success_before": 8,
+    "verified_success_after": 19,
+    "scope_violations_before": 17,
+    "scope_violations_after": 5,
+    "approval_checks_preserved": true
+  },
+  "final_quality_report": ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-151544510-recovery-context/quality-report.json",
+  "final_quality_report_sha256": "sha256:43308f70db8e15028753540b8badf3a98bd0fc061207d19541e6dcf985619ea4",
+  "final_quality_verdict": "pass"
+}
