@@ -27,7 +27,18 @@ Add a mandatory black-box installed-package E2E scenario to the AgentPlane relea
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .github/workflows/ci.yml                           |   2 +-
+ package.json                                       |   1 +
+ .../commands/release/ci-workflow-contract.test.ts  |   4 +-
+ .../shared/workflow-step-fingerprint.test.ts       |  14 +
+ .../commands/shared/workflow-step-fingerprint.ts   |   1 +
+ .../commands/shared/workflow-step-policy-scope.ts  |  21 +-
+ scripts/README.md                                  | 120 +--
+ .../check-packaged-mixed-scope-lifecycle.mjs       | 816 +++++++++++++++++++++
+ .../qualification/release-qualification.test.mjs   |  95 +++
+ .../run-v0.7.1-release-qualification.mjs           |   1 +
+ .../v0.7.1-release-qualification.json              |  21 +
+ 11 files changed, 1031 insertions(+), 65 deletions(-)
 ```
 
 </details>
