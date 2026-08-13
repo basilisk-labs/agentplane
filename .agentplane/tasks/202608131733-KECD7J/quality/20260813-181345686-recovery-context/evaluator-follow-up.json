@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608131733-KECD7J-83faf25443419f192505ff4e",
+  "task_id": "202608131733-KECD7J",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Update only the INC-20260811-01 archived record to include the frozen exact T3ZDDM implementation and merged commit identities, then rerun the assigned archive, formatting, routing, and incident checks.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The INC-20260811-01 archived record names T3ZDDM as required qualification hardening but omits its exact implementation and merged commit identities, so the archive does not contain the complete exact task-and-commit evidence required by the approved contract.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/6f82337e880eb1aa5e4d986d2271cb945232b8f40280edd568973d2b80cdcf94.patch",
+          "sha256": "sha256:6f82337e880eb1aa5e4d986d2271cb945232b8f40280edd568973d2b80cdcf94",
+          "lines": "+... release-qualification hardening task `202608112259-T3ZDDM`; current-main ...",
+          "section": "docs/developer/incident-archive.mdx"
+        },
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/evidence/qualification-outcome.json",
+          "sha256": "sha256:2dbf451681cf32d4661d5afc74c86375c180bddb98e56a4a65ed8f8f79d44c95",
+          "lines": "\"implementation_sha\": \"010baa075cf40e400747d255140f6f03a04032eb\""
+        },
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/evidence/hosted-checks.json",
+          "sha256": "sha256:6318d60bd967bb2214f9481dcaffccfbf05ba3f65e661827b94db91931cdee22",
+          "lines": "T3ZDDM merge_commit: 89dfabe89424ae6b69911a7174b9876f2713f24e",
+          "section": "pull_requests"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608131733-KECD7J/quality/20260813-181345686-recovery-context/evaluator-result.json"
+}

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608131733-KECD7J",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-13T18:14:25.774Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "d0135b104218422ca56f064389bb3d56f5e3bf76",
+  "blueprint_digest": "8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece",
+  "findings": [
+    "The INC-20260811-01 archived record names T3ZDDM as required qualification hardening but omits its exact implementation and merged commit identities, so the archive does not contain the complete exact task-and-commit evidence required by the approved contract."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/6f82337e880eb1aa5e4d986d2271cb945232b8f40280edd568973d2b80cdcf94.patch",
+    ".agentplane/tasks/202608131733-KECD7J/evidence/qualification-outcome.json",
+    ".agentplane/tasks/202608131733-KECD7J/evidence/hosted-checks.json"
+  ],
+  "missing_tests": [
+    "Add or extend the incident archive contract check so every task cited as a fix or qualification dependency has its exact implementation and/or merged commit recorded in the archived entry."
+  ],
+  "hidden_assumptions": [
+    "The archive assumes that naming T3ZDDM and summarizing its qualification outcome is equivalent to preserving its exact commit evidence."
+  ],
+  "residual_risks": [
+    "Update only the INC-20260811-01 archived record to include the frozen exact T3ZDDM implementation and merged commit identities, then rerun the assigned archive, formatting, routing, and incident checks."
+  ]
+}
