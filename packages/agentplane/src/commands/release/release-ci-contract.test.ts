@@ -125,6 +125,8 @@ describe("release CI contract", () => {
     expect(localCi).toContain("timeout: options.timeoutMs");
     expect(localCi).toContain('timeoutLabel: "Vitest suite"');
     expect(localCi).toContain('args: ["scripts/checks/run-local-ci-group.mjs", id]');
+    expect(localCi).toContain("switch (executionPlan.route)");
+    expect(localCi).toContain('case "full-fast":');
     expect(localCiGroup).toContain(
       '"packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"',
     );

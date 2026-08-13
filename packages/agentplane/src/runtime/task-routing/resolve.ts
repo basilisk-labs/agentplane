@@ -508,6 +508,10 @@ export function reconcileTaskExecutionContract(opts: {
     ...unauthorizedExternalEffects.map((effect) => `observed_external_effect_${effect}`),
   ];
   const reason_codes = uniqueSorted([...opts.contract.reason_codes, ...escalationReasons]);
+  const observedChangedPaths = uniqueSorted([
+    ...opts.contract.observed.changed_paths,
+    ...changed_paths,
+  ]);
   const contract: TaskExecutionContract = {
     ...opts.contract,
     selected_mode,
@@ -524,7 +528,7 @@ export function reconcileTaskExecutionContract(opts: {
       contract: verificationContract({
         declaration: opts.contract.declaration,
         selectedMode: selected_mode,
-        changedFiles: changed_paths,
+        changedFiles: observedChangedPaths,
         observedRepositoryEffects: observedEffects,
         observedExternalEffects,
         changedComponents: uniqueSorted([
@@ -536,7 +540,7 @@ export function reconcileTaskExecutionContract(opts: {
     observed: {
       repository_effects: observedEffects,
       external_effects: observedExternalEffects,
-      changed_paths: uniqueSorted([...opts.contract.observed.changed_paths, ...changed_paths]),
+      changed_paths: observedChangedPaths,
       changed_components: uniqueSorted([
         ...opts.contract.observed.changed_components,
         ...changed_paths.map((changedPath) => componentForPath(changedPath)),

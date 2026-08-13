@@ -874,7 +874,19 @@ export function buildLocalCiExecutionPlan({
   let route = "full-fast";
   let steps;
 
-  if (verificationContract.selector.execution_mode === "smoke" && plan.kind === "docs-only") {
+  if (
+    verificationContract.requires_full_regression &&
+    verificationContract.selector.execution_mode !== "full"
+  ) {
+    route = "full-fast";
+    steps = fastStepReports({ runCliDocsCheck });
+    if (plan.bucket === "workflow") {
+      steps.push(commandStep("Workflow lint + command contract", "bun run workflows:lint"));
+    }
+  } else if (
+    verificationContract.selector.execution_mode === "smoke" &&
+    plan.kind === "docs-only"
+  ) {
     route = "docs-only-smoke";
     steps = [commandStep("Format (check)", "bun run format:check")];
   } else if (verificationContract.selector.execution_mode === "smoke" && plan.kind === "targeted") {

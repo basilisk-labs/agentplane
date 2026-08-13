@@ -218,6 +218,41 @@ describe("task execution route", () => {
     });
   });
 
+  it("preserves path-based escalation when a later observation has no changed paths", () => {
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    const initial = resolveTaskExecutionContract({
+      config,
+      task: {},
+      declaration: {
+        schema_version: 2,
+        preferred_mode: "direct",
+        scope_roots: ["assets"],
+        repository_effects: ["repository_write"],
+        external_effects: [],
+        requirements_uncertainty: "bounded",
+        implementation_uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["bounded repository change"],
+      },
+    });
+    const observed = reconcileTaskExecutionContract({
+      contract: initial,
+      changed_paths: ["assets/opaque-model.unknown"],
+    }).contract;
+    const rereconciled = reconcileTaskExecutionContract({
+      contract: observed,
+      changed_paths: [],
+      verification_results: [{ id: "task_outcome", result: "pass" }],
+    }).contract;
+
+    expect(rereconciled.observed.changed_paths).toContain("assets/opaque-model.unknown");
+    expect(rereconciled.verification.contract).toMatchObject({
+      requires_full_regression: true,
+      escalation_reasons: ["unknown_path:assets/opaque-model.unknown"],
+    });
+  });
+
   it("keeps legacy task new behavior when repository mode is requested", () => {
     const config = defaultConfig();
     config.workflow_mode = "direct";

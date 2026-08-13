@@ -1,5 +1,7 @@
 import { execFileSync } from "node:child_process";
 
+import { evaluateLifecycleArtifactReuse } from "../lib/lifecycle-artifact-reuse.mjs";
+
 const parentSha = String(process.env.AGENTPLANE_REUSE_SHA ?? "").trim();
 const token = String(process.env.GITHUB_TOKEN ?? "").trim();
 const repository = String(process.env.GITHUB_REPOSITORY ?? "").trim();
@@ -9,14 +11,12 @@ if (!/^[0-9a-f]{40}$/u.test(parentSha) || !token || !repository) {
   throw new Error("Verified-parent reuse requires an exact parent SHA and GitHub read token.");
 }
 
-const changed = execFileSync("git", ["diff", "--name-only", parentSha, "HEAD"], {
-  encoding: "utf8",
-})
-  .split("\n")
-  .map((line) => line.trim())
-  .filter(Boolean);
-if (changed.length === 0 || changed.some((filePath) => !/^\.agentplane\/tasks\//u.test(filePath))) {
-  throw new Error("Verification reuse is restricted to lifecycle-only task artifacts.");
+const currentSha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+const lifecycleReuse = evaluateLifecycleArtifactReuse({ parentSha, currentSha });
+if (!lifecycleReuse.eligible) {
+  throw new Error(
+    `Verification reuse is restricted to semantically validated lifecycle artifacts (reason=${lifecycleReuse.reason}).`,
+  );
 }
 
 const response = await fetch(`${apiUrl}/repos/${repository}/commits/${parentSha}/check-runs`, {
@@ -43,8 +43,9 @@ process.stdout.write(
     schema_version: 1,
     kind: "verified_parent_reuse",
     parent_sha: parentSha,
-    current_sha: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
-    changed_files: changed,
+    current_sha: currentSha,
+    changed_files: lifecycleReuse.changed_files,
+    lifecycle_comparison_digest: lifecycleReuse.comparison_digest,
     source_check_url: aggregate.html_url,
   })}\n`,
 );

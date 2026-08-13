@@ -1,6 +1,12 @@
+import { execFileSync } from "node:child_process";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import * as githubCiCapabilitiesModule from "../../../../../scripts/lib/github-ci-capabilities.mjs";
+import * as lifecycleArtifactReuseModule from "../../../../../scripts/lib/lifecycle-artifact-reuse.mjs";
 
 type GithubCiCapabilities = Record<
   | "core"
@@ -54,6 +60,115 @@ const { GITHUB_CI_GATE_JOBS, buildGithubCiCapabilityPlan } = githubCiCapabilitie
     };
   }) => GithubCiPlan;
 };
+const { evaluateLifecycleArtifactReuse } = lifecycleArtifactReuseModule as {
+  evaluateLifecycleArtifactReuse: (input: {
+    cwd: string;
+    parentSha: string;
+    currentSha: string;
+  }) => { eligible: boolean; reason: string; changed_files: string[] };
+};
+
+function git(cwd: string, args: string[]): string {
+  return execFileSync("git", args, {
+    cwd,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "ignore"],
+  }).trim();
+}
+
+function taskReadme({
+  title = "Lifecycle task",
+  status,
+  parentSha = null,
+}: {
+  title?: string;
+  status: "DOING" | "DONE";
+  parentSha?: string | null;
+}): string {
+  const terminal = status === "DONE";
+  return `---
+id: "202608131200-ABC123"
+title: "${title}"
+status: "${status}"
+revision: ${terminal ? 2 : 1}
+verification: ${terminal ? '{ state: "ok" }' : '{ state: "pending" }'}
+quality_review: ${terminal ? `{ state: "pass", evaluated_sha: "${parentSha}" }` : '{ state: "pending" }'}
+commit: ${terminal ? `{ hash: "${parentSha}" }` : "null"}
+execution_contract:
+  schema_version: 1
+  source: "agent_declaration"
+  declaration: { repository_effects: ["source_code"] }
+  selected_mode: "branch_pr"
+  repository_mode: "branch_pr"
+  reason_codes: ["agent_preferred_branch_pr"]
+  authority: {}
+  safety: {}
+  observed:
+    repository_effects: []
+    external_effects: []
+    changed_paths: []
+    changed_components: []
+    authority_violations: []
+    verification_results: []
+  verification:
+    required_evidence: ["task_outcome"]
+    contract:
+      schema_version: 2
+      kind: "verification_contract"
+      source: "execution_contract"
+      phase: "task"
+      declared:
+        repository_effects: ["source_code"]
+        external_effects: []
+        components: []
+        risk: { requirements_uncertainty: "bounded", implementation_uncertainty: "bounded", reversibility: "reversible" }
+        evidence_requirements: ["task_outcome"]
+      observed: { repository_effects: [], external_effects: [], changed_components: [], changed_files: [] }
+      policy_floor: { pr_full_regression: true, unknown_or_central_full_regression: true, monotonic_strengthening: true }
+      selector: { kind: "semantic", reason: "execution_declaration", execution_mode: "semantic", bucket: null, buckets: [], lint_targets: [], vitest_pool: "forks", run_cli_docs_check: false, selected_test_files: [] }
+      selected_checks: ["task_outcome"]
+      execution_groups: ["core"]
+      escalation_reasons: []
+      requires_full_regression: false
+      requires_real_e2e: false
+      digest: "sha256:${"a".repeat(64)}"
+---
+## Summary
+
+Stable semantic task body.
+
+## Verification
+
+${terminal ? "<!-- BEGIN VERIFICATION RESULTS -->\npass\n<!-- END VERIFICATION RESULTS -->" : "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->"}
+`;
+}
+
+function withLifecycleRepo(
+  mutate: (repo: string, parentSha: string, readmePath: string) => void,
+): ReturnType<typeof evaluateLifecycleArtifactReuse> {
+  const repo = mkdtempSync(path.join(os.tmpdir(), "agentplane-lifecycle-reuse-"));
+  try {
+    git(repo, ["init", "-b", "main"]);
+    git(repo, ["config", "user.name", "CI Test"]);
+    git(repo, ["config", "user.email", "ci@example.com"]);
+    const readmePath = ".agentplane/tasks/202608131200-ABC123/README.md";
+    mkdirSync(path.join(repo, path.dirname(readmePath)), { recursive: true });
+    writeFileSync(path.join(repo, readmePath), taskReadme({ status: "DOING" }));
+    git(repo, ["add", "."]);
+    git(repo, ["commit", "-m", "implementation"]);
+    const parentSha = git(repo, ["rev-parse", "HEAD"]);
+    mutate(repo, parentSha, readmePath);
+    git(repo, ["add", "."]);
+    git(repo, ["commit", "-m", "lifecycle"]);
+    return evaluateLifecycleArtifactReuse({
+      cwd: repo,
+      parentSha,
+      currentSha: git(repo, ["rev-parse", "HEAD"]),
+    });
+  } finally {
+    rmSync(repo, { recursive: true, force: true });
+  }
+}
 
 function plan(changedFiles: string[], options: { headRef?: string } = {}) {
   return buildGithubCiCapabilityPlan({
@@ -121,6 +236,79 @@ describe("GitHub CI capability planning", () => {
       reuse_sha: parent,
     });
     expect(result.expected_jobs).toEqual(["plan", "verify-routed"]);
+  });
+
+  it("reuses only semantically valid lifecycle artifacts", () => {
+    const result = withLifecycleRepo((repo, parentSha, readmePath) => {
+      writeFileSync(path.join(repo, readmePath), taskReadme({ status: "DONE", parentSha }));
+      const evidencePath = path.join(
+        repo,
+        ".agentplane/tasks/202608131200-ABC123/verification/result.json",
+      );
+      mkdirSync(path.dirname(evidencePath), { recursive: true });
+      writeFileSync(
+        evidencePath,
+        `${JSON.stringify({
+          schema_version: 2,
+          task_id: "202608131200-ABC123",
+          result: "ok",
+          implementation_sha: parentSha,
+          input: { digest: `sha256:${"b".repeat(64)}` },
+        })}\n`,
+      );
+    });
+
+    expect(result).toMatchObject({
+      eligible: true,
+      reason: "semantic_lifecycle_drift_only",
+    });
+  });
+
+  it("rejects semantic README drift and malformed managed evidence", () => {
+    const semanticDrift = withLifecycleRepo((repo, parentSha, readmePath) => {
+      writeFileSync(
+        path.join(repo, readmePath),
+        taskReadme({ title: "Changed task scope", status: "DONE", parentSha }),
+      );
+    });
+    expect(semanticDrift).toMatchObject({ eligible: false, reason: "semantic_readme_drift" });
+
+    const malformedEvidence = withLifecycleRepo((repo, parentSha, readmePath) => {
+      writeFileSync(path.join(repo, readmePath), taskReadme({ status: "DONE", parentSha }));
+      const evidencePath = path.join(
+        repo,
+        ".agentplane/tasks/202608131200-ABC123/verification/result.json",
+      );
+      mkdirSync(path.dirname(evidencePath), { recursive: true });
+      writeFileSync(evidencePath, "{not-json\n");
+    });
+    expect(malformedEvidence).toMatchObject({
+      eligible: false,
+      reason: "malformed_managed_artifact",
+    });
+
+    const unboundEvidence = withLifecycleRepo((repo, parentSha, readmePath) => {
+      writeFileSync(path.join(repo, readmePath), taskReadme({ status: "DONE", parentSha }));
+      const evidencePath = path.join(
+        repo,
+        ".agentplane/tasks/202608131200-ABC123/verification/result.json",
+      );
+      mkdirSync(path.dirname(evidencePath), { recursive: true });
+      writeFileSync(
+        evidencePath,
+        `${JSON.stringify({
+          schema_version: 2,
+          task_id: "202608131200-ABC123",
+          result: "ok",
+          implementation_sha: "f".repeat(40),
+          input: { digest: `sha256:${"b".repeat(64)}` },
+        })}\n`,
+      );
+    });
+    expect(unboundEvidence).toMatchObject({
+      eligible: false,
+      reason: "invalid_verification_evidence",
+    });
   });
 
   it("keeps the PR full-regression floor for docs-only changes", () => {
