@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -508,8 +508,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "9f2cbe94f9e1736afb4ce2560c6da62e8556a192"
-  message: "✅ BHEAQT qualification: separate premerge and publication review"
+  hash: "8965c6f03b8c617b9b63a04d6c39ad366b1f54f9"
+  message: "🗃️ BHEAQT qualification: restore auditable raw artifacts"
 comments:
   -
     author: "INTEGRATOR"
@@ -526,6 +526,9 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: record evidence-only release candidate receipt after restoring auditable raw artifacts."
 events:
   -
     type: "status"
@@ -585,8 +588,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Candidate 8965c6f03 preserves the fully qualified 0.7.6 implementation and restores all raw evidence referenced by retained reports."
+  -
+    type: "status"
+    at: "2026-08-13T23:51:17.917Z"
+    author: "INTEGRATOR"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: record evidence-only release candidate receipt after restoring auditable raw artifacts."
+    commit: "8965c6f03b8c617b9b63a04d6c39ad366b1f54f9"
 doc_version: 3
-doc_updated_at: "2026-08-13T23:48:09.541Z"
+doc_updated_at: "2026-08-13T23:51:17.975Z"
 doc_updated_by: "INTEGRATOR"
 description: "Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact protected-main release scope; generate the patch plan and English release notes from actual changes since v0.7.5; run the complete 20-scenario provider-enabled release qualification on the exact clean candidate; run canonical release prepublish gates; prepare a branch_pr release candidate without creating a tag; require exact-SHA hosted checks and no unresolved reviews; integrate through the protected main lane; dispatch GitHub-only publication for the exact merged release SHA; verify release-ready and publish-result artifacts, tag, GitHub Release, and all three public npm packages; then clean the release worktree and report efficiency and residual lifecycle debt."
 sections:
