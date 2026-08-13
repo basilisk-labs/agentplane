@@ -6,14 +6,14 @@ Created: 2026-08-12T08:35:41.656Z
 
 - Task: `202608112259-T3ZDDM`
 - Title: Optimize the verification and test pipeline around one computed Verification Contract
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608112259-T3ZDDM/optimize-the-verification-and-test-pipeline-arou`
 - Canonical task record: `.agentplane/tasks/202608112259-T3ZDDM/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified final reuse invariants on b223ead8: 24/24 focused tests, lint, typecheck, full-fast 5/5 with one build, and hosted run 31711516858 pass.
+- Note: Verified setup-bun immutable pin on d3cc2ce7: 28/28 focused tests, workflow lint/contracts, exact hosted full CI and security pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,7 +30,7 @@ Created: 2026-08-12T08:35:41.656Z
 
 ```text
  .github/codeql/codeql-config.yml                   |    6 +
- .github/workflows/ci.yml                           |   90 +-
+ .github/workflows/ci.yml                           |  106 +-
  docs/developer/code-quality.mdx                    |    7 +
  docs/developer/verification-contract.mdx           |   83 +
  docs/user/cli-reference.generated.mdx              |    8 +-
@@ -147,7 +147,7 @@ Created: 2026-08-12T08:35:41.656Z
  tsconfig.base.json                                 |    1 +
  .../docs/developer/verification-contract.png       |  Bin 0 -> 59695 bytes
  website/static/img/social/manifest.json            |    8 +
- 118 files changed, 10924 insertions(+), 2238 deletions(-)
+ 118 files changed, 10932 insertions(+), 2246 deletions(-)
 ```
 
 </details>

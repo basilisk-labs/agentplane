@@ -19,8 +19,8 @@ Implement a versioned Verification Contract computed once from the semantic task
 - Note:
 
 ```text
-Verified final reuse invariants on b223ead8: 24/24 focused tests, lint, typecheck, full-fast 5/5
-with one build, and hosted run 31711516858 pass.
+Verified setup-bun immutable pin on d3cc2ce7: 28/28 focused tests, workflow lint/contracts, exact
+hosted full CI and security pass.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -33,7 +33,7 @@ with one build, and hosted run 31711516858 pass.
 
 ```text
  .github/codeql/codeql-config.yml                   |    6 +
- .github/workflows/ci.yml                           |   90 +-
+ .github/workflows/ci.yml                           |  106 +-
  docs/developer/code-quality.mdx                    |    7 +
  docs/developer/verification-contract.mdx           |   83 +
  docs/user/cli-reference.generated.mdx              |    8 +-
@@ -150,7 +150,7 @@ with one build, and hosted run 31711516858 pass.
  tsconfig.base.json                                 |    1 +
  .../docs/developer/verification-contract.png       |  Bin 0 -> 59695 bytes
  website/static/img/social/manifest.json            |    8 +
- 118 files changed, 10924 insertions(+), 2238 deletions(-)
+ 118 files changed, 10932 insertions(+), 2246 deletions(-)
 ```
 
 </details>

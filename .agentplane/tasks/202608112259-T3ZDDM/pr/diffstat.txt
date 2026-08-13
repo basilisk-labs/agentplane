@@ -1,5 +1,5 @@
  .github/codeql/codeql-config.yml                   |    6 +
- .github/workflows/ci.yml                           |   90 +-
+ .github/workflows/ci.yml                           |  106 +-
  docs/developer/code-quality.mdx                    |    7 +
  docs/developer/verification-contract.mdx           |   83 +
  docs/user/cli-reference.generated.mdx              |    8 +-
@@ -116,4 +116,4 @@
  tsconfig.base.json                                 |    1 +
  .../docs/developer/verification-contract.png       |  Bin 0 -> 59695 bytes
  website/static/img/social/manifest.json            |    8 +
- 118 files changed, 10924 insertions(+), 2238 deletions(-)
+ 118 files changed, 10932 insertions(+), 2246 deletions(-)
