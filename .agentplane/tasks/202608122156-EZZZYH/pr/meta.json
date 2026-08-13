@@ -8,10 +8,10 @@
   "pr_number": 4831,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4831",
   "pre_merge_closure": {
-    "basis_commit": "ab7abe4d1d0676340aa1820aaa9e6728d4126af9",
+    "basis_commit": "23ff0daa09590fbfcf195c4a7d7a8ca7f1a3e26d",
     "branch": "task/202608122156-EZZZYH/add-installed-package-mixed-scope-lifecycle-e2e",
     "pr_number": 4831,
-    "recorded_at": "2026-08-13T16:36:23.137Z",
+    "recorded_at": "2026-08-13T17:11:23.602Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
