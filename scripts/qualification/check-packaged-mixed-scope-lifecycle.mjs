@@ -725,7 +725,7 @@ function runFixture({ run, cli, packages, tempRoot }) {
     fail(
       "missing_commit",
       `recorded task commit is absent from Git: value=${JSON.stringify(taskCommit)} ` +
-      `status=${finalTask.status} head=${finalHead} error=${error.message}`,
+        `status=${finalTask.status} head=${finalHead} error=${error.message}`,
     );
   }
   const afterExecutionBase =
