@@ -662,13 +662,27 @@ function runFixture({ run, cli, packages, tempRoot }) {
       residual_risks: [],
     },
   });
-  const terminalCandidate = runPacketArgv(
-    run,
-    cli,
-    repo,
-    evaluatorExchange.resume_argv,
-    "evaluator result acceptance",
-  );
+  let terminalCandidate;
+  try {
+    terminalCandidate = runPacketArgv(
+      run,
+      cli,
+      repo,
+      evaluatorExchange.resume_argv,
+      "evaluator result acceptance",
+    );
+  } catch (error) {
+    const route = runNodeCliResult(cli, repo, [
+      "task",
+      "next-action",
+      taskId,
+      "--explain",
+      "--json",
+    ]);
+    throw new Error(
+      `${error.message}\nissued_fingerprint=${evaluator.state_fingerprint}\ncurrent_route=${route.stdout || route.stderr}`,
+    );
+  }
   const terminal = continueToTerminal(run, cli, repo, taskId, terminalCandidate);
   const finalTask = runInstalledJson(run, cli, repo, ["task", "show", taskId], "final task show");
   const finalHead = git(run, repo, ["rev-parse", "HEAD"]);
