@@ -346,8 +346,9 @@ export function assertPackagedMixedScopeEvidence(evidence) {
     fail("missing_final_readback", "completed lifecycle did not preserve the product behavior");
   }
   if (
-    evidence.commit?.task_commit !== evidence.commit?.final_head ||
     evidence.commit?.after_execution_base !== true ||
+    evidence.commit?.final_head_contains_task_commit !== true ||
+    evidence.commit?.product_tree_preserved_after_task_commit !== true ||
     evidence.commit?.count_after <= evidence.commit?.count_before
   ) {
     fail("wrong_lifecycle_commit", "recorded task commit is not the completed product commit");
@@ -730,11 +731,30 @@ function runFixture({ run, cli, packages, tempRoot }) {
   const afterExecutionBase =
     taskCommit !== executionBase &&
     git(run, repo, ["merge-base", "--is-ancestor", executionBase, taskCommit]) === "";
-  if (taskCommit !== finalHead || !afterExecutionBase || commitCountAfter <= commitCountBefore) {
+  const finalHeadContainsTaskCommit =
+    git(run, repo, ["merge-base", "--is-ancestor", taskCommit, finalHead]) === "";
+  const productTreePreservedAfterTaskCommit =
+    git(run, repo, [
+      "diff",
+      "--quiet",
+      taskCommit,
+      finalHead,
+      "--",
+      ...PACKAGED_MIXED_SCOPE_REQUIRED_PATHS,
+    ]) === "";
+  if (
+    !afterExecutionBase ||
+    !finalHeadContainsTaskCommit ||
+    !productTreePreservedAfterTaskCommit ||
+    commitCountAfter <= commitCountBefore
+  ) {
     fail(
       "wrong_lifecycle_commit",
       `recorded task commit is not the completed product commit: task=${taskCommit} ` +
-        `head=${finalHead} base=${executionBase} before=${commitCountBefore} after=${commitCountAfter}`,
+        `head=${finalHead} base=${executionBase} after_base=${afterExecutionBase} ` +
+        `head_contains_task=${finalHeadContainsTaskCommit} ` +
+        `product_preserved=${productTreePreservedAfterTaskCommit} ` +
+        `before=${commitCountBefore} after=${commitCountAfter}`,
     );
   }
   const finalProductSnapshot = productSnapshot(accessLog, repo, "final_consumer_readback");
@@ -779,6 +799,8 @@ function runFixture({ run, cli, packages, tempRoot }) {
       count_before: commitCountBefore,
       count_after: commitCountAfter,
       after_execution_base: afterExecutionBase,
+      final_head_contains_task_commit: finalHeadContainsTaskCommit,
+      product_tree_preserved_after_task_commit: productTreePreservedAfterTaskCommit,
     },
     final_consumer: {
       test_status: finalConsumerTest.status,
