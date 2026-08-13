@@ -1,10 +1,11 @@
 ---
 id: "202608131730-BHEAQT"
 title: "Qualify and publish AgentPlane 0.7.6"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -58,6 +59,20 @@ quality_review:
     - ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220303255-recovery-context/evaluator-result.json"
   findings:
     - "The legacy frozen contract under-declared documentation, dependency, public-API, source-code, and test effects, but the owner explicitly re-approved those bounded 0.7.6 changes in response to the evaluator question."
+token_usage:
+  agent_runs: 2
+  input_tokens: 262463
+  journal_digest: "sha256:e7d9759ab52ce94205f1e7254cc5a11c9dfd11250935cfae67dd7b895743466c"
+  observed_agent_runs: 2
+  observed_by: "agentplane"
+  output_tokens: 4030
+  reasoning_tokens: 1081
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "observed"
+  total_tokens: 267574
+  unavailable_reason: null
+  updated_at: "2026-08-13T22:09:11.367Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -472,8 +487,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "95a6d46c5cd6af4c4bfd2e61c79a9d4606dca12e"
-  message: "🐛 BHEAQT release: tolerate stale dependency links"
+  hash: "78b9354e40d8db1129f916f1112c4f17aa1dcdc8"
+  message: "📝 BHEAQT task: link release PR"
 comments:
   -
     author: "INTEGRATOR"
@@ -484,6 +499,9 @@ comments:
   -
     author: "USER"
     body: "User answer: Yes. The human owner explicitly approves expanding this task's frozen repository authority to include the documentation, dependency, public-API, source-code, and test mutations required by the approved 0.7.6 release candidate. The expansion is limited to the discussed and implemented 0.7.6 fixes and does not waive verification, hosted integration, or exact-SHA publication gates."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -515,9 +533,17 @@ events:
     at: "2026-08-13T22:04:02.688Z"
     author: "USER"
     body: "User answer: Yes. The human owner explicitly approves expanding this task's frozen repository authority to include the documentation, dependency, public-API, source-code, and test mutations required by the approved 0.7.6 release candidate. The expansion is limited to the discussed and implemented 0.7.6 fixes and does not waive verification, hosted integration, or exact-SHA publication gates."
+  -
+    type: "status"
+    at: "2026-08-13T22:09:11.367Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "78b9354e40d8db1129f916f1112c4f17aa1dcdc8"
 doc_version: 3
-doc_updated_at: "2026-08-13T22:04:02.688Z"
-doc_updated_by: "USER"
+doc_updated_at: "2026-08-13T22:09:11.378Z"
+doc_updated_by: "INTEGRATOR"
 description: "Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact protected-main release scope; generate the patch plan and English release notes from actual changes since v0.7.5; run the complete 20-scenario provider-enabled release qualification on the exact clean candidate; run canonical release prepublish gates; prepare a branch_pr release candidate without creating a tag; require exact-SHA hosted checks and no unresolved reviews; integrate through the protected main lane; dispatch GitHub-only publication for the exact merged release SHA; verify release-ready and publish-result artifacts, tag, GitHub Release, and all three public npm packages; then clean the release worktree and report efficiency and residual lifecycle debt."
 sections:
   Summary: |-
@@ -609,6 +635,9 @@ extensions:
         previousStatus: "DOING"
         question: "Does the human owner explicitly approve expanding this task's frozen repository authority to include the documentation, dependency, public-API, source-code, and test mutations required by the 0.7.6 release candidate?"
     openQuestion: null
+  implementation_commit:
+    hash: "95a6d46c5cd6af4c4bfd2e61c79a9d4606dca12e"
+    message: "🐛 BHEAQT release: tolerate stale dependency links"
   workflow_route_baseline:
     start_head_sha: "bc0afaea7a7be909fc93374a195c73da3f697d85"
     version: 1
@@ -695,3 +724,16 @@ DecisionContextRef:
 Before publication, close the release PR and revert only the candidate commit through a new task; do not create or push v0.7.6. After tag, GitHub Release, or npm publication, immutable registries make rollback unsafe: stop, preserve evidence, and prepare a forward-fix 0.7.7 task instead of rewriting tags, releases, or package versions.
 
 ## Findings
+
+## Token Usage
+
+- State: `observed`
+- Completeness: `2/2` agent runs
+- Input tokens: `262463`
+- Output tokens: `4030`
+- Reasoning tokens: `1081`
+- Total tokens: `267574`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:e7d9759ab52ce94205f1e7254cc5a11c9dfd11250935cfae67dd7b895743466c`
+- Unavailable reason: `none`
+- Updated at: `2026-08-13T22:09:11.367Z`
