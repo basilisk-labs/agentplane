@@ -248,6 +248,8 @@ describe("evaluator qualification packet", () => {
     await writeDefaultConfig(root);
     const taskId = "202607291149-AB13";
     await addTask(root, taskId);
+    await execFileAsync("git", ["add", "--", ".agentplane/WORKFLOW.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: baseline config"], { cwd: root });
     await commitPath(
       root,
       "src/support.ts",
@@ -267,7 +269,7 @@ describe("evaluator qualification packet", () => {
         "Command: bun run test:fast\nResult: pass\nEvidence: targeted suite\nScope: support task",
       quiet: true,
     });
-    await execFileAsync("git", ["add", "--", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["add", "--", `.agentplane/tasks/${taskId}`], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seal support verification"], {
       cwd: root,
     });

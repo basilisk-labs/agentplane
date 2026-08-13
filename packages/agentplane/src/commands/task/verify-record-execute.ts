@@ -24,11 +24,6 @@ import { buildVerifiedPrMeta, parsePrMeta } from "../shared/pr-meta.js";
 import { resolvePrPaths } from "../pr/internal/pr-paths.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
-import {
-  resolveActualDiffNames,
-  resolveEvaluatorDiffBase,
-  resolveEvaluatorDiffBaseRef,
-} from "../evaluator/evaluator-diff-evidence.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import {
   loadCommandContext,
@@ -52,6 +47,7 @@ import {
   nowIso,
 } from "./shared.js";
 import { resolveVerifyRecordInput } from "./verify-record-input.js";
+import { resolveObservedVerificationChangedPaths } from "./verify-record-observed-changes.js";
 import { isQualificationTask, writeQualificationPacket } from "./qualification-packet.js";
 import { resolveQualificationDependencyLeaves } from "./qualification-packet-dependencies.js";
 import { parseVerificationCheckDetails } from "../shared/verification-details.js";
@@ -251,30 +247,12 @@ async function recordVerificationResult(opts: {
           previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
           workflowMode: config.workflow_mode,
         });
-        const observedChangedPaths = await (async (): Promise<string[]> => {
-          if (!evaluatedSha) return [];
-          const baseRef =
-            config.workflow_mode === "branch_pr"
-              ? await resolveEvaluatorDiffBaseRef({ ctx, taskId: current.id })
-              : null;
-          const diffBaseSha = await resolveEvaluatorDiffBase({
-            gitRoot: resolved.gitRoot,
-            evaluatedSha,
-            baseRef,
-            allowSingleCommitFallback: true,
-          });
-          const taskArtifactPrefixes = qualityReviewTaskIds.map(
-            (taskId) => `${config.paths.workflow_dir.replaceAll("\\", "/")}/${taskId}/`,
-          );
-          const exactChangedPaths = await resolveActualDiffNames(
-            resolved.gitRoot,
-            evaluatedSha,
-            diffBaseSha,
-          );
-          return exactChangedPaths.filter(
-            (changedPath) => !taskArtifactPrefixes.some((prefix) => changedPath.startsWith(prefix)),
-          );
-        })();
+        const observedChangedPaths = await resolveObservedVerificationChangedPaths({
+          ctx,
+          evaluatedSha,
+          taskId: current.id,
+          artifactTaskIds: qualityReviewTaskIds,
+        });
         const observedExecutionContract = reconcileTaskExecutionContract({
           contract: baseExecutionContract,
           changed_paths: observedChangedPaths,
