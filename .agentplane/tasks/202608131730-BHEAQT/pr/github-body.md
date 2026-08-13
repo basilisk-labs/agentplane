@@ -78,6 +78,7 @@ Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact
  docs/reference/generated-reference.mdx             |   6 +-
  docs/releases/v0.7.6.md                            | 364 +++++++++++++++++++++
  packages/agentplane/package.json                   |   6 +-
+ .../src/cli/run-cli.core.blueprint.test.ts         |   6 +
  ...-cli.critical.agent-efficiency-baseline.test.ts |  57 +++-
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
@@ -88,7 +89,7 @@ Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact
  .../check-compatibility-contract-baseline.mjs      |  59 ++--
  website/static/img/social/docs/releases/v0.7.6.png | Bin 0 -> 53331 bytes
  website/static/img/social/manifest.json            |   8 +
- 61 files changed, 542 insertions(+), 1355 deletions(-)
+ 62 files changed, 548 insertions(+), 1355 deletions(-)
 ```
 
 </details>
