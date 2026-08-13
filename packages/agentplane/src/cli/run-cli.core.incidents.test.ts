@@ -156,7 +156,6 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         io.restore();
       }
     }
-
     const io = captureStdIO();
     try {
       const code = await runCli([
