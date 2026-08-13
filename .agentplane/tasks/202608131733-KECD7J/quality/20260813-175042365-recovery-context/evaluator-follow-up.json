@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608131733-KECD7J-1bdc90f490f61d26c1508693",
+  "task_id": "202608131733-KECD7J",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Freeze the W4ZM7J, 7XGP97, and T3ZDDM completion/hosted/operator-state records plus successful `bun run format:check` evidence for evaluated SHA d0135b104218422ca56f064389bb3d56f5e3bf76, then rerun evaluation.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen packet does not contain the referenced W4ZM7J, 7XGP97, or T3ZDDM task, hosted, qualification, or operator-state evidence needed to establish that both incidents are resolved and have no active follow-up.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/README.md",
+          "sha256": "sha256:af5fd06c877d40d302267a83a7e99f811aff3b5f5e01d2769af38b0d67c5ede3",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/6f82337e880eb1aa5e4d986d2271cb945232b8f40280edd568973d2b80cdcf94.patch",
+          "sha256": "sha256:6f82337e880eb1aa5e4d986d2271cb945232b8f40280edd568973d2b80cdcf94",
+          "section": "docs/developer/incident-archive.mdx"
+        },
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/verification/20260813174922146-036c7272e0349a31.json",
+          "sha256": "sha256:ec14934dca96eeccda39c057091607c0cc96a4c283048ffb4c30fa74efb13e67",
+          "section": "details"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "The recorded verification substitutes targeted Prettier checking for the explicitly required repository-wide `bun run format:check`, and no frozen prior full-format evidence supports the reuse assertion.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/README.md",
+          "sha256": "sha256:af5fd06c877d40d302267a83a7e99f811aff3b5f5e01d2769af38b0d67c5ede3",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/verification/20260813174922146-036c7272e0349a31.json",
+          "sha256": "sha256:ec14934dca96eeccda39c057091607c0cc96a4c283048ffb4c30fa74efb13e67",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608131733-KECD7J/quality/20260813-175042365-recovery-context/evaluator-result.json"
+}
