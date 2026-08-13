@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608131733-KECD7J-8d5b5670b64a86a684c41436",
+  "task_id": "202608131733-KECD7J",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the frozen evaluator packet with the referenced incident closeout source evidence, or its underlying task and hosted artifacts, included explicitly in work_order.evidence; retain the already-recorded exact focused tests, repository-wide format check, routing check, and incident gate evidence.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The frozen packet still does not contain independently reviewable source-task, hosted-check, qualification, or operator-state evidence for W4ZM7J, 7XGP97, and T3ZDDM.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/verification/20260813180750705-d3eed6a426db875c.json",
+          "sha256": "sha256:68316dde327824d9cece61d050d7afb746a355e0a6b5e1ea859fb922c6f6a46e",
+          "section": "details and input.evidence.references"
+        },
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/ed5cfa996ecf2fbe3fa0c87022cbcc03f14ce2fe488222eede514d6bf4b67b26.json",
+          "sha256": "sha256:ed5cfa996ecf2fbe3fa0c87022cbcc03f14ce2fe488222eede514d6bf4b67b26",
+          "section": "verification_contract.declared.evidence_requirements and runner_history/runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/README.md",
+          "sha256": "sha256:93387c287610a19c63287d438feacad99f1da4eb9ea6e2f8356e1aa66ba6f084",
+          "section": "Verify Steps 2 and Verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608131733-KECD7J/quality/20260813-180823425-recovery-context/evaluator-result.json"
+}

@@ -16,7 +16,7 @@ Review INC-20260810-01 and INC-20260811-01 against their merged fixes and curren
 ## Verification
 
 - State: ok
-- Note: Exact bdedc99ea source-evidence closeout passed all approved deterministic gates.
+- Note: Exact incident closeout verification with an explicit frozen runtime-evidence reference.
 - Canonical workflow state lives in the task README.
 
 <details>

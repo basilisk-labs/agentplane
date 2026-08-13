@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "The frozen packet still does not contain independently reviewable source-task, hosted-check, qualification, or operator-state evidence for W4ZM7J, 7XGP97, and T3ZDDM.",
+      "broken_invariant": "Acceptance criterion 2 requires inspection of the three source tasks and their merged evidence, while the verification contract requires hosted_integration evidence. The verification record only asserts that a separate incident-closeout-source-evidence.md file contains these facts, but that file is absent from work_order.evidence and therefore cannot be evaluated or cited.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/verification/20260813180750705-d3eed6a426db875c.json",
+          "sha256": "sha256:68316dde327824d9cece61d050d7afb746a355e0a6b5e1ea859fb922c6f6a46e",
+          "section": "details and input.evidence.references"
+        },
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/ed5cfa996ecf2fbe3fa0c87022cbcc03f14ce2fe488222eede514d6bf4b67b26.json",
+          "sha256": "sha256:ed5cfa996ecf2fbe3fa0c87022cbcc03f14ce2fe488222eede514d6bf4b67b26",
+          "section": "verification_contract.declared.evidence_requirements and runner_history/runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/README.md",
+          "sha256": "sha256:93387c287610a19c63287d438feacad99f1da4eb9ea6e2f8356e1aa66ba6f084",
+          "section": "Verify Steps 2 and Verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Freeze the referenced incident-closeout-source-evidence.md, or the underlying W4ZM7J, 7XGP97, and T3ZDDM task/PR/hosted artifacts, as explicit work_order.evidence entries so their DONE states, SHAs, hosted results, qualification disposition, and absence of active operator work can be independently checked."
+  ],
+  "hidden_assumptions": [
+    "A digest reference inside the verification record is assumed to make an omitted source artifact independently reviewable.",
+    "The TESTER summary is assumed to satisfy the hosted_integration evidence requirement without frozen hosted-check output."
+  ],
+  "recovery_context": "Regenerate the frozen evaluator packet with the referenced incident closeout source evidence, or its underlying task and hosted artifacts, included explicitly in work_order.evidence; retain the already-recorded exact focused tests, repository-wide format check, routing check, and incident gate evidence.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

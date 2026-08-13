@@ -13,7 +13,7 @@ Created: 2026-08-13T17:34:20.627Z
 ## Verification
 
 - State: ok
-- Note: Exact bdedc99ea source-evidence closeout passed all approved deterministic gates.
+- Note: Exact incident closeout verification with an explicit frozen runtime-evidence reference.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
