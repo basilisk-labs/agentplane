@@ -480,6 +480,7 @@ export async function captureWorkflowStepFingerprint(opts: {
           await observeWorkflowPolicyScope({
             repositoryRoot,
             state: opts.state,
+            excludedRoots: [path.join(opts.ctx.config.paths.workflow_dir, opts.state.task.id)],
             ...(rawGit?.state === "available" ? { preobservedDirtyPaths: rawGit.dirty_paths } : {}),
           }),
         fingerprintInputs: (scope) => ({

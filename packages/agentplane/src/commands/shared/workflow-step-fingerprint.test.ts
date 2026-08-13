@@ -444,6 +444,20 @@ it("captures every live route component from the authoritative task worktree", a
   });
 
   const initial = fingerprint;
+  const evaluatorArtifactPath = path.join(
+    worktree,
+    ".agentplane",
+    "tasks",
+    TASK_ID,
+    "quality",
+    "evidence",
+    "frozen-checks.json",
+  );
+  await mkdir(path.dirname(evaluatorArtifactPath), { recursive: true });
+  await writeFile(evaluatorArtifactPath, '{"status":"prepared"}\n', "utf8");
+  const afterEvaluatorPreparation = await capture({ ctx, root, worktree });
+  expect(changedComponents(initial, afterEvaluatorPreparation)).toEqual([]);
+
   await writeFile(blueprintPath, taskWorktree.blueprintAlternate, "utf8");
   const changedBlueprint = await capture({ ctx, root, worktree });
   expect(changedComponents(initial, changedBlueprint)).toEqual(["blueprint"]);
