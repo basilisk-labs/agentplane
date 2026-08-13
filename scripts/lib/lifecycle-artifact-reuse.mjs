@@ -249,6 +249,64 @@ function blobObject(cwd, revision, filePath) {
   }
 }
 
+function readJsonBlob(cwd, revision, filePath) {
+  const contents = readBlob(cwd, revision, filePath);
+  if (contents === null) return null;
+  try {
+    return JSON.parse(contents);
+  } catch {
+    return null;
+  }
+}
+
+function validVerificationArtifact(artifact, taskId, parentSha) {
+  return (
+    artifact?.task_id === taskId &&
+    artifact.result === "ok" &&
+    artifact.implementation_sha === parentSha &&
+    /^sha256:[0-9a-f]{64}$/u.test(String(artifact.input?.digest ?? ""))
+  );
+}
+
+function validQualityReport(artifact, taskId, parentSha, { requirePass = false } = {}) {
+  return (
+    artifact?.task_id === taskId &&
+    artifact.evaluated_sha === parentSha &&
+    ["pass", "rework", "blocked", "human_review"].includes(artifact.verdict) &&
+    (!requirePass || artifact.verdict === "pass")
+  );
+}
+
+function validateCurrentEvidenceBindings({ cwd, currentSha, taskId, parentSha, readmePath }) {
+  const readme = readBlob(cwd, currentSha, readmePath);
+  const parsed = readme === null ? null : splitFrontmatter(readme);
+  const references = parsed?.frontmatter.quality_review?.evidence_refs;
+  if (!Array.isArray(references)) return "missing_current_evidence_bindings";
+  const qualityReports = references.filter(
+    (value) => typeof value === "string" && /\/quality\/[^/]+\/quality-report\.json$/u.test(value),
+  );
+  const verificationRecords = references.filter(
+    (value) => typeof value === "string" && /\/verification\/[^/]+\.json$/u.test(value),
+  );
+  if (
+    !qualityReports.some((filePath) =>
+      validQualityReport(readJsonBlob(cwd, currentSha, filePath), taskId, parentSha, {
+        requirePass: true,
+      }),
+    )
+  ) {
+    return "missing_current_quality_pass";
+  }
+  if (
+    !verificationRecords.some((filePath) =>
+      validVerificationArtifact(readJsonBlob(cwd, currentSha, filePath), taskId, parentSha),
+    )
+  ) {
+    return "missing_current_verification_pass";
+  }
+  return null;
+}
+
 function validBoundJsonArtifact({ cwd, currentSha, taskId, relativePath, filePath, parentSha }) {
   const objectMatch = /^quality\/objects\/sha256\/([0-9a-f]{64})\.[^/]+$/u.exec(relativePath);
   if (objectMatch) {
@@ -267,10 +325,7 @@ function validBoundJsonArtifact({ cwd, currentSha, taskId, relativePath, filePat
     return "malformed_managed_artifact";
   }
   if (relativePath.startsWith("verification/")) {
-    return artifact.task_id === taskId &&
-      artifact.result === "ok" &&
-      artifact.implementation_sha === parentSha &&
-      /^sha256:[0-9a-f]{64}$/u.test(String(artifact.input?.digest ?? ""))
+    return validVerificationArtifact(artifact, taskId, parentSha)
       ? null
       : "invalid_verification_evidence";
   }
@@ -280,14 +335,16 @@ function validBoundJsonArtifact({ cwd, currentSha, taskId, relativePath, filePat
       : "invalid_evaluator_work_order";
   }
   if (/^quality\/[^/]+\/quality-report\.json$/u.test(relativePath)) {
-    return artifact.task_id === taskId &&
-      artifact.evaluated_sha === parentSha &&
-      artifact.verdict === "pass"
-      ? null
-      : "invalid_quality_report";
+    return validQualityReport(artifact, taskId, parentSha) ? null : "invalid_quality_report";
   }
   if (/^quality\/[^/]+\/evaluator-result\.json$/u.test(relativePath)) {
-    return artifact.verdict === "pass" ? null : "invalid_evaluator_result";
+    const workOrderPath = filePath.replace(/evaluator-result\.json$/u, "evaluator-work-order.json");
+    const workOrder = readJsonBlob(cwd, currentSha, workOrderPath);
+    return ["pass", "rework", "blocked", "human_review"].includes(artifact.verdict) &&
+      workOrder?.task?.id === taskId &&
+      workOrder.evaluated_sha === parentSha
+      ? null
+      : "invalid_evaluator_result";
   }
   if (relativePath === "pr/meta.json") {
     return artifact.task_id === taskId &&
@@ -316,6 +373,7 @@ export function evaluateLifecycleArtifactReuse({
 
   let lifecycleTaskId = null;
   let readmeCount = 0;
+  let readmePath = null;
   for (const filePath of changedFiles) {
     const parsedPath = taskPath(filePath);
     if (!parsedPath) {
@@ -327,6 +385,7 @@ export function evaluateLifecycleArtifactReuse({
     }
     if (parsedPath.relativePath === "README.md") {
       readmeCount += 1;
+      readmePath = filePath;
       const before = readBlob(cwd, parentSha, filePath);
       const after = readBlob(cwd, currentSha, filePath);
       if (before === null || after === null || !readmeLifecycleAdvance(before, after, parentSha)) {
@@ -359,6 +418,16 @@ export function evaluateLifecycleArtifactReuse({
 
   if (readmeCount !== 1) {
     return { eligible: false, reason: "missing_task_readme", changed_files: changedFiles };
+  }
+  const invalidBinding = validateCurrentEvidenceBindings({
+    cwd,
+    currentSha,
+    taskId: lifecycleTaskId,
+    parentSha,
+    readmePath,
+  });
+  if (invalidBinding) {
+    return { eligible: false, reason: invalidBinding, changed_files: changedFiles };
   }
 
   return {

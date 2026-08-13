@@ -92,9 +92,9 @@ title: "${title}"
 status: "${status}"
 revision: ${terminal ? 2 : 1}
 verification: ${terminal ? '{ state: "ok" }' : '{ state: "pending" }'}
-quality_review: ${terminal ? `{ state: "pass", evaluated_sha: "${parentSha}" }` : '{ state: "pending" }'}
+quality_review: ${terminal ? `{ state: "pass", evaluated_sha: "${parentSha}", evidence_refs: [".agentplane/tasks/202608131200-ABC123/quality/final/quality-report.json", ".agentplane/tasks/202608131200-ABC123/verification/result.json"] }` : '{ state: "pending" }'}
 commit: ${terminal ? `{ hash: "${parentSha}" }` : "null"}
-extensions: ${terminal ? `{ implementation_commit: { hash: "${parentSha}" } }` : "{}"}
+extensions: { ${terminal ? `implementation_commit: { hash: "${parentSha}" }, ` : ""}"agentplane.human_input": { openQuestion: null, history: [{ id: "owner-review", question: "Approve effects?", askedAt: "2026-08-13T12:00:00Z", askedBy: "EVALUATOR", answeredAt: "2026-08-13T12:01:00Z", answeredBy: "USER", answer: "Approved.", previousStatus: "DONE" }] } }
 execution_contract:
   schema_version: 1
   source: "agent_declaration"
@@ -255,6 +255,51 @@ describe("GitHub CI capability planning", () => {
           result: "ok",
           implementation_sha: parentSha,
           input: { digest: `sha256:${"b".repeat(64)}` },
+        })}\n`,
+      );
+      const qualityPath = path.join(
+        repo,
+        ".agentplane/tasks/202608131200-ABC123/quality/final/quality-report.json",
+      );
+      mkdirSync(path.dirname(qualityPath), { recursive: true });
+      writeFileSync(
+        qualityPath,
+        `${JSON.stringify({
+          schema_version: 1,
+          task_id: "202608131200-ABC123",
+          evaluated_sha: parentSha,
+          verdict: "pass",
+        })}\n`,
+      );
+      const historicalQuality = path.join(
+        repo,
+        ".agentplane/tasks/202608131200-ABC123/quality/review/quality-report.json",
+      );
+      mkdirSync(path.dirname(historicalQuality), { recursive: true });
+      writeFileSync(
+        historicalQuality,
+        `${JSON.stringify({
+          schema_version: 1,
+          task_id: "202608131200-ABC123",
+          evaluated_sha: parentSha,
+          verdict: "human_review",
+        })}\n`,
+      );
+      writeFileSync(
+        path.join(path.dirname(historicalQuality), "evaluator-work-order.json"),
+        `${JSON.stringify({
+          schema_version: 1,
+          kind: "evaluator_work_order",
+          task: { id: "202608131200-ABC123" },
+          evaluated_sha: parentSha,
+        })}\n`,
+      );
+      writeFileSync(
+        path.join(path.dirname(historicalQuality), "evaluator-result.json"),
+        `${JSON.stringify({
+          schema_version: 1,
+          kind: "evaluator_result",
+          verdict: "human_review",
         })}\n`,
       );
     });
