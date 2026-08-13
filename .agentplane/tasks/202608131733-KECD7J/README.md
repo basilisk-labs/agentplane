@@ -4,7 +4,7 @@ title: "Archive resolved release incidents before 0.7.6"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ plan_approval:
   note: "Approved as the mandatory incident closeout discovered by the already-approved 0.7.6 release preflight."
 verification:
   state: "ok"
-  updated_at: "2026-08-13T18:13:28.361Z"
+  updated_at: "2026-08-13T18:15:48.929Z"
   updated_by: "TESTER"
-  note: "Primary digest-bound task, quality, hosted, qualification, and operator evidence frozen for EVALUATOR."
+  note: "Exact archive identity rework passed with primary frozen evidence."
   attempts: 0
 quality_review:
   state: "rework"
@@ -278,8 +278,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Primary digest-bound task, quality, hosted, qualification, and operator evidence frozen for EVALUATOR."
+  -
+    type: "verify"
+    at: "2026-08-13T18:15:48.929Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Exact archive identity rework passed with primary frozen evidence."
 doc_version: 3
-doc_updated_at: "2026-08-13T18:13:29.861Z"
+doc_updated_at: "2026-08-13T18:15:50.226Z"
 doc_updated_by: "CODER"
 description: "Review INC-20260810-01 and INC-20260811-01 against their merged fixes and current enforcement tests. If both failure classes are fixed and no active operator work remains, remove them from the active incidents registry and its installed asset mirror, append complete archived records with exact task, commit, test, and enforcement evidence to docs/developer/incident-archive.mdx, run policy routing and focused incident/regression checks, integrate the policy-only change, then unblock release task 202608131730-BHEAQT without changing its sequence or release scope."
 sections:
@@ -569,6 +575,61 @@ sections:
     Result: pass
     Evidence: 37 focused tests passed; repository-wide format, policy routing, and zero-active-incident gate passed.
     Scope: current implementation and approved deterministic closeout checks.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131733-KECD7J-archive-resolved-release-incidents-before-0-7-6/.agentplane/tasks/202608131733-KECD7J/blueprint/resolved-snapshot.json
+    - old_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+    - current_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608131733-KECD7J
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608131733-KECD7J
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-13T18:15:48.929Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Exact archive identity rework passed with primary frozen evidence.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4, input_digest=sha256:13cbde1ceabdb7665a1c59dd92e0604229e34adc4512b85856802cd3f33646cd
+
+    Details:
+
+    Command: inspect docs/developer/incident-archive.mdx qualification identity
+    Result: pass
+    Evidence: INC-20260811-01 records T3ZDDM qualified implementation 010baa075cf40e400747d255140f6f03a04032eb, final reviewed task commit d3cc2ce785dde5e9e93c221c3196768b32167326, and merged main 89dfabe89424ae6b69911a7174b9876f2713f24e.
+    Scope: exact task-and-commit archive contract requested by EVALUATOR.
+
+    Command: bunx prettier --check docs/developer/incident-archive.mdx .agentplane/tasks/202608131733-KECD7J/evidence
+    Result: pass
+    Evidence: all matched files use Prettier style.
+    Scope: updated archive and frozen evidence formatting.
+
+    Command: node .agentplane/policy/check-routing.mjs && bun run release:incidents:check
+    Result: pass
+    Evidence: policy routing OK; release incident gate reports no active entries.
+    Scope: routing integrity and release unblock.
+
+    Command: git cat-file -e <qualification-shas>^{commit}
+    Result: pass
+    Evidence: qualified implementation, final reviewed task commit, and merged main commit all resolve in the complete repository.
+    Scope: archived qualification identity validity.
+
+    Command: inspect primary source evidence
+    Result: pass
+    Evidence: .agentplane/tasks/202608131733-KECD7J/evidence/source-task-readme-digests.txt | .agentplane/tasks/202608131733-KECD7J/evidence/w4zm7j-final-quality-report.json | .agentplane/tasks/202608131733-KECD7J/evidence/t3zddm-final-quality-report.json | .agentplane/tasks/202608131733-KECD7J/evidence/hosted-checks.json | .agentplane/tasks/202608131733-KECD7J/evidence/qualification-outcome.json | .agentplane/tasks/202608131733-KECD7J/evidence/operator-state.json
+    Scope: digest-bound source tasks, final quality, hosted results, qualification disposition, and remaining operator state.
 
     BlueprintSnapshotRef:
     - state: current
@@ -897,6 +958,61 @@ Command: bun test focused-regressions && bun run format:check && policy/incident
 Result: pass
 Evidence: 37 focused tests passed; repository-wide format, policy routing, and zero-active-incident gate passed.
 Scope: current implementation and approved deterministic closeout checks.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131733-KECD7J-archive-resolved-release-incidents-before-0-7-6/.agentplane/tasks/202608131733-KECD7J/blueprint/resolved-snapshot.json
+- old_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+- current_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608131733-KECD7J
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608131733-KECD7J
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-13T18:15:48.929Z — VERIFY — ok
+
+By: TESTER
+
+Note: Exact archive identity rework passed with primary frozen evidence.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4, input_digest=sha256:13cbde1ceabdb7665a1c59dd92e0604229e34adc4512b85856802cd3f33646cd
+
+Details:
+
+Command: inspect docs/developer/incident-archive.mdx qualification identity
+Result: pass
+Evidence: INC-20260811-01 records T3ZDDM qualified implementation 010baa075cf40e400747d255140f6f03a04032eb, final reviewed task commit d3cc2ce785dde5e9e93c221c3196768b32167326, and merged main 89dfabe89424ae6b69911a7174b9876f2713f24e.
+Scope: exact task-and-commit archive contract requested by EVALUATOR.
+
+Command: bunx prettier --check docs/developer/incident-archive.mdx .agentplane/tasks/202608131733-KECD7J/evidence
+Result: pass
+Evidence: all matched files use Prettier style.
+Scope: updated archive and frozen evidence formatting.
+
+Command: node .agentplane/policy/check-routing.mjs && bun run release:incidents:check
+Result: pass
+Evidence: policy routing OK; release incident gate reports no active entries.
+Scope: routing integrity and release unblock.
+
+Command: git cat-file -e <qualification-shas>^{commit}
+Result: pass
+Evidence: qualified implementation, final reviewed task commit, and merged main commit all resolve in the complete repository.
+Scope: archived qualification identity validity.
+
+Command: inspect primary source evidence
+Result: pass
+Evidence: .agentplane/tasks/202608131733-KECD7J/evidence/source-task-readme-digests.txt | .agentplane/tasks/202608131733-KECD7J/evidence/w4zm7j-final-quality-report.json | .agentplane/tasks/202608131733-KECD7J/evidence/t3zddm-final-quality-report.json | .agentplane/tasks/202608131733-KECD7J/evidence/hosted-checks.json | .agentplane/tasks/202608131733-KECD7J/evidence/qualification-outcome.json | .agentplane/tasks/202608131733-KECD7J/evidence/operator-state.json
+Scope: digest-bound source tasks, final quality, hosted results, qualification disposition, and remaining operator state.
 
 BlueprintSnapshotRef:
 - state: current

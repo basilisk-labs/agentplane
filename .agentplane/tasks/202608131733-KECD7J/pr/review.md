@@ -13,7 +13,7 @@ Created: 2026-08-13T17:34:20.627Z
 ## Verification
 
 - State: ok
-- Note: Primary digest-bound task, quality, hosted, qualification, and operator evidence frozen for EVALUATOR.
+- Note: Exact archive identity rework passed with primary frozen evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

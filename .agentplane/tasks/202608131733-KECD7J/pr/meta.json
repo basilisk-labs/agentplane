@@ -3,7 +3,7 @@
   "branch": "task/202608131733-KECD7J/archive-resolved-release-incidents-before-0-7-6",
   "created_at": "2026-08-13T17:34:20.627Z",
   "diffstat_sha256": "sha256:94c00ff80640012b88ed6a17f9ac02a6fbef94a7bf668e4a4a082aaa8734d028",
-  "last_verified_at": "2026-08-13T18:13:28.361Z",
+  "last_verified_at": "2026-08-13T18:15:48.929Z",
   "last_verified_diffstat_sha256": "sha256:94c00ff80640012b88ed6a17f9ac02a6fbef94a7bf668e4a4a082aaa8734d028",
   "pr_number": 4832,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4832",
