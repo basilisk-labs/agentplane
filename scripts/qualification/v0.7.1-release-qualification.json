@@ -78,6 +78,27 @@
       }
     },
     {
+      "id": "packaged-mixed-scope-lifecycle",
+      "title": "Installed candidate mixed-scope task through completed public lifecycle",
+      "tier": "full",
+      "command": ["node", "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"],
+      "timeout_ms": 900000,
+      "coverage": {
+        "workflow_modes": ["direct"],
+        "supervisor_frontends": ["external_advance"],
+        "lifecycle_states": ["planned", "ready", "doing", "verified", "done"],
+        "semantic_stops": ["approval_required"],
+        "recovery_states": ["stale_fingerprint"]
+      },
+      "failure": {
+        "classification": "packaged_mixed_scope_lifecycle_failure",
+        "impact": "The installable release cannot prove a normal product change through planning, implementation, deterministic verification, evaluator review, commit, and finish.",
+        "proposed_fix": "Reproduce the isolated installed-package fixture, repair the first failing public lifecycle phase, and preserve the stale-envelope and cleanup shields.",
+        "owner_task": "202608122156-EZZZYH",
+        "release_disposition": "block"
+      }
+    },
+    {
       "id": "lifecycle-matrix",
       "title": "Direct and branch_pr lifecycle state matrix",
       "tier": "core",

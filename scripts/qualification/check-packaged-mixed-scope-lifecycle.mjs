@@ -1,0 +1,716 @@
+import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import {
+  createQualificationCommandRunner,
+  installPackedWorkspace,
+} from "../lib/qualification-packed-runtime.mjs";
+import { isDirectRun } from "../lib/script-runtime.mjs";
+
+const scriptPath = fileURLToPath(import.meta.url);
+const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+const PACKAGES = ["core", "recipes", "agentplane"];
+
+export const PACKAGED_MIXED_SCOPE_REQUIRED_PATHS = [
+  ".gitignore",
+  "docs/guide.md",
+  "src/greeting.mjs",
+  "test/greeting.test.mjs",
+];
+
+export class PackagedMixedScopeContractError extends Error {
+  constructor(code, message) {
+    super(`${code}: ${message}`);
+    this.name = "PackagedMixedScopeContractError";
+    this.code = code;
+  }
+}
+
+function fail(code, message) {
+  throw new PackagedMixedScopeContractError(code, message);
+}
+
+function normalizedPath(filePath) {
+  return path.resolve(filePath);
+}
+
+function isInside(parent, child) {
+  const relative = path.relative(normalizedPath(parent), normalizedPath(child));
+  return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative));
+}
+
+function trackAccess(accessLog, operation, filePath, purpose) {
+  accessLog.push({ operation, path: normalizedPath(filePath), purpose });
+}
+
+function readTracked(accessLog, filePath, purpose) {
+  trackAccess(accessLog, "read", filePath, purpose);
+  return readFileSync(filePath, "utf8");
+}
+
+function writeTracked(accessLog, filePath, contents, purpose) {
+  trackAccess(accessLog, "write", filePath, purpose);
+  mkdirSync(path.dirname(filePath), { recursive: true });
+  writeFileSync(filePath, contents, "utf8");
+}
+
+function parseJson(text, label) {
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    fail("invalid_public_json", `${label} did not emit JSON: ${error.message}`);
+  }
+}
+
+function runInstalledJson(run, cli, cwd, argv, label) {
+  return parseJson(run(process.execPath, [cli, ...argv], { cwd }), label);
+}
+
+function assertPublicArgv(argv, label) {
+  if (!Array.isArray(argv) || argv[0] !== "agentplane") {
+    fail("invalid_public_argv", `${label} did not provide an installed agentplane command`);
+  }
+}
+
+function runPacketArgv(run, cli, cwd, argv, label) {
+  assertPublicArgv(argv, label);
+  return runInstalledJson(run, cli, cwd, argv.slice(1), label);
+}
+
+function runInstalledFailure(cli, cwd, argv) {
+  const result = spawnSync(process.execPath, [cli, ...argv], {
+    cwd,
+    encoding: "utf8",
+    env: { ...process.env, AGENTPLANE_NO_UPDATE_CHECK: "1" },
+    maxBuffer: 128 * 1024 * 1024,
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  if (result.error) throw result.error;
+  return {
+    status: result.status,
+    stdout: result.stdout ?? "",
+    stderr: result.stderr ?? "",
+  };
+}
+
+function git(run, repo, argv) {
+  return run("git", argv, { cwd: repo }).trim();
+}
+
+function commitAllIfDirty(run, repo, subject) {
+  if (!git(run, repo, ["status", "--short", "--untracked-files=all"])) return null;
+  git(run, repo, ["add", "-A"]);
+  git(run, repo, ["commit", "-m", subject]);
+  return git(run, repo, ["rev-parse", "HEAD"]);
+}
+
+function longMixedScopePlan() {
+  const steps = [
+    [
+      "Inspect the clean fixture baseline and preserve the public package boundary.",
+      "Confirm that the implementation is limited to the greeting source, its automated tests, the user guide, and repository ignore metadata. The work must remain reversible, local to the repository, and free of provider or network effects after installation.",
+    ],
+    [
+      "Define the observable greeting behavior before changing implementation details.",
+      "The module must expose a named function, preserve a useful default for callers that omit a name, and return a personalized value when a name is provided. Treat these outputs as the product contract rather than relying on source-text matching alone.",
+    ],
+    [
+      "Update the source module without widening the public surface.",
+      "Use a small deterministic implementation that can be imported by the built-in Node test runner. Avoid dependencies, generated code, environment variables, clocks, random values, and filesystem access so the behavior remains portable and cheap to verify.",
+    ],
+    [
+      "Expand automated coverage for both the default and personalized paths.",
+      "The test must import the installed fixture source through a normal relative module boundary, assert exact user-visible strings, fail on a regression, and execute through the verification command declared during public task creation.",
+    ],
+    [
+      "Revise the user guide to describe the completed behavior.",
+      "Document the default invocation, the personalized invocation, and the exact expected outputs. Keep the guide aligned with the executable tests so a release cannot pass with source code but missing or contradictory user documentation.",
+    ],
+    [
+      "Update repository metadata as part of the same coherent product change.",
+      "Add the fixture build-output directory to .gitignore while preserving all existing ignore entries. This metadata edit is required evidence that mixed-scope authority is carried through planning, implementation, verification, and finish rather than silently dropped.",
+    ],
+    [
+      "Return implementation control to the AgentPlane supervisor through the issued exchange only.",
+      "Write one schema-valid semantic result to the exact result path in the public packet. Do not edit the task README, verification records, evaluator artifacts, recovery journals, fingerprints, quality reports, or any other lifecycle state directly.",
+    ],
+    [
+      "Let AgentPlane execute deterministic verification from the declared command.",
+      "The supervisor must run node --test test/greeting.test.mjs, record the command outcome, bind it to current task state, and expose the result through public task readback. A claimed agent check alone is not sufficient evidence.",
+    ],
+    [
+      "Review the resulting diff and verification evidence before accepting quality.",
+      "The evaluator decision must be derived from the actual changed-path set, the public verification state, and the resulting product content. It must reject missing source, test, documentation, metadata, or verification evidence instead of returning a pre-baked pass.",
+    ],
+    [
+      "Complete the direct lifecycle with AgentPlane-owned Git effects.",
+      "Require a real implementation commit, a completed task state, a passing quality review, and a clean tracked worktree. Validate that the recorded task commit resolves to an actual Git commit and that the final repository contains every intended product path.",
+    ],
+    [
+      "Exercise the stale-envelope recovery boundary explicitly.",
+      "After a valid planning envelope is accepted, replay the exact public resume command and require a non-zero stale or already-consumed diagnostic. Continue with a fresh supervisor packet so the negative probe cannot corrupt or prematurely terminate the task lifecycle.",
+    ],
+    [
+      "Prove cleanup and release-gate behavior.",
+      "Remove the isolated prefix, packed tarballs, npm cache, exchange files, fixture repository, and all temporary state even on failure. Report a stable phase-specific diagnostic for any missing evidence and block qualification instead of downgrading the scenario to an informational warning.",
+    ],
+  ];
+  const text = steps
+    .map(([title, detail], index) => `${index + 1}. ${title}\n   ${detail}`)
+    .join("\n\n");
+  assert.ok(
+    Buffer.byteLength(text, "utf8") > 4_218,
+    "fixture plan must exceed the 0.7.5 failure size",
+  );
+  assert.ok(Buffer.byteLength(text, "utf8") < 64 * 1024, "fixture plan must remain bounded");
+  return text;
+}
+
+function packetExchange(packet, expectedRole) {
+  if (packet.action?.kind !== "agent_episode" || packet.authority?.role !== expectedRole) {
+    fail(
+      `missing_${expectedRole.toLowerCase()}_episode`,
+      `expected ${expectedRole} agent episode, received ${packet.action?.kind ?? "unknown"}/${packet.authority?.role ?? "unknown"}`,
+    );
+  }
+  if (!packet.exchange?.result_path || !packet.exchange?.work_order_ref) {
+    fail("missing_exchange", `${expectedRole} packet omitted its public exchange`);
+  }
+  return packet.exchange;
+}
+
+function semanticResultFor({ packet, workOrder, summary, taskIntent, claimedChecks, review }) {
+  return {
+    schema_version: 1,
+    kind: "agent_action_result",
+    task_id: packet.task_id,
+    transition_id: packet.transition_id,
+    state_fingerprint: packet.state_fingerprint,
+    role: workOrder.role,
+    result: {
+      schema_version: 2,
+      kind: "agent_semantic_result",
+      work_order_id: workOrder.work_order_id,
+      status: "completed",
+      summary,
+      findings: review ? ["The public diff and recorded verification satisfy the task."] : [],
+      uncertainty: [],
+      ...(taskIntent ? { task_intent: taskIntent } : {}),
+      ...(claimedChecks ? { claimed_checks: claimedChecks } : {}),
+      ...(review ? { review } : {}),
+    },
+  };
+}
+
+function writePacketResult(accessLog, packet, role, resultOptions) {
+  const exchange = packetExchange(packet, role);
+  const workOrderPath = path.join(exchange.directory, exchange.work_order_ref);
+  const workOrder = parseJson(
+    readTracked(accessLog, workOrderPath, `${role.toLowerCase()}_work_order`),
+    `${role} work order`,
+  );
+  const expectedResultPath = path.join(exchange.directory, exchange.result_ref);
+  if (normalizedPath(exchange.result_path) !== normalizedPath(expectedResultPath)) {
+    fail("invalid_exchange_path", `${role} result path is not bound to its public exchange`);
+  }
+  writeTracked(
+    accessLog,
+    exchange.result_path,
+    `${JSON.stringify(semanticResultFor({ packet, workOrder, ...resultOptions }), null, 2)}\n`,
+    `${role.toLowerCase()}_result`,
+  );
+  return exchange;
+}
+
+function advanceToEpisode(run, cli, repo, taskId, expectedRole) {
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    const packet = runInstalledJson(
+      run,
+      cli,
+      repo,
+      ["task", "advance", taskId, "--agent-json"],
+      `task advance ${expectedRole}`,
+    );
+    if (packet.action?.kind === "agent_episode") {
+      packetExchange(packet, expectedRole);
+      return packet;
+    }
+    if (packet.action?.kind === "terminal") {
+      fail(
+        `missing_${expectedRole.toLowerCase()}_episode`,
+        `task became terminal before ${expectedRole}`,
+      );
+    }
+    if (packet.action?.kind === "approval_required") {
+      fail("unexpected_approval", `task requested an unhandled approval before ${expectedRole}`);
+    }
+  }
+  fail(`missing_${expectedRole.toLowerCase()}_episode`, `task did not issue ${expectedRole}`);
+}
+
+function continueToTerminal(run, cli, repo, taskId, initialPacket) {
+  let packet = initialPacket;
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    if (packet.action?.kind === "terminal") return packet;
+    packet = runInstalledJson(
+      run,
+      cli,
+      repo,
+      ["task", "advance", taskId, "--agent-json"],
+      "task advance terminal",
+    );
+  }
+  fail("missing_finish", "task did not reach a terminal public supervisor state");
+}
+
+function invalidInternalAccesses(evidence) {
+  const internalRoot = path.join(evidence.fixture_repo, ".agentplane");
+  return evidence.access_log.filter((entry) => isInside(internalRoot, entry.path));
+}
+
+export function assertPackagedMixedScopeEvidence(evidence) {
+  if (!Number.isSafeInteger(evidence.plan_bytes) || evidence.plan_bytes <= 4_218) {
+    fail("missing_planner", "accepted semantic plan did not cross the 0.7.5 failure boundary");
+  }
+  if (!evidence.phase_roles?.includes("EXECUTOR")) {
+    fail("missing_executor", "public supervisor did not issue the implementation episode");
+  }
+  const changed = new Set(evidence.changed_paths ?? []);
+  for (const requiredPath of PACKAGED_MIXED_SCOPE_REQUIRED_PATHS) {
+    if (changed.has(requiredPath)) continue;
+    if (requiredPath === "src/greeting.mjs") fail("missing_code", "source change was omitted");
+    if (requiredPath === "test/greeting.test.mjs") fail("missing_tests", "test change was omitted");
+    if (requiredPath === "docs/guide.md") fail("missing_docs", "documentation change was omitted");
+    fail("missing_metadata", "repository metadata change was omitted");
+  }
+  if (evidence.verification?.state !== "ok" || evidence.verification?.phase !== "TESTER") {
+    fail("missing_verification", "supervisor-owned deterministic verification was not observed");
+  }
+  if (evidence.evaluator?.state !== "pass" || evidence.evaluator?.phase !== "EVALUATOR") {
+    fail("missing_evaluator", "evidence-backed evaluator acceptance was not observed");
+  }
+  if (!/^[0-9a-f]{40}$/u.test(evidence.commit?.task_commit ?? "")) {
+    fail("missing_commit", "task finish did not record a real Git commit");
+  }
+  if (evidence.finish?.status !== "DONE" || evidence.finish?.terminal !== true) {
+    fail("missing_finish", "public supervisor did not complete the lifecycle");
+  }
+  if (evidence.stale_exchange?.rejected !== true) {
+    fail("stale_exchange_accepted", "an accepted envelope was replayed without a stable rejection");
+  }
+  const internal = invalidInternalAccesses(evidence);
+  if (internal.length > 0) {
+    fail("internal_artifact_access", `harness accessed ${internal[0].path}`);
+  }
+  if (evidence.temp_cleanup !== true) {
+    fail("temporary_state_leaked", "temporary package or fixture state remained after execution");
+  }
+  if (evidence.final_git_status !== "") {
+    fail(
+      "dirty_fixture",
+      `fixture ended with tracked or untracked changes: ${evidence.final_git_status}`,
+    );
+  }
+  return evidence;
+}
+
+function buildFixture(run, repo, accessLog) {
+  mkdirSync(repo, { recursive: true });
+  git(run, repo, ["init", "-q", "-b", "main"]);
+  git(run, repo, ["config", "user.name", "AgentPlane Qualification"]);
+  git(run, repo, ["config", "user.email", "qualification@example.invalid"]);
+  writeTracked(
+    accessLog,
+    path.join(repo, "package.json"),
+    `${JSON.stringify({ name: "agentplane-mixed-scope-fixture", private: true, type: "module" }, null, 2)}\n`,
+    "fixture_seed",
+  );
+  writeTracked(
+    accessLog,
+    path.join(repo, "src", "greeting.mjs"),
+    'export function greeting() {\n  return "Hello, world!";\n}\n',
+    "fixture_seed",
+  );
+  writeTracked(
+    accessLog,
+    path.join(repo, "test", "greeting.test.mjs"),
+    [
+      'import assert from "node:assert/strict";',
+      'import { test } from "node:test";',
+      'import { greeting } from "../src/greeting.mjs";',
+      "",
+      'test("returns the default greeting", () => {',
+      '  assert.equal(greeting(), "Hello, world!");',
+      "});",
+      "",
+    ].join("\n"),
+    "fixture_seed",
+  );
+  writeTracked(
+    accessLog,
+    path.join(repo, "docs", "guide.md"),
+    "# Greeting guide\n\nCall `greeting()` to receive `Hello, world!`.\n",
+    "fixture_seed",
+  );
+  writeTracked(accessLog, path.join(repo, ".gitignore"), "node_modules/\n", "fixture_seed");
+  writeTracked(
+    accessLog,
+    path.join(repo, "README.md"),
+    "# Mixed-scope qualification fixture\n",
+    "fixture_seed",
+  );
+  commitAllIfDirty(run, repo, "chore: seed mixed-scope fixture");
+}
+
+function applyProductChange(accessLog, repo) {
+  writeTracked(
+    accessLog,
+    path.join(repo, "src", "greeting.mjs"),
+    ['export function greeting(name = "world") {', "  return `Hello, ${name}!`;", "}", ""].join(
+      "\n",
+    ),
+    "executor_product_change",
+  );
+  writeTracked(
+    accessLog,
+    path.join(repo, "test", "greeting.test.mjs"),
+    [
+      'import assert from "node:assert/strict";',
+      'import { test } from "node:test";',
+      'import { greeting } from "../src/greeting.mjs";',
+      "",
+      'test("returns the default greeting", () => {',
+      '  assert.equal(greeting(), "Hello, world!");',
+      "});",
+      "",
+      'test("returns a personalized greeting", () => {',
+      '  assert.equal(greeting("Ada"), "Hello, Ada!");',
+      "});",
+      "",
+    ].join("\n"),
+    "executor_product_change",
+  );
+  writeTracked(
+    accessLog,
+    path.join(repo, "docs", "guide.md"),
+    [
+      "# Greeting guide",
+      "",
+      "Call `greeting()` to receive `Hello, world!`.",
+      'Call `greeting("Ada")` to receive `Hello, Ada!`.',
+      "",
+    ].join("\n"),
+    "executor_product_change",
+  );
+  const gitignorePath = path.join(repo, ".gitignore");
+  const currentGitignore = readTracked(accessLog, gitignorePath, "executor_metadata_read");
+  writeTracked(
+    accessLog,
+    gitignorePath,
+    `${currentGitignore.replace(/\n*$/u, "\n")}fixture-dist/\n`,
+    "executor_product_change",
+  );
+}
+
+function runFixture({ run, cli, packages, tempRoot }) {
+  const repo = path.join(tempRoot, "fixture");
+  const accessLog = [];
+  buildFixture(run, repo, accessLog);
+
+  run(process.execPath, [cli, "--version"], { cwd: repo });
+  run(
+    process.execPath,
+    [
+      cli,
+      "init",
+      "--yes",
+      "--init-mode",
+      "ci",
+      "--tool",
+      "manual",
+      "--setup-profile",
+      "standard",
+      "--workflow",
+      "direct",
+      "--backend",
+      "local",
+      "--hooks",
+      "false",
+      "--require-plan-approval",
+      "true",
+      "--require-network-approval",
+      "false",
+      "--require-verify-approval",
+      "false",
+    ],
+    { cwd: repo },
+  );
+  commitAllIfDirty(run, repo, "chore: initialize AgentPlane fixture");
+
+  const created = runInstalledJson(
+    run,
+    cli,
+    repo,
+    [
+      "task",
+      "create",
+      "Add a personalized greeting with tests and user documentation",
+      "--description",
+      "Change source behavior, automated tests, the user guide, and .gitignore without external effects.",
+      "--route",
+      "auto",
+      "--verify",
+      "node --test test/greeting.test.mjs",
+      "--json",
+    ],
+    "task create",
+  );
+  const taskId = created.task_id;
+  assert.equal(created.status, "semantic_input_required");
+
+  const planner = advanceToEpisode(run, cli, repo, taskId, "PLANNER");
+  const plan = longMixedScopePlan();
+  const plannerExchange = writePacketResult(accessLog, planner, "PLANNER", {
+    summary: plan,
+    taskIntent: {
+      task_kind: "code",
+      mutation_scope: "code",
+      risk_flags: [],
+      tags: ["qualification", "mixed-scope", "installed-package"],
+      blueprint_request: "code.direct",
+      execution: {
+        schema_version: 2,
+        preferred_mode: "direct",
+        scope_roots: [...PACKAGED_MIXED_SCOPE_REQUIRED_PATHS],
+        repository_effects: ["repository_write", "source_code", "tests", "documentation"],
+        external_effects: [],
+        requirements_uncertainty: "bounded",
+        implementation_uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: [
+          "The fixture change is local, bounded, reversible, and has no external effects.",
+        ],
+      },
+    },
+  });
+  const approval = runPacketArgv(
+    run,
+    cli,
+    repo,
+    plannerExchange.resume_argv,
+    "planner result acceptance",
+  );
+  assert.equal(approval.action?.kind, "approval_required");
+  assert.equal(approval.operator_action?.kind, "approve_plan");
+
+  const stale = runInstalledFailure(cli, repo, plannerExchange.resume_argv.slice(1));
+  const staleDiagnostic = `${stale.stderr}\n${stale.stdout}`.trim();
+  if (
+    stale.status === 0 ||
+    !/accepted|consumed|current|retired|stale|already/iu.test(staleDiagnostic)
+  ) {
+    fail(
+      "stale_exchange_accepted",
+      `accepted planning envelope replay did not fail stably: status=${stale.status} ${staleDiagnostic}`,
+    );
+  }
+
+  runPacketArgv(
+    run,
+    cli,
+    approval.operator_action.cwd ?? repo,
+    approval.operator_action.argv,
+    "plan approval",
+  );
+  commitAllIfDirty(run, repo, `chore: approve ${taskId} plan`);
+  const executionBase = git(run, repo, ["rev-parse", "HEAD"]);
+  const commitCountBefore = Number(git(run, repo, ["rev-list", "--count", "HEAD"]));
+
+  const executor = advanceToEpisode(run, cli, repo, taskId, "EXECUTOR");
+  applyProductChange(accessLog, repo);
+  const executorExchange = writePacketResult(accessLog, executor, "EXECUTOR", {
+    summary:
+      "Implemented personalized greeting behavior, executable tests, aligned user documentation, and repository ignore metadata.",
+    claimedChecks: [
+      {
+        check: "node --test test/greeting.test.mjs",
+        claimed_status: "not_run",
+        details: "The AgentPlane supervisor owns deterministic verification for this task.",
+      },
+    ],
+  });
+  const evaluator = runPacketArgv(
+    run,
+    cli,
+    repo,
+    executorExchange.resume_argv,
+    "executor result acceptance",
+  );
+  packetExchange(evaluator, "EVALUATOR");
+
+  const afterVerification = runInstalledJson(
+    run,
+    cli,
+    repo,
+    ["task", "show", taskId],
+    "task show after verification",
+  );
+  const changedPaths = git(run, repo, ["diff", "--name-only", executionBase, "HEAD", "--"])
+    .split("\n")
+    .filter(Boolean)
+    .sort();
+  const evaluatorProductSnapshot = {
+    source: readTracked(accessLog, path.join(repo, "src", "greeting.mjs"), "evaluator_review"),
+    test: readTracked(accessLog, path.join(repo, "test", "greeting.test.mjs"), "evaluator_review"),
+    docs: readTracked(accessLog, path.join(repo, "docs", "guide.md"), "evaluator_review"),
+    metadata: readTracked(accessLog, path.join(repo, ".gitignore"), "evaluator_review"),
+  };
+  const reviewReady =
+    PACKAGED_MIXED_SCOPE_REQUIRED_PATHS.every((requiredPath) =>
+      changedPaths.includes(requiredPath),
+    ) &&
+    afterVerification.verification?.state === "ok" &&
+    evaluatorProductSnapshot.source.includes("Hello, ${name}!") &&
+    evaluatorProductSnapshot.test.includes("personalized greeting") &&
+    evaluatorProductSnapshot.docs.includes("Hello, Ada!") &&
+    evaluatorProductSnapshot.metadata.includes("fixture-dist/");
+  if (!reviewReady) {
+    fail("missing_evaluator_evidence", "public diff or deterministic verification was incomplete");
+  }
+
+  const evaluatorExchange = writePacketResult(accessLog, evaluator, "EVALUATOR", {
+    summary:
+      "Reviewed the committed diff and public deterministic-verification state; every required product surface is present and consistent.",
+    review: {
+      verdict: "pass",
+      missing_tests: [],
+      hidden_assumptions: [],
+      residual_risks: [],
+    },
+  });
+  const terminalCandidate = runPacketArgv(
+    run,
+    cli,
+    repo,
+    evaluatorExchange.resume_argv,
+    "evaluator result acceptance",
+  );
+  const terminal = continueToTerminal(run, cli, repo, taskId, terminalCandidate);
+  const finalTask = runInstalledJson(run, cli, repo, ["task", "show", taskId], "final task show");
+  const finalHead = git(run, repo, ["rev-parse", "HEAD"]);
+  const commitCountAfter = Number(git(run, repo, ["rev-list", "--count", "HEAD"]));
+  const taskCommit = String(finalTask.commit ?? "");
+  try {
+    git(run, repo, ["cat-file", "-e", `${taskCommit}^{commit}`]);
+  } catch {
+    fail("missing_commit", "recorded task commit is absent from Git");
+  }
+
+  return {
+    schema_version: 1,
+    kind: "agentplane.packaged_mixed_scope_lifecycle_evidence",
+    task_id: taskId,
+    fixture_repo: repo,
+    packages,
+    plan_bytes: Buffer.byteLength(plan, "utf8"),
+    phase_roles: ["PLANNER", "EXECUTOR", "TESTER:supervisor_owned", "EVALUATOR"],
+    changed_paths: changedPaths,
+    verification: {
+      phase: "TESTER",
+      state: finalTask.verification?.state ?? null,
+      command: "node --test test/greeting.test.mjs",
+    },
+    evaluator: {
+      phase: "EVALUATOR",
+      state: finalTask.quality_review?.state ?? null,
+      reviewed_changed_paths: changedPaths,
+    },
+    commit: {
+      task_commit: taskCommit,
+      final_head: finalHead,
+      count_before: commitCountBefore,
+      count_after: commitCountAfter,
+    },
+    finish: { status: finalTask.status, terminal: terminal.action?.kind === "terminal" },
+    stale_exchange: {
+      rejected: stale.status !== 0,
+      status: stale.status,
+      diagnostic: staleDiagnostic,
+    },
+    access_log: accessLog,
+    final_git_status: git(run, repo, ["status", "--short", "--untracked-files=all"]),
+    temp_cleanup: false,
+  };
+}
+
+export function runPackagedMixedScopeLifecycle() {
+  const run = createQualificationCommandRunner(repoRoot);
+  const candidateStatus = git(run, repoRoot, [
+    "status",
+    "--short",
+    "--untracked-files=all",
+    "--",
+    ".",
+    ":(exclude).agentplane/tasks",
+  ]);
+  if (candidateStatus) {
+    fail("candidate_not_clean", `packaged candidate worktree is not clean: ${candidateStatus}`);
+  }
+  const tempRoot = mkdtempSync(path.join(os.tmpdir(), "agentplane-packaged-mixed-scope-"));
+  const prefix = path.join(tempRoot, "prefix");
+  const packDirectory = path.join(tempRoot, "packs");
+  const cacheDirectory = path.join(tempRoot, "npm-cache");
+  mkdirSync(prefix, { recursive: true });
+  mkdirSync(packDirectory, { recursive: true });
+  mkdirSync(cacheDirectory, { recursive: true });
+  let evidence;
+  try {
+    const installed = installPackedWorkspace({
+      run,
+      prefix,
+      packDirectory,
+      cacheDirectory,
+      repoRoot,
+      packageNames: PACKAGES,
+    });
+    evidence = runFixture({
+      run,
+      cli: installed.cli,
+      packages: installed.packages,
+      tempRoot,
+    });
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+  evidence.temp_cleanup = !existsSync(tempRoot);
+  assertPackagedMixedScopeEvidence(evidence);
+  return evidence;
+}
+
+if (isDirectRun(import.meta.url)) {
+  try {
+    const evidence = runPackagedMixedScopeLifecycle();
+    process.stdout.write(
+      `${JSON.stringify(
+        {
+          status: "passed",
+          task_id: evidence.task_id,
+          plan_bytes: evidence.plan_bytes,
+          changed_paths: evidence.changed_paths,
+          task_commit: evidence.commit.task_commit,
+          stale_exchange_status: evidence.stale_exchange.status,
+          temp_cleanup: evidence.temp_cleanup,
+        },
+        null,
+        2,
+      )}\n`,
+    );
+  } catch (error) {
+    process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
+    process.exitCode = 1;
+  }
+}
