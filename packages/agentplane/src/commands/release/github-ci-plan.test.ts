@@ -373,6 +373,86 @@ describe("GitHub CI capability planning", () => {
     }
   });
 
+  it("rotates the frozen implementation identity to an exact new code parent", () => {
+    const repo = mkdtempSync(path.join(os.tmpdir(), "agentplane-lifecycle-rotation-"));
+    try {
+      git(repo, ["init", "-b", "main"]);
+      git(repo, ["config", "user.name", "CI Test"]);
+      git(repo, ["config", "user.email", "ci@example.com"]);
+      const taskRoot = ".agentplane/tasks/202608131200-ABC123";
+      const readmePath = `${taskRoot}/README.md`;
+      mkdirSync(path.join(repo, taskRoot), { recursive: true });
+      writeFileSync(path.join(repo, "feature.js"), "export const value = 1;\n");
+      writeFileSync(path.join(repo, readmePath), taskReadme({ status: "DOING" }));
+      git(repo, ["add", "."]);
+      git(repo, ["commit", "-m", "initial implementation"]);
+      const oldImplementationSha = git(repo, ["rev-parse", "HEAD"]);
+
+      writeFileSync(path.join(repo, "feature.js"), "export const value = 2;\n");
+      writeFileSync(
+        path.join(repo, readmePath),
+        taskReadme({
+          status: "DOING",
+        }).replace(
+          'extensions: { "agentplane.human_input"',
+          `extensions: { implementation_commit: { hash: "${oldImplementationSha}" }, "agentplane.human_input"`,
+        ),
+      );
+      git(repo, ["add", "."]);
+      git(repo, ["commit", "-m", "new implementation"]);
+      const newImplementationSha = git(repo, ["rev-parse", "HEAD"]);
+
+      writeFileSync(
+        path.join(repo, readmePath),
+        taskReadme({ status: "DOING" })
+          .replace(
+            'extensions: { "agentplane.human_input"',
+            `extensions: { implementation_commit: { hash: "${oldImplementationSha}" }, "agentplane.human_input"`,
+          )
+          .replace("revision: 1", "revision: 2"),
+      );
+      git(repo, ["add", "."]);
+      git(repo, ["commit", "-m", "verification artifacts"]);
+      const verifiedLifecycleParent = git(repo, ["rev-parse", "HEAD"]);
+
+      writeFileSync(
+        path.join(repo, readmePath),
+        taskReadme({
+          status: "DONE",
+          parentSha: verifiedLifecycleParent,
+          implementationSha: newImplementationSha,
+        }),
+      );
+      const verificationPath = path.join(repo, taskRoot, "verification/result.json");
+      mkdirSync(path.dirname(verificationPath), { recursive: true });
+      writeFileSync(
+        verificationPath,
+        `${JSON.stringify({ task_id: "202608131200-ABC123", result: "ok", implementation_sha: newImplementationSha, input: { digest: `sha256:${"b".repeat(64)}` } })}\n`,
+      );
+      const qualityPath = path.join(repo, taskRoot, "quality/final/quality-report.json");
+      mkdirSync(path.dirname(qualityPath), { recursive: true });
+      writeFileSync(
+        qualityPath,
+        `${JSON.stringify({ task_id: "202608131200-ABC123", evaluated_sha: newImplementationSha, verdict: "pass" })}\n`,
+      );
+      git(repo, ["add", "."]);
+      git(repo, ["commit", "-m", "lifecycle closure"]);
+
+      expect(
+        evaluateLifecycleArtifactReuse({
+          cwd: repo,
+          parentSha: verifiedLifecycleParent,
+          currentSha: git(repo, ["rev-parse", "HEAD"]),
+        }),
+      ).toMatchObject({
+        eligible: true,
+        implementation_sha: newImplementationSha,
+      });
+    } finally {
+      rmSync(repo, { recursive: true, force: true });
+    }
+  });
+
   it("rejects semantic README drift and malformed managed evidence", () => {
     const semanticDrift = withLifecycleRepo((repo, parentSha, readmePath) => {
       writeFileSync(
@@ -432,6 +512,53 @@ describe("GitHub CI capability planning", () => {
       eligible: false,
       reason: "semantic_readme_drift",
     });
+  });
+
+  it("rejects rotating implementation identity across task-artifact-only history", () => {
+    const repo = mkdtempSync(path.join(os.tmpdir(), "agentplane-lifecycle-task-only-"));
+    try {
+      git(repo, ["init", "-b", "main"]);
+      git(repo, ["config", "user.name", "CI Test"]);
+      git(repo, ["config", "user.email", "ci@example.com"]);
+      const readmePath = ".agentplane/tasks/202608131200-ABC123/README.md";
+      mkdirSync(path.join(repo, path.dirname(readmePath)), { recursive: true });
+      writeFileSync(path.join(repo, readmePath), taskReadme({ status: "DOING" }));
+      git(repo, ["add", "."]);
+      git(repo, ["commit", "-m", "implementation"]);
+      const implementationSha = git(repo, ["rev-parse", "HEAD"]);
+
+      writeFileSync(
+        path.join(repo, readmePath),
+        taskReadme({ status: "DOING" }).replace(
+          'extensions: { "agentplane.human_input"',
+          `extensions: { implementation_commit: { hash: "${implementationSha}" }, "agentplane.human_input"`,
+        ),
+      );
+      git(repo, ["add", "."]);
+      git(repo, ["commit", "-m", "task artifact only"]);
+      const taskOnlyParent = git(repo, ["rev-parse", "HEAD"]);
+
+      writeFileSync(
+        path.join(repo, readmePath),
+        taskReadme({
+          status: "DONE",
+          parentSha: taskOnlyParent,
+          implementationSha: taskOnlyParent,
+        }),
+      );
+      git(repo, ["add", "."]);
+      git(repo, ["commit", "-m", "invalid rotation"]);
+
+      expect(
+        evaluateLifecycleArtifactReuse({
+          cwd: repo,
+          parentSha: taskOnlyParent,
+          currentSha: git(repo, ["rev-parse", "HEAD"]),
+        }),
+      ).toMatchObject({ eligible: false, reason: "semantic_readme_drift" });
+    } finally {
+      rmSync(repo, { recursive: true, force: true });
+    }
   });
 
   it("keeps the PR full-regression floor for docs-only changes", () => {

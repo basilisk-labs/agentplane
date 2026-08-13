@@ -43,6 +43,10 @@ function taskPath(value) {
   return match ? { taskId: match[1], relativePath: match[2] } : null;
 }
 
+function isTaskArtifactPath(value) {
+  return taskPath(value) !== null;
+}
+
 function splitFrontmatter(markdown) {
   const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/u.exec(markdown);
   if (!match) return null;
@@ -205,14 +209,23 @@ function readmeImplementationSha(cwd, before, after, parentSha) {
   const implementationSha = /^[0-9a-f]{40}$/u.test(String(afterDeclared ?? ""))
     ? afterDeclared
     : parentSha;
-  if (
-    beforeImplementation
-      ? beforeImplementation !== implementationSha
-      : implementationSha !== parentSha
-  ) {
-    return null;
-  }
   try {
+    const preservesIdentity = beforeImplementation === implementationSha;
+    const establishesInitialIdentity = !beforeImplementation && implementationSha === parentSha;
+    const rotatesToNewImplementation =
+      beforeImplementation &&
+      implementationSha !== beforeImplementation &&
+      git(["diff", "--name-only", beforeImplementation, parentSha], cwd)
+        .split("\n")
+        .filter(Boolean)
+        .some((filePath) => !isTaskArtifactPath(filePath)) &&
+      git(["diff", "--name-only", implementationSha, parentSha], cwd)
+        .split("\n")
+        .filter(Boolean)
+        .every((filePath) => isTaskArtifactPath(filePath));
+    if (!preservesIdentity && !establishesInitialIdentity && !rotatesToNewImplementation) {
+      return null;
+    }
     execFileSync("git", ["merge-base", "--is-ancestor", implementationSha, parentSha], {
       cwd,
       stdio: "ignore",
