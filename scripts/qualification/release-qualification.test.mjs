@@ -50,6 +50,10 @@ import {
   CODEX_REPLAY_BINARY_ENV,
   CODEX_REPLAY_CLI_VERSION_ENV,
 } from "../bench/internal/agent-efficiency-codex-runtime.mjs";
+import {
+  assertPackagedMixedScopeEvidence,
+  PackagedMixedScopeContractError,
+} from "./check-packaged-mixed-scope-lifecycle.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
@@ -173,6 +177,86 @@ function supervisorLatencySample(duration_ms) {
 }
 
 describe("v0.7.1 release qualification contract", () => {
+  it("keeps the installed mixed-scope scenario blocking, bounded, and selectable", () => {
+    const manifest = readQualificationManifest(manifestPath);
+    const scenario = manifest.scenarios.find(
+      (candidate) => candidate.id === "packaged-mixed-scope-lifecycle",
+    );
+    assert.ok(scenario);
+    assert.equal(scenario.tier, "full");
+    assert.equal(scenario.timeout_ms, 900_000);
+    assert.equal(scenario.failure.release_disposition, "block");
+    assert.deepEqual(scenario.coverage.workflow_modes, ["direct"]);
+    assert.deepEqual(scenario.coverage.supervisor_frontends, ["external_advance"]);
+    assert.deepEqual(scenario.coverage.lifecycle_states, [
+      "planned",
+      "ready",
+      "doing",
+      "verified",
+      "done",
+    ]);
+    assert.deepEqual(
+      selectQualificationScenarios(manifest, {
+        profile: "full",
+        provider: false,
+        scenarioIds: ["packaged-mixed-scope-lifecycle"],
+      }).map((candidate) => candidate.id),
+      ["packaged-mixed-scope-lifecycle"],
+    );
+  });
+
+  it("fails the installed mixed-scope contract for every omitted lifecycle proof", () => {
+    const fixtureRepo = path.join(tmpdir(), "agentplane-mixed-scope-contract-fixture");
+    const valid = {
+      plan_bytes: 4_219,
+      phase_roles: ["PLANNER", "EXECUTOR", "TESTER:supervisor_owned", "EVALUATOR"],
+      fixture_repo: fixtureRepo,
+      changed_paths: [".gitignore", "docs/guide.md", "src/greeting.mjs", "test/greeting.test.mjs"],
+      verification: { phase: "TESTER", state: "ok" },
+      evaluator: { phase: "EVALUATOR", state: "pass" },
+      commit: { task_commit: "a".repeat(40) },
+      finish: { status: "DONE", terminal: true },
+      stale_exchange: { rejected: true },
+      access_log: [],
+      temp_cleanup: true,
+      final_git_status: "",
+    };
+    assert.equal(assertPackagedMixedScopeEvidence(valid), valid);
+
+    const cases = [
+      ["missing_planner", (value) => (value.plan_bytes = 3_072)],
+      ["missing_executor", (value) => (value.phase_roles = ["PLANNER", "EVALUATOR"])],
+      ["missing_code", (value) => value.changed_paths.splice(2, 1)],
+      ["missing_tests", (value) => value.changed_paths.pop()],
+      ["missing_docs", (value) => value.changed_paths.splice(1, 1)],
+      ["missing_metadata", (value) => value.changed_paths.shift()],
+      ["missing_verification", (value) => (value.verification.state = "missing")],
+      ["missing_evaluator", (value) => (value.evaluator.state = "missing")],
+      ["missing_commit", (value) => (value.commit.task_commit = "")],
+      ["missing_finish", (value) => (value.finish.terminal = false)],
+      ["stale_exchange_accepted", (value) => (value.stale_exchange.rejected = false)],
+      [
+        "internal_artifact_access",
+        (value) =>
+          value.access_log.push({
+            operation: "read",
+            path: path.join(fixtureRepo, ".agentplane", "tasks", "README.md"),
+            purpose: "forbidden",
+          }),
+      ],
+      ["temporary_state_leaked", (value) => (value.temp_cleanup = false)],
+    ];
+    for (const [expectedCode, mutate] of cases) {
+      const incomplete = structuredClone(valid);
+      mutate(incomplete);
+      assert.throws(
+        () => assertPackagedMixedScopeEvidence(incomplete),
+        (error) => error instanceof PackagedMixedScopeContractError && error.code === expectedCode,
+        expectedCode,
+      );
+    }
+  });
+
   it("gates supervisor latency on paired ratios instead of unrelated host-load tails", () => {
     const hostLoad = [100, 100, 100, 100, 100, 500, 500, 500, 500, 500];
     const stable = compareSupervisorLatencySamples(
@@ -345,6 +429,7 @@ describe("v0.7.1 release qualification contract", () => {
     const scenarios = [
       { id: "reader-before", tier: "core", depends_on: [] },
       { id: "packaged-candidate-flow", tier: "full", depends_on: [] },
+      { id: "packaged-mixed-scope-lifecycle", tier: "full", depends_on: [] },
       { id: "reader-after", tier: "core", depends_on: [] },
     ];
     const events = [];
@@ -366,6 +451,14 @@ describe("v0.7.1 release qualification contract", () => {
     );
     assert.ok(
       events.indexOf("finish:packaged-candidate-flow:1") < events.indexOf("start:reader-after:1"),
+    );
+    assert.ok(
+      events.indexOf("finish:packaged-candidate-flow:1") <
+        events.indexOf("start:packaged-mixed-scope-lifecycle:1"),
+    );
+    assert.ok(
+      events.indexOf("finish:packaged-mixed-scope-lifecycle:1") <
+        events.indexOf("start:reader-after:1"),
     );
   });
 

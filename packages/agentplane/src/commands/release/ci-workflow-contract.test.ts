@@ -45,7 +45,9 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("run: bun run test:fast:ci");
     expect(workflow).toContain("verify-real-e2e:");
     expect(workflow).toContain("needs.plan.outputs.real_e2e == 'true'");
-    expect(workflow).toContain("--scenario packaged-candidate-flow,hosted-boundary-matrix");
+    expect(workflow).toContain(
+      "--scenario packaged-candidate-flow,packaged-mixed-scope-lifecycle,hosted-boundary-matrix",
+    );
     expect(workflow).toContain("verify-docs:");
     expect(workflow).toContain("verify-security:");
     expect(workflow).not.toContain("verify-unit:");
