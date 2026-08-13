@@ -2,10 +2,10 @@
 id: "202608112259-T3ZDDM"
 title: "Optimize the verification and test pipeline around one computed Verification Contract"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 38
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +27,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-13T13:40:42.401Z"
-  updated_by: "TESTER"
-  note: "Verified evidence-only closure 57a80d38d over implementation 9766c12d; current benchmark, fixture/process profile, isolation checks, prior full-fast, and exact hosted CI all pass."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-13T14:12:39.247Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: No executable declared verification checks are configured for this task."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "human_supplied"
@@ -127,6 +127,7 @@ execution_contract:
       - "repository_effect:documentation"
       - "repository_effect:schema"
       - "repository_effect:tests"
+      - "verification:verification-record:fail"
     changed_components:
       - ".github"
       - "docs"
@@ -282,6 +283,9 @@ execution_contract:
       -
         id: "recorded-check-5"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "observed_effect_ci"
@@ -578,9 +582,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "9a6b8c93cfe2a42e8e74e092d228d3d8424c1a1b"
-  message: "✅ T3ZDDM task: freeze final verified closure"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -735,8 +738,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "9a6b8c93cfe2a42e8e74e092d228d3d8424c1a1b"
+  -
+    type: "verify"
+    at: "2026-08-13T14:12:39.247Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: No executable declared verification checks are configured for this task."
 doc_version: 3
-doc_updated_at: "2026-08-13T14:07:53.203Z"
+doc_updated_at: "2026-08-13T14:12:41.570Z"
 doc_updated_by: "CODER"
 description: "Implement a versioned Verification Contract computed once from the semantic task assessment introduced by 202608112232-3NC7Y4 and strengthened monotonically by deterministic observed effects. Make that contract the single authority for local, PR, release, evaluator, finish, and recovery verification. Add change-aware test selection so local development runs only affected unit/integration suites plus mandatory critical-path checks; run the full CLI regression on PR; run real E2E on PR and release according to risk and observed effects. Add a conservative fallback that selects full regression whenever central components, shared contracts, routing, lifecycle, verification policy, schemas, package/lockfiles, CI, or unknown/unmapped effects are touched. The LLM may propose semantic scope and explain results but must not remove, downgrade, or bypass mandatory checks selected by deterministic policy. Audit duplicate behavioral coverage and move assertions to the cheapest sufficient level, retaining higher-level tests only for observable cross-boundary contracts. Profile fixture creation and process startup; replace repeated mutable setup with reusable immutable fixtures and cheap isolated repository copies where hermeticity is preserved. Execute independent core, runtime, CLI, and docs/schema groups in parallel with deterministic aggregation, failure reporting, and cancellation semantics. Instrument and report verification amplification, wall-clock verification time, test duplication, and the number of AgentPlane lifecycle/control-plane commands. Define small direct work as localized, reversible, non-central, with no external effects; on pinned reference hardware target mandatory local verification at no more than 60 seconds p50 and 120 seconds p95, no more than three lifecycle/control-plane commands, and no local full CLI regression unless the deterministic fallback triggers. Establish a reproducible before/after benchmark, document metric definitions and residual risk, and prove that speedups do not weaken required evidence."
 sections:
@@ -1278,6 +1287,36 @@ sections:
     Result: pass
     Evidence: 122/122 focused; full-fast 5/5 groups with one build; GitHub Actions https://github.com/basilisk-labs/agentplane/actions/runs/31703341688 all jobs passed on exact implementation 9766c12d8519a4f797fa46538871a776238bad5b.
     Scope: Verify Steps 1, 2, 4, 6, and 8; current 57a80d38d delta is task evidence only and is JSON-valid/content-addressed.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou/.agentplane/tasks/202608112259-T3ZDDM/blueprint/resolved-snapshot.json
+    - old_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+    - current_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608112259-T3ZDDM
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-13T14:12:39.247Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: No executable declared verification checks are configured for this task.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e, input_digest=sha256:6760adfc9c031ce4b0edef4262fd18ba62942362e6a5649fcb630eefc366d4ee
+
+    Details:
 
     BlueprintSnapshotRef:
     - state: current
@@ -1880,6 +1919,36 @@ Command: reuse prior exact-SHA focused/full-fast and GitHub Actions evidence
 Result: pass
 Evidence: 122/122 focused; full-fast 5/5 groups with one build; GitHub Actions https://github.com/basilisk-labs/agentplane/actions/runs/31703341688 all jobs passed on exact implementation 9766c12d8519a4f797fa46538871a776238bad5b.
 Scope: Verify Steps 1, 2, 4, 6, and 8; current 57a80d38d delta is task evidence only and is JSON-valid/content-addressed.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou/.agentplane/tasks/202608112259-T3ZDDM/blueprint/resolved-snapshot.json
+- old_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+- current_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608112259-T3ZDDM
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-13T14:12:39.247Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: No executable declared verification checks are configured for this task.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e, input_digest=sha256:6760adfc9c031ce4b0edef4262fd18ba62942362e6a5649fcb630eefc366d4ee
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current

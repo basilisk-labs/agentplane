@@ -15,13 +15,8 @@ Implement a versioned Verification Contract computed once from the semantic task
 
 ## Verification
 
-- State: ok
-- Note:
-
-```text
-Verified evidence-only closure 57a80d38d over implementation 9766c12d; current benchmark,
-fixture/process profile, isolation checks, prior full-fast, and exact hosted CI all pass.
-```
+- State: needs_rework
+- Note: Rework: No executable declared verification checks are configured for this task.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -60,7 +55,7 @@ fixture/process profile, isolation checks, prior full-fast, and exact hosted CI 
  .../evaluator-verification-contract.test.ts        |   76 +
  .../evaluator/evaluator-verification-records.ts    |   11 +-
  .../commands/release/ci-workflow-contract.test.ts  |   15 +
- .../src/commands/release/github-ci-plan.test.ts    |  347 ++-
+ .../src/commands/release/github-ci-plan.test.ts    |  410 +++-
  .../commands/release/release-ci-contract.test.ts   |   13 +-
  .../commands/shared/quality-review-target.test.ts  |   25 +
  .../src/commands/shared/quality-review-target.ts   |   18 +-
@@ -128,7 +123,7 @@ fixture/process profile, isolation checks, prior full-fast, and exact hosted CI 
  scripts/lib/github-ci-capabilities.d.ts            |   11 +
  scripts/lib/github-ci-capabilities.mjs             |   87 +-
  scripts/lib/installed-migration-matrix.mjs         |   22 +
- scripts/lib/lifecycle-artifact-reuse.mjs           |  445 ++++
+ scripts/lib/lifecycle-artifact-reuse.mjs           |  479 ++++
  scripts/lib/lifecycle-control-metrics.d.ts         |   30 +
  scripts/lib/lifecycle-control-metrics.mjs          |   66 +
  scripts/lib/local-ci-selection.d.ts                |   19 +
@@ -150,7 +145,7 @@ fixture/process profile, isolation checks, prior full-fast, and exact hosted CI 
  tsconfig.base.json                                 |    1 +
  .../docs/developer/verification-contract.png       |  Bin 0 -> 59695 bytes
  website/static/img/social/manifest.json            |    8 +
- 118 files changed, 10660 insertions(+), 2238 deletions(-)
+ 118 files changed, 10757 insertions(+), 2238 deletions(-)
 ```
 
 </details>
