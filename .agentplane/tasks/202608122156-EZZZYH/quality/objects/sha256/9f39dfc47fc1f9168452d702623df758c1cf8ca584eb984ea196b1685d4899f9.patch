@@ -1,0 +1,1275 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 015a18427..769f2bcc3 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -406,7 +406,7 @@ jobs:
+           node scripts/qualification/run-v0.7.1-release-qualification.mjs
+           --mode audit
+           --profile full
+-          --scenario packaged-candidate-flow,hosted-boundary-matrix
++          --scenario packaged-candidate-flow,packaged-mixed-scope-lifecycle,hosted-boundary-matrix
+           --subject ${{ env.AGENTPLANE_CI_REF }}
+ 
+   test-windows:
+diff --git a/package.json b/package.json
+index f4f1fbd0e..9f22275f7 100644
+--- a/package.json
++++ b/package.json
+@@ -72,6 +72,7 @@
+     "release:recover": "node scripts/release/check-release-recovery-state.mjs",
+     "release:e2e:local": "node scripts/release/run-local-release-e2e.mjs",
+     "qualification:check": "node --test scripts/qualification/release-qualification.test.mjs && node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --dry-run",
++    "qualification:mixed-scope-lifecycle": "node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs",
+     "e2e:v0.7.1:check": "bun run qualification:check",
+     "e2e:v0.7.1:core-audit": "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile core",
+     "e2e:v0.7.1:audit": "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full",
+diff --git a/packages/agentplane/src/commands/release/ci-workflow-contract.test.ts b/packages/agentplane/src/commands/release/ci-workflow-contract.test.ts
+index 83e461105..81bc8dff1 100644
+--- a/packages/agentplane/src/commands/release/ci-workflow-contract.test.ts
++++ b/packages/agentplane/src/commands/release/ci-workflow-contract.test.ts
+@@ -45,7 +45,9 @@ describe("Core CI workflow contract", () => {
+     expect(workflow).toContain("run: bun run test:fast:ci");
+     expect(workflow).toContain("verify-real-e2e:");
+     expect(workflow).toContain("needs.plan.outputs.real_e2e == 'true'");
+-    expect(workflow).toContain("--scenario packaged-candidate-flow,hosted-boundary-matrix");
++    expect(workflow).toContain(
++      "--scenario packaged-candidate-flow,packaged-mixed-scope-lifecycle,hosted-boundary-matrix",
++    );
+     expect(workflow).toContain("verify-docs:");
+     expect(workflow).toContain("verify-security:");
+     expect(workflow).not.toContain("verify-unit:");
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts
+index 9697b8017..a210289bc 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts
+@@ -444,6 +444,20 @@ it("captures every live route component from the authoritative task worktree", a
+   });
+ 
+   const initial = fingerprint;
++  const evaluatorArtifactPath = path.join(
++    worktree,
++    ".agentplane",
++    "tasks",
++    TASK_ID,
++    "quality",
++    "evidence",
++    "frozen-checks.json",
++  );
++  await mkdir(path.dirname(evaluatorArtifactPath), { recursive: true });
++  await writeFile(evaluatorArtifactPath, '{"status":"prepared"}\n', "utf8");
++  const afterEvaluatorPreparation = await capture({ ctx, root, worktree });
++  expect(changedComponents(initial, afterEvaluatorPreparation)).toEqual([]);
++
+   await writeFile(blueprintPath, taskWorktree.blueprintAlternate, "utf8");
+   const changedBlueprint = await capture({ ctx, root, worktree });
+   expect(changedComponents(initial, changedBlueprint)).toEqual(["blueprint"]);
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
+index e419b71ea..dc7c2aec4 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
+@@ -480,6 +480,7 @@ export async function captureWorkflowStepFingerprint(opts: {
+           await observeWorkflowPolicyScope({
+             repositoryRoot,
+             state: opts.state,
++            excludedRoots: [path.join(opts.ctx.config.paths.workflow_dir, opts.state.task.id)],
+             ...(rawGit?.state === "available" ? { preobservedDirtyPaths: rawGit.dirty_paths } : {}),
+           }),
+         fingerprintInputs: (scope) => ({
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts b/packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts
+index 902f173cf..9130bc5fc 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts
+@@ -34,6 +34,16 @@ function normalizedPaths(values: readonly string[]): string[] {
+   ].toSorted();
+ }
+ 
++function withoutExcludedRoots(
++  values: readonly string[],
++  excludedRoots: readonly string[],
++): string[] {
++  const normalizedRoots = normalizedPaths(excludedRoots);
++  return normalizedPaths(values).filter(
++    (value) => !normalizedRoots.some((root) => value === root || value.startsWith(`${root}/`)),
++  );
++}
++
+ function baselineFromTask(task: TaskData): WorkflowRouteBaseline | null {
+   const value = task.extensions?.[WORKFLOW_ROUTE_BASELINE_KEY];
+   if (
+@@ -95,6 +105,7 @@ export async function observeWorkflowPolicyScope(opts: {
+   repositoryRoot: string;
+   state: WorkflowRouteStateInput;
+   preobservedDirtyPaths?: readonly string[];
++  excludedRoots?: readonly string[];
+ }): Promise<WorkflowPolicyScopeObservation> {
+   const passedDirtyPaths = opts.state.taskWorktree?.changedPaths ?? [];
+   const baseline = baselineFromTask(opts.state.task);
+@@ -107,7 +118,9 @@ export async function observeWorkflowPolicyScope(opts: {
+           ? (opts.preobservedDirtyPaths ?? [])
+           : await new GitContext({ gitRoot: opts.repositoryRoot }).statusChangedPaths()
+         : [];
+-    const dirtyPaths = normalizedPaths([...passedDirtyPaths, ...directDirtyPaths]);
++    const scopePaths = (values: readonly string[]) =>
++      withoutExcludedRoots(values, opts.excludedRoots ?? []);
++    const dirtyPaths = scopePaths([...passedDirtyPaths, ...directDirtyPaths]);
+     if (opts.state.workflowMode === "branch_pr") {
+       const branch = taskBranch(opts.state);
+       const base = opts.state.resume.base_branch?.trim() ?? "";
+@@ -128,7 +141,7 @@ export async function observeWorkflowPolicyScope(opts: {
+       );
+       return {
+         state: "present",
+-        changedPaths: normalizedPaths([...committedPaths, ...dirtyPaths]),
++        changedPaths: scopePaths([...committedPaths, ...dirtyPaths]),
+         sources: [baseline ? "task_start_baseline" : "base_branch", "working_tree"],
+       };
+     }
+@@ -150,7 +163,7 @@ export async function observeWorkflowPolicyScope(opts: {
+           });
+       return {
+         state: "present",
+-        changedPaths: normalizedPaths([...committedPaths, ...dirtyPaths]),
++        changedPaths: scopePaths([...committedPaths, ...dirtyPaths]),
+         sources: [
+           baseline.start_head_sha ? "task_start_baseline" : "unborn_task_start_baseline",
+           "working_tree",
+@@ -162,7 +175,7 @@ export async function observeWorkflowPolicyScope(opts: {
+     if (status === "TODO" || dirtyPaths.length > 0 || runnerPaths.length > 0) {
+       return {
+         state: "present",
+-        changedPaths: normalizedPaths([...runnerPaths, ...dirtyPaths]),
++        changedPaths: scopePaths([...runnerPaths, ...dirtyPaths]),
+         sources: [
+           ...(runnerPaths.length > 0 ? ["runner_evidence"] : []),
+           ...(dirtyPaths.length > 0 ? ["working_tree"] : []),
+diff --git a/scripts/README.md b/scripts/README.md
+index 95e882011..4d249ef38 100644
+--- a/scripts/README.md
++++ b/scripts/README.md
+@@ -166,65 +166,66 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ 
+ ## Misc
+ 
+-| Script                             | Command                                                                                                                                                                                                                          | Purpose                                                   |
+-| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+-| `agents:check`                     | `node scripts/generate/sync-agent-templates.mjs check`                                                                                                                                                                           | Run agents workflow: check.                               |
+-| `agents:sync`                      | `node scripts/generate/sync-agent-templates.mjs sync`                                                                                                                                                                            | Run agents workflow: sync.                                |
+-| `artifacts:check`                  | `node scripts/checks/check-agentplane-artifacts.mjs`                                                                                                                                                                             | Run artifacts workflow: check.                            |
+-| `assets:builtin:check`             | `node scripts/generate/generate-builtin-assets.mjs --check`                                                                                                                                                                      | Run assets workflow: builtin check.                       |
+-| `assets:builtin:generate`          | `node scripts/generate/generate-builtin-assets.mjs`                                                                                                                                                                              | Run assets workflow: builtin generate.                    |
+-| `backend:live`                     | `node -e "console.log('backend live connector suites moved to agentplane-cloud-sync')"`                                                                                                                                          | Run backend workflow: live.                               |
+-| `backend:matrix`                   | `bun run test:backend-critical`                                                                                                                                                                                                  | Run backend workflow: matrix.                             |
+-| `build`                            | `node scripts/checks/run-typescript-build.mjs && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle`                          | Build TypeScript project and bundle publishable packages. |
+-| `check:types-files`                | `node scripts/checks/check-types-files.mjs`                                                                                                                                                                                      | Run check workflow: types-files.                          |
+-| `checks:run`                       | `node scripts/checks/run-checks.mjs`                                                                                                                                                                                             | Run checks workflow: run.                                 |
+-| `coverage`                         | `vitest run --coverage`                                                                                                                                                                                                          | Run coverage workflow commands.                           |
+-| `deps:triage`                      | `node scripts/checks/deps-triage.mjs`                                                                                                                                                                                            | Run deps workflow: triage.                                |
+-| `dev:impact`                       | `node scripts/checks/dev-impact.mjs`                                                                                                                                                                                             | Run dev workflow: impact.                                 |
+-| `dev:task-scope:check`             | `node scripts/checks/check-task-scope.mjs`                                                                                                                                                                                       | Run dev workflow: task-scope check.                       |
+-| `dev:turbo:affected`               | `node scripts/checks/run-turbo-local-ci.mjs --affected`                                                                                                                                                                          | Run dev workflow: turbo affected.                         |
+-| `dev:turbo:build`                  | `TURBO_TELEMETRY_DISABLED=1 turbo run build --filter='./packages/*' --summarize`                                                                                                                                                 | Run dev workflow: turbo build.                            |
+-| `dev:turbo:docs`                   | `TURBO_TELEMETRY_DISABLED=1 turbo run typecheck build --filter='./website' --summarize`                                                                                                                                          | Run dev workflow: turbo docs.                             |
+-| `dev:turbo:graph`                  | `mkdir -p .agentplane/cache && TURBO_TELEMETRY_DISABLED=1 turbo run build typecheck test --filter='./packages/*' --graph=.agentplane/cache/turbo-task-graph.mermaid`                                                             | Run dev workflow: turbo graph.                            |
+-| `dev:turbo:ls`                     | `TURBO_TELEMETRY_DISABLED=1 turbo ls --output=json`                                                                                                                                                                              | Run dev workflow: turbo ls.                               |
+-| `e2e:v0.7.1:audit`                 | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full`                                                                                                                                    | Run e2e workflow: v0.7.1 audit.                           |
+-| `e2e:v0.7.1:check`                 | `bun run qualification:check`                                                                                                                                                                                                    | Run e2e workflow: v0.7.1 check.                           |
+-| `e2e:v0.7.1:core-audit`            | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile core`                                                                                                                                    | Run e2e workflow: v0.7.1 core-audit.                      |
+-| `e2e:v0.7.1:gate`                  | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1`                                                                                        | Run e2e workflow: v0.7.1 gate.                            |
+-| `format`                           | `prettier . --write`                                                                                                                                                                                                             | Format repository files with Prettier.                    |
+-| `format:changed`                   | `node scripts/checks/check-changed-format.mjs`                                                                                                                                                                                   | Run format workflow: changed.                             |
+-| `format:check`                     | `prettier . --check`                                                                                                                                                                                                             | Check formatting drift with Prettier.                     |
+-| `framework:dev:bootstrap`          | `node scripts/workflow/bootstrap-framework-dev.mjs`                                                                                                                                                                              | Run framework workflow: dev bootstrap.                    |
+-| `guards:check`                     | `node scripts/checks/check-shared-guards.mjs && bun run trust:ratchet:check`                                                                                                                                                     | Run guards workflow: check.                               |
+-| `hooks:install`                    | `lefthook install`                                                                                                                                                                                                               | Run hooks workflow: install.                              |
+-| `hotspots:check`                   | `node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000` | Run hotspot guardrails for runtime and test file size.    |
+-| `knip:check`                       | `node scripts/checks/check-knip-baseline.mjs`                                                                                                                                                                                    | Run knip workflow: check.                                 |
+-| `knip:report`                      | `knip --config knip.json --no-exit-code`                                                                                                                                                                                         | Run knip workflow: report.                                |
+-| `lifecycle:invariants`             | `node scripts/checks/check-lifecycle-invariants.mjs`                                                                                                                                                                             | Run lifecycle workflow: invariants.                       |
+-| `lint`                             | `bun run lint:core && bun run lint:website`                                                                                                                                                                                      | Run full lint suite.                                      |
+-| `lint:core`                        | `eslint packages scripts eslint.config.cjs vitest.config.ts`                                                                                                                                                                     | Run lint workflow: core.                                  |
+-| `lint:fix`                         | `eslint . --fix`                                                                                                                                                                                                                 | Run lint workflow: fix.                                   |
+-| `lint:website`                     | `eslint website`                                                                                                                                                                                                                 | Run lint workflow: website.                               |
+-| `logging:check`                    | `node scripts/checks/check-no-console.mjs`                                                                                                                                                                                       | Run logging workflow: check.                              |
+-| `package:install-smoke`            | `node scripts/release/check-local-tarball-install-smoke.mjs`                                                                                                                                                                     | Run package workflow: install-smoke.                      |
+-| `package:tarball:check`            | `node scripts/release/check-package-tarball.mjs`                                                                                                                                                                                 | Run package workflow: tarball check.                      |
+-| `policy:routing:check`             | `node scripts/checks/check-policy-routing.mjs`                                                                                                                                                                                   | Run policy workflow: routing check.                       |
+-| `postinstall`                      | `lefthook install`                                                                                                                                                                                                               | Run postinstall workflow commands.                        |
+-| `qualification:check`              | `node --test scripts/qualification/release-qualification.test.mjs && node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --dry-run`                                                      | Run qualification workflow: check.                        |
+-| `runner:codex:approval-probe`      | `bun scripts/workflow/run-runner-codex-approval-probe.mjs`                                                                                                                                                                       | Run runner workflow: codex approval-probe.                |
+-| `runner:codex:smoke`               | `bun scripts/run-runner-codex-smoke.mjs`                                                                                                                                                                                         | Run runner workflow: codex smoke.                         |
+-| `schemas:check`                    | `bun scripts/generate/sync-schemas.mjs check`                                                                                                                                                                                    | Run schemas workflow: check.                              |
+-| `schemas:sync`                     | `bun scripts/generate/sync-schemas.mjs sync`                                                                                                                                                                                     | Run schemas workflow: sync.                               |
+-| `spec:examples:check`              | `node scripts/checks/check-spec-examples.mjs`                                                                                                                                                                                    | Run spec workflow: examples check.                        |
+-| `task-state:check`                 | `node scripts/checks/check-task-state.mjs`                                                                                                                                                                                       | Run task-state workflow: check.                           |
+-| `trust:ratchet:check`              | `node scripts/checks/check-trust-boundary-ratchet.mjs`                                                                                                                                                                           | Run trust workflow: ratchet check.                        |
+-| `typecheck`                        | `node scripts/checks/run-typescript-build.mjs`                                                                                                                                                                                   | Run repository TypeScript type checks.                    |
+-| `typescript:toolchain:check`       | `node scripts/checks/check-typescript-toolchain.mjs`                                                                                                                                                                             | Run typescript workflow: toolchain check.                 |
+-| `vitest:projects:check`            | `node scripts/checks/check-vitest-projects.mjs`                                                                                                                                                                                  | Run vitest workflow: projects check.                      |
+-| `workflow:github-protection:check` | `node scripts/checks/check-github-protection-contract.mjs`                                                                                                                                                                       | Run workflow workflow: github-protection check.           |
+-| `workflow:wait-remote-checks`      | `node scripts/workflow/wait-remote-pr-checks.mjs`                                                                                                                                                                                | Run workflow workflow: wait-remote-checks.                |
+-| `workflows:command-check`          | `node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs`                                                                   | Run workflows workflow: command-check.                    |
+-| `workflows:lint`                   | `node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs`                   | Validate workflow files and command contracts.            |
++| Script                                | Command                                                                                                                                                                                                                          | Purpose                                                   |
++| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
++| `agents:check`                        | `node scripts/generate/sync-agent-templates.mjs check`                                                                                                                                                                           | Run agents workflow: check.                               |
++| `agents:sync`                         | `node scripts/generate/sync-agent-templates.mjs sync`                                                                                                                                                                            | Run agents workflow: sync.                                |
++| `artifacts:check`                     | `node scripts/checks/check-agentplane-artifacts.mjs`                                                                                                                                                                             | Run artifacts workflow: check.                            |
++| `assets:builtin:check`                | `node scripts/generate/generate-builtin-assets.mjs --check`                                                                                                                                                                      | Run assets workflow: builtin check.                       |
++| `assets:builtin:generate`             | `node scripts/generate/generate-builtin-assets.mjs`                                                                                                                                                                              | Run assets workflow: builtin generate.                    |
++| `backend:live`                        | `node -e "console.log('backend live connector suites moved to agentplane-cloud-sync')"`                                                                                                                                          | Run backend workflow: live.                               |
++| `backend:matrix`                      | `bun run test:backend-critical`                                                                                                                                                                                                  | Run backend workflow: matrix.                             |
++| `build`                               | `node scripts/checks/run-typescript-build.mjs && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle`                          | Build TypeScript project and bundle publishable packages. |
++| `check:types-files`                   | `node scripts/checks/check-types-files.mjs`                                                                                                                                                                                      | Run check workflow: types-files.                          |
++| `checks:run`                          | `node scripts/checks/run-checks.mjs`                                                                                                                                                                                             | Run checks workflow: run.                                 |
++| `coverage`                            | `vitest run --coverage`                                                                                                                                                                                                          | Run coverage workflow commands.                           |
++| `deps:triage`                         | `node scripts/checks/deps-triage.mjs`                                                                                                                                                                                            | Run deps workflow: triage.                                |
++| `dev:impact`                          | `node scripts/checks/dev-impact.mjs`                                                                                                                                                                                             | Run dev workflow: impact.                                 |
++| `dev:task-scope:check`                | `node scripts/checks/check-task-scope.mjs`                                                                                                                                                                                       | Run dev workflow: task-scope check.                       |
++| `dev:turbo:affected`                  | `node scripts/checks/run-turbo-local-ci.mjs --affected`                                                                                                                                                                          | Run dev workflow: turbo affected.                         |
++| `dev:turbo:build`                     | `TURBO_TELEMETRY_DISABLED=1 turbo run build --filter='./packages/*' --summarize`                                                                                                                                                 | Run dev workflow: turbo build.                            |
++| `dev:turbo:docs`                      | `TURBO_TELEMETRY_DISABLED=1 turbo run typecheck build --filter='./website' --summarize`                                                                                                                                          | Run dev workflow: turbo docs.                             |
++| `dev:turbo:graph`                     | `mkdir -p .agentplane/cache && TURBO_TELEMETRY_DISABLED=1 turbo run build typecheck test --filter='./packages/*' --graph=.agentplane/cache/turbo-task-graph.mermaid`                                                             | Run dev workflow: turbo graph.                            |
++| `dev:turbo:ls`                        | `TURBO_TELEMETRY_DISABLED=1 turbo ls --output=json`                                                                                                                                                                              | Run dev workflow: turbo ls.                               |
++| `e2e:v0.7.1:audit`                    | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full`                                                                                                                                    | Run e2e workflow: v0.7.1 audit.                           |
++| `e2e:v0.7.1:check`                    | `bun run qualification:check`                                                                                                                                                                                                    | Run e2e workflow: v0.7.1 check.                           |
++| `e2e:v0.7.1:core-audit`               | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile core`                                                                                                                                    | Run e2e workflow: v0.7.1 core-audit.                      |
++| `e2e:v0.7.1:gate`                     | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1`                                                                                        | Run e2e workflow: v0.7.1 gate.                            |
++| `format`                              | `prettier . --write`                                                                                                                                                                                                             | Format repository files with Prettier.                    |
++| `format:changed`                      | `node scripts/checks/check-changed-format.mjs`                                                                                                                                                                                   | Run format workflow: changed.                             |
++| `format:check`                        | `prettier . --check`                                                                                                                                                                                                             | Check formatting drift with Prettier.                     |
++| `framework:dev:bootstrap`             | `node scripts/workflow/bootstrap-framework-dev.mjs`                                                                                                                                                                              | Run framework workflow: dev bootstrap.                    |
++| `guards:check`                        | `node scripts/checks/check-shared-guards.mjs && bun run trust:ratchet:check`                                                                                                                                                     | Run guards workflow: check.                               |
++| `hooks:install`                       | `lefthook install`                                                                                                                                                                                                               | Run hooks workflow: install.                              |
++| `hotspots:check`                      | `node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000` | Run hotspot guardrails for runtime and test file size.    |
++| `knip:check`                          | `node scripts/checks/check-knip-baseline.mjs`                                                                                                                                                                                    | Run knip workflow: check.                                 |
++| `knip:report`                         | `knip --config knip.json --no-exit-code`                                                                                                                                                                                         | Run knip workflow: report.                                |
++| `lifecycle:invariants`                | `node scripts/checks/check-lifecycle-invariants.mjs`                                                                                                                                                                             | Run lifecycle workflow: invariants.                       |
++| `lint`                                | `bun run lint:core && bun run lint:website`                                                                                                                                                                                      | Run full lint suite.                                      |
++| `lint:core`                           | `eslint packages scripts eslint.config.cjs vitest.config.ts`                                                                                                                                                                     | Run lint workflow: core.                                  |
++| `lint:fix`                            | `eslint . --fix`                                                                                                                                                                                                                 | Run lint workflow: fix.                                   |
++| `lint:website`                        | `eslint website`                                                                                                                                                                                                                 | Run lint workflow: website.                               |
++| `logging:check`                       | `node scripts/checks/check-no-console.mjs`                                                                                                                                                                                       | Run logging workflow: check.                              |
++| `package:install-smoke`               | `node scripts/release/check-local-tarball-install-smoke.mjs`                                                                                                                                                                     | Run package workflow: install-smoke.                      |
++| `package:tarball:check`               | `node scripts/release/check-package-tarball.mjs`                                                                                                                                                                                 | Run package workflow: tarball check.                      |
++| `policy:routing:check`                | `node scripts/checks/check-policy-routing.mjs`                                                                                                                                                                                   | Run policy workflow: routing check.                       |
++| `postinstall`                         | `lefthook install`                                                                                                                                                                                                               | Run postinstall workflow commands.                        |
++| `qualification:check`                 | `node --test scripts/qualification/release-qualification.test.mjs && node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --dry-run`                                                      | Run qualification workflow: check.                        |
++| `qualification:mixed-scope-lifecycle` | `node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs`                                                                                                                                                            | Run qualification workflow: mixed-scope-lifecycle.        |
++| `runner:codex:approval-probe`         | `bun scripts/workflow/run-runner-codex-approval-probe.mjs`                                                                                                                                                                       | Run runner workflow: codex approval-probe.                |
++| `runner:codex:smoke`                  | `bun scripts/run-runner-codex-smoke.mjs`                                                                                                                                                                                         | Run runner workflow: codex smoke.                         |
++| `schemas:check`                       | `bun scripts/generate/sync-schemas.mjs check`                                                                                                                                                                                    | Run schemas workflow: check.                              |
++| `schemas:sync`                        | `bun scripts/generate/sync-schemas.mjs sync`                                                                                                                                                                                     | Run schemas workflow: sync.                               |
++| `spec:examples:check`                 | `node scripts/checks/check-spec-examples.mjs`                                                                                                                                                                                    | Run spec workflow: examples check.                        |
++| `task-state:check`                    | `node scripts/checks/check-task-state.mjs`                                                                                                                                                                                       | Run task-state workflow: check.                           |
++| `trust:ratchet:check`                 | `node scripts/checks/check-trust-boundary-ratchet.mjs`                                                                                                                                                                           | Run trust workflow: ratchet check.                        |
++| `typecheck`                           | `node scripts/checks/run-typescript-build.mjs`                                                                                                                                                                                   | Run repository TypeScript type checks.                    |
++| `typescript:toolchain:check`          | `node scripts/checks/check-typescript-toolchain.mjs`                                                                                                                                                                             | Run typescript workflow: toolchain check.                 |
++| `vitest:projects:check`               | `node scripts/checks/check-vitest-projects.mjs`                                                                                                                                                                                  | Run vitest workflow: projects check.                      |
++| `workflow:github-protection:check`    | `node scripts/checks/check-github-protection-contract.mjs`                                                                                                                                                                       | Run workflow workflow: github-protection check.           |
++| `workflow:wait-remote-checks`         | `node scripts/workflow/wait-remote-pr-checks.mjs`                                                                                                                                                                                | Run workflow workflow: wait-remote-checks.                |
++| `workflows:command-check`             | `node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs`                                                                   | Run workflows workflow: command-check.                    |
++| `workflows:lint`                      | `node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs`                   | Validate workflow files and command contracts.            |
+ 
+ ## Ungrouped Namespace Scripts
+ 
+@@ -266,6 +267,7 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ - `package:tarball:check` is currently grouped as `misc` (review namespace intent).
+ - `policy:routing:check` is currently grouped as `misc` (review namespace intent).
+ - `qualification:check` is currently grouped as `misc` (review namespace intent).
++- `qualification:mixed-scope-lifecycle` is currently grouped as `misc` (review namespace intent).
+ - `runner:codex:approval-probe` is currently grouped as `misc` (review namespace intent).
+ - `runner:codex:smoke` is currently grouped as `misc` (review namespace intent).
+ - `schemas:check` is currently grouped as `misc` (review namespace intent).
+diff --git a/scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs b/scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs
+new file mode 100644
+index 000000000..aa317bc79
+--- /dev/null
++++ b/scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs
+@@ -0,0 +1,816 @@
++import assert from "node:assert/strict";
++import { spawnSync } from "node:child_process";
++import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
++import os from "node:os";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++
++import {
++  createQualificationCommandRunner,
++  installPackedWorkspace,
++} from "../lib/qualification-packed-runtime.mjs";
++import { isDirectRun } from "../lib/script-runtime.mjs";
++
++const scriptPath = fileURLToPath(import.meta.url);
++const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
++const PACKAGES = ["core", "recipes", "agentplane"];
++
++export const PACKAGED_MIXED_SCOPE_REQUIRED_PATHS = [
++  ".gitignore",
++  "docs/guide.md",
++  "src/greeting.mjs",
++  "test/greeting.test.mjs",
++];
++
++export class PackagedMixedScopeContractError extends Error {
++  constructor(code, message) {
++    super(`${code}: ${message}`);
++    this.name = "PackagedMixedScopeContractError";
++    this.code = code;
++  }
++}
++
++function fail(code, message) {
++  throw new PackagedMixedScopeContractError(code, message);
++}
++
++function normalizedPath(filePath) {
++  return path.resolve(filePath);
++}
++
++function isInside(parent, child) {
++  const relative = path.relative(normalizedPath(parent), normalizedPath(child));
++  return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative));
++}
++
++function trackAccess(accessLog, operation, filePath, purpose) {
++  accessLog.push({ operation, path: normalizedPath(filePath), purpose });
++}
++
++function readTracked(accessLog, filePath, purpose) {
++  trackAccess(accessLog, "read", filePath, purpose);
++  return readFileSync(filePath, "utf8");
++}
++
++function writeTracked(accessLog, filePath, contents, purpose) {
++  trackAccess(accessLog, "write", filePath, purpose);
++  mkdirSync(path.dirname(filePath), { recursive: true });
++  writeFileSync(filePath, contents, "utf8");
++}
++
++function parseJson(text, label) {
++  try {
++    return JSON.parse(text);
++  } catch (error) {
++    fail("invalid_public_json", `${label} did not emit JSON: ${error.message}`);
++  }
++}
++
++function runInstalledJson(run, cli, cwd, argv, label) {
++  return parseJson(run(process.execPath, [cli, ...argv], { cwd }), label);
++}
++
++function assertPublicArgv(argv, label) {
++  if (!Array.isArray(argv) || argv[0] !== "agentplane") {
++    fail("invalid_public_argv", `${label} did not provide an installed agentplane command`);
++  }
++}
++
++function runPacketArgv(run, cli, cwd, argv, label) {
++  assertPublicArgv(argv, label);
++  try {
++    return runInstalledJson(run, cli, cwd, argv.slice(1), label);
++  } catch (error) {
++    const stderr = error?.stderr?.toString?.().trim() ?? "";
++    fail("public_command_failed", `${label}: ${stderr || error.message}`);
++  }
++}
++
++function runPacketCommand(run, cli, cwd, argv, label) {
++  assertPublicArgv(argv, label);
++  return run(process.execPath, [cli, ...argv.slice(1)], { cwd });
++}
++
++function runNodeCliResult(cli, cwd, argv) {
++  const result = spawnSync(process.execPath, [cli, ...argv], {
++    cwd,
++    encoding: "utf8",
++    env: { ...process.env, AGENTPLANE_NO_UPDATE_CHECK: "1" },
++    maxBuffer: 128 * 1024 * 1024,
++    stdio: ["ignore", "pipe", "pipe"],
++  });
++  if (result.error) throw result.error;
++  return {
++    status: result.status,
++    stdout: result.stdout ?? "",
++    stderr: result.stderr ?? "",
++  };
++}
++
++function git(run, repo, argv) {
++  return run("git", argv, { cwd: repo }).trim();
++}
++
++function commitAllIfDirty(run, repo, subject) {
++  if (!git(run, repo, ["status", "--short", "--untracked-files=all"])) return null;
++  git(run, repo, ["add", "-A"]);
++  git(run, repo, ["commit", "-m", subject]);
++  return git(run, repo, ["rev-parse", "HEAD"]);
++}
++
++function longMixedScopePlan() {
++  const steps = [
++    [
++      "Inspect the clean fixture baseline and preserve the public package boundary.",
++      "Confirm that the implementation is limited to the greeting source, its automated tests, the user guide, and repository ignore metadata. The work must remain reversible, local to the repository, and free of provider or network effects after installation.",
++    ],
++    [
++      "Define the observable greeting behavior before changing implementation details.",
++      "The module must expose a named function, preserve a useful default for callers that omit a name, and return a personalized value when a name is provided. Treat these outputs as the product contract rather than relying on source-text matching alone.",
++    ],
++    [
++      "Update the source module without widening the public surface.",
++      "Use a small deterministic implementation that can be imported by the built-in Node test runner. Avoid dependencies, generated code, environment variables, clocks, random values, and filesystem access so the behavior remains portable and cheap to verify.",
++    ],
++    [
++      "Expand automated coverage for both the default and personalized paths.",
++      "The test must import the installed fixture source through a normal relative module boundary, assert exact user-visible strings, fail on a regression, and execute through the verification command declared during public task creation.",
++    ],
++    [
++      "Revise the user guide to describe the completed behavior.",
++      "Document the default invocation, the personalized invocation, and the exact expected outputs. Keep the guide aligned with the executable tests so a release cannot pass with source code but missing or contradictory user documentation.",
++    ],
++    [
++      "Update repository metadata as part of the same coherent product change.",
++      "Add the fixture build-output directory to .gitignore while preserving all existing ignore entries. This metadata edit is required evidence that mixed-scope authority is carried through planning, implementation, verification, and finish rather than silently dropped.",
++    ],
++    [
++      "Return implementation control to the AgentPlane supervisor through the issued exchange only.",
++      "Write one schema-valid semantic result to the exact result path in the public packet. Do not edit the task README, verification records, evaluator artifacts, recovery journals, fingerprints, quality reports, or any other lifecycle state directly.",
++    ],
++    [
++      "Let AgentPlane execute deterministic verification from the declared command.",
++      "The supervisor must run node --test test/greeting.test.mjs, record the command outcome, bind it to current task state, and expose the result through public task readback. A claimed agent check alone is not sufficient evidence.",
++    ],
++    [
++      "Review the resulting diff and verification evidence before accepting quality.",
++      "The evaluator decision must be derived from the actual changed-path set, the public verification state, and the resulting product content. It must reject missing source, test, documentation, metadata, or verification evidence instead of returning a pre-baked pass.",
++    ],
++    [
++      "Complete the direct lifecycle with AgentPlane-owned Git effects.",
++      "Require a real implementation commit, a completed task state, a passing quality review, and a clean tracked worktree. Validate that the recorded task commit resolves to an actual Git commit and that the final repository contains every intended product path.",
++    ],
++    [
++      "Exercise exact replay and stale-envelope recovery explicitly.",
++      "After a valid planning envelope is accepted, replay the exact public resume command and require the same current approval boundary as an idempotent no-op. Then alter the envelope fingerprint and require a non-zero stale diagnostic before continuing from a fresh supervisor packet.",
++    ],
++    [
++      "Prove cleanup and release-gate behavior.",
++      "Remove the isolated prefix, packed tarballs, npm cache, exchange files, fixture repository, and all temporary state even on failure. Report a stable phase-specific diagnostic for any missing evidence and block qualification instead of downgrading the scenario to an informational warning.",
++    ],
++    [
++      "Keep public readback as the only lifecycle truth used by the harness.",
++      "Use task show and task advance output for the final status, verification state, quality state, task commit, terminal action, and recovery decision. The harness may inspect ordinary product files and Git history, but it must never derive success by opening AgentPlane task documents or runtime-owned evidence files.",
++    ],
++    [
++      "Bind the release assertion to observable product behavior.",
++      "After finish, execute the same Node test command again as an independent consumer check and inspect the committed guide, source, test, and ignore metadata. This final readback protects against a process that records green lifecycle evidence while losing the user-visible product change.",
++    ],
++    [
++      "Preserve every pre-existing release qualification scenario.",
++      "Register this scenario as an additional full-tier blocking gate with a bounded timeout and no hidden dependency on another explicit selection. Keep the older packaged-candidate and hosted-boundary flows intact because they validate different install, migration, and provider boundaries.",
++    ],
++  ];
++  const text = steps
++    .map(([title, detail], index) => `${index + 1}. ${title}\n   ${detail}`)
++    .join("\n\n");
++  assert.ok(
++    Buffer.byteLength(text, "utf8") > 4218,
++    "fixture plan must exceed the 0.7.5 failure size",
++  );
++  assert.ok(Buffer.byteLength(text, "utf8") < 64 * 1024, "fixture plan must remain bounded");
++  return text;
++}
++
++function packetExchange(packet, expectedRole) {
++  if (packet.action?.kind !== "agent_episode" || packet.authority?.role !== expectedRole) {
++    fail(
++      `missing_${expectedRole.toLowerCase()}_episode`,
++      `expected ${expectedRole} agent episode, received ${packet.action?.kind ?? "unknown"}/${packet.authority?.role ?? "unknown"}`,
++    );
++  }
++  if (!packet.exchange?.result_path || !packet.exchange?.work_order_ref) {
++    fail("missing_exchange", `${expectedRole} packet omitted its public exchange`);
++  }
++  return packet.exchange;
++}
++
++function semanticResultFor({ packet, workOrder, summary, taskIntent, claimedChecks, review }) {
++  return {
++    schema_version: 1,
++    kind: "agent_action_result",
++    task_id: packet.task_id,
++    transition_id: packet.transition_id,
++    state_fingerprint: packet.state_fingerprint,
++    role: workOrder.role,
++    result: {
++      schema_version: 2,
++      kind: "agent_semantic_result",
++      work_order_id: workOrder.work_order_id,
++      status: "completed",
++      summary,
++      findings: review ? ["The public diff and recorded verification satisfy the task."] : [],
++      uncertainty: [],
++      ...(taskIntent ? { task_intent: taskIntent } : {}),
++      ...(claimedChecks ? { claimed_checks: claimedChecks } : {}),
++      ...(review ? { review } : {}),
++    },
++  };
++}
++
++function writePacketResult(accessLog, packet, role, resultOptions) {
++  const exchange = packetExchange(packet, role);
++  const workOrderPath = path.join(exchange.directory, exchange.work_order_ref);
++  const workOrder = parseJson(
++    readTracked(accessLog, workOrderPath, `${role.toLowerCase()}_work_order`),
++    `${role} work order`,
++  );
++  const expectedResultPath = path.join(exchange.directory, exchange.result_ref);
++  if (normalizedPath(exchange.result_path) !== normalizedPath(expectedResultPath)) {
++    fail("invalid_exchange_path", `${role} result path is not bound to its public exchange`);
++  }
++  writeTracked(
++    accessLog,
++    exchange.result_path,
++    `${JSON.stringify(semanticResultFor({ packet, workOrder, ...resultOptions }), null, 2)}\n`,
++    `${role.toLowerCase()}_result`,
++  );
++  return exchange;
++}
++
++function advanceToEpisode(run, cli, repo, taskId, expectedRole) {
++  for (let attempt = 0; attempt < 6; attempt += 1) {
++    const packet = runInstalledJson(
++      run,
++      cli,
++      repo,
++      ["task", "advance", taskId, "--agent-json"],
++      `task advance ${expectedRole}`,
++    );
++    if (packet.action?.kind === "agent_episode") {
++      packetExchange(packet, expectedRole);
++      return packet;
++    }
++    if (packet.action?.kind === "terminal") {
++      fail(
++        `missing_${expectedRole.toLowerCase()}_episode`,
++        `task became terminal before ${expectedRole}`,
++      );
++    }
++    if (packet.action?.kind === "approval_required") {
++      fail("unexpected_approval", `task requested an unhandled approval before ${expectedRole}`);
++    }
++  }
++  fail(`missing_${expectedRole.toLowerCase()}_episode`, `task did not issue ${expectedRole}`);
++}
++
++function continueToTerminal(run, cli, repo, taskId, initialPacket) {
++  let packet = initialPacket;
++  for (let attempt = 0; attempt < 6; attempt += 1) {
++    if (packet.action?.kind === "terminal") return packet;
++    packet = runInstalledJson(
++      run,
++      cli,
++      repo,
++      ["task", "advance", taskId, "--agent-json"],
++      "task advance terminal",
++    );
++  }
++  fail("missing_finish", "task did not reach a terminal public supervisor state");
++}
++
++function invalidInternalAccesses(evidence) {
++  const internalRoot = path.join(evidence.fixture_repo, ".agentplane");
++  return evidence.access_log.filter((entry) => isInside(internalRoot, entry.path));
++}
++
++export function assertPackagedMixedScopeEvidence(evidence) {
++  if (!Number.isSafeInteger(evidence.plan_bytes) || evidence.plan_bytes <= 4218) {
++    fail("missing_planner", "accepted semantic plan did not cross the 0.7.5 failure boundary");
++  }
++  if (!evidence.phase_roles?.includes("EXECUTOR")) {
++    fail("missing_executor", "public supervisor did not issue the implementation episode");
++  }
++  const changed = new Set(evidence.changed_paths);
++  for (const requiredPath of PACKAGED_MIXED_SCOPE_REQUIRED_PATHS) {
++    if (changed.has(requiredPath)) continue;
++    if (requiredPath === "src/greeting.mjs") fail("missing_code", "source change was omitted");
++    if (requiredPath === "test/greeting.test.mjs") fail("missing_tests", "test change was omitted");
++    if (requiredPath === "docs/guide.md") fail("missing_docs", "documentation change was omitted");
++    fail("missing_metadata", "repository metadata change was omitted");
++  }
++  if (evidence.verification?.state !== "ok" || evidence.verification?.phase !== "TESTER") {
++    fail("missing_verification", "supervisor-owned deterministic verification was not observed");
++  }
++  if (evidence.evaluator?.state !== "pass" || evidence.evaluator?.phase !== "EVALUATOR") {
++    fail("missing_evaluator", "evidence-backed evaluator acceptance was not observed");
++  }
++  if (!/^[0-9a-f]{40}$/u.test(evidence.commit?.task_commit ?? "")) {
++    fail("missing_commit", "task finish did not record a real Git commit");
++  }
++  if (evidence.finish?.status !== "DONE" || evidence.finish?.terminal !== true) {
++    fail("missing_finish", "public supervisor did not complete the lifecycle");
++  }
++  if (evidence.stale_exchange?.rejected !== true) {
++    fail("stale_exchange_accepted", "an accepted envelope was replayed without a stable rejection");
++  }
++  if (
++    evidence.exact_replay?.idempotent !== true ||
++    evidence.exact_replay?.action !== "approval_required"
++  ) {
++    fail(
++      "accepted_exchange_not_idempotent",
++      "exact accepted-envelope replay did not preserve the current lifecycle boundary",
++    );
++  }
++  const internal = invalidInternalAccesses(evidence);
++  if (internal.length > 0) {
++    fail("internal_artifact_access", `harness accessed ${internal[0].path}`);
++  }
++  if (evidence.temp_cleanup !== true) {
++    fail("temporary_state_leaked", "temporary package or fixture state remained after execution");
++  }
++  if (evidence.final_git_status !== "") {
++    fail(
++      "dirty_fixture",
++      `fixture ended with tracked or untracked changes: ${evidence.final_git_status}`,
++    );
++  }
++  return evidence;
++}
++
++function buildFixture(run, repo, accessLog) {
++  mkdirSync(repo, { recursive: true });
++  git(run, repo, ["init", "-q", "-b", "main"]);
++  git(run, repo, ["config", "user.name", "AgentPlane Qualification"]);
++  git(run, repo, ["config", "user.email", "qualification@example.invalid"]);
++  writeTracked(
++    accessLog,
++    path.join(repo, "package.json"),
++    `${JSON.stringify({ name: "agentplane-mixed-scope-fixture", private: true, type: "module" }, null, 2)}\n`,
++    "fixture_seed",
++  );
++  writeTracked(
++    accessLog,
++    path.join(repo, "src", "greeting.mjs"),
++    'export function greeting() {\n  return "Hello, world!";\n}\n',
++    "fixture_seed",
++  );
++  writeTracked(
++    accessLog,
++    path.join(repo, "test", "greeting.test.mjs"),
++    [
++      'import assert from "node:assert/strict";',
++      'import { test } from "node:test";',
++      'import { greeting } from "../src/greeting.mjs";',
++      "",
++      'test("returns the default greeting", () => {',
++      '  assert.equal(greeting(), "Hello, world!");',
++      "});",
++      "",
++    ].join("\n"),
++    "fixture_seed",
++  );
++  writeTracked(
++    accessLog,
++    path.join(repo, "docs", "guide.md"),
++    "# Greeting guide\n\nCall `greeting()` to receive `Hello, world!`.\n",
++    "fixture_seed",
++  );
++  writeTracked(accessLog, path.join(repo, ".gitignore"), "node_modules/\n", "fixture_seed");
++  writeTracked(
++    accessLog,
++    path.join(repo, "README.md"),
++    "# Mixed-scope qualification fixture\n",
++    "fixture_seed",
++  );
++  commitAllIfDirty(run, repo, "chore: seed mixed-scope fixture");
++}
++
++function applyProductChange(accessLog, repo) {
++  writeTracked(
++    accessLog,
++    path.join(repo, "src", "greeting.mjs"),
++    ['export function greeting(name = "world") {', "  return `Hello, ${name}!`;", "}", ""].join(
++      "\n",
++    ),
++    "executor_product_change",
++  );
++  writeTracked(
++    accessLog,
++    path.join(repo, "test", "greeting.test.mjs"),
++    [
++      'import assert from "node:assert/strict";',
++      'import { test } from "node:test";',
++      'import { greeting } from "../src/greeting.mjs";',
++      "",
++      'test("returns the default greeting", () => {',
++      '  assert.equal(greeting(), "Hello, world!");',
++      "});",
++      "",
++      'test("returns a personalized greeting", () => {',
++      '  assert.equal(greeting("Ada"), "Hello, Ada!");',
++      "});",
++      "",
++    ].join("\n"),
++    "executor_product_change",
++  );
++  writeTracked(
++    accessLog,
++    path.join(repo, "docs", "guide.md"),
++    [
++      "# Greeting guide",
++      "",
++      "Call `greeting()` to receive `Hello, world!`.",
++      'Call `greeting("Ada")` to receive `Hello, Ada!`.',
++      "",
++    ].join("\n"),
++    "executor_product_change",
++  );
++  const gitignorePath = path.join(repo, ".gitignore");
++  const currentGitignore = readTracked(accessLog, gitignorePath, "executor_metadata_read");
++  writeTracked(
++    accessLog,
++    gitignorePath,
++    `${currentGitignore.replace(/\n*$/u, "\n")}fixture-dist/\n`,
++    "executor_product_change",
++  );
++}
++
++function runFixture({ run, cli, packages, tempRoot }) {
++  const repo = path.join(tempRoot, "fixture");
++  const accessLog = [];
++  buildFixture(run, repo, accessLog);
++
++  run(process.execPath, [cli, "--version"], { cwd: repo });
++  run(
++    process.execPath,
++    [
++      cli,
++      "init",
++      "--yes",
++      "--init-mode",
++      "ci",
++      "--tool",
++      "manual",
++      "--setup-profile",
++      "standard",
++      "--workflow",
++      "direct",
++      "--backend",
++      "local",
++      "--hooks",
++      "false",
++      "--require-plan-approval",
++      "true",
++      "--require-network-approval",
++      "false",
++      "--require-verify-approval",
++      "false",
++    ],
++    { cwd: repo },
++  );
++  commitAllIfDirty(run, repo, "chore: initialize AgentPlane fixture");
++
++  const created = runInstalledJson(
++    run,
++    cli,
++    repo,
++    [
++      "task",
++      "create",
++      "Add a personalized greeting with tests and user documentation",
++      "--description",
++      "Change source behavior, automated tests, the user guide, and .gitignore without external effects.",
++      "--route",
++      "auto",
++      "--verify",
++      "node --test test/greeting.test.mjs",
++      "--json",
++    ],
++    "task create",
++  );
++  const taskId = created.task_id;
++  assert.equal(created.status, "semantic_input_required");
++
++  const planner = advanceToEpisode(run, cli, repo, taskId, "PLANNER");
++  const plan = longMixedScopePlan();
++  const plannerExchange = writePacketResult(accessLog, planner, "PLANNER", {
++    summary: plan,
++    taskIntent: {
++      task_kind: "code",
++      mutation_scope: "code",
++      risk_flags: [],
++      tags: ["qualification", "mixed-scope", "installed-package"],
++      blueprint_request: "code.direct",
++      execution: {
++        schema_version: 2,
++        preferred_mode: "direct",
++        scope_roots: [...PACKAGED_MIXED_SCOPE_REQUIRED_PATHS],
++        repository_effects: ["repository_write", "source_code", "tests", "documentation"],
++        external_effects: [],
++        requirements_uncertainty: "bounded",
++        implementation_uncertainty: "bounded",
++        reversibility: "reversible",
++        rationale: [
++          "The fixture change is local, bounded, reversible, and has no external effects.",
++        ],
++      },
++    },
++  });
++  const approval = runPacketArgv(
++    run,
++    cli,
++    repo,
++    plannerExchange.resume_argv,
++    "planner result acceptance",
++  );
++  assert.equal(approval.action?.kind, "approval_required");
++  assert.equal(approval.operator_action?.kind, "approve_plan");
++
++  const exactReplay = runNodeCliResult(cli, repo, plannerExchange.resume_argv.slice(1));
++  const exactReplayPacket = parseJson(exactReplay.stdout, "exact accepted-envelope replay");
++  if (
++    exactReplay.status !== 0 ||
++    exactReplayPacket.action?.kind !== "approval_required" ||
++    exactReplayPacket.state_fingerprint !== approval.state_fingerprint
++  ) {
++    fail(
++      "accepted_exchange_not_idempotent",
++      `exact accepted-envelope replay did not return the current approval boundary: status=${exactReplay.status}`,
++    );
++  }
++  const acceptedEnvelopeText = readTracked(
++    accessLog,
++    plannerExchange.result_path,
++    "stale_exchange_probe_read",
++  );
++  const staleEnvelope = parseJson(acceptedEnvelopeText, "accepted planning result");
++  staleEnvelope.state_fingerprint = `sha256:${"0".repeat(64)}`;
++  writeTracked(
++    accessLog,
++    plannerExchange.result_path,
++    `${JSON.stringify(staleEnvelope, null, 2)}\n`,
++    "stale_exchange_probe_write",
++  );
++  const stale = runNodeCliResult(cli, repo, plannerExchange.resume_argv.slice(1));
++  const staleDiagnostic = `${stale.stderr}\n${stale.stdout}`.trim();
++  if (
++    stale.status === 0 ||
++    !/fingerprint|stale|accepted result|no issued external-agent exchange/iu.test(staleDiagnostic)
++  ) {
++    fail(
++      "stale_exchange_accepted",
++      `modified planning envelope did not fail stably: status=${stale.status} ${staleDiagnostic}`,
++    );
++  }
++  writeTracked(
++    accessLog,
++    plannerExchange.result_path,
++    acceptedEnvelopeText,
++    "stale_exchange_probe_restore",
++  );
++
++  runPacketCommand(
++    run,
++    cli,
++    approval.operator_action.cwd ?? repo,
++    approval.operator_action.argv,
++    "plan approval",
++  );
++  commitAllIfDirty(run, repo, `chore: approve ${taskId} plan`);
++  const executionBase = git(run, repo, ["rev-parse", "HEAD"]);
++  const commitCountBefore = Number(git(run, repo, ["rev-list", "--count", "HEAD"]));
++
++  const executor = advanceToEpisode(run, cli, repo, taskId, "EXECUTOR");
++  applyProductChange(accessLog, repo);
++  const executorExchange = writePacketResult(accessLog, executor, "EXECUTOR", {
++    summary:
++      "Implemented personalized greeting behavior, executable tests, aligned user documentation, and repository ignore metadata.",
++    claimedChecks: [
++      {
++        check: "node --test test/greeting.test.mjs",
++        claimed_status: "not_run",
++        details: "The AgentPlane supervisor owns deterministic verification for this task.",
++      },
++    ],
++  });
++  const evaluator = runPacketArgv(
++    run,
++    cli,
++    repo,
++    executorExchange.resume_argv,
++    "executor result acceptance",
++  );
++  packetExchange(evaluator, "EVALUATOR");
++
++  const changedPaths = git(run, repo, ["diff", "--name-only", executionBase, "HEAD", "--"])
++    .split("\n")
++    .filter(Boolean)
++    .toSorted();
++  const evaluatorProductSnapshot = {
++    source: readTracked(accessLog, path.join(repo, "src", "greeting.mjs"), "evaluator_review"),
++    test: readTracked(accessLog, path.join(repo, "test", "greeting.test.mjs"), "evaluator_review"),
++    docs: readTracked(accessLog, path.join(repo, "docs", "guide.md"), "evaluator_review"),
++    metadata: readTracked(accessLog, path.join(repo, ".gitignore"), "evaluator_review"),
++  };
++  const evaluatorTestResult = spawnSync(process.execPath, ["--test", "test/greeting.test.mjs"], {
++    cwd: repo,
++    encoding: "utf8",
++    env: { ...process.env, AGENTPLANE_NO_UPDATE_CHECK: "1" },
++    maxBuffer: 128 * 1024 * 1024,
++    stdio: ["ignore", "pipe", "pipe"],
++  });
++  if (evaluatorTestResult.error) throw evaluatorTestResult.error;
++  const reviewReady =
++    PACKAGED_MIXED_SCOPE_REQUIRED_PATHS.every((requiredPath) =>
++      changedPaths.includes(requiredPath),
++    ) &&
++    evaluatorTestResult.status === 0 &&
++    evaluatorProductSnapshot.source.includes("Hello, ${name}!") &&
++    evaluatorProductSnapshot.test.includes("personalized greeting") &&
++    evaluatorProductSnapshot.docs.includes("Hello, Ada!") &&
++    evaluatorProductSnapshot.metadata.includes("fixture-dist/");
++  if (!reviewReady) {
++    fail(
++      "missing_evaluator_evidence",
++      `public diff or deterministic verification was incomplete: paths=${changedPaths.join(",")} ` +
++        `test_status=${evaluatorTestResult.status} source=${evaluatorProductSnapshot.source.includes("Hello, ${name}!")} ` +
++        `tests=${evaluatorProductSnapshot.test.includes("personalized greeting")} ` +
++        `docs=${evaluatorProductSnapshot.docs.includes("Hello, Ada!")} ` +
++        `metadata=${evaluatorProductSnapshot.metadata.includes("fixture-dist/")}`,
++    );
++  }
++
++  const evaluatorExchange = writePacketResult(accessLog, evaluator, "EVALUATOR", {
++    summary:
++      "Reviewed the committed diff and public deterministic-verification state; every required product surface is present and consistent.",
++    review: {
++      verdict: "pass",
++      missing_tests: [],
++      hidden_assumptions: [],
++      residual_risks: [],
++    },
++  });
++  let terminalCandidate;
++  try {
++    terminalCandidate = runPacketArgv(
++      run,
++      cli,
++      repo,
++      evaluatorExchange.resume_argv,
++      "evaluator result acceptance",
++    );
++  } catch (error) {
++    const route = runNodeCliResult(cli, repo, [
++      "task",
++      "next-action",
++      taskId,
++      "--explain",
++      "--json",
++    ]);
++    throw new Error(
++      `${error.message}\nissued_fingerprint=${evaluator.state_fingerprint}\ncurrent_route=${route.stdout || route.stderr}`,
++    );
++  }
++  const terminal = continueToTerminal(run, cli, repo, taskId, terminalCandidate);
++  const finalTask = runInstalledJson(run, cli, repo, ["task", "show", taskId], "final task show");
++  const finalHead = git(run, repo, ["rev-parse", "HEAD"]);
++  const commitCountAfter = Number(git(run, repo, ["rev-list", "--count", "HEAD"]));
++  const taskCommit =
++    typeof finalTask.commit === "string"
++      ? finalTask.commit
++      : typeof finalTask.commit?.sha === "string"
++        ? finalTask.commit.sha
++        : typeof finalTask.commit?.hash === "string"
++          ? finalTask.commit.hash
++          : "";
++  try {
++    git(run, repo, ["cat-file", "-e", `${taskCommit}^{commit}`]);
++  } catch (error) {
++    fail(
++      "missing_commit",
++      `recorded task commit is absent from Git: value=${JSON.stringify(taskCommit)} ` +
++        `status=${finalTask.status} head=${finalHead} error=${error.message}`,
++    );
++  }
++
++  return {
++    schema_version: 1,
++    kind: "agentplane.packaged_mixed_scope_lifecycle_evidence",
++    task_id: taskId,
++    fixture_repo: repo,
++    packages,
++    plan_bytes: Buffer.byteLength(plan, "utf8"),
++    phase_roles: ["PLANNER", "EXECUTOR", "TESTER:supervisor_owned", "EVALUATOR"],
++    changed_paths: changedPaths,
++    verification: {
++      phase: "TESTER",
++      state: finalTask.verification?.state ?? null,
++      command: "node --test test/greeting.test.mjs",
++    },
++    evaluator: {
++      phase: "EVALUATOR",
++      state: finalTask.quality_review?.state ?? null,
++      reviewed_changed_paths: changedPaths,
++    },
++    commit: {
++      task_commit: taskCommit,
++      final_head: finalHead,
++      count_before: commitCountBefore,
++      count_after: commitCountAfter,
++    },
++    finish: { status: finalTask.status, terminal: terminal.action?.kind === "terminal" },
++    stale_exchange: {
++      rejected: stale.status !== 0,
++      status: stale.status,
++      diagnostic: staleDiagnostic,
++    },
++    exact_replay: {
++      idempotent: exactReplay.status === 0,
++      action: exactReplayPacket.action?.kind ?? null,
++      state_fingerprint: exactReplayPacket.state_fingerprint ?? null,
++    },
++    access_log: accessLog,
++    final_git_status: git(run, repo, ["status", "--short", "--untracked-files=all"]),
++    temp_cleanup: false,
++  };
++}
++
++export function runPackagedMixedScopeLifecycle() {
++  const run = createQualificationCommandRunner(repoRoot);
++  const candidateStatus = git(run, repoRoot, [
++    "status",
++    "--short",
++    "--untracked-files=all",
++    "--",
++    ".",
++    ":(exclude).agentplane/tasks",
++  ]);
++  if (candidateStatus) {
++    fail("candidate_not_clean", `packaged candidate worktree is not clean: ${candidateStatus}`);
++  }
++  const tempRoot = mkdtempSync(path.join(os.tmpdir(), "agentplane-packaged-mixed-scope-"));
++  const prefix = path.join(tempRoot, "prefix");
++  const packDirectory = path.join(tempRoot, "packs");
++  const cacheDirectory = path.join(tempRoot, "npm-cache");
++  mkdirSync(prefix, { recursive: true });
++  mkdirSync(packDirectory, { recursive: true });
++  mkdirSync(cacheDirectory, { recursive: true });
++  let evidence;
++  try {
++    const installed = installPackedWorkspace({
++      run,
++      prefix,
++      packDirectory,
++      cacheDirectory,
++      repoRoot,
++      packageNames: PACKAGES,
++    });
++    evidence = runFixture({
++      run,
++      cli: installed.cli,
++      packages: installed.packages,
++      tempRoot,
++    });
++  } finally {
++    rmSync(tempRoot, { recursive: true, force: true });
++  }
++  evidence.temp_cleanup = !existsSync(tempRoot);
++  assertPackagedMixedScopeEvidence(evidence);
++  return evidence;
++}
++
++if (isDirectRun(import.meta.url)) {
++  try {
++    const evidence = runPackagedMixedScopeLifecycle();
++    process.stdout.write(
++      `${JSON.stringify(
++        {
++          status: "passed",
++          task_id: evidence.task_id,
++          plan_bytes: evidence.plan_bytes,
++          changed_paths: evidence.changed_paths,
++          task_commit: evidence.commit.task_commit,
++          stale_exchange_status: evidence.stale_exchange.status,
++          temp_cleanup: evidence.temp_cleanup,
++        },
++        null,
++        2,
++      )}\n`,
++    );
++  } catch (error) {
++    process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
++    process.exitCode = 1;
++  }
++}
+diff --git a/scripts/qualification/release-qualification.test.mjs b/scripts/qualification/release-qualification.test.mjs
+index 8059f96bc..e50566321 100644
+--- a/scripts/qualification/release-qualification.test.mjs
++++ b/scripts/qualification/release-qualification.test.mjs
+@@ -50,6 +50,10 @@ import {
+   CODEX_REPLAY_BINARY_ENV,
+   CODEX_REPLAY_CLI_VERSION_ENV,
+ } from "../bench/internal/agent-efficiency-codex-runtime.mjs";
++import {
++  assertPackagedMixedScopeEvidence,
++  PackagedMixedScopeContractError,
++} from "./check-packaged-mixed-scope-lifecycle.mjs";
+ 
+ const scriptPath = fileURLToPath(import.meta.url);
+ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+@@ -173,6 +177,88 @@ function supervisorLatencySample(duration_ms) {
+ }
+ 
+ describe("v0.7.1 release qualification contract", () => {
++  it("keeps the installed mixed-scope scenario blocking, bounded, and selectable", () => {
++    const manifest = readQualificationManifest(manifestPath);
++    const scenario = manifest.scenarios.find(
++      (candidate) => candidate.id === "packaged-mixed-scope-lifecycle",
++    );
++    assert.ok(scenario);
++    assert.equal(scenario.tier, "full");
++    assert.equal(scenario.timeout_ms, 900_000);
++    assert.equal(scenario.failure.release_disposition, "block");
++    assert.deepEqual(scenario.coverage.workflow_modes, ["direct"]);
++    assert.deepEqual(scenario.coverage.supervisor_frontends, ["external_advance"]);
++    assert.deepEqual(scenario.coverage.lifecycle_states, [
++      "planned",
++      "ready",
++      "doing",
++      "verified",
++      "done",
++    ]);
++    assert.deepEqual(
++      selectQualificationScenarios(manifest, {
++        profile: "full",
++        provider: false,
++        scenarioIds: ["packaged-mixed-scope-lifecycle"],
++      }).map((candidate) => candidate.id),
++      ["packaged-mixed-scope-lifecycle"],
++    );
++  });
++
++  it("fails the installed mixed-scope contract for every omitted lifecycle proof", () => {
++    const fixtureRepo = path.join(tmpdir(), "agentplane-mixed-scope-contract-fixture");
++    const valid = {
++      plan_bytes: 4219,
++      phase_roles: ["PLANNER", "EXECUTOR", "TESTER:supervisor_owned", "EVALUATOR"],
++      fixture_repo: fixtureRepo,
++      changed_paths: [".gitignore", "docs/guide.md", "src/greeting.mjs", "test/greeting.test.mjs"],
++      verification: { phase: "TESTER", state: "ok" },
++      evaluator: { phase: "EVALUATOR", state: "pass" },
++      commit: { task_commit: "a".repeat(40) },
++      finish: { status: "DONE", terminal: true },
++      stale_exchange: { rejected: true },
++      exact_replay: { idempotent: true, action: "approval_required" },
++      access_log: [],
++      temp_cleanup: true,
++      final_git_status: "",
++    };
++    assert.equal(assertPackagedMixedScopeEvidence(valid), valid);
++
++    const cases = [
++      ["missing_planner", (value) => (value.plan_bytes = 3072)],
++      ["missing_executor", (value) => (value.phase_roles = ["PLANNER", "EVALUATOR"])],
++      ["missing_code", (value) => value.changed_paths.splice(2, 1)],
++      ["missing_tests", (value) => value.changed_paths.pop()],
++      ["missing_docs", (value) => value.changed_paths.splice(1, 1)],
++      ["missing_metadata", (value) => value.changed_paths.shift()],
++      ["missing_verification", (value) => (value.verification.state = "missing")],
++      ["missing_evaluator", (value) => (value.evaluator.state = "missing")],
++      ["missing_commit", (value) => (value.commit.task_commit = "")],
++      ["missing_finish", (value) => (value.finish.terminal = false)],
++      ["stale_exchange_accepted", (value) => (value.stale_exchange.rejected = false)],
++      ["accepted_exchange_not_idempotent", (value) => (value.exact_replay.idempotent = false)],
++      [
++        "internal_artifact_access",
++        (value) =>
++          value.access_log.push({
++            operation: "read",
++            path: path.join(fixtureRepo, ".agentplane", "tasks", "README.md"),
++            purpose: "forbidden",
++          }),
++      ],
++      ["temporary_state_leaked", (value) => (value.temp_cleanup = false)],
++    ];
++    for (const [expectedCode, mutate] of cases) {
++      const incomplete = structuredClone(valid);
++      mutate(incomplete);
++      assert.throws(
++        () => assertPackagedMixedScopeEvidence(incomplete),
++        (error) => error instanceof PackagedMixedScopeContractError && error.code === expectedCode,
++        expectedCode,
++      );
++    }
++  });
++
+   it("gates supervisor latency on paired ratios instead of unrelated host-load tails", () => {
+     const hostLoad = [100, 100, 100, 100, 100, 500, 500, 500, 500, 500];
+     const stable = compareSupervisorLatencySamples(
+@@ -345,6 +431,7 @@ describe("v0.7.1 release qualification contract", () => {
+     const scenarios = [
+       { id: "reader-before", tier: "core", depends_on: [] },
+       { id: "packaged-candidate-flow", tier: "full", depends_on: [] },
++      { id: "packaged-mixed-scope-lifecycle", tier: "full", depends_on: [] },
+       { id: "reader-after", tier: "core", depends_on: [] },
+     ];
+     const events = [];
+@@ -367,6 +454,14 @@ describe("v0.7.1 release qualification contract", () => {
+     assert.ok(
+       events.indexOf("finish:packaged-candidate-flow:1") < events.indexOf("start:reader-after:1"),
+     );
++    assert.ok(
++      events.indexOf("finish:packaged-candidate-flow:1") <
++        events.indexOf("start:packaged-mixed-scope-lifecycle:1"),
++    );
++    assert.ok(
++      events.indexOf("finish:packaged-mixed-scope-lifecycle:1") <
++        events.indexOf("start:reader-after:1"),
++    );
+   });
+ 
+   it("stops queued work after failure and settles active work without starting dependents", async () => {
+diff --git a/scripts/qualification/run-v0.7.1-release-qualification.mjs b/scripts/qualification/run-v0.7.1-release-qualification.mjs
+index dbb4d77fa..229076472 100644
+--- a/scripts/qualification/run-v0.7.1-release-qualification.mjs
++++ b/scripts/qualification/run-v0.7.1-release-qualification.mjs
+@@ -44,6 +44,7 @@ const EXCLUSIVE_QUALIFICATION_SCENARIO_IDS = new Set([
+   "full-contract",
+   "matched-cli-latency",
+   "packaged-candidate-flow",
++  "packaged-mixed-scope-lifecycle",
+   "supervisor-latency",
+ ]);
+ 
+diff --git a/scripts/qualification/v0.7.1-release-qualification.json b/scripts/qualification/v0.7.1-release-qualification.json
+index 375dac074..f9c6a306d 100644
+--- a/scripts/qualification/v0.7.1-release-qualification.json
++++ b/scripts/qualification/v0.7.1-release-qualification.json
+@@ -77,6 +77,27 @@
+         "release_disposition": "block"
+       }
+     },
++    {
++      "id": "packaged-mixed-scope-lifecycle",
++      "title": "Installed candidate mixed-scope task through completed public lifecycle",
++      "tier": "full",
++      "command": ["node", "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"],
++      "timeout_ms": 900000,
++      "coverage": {
++        "workflow_modes": ["direct"],
++        "supervisor_frontends": ["external_advance"],
++        "lifecycle_states": ["planned", "ready", "doing", "verified", "done"],
++        "semantic_stops": ["approval_required"],
++        "recovery_states": ["stale_fingerprint"]
++      },
++      "failure": {
++        "classification": "packaged_mixed_scope_lifecycle_failure",
++        "impact": "The installable release cannot prove a normal product change through planning, implementation, deterministic verification, evaluator review, commit, and finish.",
++        "proposed_fix": "Reproduce the isolated installed-package fixture, repair the first failing public lifecycle phase, and preserve the stale-envelope and cleanup shields.",
++        "owner_task": "202608122156-EZZZYH",
++        "release_disposition": "block"
++      }
++    },
+     {
+       "id": "lifecycle-matrix",
+       "title": "Direct and branch_pr lifecycle state matrix",

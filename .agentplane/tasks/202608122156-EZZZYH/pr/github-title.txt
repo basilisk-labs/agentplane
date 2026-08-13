@@ -1,1 +1,1 @@
-🚧 EZZZYH task: Add installed-package mixed-scope lifecycle E2E to release qualification [202608122156-EZZZYH]
+✅ EZZZYH task: Add installed-package mixed-scope lifecycle E2E to release qualification [202608122156-EZZZYH]
