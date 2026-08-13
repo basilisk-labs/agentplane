@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202608112259-T3ZDDM-ea68de563ded4e0bd53a0797",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou/.agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-08-13T12:58:30.333Z",
+  "ended_at": "2026-08-13T12:59:22.886Z",
+  "stdout_bytes": 149735,
+  "stderr_bytes": 134,
+  "provider_usage": {
+    "input_tokens": 175745,
+    "output_tokens": 2953,
+    "total_tokens": 178698,
+    "visible_output_tokens": 2440,
+    "reasoning_tokens": 513
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:74df3679409d4f46ee0d790b1167f78413914afbfa7a638929eef56368762bb3"
+}
