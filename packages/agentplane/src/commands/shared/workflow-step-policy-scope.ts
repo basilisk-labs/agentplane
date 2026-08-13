@@ -34,6 +34,16 @@ function normalizedPaths(values: readonly string[]): string[] {
   ].toSorted();
 }
 
+function withoutExcludedRoots(
+  values: readonly string[],
+  excludedRoots: readonly string[],
+): string[] {
+  const normalizedRoots = normalizedPaths(excludedRoots);
+  return normalizedPaths(values).filter(
+    (value) => !normalizedRoots.some((root) => value === root || value.startsWith(`${root}/`)),
+  );
+}
+
 function baselineFromTask(task: TaskData): WorkflowRouteBaseline | null {
   const value = task.extensions?.[WORKFLOW_ROUTE_BASELINE_KEY];
   if (
@@ -95,6 +105,7 @@ export async function observeWorkflowPolicyScope(opts: {
   repositoryRoot: string;
   state: WorkflowRouteStateInput;
   preobservedDirtyPaths?: readonly string[];
+  excludedRoots?: readonly string[];
 }): Promise<WorkflowPolicyScopeObservation> {
   const passedDirtyPaths = opts.state.taskWorktree?.changedPaths ?? [];
   const baseline = baselineFromTask(opts.state.task);
@@ -107,7 +118,9 @@ export async function observeWorkflowPolicyScope(opts: {
           ? (opts.preobservedDirtyPaths ?? [])
           : await new GitContext({ gitRoot: opts.repositoryRoot }).statusChangedPaths()
         : [];
-    const dirtyPaths = normalizedPaths([...passedDirtyPaths, ...directDirtyPaths]);
+    const scopePaths = (values: readonly string[]) =>
+      withoutExcludedRoots(values, opts.excludedRoots ?? []);
+    const dirtyPaths = scopePaths([...passedDirtyPaths, ...directDirtyPaths]);
     if (opts.state.workflowMode === "branch_pr") {
       const branch = taskBranch(opts.state);
       const base = opts.state.resume.base_branch?.trim() ?? "";
@@ -128,7 +141,7 @@ export async function observeWorkflowPolicyScope(opts: {
       );
       return {
         state: "present",
-        changedPaths: normalizedPaths([...committedPaths, ...dirtyPaths]),
+        changedPaths: scopePaths([...committedPaths, ...dirtyPaths]),
         sources: [baseline ? "task_start_baseline" : "base_branch", "working_tree"],
       };
     }
@@ -150,7 +163,7 @@ export async function observeWorkflowPolicyScope(opts: {
           });
       return {
         state: "present",
-        changedPaths: normalizedPaths([...committedPaths, ...dirtyPaths]),
+        changedPaths: scopePaths([...committedPaths, ...dirtyPaths]),
         sources: [
           baseline.start_head_sha ? "task_start_baseline" : "unborn_task_start_baseline",
           "working_tree",
@@ -162,7 +175,7 @@ export async function observeWorkflowPolicyScope(opts: {
     if (status === "TODO" || dirtyPaths.length > 0 || runnerPaths.length > 0) {
       return {
         state: "present",
-        changedPaths: normalizedPaths([...runnerPaths, ...dirtyPaths]),
+        changedPaths: scopePaths([...runnerPaths, ...dirtyPaths]),
         sources: [
           ...(runnerPaths.length > 0 ? ["runner_evidence"] : []),
           ...(dirtyPaths.length > 0 ? ["working_tree"] : []),
