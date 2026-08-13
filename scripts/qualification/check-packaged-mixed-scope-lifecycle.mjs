@@ -78,7 +78,12 @@ function assertPublicArgv(argv, label) {
 
 function runPacketArgv(run, cli, cwd, argv, label) {
   assertPublicArgv(argv, label);
-  return runInstalledJson(run, cli, cwd, argv.slice(1), label);
+  try {
+    return runInstalledJson(run, cli, cwd, argv.slice(1), label);
+  } catch (error) {
+    const stderr = error?.stderr?.toString?.().trim() ?? "";
+    fail("public_command_failed", `${label}: ${stderr || error.message}`);
+  }
 }
 
 function runPacketCommand(run, cli, cwd, argv, label) {
