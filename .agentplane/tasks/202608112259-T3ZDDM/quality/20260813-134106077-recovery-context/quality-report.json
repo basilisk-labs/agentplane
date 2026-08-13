@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608112259-T3ZDDM",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-13T13:41:52.496Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "human_review",
+  "summary": "EVALUATOR returned human_review with 1 typed finding(s).",
+  "evaluated_sha": "9766c12d8519a4f797fa46538871a776238bad5b",
+  "blueprint_digest": "ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb",
+  "findings": [
+    "The implementation records repository effects explicitly forbidden by the approved execution authority, with no frozen evidence of owner re-approval for that material drift."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [
+    "Add a lifecycle validation proving that observed repository effects outside execution_contract.authority.forbidden_repository_effects cannot reach verification or completion without recorded owner re-approval."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes that the broad task acceptance criteria implicitly override the narrower frozen execution authority, but no owner decision establishing that precedence is present in the frozen evidence."
+  ],
+  "residual_risks": [
+    "Does the human owner explicitly approve the observed CI, dependency, documentation, schema, and test changes despite their exclusion from the task's execution authority?"
+  ]
+}

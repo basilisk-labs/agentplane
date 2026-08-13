@@ -1,0 +1,290 @@
+{
+  "schema_version": 2,
+  "kind": "verification_contract_benchmark",
+  "fixture": "small-localized-reversible-no-external-effects",
+  "execution_mode": "execute",
+  "samples": 5,
+  "collection": {
+    "subject_sha": "9766c12d8519a4f797fa46538871a776238bad5b",
+    "collected_at": "2026-08-13T13:21:47.279Z",
+    "command": [
+      "/opt/homebrew/Cellar/node/26.7.0/bin/node",
+      "scripts/bench/measure-verification-contract.mjs",
+      "--samples",
+      "5",
+      "--execute",
+      "--evidence-dir",
+      ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples",
+      "--output",
+      ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/report.json"
+    ],
+    "changed_files": [
+      "packages/agentplane/src/shared/write-if-changed.ts",
+      "packages/agentplane/src/shared/write-if-changed.test.ts"
+    ],
+    "hardware": {
+      "platform": "darwin",
+      "release": "25.5.0",
+      "arch": "arm64",
+      "cpu_model": "Apple M4",
+      "logical_cpu_count": 10,
+      "total_memory_bytes": 25769803776,
+      "host_model": "Mac16,12"
+    },
+    "runtime": {
+      "node": "v26.7.0",
+      "bun": "1.3.6"
+    }
+  },
+  "sample_results": [
+    {
+      "index": 1,
+      "execution_mode": "execute",
+      "wall_clock_ms": 9177,
+      "process": {
+        "exit_code": 0,
+        "signal": null,
+        "error": null,
+        "ok": true
+      },
+      "selected_groups": 5,
+      "executed_groups": 5,
+      "build_invocations": 1,
+      "verification_amplification": 1,
+      "lifecycle_control": {
+        "schema_version": 1,
+        "kind": "agentplane.lifecycle_control_budget",
+        "provenance": "observed_command_events",
+        "call_count": 1,
+        "maximum": 3,
+        "commands": [
+          "ci:local"
+        ],
+        "ok": true
+      },
+      "raw_evidence": {
+        "stdout_path": ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-01.stdout.log",
+        "stdout_sha256": "sha256:d21b849245f02324e788705a412856075e4ac71a3cb4b167d01eb57af48e36b7",
+        "stderr_path": ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-01.stderr.log",
+        "stderr_sha256": "sha256:a5ea7c74aec288b5144c26e4c3263b929a81cdbfe80d1b114906e99414b839d7",
+        "command_events_path": ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-01.events.jsonl",
+        "command_events_sha256": "sha256:95de1bd71771ec574136c1f62216646d1ab345b1626c3b23af6678d817f3479a"
+      },
+      "ok": true
+    },
+    {
+      "index": 2,
+      "execution_mode": "execute",
+      "wall_clock_ms": 8669,
+      "process": {
+        "exit_code": 0,
+        "signal": null,
+        "error": null,
+        "ok": true
+      },
+      "selected_groups": 5,
+      "executed_groups": 5,
+      "build_invocations": 1,
+      "verification_amplification": 1,
+      "lifecycle_control": {
+        "schema_version": 1,
+        "kind": "agentplane.lifecycle_control_budget",
+        "provenance": "observed_command_events",
+        "call_count": 1,
+        "maximum": 3,
+        "commands": [
+          "ci:local"
+        ],
+        "ok": true
+      },
+      "raw_evidence": {
+        "stdout_path": ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-02.stdout.log",
+        "stdout_sha256": "sha256:748ab45560d4cefcce93f911b2c91c64a4af15aba84227439b6b4701e53b8418",
+        "stderr_path": ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-02.stderr.log",
+        "stderr_sha256": "sha256:a5ea7c74aec288b5144c26e4c3263b929a81cdbfe80d1b114906e99414b839d7",
+        "command_events_path": ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-02.events.jsonl",
+        "command_events_sha256": "sha256:1a919913e8333ef20aaaba3c7f9c7d87510317214d2397c0dfb4ae3217400c6d"
+      },
+      "ok": true
+    },
+    {
+      "index": 3,
+      "execution_mode": "execute",
+      "wall_clock_ms": 8703,
+      "process": {
+        "exit_code": 0,
+        "signal": null,
+        "error": null,
+        "ok": true
+      },
+      "selected_groups": 5,
+      "executed_groups": 5,
+      "build_invocations": 1,
+      "verification_amplification": 1,
+      "lifecycle_control": {
+        "schema_version": 1,
+        "kind": "agentplane.lifecycle_control_budget",
+        "provenance": "observed_command_events",
+        "call_count": 1,
+        "maximum": 3,
+        "commands": [
+          "ci:local"
+        ],
+        "ok": true
+      },
+      "raw_evidence": {
+        "stdout_path": ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-03.stdout.log",
+        "stdout_sha256": "sha256:0afa47532caaffefd1bf36e295bd19d2cfb06f10d7c62b6b727e43b946b2899c",
+        "stderr_path": ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-03.stderr.log",
+        "stderr_sha256": "sha256:a5ea7c74aec288b5144c26e4c3263b929a81cdbfe80d1b114906e99414b839d7",
+        "command_events_path": ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-03.events.jsonl",
+        "command_events_sha256": "sha256:778b461e6e51995695cfa85eecc58721f3b7eadf78e0e69b635e8d27f5d4bb60"
+      },
+      "ok": true
+    },
+    {
+      "index": 4,
+      "execution_mode": "execute",
+      "wall_clock_ms": 8642,
+      "process": {
+        "exit_code": 0,
+        "signal": null,
+        "error": null,
+        "ok": true
+      },
+      "selected_groups": 5,
+      "executed_groups": 5,
+      "build_invocations": 1,
+      "verification_amplification": 1,
+      "lifecycle_control": {
+        "schema_version": 1,
+        "kind": "agentplane.lifecycle_control_budget",
+        "provenance": "observed_command_events",
+        "call_count": 1,
+        "maximum": 3,
+        "commands": [
+          "ci:local"
+        ],
+        "ok": true
+      },
+      "raw_evidence": {
+        "stdout_path": ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-04.stdout.log",
+        "stdout_sha256": "sha256:359323398477fbc8fcae7121991f5e6b7d8bc9a8d9c20afa57126ff2771fd697",
+        "stderr_path": ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-04.stderr.log",
+        "stderr_sha256": "sha256:a5ea7c74aec288b5144c26e4c3263b929a81cdbfe80d1b114906e99414b839d7",
+        "command_events_path": ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-04.events.jsonl",
+        "command_events_sha256": "sha256:1bbea639e25f8cd219e7c6079496ff4b146534dd183f1c522efc187835a5b1c9"
+      },
+      "ok": true
+    },
+    {
+      "index": 5,
+      "execution_mode": "execute",
+      "wall_clock_ms": 8665,
+      "process": {
+        "exit_code": 0,
+        "signal": null,
+        "error": null,
+        "ok": true
+      },
+      "selected_groups": 5,
+      "executed_groups": 5,
+      "build_invocations": 1,
+      "verification_amplification": 1,
+      "lifecycle_control": {
+        "schema_version": 1,
+        "kind": "agentplane.lifecycle_control_budget",
+        "provenance": "observed_command_events",
+        "call_count": 1,
+        "maximum": 3,
+        "commands": [
+          "ci:local"
+        ],
+        "ok": true
+      },
+      "raw_evidence": {
+        "stdout_path": ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-05.stdout.log",
+        "stdout_sha256": "sha256:6e3e84bd8177c4d9992677c479ee595735a8382569de79b19badff8cdb21d47c",
+        "stderr_path": ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-05.stderr.log",
+        "stderr_sha256": "sha256:a5ea7c74aec288b5144c26e4c3263b929a81cdbfe80d1b114906e99414b839d7",
+        "command_events_path": ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-05.events.jsonl",
+        "command_events_sha256": "sha256:50e6544f7ebec105e3a0d183823091b278acf57e4754841dd48f5d4ea6255c01"
+      },
+      "ok": true
+    }
+  ],
+  "durations_ms": [
+    9177,
+    8669,
+    8703,
+    8642,
+    8665
+  ],
+  "p50_ms": 8669,
+  "p95_ms": 9177,
+  "lifecycle_control_commands": 1,
+  "lifecycle_control_collection": {
+    "definition": "maximum observed top-level AgentPlane verification control commands per sample",
+    "provenance": "observed_command_events"
+  },
+  "selected_groups": 5,
+  "duplicate_build_invocations": 1,
+  "full_cli_regression_selected": false,
+  "verification_contract_digest": "sha256:f0ca23b2dc6720e5e4449e86d54665035d4d1dde77569958384f69b253731f34",
+  "thresholds": {
+    "p50_ms": 60000,
+    "p95_ms": 120000,
+    "lifecycle_control_commands": 3
+  },
+  "comparison": {
+    "baseline_anchor_commit": "e4ec4520ded988c60db3261714e68b5e22ac4e1f",
+    "baseline_collection": {
+      "collected_at": "2026-08-12",
+      "subject_sha": "e4ec4520ded988c60db3261714e68b5e22ac4e1f",
+      "hardware": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "cpu_model": "Apple M4",
+        "logical_cpu_count": 10,
+        "total_memory_bytes": 25769803776,
+        "host_model": "Mac16,12"
+      },
+      "runtime": {
+        "node": "v26.7.0",
+        "bun": "1.3.6"
+      },
+      "note": "Collected in an isolated detached worktree on this pinned reference host during task T3ZDDM."
+    },
+    "baseline_route": "full-fast",
+    "baseline_full_cli_regression_selected": true,
+    "baseline_selected_groups": 18,
+    "baseline_duplicate_build_invocations": 3,
+    "baseline_samples": 3,
+    "baseline_p50_ms": 367280,
+    "baseline_p95_ms": 639980,
+    "p50_speedup": 42.37,
+    "p95_speedup": 69.74,
+    "selected_group_reduction": 13,
+    "duplicate_build_reduction": 2
+  },
+  "qualification": {
+    "schema_version": 1,
+    "kind": "verification_contract_benchmark_qualification",
+    "mandatory_verification_executed": true,
+    "checks": {
+      "mandatory_verification_executed": true,
+      "every_sample_passed": true,
+      "p50_within_threshold": true,
+      "p95_within_threshold": true,
+      "lifecycle_commands_within_threshold": true,
+      "observed_lifecycle_provenance": true,
+      "localized_group_budget": true,
+      "single_build_invocation": true,
+      "historical_group_reduction": true,
+      "historical_build_reduction": true,
+      "no_local_full_cli_regression": true
+    },
+    "ok": true
+  },
+  "ok": true
+}

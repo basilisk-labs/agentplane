@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "human_review",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The implementation records repository effects explicitly forbidden by the approved execution authority, with no frozen evidence of owner re-approval for that material drift.",
+      "broken_invariant": "Material scope drift must be explicitly re-approved; the execution authority forbids documentation, tests, public API, schema, dependencies, CI, release metadata, and security-boundary effects, while the observed change set records violations for CI, dependencies, documentation, schema, and tests.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608112259-T3ZDDM/README.md",
+          "sha256": "sha256:ce6d0704a3ae395160e73fbaff65037253cc906265be5fa665b8bd5c179fd8f8",
+          "section": "execution_contract.authority and execution_contract.observed.authority_violations"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add a lifecycle validation proving that observed repository effects outside execution_contract.authority.forbidden_repository_effects cannot reach verification or completion without recorded owner re-approval."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes that the broad task acceptance criteria implicitly override the narrower frozen execution authority, but no owner decision establishing that precedence is present in the frozen evidence."
+  ],
+  "recovery_context": "Does the human owner explicitly approve the observed CI, dependency, documentation, schema, and test changes despite their exclusion from the task's execution authority?"
+}

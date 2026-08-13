@@ -26,7 +26,7 @@
  .../evaluator-verification-contract.test.ts        |   76 +
  .../evaluator/evaluator-verification-records.ts    |   11 +-
  .../commands/release/ci-workflow-contract.test.ts  |   15 +
- .../src/commands/release/github-ci-plan.test.ts    |  302 ++-
+ .../src/commands/release/github-ci-plan.test.ts    |  347 ++-
  .../commands/release/release-ci-contract.test.ts   |   13 +-
  .../commands/shared/quality-review-target.test.ts  |   25 +
  .../src/commands/shared/quality-review-target.ts   |   18 +-
@@ -94,7 +94,7 @@
  scripts/lib/github-ci-capabilities.d.ts            |   11 +
  scripts/lib/github-ci-capabilities.mjs             |   87 +-
  scripts/lib/installed-migration-matrix.mjs         |   22 +
- scripts/lib/lifecycle-artifact-reuse.mjs           |  376 ++++
+ scripts/lib/lifecycle-artifact-reuse.mjs           |  445 ++++
  scripts/lib/lifecycle-control-metrics.d.ts         |   30 +
  scripts/lib/lifecycle-control-metrics.mjs          |   66 +
  scripts/lib/local-ci-selection.d.ts                |   19 +
@@ -116,4 +116,4 @@
  tsconfig.base.json                                 |    1 +
  .../docs/developer/verification-contract.png       |  Bin 0 -> 59695 bytes
  website/static/img/social/manifest.json            |    8 +
- 118 files changed, 10546 insertions(+), 2238 deletions(-)
+ 118 files changed, 10660 insertions(+), 2238 deletions(-)

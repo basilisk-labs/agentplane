@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.fixture_startup_qualification",
+  "subject_sha": "9766c12d8519a4f797fa46538871a776238bad5b",
+  "baseline_sha": "e4ec4520ded988c60db3261714e68b5e22ac4e1f",
+  "collection": {
+    "hardware": "Apple M4, 10 logical CPUs, 24 GiB RAM",
+    "runtime": {
+      "node": "v26.7.0",
+      "bun": "1.3.6"
+    },
+    "commands": [
+      "node scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs --subject 9766c12d8519a4f797fa46538871a776238bad5b --out <output>/matched-cli-latency.json --runs 20 --warmups 2 --replicates 3",
+      "create a detached e4ec4520d worktree; install frozen dependencies and build both subjects outside the timed interval; alternately execute bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts --config vitest.workspace.ts five times per subject; remove the detached worktree",
+      "bunx vitest run packages/agentplane/src/cli/verification-contract.test.ts packages/testkit/src/cli-harness/temp-root-cleanup.test.ts --config vitest.workspace.ts --reporter=json --outputFile=<output>/isolation-cleanup-vitest.json"
+    ]
+  },
+  "measurements": {
+    "fixture_and_process_suite": {
+      "source": "fixture-process-profile.json",
+      "includes": [
+        "fixture_template_construction",
+        "isolated_repository_copy",
+        "test_process_startup",
+        "test_cleanup"
+      ],
+      "excludes": [
+        "dependency_installation",
+        "workspace_build"
+      ],
+      "samples_per_subject": 5,
+      "baseline": {
+        "p50_ms": 8528,
+        "p95_ms": 10809
+      },
+      "candidate": {
+        "p50_ms": 6486,
+        "p95_ms": 7038
+      },
+      "p50_reduction_ratio": 0.2394,
+      "p95_reduction_ratio": 0.3489,
+      "verdict": "pass"
+    },
+    "fresh_process_cli": {
+      "source": "matched-cli-latency.json",
+      "logical_samples_per_phase": 20,
+      "replicates_per_side_per_sample": 3,
+      "cold": {
+        "baseline_p50_ms": 1487.894,
+        "baseline_p95_ms": 1508.798,
+        "candidate_p50_ms": 1384.528,
+        "candidate_p95_ms": 1404.735
+      },
+      "warm": {
+        "baseline_p50_ms": 1277.493,
+        "baseline_p95_ms": 1308.129,
+        "candidate_p50_ms": 1181.019,
+        "candidate_p95_ms": 1218.701
+      },
+      "verdict": "pass"
+    }
+  },
+  "safety": {
+    "source": "isolation-cleanup-vitest.json",
+    "tests": 11,
+    "passed": 11,
+    "failed": 0,
+    "hermeticity": "pass",
+    "cleanup": "pass",
+    "failure_isolation": "pass",
+    "bounded_timeout": "pass"
+  },
+  "qualification": {
+    "measurable_fixture_and_startup_reduction": true,
+    "fresh_process_regression": false,
+    "hermeticity_preserved": true,
+    "cleanup_preserved": true,
+    "failure_isolation_preserved": true,
+    "ok": true
+  },
+  "residual_risk": "The fixture/process suite reports aggregate wall time and cannot attribute the reduction independently among fixture cloning, process startup, and test-body execution. The matched CLI benchmark isolates fresh process behavior and shows no regression; future work may add component-level spans if attribution becomes operationally necessary."
+}
