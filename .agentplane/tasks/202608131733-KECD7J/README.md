@@ -1,10 +1,11 @@
 ---
 id: "202608131733-KECD7J"
 title: "Archive resolved release incidents before 0.7.6"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -61,6 +62,20 @@ quality_review:
     - ".agentplane/policy/security.must.md"
   findings:
     - "The archived incident records now contain the required exact task and commit identities; the active registries are empty and mirrored, and frozen evidence covers focused regressions, formatting, routing, hosted checks, qualification, and operator-state closure."
+token_usage:
+  agent_runs: 5
+  input_tokens: 639700
+  journal_digest: "sha256:34363f3528d9bb5d2e30e2b64747a10551c9bd95801c4aa0937cd32f89f3402a"
+  observed_agent_runs: 5
+  observed_by: "agentplane"
+  output_tokens: 10844
+  reasoning_tokens: 2662
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "observed"
+  total_tokens: 653206
+  unavailable_reason: null
+  updated_at: "2026-08-13T18:19:01.100Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -217,7 +232,9 @@ execution_contract:
       - "repository_effect:repository_write"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "c6922d42e58cd245976281dfe6faa839f3b6c0c8"
+  message: "✅ KECD7J close: record passing incident review"
 comments:
   -
     author: "CODER"
@@ -225,6 +242,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: archived both resolved release incidents after 37 focused regressions, routing, and the release incident gate passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -283,8 +303,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Exact archive identity rework passed with primary frozen evidence."
+  -
+    type: "status"
+    at: "2026-08-13T18:19:01.100Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "c6922d42e58cd245976281dfe6faa839f3b6c0c8"
 doc_version: 3
-doc_updated_at: "2026-08-13T18:15:50.226Z"
+doc_updated_at: "2026-08-13T18:19:01.110Z"
 doc_updated_by: "CODER"
 description: "Review INC-20260810-01 and INC-20260811-01 against their merged fixes and current enforcement tests. If both failure classes are fixed and no active operator work remains, remove them from the active incidents registry and its installed asset mirror, append complete archived records with exact task, commit, test, and enforcement evidence to docs/developer/incident-archive.mdx, run policy routing and focused incident/regression checks, integrate the policy-only change, then unblock release task 202608131730-BHEAQT without changing its sequence or release scope."
 sections:
@@ -656,6 +684,9 @@ sections:
       Impact: Archival could not be independently audited from the evaluator packet.
       Resolution: Freeze the task, PR, merge, hosted, qualification, advisory disposition, and exact full-format evidence before reevaluation.
 extensions:
+  implementation_commit:
+    hash: "b6b5f5e57797cf0429eb8758abc3dcfdc73388c8"
+    message: "✅ KECD7J task: complete qualification archive identity"
   workflow_route_baseline:
     start_head_sha: "bc0afaea7a7be909fc93374a195c73da3f697d85"
     version: 1
@@ -1043,3 +1074,16 @@ Revert the archive commit through a new policy task, restoring both active regis
 - Observation: Incident closeout quality review lacked frozen source and exact format evidence.
   Impact: Archival could not be independently audited from the evaluator packet.
   Resolution: Freeze the task, PR, merge, hosted, qualification, advisory disposition, and exact full-format evidence before reevaluation.
+
+## Token Usage
+
+- State: `observed`
+- Completeness: `5/5` agent runs
+- Input tokens: `639700`
+- Output tokens: `10844`
+- Reasoning tokens: `2662`
+- Total tokens: `653206`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:34363f3528d9bb5d2e30e2b64747a10551c9bd95801c4aa0937cd32f89f3402a`
+- Unavailable reason: `none`
+- Updated at: `2026-08-13T18:19:01.100Z`
