@@ -114,21 +114,6 @@ export async function gitDiffNames(
   return await gitDiffNamesWithEnv(cwd, base, branch, opts, gitEnv());
 }
 
-export async function gitCommitChangedPaths(cwd: string, commit: string): Promise<string[]> {
-  assertSafeGitRef(commit);
-  const { stdout } = await execFileAsync(
-    "git",
-    ["diff-tree", "--root", "--no-commit-id", "--name-only", "-r", "-z", commit],
-    {
-      cwd,
-      env: gitEnv(),
-      encoding: "buffer",
-    },
-  );
-  const output = Buffer.isBuffer(stdout) ? stdout.toString("utf8") : String(stdout);
-  return output.split("\0").filter((entry) => entry.length > 0);
-}
-
 export async function gitProofDiffNames(
   cwd: string,
   base: string,

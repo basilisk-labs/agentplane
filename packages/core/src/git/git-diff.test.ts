@@ -7,7 +7,6 @@ import { describe, expect, it } from "vitest";
 
 import {
   gitAheadBehind,
-  gitCommitChangedPaths,
   gitDiffNames,
   gitDiffNameStatus,
   gitDiffNumstat,
@@ -63,14 +62,6 @@ describe("git-diff", () => {
     await expect(
       gitDiffNames(root, baseOut.trim(), headOut.trim(), { range: "two-dot" }),
     ).resolves.toEqual(["checkpoint.txt"]);
-  });
-
-  it("reports the changed paths of a root commit without a synthetic empty-tree hash", async () => {
-    const root = await mkRepo();
-    const { stdout: headOut } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
-
-    await expect(gitCommitChangedPaths(root, headOut.trim())).resolves.toEqual(["tracked.txt"]);
-    await expect(gitCommitChangedPaths(root, "--all")).rejects.toThrow(/option prefix/);
   });
 
   it("reads files from refs through repo-relative paths only", async () => {
