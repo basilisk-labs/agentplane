@@ -420,6 +420,20 @@ describe("GitHub CI capability planning", () => {
     });
   });
 
+  it("rejects switching the implementation identity in a lifecycle-only descendant", () => {
+    const switchedIdentity = withLifecycleRepo((repo, parentSha, readmePath) => {
+      const wrongIdentity = "f".repeat(40);
+      writeFileSync(
+        path.join(repo, readmePath),
+        taskReadme({ status: "DONE", parentSha, implementationSha: wrongIdentity }),
+      );
+    });
+    expect(switchedIdentity).toMatchObject({
+      eligible: false,
+      reason: "semantic_readme_drift",
+    });
+  });
+
   it("keeps the PR full-regression floor for docs-only changes", () => {
     const result = plan(["docs/user/setup.mdx"]);
 

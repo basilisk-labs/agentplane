@@ -196,9 +196,22 @@ function executionContractStrengthened(before, after) {
   return /^sha256:[0-9a-f]{64}$/u.test(String(afterContract.digest ?? ""));
 }
 
-function readmeImplementationSha(cwd, after, parentSha) {
-  const declared = after.frontmatter.extensions?.implementation_commit?.hash;
-  const implementationSha = /^[0-9a-f]{40}$/u.test(String(declared ?? "")) ? declared : parentSha;
+function readmeImplementationSha(cwd, before, after, parentSha) {
+  const beforeDeclared = before.frontmatter.extensions?.implementation_commit?.hash;
+  const afterDeclared = after.frontmatter.extensions?.implementation_commit?.hash;
+  const beforeImplementation = /^[0-9a-f]{40}$/u.test(String(beforeDeclared ?? ""))
+    ? beforeDeclared
+    : null;
+  const implementationSha = /^[0-9a-f]{40}$/u.test(String(afterDeclared ?? ""))
+    ? afterDeclared
+    : parentSha;
+  if (
+    beforeImplementation
+      ? beforeImplementation !== implementationSha
+      : implementationSha !== parentSha
+  ) {
+    return null;
+  }
   try {
     execFileSync("git", ["merge-base", "--is-ancestor", implementationSha, parentSha], {
       cwd,
@@ -216,7 +229,7 @@ function readmeLifecycleAdvance(cwd, beforeMarkdown, afterMarkdown, parentSha) {
   if (!before || !after || comparableReadme(beforeMarkdown) !== comparableReadme(afterMarkdown)) {
     return null;
   }
-  const implementationSha = readmeImplementationSha(cwd, after, parentSha);
+  const implementationSha = readmeImplementationSha(cwd, before, after, parentSha);
   if (!implementationSha) return null;
   if (
     !executionContractStrengthened(
@@ -397,34 +410,37 @@ export function evaluateLifecycleArtifactReuse({
     return { eligible: false, reason: "empty_diff", changed_files: [] };
   }
 
-  let lifecycleTaskId = null;
-  let readmeCount = 0;
-  let readmePath = null;
-  let implementationSha = null;
-  for (const filePath of changedFiles) {
-    const parsedPath = taskPath(filePath);
-    if (!parsedPath) {
-      return { eligible: false, reason: "non_task_artifact", changed_files: changedFiles };
-    }
-    lifecycleTaskId ??= parsedPath.taskId;
-    if (parsedPath.taskId !== lifecycleTaskId) {
-      return { eligible: false, reason: "multiple_task_artifacts", changed_files: changedFiles };
-    }
-    if (parsedPath.relativePath === "README.md") {
-      readmeCount += 1;
-      readmePath = filePath;
-      const before = readBlob(cwd, parentSha, filePath);
-      const after = readBlob(cwd, currentSha, filePath);
-      const readmeImplementation =
-        before === null || after === null
-          ? null
-          : readmeLifecycleAdvance(cwd, before, after, parentSha);
-      if (!readmeImplementation) {
-        return { eligible: false, reason: "semantic_readme_drift", changed_files: changedFiles };
-      }
-      implementationSha = readmeImplementation;
-      continue;
-    }
+  const parsedFiles = changedFiles.map((filePath) => ({
+    filePath,
+    parsedPath: taskPath(filePath),
+  }));
+  if (parsedFiles.some(({ parsedPath }) => !parsedPath)) {
+    return { eligible: false, reason: "non_task_artifact", changed_files: changedFiles };
+  }
+  const taskIds = new Set(parsedFiles.map(({ parsedPath }) => parsedPath.taskId));
+  if (taskIds.size !== 1) {
+    return { eligible: false, reason: "multiple_task_artifacts", changed_files: changedFiles };
+  }
+  const lifecycleTaskId = [...taskIds][0];
+  const readmeFiles = parsedFiles.filter(
+    ({ parsedPath }) => parsedPath.relativePath === "README.md",
+  );
+  if (readmeFiles.length !== 1) {
+    return { eligible: false, reason: "missing_task_readme", changed_files: changedFiles };
+  }
+  const readmePath = readmeFiles[0].filePath;
+  const beforeReadme = readBlob(cwd, parentSha, readmePath);
+  const afterReadme = readBlob(cwd, currentSha, readmePath);
+  const implementationSha =
+    beforeReadme === null || afterReadme === null
+      ? null
+      : readmeLifecycleAdvance(cwd, beforeReadme, afterReadme, parentSha);
+  if (!implementationSha) {
+    return { eligible: false, reason: "semantic_readme_drift", changed_files: changedFiles };
+  }
+
+  for (const { filePath, parsedPath } of parsedFiles) {
+    if (parsedPath.relativePath === "README.md") continue;
     if (MANAGED_DIRECTORIES.some((directory) => parsedPath.relativePath.startsWith(directory))) {
       const invalidReason = validBoundJsonArtifact({
         cwd,
@@ -433,7 +449,7 @@ export function evaluateLifecycleArtifactReuse({
         relativePath: parsedPath.relativePath,
         filePath,
         parentSha,
-        implementationSha: implementationSha ?? parentSha,
+        implementationSha,
       });
       if (invalidReason) {
         return {
@@ -449,14 +465,11 @@ export function evaluateLifecycleArtifactReuse({
     }
   }
 
-  if (readmeCount !== 1) {
-    return { eligible: false, reason: "missing_task_readme", changed_files: changedFiles };
-  }
   const invalidBinding = validateCurrentEvidenceBindings({
     cwd,
     currentSha,
     taskId: lifecycleTaskId,
-    parentSha: implementationSha ?? parentSha,
+    parentSha: implementationSha,
     readmePath,
   });
   if (invalidBinding) {
