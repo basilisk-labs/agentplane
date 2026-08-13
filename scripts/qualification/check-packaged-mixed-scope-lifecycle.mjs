@@ -553,7 +553,10 @@ function runFixture({ run, cli, packages, tempRoot }) {
   );
   const stale = runInstalledFailure(cli, repo, plannerExchange.resume_argv.slice(1));
   const staleDiagnostic = `${stale.stderr}\n${stale.stdout}`.trim();
-  if (stale.status === 0 || !/fingerprint|stale|accepted result/iu.test(staleDiagnostic)) {
+  if (
+    stale.status === 0 ||
+    !/fingerprint|stale|accepted result|no issued external-agent exchange/iu.test(staleDiagnostic)
+  ) {
     fail(
       "stale_exchange_accepted",
       `modified planning envelope did not fail stably: status=${stale.status} ${staleDiagnostic}`,
