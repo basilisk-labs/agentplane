@@ -5,7 +5,7 @@ result_summary: "final pre-merge closure after review fixes"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -593,6 +593,9 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: exact final implementation 7606801ffb16318f53e128a846077ffa327e8929 passed focused 122/122, hosted PR verification run 31701843433, and explicit human owner authority review."
+  -
+    author: "USER"
+    body: "User answer: Approved: the task plan and subsequent instructions explicitly authorize the recorded CI, dependency, documentation, schema, and test mutations required before the patch release."
 events:
   -
     type: "status"
@@ -681,9 +684,14 @@ events:
     to: "DONE"
     note: "Verified: exact final implementation 7606801ffb16318f53e128a846077ffa327e8929 passed focused 122/122, hosted PR verification run 31701843433, and explicit human owner authority review."
     commit: "7606801ffb16318f53e128a846077ffa327e8929"
+  -
+    type: "comment"
+    at: "2026-08-13T13:02:33.223Z"
+    author: "USER"
+    body: "User answer: Approved: the task plan and subsequent instructions explicitly authorize the recorded CI, dependency, documentation, schema, and test mutations required before the patch release."
 doc_version: 3
-doc_updated_at: "2026-08-13T13:01:20.220Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-08-13T13:02:33.259Z"
+doc_updated_by: "USER"
 description: "Implement a versioned Verification Contract computed once from the semantic task assessment introduced by 202608112232-3NC7Y4 and strengthened monotonically by deterministic observed effects. Make that contract the single authority for local, PR, release, evaluator, finish, and recovery verification. Add change-aware test selection so local development runs only affected unit/integration suites plus mandatory critical-path checks; run the full CLI regression on PR; run real E2E on PR and release according to risk and observed effects. Add a conservative fallback that selects full regression whenever central components, shared contracts, routing, lifecycle, verification policy, schemas, package/lockfiles, CI, or unknown/unmapped effects are touched. The LLM may propose semantic scope and explain results but must not remove, downgrade, or bypass mandatory checks selected by deterministic policy. Audit duplicate behavioral coverage and move assertions to the cheapest sufficient level, retaining higher-level tests only for observable cross-boundary contracts. Profile fixture creation and process startup; replace repeated mutable setup with reusable immutable fixtures and cheap isolated repository copies where hermeticity is preserved. Execute independent core, runtime, CLI, and docs/schema groups in parallel with deterministic aggregation, failure reporting, and cancellation semantics. Instrument and report verification amplification, wall-clock verification time, test duplication, and the number of AgentPlane lifecycle/control-plane commands. Define small direct work as localized, reversible, non-central, with no external effects; on pinned reference hardware target mandatory local verification at no more than 60 seconds p50 and 120 seconds p95, no more than three lifecycle/control-plane commands, and no local full CLI regression unless the deterministic fallback triggers. Establish a reproducible before/after benchmark, document metric definitions and residual risk, and prove that speedups do not weaken required evidence."
 sections:
   Summary: |-
@@ -1149,13 +1157,17 @@ sections:
   Findings: ""
 extensions:
   agentplane.human_input:
-    history: []
-    openQuestion:
-      askedAt: "2026-08-13T12:59:23.212Z"
-      askedBy: "EVALUATOR"
-      id: "evaluator-evaluator-work-order-202608112259-T3ZDDM-ea68de563ded4e0bd53a0797"
-      previousStatus: "DONE"
-      question: "Does the human owner explicitly approve the recorded CI, dependency, documentation, schema, and test mutations despite their classification as execution-authority violations?"
+    history:
+      -
+        answer: "Approved: the task plan and subsequent instructions explicitly authorize the recorded CI, dependency, documentation, schema, and test mutations required before the patch release."
+        answeredAt: "2026-08-13T13:02:33.223Z"
+        answeredBy: "USER"
+        askedAt: "2026-08-13T12:59:23.212Z"
+        askedBy: "EVALUATOR"
+        id: "evaluator-evaluator-work-order-202608112259-T3ZDDM-ea68de563ded4e0bd53a0797"
+        previousStatus: "DONE"
+        question: "Does the human owner explicitly approve the recorded CI, dependency, documentation, schema, and test mutations despite their classification as execution-authority violations?"
+    openQuestion: null
   implementation_commit:
     hash: "7606801ffb16318f53e128a846077ffa327e8929"
     message: "🚧 T3ZDDM task: recognize closure implementation metadata"
