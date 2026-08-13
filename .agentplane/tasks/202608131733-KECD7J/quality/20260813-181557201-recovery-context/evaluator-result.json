@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The archived incident records now contain the required exact task and commit identities; the active registries are empty and mirrored, and frozen evidence covers focused regressions, formatting, routing, hosted checks, qualification, and operator-state closure.",
+      "broken_invariant": "No invariant is broken; the approved incident-archive contract is satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/quality/objects/sha256/a44732d9cc4b7a4d62d6bf4238a65bc55736d25c5b57eeacb4a84145c0d792cc.patch",
+          "sha256": "sha256:a44732d9cc4b7a4d62d6bf4238a65bc55736d25c5b57eeacb4a84145c0d792cc"
+        },
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/README.md",
+          "sha256": "sha256:f933528d112a399313c17400748d29146d61b0df503f41f7178dc9a9f9c998f5",
+          "lines": "690-1010",
+          "section": "Verification Results"
+        },
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/evidence/hosted-checks.json",
+          "sha256": "sha256:6318d60bd967bb2214f9481dcaffccfbf05ba3f65e661827b94db91931cdee22"
+        },
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/evidence/operator-state.json",
+          "sha256": "sha256:bdb633afecab8c27b034d179079869ccb00ee6b48d6595a83b346ed98d616a2f"
+        },
+        {
+          "path": ".agentplane/tasks/202608131733-KECD7J/evidence/qualification-outcome.json",
+          "sha256": "sha256:2dbf451681cf32d4661d5afc74c86375c180bddb98e56a4a65ed8f8f79d44c95"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
