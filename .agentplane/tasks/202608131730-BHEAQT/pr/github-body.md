@@ -19,7 +19,7 @@ Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact
 - Note:
 
 ```text
-Candidate 8965c6f03 preserves the fully qualified 0.7.6 implementation and restores all raw evidence
+Evidence candidate 8965c6f03 preserves qualified 0.7.6 code and restores every raw artifact
 referenced by retained reports.
 ```
 - Canonical workflow state lives in the task README.

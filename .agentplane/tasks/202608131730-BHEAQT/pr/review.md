@@ -13,7 +13,7 @@ Created: 2026-08-13T17:32:00.151Z
 ## Verification
 
 - State: ok
-- Note: Candidate 8965c6f03 preserves the fully qualified 0.7.6 implementation and restores all raw evidence referenced by retained reports.
+- Note: Evidence candidate 8965c6f03 preserves qualified 0.7.6 code and restores every raw artifact referenced by retained reports.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

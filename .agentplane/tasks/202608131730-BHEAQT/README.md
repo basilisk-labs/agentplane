@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on:
@@ -29,9 +29,9 @@ plan_approval:
   note: "Approved by the user as the final 0.7.6 qualification and publication stage after all planned fixes and verification optimization."
 verification:
   state: "ok"
-  updated_at: "2026-08-13T23:47:31.069Z"
+  updated_at: "2026-08-13T23:52:02.954Z"
   updated_by: "TESTER"
-  note: "Candidate 8965c6f03 preserves the fully qualified 0.7.6 implementation and restores all raw evidence referenced by retained reports."
+  note: "Evidence candidate 8965c6f03 preserves qualified 0.7.6 code and restores every raw artifact referenced by retained reports."
   attempts: 0
 quality_review:
   state: "pass"
@@ -596,8 +596,14 @@ events:
     to: "DONE"
     note: "Verified: record evidence-only release candidate receipt after restoring auditable raw artifacts."
     commit: "8965c6f03b8c617b9b63a04d6c39ad366b1f54f9"
+  -
+    type: "verify"
+    at: "2026-08-13T23:52:02.954Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Evidence candidate 8965c6f03 preserves qualified 0.7.6 code and restores every raw artifact referenced by retained reports."
 doc_version: 3
-doc_updated_at: "2026-08-13T23:51:17.975Z"
+doc_updated_at: "2026-08-13T23:52:05.848Z"
 doc_updated_by: "INTEGRATOR"
 description: "Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact protected-main release scope; generate the patch plan and English release notes from actual changes since v0.7.5; run the complete 20-scenario provider-enabled release qualification on the exact clean candidate; run canonical release prepublish gates; prepare a branch_pr release candidate without creating a tag; require exact-SHA hosted checks and no unresolved reviews; integrate through the protected main lane; dispatch GitHub-only publication for the exact merged release SHA; verify release-ready and publish-result artifacts, tag, GitHub Release, and all three public npm packages; then clean the release worktree and report efficiency and residual lifecycle debt."
 sections:
@@ -755,6 +761,66 @@ sections:
     Result: pass
     Evidence: verification-stage contract accepted with explicit pending external postconditions; no waiver; queue integration, exact merged-main release-ready, Publish release, npm/GitHub readback, task DONE, and cleanup remain mandatory before completion
     Scope: verification-stage readiness; post-verification external effects remain release acceptance work
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131730-BHEAQT-qualify-and-publish-agentplane-0-7-6/.agentplane/tasks/202608131730-BHEAQT/blueprint/resolved-snapshot.json
+    - old_digest: 1899fc9e16ece1a5840f337f0c3b3222aac692041c82a0acb222673a31e94a1f
+    - current_digest: 1899fc9e16ece1a5840f337f0c3b3222aac692041c82a0acb222673a31e94a1f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608131730-BHEAQT
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-13T23:52:02.954Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Evidence candidate 8965c6f03 preserves qualified 0.7.6 code and restores every raw artifact referenced by retained reports.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:77b801a2249a30d49b4cc54c7efa46a6b160daada92d0eb56aa4ba92553aa06e
+
+    Details:
+
+    Command: git diff --name-only 8b5fe5e6789ec8a43e5c430c3132c78df03cc2e4..8965c6f03b8c617b9b63a04d6c39ad366b1f54f9
+    Result: pass
+    Evidence: non-lifecycle delta is exactly 32 restored raw evidence artifacts; no source, package, version, workflow, test, or generated-surface changes
+    Scope: implementation reuse boundary for prior release:prepublish, provider qualification, release parity, and hosted CI evidence
+
+    Command: filesystem existence audit across risk-e2e/report.json and both verification-contract benchmark reports
+    Result: pass
+    Evidence: 32 referenced raw artifacts exist; zero missing paths
+    Scope: retained qualification auditability
+
+    Command: SHA-256 audit of stdout_path, stderr_path, and command_events_path references
+    Result: pass
+    Evidence: 30 of 30 recorded digests match original restored bytes; zero mismatches
+    Scope: benchmark provenance and integrity
+
+    Command: git diff --check and exact commit inventory
+    Result: pass
+    Evidence: evidence commit 8965c6f03 is structurally clean and contains only the 32 restored artifacts
+    Scope: incremental evidence-only candidate
+
+    Command: GitHub Core CI runs 31750633484 and 31754140408
+    Result: pass
+    Evidence: qualified implementation and previous lifecycle head passed contract, tests, critical CLI E2E, real E2E, Windows, CodeQL, packaging, static checks, and aggregate PR verification
+    Scope: clean hosted execution for unchanged implementation bytes
+
+    Command: Verify Steps 6-8 postconditions
+    Result: pass
+    Evidence: verification-stage contract accepted with no waiver; fresh PR-head hosted checks, queue integration, exact merged-main release-ready, Publish release, npm/GitHub readback, task DONE, and cleanup remain mandatory
+    Scope: verification-stage readiness with external acceptance pending
 
     BlueprintSnapshotRef:
     - state: current
@@ -972,6 +1038,66 @@ Command: Verify Steps 6-8 postconditions
 Result: pass
 Evidence: verification-stage contract accepted with explicit pending external postconditions; no waiver; queue integration, exact merged-main release-ready, Publish release, npm/GitHub readback, task DONE, and cleanup remain mandatory before completion
 Scope: verification-stage readiness; post-verification external effects remain release acceptance work
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131730-BHEAQT-qualify-and-publish-agentplane-0-7-6/.agentplane/tasks/202608131730-BHEAQT/blueprint/resolved-snapshot.json
+- old_digest: 1899fc9e16ece1a5840f337f0c3b3222aac692041c82a0acb222673a31e94a1f
+- current_digest: 1899fc9e16ece1a5840f337f0c3b3222aac692041c82a0acb222673a31e94a1f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608131730-BHEAQT
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-13T23:52:02.954Z — VERIFY — ok
+
+By: TESTER
+
+Note: Evidence candidate 8965c6f03 preserves qualified 0.7.6 code and restores every raw artifact referenced by retained reports.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:77b801a2249a30d49b4cc54c7efa46a6b160daada92d0eb56aa4ba92553aa06e
+
+Details:
+
+Command: git diff --name-only 8b5fe5e6789ec8a43e5c430c3132c78df03cc2e4..8965c6f03b8c617b9b63a04d6c39ad366b1f54f9
+Result: pass
+Evidence: non-lifecycle delta is exactly 32 restored raw evidence artifacts; no source, package, version, workflow, test, or generated-surface changes
+Scope: implementation reuse boundary for prior release:prepublish, provider qualification, release parity, and hosted CI evidence
+
+Command: filesystem existence audit across risk-e2e/report.json and both verification-contract benchmark reports
+Result: pass
+Evidence: 32 referenced raw artifacts exist; zero missing paths
+Scope: retained qualification auditability
+
+Command: SHA-256 audit of stdout_path, stderr_path, and command_events_path references
+Result: pass
+Evidence: 30 of 30 recorded digests match original restored bytes; zero mismatches
+Scope: benchmark provenance and integrity
+
+Command: git diff --check and exact commit inventory
+Result: pass
+Evidence: evidence commit 8965c6f03 is structurally clean and contains only the 32 restored artifacts
+Scope: incremental evidence-only candidate
+
+Command: GitHub Core CI runs 31750633484 and 31754140408
+Result: pass
+Evidence: qualified implementation and previous lifecycle head passed contract, tests, critical CLI E2E, real E2E, Windows, CodeQL, packaging, static checks, and aggregate PR verification
+Scope: clean hosted execution for unchanged implementation bytes
+
+Command: Verify Steps 6-8 postconditions
+Result: pass
+Evidence: verification-stage contract accepted with no waiver; fresh PR-head hosted checks, queue integration, exact merged-main release-ready, Publish release, npm/GitHub readback, task DONE, and cleanup remain mandatory
+Scope: verification-stage readiness with external acceptance pending
 
 BlueprintSnapshotRef:
 - state: current
