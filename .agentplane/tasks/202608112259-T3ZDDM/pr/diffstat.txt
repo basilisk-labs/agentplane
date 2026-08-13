@@ -1,32 +1,58 @@
  .github/workflows/ci.yml                           |   88 +-
  docs/developer/code-quality.mdx                    |    2 +
  docs/developer/verification-contract.mdx           |   81 +
+ docs/user/cli-reference.generated.mdx              |    8 +-
  package.json                                       |    7 +-
  .../agentplane/src/backends/task-backend.test.ts   |   67 +
  .../src/backends/task-backend/shared/record.ts     |  133 +-
  .../agentplane/src/cli/local-ci-selection.test.ts  |   71 +-
  .../run-cli.core.hooks.pre-push-full-fast.test.ts  |   61 +
  .../run-cli.core.pr-flow.worktree-runtime.test.ts  |  250 +--
+ .../src/cli/run-cli.core.task-advance.test.ts      |    2 +-
+ .../src/cli/run-cli.core.task-run.test.ts          |    4 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |   29 +-
  .../agentplane/src/cli/test-routing-check.test.ts  |   79 +-
  .../src/cli/verification-contract.test.ts          |  247 +++
  .../src/commands/branch/work-start.materialize.ts  |   94 +-
  .../evaluator-qualification-packet.test.ts         |   14 +-
+ .../commands/evaluator/evaluator-review-usecase.ts |   15 +
+ .../evaluator/evaluator-runtime-evidence.test.ts   |   53 +-
+ .../evaluator/evaluator-verification-records.ts    |   11 +-
  .../commands/release/ci-workflow-contract.test.ts  |    7 +
  .../src/commands/release/github-ci-plan.test.ts    |  113 +-
+ .../commands/release/release-ci-contract.test.ts   |    5 +-
  .../commands/shared/quality-review-target.test.ts  |   25 +
  .../src/commands/shared/quality-review-target.ts   |   18 +-
  .../shared/task-verification-input.test.ts         |   29 +
  .../src/commands/shared/task-verification-input.ts |   19 +-
- .../commands/shared/task-verification-records.ts   |   10 +-
+ .../shared/task-verification-records.test.ts       |   48 +-
+ .../commands/shared/task-verification-records.ts   |   59 +-
+ .../commands/shared/verification-details.test.ts   |   26 +
+ .../src/commands/shared/verification-details.ts    |   15 +-
+ .../commands/shared/workflow-step-policy-scope.ts  |    8 +-
+ .../task/branch-task-supervisor-episodes.ts        |   21 +-
  .../agentplane/src/commands/task/brief-render.ts   |   13 +
- .../src/commands/task/verify-record-execute.ts     |    2 +
+ .../task/direct-task-supervisor-closeout.test.ts   |   17 +-
+ .../task/direct-task-supervisor-closeout.ts        |   23 +-
+ .../commands/task/direct-task-verification.test.ts |   44 +-
+ .../src/commands/task/direct-task-verification.ts  |   34 +
+ .../external-agent-implementation-authority.ts     |   57 +
+ .../src/commands/task/finish-blueprint-evidence.ts |   37 +
+ .../task/finish.quality-review-target.unit.test.ts |   37 +
+ .../src/commands/task/verify-command-shared.ts     |    2 +-
+ .../src/commands/task/verify-record-execute.ts     |   25 +
+ .../task/verify-record.durability.unit.test.ts     |    8 +-
+ packages/agentplane/src/commands/verify.spec.ts    |    4 +-
+ .../agentplane/src/runtime/task-routing/effects.ts |   37 +
  .../src/runtime/task-routing/observed-path.ts      |   67 +-
- .../src/runtime/task-routing/resolve.test.ts       |   76 +
- .../agentplane/src/runtime/task-routing/resolve.ts |   53 +-
+ .../src/runtime/task-routing/resolve.test.ts       |  155 ++
+ .../agentplane/src/runtime/task-routing/resolve.ts |  110 +-
  packages/core/package.json                         |    5 +
  .../schemas/task-readme-frontmatter.schema.json    |  199 ++
  packages/core/schemas/tasks-export.schema.json     |  199 ++
+ packages/core/src/git/git-diff.test.ts             |   14 +
+ packages/core/src/git/git-diff.ts                  |    8 +-
+ packages/core/src/runner/agent-semantic-result.ts  |   92 +-
  packages/core/src/tasks/index.ts                   |   11 +
  .../core/src/tasks/task-artifact-schema.task.ts    |   47 +-
  packages/core/src/tasks/task-store.ts              |   33 +
@@ -36,26 +62,30 @@
  packages/core/tsup.config.ts                       |    1 +
  .../schemas/task-readme-frontmatter.schema.json    |  199 ++
  packages/spec/schemas/tasks-export.schema.json     |  199 ++
+ schemas/agent-semantic-result.schema.json          |  102 +-
  schemas/task-readme-frontmatter.schema.json        |  199 ++
  schemas/tasks-export.schema.json                   |  199 ++
  scripts/README.md                                  |   43 +-
+ scripts/baselines/clone-baseline.json              |  249 +--
  .../baselines/v0.7-compatibility-candidate.json    | 2344 +++++++++-----------
  scripts/baselines/verification-contract-small.json |   37 +
  scripts/bench/capture-compatibility-candidate.mjs  |  172 ++
  scripts/bench/measure-verification-contract.mjs    |  235 ++
  scripts/checks/check-cli-cold-baseline.mjs         |    8 +-
+ scripts/checks/check-clone-baseline.mjs            |    1 +
  .../check-compatibility-contract-baseline.mjs      |   19 +-
  scripts/checks/check-test-routing.mjs              |   67 +-
  scripts/checks/plan-github-ci.mjs                  |   45 +-
- scripts/checks/run-local-ci.mjs                    |  156 +-
+ scripts/checks/run-local-ci.mjs                    |  180 +-
  scripts/checks/run-pre-push-hook.mjs               |   17 +-
  scripts/checks/verify-reused-parent.mjs            |   50 +
  scripts/lib/github-ci-capabilities.d.ts            |   11 +
  scripts/lib/github-ci-capabilities.mjs             |   87 +-
+ scripts/lib/installed-migration-matrix.mjs         |   22 +
  scripts/lib/lifecycle-control-metrics.d.ts         |   30 +
  scripts/lib/lifecycle-control-metrics.mjs          |   66 +
  scripts/lib/local-ci-selection.d.ts                |   19 +
- scripts/lib/local-ci-selection.mjs                 |   98 +-
+ scripts/lib/local-ci-selection.mjs                 |  104 +-
  scripts/lib/local-verification-receipt.d.ts        |   26 +
  scripts/lib/local-verification-receipt.mjs         |   94 +
  scripts/lib/task-verification-contracts.d.ts       |   12 +
@@ -66,8 +96,10 @@
  scripts/lib/verification-contract.mjs              |   65 +
  scripts/lib/verification-scheduler.d.ts            |   33 +
  scripts/lib/verification-scheduler.mjs             |  102 +
+ .../measure-v0.7.1-matched-cli-latency.mjs         |   34 +-
+ .../qualification/release-qualification.test.mjs   |   24 +-
  scripts/release/check-package-node-runtime.mjs     |   13 +-
  tsconfig.base.json                                 |    1 +
  .../docs/developer/verification-contract.png       |  Bin 0 -> 59695 bytes
  website/static/img/social/manifest.json            |    8 +
- 72 files changed, 5575 insertions(+), 1791 deletions(-)
+ 104 files changed, 6541 insertions(+), 2125 deletions(-)

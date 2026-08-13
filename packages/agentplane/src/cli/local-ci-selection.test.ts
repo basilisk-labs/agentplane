@@ -77,6 +77,15 @@ const { buildLocalCiExecutionPlan, parseChangedFilesEnv, selectFastCiPlan, shoul
         recipesInventory: boolean;
         workflowLint: boolean;
       };
+      verification_contract: {
+        selector: {
+          kind: string;
+          reason: string;
+          selected_test_files: string[];
+          lint_targets: string[];
+          vitest_pool: "threads" | "forks";
+        };
+      };
     };
     parseChangedFilesEnv: (rawValue: unknown) => string[];
     selectFastCiPlan: (changedFiles: string[]) => FastCiPlan;
@@ -150,7 +159,7 @@ describe("local CI fast selection", () => {
     ];
     const local = buildLocalCiExecutionPlan({ mode: "fast", changedFiles });
     expect(local.verification_contract).toMatchObject({
-      schema_version: 1,
+      schema_version: 2,
       phase: "local",
       requires_full_regression: false,
     });
@@ -768,6 +777,26 @@ describe("local CI fast selection", () => {
     expect(
       report.steps.find((step) => step.label === "Unit tests (targeted:task)")?.command,
     ).toContain("packages/agentplane/src/commands/task/finish.validation.unit.test.ts");
+  });
+
+  it("derives the executable route and commands from the persisted contract", () => {
+    const report = buildLocalCiExecutionPlan({
+      mode: "fast",
+      changedFiles: ["packages/agentplane/src/commands/task/new.ts"],
+    });
+
+    expect(report.route).toBe("targeted-fast");
+    const selector = report.verification_contract.selector;
+    expect(report.selector).toMatchObject({
+      kind: selector.kind,
+      reason: selector.reason,
+      testFiles: selector.selected_test_files,
+      lintTargets: selector.lint_targets,
+      vitestPool: selector.vitest_pool,
+    });
+    expect(report.steps.find((step) => step.label.startsWith("Unit tests"))?.command).toContain(
+      selector.selected_test_files[0],
+    );
   });
 
   it("marks CLI docs freshness as skipped in explainable non-CLI fast plans", () => {

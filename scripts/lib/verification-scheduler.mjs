@@ -12,6 +12,7 @@ function appendTail(current, chunk, limit) {
 function runOne(group, options) {
   return new Promise((resolve) => {
     const started = performance.now();
+    const startedAtMs = Date.now();
     const child = spawn(group.command, group.args ?? [], {
       cwd: options.cwd,
       env: options.env,
@@ -58,6 +59,8 @@ function runOne(group, options) {
         exit_code: 1,
         timed_out: false,
         duration_ms: Math.round(performance.now() - started),
+        started_at_ms: startedAtMs,
+        finished_at_ms: Date.now(),
         stdout,
         stderr: `${stderr}${error.message}\n`,
       });
@@ -68,6 +71,8 @@ function runOne(group, options) {
         exit_code: timedOut ? 124 : (code ?? 1),
         timed_out: timedOut,
         duration_ms: Math.round(performance.now() - started),
+        started_at_ms: startedAtMs,
+        finished_at_ms: Date.now(),
         stdout,
         stderr,
       });

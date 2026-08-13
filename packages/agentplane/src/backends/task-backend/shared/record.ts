@@ -1,6 +1,5 @@
 import type { TaskRecord } from "@agentplaneorg/core/tasks";
 import {
-  computeVerificationContractKernel,
   normalizeTaskStatus,
   normalizeTaskDocVersion,
   renderTaskDocFromSections,
@@ -11,6 +10,7 @@ import { isRecord } from "../../../shared/guards.js";
 
 import { extractTaskDoc } from "./doc.js";
 import { normalizeEvents } from "./events.js";
+import { normalizeVerificationContract } from "./normalize-verification-contract.js";
 import {
   normalizeDependsOn,
   normalizePlanApproval,
@@ -124,127 +124,6 @@ function normalizeStringList(value: unknown): string[] | null {
     return null;
   }
   return [...new Set(value as string[])];
-}
-
-function normalizeVerificationContract(
-  value: unknown,
-): NonNullable<TaskData["execution_contract"]>["verification"]["contract"] | null {
-  if (!isRecord(value) || value.schema_version !== 1 || value.source !== "execution_contract") {
-    return null;
-  }
-  if (
-    !isRecord(value.declared) ||
-    !isRecord(value.observed) ||
-    !isRecord(value.selector) ||
-    !["task", "local", "pr", "release"].includes(String(value.phase)) ||
-    !isRecord(value.policy_floor) ||
-    value.policy_floor.pr_full_regression !== true ||
-    value.policy_floor.unknown_or_central_full_regression !== true ||
-    value.policy_floor.monotonic_strengthening !== true ||
-    typeof value.requires_full_regression !== "boolean" ||
-    typeof value.requires_real_e2e !== "boolean" ||
-    typeof value.digest !== "string" ||
-    !/^sha256:[0-9a-f]{64}$/u.test(value.digest)
-  ) {
-    return null;
-  }
-  const declaredRepositoryEffects = normalizeStringList(value.declared.repository_effects);
-  const declaredExternalEffects = normalizeStringList(value.declared.external_effects);
-  const observedRepositoryEffects = normalizeStringList(value.observed.repository_effects);
-  const observedExternalEffects = normalizeStringList(value.observed.external_effects);
-  const changedComponents = normalizeStringList(value.observed.changed_components);
-  const changedFiles = normalizeStringList(value.observed.changed_files);
-  const selectedTestFiles = normalizeStringList(value.selector.selected_test_files);
-  const selectedChecks = normalizeStringList(value.selected_checks);
-  const escalationReasons = normalizeStringList(value.escalation_reasons);
-  if (
-    declaredRepositoryEffects === null ||
-    declaredRepositoryEffects.some((effect) => !REPOSITORY_EFFECTS.has(effect)) ||
-    declaredExternalEffects === null ||
-    declaredExternalEffects.some((effect) => !EXTERNAL_EFFECTS.has(effect)) ||
-    observedRepositoryEffects === null ||
-    observedRepositoryEffects.some((effect) => !REPOSITORY_EFFECTS.has(effect)) ||
-    observedExternalEffects === null ||
-    observedExternalEffects.some((effect) => !EXTERNAL_EFFECTS.has(effect)) ||
-    changedComponents === null ||
-    changedFiles === null ||
-    typeof value.selector.kind !== "string" ||
-    !value.selector.kind.trim() ||
-    typeof value.selector.reason !== "string" ||
-    !value.selector.reason.trim() ||
-    selectedTestFiles === null ||
-    !selectedChecks?.length ||
-    escalationReasons === null
-  ) {
-    return null;
-  }
-  const computed = computeVerificationContractKernel({
-    phase: value.phase as "task" | "local" | "pr" | "release",
-    changedFiles,
-    declaredRepositoryEffects: declaredRepositoryEffects as NonNullable<
-      TaskData["execution_contract"]
-    >["declaration"]["repository_effects"],
-    declaredExternalEffects: declaredExternalEffects as NonNullable<
-      TaskData["execution_contract"]
-    >["declaration"]["external_effects"],
-    observedRepositoryEffects: observedRepositoryEffects as NonNullable<
-      TaskData["execution_contract"]
-    >["observed"]["repository_effects"],
-    observedExternalEffects: observedExternalEffects as NonNullable<
-      TaskData["execution_contract"]
-    >["observed"]["external_effects"],
-    changedComponents,
-    selectorKind: value.selector.kind,
-    selectorReason: value.selector.reason,
-    selectedTestFiles,
-  });
-  if (
-    computed.digest !== value.digest ||
-    JSON.stringify(computed.selected_checks) !== JSON.stringify(selectedChecks) ||
-    JSON.stringify(computed.escalation_reasons) !== JSON.stringify(escalationReasons) ||
-    computed.requires_full_regression !== value.requires_full_regression ||
-    computed.requires_real_e2e !== value.requires_real_e2e
-  ) {
-    return null;
-  }
-  return {
-    schema_version: 1,
-    source: "execution_contract",
-    phase: value.phase as "task" | "local" | "pr" | "release",
-    declared: {
-      repository_effects: declaredRepositoryEffects as NonNullable<
-        TaskData["execution_contract"]
-      >["declaration"]["repository_effects"],
-      external_effects: declaredExternalEffects as NonNullable<
-        TaskData["execution_contract"]
-      >["declaration"]["external_effects"],
-    },
-    observed: {
-      repository_effects: observedRepositoryEffects as NonNullable<
-        TaskData["execution_contract"]
-      >["observed"]["repository_effects"],
-      external_effects: observedExternalEffects as NonNullable<
-        TaskData["execution_contract"]
-      >["observed"]["external_effects"],
-      changed_components: changedComponents,
-      changed_files: changedFiles,
-    },
-    policy_floor: {
-      pr_full_regression: true,
-      unknown_or_central_full_regression: true,
-      monotonic_strengthening: true,
-    },
-    selector: {
-      kind: value.selector.kind.trim(),
-      reason: value.selector.reason.trim(),
-      selected_test_files: selectedTestFiles,
-    },
-    selected_checks: selectedChecks,
-    escalation_reasons: escalationReasons,
-    requires_full_regression: value.requires_full_regression,
-    requires_real_e2e: value.requires_real_e2e,
-    digest: value.digest as `sha256:${string}`,
-  };
 }
 
 function normalizeExecutionContract(value: unknown): TaskData["execution_contract"] {

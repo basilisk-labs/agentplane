@@ -878,102 +878,480 @@
                     }
                   },
                   "contract": {
-                    "type": "object",
-                    "properties": {
-                      "schema_version": {
-                        "type": "number",
-                        "const": 1
-                      },
-                      "source": {
-                        "type": "string",
-                        "const": "execution_contract"
-                      },
-                      "phase": {
-                        "type": "string",
-                        "enum": ["task", "local", "pr", "release"]
-                      },
-                      "declared": {
+                    "anyOf": [
+                      {
                         "type": "object",
                         "properties": {
-                          "repository_effects": {
-                            "type": "array",
-                            "items": {
-                              "type": "string",
-                              "enum": [
-                                "repository_write",
-                                "documentation",
-                                "source_code",
-                                "tests",
-                                "public_api",
-                                "schema",
-                                "dependencies",
-                                "ci",
-                                "release_metadata",
-                                "security_boundary"
-                              ]
-                            }
+                          "source": {
+                            "type": "string",
+                            "const": "execution_contract"
                           },
-                          "external_effects": {
-                            "type": "array",
-                            "items": {
-                              "type": "string",
-                              "enum": [
-                                "network_read",
-                                "external_write",
-                                "credentials",
-                                "publish",
-                                "deploy",
-                                "destructive_git"
-                              ]
-                            }
-                          }
-                        },
-                        "required": ["repository_effects", "external_effects"],
-                        "additionalProperties": false
-                      },
-                      "observed": {
-                        "type": "object",
-                        "properties": {
-                          "repository_effects": {
-                            "type": "array",
-                            "items": {
-                              "type": "string",
-                              "enum": [
-                                "repository_write",
-                                "documentation",
-                                "source_code",
-                                "tests",
-                                "public_api",
-                                "schema",
-                                "dependencies",
-                                "ci",
-                                "release_metadata",
-                                "security_boundary"
-                              ]
-                            }
+                          "phase": {
+                            "type": "string",
+                            "enum": ["task", "local", "pr", "release"]
                           },
-                          "external_effects": {
-                            "type": "array",
-                            "items": {
-                              "type": "string",
-                              "enum": [
-                                "network_read",
-                                "external_write",
-                                "credentials",
-                                "publish",
-                                "deploy",
-                                "destructive_git"
-                              ]
-                            }
+                          "observed": {
+                            "type": "object",
+                            "properties": {
+                              "repository_effects": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "repository_write",
+                                    "documentation",
+                                    "source_code",
+                                    "tests",
+                                    "public_api",
+                                    "schema",
+                                    "dependencies",
+                                    "ci",
+                                    "release_metadata",
+                                    "security_boundary"
+                                  ]
+                                }
+                              },
+                              "external_effects": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "network_read",
+                                    "external_write",
+                                    "credentials",
+                                    "publish",
+                                    "deploy",
+                                    "destructive_git"
+                                  ]
+                                }
+                              },
+                              "changed_components": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "changed_files": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              }
+                            },
+                            "required": [
+                              "repository_effects",
+                              "external_effects",
+                              "changed_components",
+                              "changed_files"
+                            ],
+                            "additionalProperties": false
                           },
-                          "changed_components": {
+                          "policy_floor": {
+                            "type": "object",
+                            "properties": {
+                              "pr_full_regression": {
+                                "type": "boolean",
+                                "const": true
+                              },
+                              "unknown_or_central_full_regression": {
+                                "type": "boolean",
+                                "const": true
+                              },
+                              "monotonic_strengthening": {
+                                "type": "boolean",
+                                "const": true
+                              }
+                            },
+                            "required": [
+                              "pr_full_regression",
+                              "unknown_or_central_full_regression",
+                              "monotonic_strengthening"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "selected_checks": {
+                            "minItems": 1,
                             "type": "array",
                             "items": {
                               "type": "string",
                               "minLength": 1
                             }
                           },
-                          "changed_files": {
+                          "escalation_reasons": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "requires_full_regression": {
+                            "type": "boolean"
+                          },
+                          "requires_real_e2e": {
+                            "type": "boolean"
+                          },
+                          "digest": {
+                            "type": "string",
+                            "pattern": "^sha256:[0-9a-f]{64}$"
+                          },
+                          "schema_version": {
+                            "type": "number",
+                            "const": 1
+                          },
+                          "declared": {
+                            "type": "object",
+                            "properties": {
+                              "repository_effects": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "repository_write",
+                                    "documentation",
+                                    "source_code",
+                                    "tests",
+                                    "public_api",
+                                    "schema",
+                                    "dependencies",
+                                    "ci",
+                                    "release_metadata",
+                                    "security_boundary"
+                                  ]
+                                }
+                              },
+                              "external_effects": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "network_read",
+                                    "external_write",
+                                    "credentials",
+                                    "publish",
+                                    "deploy",
+                                    "destructive_git"
+                                  ]
+                                }
+                              }
+                            },
+                            "required": ["repository_effects", "external_effects"],
+                            "additionalProperties": false
+                          },
+                          "selector": {
+                            "type": "object",
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "reason": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "selected_test_files": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              }
+                            },
+                            "required": ["kind", "reason", "selected_test_files"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "source",
+                          "phase",
+                          "observed",
+                          "policy_floor",
+                          "selected_checks",
+                          "escalation_reasons",
+                          "requires_full_regression",
+                          "requires_real_e2e",
+                          "digest",
+                          "schema_version",
+                          "declared",
+                          "selector"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "source": {
+                            "type": "string",
+                            "const": "execution_contract"
+                          },
+                          "phase": {
+                            "type": "string",
+                            "enum": ["task", "local", "pr", "release"]
+                          },
+                          "observed": {
+                            "type": "object",
+                            "properties": {
+                              "repository_effects": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "repository_write",
+                                    "documentation",
+                                    "source_code",
+                                    "tests",
+                                    "public_api",
+                                    "schema",
+                                    "dependencies",
+                                    "ci",
+                                    "release_metadata",
+                                    "security_boundary"
+                                  ]
+                                }
+                              },
+                              "external_effects": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "network_read",
+                                    "external_write",
+                                    "credentials",
+                                    "publish",
+                                    "deploy",
+                                    "destructive_git"
+                                  ]
+                                }
+                              },
+                              "changed_components": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "changed_files": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              }
+                            },
+                            "required": [
+                              "repository_effects",
+                              "external_effects",
+                              "changed_components",
+                              "changed_files"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "policy_floor": {
+                            "type": "object",
+                            "properties": {
+                              "pr_full_regression": {
+                                "type": "boolean",
+                                "const": true
+                              },
+                              "unknown_or_central_full_regression": {
+                                "type": "boolean",
+                                "const": true
+                              },
+                              "monotonic_strengthening": {
+                                "type": "boolean",
+                                "const": true
+                              }
+                            },
+                            "required": [
+                              "pr_full_regression",
+                              "unknown_or_central_full_regression",
+                              "monotonic_strengthening"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "selected_checks": {
+                            "minItems": 1,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "escalation_reasons": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "requires_full_regression": {
+                            "type": "boolean"
+                          },
+                          "requires_real_e2e": {
+                            "type": "boolean"
+                          },
+                          "digest": {
+                            "type": "string",
+                            "pattern": "^sha256:[0-9a-f]{64}$"
+                          },
+                          "schema_version": {
+                            "type": "number",
+                            "const": 2
+                          },
+                          "declared": {
+                            "type": "object",
+                            "properties": {
+                              "repository_effects": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "repository_write",
+                                    "documentation",
+                                    "source_code",
+                                    "tests",
+                                    "public_api",
+                                    "schema",
+                                    "dependencies",
+                                    "ci",
+                                    "release_metadata",
+                                    "security_boundary"
+                                  ]
+                                }
+                              },
+                              "external_effects": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "network_read",
+                                    "external_write",
+                                    "credentials",
+                                    "publish",
+                                    "deploy",
+                                    "destructive_git"
+                                  ]
+                                }
+                              },
+                              "components": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "risk": {
+                                "type": "object",
+                                "properties": {
+                                  "requirements_uncertainty": {
+                                    "type": "string",
+                                    "enum": ["bounded", "material"]
+                                  },
+                                  "implementation_uncertainty": {
+                                    "type": "string",
+                                    "enum": ["bounded", "material"]
+                                  },
+                                  "reversibility": {
+                                    "type": "string",
+                                    "enum": ["reversible", "recovery_required", "irreversible"]
+                                  }
+                                },
+                                "required": [
+                                  "requirements_uncertainty",
+                                  "implementation_uncertainty",
+                                  "reversibility"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "evidence_requirements": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              }
+                            },
+                            "required": [
+                              "repository_effects",
+                              "external_effects",
+                              "components",
+                              "risk",
+                              "evidence_requirements"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "selector": {
+                            "type": "object",
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "reason": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "execution_mode": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "bucket": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "buckets": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "lint_targets": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "vitest_pool": {
+                                "type": "string",
+                                "enum": ["threads", "forks"]
+                              },
+                              "run_cli_docs_check": {
+                                "type": "boolean"
+                              },
+                              "selected_test_files": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              }
+                            },
+                            "required": [
+                              "kind",
+                              "reason",
+                              "execution_mode",
+                              "bucket",
+                              "buckets",
+                              "lint_targets",
+                              "vitest_pool",
+                              "run_cli_docs_check",
+                              "selected_test_files"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "execution_groups": {
+                            "minItems": 1,
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -982,99 +1360,23 @@
                           }
                         },
                         "required": [
-                          "repository_effects",
-                          "external_effects",
-                          "changed_components",
-                          "changed_files"
+                          "source",
+                          "phase",
+                          "observed",
+                          "policy_floor",
+                          "selected_checks",
+                          "escalation_reasons",
+                          "requires_full_regression",
+                          "requires_real_e2e",
+                          "digest",
+                          "schema_version",
+                          "declared",
+                          "selector",
+                          "execution_groups"
                         ],
                         "additionalProperties": false
-                      },
-                      "policy_floor": {
-                        "type": "object",
-                        "properties": {
-                          "pr_full_regression": {
-                            "type": "boolean",
-                            "const": true
-                          },
-                          "unknown_or_central_full_regression": {
-                            "type": "boolean",
-                            "const": true
-                          },
-                          "monotonic_strengthening": {
-                            "type": "boolean",
-                            "const": true
-                          }
-                        },
-                        "required": [
-                          "pr_full_regression",
-                          "unknown_or_central_full_regression",
-                          "monotonic_strengthening"
-                        ],
-                        "additionalProperties": false
-                      },
-                      "selector": {
-                        "type": "object",
-                        "properties": {
-                          "kind": {
-                            "type": "string",
-                            "minLength": 1
-                          },
-                          "reason": {
-                            "type": "string",
-                            "minLength": 1
-                          },
-                          "selected_test_files": {
-                            "type": "array",
-                            "items": {
-                              "type": "string",
-                              "minLength": 1
-                            }
-                          }
-                        },
-                        "required": ["kind", "reason", "selected_test_files"],
-                        "additionalProperties": false
-                      },
-                      "selected_checks": {
-                        "minItems": 1,
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      },
-                      "escalation_reasons": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      },
-                      "requires_full_regression": {
-                        "type": "boolean"
-                      },
-                      "requires_real_e2e": {
-                        "type": "boolean"
-                      },
-                      "digest": {
-                        "type": "string",
-                        "pattern": "^sha256:[0-9a-f]{64}$"
                       }
-                    },
-                    "required": [
-                      "schema_version",
-                      "source",
-                      "phase",
-                      "declared",
-                      "observed",
-                      "policy_floor",
-                      "selector",
-                      "selected_checks",
-                      "escalation_reasons",
-                      "requires_full_regression",
-                      "requires_real_e2e",
-                      "digest"
-                    ],
-                    "additionalProperties": false
+                    ]
                   }
                 },
                 "required": ["required_evidence"],

@@ -63,6 +63,7 @@ export { generateTaskId, TASK_ID_ALPHABET, timestampIdPrefix } from "./task-id.j
 export {
   componentForVerificationPath,
   computeVerificationContractKernel,
+  computeLegacyVerificationContractKernel,
   isCentralVerificationPath,
   repositoryEffectsForPath,
   type VerificationContractKernelInput,
@@ -147,6 +148,7 @@ export {
   type TaskExecutionUncertainty,
   type TaskVerificationObservation,
   type TaskVerificationContract,
+  type TaskVerificationContractV1,
   type TaskExternalEffect,
   type TaskRepositoryEffect,
   type TaskSyncConflict,

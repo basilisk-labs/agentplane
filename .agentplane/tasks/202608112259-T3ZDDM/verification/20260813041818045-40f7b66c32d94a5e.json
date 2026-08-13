@@ -1,0 +1,132 @@
+{
+  "details": "Command: bun run ci:local:fast\nResult: pass\nEvidence: reusable local verification receipt for 7836b00df0bc; 556/556 files, 4091 passed, 1 skipped; isolated concurrency 18/18; critical CLI 91/91\nScope: Verify Steps 1, 2, 5, 6, 7, and 8; contract consumers, selector/fallback matrix, duplication/fixture guards, deterministic scheduling, metrics, and complete local regression\n\nCommand: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1 --subject 7836b00df0bc54d16738a32828ae4e5a29593eab\nResult: pass\nEvidence: .agentplane/reports/T3ZDDM-7836/report.json; ready with 18/19 passed and 0 blocking; packaged, lifecycle, context, supervisor, recovery, hosted-boundary, full-contract, critical CLI, typecheck, workflow coverage, doctor, provider, and efficiency gates passed\nScope: Verify Steps 1, 4, 6, 7, and 8 on the exact implementation SHA; absolute local latency advisory excluded only after matched and supervisor gates passed\n\nCommand: node scripts/qualification/measure-v0.7.1-supervisor-latency.mjs --subject 7836b00df0bc54d16738a32828ae4e5a29593eab\nResult: pass\nEvidence: .agentplane/reports/T3ZDDM-7836/supervisor-latency.json; cold managed median +0.71%, warm managed median -0.63%, all median and p95 thresholds passed after removing one redundant Git process\nScope: Verify Steps 3 and 7; repeated cold/warm matched supervisor preparation benchmark\n\nCommand: gh run view 31664901529 -R basilisk-labs/agentplane\nResult: pass\nEvidence: exact PR head 7836b00df0bc; verify-contract, package runtime, verify-static, verify-tests, Windows, verify-security, PR verification, and CodeQL all succeeded\nScope: Verify Steps 4 and 8; hosted full regression and security evidence for the exact reviewed implementation SHA\n\nCommand: provider efficiency evidence readback\nResult: pass\nEvidence: .agentplane/reports/T3ZDDM-7836/efficiency-evidence.json; 50 replay runs, 55 episodes, 10 scenarios, candidate token total 4634758 vs baseline 9186747, reduction 49.55%, candidate golden mismatches 12 vs baseline 33\nScope: Verify Steps 4, 7, and 8; real provider E2E and machine-readable efficiency outcome",
+  "digest": "sha256:40f7b66c32d94a5e92b511daf921939778c70ec22678a519ea5f841264614fc8",
+  "implementation_sha": "7836b00df0bc54d16738a32828ae4e5a29593eab",
+  "input": {
+    "context": {
+      "digest": "sha256:09a7dd19858326cb007a6cee89a42cde93ea4c88b505642a07eeef2d61325617",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:e34a99b3560f0bf4c98c6051a800e9a7574f6f604c65360fd946e60680db1f55",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:f2b4bd756541ff890bd7d982695e2260387154a5d31e8c449c8f5c2817174566",
+      "digest": "sha256:32326f89f5dc5ac66fcc891a599450c02ccb6cf6bbfb21a3b143913c78985379",
+      "references": [
+        {
+          "digest": "sha256:271bcfdd7577bcb650bd65ef88ab01ef59e999a88142051c8696d8a49b1143ee",
+          "fragment": null,
+          "path": ".agentplane/reports/T3ZDDM-7836/efficiency-evidence.json",
+          "reference": ".agentplane/reports/T3ZDDM-7836/efficiency-evidence.json",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:afe80d1864bd8b46dff30142f2e6a7302a1e3d7b81dd7fffd1d3c601a68a4dd1",
+          "fragment": null,
+          "path": ".agentplane/reports/T3ZDDM-7836/report.json",
+          "reference": ".agentplane/reports/T3ZDDM-7836/report.json",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:917e19ae13418343fcc287e65686b11dbffb5af04352215c55ad97b7d89774f9",
+          "fragment": null,
+          "path": ".agentplane/reports/T3ZDDM-7836/supervisor-latency.json",
+          "reference": ".agentplane/reports/T3ZDDM-7836/supervisor-latency.json",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "18/18",
+          "reference": "18/18",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "18/19",
+          "reference": "18/19",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "556/556",
+          "reference": "556/556",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "91/91",
+          "reference": "91/91",
+          "source": "missing"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "e4ec4520ded988c60db3261714e68b5e22ac4e1f",
+      "digest": "sha256:1baaacea749a71d99edd3a8b9cfb4f15fcb29d6a4e7316a90fe08af6db43a6f4",
+      "strategy": "branch_diff",
+      "target_sha": "7836b00df0bc54d16738a32828ae4e5a29593eab"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 2,
+    "verify_steps_digest": "sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e"
+  },
+  "kind": "task_verification_record",
+  "note": "Exact-SHA 7836b00df passes full local, hosted, latency, provider, recovery, and verification-contract qualification with zero blocking defects.",
+  "recorded_at": "2026-08-13T04:18:18.045Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Validate the versioned Verification Contract schema and every consumer. Expected: local, PR, release, evaluator, finish, and recovery read the same contract; deterministic observed effects can only add requirements; an LLM-supplied assessment or explanation cannot remove, waive, downgrade, or bypass a mandatory check.\n2. Run the selector matrix for localized code, cross-package dependencies, lifecycle/routing/verification policy, schemas/migrations, manifests/lockfiles, CI/public contracts, external effects, and unknown paths. Expected: ordinary local work selects only affected unit/integration groups plus critical paths; every central or unmapped case deterministically falls back to full regression with an explainable reason.\n3. Run the pinned small-direct benchmark before and after the change across enough repeated samples to report p50 and p95. Expected: localized reversible non-central work with no external effects completes mandatory local verification in <=60 seconds p50 and <=120 seconds p95, uses <=3 AgentPlane lifecycle/control-plane commands, and does not run the full CLI regression unless fallback is triggered.\n4. Exercise hosted phase routing on a PR and a risk-bearing PR/release fixture. Expected: every PR runs the complete CLI regression on the exact reviewed SHA; real E2E is required on PR and/or release by contract risk/effects; missing hosted evidence blocks completion.\n5. Produce the test-duplication inventory and fixture/startup profile. Expected: duplicated assertions are removed or justified at the cheapest sufficient level; immutable reusable fixtures and cheap isolated repo copies measurably reduce setup/startup cost while hermeticity, cleanup, and failure isolation tests pass.\n6. Run core, runtime, CLI, and docs/schema groups with forced independent failures. Expected: independent groups execute concurrently, aggregation is deterministic, required evidence from every group is retained, cancellation/cleanup semantics are bounded, and no secondary required failure is hidden.\n7. Validate metric output and regression guards. Expected: verification amplification, wall-clock time, test duplication, and lifecycle/control-plane command count have documented reproducible definitions, machine-readable results, a baseline/comparison/verdict, and thresholds that fail when the optimized path regresses.\n8. Run focused selector/contract/scheduler/fixture tests, full CLI regression, risk-selected real E2E, typecheck, lint, schema/docs parity, and benchmark quality checks. Expected: all required checks pass and the final evidence shows the speedup did not weaken observable behavior or safety coverage.",
+  "scope_digest": "sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e",
+  "task_id": "202608112259-T3ZDDM",
+  "verification_command": "agentplane verify 202608112259-T3ZDDM --ok --by TESTER",
+  "verifier": "TESTER"
+}

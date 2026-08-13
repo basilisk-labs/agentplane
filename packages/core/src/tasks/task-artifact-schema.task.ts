@@ -149,30 +149,38 @@ const TASK_VERIFICATION_OBSERVATION_SCHEMA = z
     result: z.enum(["pass", "fail", "unsupported"]),
   })
   .strict();
-const TASK_VERIFICATION_CONTRACT_SCHEMA = z
+const TASK_VERIFICATION_CONTRACT_COMMON_SCHEMA = {
+  source: z.literal("execution_contract"),
+  phase: z.enum(["task", "local", "pr", "release"]),
+  observed: z
+    .object({
+      repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
+      external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
+      changed_components: z.array(NON_EMPTY_STRING),
+      changed_files: z.array(NON_EMPTY_STRING),
+    })
+    .strict(),
+  policy_floor: z
+    .object({
+      pr_full_regression: z.literal(true),
+      unknown_or_central_full_regression: z.literal(true),
+      monotonic_strengthening: z.literal(true),
+    })
+    .strict(),
+  selected_checks: z.array(NON_EMPTY_STRING).min(1),
+  escalation_reasons: z.array(NON_EMPTY_STRING),
+  requires_full_regression: z.boolean(),
+  requires_real_e2e: z.boolean(),
+  digest: z.string().regex(/^sha256:[0-9a-f]{64}$/u),
+} as const;
+const TASK_VERIFICATION_CONTRACT_V1_SCHEMA = z
   .object({
+    ...TASK_VERIFICATION_CONTRACT_COMMON_SCHEMA,
     schema_version: z.literal(1),
-    source: z.literal("execution_contract"),
-    phase: z.enum(["task", "local", "pr", "release"]),
     declared: z
       .object({
         repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
         external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
-      })
-      .strict(),
-    observed: z
-      .object({
-        repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
-        external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
-        changed_components: z.array(NON_EMPTY_STRING),
-        changed_files: z.array(NON_EMPTY_STRING),
-      })
-      .strict(),
-    policy_floor: z
-      .object({
-        pr_full_regression: z.literal(true),
-        unknown_or_central_full_regression: z.literal(true),
-        monotonic_strengthening: z.literal(true),
       })
       .strict(),
     selector: z
@@ -182,13 +190,47 @@ const TASK_VERIFICATION_CONTRACT_SCHEMA = z
         selected_test_files: z.array(NON_EMPTY_STRING),
       })
       .strict(),
-    selected_checks: z.array(NON_EMPTY_STRING).min(1),
-    escalation_reasons: z.array(NON_EMPTY_STRING),
-    requires_full_regression: z.boolean(),
-    requires_real_e2e: z.boolean(),
-    digest: z.string().regex(/^sha256:[0-9a-f]{64}$/u),
   })
   .strict();
+const TASK_VERIFICATION_CONTRACT_V2_SCHEMA = z
+  .object({
+    ...TASK_VERIFICATION_CONTRACT_COMMON_SCHEMA,
+    schema_version: z.literal(2),
+    declared: z
+      .object({
+        repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
+        external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
+        components: z.array(NON_EMPTY_STRING),
+        risk: z
+          .object({
+            requirements_uncertainty: z.enum(["bounded", "material"]),
+            implementation_uncertainty: z.enum(["bounded", "material"]),
+            reversibility: z.enum(["reversible", "recovery_required", "irreversible"]),
+          })
+          .strict(),
+        evidence_requirements: z.array(NON_EMPTY_STRING).min(1),
+      })
+      .strict(),
+    selector: z
+      .object({
+        kind: NON_EMPTY_STRING,
+        reason: NON_EMPTY_STRING,
+        execution_mode: NON_EMPTY_STRING,
+        bucket: NON_EMPTY_STRING.nullable(),
+        buckets: z.array(NON_EMPTY_STRING),
+        lint_targets: z.array(NON_EMPTY_STRING),
+        vitest_pool: z.enum(["threads", "forks"]),
+        run_cli_docs_check: z.boolean(),
+        selected_test_files: z.array(NON_EMPTY_STRING),
+      })
+      .strict(),
+    execution_groups: z.array(NON_EMPTY_STRING).min(1),
+  })
+  .strict();
+const TASK_VERIFICATION_CONTRACT_SCHEMA = z.union([
+  TASK_VERIFICATION_CONTRACT_V1_SCHEMA,
+  TASK_VERIFICATION_CONTRACT_V2_SCHEMA,
+]);
 const TASK_EXECUTION_CONTRACT_SCHEMA = z
   .object({
     schema_version: z.literal(1),
