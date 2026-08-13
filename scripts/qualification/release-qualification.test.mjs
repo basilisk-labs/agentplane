@@ -243,10 +243,7 @@ describe("v0.7.1 release qualification contract", () => {
       ["missing_verification", (value) => (value.verification.state = "missing")],
       ["missing_evaluator", (value) => (value.evaluator.state = "missing")],
       ["missing_commit", (value) => (value.commit.task_commit = "")],
-      [
-        "wrong_lifecycle_commit",
-        (value) => (value.commit.final_head_contains_task_commit = false),
-      ],
+      ["wrong_lifecycle_commit", (value) => (value.commit.final_head_contains_task_commit = false)],
       ["missing_finish", (value) => (value.finish.terminal = false)],
       ["missing_final_readback", (value) => (value.final_consumer.product_matches = false)],
       ["stale_exchange_accepted", (value) => (value.stale_exchange.rejected = false)],
