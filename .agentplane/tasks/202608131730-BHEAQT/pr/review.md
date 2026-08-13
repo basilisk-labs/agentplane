@@ -92,7 +92,7 @@ Created: 2026-08-13T17:32:00.151Z
  ...-cli.critical.agent-efficiency-baseline.test.ts |  57 +++-
  .../src/cli/task-create-planner-intent.testkit.ts  |   2 +
  .../evaluator/evaluator-qualification-review.ts    |   3 +-
- .../commands/evaluator/evaluator-review-usecase.ts |  30 +-
+ .../commands/evaluator/evaluator-review-usecase.ts |  32 +-
  packages/agentplane/src/commands/pr/open.ts        |  17 +-
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
@@ -103,7 +103,7 @@ Created: 2026-08-13T17:32:00.151Z
  .../check-compatibility-contract-baseline.mjs      |  59 ++--
  website/static/img/social/docs/releases/v0.7.6.png | Bin 0 -> 53331 bytes
  website/static/img/social/manifest.json            |   8 +
- 74 files changed, 682 insertions(+), 1394 deletions(-)
+ 74 files changed, 684 insertions(+), 1394 deletions(-)
 ```
 
 </details>
