@@ -75,6 +75,7 @@ function comparableReadme(markdown) {
     if (frontmatter.extensions && typeof frontmatter.extensions === "object") {
       const extensions = { ...frontmatter.extensions };
       Reflect.deleteProperty(extensions, "agentplane.side_effect_authority");
+      Reflect.deleteProperty(extensions, "implementation_commit");
       Reflect.deleteProperty(extensions, "workflow_route_baseline");
       if (Object.keys(extensions).length === 0) Reflect.deleteProperty(frontmatter, "extensions");
       else frontmatter.extensions = extensions;

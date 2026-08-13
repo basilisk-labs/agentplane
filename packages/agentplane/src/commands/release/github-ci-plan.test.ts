@@ -94,6 +94,7 @@ revision: ${terminal ? 2 : 1}
 verification: ${terminal ? '{ state: "ok" }' : '{ state: "pending" }'}
 quality_review: ${terminal ? `{ state: "pass", evaluated_sha: "${parentSha}" }` : '{ state: "pending" }'}
 commit: ${terminal ? `{ hash: "${parentSha}" }` : "null"}
+extensions: ${terminal ? `{ implementation_commit: { hash: "${parentSha}" } }` : "{}"}
 execution_contract:
   schema_version: 1
   source: "agent_declaration"
