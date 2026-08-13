@@ -44,17 +44,19 @@ Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact
  docs/assets/readme-headers/spec.svg                |   4 +-
  docs/assets/readme-headers/testkit.svg             |   4 +-
  docs/reference/generated-reference.mdx             |   6 +-
- docs/releases/v0.7.6.md                            | 363 +++++++++++++++++++++
+ docs/releases/v0.7.6.md                            | 364 +++++++++++++++++++++
  packages/agentplane/package.json                   |   6 +-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  57 +++-
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
  packages/spec/examples/acr.json                    |   4 +-
  packages/testkit/package.json                      |   2 +-
  .../baselines/v0.7-compatibility-candidate.json    |   6 +-
+ .../check-compatibility-contract-baseline.mjs      |  59 ++--
  website/static/img/social/docs/releases/v0.7.6.png | Bin 0 -> 53331 bytes
  website/static/img/social/manifest.json            |   8 +
- 27 files changed, 458 insertions(+), 45 deletions(-)
+ 29 files changed, 542 insertions(+), 78 deletions(-)
 ```
 
 </details>

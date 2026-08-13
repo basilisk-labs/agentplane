@@ -164,7 +164,17 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
         source_tasks: string[];
         candidate: { surface_sha256: string; section_digests: Record<string, string> };
         pre_release_package_delta: Record<string, unknown>;
-        release_version_delta: Record<string, unknown>;
+        release_version_delta: {
+          source_task: string;
+          classification: string;
+          from_version: string;
+          to_version: string;
+          section: string;
+          from_sha256: string;
+          to_sha256: string;
+          surface_sha256: string;
+          allowed_json_paths: string[];
+        };
         deltas: unknown[];
       }>(COMPATIBILITY_CANDIDATE);
       expect(compatibilityCandidate).toMatchObject({
@@ -243,11 +253,8 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           source_task: "202608082119-P6SHBN",
           classification: "planned_version_parity",
           from_version: "0.6.24",
-          to_version: "0.7.5",
           section: "package_manifests",
           from_sha256: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
-          to_sha256: "7f42b57786f2a99ab19b626aa33469b37d86ccc9c09dbeccebea0e57e0f37d12",
-          surface_sha256: "712b618b2b9747f7dd1143167ffcaa8db09e8870c8a55804c11f30ad0f80b174",
           allowed_json_paths: [
             "$.package_manifests[0].dependencies.@agentplaneorg/core",
             "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -367,6 +374,13 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           },
         },
       });
+      expect(compatibilityCandidate.release_version_delta.to_version).toMatch(
+        /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u,
+      );
+      expect(compatibilityCandidate.release_version_delta.to_sha256).toMatch(/^[a-f0-9]{64}$/u);
+      expect(compatibilityCandidate.release_version_delta.surface_sha256).toMatch(
+        /^[a-f0-9]{64}$/u,
+      );
       const cliDelta = compatibilityCandidate.deltas.find(
         (delta) => (delta as { section?: string }).section === "cli_topology",
       ) as
@@ -569,9 +583,10 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
   });
 
   it(
-    "reconstructs the exact planned v0.7.5 manifest surface from the reviewed candidate",
+    "reconstructs the exact planned manifest surface for the current patch candidate",
     async () => {
       const source = `
+        import { readFileSync } from "node:fs";
         import {
           collectCompatibilitySurface,
           compatibilitySurfaceDigest,
@@ -600,20 +615,34 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
             return JSON.stringify(manifest);
           },
         });
+        const candidate = JSON.parse(readFileSync(${JSON.stringify(COMPATIBILITY_CANDIDATE)}, "utf8"));
+        const releaseVersion = candidate.release_version_delta.to_version;
         const before = collectCompatibilitySurface(versionedSource("0.6.24"));
-        const after = collectCompatibilitySurface(versionedSource("0.7.5"));
+        const after = collectCompatibilitySurface(versionedSource(releaseVersion));
         const sectionDigests = surfaceSectionDigests(after);
         process.stdout.write(JSON.stringify({
+          releaseVersion,
           packageManifestDigest: sectionDigests.package_manifests,
           surfaceDigest: compatibilitySurfaceDigest(sectionDigests),
           changedPaths: diffJsonPaths(before, after),
+          candidateReleaseVersion: candidate.release_version_delta,
         }));
       `;
       const result = await runNode(["--input-type=module", "--eval", source]);
       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
-      expect(JSON.parse(result.stdout)).toEqual({
-        packageManifestDigest: "7f42b57786f2a99ab19b626aa33469b37d86ccc9c09dbeccebea0e57e0f37d12",
-        surfaceDigest: "712b618b2b9747f7dd1143167ffcaa8db09e8870c8a55804c11f30ad0f80b174",
+      const reconstructed = JSON.parse(result.stdout) as {
+        releaseVersion: string;
+        packageManifestDigest: string;
+        surfaceDigest: string;
+        changedPaths: string[];
+        candidateReleaseVersion: {
+          to_version: string;
+          to_sha256: string;
+          surface_sha256: string;
+          allowed_json_paths: string[];
+        };
+      };
+      expect(reconstructed).toMatchObject({
         changedPaths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -625,6 +654,16 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "$.package_manifests[2].version",
         ],
       });
+      expect(reconstructed.packageManifestDigest).toBe(
+        reconstructed.candidateReleaseVersion.to_sha256,
+      );
+      expect(reconstructed.surfaceDigest).toBe(
+        reconstructed.candidateReleaseVersion.surface_sha256,
+      );
+      expect(reconstructed.releaseVersion).toBe(reconstructed.candidateReleaseVersion.to_version);
+      expect(reconstructed.changedPaths).toEqual(
+        reconstructed.candidateReleaseVersion.allowed_json_paths,
+      );
     },
     TEST_TIMEOUT_MS,
   );
