@@ -4,7 +4,7 @@ title: "Archive resolved release incidents before 0.7.6"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ plan_approval:
   note: "Approved as the mandatory incident closeout discovered by the already-approved 0.7.6 release preflight."
 verification:
   state: "ok"
-  updated_at: "2026-08-13T17:37:04.069Z"
+  updated_at: "2026-08-13T17:49:22.146Z"
   updated_by: "TESTER"
-  note: "Both incident failure classes are fixed and enforced on current main; focused 37/37 regressions, policy routing, formatting, mirror parity, and the release incident gate passed."
+  note: "Exact d0135b104 verification passed; prior full-fast evidence remains applicable to unchanged policy/archive scope."
   attempts: 0
 quality_review:
   state: "pass"
@@ -234,8 +234,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Both incident failure classes are fixed and enforced on current main; focused 37/37 regressions, policy routing, formatting, mirror parity, and the release incident gate passed."
+  -
+    type: "verify"
+    at: "2026-08-13T17:49:22.146Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Exact d0135b104 verification passed; prior full-fast evidence remains applicable to unchanged policy/archive scope."
 doc_version: 3
-doc_updated_at: "2026-08-13T17:37:05.032Z"
+doc_updated_at: "2026-08-13T17:49:23.355Z"
 doc_updated_by: "CODER"
 description: "Review INC-20260810-01 and INC-20260811-01 against their merged fixes and current enforcement tests. If both failure classes are fixed and no active operator work remains, remove them from the active incidents registry and its installed asset mirror, append complete archived records with exact task, commit, test, and enforcement evidence to docs/developer/incident-archive.mdx, run policy routing and focused incident/regression checks, integrate the policy-only change, then unblock release task 202608131730-BHEAQT without changing its sequence or release scope."
 sections:
@@ -304,6 +310,51 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-13T17:49:22.146Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Exact d0135b104 verification passed; prior full-fast evidence remains applicable to unchanged policy/archive scope.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4, input_digest=sha256:f23489b6a8797a7f60aea72a7d1fa6028e114c25c2c9f5000908bbde4ae8b214
+
+    Details:
+
+    Command: bun test packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/release/shared-worktree-dependency-manifest.test.ts
+    Result: pass
+    Evidence: 37 tests passed, 0 failed, across 3 focused files.
+    Scope: declared-check parser parity, direct verification, and RF-04 shared-worktree dependency discovery.
+
+    Command: node .agentplane/policy/check-routing.mjs && bun run release:incidents:check
+    Result: pass
+    Evidence: policy routing OK; release incident gate reports no active entries.
+    Scope: canonical policy mirrors, routing budget, and release incident blocker removal.
+
+    Command: bunx prettier --check docs/developer/incident-archive.mdx .agentplane/policy/incidents.md packages/agentplane/assets/policy/incidents.md && git cat-file -e <corrected-shas>^{commit}
+    Result: pass
+    Evidence: affected files formatted; both corrected implementation and merge SHA objects resolve as commits.
+    Scope: archive documentation quality and auditable resolution evidence.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131733-KECD7J-archive-resolved-release-incidents-before-0-7-6/.agentplane/tasks/202608131733-KECD7J/blueprint/resolved-snapshot.json
+    - old_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+    - current_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608131733-KECD7J
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608131733-KECD7J
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -394,6 +445,51 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-13T17:49:22.146Z — VERIFY — ok
+
+By: TESTER
+
+Note: Exact d0135b104 verification passed; prior full-fast evidence remains applicable to unchanged policy/archive scope.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9111f2c0bf64a260552ff8ff2599d0c39402b9c6ea951230dd39802aafcff3e4, input_digest=sha256:f23489b6a8797a7f60aea72a7d1fa6028e114c25c2c9f5000908bbde4ae8b214
+
+Details:
+
+Command: bun test packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/release/shared-worktree-dependency-manifest.test.ts
+Result: pass
+Evidence: 37 tests passed, 0 failed, across 3 focused files.
+Scope: declared-check parser parity, direct verification, and RF-04 shared-worktree dependency discovery.
+
+Command: node .agentplane/policy/check-routing.mjs && bun run release:incidents:check
+Result: pass
+Evidence: policy routing OK; release incident gate reports no active entries.
+Scope: canonical policy mirrors, routing budget, and release incident blocker removal.
+
+Command: bunx prettier --check docs/developer/incident-archive.mdx .agentplane/policy/incidents.md packages/agentplane/assets/policy/incidents.md && git cat-file -e <corrected-shas>^{commit}
+Result: pass
+Evidence: affected files formatted; both corrected implementation and merge SHA objects resolve as commits.
+Scope: archive documentation quality and auditable resolution evidence.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608131733-KECD7J-archive-resolved-release-incidents-before-0-7-6/.agentplane/tasks/202608131733-KECD7J/blueprint/resolved-snapshot.json
+- old_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+- current_digest: 8f41cc1dccec2e2822147c752baf897efe693fe6a07619ceeb6734798ec46ece
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608131733-KECD7J
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608131733-KECD7J
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
