@@ -13,7 +13,7 @@ Created: 2026-08-13T15:34:09.778Z
 ## Verification
 
 - State: ok
-- Note: Verified exact published SHA ab7abe4d1 and hosted Core CI run 31720631534; installed-package mixed-scope lifecycle and every Verification Contract group passed.
+- Note: Verified exact published SHA 207a86ab5 with hosted Core CI run 31723346838; review fixes, installed-package lifecycle, and every selected verification group passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,18 +29,19 @@ Created: 2026-08-13T15:34:09.778Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .github/workflows/ci.yml                           |   2 +-
+ .github/workflows/ci.yml                           |   3 +-
  package.json                                       |   1 +
- .../commands/release/ci-workflow-contract.test.ts  |   4 +-
+ .../commands/release/ci-workflow-contract.test.ts  |   5 +-
  .../shared/workflow-step-fingerprint.test.ts       |  14 +
  .../commands/shared/workflow-step-fingerprint.ts   |   1 +
  .../commands/shared/workflow-step-policy-scope.ts  |  21 +-
  scripts/README.md                                  | 120 +--
- .../check-packaged-mixed-scope-lifecycle.mjs       | 816 +++++++++++++++++++++
- .../qualification/release-qualification.test.mjs   |  95 +++
- .../run-v0.7.1-release-qualification.mjs           |   1 +
+ .../check-packaged-mixed-scope-lifecycle.mjs       | 892 +++++++++++++++++++++
+ scripts/qualification/release-qualification.mjs    |   3 +-
+ .../qualification/release-qualification.test.mjs   | 107 +++
+ .../run-v0.7.1-release-qualification.mjs           |   9 +-
  .../v0.7.1-release-qualification.json              |  21 +
- 11 files changed, 1031 insertions(+), 65 deletions(-)
+ 12 files changed, 1129 insertions(+), 68 deletions(-)
 ```
 
 </details>

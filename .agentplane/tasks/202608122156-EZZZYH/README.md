@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -30,9 +30,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-13T16:34:52.060Z"
+  updated_at: "2026-08-13T17:08:34.348Z"
   updated_by: "TESTER"
-  note: "Verified exact published SHA ab7abe4d1 and hosted Core CI run 31720631534; installed-package mixed-scope lifecycle and every Verification Contract group passed."
+  note: "Verified exact published SHA 207a86ab5 with hosted Core CI run 31723346838; review fixes, installed-package lifecycle, and every selected verification group passed."
   attempts: 0
 quality_review:
   state: "pass"
@@ -160,6 +160,7 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
       - "scripts/README.md"
       - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+      - "scripts/qualification/release-qualification.mjs"
       - "scripts/qualification/release-qualification.test.mjs"
       - "scripts/qualification/run-v0.7.1-release-qualification.mjs"
       - "scripts/qualification/v0.7.1-release-qualification.json"
@@ -239,7 +240,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:c53a60dd5d0b9ceb3ca8c35c35255c77a21d8f600e7e9b14d5572382423c9522"
+      digest: "sha256:17aa4d1fea0056c9249eb67139ff9a575682a49f87e1efc3ede4f53735e40d43"
       escalation_reasons:
         - "central_component:.github/workflows/ci.yml"
         - "central_component:package.json"
@@ -272,6 +273,7 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
           - "scripts/README.md"
           - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+          - "scripts/qualification/release-qualification.mjs"
           - "scripts/qualification/release-qualification.test.mjs"
           - "scripts/qualification/run-v0.7.1-release-qualification.mjs"
           - "scripts/qualification/v0.7.1-release-qualification.json"
@@ -362,8 +364,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "ab7abe4d1d0676340aa1820aaa9e6728d4126af9"
+  -
+    type: "verify"
+    at: "2026-08-13T17:08:34.348Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified exact published SHA 207a86ab5 with hosted Core CI run 31723346838; review fixes, installed-package lifecycle, and every selected verification group passed."
 doc_version: 3
-doc_updated_at: "2026-08-13T16:36:23.081Z"
+doc_updated_at: "2026-08-13T17:08:36.908Z"
 doc_updated_by: "CODER"
 description: "Add a mandatory black-box installed-package E2E scenario to the AgentPlane release qualification used for 0.7.6. The scenario must pack the exact clean candidate, install the tarball into an isolated prefix, create a clean temporary Git repository, use only the public installed CLI, run init and semantic task intake, execute a real mixed-scope change spanning source code, tests, documentation, and repository metadata such as .gitignore, perform deterministic verification and evaluator review, and reach an equivalent completed lifecycle with commit and branch/PR-ready outcome. The scenario must not read or mutate internal runtime, quality, recovery, or task artifacts directly and must fail the release gate if any required phase is skipped or simulated. Preserve every existing qualification scenario and add manifest, runner, CI-routing, contract tests, cleanup, and operator documentation needed to make this a blocking 0.7.6 release check."
 sections:
@@ -456,6 +464,72 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608122156-EZZZYH
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-13T17:08:34.348Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified exact published SHA 207a86ab5 with hosted Core CI run 31723346838; review fixes, installed-package lifecycle, and every selected verification group passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8c4b389918a693b772b8749782b0697958eb52a8bc31b22dabee998dc3f582e9, input_digest=sha256:8730f7164c807f73d723885b452ec49c4c987622a7a78c81e239e2665f947582
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts packages/agentplane/src/commands/release/ci-workflow-contract.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts; node --test scripts/qualification/release-qualification.test.mjs
+    Result: pass
+    Evidence: focused Vitest passed 9/9 after the review fixes; qualification contract passed 37/37 on exact current sources
+    Scope: evaluator fingerprint stability, task envelope advance, CI routing, scenario selection, failure mode coverage
+
+    Check: critical_paths
+    Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --scenario packaged-mixed-scope-lifecycle
+    Result: pass
+    Evidence: exact clean SHA 207a86ab5 passed the installed tarball black-box lifecycle in 18787ms; plan size 5080 bytes, exact replay idempotent, stale replay rejected, evaluator and finish persisted, final consumer readback passed
+    Scope: first-task mixed source, tests, docs and metadata lifecycle using only the installed public CLI
+
+    Check: docs_contract
+    Command: bun run qualification:check; Core CI verify-contract
+    Result: pass
+    Evidence: qualification contract passed 37/37, full manifest dry-run retained all 20 scenarios, hosted verify-contract passed on 207a86ab5
+    Scope: generated documentation, qualification manifest, CI contract, repository policy graph
+
+    Check: full_regression
+    Command: GitHub Actions Core CI run 31723346838
+    Result: pass
+    Evidence: verify-tests, verify-static, verify-contract, verify-security, Windows, package runtime, and aggregate PR verification all passed on exact head 207a86ab5
+    Scope: complete routed hosted regression for the current implementation
+
+    Check: hosted_integration
+    Command: gh run view 31723346838; gh pr view 4831
+    Result: pass
+    Evidence: Core CI concluded success for exact PR head 207a86ab5bcb897a9032edcc4f35bc1e4f5ae092; aggregate PR gate passed and all review threads are resolved
+    Scope: hosted Linux, Windows, security, package-runtime, review, and aggregate boundaries
+
+    Check: task_outcome
+    Command: bun run qualification:check; installed-package black-box scenario; git status --short --untracked-files=all
+    Result: pass
+    Evidence: complete dry-run contract passed; black-box scenario passed with zero blocking defects; candidate packaging and temporary fixture cleanup passed; product tree stayed stable across lifecycle-only tail commits
+    Scope: approved EZZZYH outcome, deterministic lifecycle, exact commit identity, and clean candidate boundary
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608122156-EZZZYH-add-installed-package-mixed-scope-lifecycle-e2e/.agentplane/tasks/202608122156-EZZZYH/blueprint/resolved-snapshot.json
+    - old_digest: 72867270b7cf279c96932125ddc698ff2ebf2308c32b7a560ec02c9e4b6dd025
+    - current_digest: 72867270b7cf279c96932125ddc698ff2ebf2308c32b7a560ec02c9e4b6dd025
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608122156-EZZZYH
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -573,6 +647,72 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608122156-EZZZYH
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-13T17:08:34.348Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified exact published SHA 207a86ab5 with hosted Core CI run 31723346838; review fixes, installed-package lifecycle, and every selected verification group passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8c4b389918a693b772b8749782b0697958eb52a8bc31b22dabee998dc3f582e9, input_digest=sha256:8730f7164c807f73d723885b452ec49c4c987622a7a78c81e239e2665f947582
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts packages/agentplane/src/commands/release/ci-workflow-contract.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts; node --test scripts/qualification/release-qualification.test.mjs
+Result: pass
+Evidence: focused Vitest passed 9/9 after the review fixes; qualification contract passed 37/37 on exact current sources
+Scope: evaluator fingerprint stability, task envelope advance, CI routing, scenario selection, failure mode coverage
+
+Check: critical_paths
+Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --scenario packaged-mixed-scope-lifecycle
+Result: pass
+Evidence: exact clean SHA 207a86ab5 passed the installed tarball black-box lifecycle in 18787ms; plan size 5080 bytes, exact replay idempotent, stale replay rejected, evaluator and finish persisted, final consumer readback passed
+Scope: first-task mixed source, tests, docs and metadata lifecycle using only the installed public CLI
+
+Check: docs_contract
+Command: bun run qualification:check; Core CI verify-contract
+Result: pass
+Evidence: qualification contract passed 37/37, full manifest dry-run retained all 20 scenarios, hosted verify-contract passed on 207a86ab5
+Scope: generated documentation, qualification manifest, CI contract, repository policy graph
+
+Check: full_regression
+Command: GitHub Actions Core CI run 31723346838
+Result: pass
+Evidence: verify-tests, verify-static, verify-contract, verify-security, Windows, package runtime, and aggregate PR verification all passed on exact head 207a86ab5
+Scope: complete routed hosted regression for the current implementation
+
+Check: hosted_integration
+Command: gh run view 31723346838; gh pr view 4831
+Result: pass
+Evidence: Core CI concluded success for exact PR head 207a86ab5bcb897a9032edcc4f35bc1e4f5ae092; aggregate PR gate passed and all review threads are resolved
+Scope: hosted Linux, Windows, security, package-runtime, review, and aggregate boundaries
+
+Check: task_outcome
+Command: bun run qualification:check; installed-package black-box scenario; git status --short --untracked-files=all
+Result: pass
+Evidence: complete dry-run contract passed; black-box scenario passed with zero blocking defects; candidate packaging and temporary fixture cleanup passed; product tree stayed stable across lifecycle-only tail commits
+Scope: approved EZZZYH outcome, deterministic lifecycle, exact commit identity, and clean candidate boundary
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608122156-EZZZYH-add-installed-package-mixed-scope-lifecycle-e2e/.agentplane/tasks/202608122156-EZZZYH/blueprint/resolved-snapshot.json
+- old_digest: 72867270b7cf279c96932125ddc698ff2ebf2308c32b7a560ec02c9e4b6dd025
+- current_digest: 72867270b7cf279c96932125ddc698ff2ebf2308c32b7a560ec02c9e4b6dd025
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608122156-EZZZYH
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
