@@ -83,6 +83,7 @@ Created: 2026-08-13T17:32:00.151Z
  .../src/cli/run-cli.core.blueprint.test.ts         |   6 +
  .../src/cli/run-cli.core.incidents.test.ts         |   2 +-
  ...-cli.core.lifecycle.finish-close-commit.test.ts |   1 +
+ ...-cli.core.pr-flow.integrate-rebase-race.test.ts |  23 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |  57 +++-
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
@@ -93,7 +94,7 @@ Created: 2026-08-13T17:32:00.151Z
  .../check-compatibility-contract-baseline.mjs      |  59 ++--
  website/static/img/social/docs/releases/v0.7.6.png | Bin 0 -> 53331 bytes
  website/static/img/social/manifest.json            |   8 +
- 64 files changed, 550 insertions(+), 1356 deletions(-)
+ 65 files changed, 567 insertions(+), 1362 deletions(-)
 ```
 
 </details>

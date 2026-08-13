@@ -45,15 +45,26 @@ describe("runCli integrate rebase race", () => {
       const execFileAsync = promisify(execFile);
       await writeFile(path.join(root, "README.md"), "base\n", "utf8");
       await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+      await writeFile(
+        path.join(root, "verify-bump.mjs"),
+        [
+          'import { execFileSync } from "node:child_process";',
+          'import { appendFileSync } from "node:fs";',
+          'import path from "node:path";',
+          `const root = ${JSON.stringify(root)};`,
+          'appendFileSync(path.join(root, "bump.txt"), "bump\\n");',
+          'execFileSync("git", ["-C", root, "add", "bump.txt"]);',
+          'execFileSync("git", ["-C", root, "commit", "-m", "chore bump"]);',
+          "",
+        ].join("\n"),
+        "utf8",
+      );
       await stageGitignoreIfPresent(root);
-      await execFileAsync("git", ["add", "README.md"], { cwd: root });
+      await execFileAsync("git", ["add", "README.md", "verify-bump.mjs"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
-      const verifyCmd = [
-        "node -e",
-        `'const cp=require("node:child_process");const fs=require("node:fs");const path=require("node:path");const root=${JSON.stringify(root)};fs.appendFileSync(path.join(root,"bump.txt"),"bump"+String.fromCharCode(10));cp.execFileSync("git",["-C",root,"add","bump.txt"]);cp.execFileSync("git",["-C",root,"commit","-m","chore bump"]);'`,
-      ].join(" ");
+      const verifyCmd = "node verify-bump.mjs";
 
       let taskId = "";
       const ioTask = captureStdIO();
@@ -76,7 +87,7 @@ describe("runCli integrate rebase race", () => {
           "--root",
           root,
         ]);
-        expect(code).toBe(0);
+        expect(code, `${ioTask.stdout}\n${ioTask.stderr}`).toBe(0);
         taskId = ioTask.stdout.trim();
       } finally {
         ioTask.restore();
