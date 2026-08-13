@@ -217,6 +217,14 @@ function outputTail(value, maximum = 4000) {
   return value.length <= maximum ? value : value.slice(-maximum);
 }
 
+export function formatQualificationScenarioFailure(scenarioId, output, maximum = 4000) {
+  const tail = outputTail(output, maximum).trim();
+  return [
+    `qualification: ${scenarioId} failure output (last ${maximum} characters)`,
+    tail || "<no child output>",
+  ].join("\n");
+}
+
 function executeFile(command, args, options) {
   return new Promise((resolve) => {
     execFile(
@@ -276,6 +284,9 @@ async function runScenario(scenario, variables, outputDirectory) {
   process.stdout.write(
     `qualification: ${scenario.id} ${passed ? "passed" : "failed"} in ${durationMs}ms\n`,
   );
+  if (!passed) {
+    process.stderr.write(`${formatQualificationScenarioFailure(scenario.id, combined)}\n`);
+  }
   return {
     scenario,
     command,
