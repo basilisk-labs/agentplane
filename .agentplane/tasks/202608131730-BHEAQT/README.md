@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -63,19 +63,19 @@ quality_review:
     - "The implementation fixes the observed 0.7.5 lifecycle, plan-capacity, worktree, classification, verification-ordering, queue progression, and CI-efficiency failures within the approved 0.7.6 scope, with deterministic platform-independent test fixtures added for the final hosted regression."
     - "The provider evaluator's blocked verdict identifies evidence that can only exist after merge and publication; it is retained as the mandatory post-publication readback contract, not treated as an implementation defect or removed."
 token_usage:
-  agent_runs: 2
-  input_tokens: 262463
-  journal_digest: "sha256:e7d9759ab52ce94205f1e7254cc5a11c9dfd11250935cfae67dd7b895743466c"
-  observed_agent_runs: 2
+  agent_runs: 3
+  input_tokens: 490474
+  journal_digest: "sha256:80f1a8b35a769ad8299141d552937a2375a08627ebc4e49a088e8957faa258f8"
+  observed_agent_runs: 3
   observed_by: "agentplane"
-  output_tokens: 4030
-  reasoning_tokens: 1081
+  output_tokens: 6459
+  reasoning_tokens: 1516
   schema_version: 1
   source: "supervisor_journal"
   state: "observed"
-  total_tokens: 267574
+  total_tokens: 498449
   unavailable_reason: null
-  updated_at: "2026-08-13T22:09:11.367Z"
+  updated_at: "2026-08-13T23:29:33.865Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -501,8 +501,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "78b9354e40d8db1129f916f1112c4f17aa1dcdc8"
-  message: "📝 BHEAQT task: link release PR"
+  hash: "9f2cbe94f9e1736afb4ce2560c6da62e8556a192"
+  message: "✅ BHEAQT qualification: separate premerge and publication review"
 comments:
   -
     author: "INTEGRATOR"
@@ -516,6 +516,9 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -561,8 +564,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Exact candidate 8b5fe5e67 passed local, provider, and hosted release qualification."
+  -
+    type: "status"
+    at: "2026-08-13T23:29:33.865Z"
+    author: "INTEGRATOR"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "9f2cbe94f9e1736afb4ce2560c6da62e8556a192"
 doc_version: 3
-doc_updated_at: "2026-08-13T23:28:27.321Z"
+doc_updated_at: "2026-08-13T23:29:33.892Z"
 doc_updated_by: "INTEGRATOR"
 description: "Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact protected-main release scope; generate the patch plan and English release notes from actual changes since v0.7.5; run the complete 20-scenario provider-enabled release qualification on the exact clean candidate; run canonical release prepublish gates; prepare a branch_pr release candidate without creating a tag; require exact-SHA hosted checks and no unresolved reviews; integrate through the protected main lane; dispatch GitHub-only publication for the exact merged release SHA; verify release-ready and publish-result artifacts, tag, GitHub Release, and all three public npm packages; then clean the release worktree and report efficiency and residual lifecycle debt."
 sections:
@@ -706,8 +717,8 @@ extensions:
         question: "Does the human owner explicitly approve expanding this task's frozen repository authority to include the documentation, dependency, public-API, source-code, and test mutations required by the 0.7.6 release candidate?"
     openQuestion: null
   implementation_commit:
-    hash: "95a6d46c5cd6af4c4bfd2e61c79a9d4606dca12e"
-    message: "🐛 BHEAQT release: tolerate stale dependency links"
+    hash: "8b5fe5e6789ec8a43e5c430c3132c78df03cc2e4"
+    message: "🧪 BHEAQT qualification: pin fixture base branch"
   workflow_route_baseline:
     start_head_sha: "bc0afaea7a7be909fc93374a195c73da3f697d85"
     version: 1
@@ -848,12 +859,12 @@ Before publication, close the release PR and revert only the candidate commit th
 ## Token Usage
 
 - State: `observed`
-- Completeness: `2/2` agent runs
-- Input tokens: `262463`
-- Output tokens: `4030`
-- Reasoning tokens: `1081`
-- Total tokens: `267574`
+- Completeness: `3/3` agent runs
+- Input tokens: `490474`
+- Output tokens: `6459`
+- Reasoning tokens: `1516`
+- Total tokens: `498449`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:e7d9759ab52ce94205f1e7254cc5a11c9dfd11250935cfae67dd7b895743466c`
+- Journal digest: `sha256:80f1a8b35a769ad8299141d552937a2375a08627ebc4e49a088e8957faa258f8`
 - Unavailable reason: `none`
-- Updated at: `2026-08-13T22:09:11.367Z`
+- Updated at: `2026-08-13T23:29:33.865Z`

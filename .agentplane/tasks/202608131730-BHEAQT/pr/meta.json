@@ -8,10 +8,10 @@
   "pr_number": 4833,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4833",
   "pre_merge_closure": {
-    "basis_commit": "78b9354e40d8db1129f916f1112c4f17aa1dcdc8",
+    "basis_commit": "9f2cbe94f9e1736afb4ce2560c6da62e8556a192",
     "branch": "task/202608131730-BHEAQT/qualify-and-publish-agentplane-0-7-6",
     "pr_number": 4833,
-    "recorded_at": "2026-08-13T22:09:11.438Z",
+    "recorded_at": "2026-08-13T23:29:33.930Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
