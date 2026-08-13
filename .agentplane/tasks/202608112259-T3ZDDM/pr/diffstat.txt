@@ -1,5 +1,6 @@
+ .github/codeql/codeql-config.yml                   |    6 +
  .github/workflows/ci.yml                           |   88 +-
- docs/developer/code-quality.mdx                    |    2 +
+ docs/developer/code-quality.mdx                    |    7 +
  docs/developer/verification-contract.mdx           |   81 +
  docs/user/cli-reference.generated.mdx              |    8 +-
  package.json                                       |    7 +-
@@ -16,14 +17,15 @@
  .../agentplane/src/cli/test-routing-check.test.ts  |   79 +-
  .../src/cli/verification-contract.test.ts          |  313 +++
  .../src/commands/branch/work-start.materialize.ts  |   94 +-
- .../evaluator-episode.calibration.test.ts          |    8 +-
- .../evaluator-qualification-packet.test.ts         |   14 +-
- .../commands/evaluator/evaluator-review-usecase.ts |   26 +
- .../evaluator/evaluator-run.command.test.ts        |   17 +-
+ .../commands/evaluator/evaluator-diff-evidence.ts  |   45 +
+ .../evaluator-episode.calibration.test.ts          |   14 +-
+ .../evaluator-qualification-packet.test.ts         |   18 +-
+ .../commands/evaluator/evaluator-review-usecase.ts |   58 +-
+ .../evaluator/evaluator-run.command.test.ts        |   22 +-
  .../evaluator/evaluator-runtime-evidence.test.ts   |   53 +-
- .../evaluator-verification-contract.test.ts        |   38 +
+ .../evaluator-verification-contract.test.ts        |   76 +
  .../evaluator/evaluator-verification-records.ts    |   11 +-
- .../commands/release/ci-workflow-contract.test.ts  |    7 +
+ .../commands/release/ci-workflow-contract.test.ts  |   13 +
  .../src/commands/release/github-ci-plan.test.ts    |  113 +-
  .../commands/release/release-ci-contract.test.ts   |   11 +-
  .../commands/shared/quality-review-target.test.ts  |   25 +
@@ -47,8 +49,9 @@
  .../src/commands/task/finish-blueprint-evidence.ts |   37 +
  .../task/finish.quality-review-target.unit.test.ts |   37 +
  .../src/commands/task/verify-command-shared.ts     |    2 +-
- .../src/commands/task/verify-record-execute.ts     |   70 +-
- .../task/verify-record.durability.unit.test.ts     |   44 +-
+ .../src/commands/task/verify-record-execute.ts     |   80 +-
+ .../task/verify-record-observed-changes.ts         |   37 +
+ .../task/verify-record.durability.unit.test.ts     |  140 +-
  packages/agentplane/src/commands/verify.spec.ts    |    4 +-
  .../agentplane/src/runtime/task-routing/effects.ts |   37 +
  .../src/runtime/task-routing/observed-path.ts      |   67 +-
@@ -106,9 +109,10 @@
  scripts/lib/verification-scheduler.d.ts            |   35 +
  scripts/lib/verification-scheduler.mjs             |  107 +
  .../measure-v0.7.1-matched-cli-latency.mjs         |   34 +-
- .../qualification/release-qualification.test.mjs   |   24 +-
+ .../measure-v0.7.1-supervisor-latency.mjs          |  193 +-
+ .../qualification/release-qualification.test.mjs   |  114 +-
  scripts/release/check-package-node-runtime.mjs     |   13 +-
  tsconfig.base.json                                 |    1 +
  .../docs/developer/verification-contract.png       |  Bin 0 -> 59695 bytes
  website/static/img/social/manifest.json            |    8 +
- 113 files changed, 9358 insertions(+), 2183 deletions(-)
+ 117 files changed, 9882 insertions(+), 2232 deletions(-)

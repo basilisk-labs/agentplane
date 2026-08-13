@@ -1,10 +1,11 @@
 ---
 id: "202608112259-T3ZDDM"
 title: "Optimize the verification and test pipeline around one computed Verification Contract"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -27,37 +28,50 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-13T07:47:22.992Z"
+  updated_at: "2026-08-13T11:45:24.441Z"
   updated_by: "TESTER"
-  note: "Exact-SHA local, hosted, provider, benchmark, and regression qualification passed."
+  note: "Verified exact implementation 010baa075cf40e400747d255140f6f03a04032eb; all blocking local, provider, benchmark, and hosted checks passed."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-13T07:48:25.653Z"
+  updated_at: "2026-08-13T11:46:53.990Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "0cda505b4eec2470559c05165d8459bbd0e3b702"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "010baa075cf40e400747d255140f6f03a04032eb"
   blueprint_digest: "ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb"
   evidence_refs:
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-074739093-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-074739093-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/11fb0a6ad66958939e3211d49b84a148661ab51884c69e48477220e49286c13d.md"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-074739093-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-074739093-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-074739093-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-074739093-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-114606606-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-114606606-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/6470b4798be31ce8328fa374f994515b0eff2bf9d85ef4b2e7da8beffb6285ae.md"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-114606606-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-114606606-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/20260813-114606606-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608112259-T3ZDDM/README.md"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/8fd6209c2f8bb5830e68c2168ef7f6d2a9c1be6aff4610f7778e10ff78c3009c.patch"
-    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/1cabe36d131c3ba8156174a88d89100d4aa35fb15c57a397737948417168e386.json"
-    - ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813074722992-6ad656c6781aca9e.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/7b0d385efa86f109510d5d6431890a12eeb45b380fac2459cd6dbfb8fd2c8b45.patch"
+    - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/11c30351744cd16b55752100c2fbd891bb0f3423d1c92d11856e7ddd1fe97a53.json"
+    - ".agentplane/tasks/202608112259-T3ZDDM/verification/20260813114524441-d1bf42d99defc8b7.json"
     - ".agentplane/tasks/202608112259-T3ZDDM/quality/objects/sha256/478fe6fd0549b9c5f29594800dcc6351fe24c8d2b80ecb1bb3e98d5c1600c1ea.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The persisted Verification Contract was not strengthened from the evaluated diff: it records no changed files or components and does not require full regression despite changes to CI, package manifests, schemas, routing, lifecycle, verification policy, and previously unmapped paths."
+    - "The standalone risk-E2E audit artifact is tied to an earlier SHA and reports an incomplete overall qualification, although the frozen verification record reports the final exact-SHA hosted and release-qualification gates as passing."
+token_usage:
+  agent_runs: 6
+  input_tokens: 1501682
+  journal_digest: "sha256:7e14ba0721dacd191f5f786df417e95c1992c49e44d1a72841add2520a602eac"
+  observed_agent_runs: 6
+  observed_by: "agentplane"
+  output_tokens: 17000
+  reasoning_tokens: 3552
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "observed"
+  total_tokens: 1522234
+  unavailable_reason: null
+  updated_at: "2026-08-13T11:47:28.231Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -103,11 +117,150 @@ execution_contract:
     schema_version: 2
     scope_roots: []
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "repository_effect:ci"
+      - "repository_effect:dependencies"
+      - "repository_effect:documentation"
+      - "repository_effect:schema"
+      - "repository_effect:tests"
+    changed_components:
+      - ".github"
+      - "docs"
+      - "package.json"
+      - "packages/agentplane"
+      - "packages/core"
+      - "packages/spec"
+      - "schemas"
+      - "scripts"
+      - "tsconfig.base.json"
+      - "website"
+    changed_paths:
+      - ".github/codeql/codeql-config.yml"
+      - ".github/workflows/ci.yml"
+      - "docs/developer/code-quality.mdx"
+      - "docs/developer/verification-contract.mdx"
+      - "docs/user/cli-reference.generated.mdx"
+      - "package.json"
+      - "packages/agentplane/src/backends/task-backend.test.ts"
+      - "packages/agentplane/src/backends/task-backend/shared/normalize-verification-contract.test.ts"
+      - "packages/agentplane/src/backends/task-backend/shared/normalize-verification-contract.ts"
+      - "packages/agentplane/src/backends/task-backend/shared/record.ts"
+      - "packages/agentplane/src/cli/local-ci-selection.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-run.test.ts"
+      - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+      - "packages/agentplane/src/cli/test-routing-check.test.ts"
+      - "packages/agentplane/src/cli/verification-contract.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts"
+      - "packages/agentplane/src/commands/release/ci-workflow-contract.test.ts"
+      - "packages/agentplane/src/commands/release/github-ci-plan.test.ts"
+      - "packages/agentplane/src/commands/release/release-ci-contract.test.ts"
+      - "packages/agentplane/src/commands/shared/quality-review-target.test.ts"
+      - "packages/agentplane/src/commands/shared/quality-review-target.ts"
+      - "packages/agentplane/src/commands/shared/task-verification-input.test.ts"
+      - "packages/agentplane/src/commands/shared/task-verification-input.ts"
+      - "packages/agentplane/src/commands/shared/task-verification-records.test.ts"
+      - "packages/agentplane/src/commands/shared/task-verification-records.ts"
+      - "packages/agentplane/src/commands/shared/verification-details.test.ts"
+      - "packages/agentplane/src/commands/shared/verification-details.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-artifact-commit.test.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-artifact-commit.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+      - "packages/agentplane/src/commands/task/brief-render.ts"
+      - "packages/agentplane/src/commands/task/direct-task-supervisor-closeout.test.ts"
+      - "packages/agentplane/src/commands/task/direct-task-supervisor-closeout.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+      - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
+      - "packages/agentplane/src/commands/task/verify-command-shared.ts"
+      - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+      - "packages/agentplane/src/commands/task/verify-record-observed-changes.ts"
+      - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
+      - "packages/agentplane/src/commands/verify.spec.ts"
+      - "packages/agentplane/src/runtime/task-routing/effects.ts"
+      - "packages/agentplane/src/runtime/task-routing/observed-path.ts"
+      - "packages/agentplane/src/runtime/task-routing/resolve.test.ts"
+      - "packages/agentplane/src/runtime/task-routing/resolve.ts"
+      - "packages/core/package.json"
+      - "packages/core/schemas/task-readme-frontmatter.schema.json"
+      - "packages/core/schemas/tasks-export.schema.json"
+      - "packages/core/src/git/git-diff.test.ts"
+      - "packages/core/src/git/git-diff.ts"
+      - "packages/core/src/runner/agent-semantic-result.ts"
+      - "packages/core/src/tasks/index.ts"
+      - "packages/core/src/tasks/task-artifact-schema.task.ts"
+      - "packages/core/src/tasks/task-execution-contract-compat.test.ts"
+      - "packages/core/src/tasks/task-store.ts"
+      - "packages/core/src/tasks/verification-contract-kernel.d.ts"
+      - "packages/core/src/tasks/verification-contract-kernel.js"
+      - "packages/core/src/tasks/verification-contract.ts"
+      - "packages/core/tsup.config.ts"
+      - "packages/spec/schemas/task-readme-frontmatter.schema.json"
+      - "packages/spec/schemas/tasks-export.schema.json"
+      - "schemas/agent-semantic-result.schema.json"
+      - "schemas/task-readme-frontmatter.schema.json"
+      - "schemas/tasks-export.schema.json"
+      - "scripts/README.md"
+      - "scripts/baselines/clone-baseline.json"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/baselines/verification-contract-small.json"
+      - "scripts/bench/capture-compatibility-candidate.mjs"
+      - "scripts/bench/measure-verification-contract.mjs"
+      - "scripts/checks/check-cli-cold-baseline.mjs"
+      - "scripts/checks/check-clone-baseline.mjs"
+      - "scripts/checks/check-compatibility-contract-baseline.mjs"
+      - "scripts/checks/check-test-routing.mjs"
+      - "scripts/checks/plan-github-ci.mjs"
+      - "scripts/checks/run-local-ci-group.mjs"
+      - "scripts/checks/run-local-ci.mjs"
+      - "scripts/checks/run-pre-push-hook.mjs"
+      - "scripts/checks/verify-reused-parent.mjs"
+      - "scripts/lib/github-ci-capabilities.d.ts"
+      - "scripts/lib/github-ci-capabilities.mjs"
+      - "scripts/lib/installed-migration-matrix.mjs"
+      - "scripts/lib/lifecycle-control-metrics.d.ts"
+      - "scripts/lib/lifecycle-control-metrics.mjs"
+      - "scripts/lib/local-ci-selection.d.ts"
+      - "scripts/lib/local-ci-selection.mjs"
+      - "scripts/lib/local-verification-receipt.d.ts"
+      - "scripts/lib/local-verification-receipt.mjs"
+      - "scripts/lib/task-verification-contracts.d.ts"
+      - "scripts/lib/task-verification-contracts.mjs"
+      - "scripts/lib/verification-benchmark.d.ts"
+      - "scripts/lib/verification-benchmark.mjs"
+      - "scripts/lib/verification-contract.d.ts"
+      - "scripts/lib/verification-contract.mjs"
+      - "scripts/lib/verification-scheduler.d.ts"
+      - "scripts/lib/verification-scheduler.mjs"
+      - "scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs"
+      - "scripts/qualification/measure-v0.7.1-supervisor-latency.mjs"
+      - "scripts/qualification/release-qualification.test.mjs"
+      - "scripts/release/check-package-node-runtime.mjs"
+      - "tsconfig.base.json"
+      - "website/static/img/social/docs/developer/verification-contract.png"
+      - "website/static/img/social/manifest.json"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "ci"
+      - "dependencies"
+      - "documentation"
+      - "repository_write"
+      - "schema"
+      - "source_code"
+      - "tests"
     verification_results:
       -
         id: "recorded-check-1"
@@ -126,6 +279,9 @@ execution_contract:
         result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
+    - "observed_effect_ci"
+    - "observed_effect_dependencies"
+    - "observed_effect_schema"
     - "repository_branch_pr_floor"
   repository_mode: "branch_pr"
   safety:
@@ -141,8 +297,13 @@ execution_contract:
         components: []
         evidence_requirements:
           - "hosted_integration"
+          - "repository_effect:ci"
+          - "repository_effect:dependencies"
+          - "repository_effect:documentation"
           - "repository_effect:repository_write"
+          - "repository_effect:schema"
           - "repository_effect:source_code"
+          - "repository_effect:tests"
           - "task_outcome"
         external_effects: []
         repository_effects:
@@ -152,27 +313,241 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:5cce438a0252ecd96091bc582c42af2d777ee0f2a627b7930089252831afd436"
-      escalation_reasons: []
+      digest: "sha256:eb93e527da410de788c1d216543498118964d2c4914d31a7407f78f481535089"
+      escalation_reasons:
+        - "central_path:.github/codeql/codeql-config.yml"
+        - "central_path:.github/workflows/ci.yml"
+        - "central_path:package.json"
+        - "central_path:packages/agentplane/src/cli/local-ci-selection.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-run.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+        - "central_path:packages/agentplane/src/cli/test-routing-check.test.ts"
+        - "central_path:packages/agentplane/src/cli/verification-contract.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/quality-review-target.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/quality-review-target.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-verification-input.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-verification-input.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-verification-records.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-verification-records.ts"
+        - "central_path:packages/agentplane/src/commands/shared/verification-details.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/verification-details.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
+        - "central_path:packages/agentplane/src/runtime/task-routing/effects.ts"
+        - "central_path:packages/agentplane/src/runtime/task-routing/observed-path.ts"
+        - "central_path:packages/agentplane/src/runtime/task-routing/resolve.test.ts"
+        - "central_path:packages/agentplane/src/runtime/task-routing/resolve.ts"
+        - "central_path:packages/core/package.json"
+        - "central_path:packages/core/schemas/task-readme-frontmatter.schema.json"
+        - "central_path:packages/core/schemas/tasks-export.schema.json"
+        - "central_path:packages/core/src/git/git-diff.test.ts"
+        - "central_path:packages/core/src/git/git-diff.ts"
+        - "central_path:packages/core/src/runner/agent-semantic-result.ts"
+        - "central_path:packages/core/src/tasks/index.ts"
+        - "central_path:packages/core/src/tasks/task-artifact-schema.task.ts"
+        - "central_path:packages/core/src/tasks/task-execution-contract-compat.test.ts"
+        - "central_path:packages/core/src/tasks/task-store.ts"
+        - "central_path:packages/core/src/tasks/verification-contract-kernel.d.ts"
+        - "central_path:packages/core/src/tasks/verification-contract-kernel.js"
+        - "central_path:packages/core/src/tasks/verification-contract.ts"
+        - "central_path:packages/core/tsup.config.ts"
+        - "central_path:schemas/agent-semantic-result.schema.json"
+        - "central_path:schemas/task-readme-frontmatter.schema.json"
+        - "central_path:schemas/tasks-export.schema.json"
+        - "central_path:scripts/checks/check-cli-cold-baseline.mjs"
+        - "central_path:scripts/checks/check-clone-baseline.mjs"
+        - "central_path:scripts/checks/check-compatibility-contract-baseline.mjs"
+        - "central_path:scripts/checks/check-test-routing.mjs"
+        - "central_path:scripts/checks/plan-github-ci.mjs"
+        - "central_path:scripts/checks/run-local-ci-group.mjs"
+        - "central_path:scripts/checks/run-local-ci.mjs"
+        - "central_path:scripts/checks/run-pre-push-hook.mjs"
+        - "central_path:scripts/checks/verify-reused-parent.mjs"
+        - "central_path:scripts/lib/github-ci-capabilities.d.ts"
+        - "central_path:scripts/lib/github-ci-capabilities.mjs"
+        - "central_path:scripts/lib/installed-migration-matrix.mjs"
+        - "central_path:scripts/lib/lifecycle-control-metrics.d.ts"
+        - "central_path:scripts/lib/lifecycle-control-metrics.mjs"
+        - "central_path:scripts/lib/local-ci-selection.d.ts"
+        - "central_path:scripts/lib/local-ci-selection.mjs"
+        - "central_path:scripts/lib/local-verification-receipt.d.ts"
+        - "central_path:scripts/lib/local-verification-receipt.mjs"
+        - "central_path:scripts/lib/task-verification-contracts.d.ts"
+        - "central_path:scripts/lib/task-verification-contracts.mjs"
+        - "central_path:scripts/lib/verification-benchmark.d.ts"
+        - "central_path:scripts/lib/verification-benchmark.mjs"
+        - "central_path:scripts/lib/verification-contract.d.ts"
+        - "central_path:scripts/lib/verification-contract.mjs"
+        - "central_path:scripts/lib/verification-scheduler.d.ts"
+        - "central_path:scripts/lib/verification-scheduler.mjs"
+        - "central_path:scripts/release/check-package-node-runtime.mjs"
+        - "effect_ci"
+        - "effect_dependencies"
+        - "effect_schema"
+        - "unknown_path:.github/codeql/codeql-config.yml"
+        - "unknown_path:scripts/baselines/clone-baseline.json"
+        - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
+        - "unknown_path:scripts/baselines/verification-contract-small.json"
+        - "unknown_path:tsconfig.base.json"
       execution_groups:
+        - "docs-schema"
         - "core"
+        - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - ".github"
+          - "docs"
+          - "package.json"
+          - "packages/agentplane"
+          - "packages/core"
+          - "packages/spec"
+          - "schemas"
+          - "scripts"
+          - "tsconfig.base.json"
+          - "website"
+        changed_files:
+          - ".github/codeql/codeql-config.yml"
+          - ".github/workflows/ci.yml"
+          - "docs/developer/code-quality.mdx"
+          - "docs/developer/verification-contract.mdx"
+          - "docs/user/cli-reference.generated.mdx"
+          - "package.json"
+          - "packages/agentplane/src/backends/task-backend.test.ts"
+          - "packages/agentplane/src/backends/task-backend/shared/normalize-verification-contract.test.ts"
+          - "packages/agentplane/src/backends/task-backend/shared/normalize-verification-contract.ts"
+          - "packages/agentplane/src/backends/task-backend/shared/record.ts"
+          - "packages/agentplane/src/cli/local-ci-selection.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-run.test.ts"
+          - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+          - "packages/agentplane/src/cli/test-routing-check.test.ts"
+          - "packages/agentplane/src/cli/verification-contract.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts"
+          - "packages/agentplane/src/commands/release/ci-workflow-contract.test.ts"
+          - "packages/agentplane/src/commands/release/github-ci-plan.test.ts"
+          - "packages/agentplane/src/commands/release/release-ci-contract.test.ts"
+          - "packages/agentplane/src/commands/shared/quality-review-target.test.ts"
+          - "packages/agentplane/src/commands/shared/quality-review-target.ts"
+          - "packages/agentplane/src/commands/shared/task-verification-input.test.ts"
+          - "packages/agentplane/src/commands/shared/task-verification-input.ts"
+          - "packages/agentplane/src/commands/shared/task-verification-records.test.ts"
+          - "packages/agentplane/src/commands/shared/task-verification-records.ts"
+          - "packages/agentplane/src/commands/shared/verification-details.test.ts"
+          - "packages/agentplane/src/commands/shared/verification-details.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-artifact-commit.test.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-artifact-commit.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+          - "packages/agentplane/src/commands/task/brief-render.ts"
+          - "packages/agentplane/src/commands/task/direct-task-supervisor-closeout.test.ts"
+          - "packages/agentplane/src/commands/task/direct-task-supervisor-closeout.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+          - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+          - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
+          - "packages/agentplane/src/commands/task/verify-command-shared.ts"
+          - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+          - "packages/agentplane/src/commands/task/verify-record-observed-changes.ts"
+          - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
+          - "packages/agentplane/src/commands/verify.spec.ts"
+          - "packages/agentplane/src/runtime/task-routing/effects.ts"
+          - "packages/agentplane/src/runtime/task-routing/observed-path.ts"
+          - "packages/agentplane/src/runtime/task-routing/resolve.test.ts"
+          - "packages/agentplane/src/runtime/task-routing/resolve.ts"
+          - "packages/core/package.json"
+          - "packages/core/schemas/task-readme-frontmatter.schema.json"
+          - "packages/core/schemas/tasks-export.schema.json"
+          - "packages/core/src/git/git-diff.test.ts"
+          - "packages/core/src/git/git-diff.ts"
+          - "packages/core/src/runner/agent-semantic-result.ts"
+          - "packages/core/src/tasks/index.ts"
+          - "packages/core/src/tasks/task-artifact-schema.task.ts"
+          - "packages/core/src/tasks/task-execution-contract-compat.test.ts"
+          - "packages/core/src/tasks/task-store.ts"
+          - "packages/core/src/tasks/verification-contract-kernel.d.ts"
+          - "packages/core/src/tasks/verification-contract-kernel.js"
+          - "packages/core/src/tasks/verification-contract.ts"
+          - "packages/core/tsup.config.ts"
+          - "packages/spec/schemas/task-readme-frontmatter.schema.json"
+          - "packages/spec/schemas/tasks-export.schema.json"
+          - "schemas/agent-semantic-result.schema.json"
+          - "schemas/task-readme-frontmatter.schema.json"
+          - "schemas/tasks-export.schema.json"
+          - "scripts/README.md"
+          - "scripts/baselines/clone-baseline.json"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
+          - "scripts/baselines/verification-contract-small.json"
+          - "scripts/bench/capture-compatibility-candidate.mjs"
+          - "scripts/bench/measure-verification-contract.mjs"
+          - "scripts/checks/check-cli-cold-baseline.mjs"
+          - "scripts/checks/check-clone-baseline.mjs"
+          - "scripts/checks/check-compatibility-contract-baseline.mjs"
+          - "scripts/checks/check-test-routing.mjs"
+          - "scripts/checks/plan-github-ci.mjs"
+          - "scripts/checks/run-local-ci-group.mjs"
+          - "scripts/checks/run-local-ci.mjs"
+          - "scripts/checks/run-pre-push-hook.mjs"
+          - "scripts/checks/verify-reused-parent.mjs"
+          - "scripts/lib/github-ci-capabilities.d.ts"
+          - "scripts/lib/github-ci-capabilities.mjs"
+          - "scripts/lib/installed-migration-matrix.mjs"
+          - "scripts/lib/lifecycle-control-metrics.d.ts"
+          - "scripts/lib/lifecycle-control-metrics.mjs"
+          - "scripts/lib/local-ci-selection.d.ts"
+          - "scripts/lib/local-ci-selection.mjs"
+          - "scripts/lib/local-verification-receipt.d.ts"
+          - "scripts/lib/local-verification-receipt.mjs"
+          - "scripts/lib/task-verification-contracts.d.ts"
+          - "scripts/lib/task-verification-contracts.mjs"
+          - "scripts/lib/verification-benchmark.d.ts"
+          - "scripts/lib/verification-benchmark.mjs"
+          - "scripts/lib/verification-contract.d.ts"
+          - "scripts/lib/verification-contract.mjs"
+          - "scripts/lib/verification-scheduler.d.ts"
+          - "scripts/lib/verification-scheduler.mjs"
+          - "scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs"
+          - "scripts/qualification/measure-v0.7.1-supervisor-latency.mjs"
+          - "scripts/qualification/release-qualification.test.mjs"
+          - "scripts/release/check-package-node-runtime.mjs"
+          - "tsconfig.base.json"
+          - "website/static/img/social/docs/developer/verification-contract.png"
+          - "website/static/img/social/manifest.json"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "ci"
+          - "dependencies"
+          - "documentation"
+          - "repository_write"
+          - "schema"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
         pr_full_regression: true
         unknown_or_central_full_regression: true
-      requires_full_regression: false
+      requires_full_regression: true
       requires_real_e2e: false
       schema_version: 2
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "docs_contract"
+        - "full_regression"
         - "hosted_integration"
         - "task_outcome"
       selector:
@@ -188,12 +563,17 @@ execution_contract:
       source: "execution_contract"
     required_evidence:
       - "hosted_integration"
+      - "repository_effect:ci"
+      - "repository_effect:dependencies"
+      - "repository_effect:documentation"
       - "repository_effect:repository_write"
+      - "repository_effect:schema"
       - "repository_effect:source_code"
+      - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b4fd43e41c910ff8b978fb72060efac4991eb72f"
-  message: "⚡ T3ZDDM verification: optimize contract pipeline"
+  hash: "010baa075cf40e400747d255140f6f03a04032eb"
+  message: "⚡ T3ZDDM performance: focus CodeQL on shipped code"
 comments:
   -
     author: "CODER"
@@ -201,6 +581,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed at b4fd43e41: one deterministic Verification Contract now governs local and hosted selection; exact verification reuse, bounded parallel scheduling, worktree dependency isolation, benchmark guards, schemas, tests, and documentation are included."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -247,8 +630,22 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Exact-SHA local, hosted, provider, benchmark, and regression qualification passed."
+  -
+    type: "verify"
+    at: "2026-08-13T11:45:24.441Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified exact implementation 010baa075cf40e400747d255140f6f03a04032eb; all blocking local, provider, benchmark, and hosted checks passed."
+  -
+    type: "status"
+    at: "2026-08-13T11:47:28.231Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "010baa075cf40e400747d255140f6f03a04032eb"
 doc_version: 3
-doc_updated_at: "2026-08-13T07:47:24.330Z"
+doc_updated_at: "2026-08-13T11:47:28.241Z"
 doc_updated_by: "CODER"
 description: "Implement a versioned Verification Contract computed once from the semantic task assessment introduced by 202608112232-3NC7Y4 and strengthened monotonically by deterministic observed effects. Make that contract the single authority for local, PR, release, evaluator, finish, and recovery verification. Add change-aware test selection so local development runs only affected unit/integration suites plus mandatory critical-path checks; run the full CLI regression on PR; run real E2E on PR and release according to risk and observed effects. Add a conservative fallback that selects full regression whenever central components, shared contracts, routing, lifecycle, verification policy, schemas, package/lockfiles, CI, or unknown/unmapped effects are touched. The LLM may propose semantic scope and explain results but must not remove, downgrade, or bypass mandatory checks selected by deterministic policy. Audit duplicate behavioral coverage and move assertions to the cheapest sufficient level, retaining higher-level tests only for observable cross-boundary contracts. Profile fixture creation and process startup; replace repeated mutable setup with reusable immutable fixtures and cheap isolated repository copies where hermeticity is preserved. Execute independent core, runtime, CLI, and docs/schema groups in parallel with deterministic aggregation, failure reporting, and cancellation semantics. Instrument and report verification amplification, wall-clock verification time, test duplication, and the number of AgentPlane lifecycle/control-plane commands. Define small direct work as localized, reversible, non-central, with no external effects; on pinned reference hardware target mandatory local verification at no more than 60 seconds p50 and 120 seconds p95, no more than three lifecycle/control-plane commands, and no local full CLI regression unless the deterministic fallback triggers. Establish a reproducible before/after benchmark, document metric definitions and residual risk, and prove that speedups do not weaken required evidence."
 sections:
@@ -526,6 +923,60 @@ sections:
     Result: pass; clones 88 vs baseline 89; duplicated lines 1393 vs 1412; oversized test baseline 10 entries and 11363 lines
     Evidence: exact-SHA command output
     Scope: duplication inventory, maintainability guards, and test file budget
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou/.agentplane/tasks/202608112259-T3ZDDM/blueprint/resolved-snapshot.json
+    - old_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+    - current_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608112259-T3ZDDM
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608112259-T3ZDDM
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-13T11:45:24.441Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified exact implementation 010baa075cf40e400747d255140f6f03a04032eb; all blocking local, provider, benchmark, and hosted checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e, input_digest=sha256:be11eae0c0fe35163c3a1e4c63d1c1f38ad05759a91313af584a25b1f0638f25
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: npm exec vitest run -- <five focused verification/selector/CI contract suites>; npm run test:ci:full-fast
+    Result: pass
+    Evidence: 40/40 focused tests passed; full-fast completed five groups with one build, including 559 core files (4102 pass, 1 skip), runtime 18/18, critical CLI 91/91, Windows-critical 97/97, and significant coverage 101/101. Exact qualification: .agentplane/reports/T3ZDDM-010baa0-final/report.json (ready; 18 passed, 1 advisory, 0 blocking).
+    Scope: exact implementation SHA 010baa075cf40e400747d255140f6f03a04032eb
+
+    Check: critical_paths
+    Command: npm run typecheck; npm run lint; npm run format:check; npm run check:workflows; npm run trust:ratchet; node scripts/qualification/run-release-qualification.mjs --manifest scripts/qualification/v0.7.1-release-qualification.json --mode full --provider --subject 010baa075cf40e400747d255140f6f03a04032eb
+    Result: pass
+    Evidence: qualification report is release_ready=true and local_ready=true; matched CLI and supervisor latency gates passed; provider evidence passed with 54.91% token reduction, verified_success 8->19, scope violations 17->5, and all approval checks preserved. The sole absolute CLI threshold diagnostic is advisory and its matched baseline gate passed.
+    Scope: verification contract, selector/fallback, scheduler, fixtures, lifecycle/recovery, and efficiency regression guards
+
+    Check: hosted_integration
+    Command: GitHub Actions run 31694178157 for PR #4830
+    Result: pass
+    Evidence: exact head 010baa075cf40e400747d255140f6f03a04032eb; package 51s, Windows 3m03s, contract 2m49s, static 4m30s, tests 6m39s, security 4m40s, PR verification 14s; all required jobs succeeded.
+    Scope: hosted checks on exact reviewed SHA, including complete CLI regression and security-extended CodeQL over shipped source
+
+    Check: task_outcome
+    Command: inspect release qualification, benchmark comparison, verification-contract consumers, and documented metrics/duplication inventory
+    Result: pass
+    Evidence: one versioned monotonic Verification Contract now governs local, PR, release, evaluator, finish, and recovery; deterministic fallback covers central or unmapped effects; independent groups aggregate deterministically; 20 paired logical supervisor samples with 3 alternating replicates each pass the +10% median/p95 guard; final qualification duration 1556756ms.
+    Scope: all eight approved acceptance criteria and observed repository/source effects
 
     BlueprintSnapshotRef:
     - state: current
@@ -860,6 +1311,60 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-13T11:45:24.441Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified exact implementation 010baa075cf40e400747d255140f6f03a04032eb; all blocking local, provider, benchmark, and hosted checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b83a1f46f43c02d243a390643271a632bab76eb8d1ed3216b41d2e9c2c79b6e, input_digest=sha256:be11eae0c0fe35163c3a1e4c63d1c1f38ad05759a91313af584a25b1f0638f25
+
+Details:
+
+Check: affected_unit_integration
+Command: npm exec vitest run -- <five focused verification/selector/CI contract suites>; npm run test:ci:full-fast
+Result: pass
+Evidence: 40/40 focused tests passed; full-fast completed five groups with one build, including 559 core files (4102 pass, 1 skip), runtime 18/18, critical CLI 91/91, Windows-critical 97/97, and significant coverage 101/101. Exact qualification: .agentplane/reports/T3ZDDM-010baa0-final/report.json (ready; 18 passed, 1 advisory, 0 blocking).
+Scope: exact implementation SHA 010baa075cf40e400747d255140f6f03a04032eb
+
+Check: critical_paths
+Command: npm run typecheck; npm run lint; npm run format:check; npm run check:workflows; npm run trust:ratchet; node scripts/qualification/run-release-qualification.mjs --manifest scripts/qualification/v0.7.1-release-qualification.json --mode full --provider --subject 010baa075cf40e400747d255140f6f03a04032eb
+Result: pass
+Evidence: qualification report is release_ready=true and local_ready=true; matched CLI and supervisor latency gates passed; provider evidence passed with 54.91% token reduction, verified_success 8->19, scope violations 17->5, and all approval checks preserved. The sole absolute CLI threshold diagnostic is advisory and its matched baseline gate passed.
+Scope: verification contract, selector/fallback, scheduler, fixtures, lifecycle/recovery, and efficiency regression guards
+
+Check: hosted_integration
+Command: GitHub Actions run 31694178157 for PR #4830
+Result: pass
+Evidence: exact head 010baa075cf40e400747d255140f6f03a04032eb; package 51s, Windows 3m03s, contract 2m49s, static 4m30s, tests 6m39s, security 4m40s, PR verification 14s; all required jobs succeeded.
+Scope: hosted checks on exact reviewed SHA, including complete CLI regression and security-extended CodeQL over shipped source
+
+Check: task_outcome
+Command: inspect release qualification, benchmark comparison, verification-contract consumers, and documented metrics/duplication inventory
+Result: pass
+Evidence: one versioned monotonic Verification Contract now governs local, PR, release, evaluator, finish, and recovery; deterministic fallback covers central or unmapped effects; independent groups aggregate deterministically; 20 paired logical supervisor samples with 3 alternating replicates each pass the +10% median/p95 guard; final qualification duration 1556756ms.
+Scope: all eight approved acceptance criteria and observed repository/source effects
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608112259-T3ZDDM-optimize-the-verification-and-test-pipeline-arou/.agentplane/tasks/202608112259-T3ZDDM/blueprint/resolved-snapshot.json
+- old_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+- current_digest: ab26fac451f89290abafc5d80e4c3a20e3154a18baea41de0e22aafb6427f5bb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608112259-T3ZDDM
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608112259-T3ZDDM
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -868,3 +1373,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `observed`
+- Completeness: `6/6` agent runs
+- Input tokens: `1501682`
+- Output tokens: `17000`
+- Reasoning tokens: `3552`
+- Total tokens: `1522234`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:7e14ba0721dacd191f5f786df417e95c1992c49e44d1a72841add2520a602eac`
+- Unavailable reason: `none`
+- Updated at: `2026-08-13T11:47:28.231Z`
