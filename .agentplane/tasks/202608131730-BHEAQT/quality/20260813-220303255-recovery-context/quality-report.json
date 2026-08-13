@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608131730-BHEAQT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-13T22:03:37.314Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "human_review",
+  "summary": "EVALUATOR returned human_review with 1 typed finding(s).",
+  "evaluated_sha": "95a6d46c5cd6af4c4bfd2e61c79a9d4606dca12e",
+  "blueprint_digest": "1899fc9e16ece1a5840f337f0c3b3222aac692041c82a0acb222673a31e94a1f",
+  "findings": [
+    "The approved release objective requires release notes, package version changes, internal dependency-pin updates, and related candidate changes, while the frozen execution contract forbids documentation, dependencies, public API, source-code, and test effects and records the candidate as violating that authority."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608131730-BHEAQT/README.md",
+    ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/fba8557f3b542bff7b24ea124dcb3a7c53256fea1a6bf8c45119855516cdf611.json",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [
+    "Add a contract-validation check that rejects a release task when its required acceptance-criteria effects are forbidden by its frozen execution authority."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes that approval of the release objective implicitly authorizes documentation, dependency, public-API, source-code, and test mutations despite the frozen execution contract explicitly forbidding them."
+  ],
+  "residual_risks": [
+    "Does the human owner explicitly approve expanding this task's frozen repository authority to include the documentation, dependency, public-API, source-code, and test mutations required by the 0.7.6 release candidate?"
+  ]
+}
