@@ -156,6 +156,8 @@ export async function writeFrameworkHarnessGitignore(root: string): Promise<void
       "packages/agentplane/package.json",
       "packages/core/dist",
       "packages/core/package.json",
+      "packages/recipes/dist",
+      "packages/recipes/package.json",
       "website/node_modules",
       "",
     ].join("\n"),

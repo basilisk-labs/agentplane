@@ -42,6 +42,7 @@ import {
 } from "./measure-v0.7.1-supervisor-latency.mjs";
 import {
   preflightQualificationProviderRuntime,
+  formatQualificationScenarioFailure,
   QUALIFICATION_CODEX_CLI_VERSION,
   readQualificationRunSubjectIdentity,
   runQualificationScenarios,
@@ -177,6 +178,19 @@ function supervisorLatencySample(duration_ms) {
 }
 
 describe("v0.7.1 release qualification contract", () => {
+  it("prints bounded child output for failed qualification scenarios", () => {
+    assert.equal(
+      formatQualificationScenarioFailure("hosted-boundary-matrix", "first\nsecond\n", 8),
+      ["qualification: hosted-boundary-matrix failure output (last 8 characters)", "second"].join(
+        "\n",
+      ),
+    );
+    assert.match(
+      formatQualificationScenarioFailure("hosted-boundary-matrix", ""),
+      /<no child output>/u,
+    );
+  });
+
   it("keeps the installed mixed-scope scenario blocking, bounded, and selectable", () => {
     const manifest = readQualificationManifest(manifestPath);
     const scenario = manifest.scenarios.find(

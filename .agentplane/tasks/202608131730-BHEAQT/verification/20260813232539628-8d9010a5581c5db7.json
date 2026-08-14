@@ -1,0 +1,126 @@
+{
+  "details": "Command: bun run release:prepublish\nResult: pass\nEvidence: release-ci-base 104/104 chunks; workflow coverage 50/50; significant coverage 204/204; release-critical 16/16; installed migration matrix 8/8\nScope: exact-SHA build, package, migration, workflow, CLI, regression, coverage, compatibility, efficiency, and release-critical gates\n\nCommand: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1 --subject 8b5fe5e6789ec8a43e5c430c3132c78df03cc2e4\nResult: pass\nEvidence: report .agentplane/reports/v0.7.1-qualification/2026-08-13T22-59-12-627Z/report.json; 20 scenarios executed; 19 passed; one non-blocking absolute-latency advisory; paired latency and provider matrix passed; zero blocking defects; verdict ready\nScope: real user workflows, installed CLI, provider-enabled lifecycle, first-task, mixed-scope, recovery, hosted boundary, and efficiency behavior\n\nCommand: bun run release:parity\nResult: pass\nEvidence: agentplane, core, recipes, internal pins, ACR example, README header, and release surfaces agree on 0.7.6\nScope: version and generated release metadata consistency\n\nCommand: GitHub Core CI run 31750633484\nResult: pass\nEvidence: exact head 8b5fe5e6789ec8a43e5c430c3132c78df03cc2e4; verify-real-e2e, verify-tests, verify-static, verify-contract, test-windows, package runtime, security, and PR verification all succeeded\nScope: clean Ubuntu and Windows hosted checks, including deterministic hosted-boundary fixtures",
+  "digest": "sha256:8d9010a5581c5db704b562553f8d5c1d13f1c919ff4c193b8c6afcce953607b3",
+  "implementation_sha": "8b5fe5e6789ec8a43e5c430c3132c78df03cc2e4",
+  "input": {
+    "context": {
+      "digest": "sha256:db943969fd6a5db05b4a920d4e5bf19384f5029cacde12d13d48fdf976f3ebfc",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:f3efd5d0626350d4e864e8f3cf803ea80c5b77f861db1ab9727b5155941a3a73",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e60ee14d23e67bcf396619155c43425571e82646d32395331963c1d01ba7dccf",
+      "digest": "sha256:51bf1b5bdaf7c74179fa669f805ae4c25fd040bf75c1e3deb1ebbd9040a9cce2",
+      "references": [
+        {
+          "digest": "sha256:557093f9fbf395103038ec1e464a25ee667bca0d07c74b9d263f3f6519b3320e",
+          "fragment": null,
+          "path": ".agentplane/reports/v0.7.1-qualification/2026-08-13T22-59-12-627Z/report.json",
+          "reference": ".agentplane/reports/v0.7.1-qualification/2026-08-13T22-59-12-627Z/report.json",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "104/104",
+          "reference": "104/104",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "16/16",
+          "reference": "16/16",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "204/204",
+          "reference": "204/204",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "50/50",
+          "reference": "50/50",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "8/8",
+          "reference": "8/8",
+          "source": "missing"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "b6ad9823183a8c65b1707267cef73906573ceb08",
+      "digest": "sha256:15f095189907aaecd2373651b15b5181e3563db4d8db85efd8276ad021eed03b",
+      "strategy": "branch_diff",
+      "target_sha": "8b5fe5e6789ec8a43e5c430c3132c78df03cc2e4"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:9357e386b29b712260ef2a373709ceaef3742a60d7e2b9fab28c65dea839d6df",
+    "verify_steps_digest": "sha256:77b801a2249a30d49b4cc54c7efa46a6b160daada92d0eb56aa4ba92553aa06e"
+  },
+  "kind": "task_verification_record",
+  "note": "Exact candidate 8b5fe5e67 passed local, provider, and hosted release qualification.",
+  "recorded_at": "2026-08-13T23:25:39.628Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Inspect main and provider state. Expected: PR #4831 is merged, Task Hosted Close 31725715564 succeeded, EZZZYH is DONE, the integration queue is empty, tracked main is clean, all public packages are 0.7.5, and no active incident blocks release planning.\n2. Run the canonical patch release plan. Expected: target version is exactly 0.7.6, base SHA equals the protected main release base, changes inventory covers every commit since v0.7.5, and docs/releases/v0.7.6.md satisfies the release-note coverage contract.\n3. Execute node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1 --subject <exact-clean-candidate-sha>. Expected: all 20 scenarios execute, provider matrix and packaged-mixed-scope-lifecycle pass, release disposition is ready with zero blocking defects, and exact-SHA report plus efficiency metrics are retained.\n4. Prepare the branch_pr release candidate. Expected: agentplane, @agentplaneorg/core, and @agentplaneorg/recipes versions and both CLI internal dependency pins are 0.7.6; repository expected CLI and generated release surfaces agree; no tag is created before protected-main merge.\n5. Run bun run release:parity and bun run release:prepublish on the exact candidate SHA. Expected: both exit zero; install, migration, workflow, critical CLI, significant coverage, schema/docs, and package/runtime gates remain present; no temporary or unintended tracked artifacts remain.\n6. Inspect the release PR and hosted checks. Expected: no unresolved review thread, PR head equals the verified candidate SHA, every required hosted check including PR verification passes stably, and AgentPlane integration records the exact merge SHA plus hosted-close evidence.\n7. Inspect Core CI release-ready for the exact merged main SHA, dispatch Publish release with version 0.7.6 and that SHA, and inspect its artifact. Expected: release-ready and publish-result identities match exact SHA/version/tag, workflow concludes success, tag and GitHub Release v0.7.6 exist, and the release is latest.\n8. Run node scripts/release/check-published-packages.mjs --version 0.7.6 and independent npm/GitHub readback. Expected: agentplane, @agentplaneorg/core, and @agentplaneorg/recipes resolve to 0.7.6 with expected dependency pins; final main equals origin/main, the release task is DONE, its worktree/branch are cleaned, and git status contains no unintended tracked changes.",
+  "scope_digest": "sha256:77b801a2249a30d49b4cc54c7efa46a6b160daada92d0eb56aa4ba92553aa06e",
+  "task_id": "202608131730-BHEAQT",
+  "verification_command": "agentplane verify 202608131730-BHEAQT --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -99,7 +99,10 @@ async function ensureGitTemplateRoot(): Promise<string> {
   if (gitTemplateRoot) return gitTemplateRoot;
   gitTemplatePromise ??= (async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-git-template-"));
-    await execFileAsync("git", ["init", "-q"], { cwd: root, env: cleanGitEnv() });
+    await execFileAsync("git", ["init", "-q", "--initial-branch=main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
     await execFileAsync("git", ["config", "user.email", "agentplane-test@example.com"], {
       cwd: root,
       env: cleanGitEnv(),

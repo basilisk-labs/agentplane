@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608131730-BHEAQT-164871677b3e9b486e911a1c",
+  "prepared_at": "2026-08-13T22:05:40.187Z",
+  "task": {
+    "id": "202608131730-BHEAQT",
+    "revision": 12,
+    "objective": "Qualify and publish AgentPlane 0.7.6\n\nPublish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact protected-main release scope; generate the patch plan and English release notes from actual changes since v0.7.5; run the complete 20-scenario provider-enabled release qualification on the exact clean candidate; run canonical release prepublish gates; prepare a branch_pr release candidate without creating a tag; require exact-SHA hosted checks and no unresolved reviews; integrate through the protected main lane; dispatch GitHub-only publication for the exact merged release SHA; verify release-ready and publish-result artifacts, tag, GitHub Release, and all three public npm packages; then clean the release worktree and report efficiency and residual lifecycle debt.",
+    "acceptance_criteria": [
+      "- In scope: Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact protected-main release scope; generate the patch plan and English release notes from actual changes since v0.7.5; run the complete 20-scenario provider-enabled release qualification on the exact clean candidate; run canonical release prepublish gates; prepare a branch_pr release candidate without creating a tag; require exact-SHA hosted checks and no unresolved reviews; integrate through the protected main lane; dispatch GitHub-only publication for the exact merged release SHA; verify release-ready and publish-result artifacts, tag, GitHub Release, and all three public npm packages; then clean the release worktree and report efficiency and residual lifecycle debt.\n- Out of scope: unrelated refactors not required for \"Qualify and publish AgentPlane 0.7.6\".",
+      "1. Confirm the merged EZZZYH hosted-close and a clean tracked protected-main baseline; require current public version 0.7.5 and no active release incident. 2. Create the dedicated branch_pr release worktree, freeze the canonical patch plan at exactly 0.7.6 from the current main SHA, and author English release notes that cover the actual v0.7.5..candidate change inventory. 3. Run the complete provider-enabled 20-scenario release qualification on the exact clean pre-version candidate using the reviewed Codex runtime; require ready disposition, zero blocking defects, and preserve the measured verification-efficiency evidence. 4. Prepare the 0.7.6 release candidate so all public package versions, internal dependency pins, repository expected CLI, generated artifacts, and release notes advance together without creating or pushing a tag. 5. Run release parity and the canonical release:prepublish gate on the exact release candidate SHA; record the full check composition and stop on any failure or unexpected dirty state. 6. Push the candidate branch, open the release PR, require resolved review threads and stable required hosted checks on its exact head, then integrate through the AgentPlane queue and wait for hosted close. 7. From the exact merged main release SHA, require a successful release-ready artifact, dispatch the GitHub-only Publish release workflow for 0.7.6, and require successful publish-result, tag, GitHub Release, and registry identity for agentplane, @agentplaneorg/core, and @agentplaneorg/recipes. 8. Finalize AgentPlane task truth, clean the merged release worktree and branch through AgentPlane, verify local main equals origin/main with no unintended tracked changes, and report qualification, efficiency, publication, and residual lifecycle debt.",
+      "1. Inspect main and provider state. Expected: PR #4831 is merged, Task Hosted Close 31725715564 succeeded, EZZZYH is DONE, the integration queue is empty, tracked main is clean, all public packages are 0.7.5, and no active incident blocks release planning.\n2. Run the canonical patch release plan. Expected: target version is exactly 0.7.6, base SHA equals the protected main release base, changes inventory covers every commit since v0.7.5, and docs/releases/v0.7.6.md satisfies the release-note coverage contract.\n3. Execute node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider --codex-version 0.146.0-alpha.3.1 --subject <exact-clean-candidate-sha>. Expected: all 20 scenarios execute, provider matrix and packaged-mixed-scope-lifecycle pass, release disposition is ready with zero blocking defects, and exact-SHA report plus efficiency metrics are retained.\n4. Prepare the branch_pr release candidate. Expected: agentplane, @agentplaneorg/core, and @agentplaneorg/recipes versions and both CLI internal dependency pins are 0.7.6; repository expected CLI and generated release surfaces agree; no tag is created before protected-main merge.\n5. Run bun run release:parity and bun run release:prepublish on the exact candidate SHA. Expected: both exit zero; install, migration, workflow, critical CLI, significant coverage, schema/docs, and package/runtime gates remain present; no temporary or unintended tracked artifacts remain.\n6. Inspect the release PR and hosted checks. Expected: no unresolved review thread, PR head equals the verified candidate SHA, every required hosted check including PR verification passes stably, and AgentPlane integration records the exact merge SHA plus hosted-close evidence.\n7. Inspect Core CI release-ready for the exact merged main SHA, dispatch Publish release with version 0.7.6 and that SHA, and inspect its artifact. Expected: release-ready and publish-result identities match exact SHA/version/tag, workflow concludes success, tag and GitHub Release v0.7.6 exist, and the release is latest.\n8. Run node scripts/release/check-published-packages.mjs --version 0.7.6 and independent npm/GitHub readback. Expected: agentplane, @agentplaneorg/core, and @agentplaneorg/recipes resolve to 0.7.6 with expected dependency pins; final main equals origin/main, the release task is DONE, its worktree/branch are cleaned, and git status contains no unintended tracked changes."
+    ]
+  },
+  "evaluated_sha": "95a6d46c5cd6af4c4bfd2e61c79a9d4606dca12e",
+  "diff_base_sha": "b6ad9823183a8c65b1707267cef73906573ceb08",
+  "blueprint_digest": "1899fc9e16ece1a5840f337f0c3b3222aac692041c82a0acb222673a31e94a1f",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220540187-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:a71c1b8cd39cb73aff022b9cd760bb6a5359fca5c13e07428a4cfd1e348e1fd3",
+    "prompt_path": ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/0646d64f66b67e6a4cac490cce996b89fe151bb8807c17a5a93c370dabe566bd.md",
+    "result_schema_path": ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608131730-BHEAQT/README.md",
+      "sha256": "sha256:3349ee80dcc7d0685100b66cd61bfd91ffff9612bf42d84399dfd8b48881a071",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/8d1fe4ed0ce8e696c804bf13f6c0e6544c502f5994e352426606aca4c437b78d.patch",
+      "sha256": "sha256:8d1fe4ed0ce8e696c804bf13f6c0e6544c502f5994e352426606aca4c437b78d",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/fba8557f3b542bff7b24ea124dcb3a7c53256fea1a6bf8c45119855516cdf611.json",
+      "sha256": "sha256:fba8557f3b542bff7b24ea124dcb3a7c53256fea1a6bf8c45119855516cdf611",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608131730-BHEAQT/verification/20260813220007775-1c4ec2c7aba44828.json",
+      "sha256": "sha256:c58705abcef92baf6d8f775bad102d59521c86cc5d67e88c872c6d5f8121378e",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/eb74ab4402f4753e2b0d2142968f0e82ce7d90ace408a962c30ee82f82215476.json",
+      "sha256": "sha256:eb74ab4402f4753e2b0d2142968f0e82ce7d90ace408a962c30ee82f82215476",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:47ab8b04f9d747491398390dac415b34aa6d3df0cf0fb61e9924fd3e4851ec48",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "base": "main",
+  "branch": "task/202608131730-BHEAQT/qualify-and-publish-agentplane-0-7-6",
+  "created_at": "2026-08-13T17:32:00.151Z",
+  "diffstat_sha256": "sha256:86f2d864d3ac4ca73f806d6145094e7b7aef1d64eaca771279d676be53606077",
+  "last_verified_at": "2026-08-13T23:52:02.954Z",
+  "last_verified_diffstat_sha256": "sha256:86f2d864d3ac4ca73f806d6145094e7b7aef1d64eaca771279d676be53606077",
+  "pr_number": 4833,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4833",
+  "pre_merge_closure": {
+    "basis_commit": "9f2cbe94f9e1736afb4ce2560c6da62e8556a192",
+    "branch": "task/202608131730-BHEAQT/qualify-and-publish-agentplane-0-7-6",
+    "pr_number": 4833,
+    "recorded_at": "2026-08-13T23:29:33.930Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608131730-BHEAQT",
+  "updated_at": "2026-08-13T22:08:12.433Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608131730-BHEAQT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-13T22:01:48.340Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "human_review",
+  "summary": "EVALUATOR returned human_review with 1 typed finding(s).",
+  "evaluated_sha": "95a6d46c5cd6af4c4bfd2e61c79a9d4606dca12e",
+  "blueprint_digest": "1899fc9e16ece1a5840f337f0c3b3222aac692041c82a0acb222673a31e94a1f",
+  "findings": [
+    "The frozen execution contract forbids documentation, source-code, test, public-API, and dependency mutations, but the evaluated candidate contains all five classes and records them as authority violations."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608131730-BHEAQT/README.md",
+    ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/8d1fe4ed0ce8e696c804bf13f6c0e6544c502f5994e352426606aca4c437b78d.patch",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [
+    "An authority-conformance gate that fails a candidate when observed repository effects intersect execution_contract.authority.forbidden_repository_effects."
+  ],
+  "hidden_assumptions": [
+    "The broad plan approval note is assumed to authorize later implementation, test, documentation, public-API, and dependency changes despite the frozen execution contract explicitly forbidding them.",
+    "The recorded local release checks are assumed to supersede authority violations, although verification success does not grant mutation authority."
+  ],
+  "residual_risks": [
+    "Does the human owner explicitly approve the candidate’s recorded documentation, source-code, test, public-API, and dependency mutations despite the frozen execution contract forbidding those repository effects?"
+  ]
+}

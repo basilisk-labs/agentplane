@@ -156,7 +156,6 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         io.restore();
       }
     }
-
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -1040,6 +1039,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         "--commit",
         headSha,
         "--force",
+        "--yes",
         "--observation",
         "Closeout repeatedly surfaced a reusable workflow failure only after implementation was complete.",
         "--impact",

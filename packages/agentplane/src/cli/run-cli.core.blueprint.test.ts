@@ -893,6 +893,12 @@ describe("runCli blueprint commands", () => {
         "med",
         "--owner",
         "CODER",
+        "--task-kind",
+        "code",
+        "--mutation-scope",
+        "code",
+        "--blueprint-request",
+        "code.direct",
         "--tag",
         "code",
       ]);

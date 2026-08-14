@@ -58,7 +58,15 @@ describe("runCli", { timeout: NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS }, () => 
 
       const ioNormalize = captureStdIO();
       try {
-        const code = await runCli(["task", "normalize", "--quiet", "--force", "--root", root]);
+        const code = await runCli([
+          "task",
+          "normalize",
+          "--quiet",
+          "--force",
+          "--yes",
+          "--root",
+          root,
+        ]);
         expect(code).toBe(0);
         expect(ioNormalize.stdout).toBe("");
       } finally {
@@ -103,6 +111,7 @@ describe("runCli", { timeout: NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS }, () => 
           path.relative(root, exportPath),
           "--quiet",
           "--force",
+          "--yes",
           "--root",
           root,
         ]);
@@ -837,7 +846,7 @@ describe("runCli", { timeout: NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS }, () => 
         root,
       ]);
       expect(addCode).toBe(0);
-      await runCliSilent([
+      const docCode = await runCliSilent([
         "task",
         "doc",
         "set",
@@ -849,8 +858,9 @@ describe("runCli", { timeout: NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS }, () => 
         "--root",
         root,
       ]);
+      expect(docCode).toBe(0);
 
-      await runCliSilent([
+      const doingCode = await runCliSilent([
         "task",
         "set-status",
         taskId,
@@ -860,19 +870,7 @@ describe("runCli", { timeout: NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS }, () => 
         "--root",
         root,
       ]);
-      await runCliSilent([
-        "verify",
-        taskId,
-        "--ok",
-        "--by",
-        "CODER",
-        "--note",
-        "verified shipped state",
-        "--quiet",
-        "--root",
-        root,
-      ]);
-
+      expect(doingCode).toBe(0);
       const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
       await mkdir(prDir, { recursive: true });
       await writeFile(
@@ -885,9 +883,9 @@ describe("runCli", { timeout: NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS }, () => 
             base: "main",
             created_at: "2026-04-05T09:00:00.000Z",
             updated_at: "2026-04-05T09:00:00.000Z",
-            last_verified_sha: null,
-            last_verified_at: null,
-            verify: { status: "skipped" },
+            last_verified_sha: shippedHash,
+            last_verified_at: "2026-04-05T09:00:00.000Z",
+            verify: { status: "pass" },
           },
           null,
           2,
@@ -1124,7 +1122,7 @@ describe("runCli", { timeout: NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS }, () => 
           root,
         ]);
         expect(addCode).toBe(0);
-        await runCliSilent([
+        const doingCode = await runCliSilent([
           "task",
           "set-status",
           taskId,
@@ -1134,18 +1132,7 @@ describe("runCli", { timeout: NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS }, () => 
           "--root",
           root,
         ]);
-        await runCliSilent([
-          "verify",
-          taskId,
-          "--ok",
-          "--by",
-          "CODER",
-          "--note",
-          "verified shipped state",
-          "--quiet",
-          "--root",
-          root,
-        ]);
+        expect(doingCode).toBe(0);
         const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
         await mkdir(prDir, { recursive: true });
         await writeFile(
@@ -1158,9 +1145,9 @@ describe("runCli", { timeout: NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS }, () => 
               base: "main",
               created_at: "2026-04-07T18:53:00.000Z",
               updated_at: "2026-04-07T18:53:00.000Z",
-              last_verified_sha: null,
-              last_verified_at: null,
-              verify: { status: "skipped" },
+              last_verified_sha: shippedHash,
+              last_verified_at: "2026-04-07T18:53:00.000Z",
+              verify: { status: "pass" },
             },
             null,
             2,

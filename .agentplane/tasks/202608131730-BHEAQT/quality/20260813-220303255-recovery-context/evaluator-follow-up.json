@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608131730-BHEAQT-7ced079d3c0c37c3724f93a2",
+  "task_id": "202608131730-BHEAQT",
+  "verdict": "human_review",
+  "next_owner": "USER",
+  "instruction": "Does the human owner explicitly approve expanding this task's frozen repository authority to include the documentation, dependency, public-API, source-code, and test mutations required by the 0.7.6 release candidate?",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The approved release objective requires release notes, package version changes, internal dependency-pin updates, and related candidate changes, while the frozen execution contract forbids documentation, dependencies, public API, source-code, and test effects and records the candidate as violating that authority.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608131730-BHEAQT/README.md",
+          "sha256": "sha256:7c0fb13585a87c1d7382def2577c704daeef832aa84ec7ef9fe2161a44fb04b9",
+          "section": "execution_contract"
+        },
+        {
+          "path": ".agentplane/tasks/202608131730-BHEAQT/quality/objects/sha256/fba8557f3b542bff7b24ea124dcb3a7c53256fea1a6bf8c45119855516cdf611.json",
+          "sha256": "sha256:fba8557f3b542bff7b24ea124dcb3a7c53256fea1a6bf8c45119855516cdf611",
+          "section": "verification_contract"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608131730-BHEAQT/quality/20260813-220303255-recovery-context/evaluator-result.json"
+}

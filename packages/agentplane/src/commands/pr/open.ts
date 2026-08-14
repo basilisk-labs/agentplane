@@ -4,7 +4,12 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { withEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
+import {
+  loadCommandContext,
+  loadTaskFromContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 
 import { pushTaskBranchUpstreamIfConfigured } from "./branch-publication.js";
 import { maybeAutoCommitTaskPrArtifacts } from "./internal/auto-commit.js";
@@ -58,9 +63,17 @@ export async function cmdPrOpen(opts: {
       });
     }
 
-    const commandCtx =
+    const initialCtx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const commandCtx = withEffectiveTaskWorkflowMode(
+      initialCtx,
+      await loadTaskFromContext({
+        ctx: initialCtx,
+        taskId: opts.taskId,
+        preferBranchSnapshot: true,
+      }),
+    );
 
     const initialSync = await syncPrArtifacts({
       ctx: commandCtx,

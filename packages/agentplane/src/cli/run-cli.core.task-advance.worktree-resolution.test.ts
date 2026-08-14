@@ -62,7 +62,7 @@ async function createTask(root: string): Promise<string> {
       "--tag",
       "code",
       "--verify",
-      "bun run test:critical",
+      "git diff --check",
       "--root",
       root,
     ]);

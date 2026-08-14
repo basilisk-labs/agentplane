@@ -165,6 +165,7 @@ describe("runCli", () => {
           "--commit",
           commitHash.trim(),
           "--force",
+          "--yes",
           "--root",
           root,
         ]);

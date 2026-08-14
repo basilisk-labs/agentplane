@@ -1,6 +1,7 @@
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import { withEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
 import { CliError } from "../../shared/errors.js";
 import {
   checkTaskBlueprintSnapshotDrift,
@@ -9,7 +10,10 @@ import {
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { withEvidenceMutationLock } from "../evidence/evidence-mutation-lock.js";
-import { requiredVerificationContractChecks } from "../shared/task-verification-records.js";
+import {
+  assessLocalVerificationRecords,
+  requiredVerificationContractChecks,
+} from "../shared/task-verification-records.js";
 
 import type { EvaluatorModule } from "../../evaluators/catalog.js";
 import {
@@ -53,6 +57,7 @@ import {
   isWithinRoot,
   relative,
   uniqueStrings,
+  type PreparedEvaluatorReview,
 } from "./evaluator-review-shared.js";
 import type { EvaluatorRunProvenance } from "./evaluator.spec.js";
 import { renderEvaluatorResultOutputSchemaJson } from "./evaluator-result-schema.js";
@@ -68,6 +73,7 @@ export {
   relative,
   uniqueStrings,
   type HumanEvaluatorReviewInput,
+  type PreparedEvaluatorReview,
 } from "./evaluator-review-shared.js";
 export {
   renderActualDiff,
@@ -81,16 +87,6 @@ export type { EvaluatorWorkOrder } from "./evaluator-work-order.js";
 const EVALUATOR_WORK_ORDER_FILE = "evaluator-work-order.json";
 const EVALUATOR_RESULT_FILE = "evaluator-result.json";
 const EVALUATOR_PACKET_MANIFEST_FILE = "evaluator-evidence-manifest.json";
-export type PreparedEvaluatorReview = {
-  work_order: EvaluatorWorkOrder;
-  work_order_path: string;
-  report_path: string;
-  prompt_path: string;
-  output_schema_path: string;
-  packet_manifest_path: string;
-  opinion_path: string;
-  result_path: string;
-};
 
 async function assertTaskReviewWorkspaceClean(opts: {
   ctx: CommandContext;
@@ -159,15 +155,16 @@ type PrepareEvaluatorReviewOptions = {
 export async function prepareEvaluatorReview(
   opts: PrepareEvaluatorReviewOptions,
 ): Promise<PreparedEvaluatorReview> {
-  await assertTaskReviewWorkspaceClean({ ctx: opts.ctx, taskId: opts.task.id });
-  const gitRoot = opts.ctx.resolvedProject.gitRoot;
+  const ctx = withEffectiveTaskWorkflowMode(opts.ctx, opts.task);
+  await assertTaskReviewWorkspaceClean({ ctx, taskId: opts.task.id });
+  const gitRoot = ctx.resolvedProject.gitRoot;
   return await withEvidenceMutationLock(
     {
       root: gitRoot,
-      workflowDir: opts.ctx.config.paths.workflow_dir,
+      workflowDir: ctx.config.paths.workflow_dir,
       taskId: opts.task.id,
     },
-    () => prepareEvaluatorReviewLocked(opts, gitRoot),
+    () => prepareEvaluatorReviewLocked({ ...opts, ctx }, gitRoot),
   );
 }
 
@@ -241,21 +238,34 @@ async function prepareEvaluatorReviewLocked(
     ctx: opts.ctx,
     task: opts.task,
   });
-  const verificationTargetSha = qualificationPacket?.packet.implementation_sha ?? evaluatedSha;
-  const recordPaths = await verificationRecordPaths(taskRoot, opts.task, verificationTargetSha, {
+  const verificationTargetSha =
+    qualificationPacket?.packet.implementation_sha ??
+    opts.task.commit?.hash?.trim() ??
+    evaluatedSha;
+  const verificationTargetContext = {
     gitRoot,
     workflowDir: opts.ctx.config.paths.workflow_dir,
     taskIds: normalizeBranchPrBatchTaskIds(opts.task, opts.task.id),
     workflowMode: opts.ctx.config.workflow_mode,
+  } as const;
+  const recordPaths = await verificationRecordPaths(taskRoot, opts.task, verificationTargetSha, {
+    ...verificationTargetContext,
   });
   const selectedContractChecks = requiredVerificationContractChecks(opts.task);
   if (selectedContractChecks.length > 0 && recordPaths.length === 0) {
+    const assessment = await assessLocalVerificationRecords({
+      taskRoot,
+      task: opts.task,
+      evaluatedSha: verificationTargetSha,
+      targetContext: verificationTargetContext,
+    });
     throw new CliError({
       code: "E_VALIDATION",
       message: [
         "evaluator requires a current verification record that satisfies the persisted Verification Contract.",
         `task=${opts.task.id}`,
         `required_checks=${selectedContractChecks.join(",")}`,
+        `reason_code=${assessment.reason}`,
         "Fix: record current verification with concrete evidence and a `Check: <check-id>` block for every required check.",
       ].join("\n"),
     });

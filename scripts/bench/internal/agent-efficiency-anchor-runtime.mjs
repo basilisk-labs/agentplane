@@ -136,7 +136,7 @@ const WORKSPACE_DEPENDENCIES = new Map([
   ["@agentplane/testkit", "packages/testkit"],
 ]);
 
-function mirrorDependencyLayout(sourceRoot, targetRoot, subjectRoot, layoutRelative = "") {
+export function mirrorDependencyLayout(sourceRoot, targetRoot, subjectRoot, layoutRelative = "") {
   mkdirSync(targetRoot, { recursive: true });
   for (const entry of readdirSync(sourceRoot, { withFileTypes: true })) {
     const source = path.join(sourceRoot, entry.name);
@@ -156,7 +156,14 @@ function mirrorDependencyLayout(sourceRoot, targetRoot, subjectRoot, layoutRelat
     if (workspaceRelative) {
       symlinkSync(path.join(subjectRoot, workspaceRelative), target);
     } else {
-      symlinkSync(path.resolve(realpathSync(source)), target);
+      let resolved;
+      try {
+        resolved = path.resolve(realpathSync(source));
+      } catch (error) {
+        if (error?.code === "ENOENT") continue;
+        throw error;
+      }
+      symlinkSync(resolved, target);
     }
   }
 }

@@ -33,6 +33,12 @@ async function createBranchPrTask(root: string): Promise<string> {
       "med",
       "--owner",
       "CODER",
+      "--task-kind",
+      "code",
+      "--mutation-scope",
+      "code",
+      "--blueprint-request",
+      "code.branch_pr",
       "--tag",
       "code",
       "--allow-duplicate",
@@ -616,17 +622,12 @@ describe("pre-merge closure route decisions", () => {
               workflow_step: {
                 id: string;
                 kind: string;
-                condition: { type: string; queueStatus: string };
               };
             };
             expect(queued.task.status).toBe("DONE");
             expect(queued.workflow_step).toMatchObject({
-              id: "wait.integration_queue",
-              kind: "wait",
-              condition: {
-                type: "integration_queue_terminal",
-                queueStatus: "queued",
-              },
+              id: "integration.run_next",
+              kind: "cli_operation",
             });
           } finally {
             queuedIo.restore();

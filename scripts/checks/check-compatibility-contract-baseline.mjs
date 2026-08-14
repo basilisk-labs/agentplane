@@ -470,14 +470,23 @@ function validateReviewedCandidate({
       preReleasePackageDelta.to_sha256 === candidate.candidate.section_digests.package_manifests,
     "pre-release package delta digest drift",
   );
+  const baselinePackageVersions = [
+    ...new Set(exactMainSurface.package_manifests.map((manifest) => manifest.version)),
+  ];
+  assert(
+    baselinePackageVersions.length === 1 &&
+      /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u.test(baselinePackageVersions[0]),
+    "baseline package versions must resolve to one semantic version",
+  );
+  const baselinePackageVersion = baselinePackageVersions[0];
   const preReleasePackageManifests = currentSurface.package_manifests.map((manifest) => {
     const normalizedManifest = structuredClone(manifest);
     delete normalizedManifest.path;
     delete normalizedManifest.normalized_sha256;
-    normalizedManifest.version = "0.6.24";
+    normalizedManifest.version = baselinePackageVersion;
     if (manifest.path === "packages/agentplane/package.json") {
-      normalizedManifest.dependencies["@agentplaneorg/core"] = "0.6.24";
-      normalizedManifest.dependencies["@agentplaneorg/recipes"] = "0.6.24";
+      normalizedManifest.dependencies["@agentplaneorg/core"] = baselinePackageVersion;
+      normalizedManifest.dependencies["@agentplaneorg/recipes"] = baselinePackageVersion;
     }
     return packageSurface(manifest.path, normalizedManifest);
   });
@@ -511,28 +520,30 @@ function validateReviewedCandidate({
     [],
     "compatibility release version delta",
   );
+  const currentPackageVersions = [
+    ...new Set(currentSurface.package_manifests.map((manifest) => manifest.version)),
+  ];
   assert(
-    hashJson(releaseVersionDelta) ===
-      hashJson({
-        source_task: "202608082119-P6SHBN",
-        classification: "planned_version_parity",
-        from_version: "0.6.24",
-        to_version: "0.7.5",
-        section: "package_manifests",
-        from_sha256: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
-        to_sha256: "7f42b57786f2a99ab19b626aa33469b37d86ccc9c09dbeccebea0e57e0f37d12",
-        surface_sha256: "712b618b2b9747f7dd1143167ffcaa8db09e8870c8a55804c11f30ad0f80b174",
-        allowed_json_paths: [
-          "$.package_manifests[0].dependencies.@agentplaneorg/core",
-          "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
-          "$.package_manifests[0].normalized_sha256",
-          "$.package_manifests[0].version",
-          "$.package_manifests[1].normalized_sha256",
-          "$.package_manifests[1].version",
-          "$.package_manifests[2].normalized_sha256",
-          "$.package_manifests[2].version",
-        ],
-      }),
+    currentPackageVersions.length === 1 &&
+      /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u.test(currentPackageVersions[0]),
+    "release package versions must resolve to one semantic version",
+  );
+  const currentPackageVersion = currentPackageVersions[0];
+  const releaseVersionAllowedPaths = diffJsonPaths(
+    preReleasePackageManifests,
+    currentSurface.package_manifests,
+    "$.package_manifests",
+  );
+  assert(
+    releaseVersionDelta.source_task === "202608082119-P6SHBN" &&
+      releaseVersionDelta.classification === "planned_version_parity" &&
+      releaseVersionDelta.from_version === baselinePackageVersion &&
+      releaseVersionDelta.to_version === currentPackageVersion &&
+      releaseVersionDelta.section === "package_manifests" &&
+      releaseVersionDelta.from_sha256 === candidate.candidate.section_digests.package_manifests &&
+      releaseVersionDelta.to_sha256 === currentSectionDigests.package_manifests &&
+      releaseVersionDelta.surface_sha256 === currentDigest &&
+      hashJson(releaseVersionDelta.allowed_json_paths) === hashJson(releaseVersionAllowedPaths),
     "compatibility release version delta drift",
   );
   assert(
