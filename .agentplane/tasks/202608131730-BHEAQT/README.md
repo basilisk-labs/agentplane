@@ -603,8 +603,8 @@ events:
     state: "ok"
     note: "Evidence candidate 8965c6f03 preserves qualified 0.7.6 code and restores every raw artifact referenced by retained reports."
 doc_version: 3
-doc_updated_at: "2026-08-13T23:53:01.605Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-08-14T00:18:06.347Z"
+doc_updated_by: "DEUS"
 description: "Publish the 0.7.6 patch only after EZZZYH is merged and closed. Freeze the exact protected-main release scope; generate the patch plan and English release notes from actual changes since v0.7.5; run the complete 20-scenario provider-enabled release qualification on the exact clean candidate; run canonical release prepublish gates; prepare a branch_pr release candidate without creating a tag; require exact-SHA hosted checks and no unresolved reviews; integrate through the protected main lane; dispatch GitHub-only publication for the exact merged release SHA; verify release-ready and publish-result artifacts, tag, GitHub Release, and all three public npm packages; then clean the release worktree and report efficiency and residual lifecycle debt."
 sections:
   Summary: |-
@@ -841,6 +841,27 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    <!-- BEGIN HOSTED PUBLISH EVIDENCE -->
+    ### Hosted publish
+
+    - State: ok
+    - Note: Hosted publish confirmed for v0.7.6.
+    - Details:
+      - release_sha: b26b439e061c939c6d670d9bb9750db04b14f980
+      - version: 0.7.6
+      - tag: v0.7.6
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.7.6
+      - ghcr: published
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/31756587701
+      - external_homebrew: published | basilisk-labs/homebrew-tap | 72ab573e36a3f1a3c3d3ee756136703276662ec3 | https://github.com/basilisk-labs/homebrew-tap/pull/39
+      - external_scoop: published | basilisk-labs/scoop-bucket | 4738c87fe7cdb975fd3d8265a6bf88acc9615ed2 | https://github.com/basilisk-labs/scoop-bucket/pull/39
+      - external_setup-agentplane: published | basilisk-labs/setup-agentplane | 56fe9d36e5698b291d9c00b207a60d56d88666a9 | https://github.com/basilisk-labs/setup-agentplane/pull/39
+    <!-- END HOSTED PUBLISH EVIDENCE -->
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Before publication, close the release PR and revert only the candidate commit through a new task; do not create or push v0.7.6. After tag, GitHub Release, or npm publication, immutable registries make rollback unsafe: stop, preserve evidence, and prepare a forward-fix 0.7.7 task instead of rewriting tags, releases, or package versions."
   Findings: ""
@@ -1118,6 +1139,27 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+<!-- BEGIN HOSTED PUBLISH EVIDENCE -->
+### Hosted publish
+
+- State: ok
+- Note: Hosted publish confirmed for v0.7.6.
+- Details:
+  - release_sha: b26b439e061c939c6d670d9bb9750db04b14f980
+  - version: 0.7.6
+  - tag: v0.7.6
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.7.6
+  - ghcr: published
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/31756587701
+  - external_homebrew: published | basilisk-labs/homebrew-tap | 72ab573e36a3f1a3c3d3ee756136703276662ec3 | https://github.com/basilisk-labs/homebrew-tap/pull/39
+  - external_scoop: published | basilisk-labs/scoop-bucket | 4738c87fe7cdb975fd3d8265a6bf88acc9615ed2 | https://github.com/basilisk-labs/scoop-bucket/pull/39
+  - external_setup-agentplane: published | basilisk-labs/setup-agentplane | 56fe9d36e5698b291d9c00b207a60d56d88666a9 | https://github.com/basilisk-labs/setup-agentplane/pull/39
+<!-- END HOSTED PUBLISH EVIDENCE -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
