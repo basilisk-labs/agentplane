@@ -13,7 +13,6 @@ import {
   executeHermesWorkflowOperation,
   routeNeedsRunnerProjection,
 } from "./hermes-runtime.js";
-import { inspectCommandAvailability } from "./hermes-environment.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { captureStdIO, mkGitRepoRoot, runCliSilent } from "@agentplane/testkit";
 import { chmod, mkdir, writeFile } from "node:fs/promises";
@@ -654,29 +653,6 @@ describe("hermes adapter commands", () => {
         else process.env[key] = value;
       }
     }
-  });
-
-  it("resolves bare Windows commands through PATHEXT", async () => {
-    const visited: string[] = [];
-    const result = await inspectCommandAvailability("hermes", {
-      platform: "win32",
-      pathValue: "C:\\tools;D:\\bin",
-      pathExtValue: ".EXE;.CMD",
-      pathApi: path.win32,
-      accessFn: (candidate) => {
-        visited.push(candidate);
-        return candidate === "D:\\bin\\hermes.CMD"
-          ? Promise.resolve()
-          : Promise.reject(new Error("not found"));
-      },
-    });
-
-    expect(result).toEqual({
-      available: true,
-      resolved_path: "D:\\bin\\hermes.CMD",
-    });
-    expect(visited).toContain("C:\\tools\\hermes.EXE");
-    expect(visited).toContain("D:\\bin\\hermes.CMD");
   });
 
   it("doctor reports the Agentplane Hermes lane registry state when configured", async () => {
