@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608171853-X3FD5M-83ebc0fcf24a61acf19d73c4",
+  "prepared_at": "2026-08-17T20:30:15.801Z",
+  "task": {
+    "id": "202608171853-X3FD5M",
+    "revision": 26,
+    "objective": "Harden autonomous authority recovery and Hermes dialog approvals\n\nRecover the AgentPlane authority release after an unavailable GitHub protection lookup selected a local merge; fail closed on unavailable provider protection, repair supervisor replay/concurrency regressions, and define a verifiable Hermes-to-AgentPlane user approval receipt so the user approves in dialogue while the integration layer executes exact state-bound commands. Preserve mandatory primary plan approval and operator-owned provider merge semantics.",
+    "acceptance_criteria": [
+      "bun run typecheck",
+      "bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Recover the AgentPlane authority release after an unavailable GitHub protection lookup selected a local merge; fail closed on unavailable provider protection, repair supervisor replay/concurrency regressions, and define a verifiable Hermes-to-AgentPlane user approval receipt so the user approves in dialogue while the integration layer executes exact state-bound commands. Preserve mandatory primary plan approval and operator-owned provider merge semantics.\n- Out of scope: unrelated refactors not required for \"Harden autonomous authority recovery and Hermes dialog approvals\".",
+      "Plan a fail-closed recovery release that preserves mandatory primary plan approval, lets a user approve protected boundaries in Hermes dialogue without typing terminal commands, and repairs the replay regressions exposed by full-fast verification.",
+      "PLANNER fallback scaffold for \"Harden autonomous authority recovery and Hermes dialog approvals\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Harden autonomous authority recovery and Hermes dialog approvals\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "bd0b92e1e289b7527aa42437048a7f44dcd666c3",
+  "diff_base_sha": "e22f17ffad89f8fe9c3e41abc9c483c2c5fc2c78",
+  "blueprint_digest": "da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-203015801-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:6c29b448be972cd48c4b92b15a5ec50b6c4f38dc86ecb871a8be96b351b41cb5",
+    "prompt_path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/7291306af884cd970d091bed8c0ff8b2c58a87db81359eed05825d1b3cf134e1.md",
+    "result_schema_path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608171853-X3FD5M/README.md",
+      "sha256": "sha256:11fe1a0d0ddae993488c83519021196fd4c7b31eb5aa7ee00e5b339ab0a28322",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/f8aecceb97edcb0ce1658b2ce7aff2f8aac6a3d8092782e5fab68a2fb0dfe744.patch",
+      "sha256": "sha256:f8aecceb97edcb0ce1658b2ce7aff2f8aac6a3d8092782e5fab68a2fb0dfe744",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/fb48df9ed81c880d9ad10082c5e8349b16aabcb386f945da0db93ad5a44c2ebe.json",
+      "sha256": "sha256:fb48df9ed81c880d9ad10082c5e8349b16aabcb386f945da0db93ad5a44c2ebe",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608171853-X3FD5M/verification/20260817203009279-2714020d5c674e87.json",
+      "sha256": "sha256:01b2bc5dc7c9d93df2baa1d65ed4da1f99ddc09158decbd8cdc8e81510715949",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/d23e2ba91c6f8ade44113f76fba3d404cfff656145d05f891c1f8b3d8fd81b37.json",
+      "sha256": "sha256:d23e2ba91c6f8ade44113f76fba3d404cfff656145d05f891c1f8b3d8fd81b37",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
