@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -38,34 +38,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-17T22:22:11.656Z"
+  updated_at: "2026-08-17T22:43:10.557Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "c99c0af74efb9c5281b77305195454980a9be14d"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "8f51cbeca603c2d2885d796f14e2bf767cb9df15"
   blueprint_digest: "4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb"
   evidence_refs:
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-222045161-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-222045161-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/1f7e5e46ad3f6906774928a99f6b082389bfc3a600db9231ba72a17748090a82.md"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-222045161-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-222045161-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-222045161-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-224216135-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-224216135-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/53b22d6433b6d295726e0ed9a49c60e00c65d201e59530210c37913e589d6ad6.md"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-224216135-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-224216135-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-224216135-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608170928-8Y24PK/README.md"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/fcb821901addee6f0cf4a7d95eb50edd9a0b52adc3394a9c2f0605fdefae54f7.patch"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/729a79fb1988f8863e6cdf6856a0b3a003c25a7c56339b67d84c57370907c915.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/verification/20260817222037648-5cc6be25d18e7138.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/e910f28ad658d135bbbf33670478639449fe17a5cd843514b28a9ad2ce5825e2.patch"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/3341e6081b6cc28f0df54f070d6b8b2a9d3b3b86fe8ecf3498bf8db34deb3e54.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/verification/20260817224208229-08f6be0e6e532430.json"
     - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/9d4211df768252e341fc46edf87f511d30d4f4f08d289efc5570b595c38e2b08.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The plugin implementation validates the exact receipt request field set, signs canonical JSON with Ed25519, substitutes exactly one receipt placeholder in the supplied argv, executes no reconstructed command, and fetches a fresh supervisor packet afterward."
-    - "The signing secret is forcibly removed from the spawned environment even when AGENTPLANE_HERMES_FORWARD_ENV explicitly names it; the bridge capability is true only after a valid Ed25519 key is loaded."
-    - "Provider merge remains non-executable because packets without argv are rejected; plan approval remains an explicit user-authenticated slash or CLI action."
-    - "The retained E2E repository records plan_approval.state=approved, updated_by=USER:denis@hermes-dialog, and a receipt digest before the first EXECUTOR episode."
-    - "Plugin PR #2 is merged at 9a5cad82be0778fc08e7c9c56b6b2fe37a92c3a1 with green CI; Hermes PR #88346 publishes head fd3b69bc51c2c8e65d1e2f42b45ade884bf4709f and is mergeable."
-    - "Residual risk: Hosted AgentPlane CI and upstream Hermes review remain subsequent provider gates, not semantic implementation gaps."
+    - "The implementation preserves fail-closed equality checks against agentplane.hermes.plugin.v2 and does not alter environment forwarding, receipt validation, worker-lane dispatch, or terminal authority behavior."
+    - "The constant is not part of a package barrel or documented consumer contract; making it module-private removes an unused source-level export without changing the Hermes command surface."
+    - "The frozen implementation evidence shows a clean final repository state and the scoped Knip, Hermes command, and diff checks passed."
+    - "Residual risk: The current local rework commit has not yet been published and therefore has no hosted check result."
 token_usage:
   agent_runs: 10
   input_tokens: null
@@ -555,7 +553,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-17T22:42:09.256Z"
+doc_updated_at: "2026-08-17T22:43:10.587Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 0.2.0, and current Hermes worker-lane dispatch. Scope roots are /Users/densmirnov/Github/agentplane, /Users/densmirnov/Github/agentplane-hermes-plugin, and /Users/densmirnov/Github/hermes-agent. Required effects include source, tests, docs, public API, schema, CI/release metadata, security boundary, network reads, hosted external writes, and publication through explicit authority. Prove PLANNER/approval/EXECUTOR/EVALUATOR, retry, stale-run, and terminal attestation without direct kanban.db writes. Existing D5MAJ3 and failed structured-intake DDW1J5 are superseded and must not be implemented or published."
 sections:
