@@ -365,6 +365,13 @@ export function createSideEffectAuthorityRecord(opts: {
   return { ...record, digest: grantDigest(record) };
 }
 
+export function hasConsumedSideEffectAuthorityEvidence(
+  state: SideEffectAuthorityState,
+  evidenceDigest: string,
+): boolean {
+  return state.grants.some((item) => item.evidenceDigest === evidenceDigest);
+}
+
 export function appendSideEffectAuthorityAudit(opts: {
   state: SideEffectAuthorityState;
   at: string;

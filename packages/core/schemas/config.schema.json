@@ -34,7 +34,12 @@
         "actor": "POLICY:repository",
         "allow_operations": [],
         "deny_operations": [],
-        "ttl_minutes": 15
+        "ttl_minutes": 15,
+        "approval_receipts": {
+          "trusted_issuers": [],
+          "max_ttl_minutes": 15,
+          "clock_skew_seconds": 30
+        }
       },
       "type": "object",
       "properties": {
@@ -69,6 +74,48 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 60
+        },
+        "approval_receipts": {
+          "default": {
+            "trusted_issuers": [],
+            "max_ttl_minutes": 15,
+            "clock_skew_seconds": 30
+          },
+          "type": "object",
+          "properties": {
+            "trusted_issuers": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+                  },
+                  "public_key_spki": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9+/]+={0,2}$"
+                  }
+                },
+                "required": ["id", "public_key_spki"],
+                "additionalProperties": false
+              }
+            },
+            "max_ttl_minutes": {
+              "default": 15,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60
+            },
+            "clock_skew_seconds": {
+              "default": 30,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 300
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false

@@ -6,6 +6,7 @@ import {
   appendSideEffectAuthorityAudit,
   createSideEffectAuthorityRecord,
   evaluateWorkflowOperationAuthority,
+  hasConsumedSideEffectAuthorityEvidence,
   readSideEffectAuthorityState,
   withSideEffectAuthorityState,
   WORKFLOW_OPERATION_AUTHORITY_POLICY,
@@ -298,6 +299,32 @@ describe("side-effect authority", () => {
         now: new Date("2026-07-26T12:01:00.000Z"),
       }),
     ).toMatchObject({ state: "approval_required" });
+  });
+
+  it("persists signed receipt evidence and rejects replay detection by digest", () => {
+    const evidenceDigest = `sha256:${"e".repeat(64)}`;
+    const grant = createSideEffectAuthorityRecord({
+      id: "authority-receipt",
+      actor: "USER:denis@hermes-bridge",
+      operation,
+      fingerprint: fingerprint(),
+      issuedAt: "2026-07-26T12:00:00.000Z",
+      expiresAt: "2026-07-26T12:15:00.000Z",
+      evidenceDigest,
+    });
+    const task = {
+      extensions: withSideEffectAuthorityState(
+        { extensions: {} },
+        { schemaVersion: 1, grants: [grant], audit: [] },
+      ),
+    };
+    const state = readSideEffectAuthorityState(task);
+
+    expect(state?.grants[0]).toMatchObject({ evidenceDigest });
+    expect(state && hasConsumedSideEffectAuthorityEvidence(state, evidenceDigest)).toBe(true);
+    expect(state && hasConsumedSideEffectAuthorityEvidence(state, `sha256:${"f".repeat(64)}`)).toBe(
+      false,
+    );
   });
 
   it("keeps pre-merge authority valid after its own branch-head advance only", () => {

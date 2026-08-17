@@ -128,6 +128,12 @@ authority:
     - integration.enqueue
     - task.pre_merge_close
   ttl_minutes: 10
+  approval_receipts:
+    trusted_issuers:
+      - id: hermes-dialog
+        public_key_spki: <base64-der-spki>
+    max_ttl_minutes: 10
+    clock_skew_seconds: 30
 ```
 
 Hermes consumes fresh `task advance --agent-json` packets and performs only `agent_episode`
@@ -136,3 +142,34 @@ and returns the next semantic packet. The primary plan approval remains a mandat
 After that approval, Hermes surfaces another user action only when the current operation is absent
 from the allowlist, present in the denylist, is a provider merge decision, or the state-bound
 authority can no longer be reconstructed safely.
+
+## Conversational user approval
+
+The Hermes bridge may execute an approval command after the user decides in the Hermes dialogue;
+the user should not have to copy state digests into a terminal. This does not authorize Hermes or
+the model to manufacture user authority.
+
+When `task advance --agent-json` returns `approval_required`, its `operator_action` contains an
+`approval_receipt.request` bound to the current task, authority reference, state fingerprint, and,
+for a side effect, the exact operation digest and state-scope digest. A trusted bridge outside the
+LLM must:
+
+1. authenticate the user and display the exact pending decision;
+2. record an explicit approval in the dialogue;
+3. sign a short-lived `agentplane.user_approval_receipt` with its configured Ed25519 identity;
+4. replace `<base64url-receipt>` in the supplied `operator_action.argv` and execute that argv;
+5. request a fresh action packet instead of replaying the previous command.
+
+Agentplane verifies the issuer, signature, exact route binding, expiry, configured TTL, and
+single-use evidence digest. The stored actor is derived as `USER:<subject>@<issuer>` and remains in
+the authority audit. A forged, stale, expired, wrong-scope, or replayed receipt fails closed.
+
+The first semantic plan is still a user-owned decision. `authority.mode=policy|all` applies only to
+eligible side-effect operations after plan approval; it cannot satisfy plan approval or provider
+merge. A provider-merge packet deliberately has `operator_action.argv=null`: the bridge must keep
+that decision in its operator/provider executor boundary rather than translating it into a generic
+side-effect grant.
+
+With this split, Hermes performs all LLM work, Agentplane advances the formal lifecycle and allowed
+effects invisibly, and the user is asked again only for drift, denylisted or unconfigured effects,
+provider merge, destructive or credential boundaries, or a state that cannot be recovered safely.

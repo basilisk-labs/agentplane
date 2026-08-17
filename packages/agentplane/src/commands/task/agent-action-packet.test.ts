@@ -178,8 +178,29 @@ describe("compact agent action packet", () => {
         kind: "approve_plan",
         required_role: "USER",
         cwd: null,
-        argv: ["agentplane", "task", "plan", "approve", TASK_ID, "--by", "USER"],
+        argv: [
+          "agentplane",
+          "task",
+          "plan",
+          "approve",
+          TASK_ID,
+          "--approval-receipt",
+          "<base64url-receipt>",
+        ],
         authority_reference: "plan",
+        approval_receipt: {
+          schema_version: 1,
+          format: "base64url-json+ed25519",
+          request: {
+            approval_type: "plan_approval",
+            task_id: TASK_ID,
+            authority_reference: "plan",
+            state_fingerprint: FINGERPRINT,
+            operation_id: null,
+            operation_digest: null,
+            state_scope_digest: null,
+          },
+        },
       });
     }
   });
@@ -246,14 +267,61 @@ describe("compact agent action packet", () => {
         FINGERPRINT,
         "--state-scope-digest",
         stateScopeDigest,
-        "--by",
-        "USER",
+        "--approval-receipt",
+        "<base64url-receipt>",
       ],
       authority_reference: "route:test",
+      approval_receipt: {
+        schema_version: 1,
+        format: "base64url-json+ed25519",
+        request: {
+          approval_type: "side_effect",
+          task_id: TASK_ID,
+          authority_reference: "route:test",
+          state_fingerprint: FINGERPRINT,
+          operation_id: "pr.open",
+          operation_digest: operationDigest,
+          state_scope_digest: stateScopeDigest,
+        },
+      },
     });
     expect(Buffer.byteLength(JSON.stringify(packet, null, 2), "utf8")).toBeLessThanOrEqual(
       MAX_AGENT_ACTION_PACKET_BYTES,
     );
+  });
+
+  it("keeps provider merge operator-owned while exposing a signed receipt request", () => {
+    const packet = packetFor(
+      step({
+        kind: "approval",
+        request: {
+          type: "provider_merge",
+          taskId: TASK_ID,
+          authorityRef: "provider:merge",
+        },
+      }),
+    );
+
+    expect(packet.operator_action).toEqual({
+      kind: "approve_provider_merge",
+      required_role: "USER",
+      cwd: null,
+      argv: null,
+      authority_reference: "provider:merge",
+      approval_receipt: {
+        schema_version: 1,
+        format: "base64url-json+ed25519",
+        request: {
+          approval_type: "provider_merge",
+          task_id: TASK_ID,
+          authority_reference: "provider:merge",
+          state_fingerprint: FINGERPRINT,
+          operation_id: null,
+          operation_digest: null,
+          state_scope_digest: null,
+        },
+      },
+    });
   });
 
   it("keeps formal operations inside the control-plane boundary", () => {
