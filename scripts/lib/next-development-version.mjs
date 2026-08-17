@@ -93,22 +93,18 @@ export function applyNextDevelopmentVersion(rootDir, publishedVersion, opts = {}
     return { ...plan, dryRun: opts.write !== true, changedPaths: [] };
   }
 
-  const lockPath = "bun.lock";
   const referencePath = "docs/reference/generated-reference.mdx";
-  const lockBefore = readOptional(rootDir, lockPath);
   const referenceBefore = readOptional(rootDir, referencePath);
   const changedPaths = applyReleaseVersionSurfaces(rootDir, plan.nextVersion);
 
-  if (opts.skipInstall !== true && lockBefore !== null) {
-    run("bun", ["install", "--ignore-scripts"], rootDir, opts.quiet === true);
+  if (opts.skipInstall !== true && existsSync(path.join(rootDir, "bun.lock"))) {
+    run("bun", ["install", "--frozen-lockfile", "--ignore-scripts"], rootDir, opts.quiet === true);
   }
   const generatorPath = path.join(rootDir, "scripts", "generate", "generate-website-docs.mjs");
   if (existsSync(generatorPath)) {
     run("node", [generatorPath], rootDir, opts.quiet === true);
   }
-  const lockAfter = readOptional(rootDir, lockPath);
   const referenceAfter = readOptional(rootDir, referencePath);
-  if (lockBefore !== lockAfter && lockAfter !== null) changedPaths.push(lockPath);
   if (referenceBefore !== referenceAfter && referenceAfter !== null)
     changedPaths.push(referencePath);
 

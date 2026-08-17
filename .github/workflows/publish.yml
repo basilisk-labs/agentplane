@@ -310,7 +310,7 @@ jobs:
       - name: Validate release notes
         run: node scripts/check-release-notes.mjs --tag "${{ needs.detect.outputs.tag }}"
       - name: Validate release versions
-        run: node scripts/check-release-version.mjs --tag "${{ needs.detect.outputs.tag }}"
+        run: node scripts/check-release-version.mjs --tag "${{ needs.detect.outputs.tag }}" --stable-only
       - name: Validate exact-ref publish payload
         # The exact-SHA release-ready artifact already proves release-critical CI
         # readiness for this historical commit. The publish job only needs to

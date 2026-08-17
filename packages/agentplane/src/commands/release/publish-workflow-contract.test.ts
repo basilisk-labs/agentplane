@@ -16,6 +16,18 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("name: Publish release");
   });
 
+  it("runs the stable-version guard before publishing packages with npm tag latest", async () => {
+    const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
+
+    expect(workflow).toContain(
+      'node scripts/check-release-version.mjs --tag "${{ needs.detect.outputs.tag }}" --stable-only',
+    );
+    expect(workflow).toContain("npm publish --provenance --access public --tag latest");
+    expect(workflow.indexOf("node scripts/check-release-version.mjs")).toBeLessThan(
+      workflow.indexOf("npm publish --provenance --access public --tag latest"),
+    );
+  });
+
   it("uses workflow_run from Core CI and downloads the exact detected release-ready artifact by run id", async () => {
     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
 

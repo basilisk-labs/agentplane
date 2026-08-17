@@ -129,4 +129,20 @@ describe("open next development version", () => {
       next_version: "0.2.7",
     });
   });
+
+  it.each([
+    ["minor", "0.3.0"],
+    ["major", "1.0.0"],
+  ] as const)("prepares an approved %s candidate from the current beta", async (bump, version) => {
+    const root = await workspace("0.2.7-beta.1");
+    const result = await execFileAsync(
+      "node",
+      [VERSION_BUMP_SCRIPT_PATH, "--bump", bump, "--skip-install", "--json"],
+      { cwd: root },
+    );
+    expect(JSON.parse(result.stdout)).toMatchObject({
+      previous_version: "0.2.7-beta.1",
+      next_version: version,
+    });
+  });
 });

@@ -14,6 +14,10 @@ description: "Patch release flow, CI parity checks, and GitHub-only npm publish 
   line as `X.Y.(Z+1)-beta.1` across every semantic version surface.
 - A patch release plan created from `X.Y.Z-beta.N` finalizes `X.Y.Z`; it does not skip to
   `X.Y.(Z+1)`.
+- Explicitly approved minor and major plans from that development line target the next stable minor
+  or major version.
+- The stable publish workflow rejects prerelease versions before any package is published with npm
+  tag `latest`.
 
 ## Notes policy
 
@@ -104,10 +108,12 @@ node scripts/release/open-next-development-version.mjs \
 ```
 
 For a stable `X.Y.Z` publish, this updates package manifests, exact internal dependency pins,
-runtime version constants, repository CLI expectations, ACR examples, the lockfile, and generated
-package reference documentation to `X.Y.(Z+1)-beta.1`. Repeated workflow runs are idempotent and do
-not downgrade a workspace that has already advanced. Historical release notes, compatibility
-comments, and third-party dependency versions are not release-version surfaces.
+runtime version constants, repository CLI expectations, ACR examples, and generated package
+reference documentation to `X.Y.(Z+1)-beta.1`. The frozen lockfile is validated but not rewritten:
+workspace version metadata does not change its dependency graph, and the lockfile remains part of
+the reproducible replay anchor. Repeated workflow runs are idempotent and do not downgrade a
+workspace that has already advanced. Historical release notes, compatibility comments, and
+third-party dependency versions are not release-version surfaces.
 
 ## What `release:prepublish` covers
 

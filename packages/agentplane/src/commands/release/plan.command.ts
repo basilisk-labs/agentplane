@@ -279,15 +279,6 @@ export async function createReleasePlan(
     coreVersion,
     latestPublishedVersion,
   );
-  if (developmentReleaseVersion && flags.bump !== "patch") {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message:
-        `Development version ${coreVersion} can only be finalized with a patch release plan. ` +
-        `Use --patch to prepare ${developmentReleaseVersion}.`,
-    });
-  }
   if (
     !developmentReleaseVersion &&
     latestPublishedVersion &&
@@ -303,7 +294,11 @@ export async function createReleasePlan(
         `Publish or recover the missing release sequence first: ${missingText}.`,
     });
   }
-  const nextVersion = developmentReleaseVersion ?? bumpVersion(coreVersion, flags.bump);
+  const nextVersion = developmentReleaseVersion
+    ? flags.bump === "patch"
+      ? developmentReleaseVersion
+      : bumpVersion(developmentReleaseVersion, flags.bump)
+    : bumpVersion(coreVersion, flags.bump);
   const nextTag = `v${nextVersion}`;
   const baseSha = await resolveProtectedBaseShaForPlan({
     cwd: ctx.cwd,

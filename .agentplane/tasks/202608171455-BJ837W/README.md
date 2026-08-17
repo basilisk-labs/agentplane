@@ -4,7 +4,7 @@ title: "Automate next patch beta version after release"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +29,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-17T16:14:35.463Z"
+  updated_by: "CODEX_REVIEWER"
+  note: "PR #4838 review and hosted checks require rework before merge."
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -120,18 +120,65 @@ execution_contract:
       - "scripts/lib"
       - "scripts/release"
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
+      - "writable_scope:scripts/baselines/v0.7-compatibility-candidate.json"
+    changed_components:
+      - ".agentplane"
+      - ".github"
+      - "bun.lock"
+      - "docs"
+      - "packages/agentplane"
+      - "packages/core"
+      - "packages/recipes"
+      - "packages/spec"
+      - "packages/testkit"
+      - "scripts"
+    changed_paths:
+      - ".agentplane/WORKFLOW.md"
+      - ".github/workflows/publish.yml"
+      - "bun.lock"
+      - "docs/developer/release-and-publishing.mdx"
+      - "docs/reference/generated-reference.mdx"
+      - "packages/agentplane/package.json"
+      - "packages/agentplane/src/commands/release/open-next-development-version-script.test.ts"
+      - "packages/agentplane/src/commands/release/plan.command.ts"
+      - "packages/agentplane/src/commands/release/plan.helpers.ts"
+      - "packages/agentplane/src/commands/release/plan.test.ts"
+      - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+      - "packages/agentplane/src/commands/release/release-task-evidence-script.test.ts"
+      - "packages/core/package.json"
+      - "packages/recipes/package.json"
+      - "packages/recipes/src/index.ts"
+      - "packages/spec/examples/acr.json"
+      - "packages/testkit/package.json"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/lib/next-development-version.mjs"
+      - "scripts/lib/release-semver.mjs"
+      - "scripts/lib/release-version-surfaces.mjs"
+      - "scripts/release/open-next-development-version.mjs"
+      - "scripts/release/release-task-evidence.mjs"
+      - "scripts/release/version-bump.mjs"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "ci"
+      - "dependencies"
+      - "documentation"
+      - "public_api"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
     - "effect_dependencies"
     - "effect_public_api"
     - "effect_release_metadata"
+    - "observed_path_outside_scope:scripts/baselines/v0.7-compatibility-candidate.json"
     - "repository_branch_pr_floor"
   repository_mode: "branch_pr"
   safety:
@@ -184,25 +231,77 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:77d9a54f25a6320f71b18c148b3ee5b6edf778c1690df47e1a7b1eab323e5289"
+      digest: "sha256:e3571d42a6ca766b63cb3862e2b872ae973dc867263b6a4d083a1b99b6360856"
       escalation_reasons:
         - "central_component:.github/workflows/publish.yml"
         - "central_component:bun.lock"
         - "central_component:packages/core/package.json"
+        - "central_path:.github/workflows/publish.yml"
+        - "central_path:bun.lock"
+        - "central_path:packages/core/package.json"
+        - "central_path:scripts/lib/next-development-version.mjs"
+        - "central_path:scripts/lib/release-semver.mjs"
+        - "central_path:scripts/lib/release-version-surfaces.mjs"
+        - "central_path:scripts/release/open-next-development-version.mjs"
+        - "central_path:scripts/release/release-task-evidence.mjs"
+        - "central_path:scripts/release/version-bump.mjs"
         - "effect_ci"
         - "effect_dependencies"
         - "effect_public_api"
         - "effect_release_metadata"
+        - "unknown_path:packages/spec/examples/acr.json"
+        - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - ".agentplane"
+          - ".github"
+          - "bun.lock"
+          - "docs"
+          - "packages/agentplane"
+          - "packages/core"
+          - "packages/recipes"
+          - "packages/spec"
+          - "packages/testkit"
+          - "scripts"
+        changed_files:
+          - ".agentplane/WORKFLOW.md"
+          - ".github/workflows/publish.yml"
+          - "bun.lock"
+          - "docs/developer/release-and-publishing.mdx"
+          - "docs/reference/generated-reference.mdx"
+          - "packages/agentplane/package.json"
+          - "packages/agentplane/src/commands/release/open-next-development-version-script.test.ts"
+          - "packages/agentplane/src/commands/release/plan.command.ts"
+          - "packages/agentplane/src/commands/release/plan.helpers.ts"
+          - "packages/agentplane/src/commands/release/plan.test.ts"
+          - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+          - "packages/agentplane/src/commands/release/release-task-evidence-script.test.ts"
+          - "packages/core/package.json"
+          - "packages/recipes/package.json"
+          - "packages/recipes/src/index.ts"
+          - "packages/spec/examples/acr.json"
+          - "packages/testkit/package.json"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
+          - "scripts/lib/next-development-version.mjs"
+          - "scripts/lib/release-semver.mjs"
+          - "scripts/lib/release-version-surfaces.mjs"
+          - "scripts/release/open-next-development-version.mjs"
+          - "scripts/release/release-task-evidence.mjs"
+          - "scripts/release/version-bump.mjs"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "ci"
+          - "dependencies"
+          - "documentation"
+          - "public_api"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -240,9 +339,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "ea3b7ac45a49d7119c405e8312754c69c12b8c75"
-  message: "✨ BJ837W task: automate next patch beta version"
+      - "verification_recovery:recorded-check-1"
+commit: null
 comments:
   -
     author: "CODER"
@@ -274,8 +372,14 @@ events:
     at: "2026-08-17T15:58:36.443Z"
     author: "EVALUATOR"
     body: "Local verification evidence: focused release suites 44 passed, 0 failed; release:parity passed at 0.7.7-beta.1; package:install-smoke passed with 8 migration scenarios; ci:contract passed including compatibility, schemas, docs, ESLint, architecture, clone, knip, and coverage; hosted_integration remains pending until provider publication."
+  -
+    type: "verify"
+    at: "2026-08-17T16:14:35.463Z"
+    author: "CODEX_REVIEWER"
+    state: "needs_rework"
+    note: "PR #4838 review and hosted checks require rework before merge."
 doc_version: 3
-doc_updated_at: "2026-08-17T15:58:36.443Z"
+doc_updated_at: "2026-08-17T16:14:36.616Z"
 doc_updated_by: "EVALUATOR"
 description: "After a successful stable AgentPlane publish and hosted-evidence follow-up, atomically advance all semantic version surfaces to the next patch prerelease (for example 0.7.6 to 0.7.7-beta.1), keep the operation idempotent, teach release planning to finalize that prerelease as 0.7.7 instead of proposing 0.7.8, update generated and lockfile surfaces, add focused and packaged-install regression coverage, document the lifecycle, and perform the one-time current-main transition to 0.7.7-beta.1 without rewriting historical version references."
 sections:
@@ -295,6 +399,42 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-17T16:14:35.463Z — VERIFY — needs_rework
+
+    By: CODEX_REVIEWER
+
+    Note: PR #4838 review and hosted checks require rework before merge.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:264076cf079829cf6c8df9ceb338468dc227d40bc9df27069a14980ceb50fbb1, input_digest=sha256:8512eabdf3b7c31eb0342503d7d2307aed6e31d2a81eb466d0f918f6fcc18499
+
+    Details:
+
+    Check: task_outcome
+    Command: gh review comments and gh pr checks 4838
+    Result: fail
+    Evidence: P1 blocks approved minor/major plans from next-patch beta; CodeQL flags two read-modify-write races; verify-tests fails with ANCHOR_LOCK_MISMATCH; publish workflow lacks a stable-only guard before npm --tag latest.
+    Scope: release planning, release-version surface writes, stable publication policy, and lockfile compatibility.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171455-BJ837W-automate-next-patch-beta-version-after-release/.agentplane/tasks/202608171455-BJ837W/blueprint/resolved-snapshot.json
+    - old_digest: ef2f0f2539d317163b2953c302435f8d7eb0267d88aee38e008919f9b60b0254
+    - current_digest: ef2f0f2539d317163b2953c302435f8d7eb0267d88aee38e008919f9b60b0254
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608171455-BJ837W
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608171455-BJ837W
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -332,6 +472,42 @@ PLANNER fallback scaffold for "Automate next patch beta version after release". 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-17T16:14:35.463Z — VERIFY — needs_rework
+
+By: CODEX_REVIEWER
+
+Note: PR #4838 review and hosted checks require rework before merge.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:264076cf079829cf6c8df9ceb338468dc227d40bc9df27069a14980ceb50fbb1, input_digest=sha256:8512eabdf3b7c31eb0342503d7d2307aed6e31d2a81eb466d0f918f6fcc18499
+
+Details:
+
+Check: task_outcome
+Command: gh review comments and gh pr checks 4838
+Result: fail
+Evidence: P1 blocks approved minor/major plans from next-patch beta; CodeQL flags two read-modify-write races; verify-tests fails with ANCHOR_LOCK_MISMATCH; publish workflow lacks a stable-only guard before npm --tag latest.
+Scope: release planning, release-version surface writes, stable publication policy, and lockfile compatibility.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171455-BJ837W-automate-next-patch-beta-version-after-release/.agentplane/tasks/202608171455-BJ837W/blueprint/resolved-snapshot.json
+- old_digest: ef2f0f2539d317163b2953c302435f8d7eb0267d88aee38e008919f9b60b0254
+- current_digest: ef2f0f2539d317163b2953c302435f8d7eb0267d88aee38e008919f9b60b0254
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608171455-BJ837W
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608171455-BJ837W
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

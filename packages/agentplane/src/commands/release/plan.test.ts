@@ -170,6 +170,42 @@ describeWhenNotHook("release plan", () => {
     }
   }, 60_000);
 
+  it.each([
+    ["minor", "v0.3.0", "0.3.0"],
+    ["major", "v1.0.0", "1.0.0"],
+  ] as const)(
+    "allows an explicitly approved %s release plan from the next patch beta",
+    async (bump, nextTag, nextVersion) => {
+      const repo = await tempRepo({ withDefaultConfig: true });
+      const { root } = repo;
+      try {
+        await seedReleaseWorkspace(root, {
+          coreVersion: "0.2.7-beta.1",
+          cliVersion: "0.2.7-beta.1",
+          dependencyVersion: "0.2.7-beta.1",
+        });
+        await commitAll(root, "open 0.2.7 beta development");
+        await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+
+        const result = await createReleasePlan(
+          { cwd: root, rootOverride: root },
+          { bump, yes: true },
+        );
+
+        expect(result).toMatchObject({
+          previous_tag: "v0.2.6",
+          previous_version: "0.2.7-beta.1",
+          next_tag: nextTag,
+          next_version: nextVersion,
+          bump,
+        });
+      } finally {
+        await repo.cleanup();
+      }
+    },
+    60_000,
+  );
+
   it("rejects a prerelease that is not the next patch beta line", async () => {
     const repo = await tempRepo({ withDefaultConfig: true });
     const { root } = repo;

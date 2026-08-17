@@ -1,4 +1,13 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  closeSync,
+  existsSync,
+  fsyncSync,
+  ftruncateSync,
+  openSync,
+  readFileSync,
+  writeFileSync,
+  writeSync,
+} from "node:fs";
 import path from "node:path";
 
 const MANIFEST_PATH = "scripts/release/version-surfaces.json";
@@ -9,6 +18,28 @@ function readJson(absPath) {
 
 function writeJson(absPath, value) {
   writeFileSync(absPath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+}
+
+function rewriteTextFile(absPath, transform) {
+  const fd = openSync(absPath, "r+");
+  try {
+    const before = readFileSync(fd, "utf8");
+    const after = transform(before);
+    if (after === before) return false;
+
+    const bytes = Buffer.from(after, "utf8");
+    ftruncateSync(fd, 0);
+    let offset = 0;
+    while (offset < bytes.length) {
+      const written = writeSync(fd, bytes, offset, bytes.length - offset, offset);
+      if (written === 0) throw new Error(`Unable to rewrite ${absPath}.`);
+      offset += written;
+    }
+    fsyncSync(fd);
+    return true;
+  } finally {
+    closeSync(fd);
+  }
 }
 
 function assertStringArray(value, label) {
@@ -235,18 +266,18 @@ export function applyReleaseVersionSurfaces(rootDir, nextVersion) {
       continue;
     }
     if (surface.kind === "typescript_string_const") {
-      const before = readFileSync(absPath, "utf8");
-      const after = writeTextConst(before, surface, nextVersion);
-      if (after === before) continue;
-      writeFileSync(absPath, after, "utf8");
+      const changed = rewriteTextFile(absPath, (before) =>
+        writeTextConst(before, surface, nextVersion),
+      );
+      if (!changed) continue;
       changedPaths.push(surface.file);
       continue;
     }
     if (surface.kind === "workflow_expected_cli_version") {
-      const before = readFileSync(absPath, "utf8");
-      const after = writeWorkflowExpectedCliVersion(before, surface, nextVersion);
-      if (after === before) continue;
-      writeFileSync(absPath, after, "utf8");
+      const changed = rewriteTextFile(absPath, (before) =>
+        writeWorkflowExpectedCliVersion(before, surface, nextVersion),
+      );
+      if (!changed) continue;
       changedPaths.push(surface.file);
       continue;
     }

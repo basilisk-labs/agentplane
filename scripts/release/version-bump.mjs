@@ -41,9 +41,9 @@ function bumpVersion(currentVersion, bump) {
   if (!parsed) throw new Error(`Invalid current semver: ${currentVersion}`);
   if (parsed.prerelease.length > 0) {
     if (bump === "patch") return `${parsed.major}.${parsed.minor}.${parsed.patch}`;
-    throw new Error(
-      `Cannot apply ${bump} bump to development version ${currentVersion}; pass --version explicitly.`,
-    );
+    if (bump === "minor") return `${parsed.major}.${parsed.minor + 1}.0`;
+    if (bump === "major") return `${parsed.major + 1}.0.0`;
+    throw new Error(`Invalid --bump value: ${bump}`);
   }
   if (bump === "patch") return `${parsed.major}.${parsed.minor}.${parsed.patch + 1}`;
   if (bump === "minor") return `${parsed.major}.${parsed.minor + 1}.0`;
@@ -80,7 +80,7 @@ function main() {
   assertTargetVersion(targetVersion);
 
   const surfacePaths = listReleaseVersionSurfacePaths(ROOT);
-  const changed = [...surfacePaths, "bun.lock"];
+  const changed = surfacePaths;
 
   const report = {
     schema_version: 1,
@@ -97,7 +97,7 @@ function main() {
   if (flags.write === true) {
     applyReleaseVersionSurfaces(ROOT, targetVersion);
     if (flags["skip-install"] !== true) {
-      run("bun", ["install", "--ignore-scripts"]);
+      run("bun", ["install", "--frozen-lockfile", "--ignore-scripts"]);
     }
     run("bun", ["run", "release:parity"]);
   }

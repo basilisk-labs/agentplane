@@ -1,0 +1,91 @@
+{
+  "details": "Check: task_outcome\nCommand: gh review comments and gh pr checks 4838\nResult: fail\nEvidence: P1 blocks approved minor/major plans from next-patch beta; CodeQL flags two read-modify-write races; verify-tests fails with ANCHOR_LOCK_MISMATCH; publish workflow lacks a stable-only guard before npm --tag latest.\nScope: release planning, release-version surface writes, stable publication policy, and lockfile compatibility.",
+  "digest": "sha256:634056cf409d1456c6973d0ea96582c50f88ba27182d0eb77f5fdcf645d7c15d",
+  "implementation_sha": "ea3b7ac45a49d7119c405e8312754c69c12b8c75",
+  "input": {
+    "context": {
+      "digest": "sha256:60bad2f70226948c5f11c9b483c9c2174e33c3278934185222ac9f6da392076b",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:8512eabdf3b7c31eb0342503d7d2307aed6e31d2a81eb466d0f918f6fcc18499",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:b70f23e24b1404e6ab82f9f2bbc2f2c8734cd8f83c7b75e99189268ac9975a0a",
+      "digest": "sha256:ff0f02f001dc7cd54394063e4b68d8162625f50a8f84bc5dcc59522552fc8788",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "minor/major",
+          "reference": "minor/major",
+          "source": "missing"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "89f760183da24c5a768dfe97e6c4c2fb67bd1478",
+      "digest": "sha256:b785e95747110bf0d9adcc8e1cb4cc4e7311d194fede248f127552076cabb2dc",
+      "strategy": "branch_diff",
+      "target_sha": "ea3b7ac45a49d7119c405e8312754c69c12b8c75"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:e3571d42a6ca766b63cb3862e2b872ae973dc867263b6a4d083a1b99b6360856",
+    "verify_steps_digest": "sha256:264076cf079829cf6c8df9ceb338468dc227d40bc9df27069a14980ceb50fbb1"
+  },
+  "kind": "task_verification_record",
+  "note": "PR #4838 review and hosted checks require rework before merge.",
+  "recorded_at": "2026-08-17T16:14:35.463Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Automate next patch beta version after release\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Automate next patch beta version after release\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:264076cf079829cf6c8df9ceb338468dc227d40bc9df27069a14980ceb50fbb1",
+  "task_id": "202608171455-BJ837W",
+  "verification_command": "agentplane verify 202608171455-BJ837W --rework --by CODEX_REVIEWER",
+  "verifier": "CODEX_REVIEWER"
+}
