@@ -6,7 +6,7 @@ Created: 2026-08-17T11:57:53.694Z
 
 - Task: `202608171106-XFN696`
 - Title: Add policy-driven autonomous side-effect authority
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608171106-XFN696/add-policy-driven-autonomous-side-effect-authori`
 - Canonical task record: `.agentplane/tasks/202608171106-XFN696/README.md`
 
