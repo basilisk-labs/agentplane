@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 30143e0c4460b3a3a6f743a9c869c1ad8dccf3b1..9b38443da39b55c2915f19a93e36d7d16e2992b8",
+      "command": "git diff --check 1f3b522cc9f51f257c492fde2b233d0bccd49ec7..e237ad7b80c390b6dae9d114e339ebaf5368fdd6",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,19 +13,24 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 30143e0c4460b3a3a6f743a9c869c1ad8dccf3b1..9b38443da39b55c2915f19a93e36d7d16e2992b8",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 1f3b522cc9f51f257c492fde2b233d0bccd49ec7..e237ad7b80c390b6dae9d114e339ebaf5368fdd6",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
+        "M\t.agentplane/tasks/202608171106-XFN696/README.md",
         "M\t.agentplane/tasks/202608171106-XFN696/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608171106-XFN696/pr/github-body.md",
         "M\t.agentplane/tasks/202608171106-XFN696/pr/meta.json",
         "M\t.agentplane/tasks/202608171106-XFN696/pr/review.md",
         "M\tpackages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+        "A\tpackages/agentplane/src/commands/shared/workflow-step-planning-checkout.test.ts",
         "M\tpackages/agentplane/src/commands/shared/workflow-step-reducer.ts",
         "M\tpackages/agentplane/src/commands/shared/workflow-step.test.ts",
-        "M\tpackages/agentplane/src/commands/task/advance.command.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
+        "M\tscripts/baselines/v0.7-compatibility-candidate.json"
       ]
     },
     {
@@ -35,21 +40,32 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "30143e0c4460b3a3a6f743a9c869c1ad8dccf3b1",
-  "implementation_commit": "9b38443da39b55c2915f19a93e36d7d16e2992b8",
+  "execution_base_commit": "1f3b522cc9f51f257c492fde2b233d0bccd49ec7",
+  "implementation_commit": "e237ad7b80c390b6dae9d114e339ebaf5368fdd6",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
+      " M .agentplane/tasks/202608171106-XFN696/README.md",
       " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+      " M packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
       " M packages/agentplane/src/commands/shared/workflow-step-reducer.ts",
       " M packages/agentplane/src/commands/shared/workflow-step.test.ts",
-      " M packages/agentplane/src/commands/task/advance.command.ts",
-      " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+      " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
+      " M scripts/baselines/v0.7-compatibility-candidate.json",
+      "?? packages/agentplane/src/commands/shared/workflow-step-planning-checkout.test.ts"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608171106-XFN696/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
         "line": " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
       },
       {
         "classification": "removed_during_execution",
@@ -61,21 +77,28 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/advance.command.ts"
+        "line": " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+        "line": " M scripts/baselines/v0.7-compatibility-candidate.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/shared/workflow-step-planning-checkout.test.ts"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202608171106-XFN696/README.md",
       " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+      " M packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
       " M packages/agentplane/src/commands/shared/workflow-step-reducer.ts",
       " M packages/agentplane/src/commands/shared/workflow-step.test.ts",
-      " M packages/agentplane/src/commands/task/advance.command.ts",
-      " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+      " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
+      " M scripts/baselines/v0.7-compatibility-candidate.json",
+      "?? packages/agentplane/src/commands/shared/workflow-step-planning-checkout.test.ts"
     ],
     "unchanged_from_execution_baseline": []
   },
