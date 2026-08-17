@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -378,6 +378,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (failed): Classified the workspace changes as an intentional CI compatibility-ratchet repair after the hosted Compatibility baseline failure. The read-only episode preserved all three files; the candidate remains stale because the updated capture generator must be executed with --write in a writable implementation-rework episode."
 events:
   -
     type: "status"
@@ -430,9 +433,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "e91066c256d3e8ad52d8e8b995feb1a67294b9bd"
+  -
+    type: "comment"
+    at: "2026-08-17T20:08:12.815Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (failed): Classified the workspace changes as an intentional CI compatibility-ratchet repair after the hosted Compatibility baseline failure. The read-only episode preserved all three files; the candidate remains stale because the updated capture generator must be executed with --write in a writable implementation-rework episode."
 doc_version: 3
-doc_updated_at: "2026-08-17T19:58:34.381Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-17T20:08:12.853Z"
+doc_updated_by: "SUPERVISOR"
 description: "Recover the AgentPlane authority release after an unavailable GitHub protection lookup selected a local merge; fail closed on unavailable provider protection, repair supervisor replay/concurrency regressions, and define a verifiable Hermes-to-AgentPlane user approval receipt so the user approves in dialogue while the integration layer executes exact state-bound commands. Preserve mandatory primary plan approval and operator-owned provider merge semantics."
 sections:
   Summary: |-
