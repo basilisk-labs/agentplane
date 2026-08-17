@@ -4,7 +4,7 @@ title: "Add policy-driven autonomous side-effect authority"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -23,7 +23,7 @@ verify:
   - "node .agentplane/policy/check-routing.mjs"
 plan_approval:
   state: "approved"
-  updated_at: "2026-08-17T12:34:04.101Z"
+  updated_at: "2026-08-17T14:18:10.454Z"
   updated_by: "USER"
   note: null
 verification:
@@ -70,6 +70,7 @@ execution_contract:
       - "packages/core"
       - "packages/spec"
       - "schemas"
+      - "scripts/baselines"
   declaration:
     external_effects: []
     implementation_uncertainty: "bounded"
@@ -77,6 +78,7 @@ execution_contract:
     rationale:
       - "Implement repository-configured autonomous side-effect authority after explicit plan approval."
       - "Keep plan approval and provider merge operator-owned."
+      - "Regenerate the compatibility candidate required by the approved workflow-schema change."
       - "Touch runtime, tests, generated schemas, and documentation while preserving state-bound audit semantics."
     repository_effects:
       - "documentation"
@@ -93,65 +95,14 @@ execution_contract:
       - "packages/core"
       - "packages/spec"
       - "schemas"
+      - "scripts/baselines"
   observed:
     authority_violations: []
-    changed_components:
-      - "docs"
-      - "packages/agentplane"
-      - "packages/core"
-      - "packages/spec"
-      - "schemas"
-    changed_paths:
-      - "docs/recipes/hermes-agentplane.mdx"
-      - "docs/user/configuration.mdx"
-      - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
-      - "packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
-      - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
-      - "packages/agentplane/src/commands/task/advance.command.ts"
-      - "packages/agentplane/src/commands/task/authority-grant.command.test.ts"
-      - "packages/agentplane/src/commands/task/authority-grant.command.ts"
-      - "packages/agentplane/src/commands/task/branch-task-supervisor.ts"
-      - "packages/agentplane/src/commands/task/configured-authority.test.ts"
-      - "packages/agentplane/src/commands/task/configured-authority.ts"
-      - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
-      - "packages/core/schemas/config.schema.json"
-      - "packages/core/schemas/workflow.schema.json"
-      - "packages/core/src/config/config.test.ts"
-      - "packages/core/src/config/config.ts"
-      - "packages/core/src/config/index.ts"
-      - "packages/core/src/config/schema.impl.ts"
-      - "packages/core/src/config/workflow-contract.ts"
-      - "packages/core/src/config/workflow-file.ts"
-      - "packages/spec/schemas/config.schema.json"
-      - "packages/spec/schemas/workflow.schema.json"
-      - "schemas/config.schema.json"
-      - "schemas/workflow.schema.json"
+    changed_components: []
+    changed_paths: []
     external_effects: []
-    repository_effects:
-      - "documentation"
-      - "repository_write"
-      - "schema"
-      - "source_code"
-      - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
+    repository_effects: []
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_schema"
@@ -173,6 +124,7 @@ execution_contract:
           - "packages/core"
           - "packages/spec"
           - "schemas"
+          - "scripts/baselines"
         evidence_requirements:
           - "hosted_integration"
           - "repository_effect:documentation"
@@ -192,21 +144,8 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:75a348055b87402d2b2cc90ed40b176698adb0eaf306d58c3b25686dded0fbef"
+      digest: "sha256:eeb175357cfd7a98816358f91ee28c1424ca124d77b56b143f41a3aeba1a8b06"
       escalation_reasons:
-        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
-        - "central_path:packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
-        - "central_path:packages/agentplane/src/commands/shared/workflow-step.test.ts"
-        - "central_path:packages/core/schemas/config.schema.json"
-        - "central_path:packages/core/schemas/workflow.schema.json"
-        - "central_path:packages/core/src/config/config.test.ts"
-        - "central_path:packages/core/src/config/config.ts"
-        - "central_path:packages/core/src/config/index.ts"
-        - "central_path:packages/core/src/config/schema.impl.ts"
-        - "central_path:packages/core/src/config/workflow-contract.ts"
-        - "central_path:packages/core/src/config/workflow-file.ts"
-        - "central_path:schemas/config.schema.json"
-        - "central_path:schemas/workflow.schema.json"
         - "effect_schema"
       execution_groups:
         - "docs-schema"
@@ -214,44 +153,10 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components:
-          - "docs"
-          - "packages/agentplane"
-          - "packages/core"
-          - "packages/spec"
-          - "schemas"
-        changed_files:
-          - "docs/recipes/hermes-agentplane.mdx"
-          - "docs/user/configuration.mdx"
-          - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
-          - "packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
-          - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
-          - "packages/agentplane/src/commands/task/advance.command.ts"
-          - "packages/agentplane/src/commands/task/authority-grant.command.test.ts"
-          - "packages/agentplane/src/commands/task/authority-grant.command.ts"
-          - "packages/agentplane/src/commands/task/branch-task-supervisor.ts"
-          - "packages/agentplane/src/commands/task/configured-authority.test.ts"
-          - "packages/agentplane/src/commands/task/configured-authority.ts"
-          - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
-          - "packages/core/schemas/config.schema.json"
-          - "packages/core/schemas/workflow.schema.json"
-          - "packages/core/src/config/config.test.ts"
-          - "packages/core/src/config/config.ts"
-          - "packages/core/src/config/index.ts"
-          - "packages/core/src/config/schema.impl.ts"
-          - "packages/core/src/config/workflow-contract.ts"
-          - "packages/core/src/config/workflow-file.ts"
-          - "packages/spec/schemas/config.schema.json"
-          - "packages/spec/schemas/workflow.schema.json"
-          - "schemas/config.schema.json"
-          - "schemas/workflow.schema.json"
+        changed_components: []
+        changed_files: []
         external_effects: []
-        repository_effects:
-          - "documentation"
-          - "repository_write"
-          - "schema"
-          - "source_code"
-          - "tests"
+        repository_effects: []
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -336,7 +241,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-17T13:01:42.349Z"
+doc_updated_at: "2026-08-17T13:38:41.279Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement a repository-configured AgentPlane authority provider with manual, policy allowlist, and explicit all/YOLO modes. Auto-grants must retain operation/state/scope digests, short TTL, durable audit, and a POLICY actor; default behavior remains manual. Fix task authority grant remote/local route drift so stale hosted authority requests return an actionable fresh-route diagnostic instead of incorrectly reporting that no grant is required. Keep model agents unable to impersonate USER and preserve human gates through an explicit deny list."
 sections:
@@ -351,8 +256,9 @@ sections:
     1. Add repository-local authority configuration with manual default, policy allowlist, and explicit all mode; validate POLICY actor, TTL, allow/deny lists, and denylist precedence; expose the contract through source and generated schemas.
     2. Resolve only side_effect approval steps after the mandatory user-approved primary plan, persist the existing operation digest, state fingerprint, scope digest, TTL, audit record, and POLICY actor, and never resolve plan approval or provider merge.
     3. Integrate configured authority into task advance and the managed branch supervisor; improve stale local/remote authority-grant diagnostics so they return the recomputed route and exact next diagnostic command.
-    4. Cover manual, policy, all, denylist, mandatory plan approval, managed-supervisor, and stale-route behavior with focused tests; run lint, typecheck, schema, routing, formatting, and diff checks.
-    5. Document the Hermes flow as one explicit USER plan approval followed by autonomous LLM work and allowed formal side effects, stopping again only at drift, denylist, merge/destructive/credential boundaries, or unsafe authority reconstruction.
+    4. Cover manual, policy, all, denylist, mandatory plan approval, managed-supervisor, planning-checkout recovery, and stale-route behavior with focused tests; keep oversized-test budgets green.
+    5. Regenerate and commit the compatibility candidate under scripts/baselines for the approved workflow-schema change, update its critical reproducibility expectations, and run lint, typecheck, schema, routing, formatting, targeted tests, and the full-fast pre-push gate.
+    6. Document the Hermes flow as one explicit USER plan approval followed by autonomous LLM work and allowed formal side effects, stopping again only at drift, denylist, merge/destructive/credential boundaries, or unsafe authority reconstruction.
   Verify Steps: |-
     PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -523,8 +429,9 @@ Implement a repository-configured AgentPlane authority provider with manual, pol
 1. Add repository-local authority configuration with manual default, policy allowlist, and explicit all mode; validate POLICY actor, TTL, allow/deny lists, and denylist precedence; expose the contract through source and generated schemas.
 2. Resolve only side_effect approval steps after the mandatory user-approved primary plan, persist the existing operation digest, state fingerprint, scope digest, TTL, audit record, and POLICY actor, and never resolve plan approval or provider merge.
 3. Integrate configured authority into task advance and the managed branch supervisor; improve stale local/remote authority-grant diagnostics so they return the recomputed route and exact next diagnostic command.
-4. Cover manual, policy, all, denylist, mandatory plan approval, managed-supervisor, and stale-route behavior with focused tests; run lint, typecheck, schema, routing, formatting, and diff checks.
-5. Document the Hermes flow as one explicit USER plan approval followed by autonomous LLM work and allowed formal side effects, stopping again only at drift, denylist, merge/destructive/credential boundaries, or unsafe authority reconstruction.
+4. Cover manual, policy, all, denylist, mandatory plan approval, managed-supervisor, planning-checkout recovery, and stale-route behavior with focused tests; keep oversized-test budgets green.
+5. Regenerate and commit the compatibility candidate under scripts/baselines for the approved workflow-schema change, update its critical reproducibility expectations, and run lint, typecheck, schema, routing, formatting, targeted tests, and the full-fast pre-push gate.
+6. Document the Hermes flow as one explicit USER plan approval followed by autonomous LLM work and allowed formal side effects, stopping again only at drift, denylist, merge/destructive/credential boundaries, or unsafe authority reconstruction.
 
 ## Verify Steps
 
