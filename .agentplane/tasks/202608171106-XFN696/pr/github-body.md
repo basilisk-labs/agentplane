@@ -15,8 +15,14 @@ Implement a repository-configured AgentPlane authority provider with manual, pol
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note:
+
+```text
+Verification portability rework: route inspection and authority grants must not invalidate a passing
+record merely because the operator invokes the CLI through Bun/Node 24 instead of the Node 26
+verification process.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -34,6 +40,8 @@ Implement a repository-configured AgentPlane authority provider with manual, pol
  ...i.core.task-advance.worktree-resolution.test.ts |   7 +
  ...-cli.critical.agent-efficiency-baseline.test.ts |   4 +-
  .../src/cli/run-cli/command-loaders/task.ts        |  31 +++-
+ .../commands/shared/task-verification-records.ts   |   1 +
+ .../shared/task-verification-records.v2.test.ts    |  26 +++-
  .../shared/workflow-step-planning-checkout.test.ts |  33 +++++
  .../src/commands/shared/workflow-step-reducer.ts   |  12 +-
  .../src/commands/shared/workflow-step.test.ts      |   3 +
@@ -61,7 +69,7 @@ Implement a repository-configured AgentPlane authority provider with manual, pol
  schemas/config.schema.json                         |  45 ++++++
  schemas/workflow.schema.json                       |  76 ++++++++++
  .../baselines/v0.7-compatibility-candidate.json    |   8 +-
- 34 files changed, 1310 insertions(+), 51 deletions(-)
+ 36 files changed, 1336 insertions(+), 52 deletions(-)
 ```
 
 </details>

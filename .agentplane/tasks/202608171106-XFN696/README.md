@@ -2,10 +2,10 @@
 id: "202608171106-XFN696"
 title: "Add policy-driven autonomous side-effect authority"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 46
+revision: 47
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +28,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-17T17:15:33.187Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-17T17:21:58.058Z"
+  updated_by: "CODER"
+  note: "Verification portability rework: route inspection and authority grants must not invalidate a passing record merely because the operator invokes the CLI through Bun/Node 24 instead of the Node 26 verification process."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -370,9 +370,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit:
-  hash: "de4a86a06c6d6465e86ad63ef037da5ee51a932f"
-  message: "🚧 XFN696 task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -578,8 +576,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "de4a86a06c6d6465e86ad63ef037da5ee51a932f"
+  -
+    type: "verify"
+    at: "2026-08-17T17:21:58.058Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "Verification portability rework: route inspection and authority grants must not invalidate a passing record merely because the operator invokes the CLI through Bun/Node 24 instead of the Node 26 verification process."
 doc_version: 3
-doc_updated_at: "2026-08-17T17:20:05.491Z"
+doc_updated_at: "2026-08-17T17:22:01.099Z"
 doc_updated_by: "CODER"
 description: "Implement a repository-configured AgentPlane authority provider with manual, policy allowlist, and explicit all/YOLO modes. Auto-grants must retain operation/state/scope digests, short TTL, durable audit, and a POLICY actor; default behavior remains manual. Fix task authority grant remote/local route drift so stale hosted authority requests return an actionable fresh-route diagnostic instead of incorrectly reporting that no grant is required. Keep model agents unable to impersonate USER and preserve human gates through an explicit deny list."
 sections:
@@ -1214,6 +1218,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608171106-XFN696
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-17T17:21:58.058Z — VERIFY — needs_rework
+
+    By: CODER
+
+    Note: Verification portability rework: route inspection and authority grants must not invalidate a passing record merely because the operator invokes the CLI through Bun/Node 24 instead of the Node 26 verification process.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c454ee01251f11e191d3b390e64ff163e8f938e58ca7c9d2bdfef02d14185016, input_digest=sha256:9f67b5c87763150a9192dbfffca6fc5e1b1bafdcb9b85977a00f7e8fd2f76af8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171106-XFN696-add-policy-driven-autonomous-side-effect-authori/.agentplane/tasks/202608171106-XFN696/blueprint/resolved-snapshot.json
+    - old_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+    - current_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608171106-XFN696
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1874,6 +1908,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608171106-XFN696
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-17T17:21:58.058Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: Verification portability rework: route inspection and authority grants must not invalidate a passing record merely because the operator invokes the CLI through Bun/Node 24 instead of the Node 26 verification process.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c454ee01251f11e191d3b390e64ff163e8f938e58ca7c9d2bdfef02d14185016, input_digest=sha256:9f67b5c87763150a9192dbfffca6fc5e1b1bafdcb9b85977a00f7e8fd2f76af8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171106-XFN696-add-policy-driven-autonomous-side-effect-authori/.agentplane/tasks/202608171106-XFN696/blueprint/resolved-snapshot.json
+- old_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+- current_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608171106-XFN696
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
