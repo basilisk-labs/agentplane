@@ -37,7 +37,7 @@ Created: 2026-08-17T11:57:53.694Z
  ...-cli.critical.agent-efficiency-baseline.test.ts |   4 +-
  .../src/cli/run-cli/command-loaders/task.ts        |  31 +++-
  .../commands/shared/task-verification-records.ts   |   1 +
- .../shared/task-verification-records.v2.test.ts    |  26 +++-
+ .../shared/task-verification-records.v2.test.ts    |  37 ++++-
  .../shared/workflow-step-planning-checkout.test.ts |  33 +++++
  .../src/commands/shared/workflow-step-reducer.ts   |  12 +-
  .../src/commands/shared/workflow-step.test.ts      |   3 +
@@ -65,7 +65,7 @@ Created: 2026-08-17T11:57:53.694Z
  schemas/config.schema.json                         |  45 ++++++
  schemas/workflow.schema.json                       |  76 ++++++++++
  .../baselines/v0.7-compatibility-candidate.json    |   8 +-
- 36 files changed, 1336 insertions(+), 52 deletions(-)
+ 36 files changed, 1347 insertions(+), 52 deletions(-)
 ```
 
 </details>
