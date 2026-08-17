@@ -12,8 +12,8 @@ Created: 2026-08-17T09:29:36.876Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Core CI verify-static failed: HERMES_PLUGIN_PROTOCOL is exported but used only internally; remove the unnecessary export and re-run knip/static verification.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

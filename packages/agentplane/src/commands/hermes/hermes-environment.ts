@@ -15,7 +15,7 @@ export function hermesEnvSnapshot() {
   };
 }
 
-export const HERMES_PLUGIN_PROTOCOL = "agentplane.hermes.plugin.v2" as const;
+const HERMES_PLUGIN_PROTOCOL = "agentplane.hermes.plugin.v2" as const;
 
 function normalizedPathList(value: string | undefined): string[] {
   return (value ?? "")
