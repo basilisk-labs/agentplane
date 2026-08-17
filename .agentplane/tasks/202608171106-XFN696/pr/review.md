@@ -12,8 +12,8 @@ Created: 2026-08-17T11:57:53.694Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Implementation closeout must not treat the expected verification_recovery failure observation as a repository authority violation before replacement verification runs.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

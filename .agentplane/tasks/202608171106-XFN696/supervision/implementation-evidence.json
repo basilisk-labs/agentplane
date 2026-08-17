@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 54d2d59a0cdddefe5e14b247fe09054bc349129e..a6b8374dd1dda53dd650eb453be3a04558dc9aa6",
+      "command": "git diff --check a6b8374dd1dda53dd650eb453be3a04558dc9aa6..e8e5856b5cdb51d5a5d65c5399915401705b0c29",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 54d2d59a0cdddefe5e14b247fe09054bc349129e..a6b8374dd1dda53dd650eb453be3a04558dc9aa6",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB a6b8374dd1dda53dd650eb453be3a04558dc9aa6..e8e5856b5cdb51d5a5d65c5399915401705b0c29",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,27 +22,24 @@
         "M\t.agentplane/tasks/202608171106-XFN696/pr/github-body.md",
         "M\t.agentplane/tasks/202608171106-XFN696/pr/meta.json",
         "M\t.agentplane/tasks/202608171106-XFN696/pr/review.md",
-        "A\t.agentplane/tasks/202608171106-XFN696/verification/20260817145207936-1b1a9c6917381d87.json",
-        "M\tpackages/agentplane/src/commands/task/authority-grant.command.test.ts",
-        "M\tpackages/agentplane/src/commands/task/authority-grant.command.ts"
+        "M\t.agentplane/tasks/202608171106-XFN696/supervision/implementation-evidence.json",
+        "A\t.agentplane/tasks/202608171106-XFN696/verification/20260817151203088-68e63b9268d183f8.json",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
+        "M\tpackages/agentplane/src/runtime/task-routing/resolve.test.ts",
+        "M\tpackages/agentplane/src/runtime/task-routing/resolve.ts"
       ]
     },
     {
       "command": "git status --short --untracked-files=all",
       "id": "final-repository-status",
       "result": "pass",
-      "stdout": [
-        " M .agentplane/tasks/202608171106-XFN696/README.md",
-        " M .agentplane/tasks/202608171106-XFN696/pr/github-body.md",
-        " M .agentplane/tasks/202608171106-XFN696/pr/meta.json",
-        " M .agentplane/tasks/202608171106-XFN696/pr/review.md",
-        " M .agentplane/tasks/202608171106-XFN696/supervision/implementation-evidence.json",
-        "?? .agentplane/tasks/202608171106-XFN696/verification/20260817151203088-68e63b9268d183f8.json"
-      ]
+      "stdout": []
     }
   ],
-  "execution_base_commit": "54d2d59a0cdddefe5e14b247fe09054bc349129e",
-  "implementation_commit": "a6b8374dd1dda53dd650eb453be3a04558dc9aa6",
+  "execution_base_commit": "a6b8374dd1dda53dd650eb453be3a04558dc9aa6",
+  "implementation_commit": "e8e5856b5cdb51d5a5d65c5399915401705b0c29",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
@@ -50,59 +47,76 @@
       " M .agentplane/tasks/202608171106-XFN696/pr/github-body.md",
       " M .agentplane/tasks/202608171106-XFN696/pr/meta.json",
       " M .agentplane/tasks/202608171106-XFN696/pr/review.md",
-      "?? .agentplane/tasks/202608171106-XFN696/verification/20260817145207936-1b1a9c6917381d87.json"
+      " M .agentplane/tasks/202608171106-XFN696/supervision/implementation-evidence.json",
+      " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+      " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+      " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
+      " M packages/agentplane/src/runtime/task-routing/resolve.test.ts",
+      " M packages/agentplane/src/runtime/task-routing/resolve.ts",
+      "?? .agentplane/tasks/202608171106-XFN696/verification/20260817151203088-68e63b9268d183f8.json"
     ],
     "classification": [
       {
-        "classification": "preexisting_before_execution",
+        "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202608171106-XFN696/README.md"
       },
       {
-        "classification": "preexisting_before_execution",
+        "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202608171106-XFN696/pr/github-body.md"
       },
       {
-        "classification": "preexisting_before_execution",
+        "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202608171106-XFN696/pr/meta.json"
       },
       {
-        "classification": "preexisting_before_execution",
+        "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202608171106-XFN696/pr/review.md"
       },
       {
-        "classification": "introduced_during_execution",
+        "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202608171106-XFN696/supervision/implementation-evidence.json"
       },
       {
-        "classification": "introduced_during_execution",
-        "line": "?? .agentplane/tasks/202608171106-XFN696/verification/20260817151203088-68e63b9268d183f8.json"
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608171106-XFN696/verification/20260817145207936-1b1a9c6917381d87.json"
+        "line": " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runtime/task-routing/resolve.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runtime/task-routing/resolve.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608171106-XFN696/verification/20260817151203088-68e63b9268d183f8.json"
       }
     ],
-    "final": [
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
       " M .agentplane/tasks/202608171106-XFN696/README.md",
       " M .agentplane/tasks/202608171106-XFN696/pr/github-body.md",
       " M .agentplane/tasks/202608171106-XFN696/pr/meta.json",
       " M .agentplane/tasks/202608171106-XFN696/pr/review.md",
       " M .agentplane/tasks/202608171106-XFN696/supervision/implementation-evidence.json",
+      " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+      " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+      " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
+      " M packages/agentplane/src/runtime/task-routing/resolve.test.ts",
+      " M packages/agentplane/src/runtime/task-routing/resolve.ts",
       "?? .agentplane/tasks/202608171106-XFN696/verification/20260817151203088-68e63b9268d183f8.json"
     ],
-    "introduced_after_execution_baseline": [
-      " M .agentplane/tasks/202608171106-XFN696/supervision/implementation-evidence.json",
-      "?? .agentplane/tasks/202608171106-XFN696/verification/20260817151203088-68e63b9268d183f8.json"
-    ],
-    "removed_after_execution_baseline": [
-      "?? .agentplane/tasks/202608171106-XFN696/verification/20260817145207936-1b1a9c6917381d87.json"
-    ],
-    "unchanged_from_execution_baseline": [
-      " M .agentplane/tasks/202608171106-XFN696/README.md",
-      " M .agentplane/tasks/202608171106-XFN696/pr/github-body.md",
-      " M .agentplane/tasks/202608171106-XFN696/pr/meta.json",
-      " M .agentplane/tasks/202608171106-XFN696/pr/review.md"
-    ]
+    "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
   "task_id": "202608171106-XFN696"

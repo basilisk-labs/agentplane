@@ -15,13 +15,8 @@ Implement a repository-configured AgentPlane authority provider with manual, pol
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Implementation closeout must not treat the expected verification_recovery failure observation as a
-repository authority violation before replacement verification runs.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
