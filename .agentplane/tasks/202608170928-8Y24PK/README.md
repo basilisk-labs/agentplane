@@ -2,10 +2,10 @@
 id: "202608170928-8Y24PK"
 title: "Upgrade the Hermes AgentPlane bridge protocol across the three approved repositories"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -30,11 +30,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-17T22:42:08.229Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-17T22:58:20.396Z"
+  updated_by: "REVIEW:chatgpt-codex-connector"
+  note: "Address all three unresolved PR review findings before integration."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -357,9 +357,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit:
-  hash: "e2584c982a7bceed3cefc9394467ab5e6e1e6f9c"
-  message: "🚧 8Y24PK task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -563,8 +561,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "e2584c982a7bceed3cefc9394467ab5e6e1e6f9c"
+  -
+    type: "verify"
+    at: "2026-08-17T22:58:20.396Z"
+    author: "REVIEW:chatgpt-codex-connector"
+    state: "needs_rework"
+    note: "Address all three unresolved PR review findings before integration."
 doc_version: 3
-doc_updated_at: "2026-08-17T22:43:57.422Z"
+doc_updated_at: "2026-08-17T22:58:23.624Z"
 doc_updated_by: "CODER"
 description: "Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 0.2.0, and current Hermes worker-lane dispatch. Scope roots are /Users/densmirnov/Github/agentplane, /Users/densmirnov/Github/agentplane-hermes-plugin, and /Users/densmirnov/Github/hermes-agent. Required effects include source, tests, docs, public API, schema, CI/release metadata, security boundary, network reads, hosted external writes, and publication through explicit authority. Prove PLANNER/approval/EXECUTOR/EVALUATOR, retry, stale-run, and terminal attestation without direct kanban.db writes. Existing D5MAJ3 and failed structured-intake DDW1J5 are superseded and must not be implemented or published."
 sections:
@@ -1144,6 +1148,38 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608170928-8Y24PK
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-17T22:58:20.396Z — VERIFY — needs_rework
+
+    By: REVIEW:chatgpt-codex-connector
+
+    Note: Address all three unresolved PR review findings before integration.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8559ac20d950c1601ef1434555ed99c5da9a5c52304a4f16ad1abdb9862d0ce0, input_digest=sha256:35a9ac2b9a3710a13b73e9962cdb361308be50eff364e5397a2823e2a91afad3
+
+    Details:
+
+    P1 packages/agentplane/src/commands/hermes/hermes.command.ts: require HERMES_KANBAN_BOARD before lifecycle mutations. P2 packages/agentplane/src/commands/hermes/hermes-environment.ts: probe PATHEXT command suffixes on Windows. P2 packages/agentplane/src/commands/hermes/hermes.command.ts: hermes doctor must return nonzero when installation_ready is false.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608170928-8Y24PK-upgrade-the-hermes-agentplane-bridge-protocol-ac/.agentplane/tasks/202608170928-8Y24PK/blueprint/resolved-snapshot.json
+    - old_digest: 4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb
+    - current_digest: 4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608170928-8Y24PK
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1750,6 +1786,38 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608170928-8Y24PK
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-17T22:58:20.396Z — VERIFY — needs_rework
+
+By: REVIEW:chatgpt-codex-connector
+
+Note: Address all three unresolved PR review findings before integration.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8559ac20d950c1601ef1434555ed99c5da9a5c52304a4f16ad1abdb9862d0ce0, input_digest=sha256:35a9ac2b9a3710a13b73e9962cdb361308be50eff364e5397a2823e2a91afad3
+
+Details:
+
+P1 packages/agentplane/src/commands/hermes/hermes.command.ts: require HERMES_KANBAN_BOARD before lifecycle mutations. P2 packages/agentplane/src/commands/hermes/hermes-environment.ts: probe PATHEXT command suffixes on Windows. P2 packages/agentplane/src/commands/hermes/hermes.command.ts: hermes doctor must return nonzero when installation_ready is false.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608170928-8Y24PK-upgrade-the-hermes-agentplane-bridge-protocol-ac/.agentplane/tasks/202608170928-8Y24PK/blueprint/resolved-snapshot.json
+- old_digest: 4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb
+- current_digest: 4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608170928-8Y24PK
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

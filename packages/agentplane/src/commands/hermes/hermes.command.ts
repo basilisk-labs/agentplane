@@ -313,13 +313,14 @@ async function runHermesLifecycleCommand(
   }
   if (
     !parsed.dryRun &&
-    (!env.task_id || !env.run_id || !env.claim_lock_present || !env.workspace)
+    (!env.task_id || !env.board || !env.run_id || !env.claim_lock_present || !env.workspace)
   ) {
     throw new CliError({
       code: "E_USAGE",
       message:
         "Hermes lifecycle mutation requires the current native worker claim " +
-        "(HERMES_KANBAN_TASK, HERMES_KANBAN_RUN_ID, HERMES_KANBAN_CLAIM_LOCK, and HERMES_KANBAN_WORKSPACE).",
+        "(HERMES_KANBAN_TASK, HERMES_KANBAN_BOARD, HERMES_KANBAN_RUN_ID, " +
+        "HERMES_KANBAN_CLAIM_LOCK, and HERMES_KANBAN_WORKSPACE).",
     });
   }
   const result = await runHermesLifecycle(action, {
@@ -432,6 +433,6 @@ export function makeRunHermesDoctorHandler(deps: {
         { label: "adapter_status", value: payload.adapter_status },
       ]);
     }
-    return 0;
+    return installationReady ? 0 : 1;
   };
 }

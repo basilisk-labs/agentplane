@@ -15,8 +15,8 @@ Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Address all three unresolved PR review findings before integration.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,16 +27,16 @@ Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/recipes/hermes-agentplane.mdx                 |  28 ++++-
- docs/workflow-guides/hermes-kanban.mdx             |  94 +++++++++--------
- integrations/hermes-agentplane-plugin/README.md    | 106 ++++++++++++++-----
- .../lane-registry.example.json                     |  19 ++++
- .../protocol-v2.schema.json                        |  39 +++++++
- .../src/commands/hermes/hermes-environment.ts      |  42 +++++++-
- .../src/commands/hermes/hermes-runtime.ts          |  35 ++++---
- .../src/commands/hermes/hermes.command.test.ts     | 115 ++++++++++++++++++++-
- .../src/commands/hermes/hermes.command.ts          |  49 ++++++++-
- 9 files changed, 430 insertions(+), 97 deletions(-)
+ docs/recipes/hermes-agentplane.mdx                 |  28 +++-
+ docs/workflow-guides/hermes-kanban.mdx             |  94 ++++++-----
+ integrations/hermes-agentplane-plugin/README.md    | 106 +++++++++---
+ .../lane-registry.example.json                     |  19 +++
+ .../protocol-v2.schema.json                        |  39 +++++
+ .../src/commands/hermes/hermes-environment.ts      |  65 +++++++-
+ .../src/commands/hermes/hermes-runtime.ts          |  35 ++--
+ .../src/commands/hermes/hermes.command.test.ts     | 181 ++++++++++++++++++++-
+ .../src/commands/hermes/hermes.command.ts          |  52 +++++-
+ 9 files changed, 519 insertions(+), 100 deletions(-)
 ```
 
 </details>

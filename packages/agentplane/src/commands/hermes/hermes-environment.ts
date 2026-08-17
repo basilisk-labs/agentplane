@@ -17,9 +17,9 @@ export function hermesEnvSnapshot() {
 
 const HERMES_PLUGIN_PROTOCOL = "agentplane.hermes.plugin.v2" as const;
 
-function normalizedPathList(value: string | undefined): string[] {
+function normalizedPathList(value: string | undefined, delimiter = path.delimiter): string[] {
   return (value ?? "")
-    .split(path.delimiter)
+    .split(delimiter)
     .map((entry) => entry.trim())
     .filter(Boolean);
 }
@@ -38,13 +38,36 @@ export function hermesPluginContractSnapshot() {
   };
 }
 
-export async function inspectCommandAvailability(command: string) {
-  const candidates = command.includes(path.sep)
-    ? [path.resolve(command)]
-    : normalizedPathList(process.env.PATH).map((entry) => path.join(entry, command));
+export async function inspectCommandAvailability(
+  command: string,
+  options: {
+    platform?: NodeJS.Platform;
+    pathValue?: string;
+    pathExtValue?: string;
+    pathApi?: Pick<typeof path, "delimiter" | "extname" | "join" | "resolve" | "sep">;
+    accessFn?: typeof access;
+  } = {},
+) {
+  const platform = options.platform ?? process.platform;
+  const pathApi = options.pathApi ?? path;
+  const accessFn = options.accessFn ?? access;
+  const explicitPath =
+    command.includes(pathApi.sep) || (platform === "win32" && /[\\/]/u.test(command));
+  const pathEntries = normalizedPathList(options.pathValue ?? process.env.PATH, pathApi.delimiter);
+  const rawPathExt = options.pathExtValue ?? process.env.PATHEXT;
+  const pathExt =
+    platform === "win32" && pathApi.extname(command).length === 0
+      ? normalizedPathList(rawPathExt?.trim() ? rawPathExt : ".COM;.EXE;.BAT;.CMD", ";").map(
+          (entry) => (entry.startsWith(".") ? entry : `.${entry}`),
+        )
+      : [];
+  const commandNames = [command, ...pathExt.map((entry) => `${command}${entry}`)];
+  const candidates = explicitPath
+    ? [pathApi.resolve(command)]
+    : pathEntries.flatMap((entry) => commandNames.map((name) => pathApi.join(entry, name)));
   for (const candidate of candidates) {
     try {
-      await access(candidate, constants.X_OK);
+      await accessFn(candidate, constants.X_OK);
       return { available: true, resolved_path: candidate };
     } catch {
       // Continue through PATH without executing an untrusted binary.

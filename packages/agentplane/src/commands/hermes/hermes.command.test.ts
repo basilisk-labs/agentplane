@@ -13,6 +13,7 @@ import {
   executeHermesWorkflowOperation,
   routeNeedsRunnerProjection,
 } from "./hermes-runtime.js";
+import { inspectCommandAvailability } from "./hermes-environment.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { captureStdIO, mkGitRepoRoot, runCliSilent } from "@agentplane/testkit";
 import { chmod, mkdir, writeFile } from "node:fs/promises";
@@ -574,7 +575,7 @@ describe("hermes adapter commands", () => {
     const io = captureStdIO();
     try {
       const code = await runCli(["hermes", "doctor", "--json", "--root", root]);
-      expect(code).toBe(0);
+      expect(code).toBe(1);
       const payload = JSON.parse(io.stdout) as {
         ok: boolean;
         repo: string;
@@ -655,6 +656,29 @@ describe("hermes adapter commands", () => {
     }
   });
 
+  it("resolves bare Windows commands through PATHEXT", async () => {
+    const visited: string[] = [];
+    const result = await inspectCommandAvailability("hermes", {
+      platform: "win32",
+      pathValue: "C:\\tools;D:\\bin",
+      pathExtValue: ".EXE;.CMD",
+      pathApi: path.win32,
+      accessFn: (candidate) => {
+        visited.push(candidate);
+        return candidate === "D:\\bin\\hermes.CMD"
+          ? Promise.resolve()
+          : Promise.reject(new Error("not found"));
+      },
+    });
+
+    expect(result).toEqual({
+      available: true,
+      resolved_path: "D:\\bin\\hermes.CMD",
+    });
+    expect(visited).toContain("C:\\tools\\hermes.EXE");
+    expect(visited).toContain("D:\\bin\\hermes.CMD");
+  });
+
   it("doctor reports the Agentplane Hermes lane registry state when configured", async () => {
     const root = await mkGitRepoRoot();
     await runCliSilent(["init", "--yes", "--root", root]);
@@ -682,7 +706,7 @@ describe("hermes adapter commands", () => {
     const io = captureStdIO();
     try {
       const code = await runCli(["hermes", "doctor", "--json", "--root", root]);
-      expect(code).toBe(0);
+      expect(code).toBe(1);
       const payload = JSON.parse(io.stdout) as {
         lane_registry: {
           path: string;
@@ -952,6 +976,44 @@ describe("hermes adapter commands", () => {
         delete process.env.HERMES_BIN;
       } else {
         process.env.HERMES_BIN = previousHermesBin;
+      }
+    }
+  });
+
+  it("rejects Hermes lifecycle mutations without the claimed board", async () => {
+    const keys = [
+      "HERMES_KANBAN_TASK",
+      "HERMES_KANBAN_BOARD",
+      "HERMES_KANBAN_RUN_ID",
+      "HERMES_KANBAN_CLAIM_LOCK",
+      "HERMES_KANBAN_WORKSPACE",
+    ] as const;
+    const previous = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
+    Object.assign(process.env, {
+      HERMES_KANBAN_TASK: "hk_123",
+      HERMES_KANBAN_RUN_ID: "run_123",
+      HERMES_KANBAN_CLAIM_LOCK: "claim_123",
+      HERMES_KANBAN_WORKSPACE: "/workspace/repo",
+    });
+    delete process.env.HERMES_KANBAN_BOARD;
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "hermes",
+        "lifecycle",
+        "comment",
+        "--body",
+        "claim-scoped update",
+        "--json",
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("HERMES_KANBAN_BOARD");
+    } finally {
+      io.restore();
+      for (const key of keys) {
+        const value = previous[key];
+        if (value === undefined) delete process.env[key];
+        else process.env[key] = value;
       }
     }
   });
