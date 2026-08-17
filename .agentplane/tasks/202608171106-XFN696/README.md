@@ -4,7 +4,7 @@ title: "Add policy-driven autonomous side-effect authority"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -28,7 +28,7 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-17T12:54:55.481Z"
+  updated_at: "2026-08-17T13:01:34.423Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
@@ -104,12 +104,16 @@ execution_contract:
     changed_paths:
       - "docs/recipes/hermes-agentplane.mdx"
       - "docs/user/configuration.mdx"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
       - "packages/agentplane/src/commands/task/advance.command.ts"
       - "packages/agentplane/src/commands/task/authority-grant.command.test.ts"
       - "packages/agentplane/src/commands/task/authority-grant.command.ts"
       - "packages/agentplane/src/commands/task/branch-task-supervisor.ts"
       - "packages/agentplane/src/commands/task/configured-authority.test.ts"
       - "packages/agentplane/src/commands/task/configured-authority.ts"
+      - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
       - "packages/core/schemas/config.schema.json"
       - "packages/core/schemas/workflow.schema.json"
       - "packages/core/src/config/config.test.ts"
@@ -188,8 +192,11 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:e614df3f1b1db270a3eb951102a31b48f7c378e531fcc135a2c9e604cde5859a"
+      digest: "sha256:75a348055b87402d2b2cc90ed40b176698adb0eaf306d58c3b25686dded0fbef"
       escalation_reasons:
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step.test.ts"
         - "central_path:packages/core/schemas/config.schema.json"
         - "central_path:packages/core/schemas/workflow.schema.json"
         - "central_path:packages/core/src/config/config.test.ts"
@@ -216,12 +223,16 @@ execution_contract:
         changed_files:
           - "docs/recipes/hermes-agentplane.mdx"
           - "docs/user/configuration.mdx"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
           - "packages/agentplane/src/commands/task/advance.command.ts"
           - "packages/agentplane/src/commands/task/authority-grant.command.test.ts"
           - "packages/agentplane/src/commands/task/authority-grant.command.ts"
           - "packages/agentplane/src/commands/task/branch-task-supervisor.ts"
           - "packages/agentplane/src/commands/task/configured-authority.test.ts"
           - "packages/agentplane/src/commands/task/configured-authority.ts"
+          - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
           - "packages/core/schemas/config.schema.json"
           - "packages/core/schemas/workflow.schema.json"
           - "packages/core/src/config/config.test.ts"
@@ -276,7 +287,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "658fc6caf08dfad385fe436cf4ef950382a8442e"
+  hash: "9b38443da39b55c2915f19a93e36d7d16e2992b8"
   message: "🚧 XFN696 task: apply external agent result"
 comments:
   -
@@ -285,6 +296,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 658fc6caf08d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 9b38443da39b. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -307,8 +321,22 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-17T12:56:07.508Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 9b38443da39b. CLI accepted one state-bound external-agent semantic result."
+    commit: "9b38443da39b55c2915f19a93e36d7d16e2992b8"
+  -
+    type: "verify"
+    at: "2026-08-17T13:01:34.423Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-17T12:54:58.712Z"
+doc_updated_at: "2026-08-17T13:01:42.349Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement a repository-configured AgentPlane authority provider with manual, policy allowlist, and explicit all/YOLO modes. Auto-grants must retain operation/state/scope digests, short TTL, durable audit, and a POLICY actor; default behavior remains manual. Fix task authority grant remote/local route drift so stale hosted authority requests return an actionable fresh-route diagnostic instead of incorrectly reporting that no grant is required. Keep model agents unable to impersonate USER and preserve human gates through an explicit deny list."
 sections:
@@ -393,6 +421,72 @@ sections:
 
     DecisionContextRef:
     - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-17T13:01:34.423Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c454ee01251f11e191d3b390e64ff163e8f938e58ca7c9d2bdfef02d14185016, input_digest=sha256:860c2a68dc54c8fcdd7879743bdfe498e9ec2a365be102649e8634a85a128cc1
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171106-XFN696 Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171106-XFN696 Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171106-XFN696 Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171106-XFN696 Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171106-XFN696 Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171106-XFN696 Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171106-XFN696-add-policy-driven-autonomous-side-effect-authori/.agentplane/tasks/202608171106-XFN696/blueprint/resolved-snapshot.json
+    - old_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+    - current_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608171106-XFN696
+
+    DecisionContextRef:
+    - operator_action: provider_action
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
@@ -503,6 +597,72 @@ BlueprintSnapshotRef:
 
 DecisionContextRef:
 - operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-17T13:01:34.423Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c454ee01251f11e191d3b390e64ff163e8f938e58ca7c9d2bdfef02d14185016, input_digest=sha256:860c2a68dc54c8fcdd7879743bdfe498e9ec2a365be102649e8634a85a128cc1
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171106-XFN696 Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171106-XFN696 Verification Contract check critical_paths
+
+Check: docs_contract
+Command: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171106-XFN696 Verification Contract check docs_contract
+
+Check: full_regression
+Command: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171106-XFN696 Verification Contract check full_regression
+
+Check: hosted_integration
+Command: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171106-XFN696 Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171106-XFN696 Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171106-XFN696-add-policy-driven-autonomous-side-effect-authori/.agentplane/tasks/202608171106-XFN696/blueprint/resolved-snapshot.json
+- old_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+- current_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608171106-XFN696
+
+DecisionContextRef:
+- operator_action: provider_action
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
