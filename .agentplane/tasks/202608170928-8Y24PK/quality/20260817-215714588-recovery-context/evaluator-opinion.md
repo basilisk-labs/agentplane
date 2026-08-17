@@ -1,0 +1,28 @@
+# Semantic quality review: rework
+
+Provenance: evaluator_supplied
+
+EVALUATOR returned rework with 6 typed finding(s).
+
+## Findings
+- The protocol schema now requires agentplane approve and approval_receipt_bridge, while the published plugin branch still exposes only doctor, run, and supervise and stops on approval_required.
+- The new doctor gate is fail-closed and preserves the primary-plan, denylist, provider-merge, destructive, credential, drift, TTL, audit, and state-binding boundaries.
+- The frozen observed checks contain only Git diff/status checks for this rework; required full regression, real E2E, hosted integration, external publication, and task-outcome evidence remain absent.
+- The trusted Hermes action must sign only the exact current operator_action.approval_receipt.request, substitute only the supplied argv placeholder, keep the Ed25519 private key out of LLM child environments, and fetch a fresh packet after execution.
+- Residual risk: Shipping the AgentPlane doctor gate before the plugin update would intentionally mark every existing protocol-v2 installation not ready.
+- Residual risk: Allowing the LLM or a model-controlled tool to invoke the signer would collapse the intended user-authority boundary.
+
+## Evidence
+- .agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/33e5b789b5b9b7d1354b2401744d658de34cf4a05a5e6076d90993b80864eb13.patch
+
+## Missing Tests
+- Executable plugin receipt canonicalization, Ed25519 signing, exact argv substitution, stale and replay rejection, and secret non-forwarding tests.
+- Cross-repository E2E covering one explicit plan approval, autonomous policy allowlist effects, denylist stop, and terminal attestation.
+- Full AgentPlane regression and hosted checks on the rebased PR head.
+
+## Hidden Assumptions
+- An environment capability assertion alone does not prove that the plugin has a configured signing identity or a user-authenticated invocation path.
+- The prior external repository evidence predates the mandatory approval-receipt bridge contract.
+
+## Residual Risks
+- Implement the trusted approval bridge in basilisk-labs/agentplane-hermes-plugin 0.2.0, expose a user-authenticated Hermes dialogue action, update the Hermes host branch only as needed for that action, run focused and cross-repository E2E checks, then refresh and publish all three PR heads before reevaluation.
