@@ -2,10 +2,10 @@
 id: "202608171853-X3FD5M"
 title: "Harden autonomous authority recovery and Hermes dialog approvals"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +29,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-17T20:20:08.660Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-17T20:27:31.033Z"
+  updated_by: "USER"
+  note: "Hosted Core CI CLI docs generated-reference check failed after the approved approval-receipt CLI options were added; regenerate docs/reference/cli.mdx and re-run verification."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -376,9 +376,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit:
-  hash: "73d9a456597263f33b45297384750c97bb3243df"
-  message: "🚧 X3FD5M task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -489,8 +487,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "73d9a456597263f33b45297384750c97bb3243df"
+  -
+    type: "verify"
+    at: "2026-08-17T20:27:31.033Z"
+    author: "USER"
+    state: "needs_rework"
+    note: "Hosted Core CI CLI docs generated-reference check failed after the approved approval-receipt CLI options were added; regenerate docs/reference/cli.mdx and re-run verification."
 doc_version: 3
-doc_updated_at: "2026-08-17T20:21:57.808Z"
+doc_updated_at: "2026-08-17T20:27:33.505Z"
 doc_updated_by: "CODER"
 description: "Recover the AgentPlane authority release after an unavailable GitHub protection lookup selected a local merge; fail closed on unavailable provider protection, repair supervisor replay/concurrency regressions, and define a verifiable Hermes-to-AgentPlane user approval receipt so the user approves in dialogue while the integration layer executes exact state-bound commands. Preserve mandatory primary plan approval and operator-owned provider merge semantics."
 sections:
@@ -744,6 +748,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608171853-X3FD5M
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-17T20:27:31.033Z — VERIFY — needs_rework
+
+    By: USER
+
+    Note: Hosted Core CI CLI docs generated-reference check failed after the approved approval-receipt CLI options were added; regenerate docs/reference/cli.mdx and re-run verification.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d3ea9d1b0233fc005c39c29e6fb1eb6ed23070236ccc66392cc78b2f652d61bc, input_digest=sha256:81e1450d60240d56f1fd9e8d4165451009512c697949796df4296aa5b13fe246
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171853-X3FD5M-harden-autonomous-authority-recovery-and-hermes/.agentplane/tasks/202608171853-X3FD5M/blueprint/resolved-snapshot.json
+    - old_digest: da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8
+    - current_digest: da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608171853-X3FD5M
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1024,6 +1058,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608171853-X3FD5M
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-17T20:27:31.033Z — VERIFY — needs_rework
+
+By: USER
+
+Note: Hosted Core CI CLI docs generated-reference check failed after the approved approval-receipt CLI options were added; regenerate docs/reference/cli.mdx and re-run verification.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d3ea9d1b0233fc005c39c29e6fb1eb6ed23070236ccc66392cc78b2f652d61bc, input_digest=sha256:81e1450d60240d56f1fd9e8d4165451009512c697949796df4296aa5b13fe246
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171853-X3FD5M-harden-autonomous-authority-recovery-and-hermes/.agentplane/tasks/202608171853-X3FD5M/blueprint/resolved-snapshot.json
+- old_digest: da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8
+- current_digest: da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608171853-X3FD5M
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
