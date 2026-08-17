@@ -1,10 +1,11 @@
 ---
 id: "202608171106-XFN696"
 title: "Add policy-driven autonomous side-effect authority"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 39
+revision: 40
 origin:
   system: "manual"
 depends_on: []
@@ -62,6 +63,20 @@ quality_review:
     - "The regression test covers the missing sequence: failed operation, exact-key replacement reservation, task route mutation, and successful replacement intent bound to the failed operation key."
     - "The supervisor recorded verification result ok for implementation commit 8009dae228bae5d93aff35d647df592e7f5efa67; the focused recovery file independently passed 12 tests, and lint, typecheck, policy routing, and diff checks passed."
     - "Residual risk: Concurrent route changes after the refresh CAS but before successor intent CAS are rejected by the second compare-and-swap loop rather than silently accepted."
+token_usage:
+  agent_runs: 12
+  input_tokens: null
+  journal_digest: "sha256:e0237a74a9401d93d0c589bff461640481ae482ead4275b7465501eadd822580"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-17T16:54:42.172Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -353,8 +368,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "8009dae228bae5d93aff35d647df592e7f5efa67"
-  message: "🚧 XFN696 task: apply external agent result"
+  hash: "e50161f96dca962710d878958c01e9a2b04d4ab3"
+  message: "🚧 XFN696 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -383,6 +398,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 8009dae228ba. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -515,9 +533,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-17T16:54:42.172Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "e50161f96dca962710d878958c01e9a2b04d4ab3"
 doc_version: 3
-doc_updated_at: "2026-08-17T16:51:33.341Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-17T16:54:42.193Z"
+doc_updated_by: "CODER"
 description: "Implement a repository-configured AgentPlane authority provider with manual, policy allowlist, and explicit all/YOLO modes. Auto-grants must retain operation/state/scope digests, short TTL, durable audit, and a POLICY actor; default behavior remains manual. Fix task authority grant remote/local route drift so stale hosted authority requests return an actionable fresh-route diagnostic instead of incorrectly reporting that no grant is required. Keep model agents unable to impersonate USER and preserve human gates through an explicit deny list."
 sections:
   Summary: |-
@@ -1067,6 +1093,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "8009dae228bae5d93aff35d647df592e7f5efa67"
+    message: "🚧 XFN696 task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "89f760183da24c5a768dfe97e6c4c2fb67bd1478"
     version: 1
@@ -1630,3 +1659,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/12` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:e0237a74a9401d93d0c589bff461640481ae482ead4275b7465501eadd822580`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-17T16:54:42.172Z`
