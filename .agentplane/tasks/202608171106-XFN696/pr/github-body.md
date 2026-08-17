@@ -15,14 +15,8 @@ Implement a repository-configured AgentPlane authority provider with manual, pol
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Recovery rework: refresh a pending exact-key replacement when the route fingerprint changes after
-its reservation; preserve failed-operation binding and avoid applying completed-operation
-stale-state recovery to latest=failed.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
