@@ -2,10 +2,10 @@
 id: "202608171853-X3FD5M"
 title: "Harden autonomous authority recovery and Hermes dialog approvals"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -65,9 +65,9 @@ quality_review:
     - "Typecheck, 27 focused security/catalog tests, all 565 fast-suite files with 4161 passing tests, docs freshness, compatibility ratchets, formatting, and routing checks pass."
     - "Residual risk: The clean-commit packaged-mixed-scope-lifecycle scenario must pass in hosted CI; local qualification correctly refused to package the active AgentPlane episode with uncommitted supervisor artifacts."
 token_usage:
-  agent_runs: 12
+  agent_runs: 14
   input_tokens: null
-  journal_digest: "sha256:1cf98c61cc7a007868430b72f091029266fec51a507194ffb827d9ddc88b022a"
+  journal_digest: "sha256:1a64bd9f9dad66d3581e69013ff0b74b3763c4c7e445308263781e97b49258f3"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -77,7 +77,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-17T20:31:29.348Z"
+  updated_at: "2026-08-17T20:44:35.260Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -389,8 +389,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "3cdaf96dadfd66bb7fbe92b5eb62a7451c9a527c"
-  message: "🚧 X3FD5M task: apply external agent result"
+  hash: "99febe396cafce24ce1f9b5055b28842c4482897"
+  message: "🚧 X3FD5M task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -425,6 +425,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 3cdaf96dadfd. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -558,9 +561,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-17T20:44:35.260Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "99febe396cafce24ce1f9b5055b28842c4482897"
 doc_version: 3
-doc_updated_at: "2026-08-17T20:44:15.885Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-17T20:44:35.289Z"
+doc_updated_by: "CODER"
 description: "Recover the AgentPlane authority release after an unavailable GitHub protection lookup selected a local merge; fail closed on unavailable provider protection, repair supervisor replay/concurrency regressions, and define a verifiable Hermes-to-AgentPlane user approval receipt so the user approves in dialogue while the integration layer executes exact state-bound commands. Preserve mandatory primary plan approval and operator-owned provider merge semantics."
 sections:
   Summary: |-
@@ -1030,7 +1041,7 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "bd0b92e1e289b7527aa42437048a7f44dcd666c3"
+    hash: "3cdaf96dadfd66bb7fbe92b5eb62a7451c9a527c"
     message: "🚧 X3FD5M task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "e22f17ffad89f8fe9c3e41abc9c483c2c5fc2c78"
@@ -1519,12 +1530,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/12` agent runs
+- Completeness: `0/14` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:1cf98c61cc7a007868430b72f091029266fec51a507194ffb827d9ddc88b022a`
+- Journal digest: `sha256:1a64bd9f9dad66d3581e69013ff0b74b3763c4c7e445308263781e97b49258f3`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-17T20:31:29.348Z`
+- Updated at: `2026-08-17T20:44:35.260Z`
