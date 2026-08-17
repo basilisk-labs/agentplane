@@ -100,6 +100,11 @@ function readTextConst(text, surface) {
 
 function writeTextConst(text, surface, nextVersion) {
   const name = typeof surface.name === "string" ? surface.name.trim() : "";
+  const current = readTextConst(text, surface);
+  if (current === null) {
+    throw new Error(`${surface.file} must export ${name} as a string literal.`);
+  }
+  if (current === nextVersion) return text;
   const escapedName = name.replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`);
   const pattern = new RegExp(
     String.raw`export\s+const\s+${escapedName}\s*=\s*["'][^"']*["']\s*;`,
@@ -118,6 +123,11 @@ function readWorkflowExpectedCliVersion(text) {
 }
 
 function writeWorkflowExpectedCliVersion(text, surface, nextVersion) {
+  const current = readWorkflowExpectedCliVersion(text);
+  if (current === null) {
+    throw new Error(`${surface.file} must contain framework.cli.expected_version.`);
+  }
+  if (current === nextVersion) return text;
   const next = text.replace(/^(\s*expected_version:\s*)\S+\s*$/mu, `$1${nextVersion}`);
   if (next === text) {
     throw new Error(`${surface.file} must contain framework.cli.expected_version.`);
@@ -201,7 +211,9 @@ export function applyReleaseVersionSurfaces(rootDir, nextVersion) {
 
     if (surface.kind === "json") {
       const value = readJson(absPath);
-      setByPath(value, assertStringArray(surface.path, `${surface.id}.path`), nextVersion);
+      const keys = assertStringArray(surface.path, `${surface.id}.path`);
+      if (getByPath(value, keys) === nextVersion) continue;
+      setByPath(value, keys, nextVersion);
       writeJson(absPath, value);
       changedPaths.push(surface.file);
       continue;
@@ -215,20 +227,26 @@ export function applyReleaseVersionSurfaces(rootDir, nextVersion) {
         }
         continue;
       }
-      setByPath(item, assertStringArray(surface.path, `${surface.id}.path`), nextVersion);
+      const keys = assertStringArray(surface.path, `${surface.id}.path`);
+      if (getByPath(item, keys) === nextVersion) continue;
+      setByPath(item, keys, nextVersion);
       writeJson(absPath, value);
       changedPaths.push(surface.file);
       continue;
     }
     if (surface.kind === "typescript_string_const") {
       const before = readFileSync(absPath, "utf8");
-      writeFileSync(absPath, writeTextConst(before, surface, nextVersion), "utf8");
+      const after = writeTextConst(before, surface, nextVersion);
+      if (after === before) continue;
+      writeFileSync(absPath, after, "utf8");
       changedPaths.push(surface.file);
       continue;
     }
     if (surface.kind === "workflow_expected_cli_version") {
       const before = readFileSync(absPath, "utf8");
-      writeFileSync(absPath, writeWorkflowExpectedCliVersion(before, surface, nextVersion), "utf8");
+      const after = writeWorkflowExpectedCliVersion(before, surface, nextVersion);
+      if (after === before) continue;
+      writeFileSync(absPath, after, "utf8");
       changedPaths.push(surface.file);
       continue;
     }

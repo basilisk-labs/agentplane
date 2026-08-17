@@ -24,7 +24,7 @@ function readJson(relPath) {
 
 function parseSemver(version) {
   const match =
-    /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/u.exec(
+    /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/u.exec(
       String(version).trim(),
     );
   if (!match) return null;
@@ -32,12 +32,19 @@ function parseSemver(version) {
     major: Number(match[1]),
     minor: Number(match[2]),
     patch: Number(match[3]),
+    prerelease: match[4] ? match[4].split(".") : [],
   };
 }
 
 function bumpVersion(currentVersion, bump) {
   const parsed = parseSemver(currentVersion);
   if (!parsed) throw new Error(`Invalid current semver: ${currentVersion}`);
+  if (parsed.prerelease.length > 0) {
+    if (bump === "patch") return `${parsed.major}.${parsed.minor}.${parsed.patch}`;
+    throw new Error(
+      `Cannot apply ${bump} bump to development version ${currentVersion}; pass --version explicitly.`,
+    );
+  }
   if (bump === "patch") return `${parsed.major}.${parsed.minor}.${parsed.patch + 1}`;
   if (bump === "minor") return `${parsed.major}.${parsed.minor + 1}.0`;
   if (bump === "major") return `${parsed.major + 1}.0.0`;

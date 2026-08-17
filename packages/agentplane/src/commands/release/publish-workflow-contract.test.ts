@@ -149,6 +149,12 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("Check for existing release evidence PR");
     expect(workflow).toContain("Apply release task evidence on a follow-up branch");
     expect(workflow).toContain("bun scripts/release-task-evidence.mjs apply");
+    expect(workflow).toContain("node scripts/release/open-next-development-version.mjs");
+    expect(workflow).toContain('--published-version "${PUBLISHED_VERSION}"');
+    expect(workflow).toContain("next-development-version.json");
+    expect(workflow).toContain("release evidence follow-up branch is dirty before mutation");
+    expect(workflow).toContain("next development version mutation left unstaged tracked files");
+    expect(workflow).toContain("record publish evidence and open");
     expect(workflow).toContain("Open or recover release evidence PR");
     expect(workflow).toContain("Verify and merge exact release evidence SHA");
     expect(workflow).toContain("node scripts/workflow/verify-release-evidence-pr.mjs");

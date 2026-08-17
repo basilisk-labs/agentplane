@@ -2295,9 +2295,9 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "aa230065940bbeca341260cc7bfd453df7cae6b29f758f71c9d0f9286139268f",
-    "to_sha256": "ba86d65ec1fe45a4d31d19c537a863e802e8e7a7bbdb0d1b0a301d4c3e82b3ab",
-    "to_version": "0.7.6"
+    "surface_sha256": "c0dd505cccb05f8434d04b8094b5c5cca0c8c88dbd6918e69257ef530000f983",
+    "to_sha256": "2ab9d0c09fdab023ea57552690026b467b5aff3069ac3bb0d834c3b343534719",
+    "to_version": "0.7.7-beta.1"
   },
   "review": {
     "conditions": [

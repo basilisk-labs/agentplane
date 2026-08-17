@@ -17,6 +17,7 @@ import {
   compareSemver,
   listMissingPatchTags,
   normalizeTagVersion,
+  releaseVersionFromDevelopment,
   releaseInstructions,
   requiredBulletCount,
   type Change,
@@ -274,7 +275,24 @@ export async function createReleasePlan(
 
   const prevTag = flags.since ?? (await getLatestSemverTag(gitRoot));
   const latestPublishedVersion = normalizeTagVersion(prevTag);
-  if (latestPublishedVersion && compareSemver(coreVersion, latestPublishedVersion) > 0) {
+  const developmentReleaseVersion = releaseVersionFromDevelopment(
+    coreVersion,
+    latestPublishedVersion,
+  );
+  if (developmentReleaseVersion && flags.bump !== "patch") {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Development version ${coreVersion} can only be finalized with a patch release plan. ` +
+        `Use --patch to prepare ${developmentReleaseVersion}.`,
+    });
+  }
+  if (
+    !developmentReleaseVersion &&
+    latestPublishedVersion &&
+    compareSemver(coreVersion, latestPublishedVersion) > 0
+  ) {
     const missingTags = listMissingPatchTags(latestPublishedVersion, coreVersion);
     const missingText = missingTags.length > 0 ? missingTags.join(", ") : coreVersion;
     throw new CliError({
@@ -285,7 +303,7 @@ export async function createReleasePlan(
         `Publish or recover the missing release sequence first: ${missingText}.`,
     });
   }
-  const nextVersion = bumpVersion(coreVersion, flags.bump);
+  const nextVersion = developmentReleaseVersion ?? bumpVersion(coreVersion, flags.bump);
   const nextTag = `v${nextVersion}`;
   const baseSha = await resolveProtectedBaseShaForPlan({
     cwd: ctx.cwd,

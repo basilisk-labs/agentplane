@@ -10,6 +10,10 @@ description: "Patch release flow, CI parity checks, and GitHub-only npm publish 
 - `packages/agentplane` dependencies `@agentplaneorg/core` and `@agentplaneorg/recipes` must match the same release version exactly.
 - Patch bump is default automation path.
 - Minor/major bump requires explicit approval.
+- After a successful stable publish, the hosted evidence follow-up opens the next patch development
+  line as `X.Y.(Z+1)-beta.1` across every semantic version surface.
+- A patch release plan created from `X.Y.Z-beta.N` finalizes `X.Y.Z`; it does not skip to
+  `X.Y.(Z+1)`.
 
 ## Notes policy
 
@@ -40,9 +44,10 @@ bun run release:incidents:check
 agentplane release plan
 ```
 
-If the workspace version is already ahead of the latest published/tagged patch release, the planner
-now fails instead of proposing a skipped future patch. Recover and publish the missing patch chain
-first, then plan the next release.
+If the workspace contains the exact next patch development version, such as `0.7.7-beta.1` above
+stable tag `v0.7.6`, the planner targets `v0.7.7`. Other ahead-of-tag versions still fail instead of
+proposing a skipped future patch. Recover and publish the missing patch chain first, then plan the
+next release.
 
 3. Draft notes from plan artifacts.
 4. Run local release gate (must match publish prerequisites):
@@ -86,6 +91,23 @@ agentplane release candidate --push --yes
 
 That command prepares and optionally pushes only the candidate branch. Final publication remains
 gated on merge to the protected base branch and hosted publish from `main`.
+
+7. Open the next development line automatically.
+
+After hosted publication succeeds, the release-evidence follow-up PR records the canonical publish
+evidence and runs:
+
+```bash
+node scripts/release/open-next-development-version.mjs \
+  --published-version X.Y.Z \
+  --write
+```
+
+For a stable `X.Y.Z` publish, this updates package manifests, exact internal dependency pins,
+runtime version constants, repository CLI expectations, ACR examples, the lockfile, and generated
+package reference documentation to `X.Y.(Z+1)-beta.1`. Repeated workflow runs are idempotent and do
+not downgrade a workspace that has already advanced. Historical release notes, compatibility
+comments, and third-party dependency versions are not release-version surfaces.
 
 ## What `release:prepublish` covers
 

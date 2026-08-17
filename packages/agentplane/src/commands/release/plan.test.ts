@@ -141,6 +141,55 @@ describeWhenNotHook("release plan", () => {
     ).toThrow(/requires explicit approval/i);
   });
 
+  it("finalizes the next patch beta instead of skipping to another patch", async () => {
+    const repo = await tempRepo({ withDefaultConfig: true });
+    const { root } = repo;
+    try {
+      await seedReleaseWorkspace(root, {
+        coreVersion: "0.2.7-beta.1",
+        cliVersion: "0.2.7-beta.1",
+        dependencyVersion: "0.2.7-beta.1",
+      });
+      await commitAll(root, "open 0.2.7 beta development");
+      await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+
+      const result = await createReleasePlan(
+        { cwd: root, rootOverride: root },
+        { bump: "patch", yes: false },
+      );
+
+      expect(result).toMatchObject({
+        previous_tag: "v0.2.6",
+        previous_version: "0.2.7-beta.1",
+        next_tag: "v0.2.7",
+        next_version: "0.2.7",
+        bump: "patch",
+      });
+    } finally {
+      await repo.cleanup();
+    }
+  }, 60_000);
+
+  it("rejects a prerelease that is not the next patch beta line", async () => {
+    const repo = await tempRepo({ withDefaultConfig: true });
+    const { root } = repo;
+    try {
+      await seedReleaseWorkspace(root, {
+        coreVersion: "0.2.7-alpha.1",
+        cliVersion: "0.2.7-alpha.1",
+        dependencyVersion: "0.2.7-alpha.1",
+      });
+      await commitAll(root, "seed unsupported prerelease");
+      await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+
+      await expect(
+        runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false }),
+      ).rejects.toThrow(/Expected 0\.2\.7-beta\.N/i);
+    } finally {
+      await repo.cleanup();
+    }
+  }, 60_000);
+
   it("fails when workspace version is already ahead of the latest published patch tag", async () => {
     const repo = await tempRepo({ withDefaultConfig: true });
     const { root } = repo;
