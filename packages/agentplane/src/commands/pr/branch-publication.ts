@@ -1,11 +1,12 @@
 import { execFileAsync } from "@agentplaneorg/core/process";
-import { gitEnv, gitRefreshBranchTrackingRef } from "@agentplaneorg/core/git";
+import { gitRefreshBranchTrackingRef } from "@agentplaneorg/core/git";
 
 import { gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
 import {
   observeExistingGithubPrByBranch,
   parseGithubRepoFromRemoteUrl,
 } from "./internal/sync-github.js";
+import { ghEnv } from "./internal/gh-api.js";
 
 const GIT_OBJECT_ID_PATTERN = /^[0-9a-f]{40}(?:[0-9a-f]{24})?$/i;
 
@@ -13,7 +14,7 @@ async function gitResolveBranchHead(gitRoot: string, branch: string): Promise<st
   try {
     const { stdout } = await execFileAsync("git", ["rev-parse", `refs/heads/${branch}`], {
       cwd: gitRoot,
-      env: gitEnv(),
+      env: ghEnv(),
     });
     const trimmed = stdout.trim();
     return trimmed.length > 0 ? trimmed : null;
@@ -33,7 +34,7 @@ async function gitResolveRemoteBranchHead(
       ["ls-remote", "--heads", remoteTarget, `refs/heads/${branch}`],
       {
         cwd: gitRoot,
-        env: gitEnv(),
+        env: ghEnv(),
       },
     );
     const trimmed = stdout.trim();
@@ -49,7 +50,7 @@ async function gitResolveRemotePushTarget(gitRoot: string, remote: string): Prom
   try {
     const { stdout } = await execFileAsync("git", ["remote", "get-url", "--push", remote], {
       cwd: gitRoot,
-      env: gitEnv(),
+      env: ghEnv(),
     });
     const trimmed = stdout.trim();
     return trimmed.length > 0 ? trimmed : remote;
@@ -66,11 +67,11 @@ async function gitResolveRemoteUrls(opts: {
     const [{ stdout: fetchStdout }, { stdout: pushStdout }] = await Promise.all([
       execFileAsync("git", ["remote", "get-url", "--all", opts.remote], {
         cwd: opts.gitRoot,
-        env: gitEnv(),
+        env: ghEnv(),
       }),
       execFileAsync("git", ["remote", "get-url", "--push", "--all", opts.remote], {
         cwd: opts.gitRoot,
-        env: gitEnv(),
+        env: ghEnv(),
       }),
     ]);
     const fetchUrls = fetchStdout
@@ -107,14 +108,14 @@ async function gitSetBranchUpstream(opts: {
 }): Promise<void> {
   await execFileAsync("git", ["config", `branch.${opts.branch}.remote`, opts.remote], {
     cwd: opts.gitRoot,
-    env: gitEnv(),
+    env: ghEnv(),
   });
   await execFileAsync(
     "git",
     ["config", `branch.${opts.branch}.merge`, `refs/heads/${opts.remoteBranch}`],
     {
       cwd: opts.gitRoot,
-      env: gitEnv(),
+      env: ghEnv(),
     },
   );
 }
@@ -210,7 +211,7 @@ async function pushRebasedBranchWithObservedLease(opts: {
     ],
     {
       cwd: opts.gitRoot,
-      env: gitEnv(),
+      env: ghEnv(),
     },
   );
   return true;
@@ -241,7 +242,7 @@ export async function pushTaskBranchUpstreamIfConfigured(opts: {
     try {
       await execFileAsync("git", ["remote", "get-url", remote], {
         cwd: opts.gitRoot,
-        env: gitEnv(),
+        env: ghEnv(),
       });
     } catch {
       return false;
@@ -251,7 +252,7 @@ export async function pushTaskBranchUpstreamIfConfigured(opts: {
       ["push", "--no-verify", "-u", remote, `HEAD:refs/heads/${opts.branch}`],
       {
         cwd: opts.gitRoot,
-        env: gitEnv(),
+        env: ghEnv(),
       },
     );
   } catch (err) {

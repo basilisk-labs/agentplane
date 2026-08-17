@@ -2,11 +2,14 @@
   "base": "main",
   "branch": "task/202608171853-X3FD5M/harden-autonomous-authority-recovery-and-hermes",
   "created_at": "2026-08-17T18:59:25.035Z",
-  "diffstat_sha256": "sha256:79c5eb9a964c244fe5afd900a9887fdeb2a01999a0a7e18c8115255df5199c56",
+  "diffstat_sha256": "sha256:02ed225de475c3f79840b6e1fc0f13f90437613fdd4b1dce2e585d85479d2a53",
   "last_verified_at": null,
+  "pr_number": 4840,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4840",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202608171853-X3FD5M",
-  "updated_at": "2026-08-17T18:59:25.035Z",
+  "updated_at": "2026-08-17T19:18:18.741Z",
   "verify": {
     "status": "skipped"
   }
