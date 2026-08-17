@@ -15,13 +15,8 @@ Recover the AgentPlane authority release after an unavailable GitHub protection 
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Hosted Core CI CLI docs generated-reference check failed after the approved approval-receipt CLI
-options were added; regenerate docs/reference/cli.mdx and re-run verification.
-```
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>

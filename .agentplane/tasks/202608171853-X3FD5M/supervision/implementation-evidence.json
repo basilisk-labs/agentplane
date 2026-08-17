@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check f910eec91fd603928fc1bc8a7243a1ade71981ad..807dc2b6f39caf505efcc1a2cceb8b525fe15f54",
+      "command": "git diff --check 9c58966b4696877f25003018c1228a9b69af4e97..bd0b92e1e289b7527aa42437048a7f44dcd666c3",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB f910eec91fd603928fc1bc8a7243a1ade71981ad..807dc2b6f39caf505efcc1a2cceb8b525fe15f54",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 9c58966b4696877f25003018c1228a9b69af4e97..bd0b92e1e289b7527aa42437048a7f44dcd666c3",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -23,11 +23,8 @@
         "M\t.agentplane/tasks/202608171853-X3FD5M/pr/github-title.txt",
         "M\t.agentplane/tasks/202608171853-X3FD5M/pr/meta.json",
         "M\t.agentplane/tasks/202608171853-X3FD5M/pr/review.md",
-        "A\t.agentplane/tasks/202608171853-X3FD5M/verification/20260817200910782-84296186c85b9037.json",
-        "M\tpackages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
-        "M\tscripts/baselines/v0.7-compatibility-candidate.json",
-        "M\tscripts/bench/capture-compatibility-candidate.mjs",
-        "M\tscripts/checks/check-compatibility-contract-baseline.mjs"
+        "A\t.agentplane/tasks/202608171853-X3FD5M/verification/20260817202731033-71e876e41273d146.json",
+        "M\tdocs/user/cli-reference.generated.mdx"
       ]
     },
     {
@@ -37,8 +34,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "f910eec91fd603928fc1bc8a7243a1ade71981ad",
-  "implementation_commit": "807dc2b6f39caf505efcc1a2cceb8b525fe15f54",
+  "execution_base_commit": "9c58966b4696877f25003018c1228a9b69af4e97",
+  "implementation_commit": "bd0b92e1e289b7527aa42437048a7f44dcd666c3",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
@@ -47,10 +44,7 @@
       " M .agentplane/tasks/202608171853-X3FD5M/pr/github-title.txt",
       " M .agentplane/tasks/202608171853-X3FD5M/pr/meta.json",
       " M .agentplane/tasks/202608171853-X3FD5M/pr/review.md",
-      " M scripts/baselines/v0.7-compatibility-candidate.json",
-      " M scripts/bench/capture-compatibility-candidate.mjs",
-      " M scripts/checks/check-compatibility-contract-baseline.mjs",
-      "?? .agentplane/tasks/202608171853-X3FD5M/verification/20260817200910782-84296186c85b9037.json"
+      "?? .agentplane/tasks/202608171853-X3FD5M/verification/20260817202731033-71e876e41273d146.json"
     ],
     "classification": [
       {
@@ -75,19 +69,7 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": " M scripts/baselines/v0.7-compatibility-candidate.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M scripts/bench/capture-compatibility-candidate.mjs"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M scripts/checks/check-compatibility-contract-baseline.mjs"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608171853-X3FD5M/verification/20260817200910782-84296186c85b9037.json"
+        "line": "?? .agentplane/tasks/202608171853-X3FD5M/verification/20260817202731033-71e876e41273d146.json"
       }
     ],
     "final": [],
@@ -98,10 +80,7 @@
       " M .agentplane/tasks/202608171853-X3FD5M/pr/github-title.txt",
       " M .agentplane/tasks/202608171853-X3FD5M/pr/meta.json",
       " M .agentplane/tasks/202608171853-X3FD5M/pr/review.md",
-      " M scripts/baselines/v0.7-compatibility-candidate.json",
-      " M scripts/bench/capture-compatibility-candidate.mjs",
-      " M scripts/checks/check-compatibility-contract-baseline.mjs",
-      "?? .agentplane/tasks/202608171853-X3FD5M/verification/20260817200910782-84296186c85b9037.json"
+      "?? .agentplane/tasks/202608171853-X3FD5M/verification/20260817202731033-71e876e41273d146.json"
     ],
     "unchanged_from_execution_baseline": []
   },

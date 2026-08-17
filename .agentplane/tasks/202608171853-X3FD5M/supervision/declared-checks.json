@@ -2,7 +2,7 @@
   "checks": [
     {
       "command": "bun run typecheck",
-      "duration_ms": 100,
+      "duration_ms": 92,
       "exit_code": 0,
       "script": "typecheck",
       "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
@@ -10,11 +10,11 @@
     },
     {
       "command": "bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts",
-      "duration_ms": 21772,
+      "duration_ms": 19477,
       "exit_code": 0,
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171853-X3FD5M-harden-autonomous-authority-recovery-and-hermes\n\n\n Test Files  4 passed (4)\n      Tests  47 passed (47)\n   Start at  23:19:44\n   Duration  21.56s (transform 3.78s, setup 0ms, import 3.94s, tests 31.15s, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171853-X3FD5M-harden-autonomous-authority-recovery-and-hermes\n\n\n Test Files  4 passed (4)\n      Tests  47 passed (47)\n   Start at  23:29:48\n   Duration  19.29s (transform 3.18s, setup 0ms, import 3.30s, tests 27.32s, environment 0ms)\n\n"
     },
     {
       "command": "node .agentplane/policy/check-routing.mjs",
