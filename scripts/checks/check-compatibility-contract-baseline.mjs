@@ -345,6 +345,7 @@ function validateReviewedCandidate({
     "202608080805-KPWPAV",
     "202608110235-WCJJRD",
     "202608112213-NWJCBW",
+    "202608171853-X3FD5M",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -382,6 +383,7 @@ function validateReviewedCandidate({
     "202608110235-WCJJRD",
     "202608112213-NWJCBW",
     "202608112259-T3ZDDM",
+    "202608171853-X3FD5M",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -429,7 +431,7 @@ function validateReviewedCandidate({
   assert(
     hashJson(preReleasePackageDelta) ===
       hashJson({
-        source_tasks: ["202608021231-SHYJGK", "202608112259-T3ZDDM"],
+        source_tasks: ["202608021231-SHYJGK", "202608112259-T3ZDDM", "202608171853-X3FD5M"],
         classification: "additive",
         section: "package_manifests",
         from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
@@ -857,7 +859,7 @@ function validateReviewedCandidate({
     ],
     cli_topology: cliSourceTasks,
     machine_output_contract: ["202607221848-ABG7SD"],
-    workflow_schema: ["202607221846-4VB97J", "202608112213-NWJCBW"],
+    workflow_schema: ["202607221846-4VB97J", "202608112213-NWJCBW", "202608171853-X3FD5M"],
     tarball_policy: [
       "202607221846-4VB97J",
       "202607221848-ER5H6N",
@@ -1424,7 +1426,8 @@ function validateReviewedCandidate({
         { name: "operation-digest", kind: "string", valueHint: "<sha256>", required: true },
         { name: "state-fingerprint", kind: "string", valueHint: "<sha256>", required: true },
         { name: "state-scope-digest", kind: "string", valueHint: "<sha256>", required: true },
-        { name: "by", kind: "string", valueHint: "<actor>", required: true },
+        { name: "by", kind: "string", valueHint: "<actor>" },
+        { name: "approval-receipt", kind: "string", valueHint: "<base64url>" },
         { name: "ttl-minutes", kind: "string", valueHint: "<1-60>" },
         { name: "remote", kind: "boolean", valueHint: null, default: false },
       ],
@@ -1797,10 +1800,15 @@ function validateReviewedCandidate({
     },
     {
       command: "task authority grant",
+      name: "approval-receipt",
+      kind: "string",
+      valueHint: "<base64url>",
+    },
+    {
+      command: "task authority grant",
       name: "by",
       kind: "string",
       valueHint: "<actor>",
-      required: true,
     },
     {
       command: "task authority grant",
@@ -1953,6 +1961,12 @@ function validateReviewedCandidate({
       valueHint: "<repository|auto|direct|branch_pr>",
       default: "repository",
       choices: ["repository", "auto", "direct", "branch_pr"],
+    },
+    {
+      command: "task plan approve",
+      name: "approval-receipt",
+      kind: "string",
+      valueHint: "<base64url>",
     },
     {
       command: "task run",
@@ -2286,6 +2300,12 @@ function validateReviewedCandidate({
     {
       kind: "option",
       command: "task authority grant",
+      name: "approval-receipt",
+      source_task: "202608171853-X3FD5M",
+    },
+    {
+      kind: "option",
+      command: "task authority grant",
       name: "by",
       source_task: "202607221849-NWVCAG",
     },
@@ -2324,6 +2344,12 @@ function validateReviewedCandidate({
       command: "task authority grant",
       name: "ttl-minutes",
       source_task: "202607221849-NWVCAG",
+    },
+    {
+      kind: "option",
+      command: "task plan approve",
+      name: "approval-receipt",
+      source_task: "202608171853-X3FD5M",
     },
     {
       kind: "option",
@@ -2647,9 +2673,29 @@ function validateReviewedCandidate({
       },
     },
   ];
+  const conversationalPlanApprovalMutation = {
+    identity: "task plan approve --by",
+    before: {
+      command: "task plan approve",
+      kind: "string",
+      name: "by",
+      required: true,
+      valueHint: "<id>",
+    },
+    after: {
+      command: "task plan approve",
+      name: "by",
+      kind: "string",
+      valueHint: "<id>",
+    },
+  };
   assert(
     hashJson(cliTopologyDelta.mutated_options) ===
-      hashJson([...canonicalExecutionProfileOptionMutations, supersededQueueReleaseStatusMutation]),
+      hashJson([
+        ...canonicalExecutionProfileOptionMutations,
+        supersededQueueReleaseStatusMutation,
+        conversationalPlanApprovalMutation,
+      ]),
     "CLI option mutation is not an approved compatibility extension",
   );
 

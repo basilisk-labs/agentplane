@@ -15,8 +15,14 @@ Recover the AgentPlane authority release after an unavailable GitHub protection 
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note:
+
+```text
+Hosted Core CI Compatibility baseline failed because the reviewed v0.7 compatibility candidate and
+ratchet did not include the signed approval-receipt CLI/schema delta; preserve the three scoped
+repair files and re-run verification.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,6 +34,7 @@ Recover the AgentPlane authority release after an unavailable GitHub protection 
 
 ```text
  docs/recipes/hermes-agentplane.mdx                 |  37 +++
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
  .../src/commands/pr/branch-publication.ts          |  23 +-
  .../integrate/internal/github-protection.test.ts   |  58 +++++
  .../pr/integrate/internal/github-protection.ts     |  16 ++
@@ -56,7 +63,10 @@ Recover the AgentPlane authority release after an unavailable GitHub protection 
  packages/spec/schemas/workflow.schema.json         |  84 +++++++
  schemas/config.schema.json                         |  49 +++-
  schemas/workflow.schema.json                       |  84 +++++++
- 29 files changed, 1541 insertions(+), 90 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    |  72 ++++--
+ scripts/bench/capture-compatibility-candidate.mjs  |  35 +++
+ .../check-compatibility-contract-baseline.mjs      |  56 ++++-
+ 33 files changed, 1690 insertions(+), 115 deletions(-)
 ```
 
 </details>
