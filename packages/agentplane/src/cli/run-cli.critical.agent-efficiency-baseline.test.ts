@@ -218,7 +218,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202608112259-T3ZDDM",
         ],
         candidate: {
-          surface_sha256: "eb329963bb076054c7c8f1340ba5eb9a086d399e0b1d0f8dd09d20322ae5ee1a",
+          surface_sha256: "08bbdbf9131f3f264d91ef719da62795871b4a3e00acb50653ea252125d51802",
           section_digests: {
             agent_facing_context_contracts:
               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
@@ -227,7 +227,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
             package_manifests: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
             tarball_policy: "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
-            workflow_schema: "4714ecc43f394109cd5807ec5e544716abe7c67c20ea18554f8f2b559bf97b21",
+            workflow_schema: "e234ac9d25db50340f46a3fcc01c8f5443f85bee38ce8ec6243a5e525046aa6f",
           },
         },
         pre_release_package_delta: {

@@ -64,6 +64,7 @@ async function writeRecord(
   root: string,
   implementationSha: string,
   details = DETAILS,
+  environment?: Parameters<typeof resolveVerificationInputIdentity>[0]["environment"],
 ): Promise<string> {
   const verificationInput = await resolveVerificationInputIdentity({
     gitRoot: root,
@@ -73,7 +74,7 @@ async function writeRecord(
     verifySteps: VERIFY_STEPS,
     workflowMode: "branch_pr",
     baseRef: "main",
-    environment: {
+    environment: environment ?? {
       platform: process.platform,
       architecture: process.arch,
       node_major: process.versions.node.split(".")[0] ?? process.versions.node,
@@ -183,6 +184,40 @@ describe("content-addressed verification records", () => {
     ).resolves.toMatchObject({
       accepted: false,
       reason: "verification_steps_changed",
+    });
+  });
+
+  it("keeps verification current when a different CLI runtime inspects the route", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await commitPath(root, "package.json", '{"name":"verification-v2"}\n', "seed context");
+    await execFileAsync("git", ["checkout", "-b", "task/verification-v2"], { cwd: root });
+    const implementationSha = await commitPath(
+      root,
+      "src/feature.ts",
+      "export const feature = true;\n",
+      "implement feature",
+    );
+    await writeRecord(root, implementationSha, DETAILS, {
+      platform: process.platform,
+      architecture: process.arch,
+      node_major: "999",
+      bun_major: "9",
+    });
+
+    await expect(assess(root, task(), implementationSha)).resolves.toMatchObject({
+      accepted: true,
+      reason: "verification_current",
+    });
+
+    const lifecycleSha = await commitPath(
+      root,
+      `.agentplane/tasks/${TASK_ID}/README.md`,
+      "lifecycle-only change after verification\n",
+      "record lifecycle after verification",
+    );
+    await expect(assess(root, task(), lifecycleSha)).resolves.toMatchObject({
+      accepted: true,
+      reason: "verification_reused_equivalent_input",
     });
   });
 

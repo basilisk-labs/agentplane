@@ -1,7 +1,11 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { createCliEmitter } from "../../cli/output.js";
-import { buildTaskRouteDecision } from "../shared/route-decision.js";
+import {
+  prepareAgentWorkOrder,
+  requirePreparedAgentWorkOrder,
+} from "../../runner/usecases/agent-work-order.js";
+import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
   appendSideEffectAuthorityAudit,
   createSideEffectAuthorityRecord,
@@ -118,33 +122,56 @@ export const taskAuthorityGrantSpec: CommandSpec<TaskAuthorityGrantParsed> = {
   }),
 };
 
-function requestedOperation(decision: Awaited<ReturnType<typeof buildTaskRouteDecision>>) {
+function currentRouteCommand(taskId: string, remote: boolean): string {
+  return `agentplane task next-action ${taskId}${remote ? " --remote" : ""} --explain`;
+}
+
+function requestedOperation(
+  decision: TaskRouteDecision,
+  parsed: Pick<TaskAuthorityGrantParsed, "taskId" | "remote">,
+) {
   const request = decision.workflowStep.kind === "approval" ? decision.workflowStep.request : null;
   if (request?.type !== "side_effect") {
     throw usageError({
       spec: taskAuthorityGrantSpec,
-      message: "The current task route does not require a side-effect authority grant.",
+      message:
+        "Authority request is stale: the recomputed " +
+        `${parsed.remote ? "hosted" : "local"} route is now ` +
+        `${decision.workflowStep.kind}:${decision.workflowStep.id} and no longer requests ` +
+        `side-effect authority. Inspect the current route with: ${currentRouteCommand(
+          parsed.taskId,
+          parsed.remote,
+        )}`,
     });
   }
   return request;
 }
 
 export function makeRunTaskAuthorityGrantHandler(session: {
-  getLocalContext: (cmd: string) => Promise<CommandContext>;
+  getLocalContext: (
+    cmd: string,
+    cwd: string,
+    rootOverride: string | null,
+  ) => Promise<CommandContext>;
   getRemoteContext: (cmd: string) => Promise<CommandContext>;
+  getLocalWriteContext: (cmd: string) => Promise<CommandContext>;
+  getRemoteWriteContext: (cmd: string) => Promise<CommandContext>;
 }) {
   return async (ctx: CommandCtx, parsed: TaskAuthorityGrantParsed): Promise<number> => {
     const commandCtx = await (parsed.remote
       ? session.getRemoteContext("task authority grant")
-      : session.getLocalContext("task authority grant"));
-    const decision = await buildTaskRouteDecision({
-      ctx: commandCtx,
-      cwd: ctx.cwd,
-      rootOverride: ctx.rootOverride ?? null,
-      taskId: parsed.taskId,
-      includeRemote: parsed.remote,
-    });
-    const request = requestedOperation(decision);
+      : session.getLocalContext("task authority grant", ctx.cwd, ctx.rootOverride ?? null));
+    const preparedWorkOrder = requirePreparedAgentWorkOrder(
+      await prepareAgentWorkOrder({
+        command_ctx: commandCtx,
+        cwd: ctx.cwd,
+        root_override: ctx.rootOverride ?? null,
+        task_id: parsed.taskId,
+        ...(parsed.remote ? { include_remote: true } : {}),
+      }),
+    );
+    const decision = preparedWorkOrder.route_decision;
+    const request = requestedOperation(decision, parsed);
     if (
       request.operationId !== parsed.operationId ||
       request.operationDigest !== parsed.operationDigest ||
@@ -154,19 +181,23 @@ export function makeRunTaskAuthorityGrantHandler(session: {
       throw usageError({
         spec: taskAuthorityGrantSpec,
         message:
-          "Authority grant inputs are stale or do not match the current task next-action; recompute the route.",
+          "Authority grant inputs are stale or do not match the recomputed task route. " +
+          `Inspect the current route with: ${currentRouteCommand(parsed.taskId, parsed.remote)}`,
       });
     }
     const now = new Date();
     const issuedAt = now.toISOString();
     const expiresAt = new Date(now.getTime() + parsed.ttlMinutes * 60_000).toISOString();
+    const writeCommandCtx = await (parsed.remote
+      ? session.getRemoteWriteContext("task authority grant")
+      : session.getLocalWriteContext("task authority grant"));
     const task = await loadTaskFromContext({
-      ctx: commandCtx,
+      ctx: writeCommandCtx,
       taskId: parsed.taskId,
-      preferBranchSnapshot: commandCtx.config.workflow_mode === "branch_pr",
+      preferBranchSnapshot: writeCommandCtx.config.workflow_mode === "branch_pr",
     });
     const loaded = await loadSideEffectAuthorityState({
-      gitRoot: commandCtx.resolvedProject.gitRoot,
+      gitRoot: writeCommandCtx.resolvedProject.gitRoot,
       taskId: parsed.taskId,
       task,
     });
@@ -205,7 +236,7 @@ export function makeRunTaskAuthorityGrantHandler(session: {
       outcome: "approved",
     });
     await persistSideEffectAuthorityState({
-      gitRoot: commandCtx.resolvedProject.gitRoot,
+      gitRoot: writeCommandCtx.resolvedProject.gitRoot,
       taskId: parsed.taskId,
       state: audited,
     });

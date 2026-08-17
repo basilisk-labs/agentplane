@@ -20,6 +20,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   createSupervisorEpisodeStore,
+  preparePersistedSupervisorReplacementAfterFailure,
   resolveSupervisorExecutionEpisodePath,
 } from "../commands/shared/supervisor-execution-episode.js";
 import {
@@ -27,6 +28,14 @@ import {
   validateExternalAgentResultEnvelope,
   type ExternalAgentExchange,
 } from "../commands/task/external-agent-exchange.js";
+import {
+  requiresImplementationRecoveryReplacement,
+  requiresPlanningRecoveryReplacement,
+} from "../commands/task/external-agent-supervisor-recovery.js";
+import {
+  blockingImplementationAuthorityViolations,
+  requiresImplementationReworkReopen,
+} from "../commands/task/external-agent-implementation-authority.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
 import { readRouteFingerprint } from "./run-cli.core.task-advance.testkit.js";
@@ -120,6 +129,104 @@ async function writePlanningResult(packet: AgentPacket, summary: string): Promis
 }
 
 describe("task advance effect recovery", () => {
+  it("requires replacement when a non-planning result predates an explicit PLANNER reset", () => {
+    const stateFingerprint = `sha256:${"a".repeat(64)}`;
+    const planningFingerprint = `sha256:${"b".repeat(64)}`;
+    expect(
+      requiresPlanningRecoveryReplacement({
+        decision: {
+          workflowStep: {
+            kind: "agent_episode",
+            episode: { purpose: "planning" },
+            preconditionFingerprint: { digest: planningFingerprint },
+          },
+        } as never,
+        exchange: {
+          purpose: "implementation",
+          state_fingerprint: stateFingerprint,
+        } as ExternalAgentExchange,
+      }),
+    ).toBe(true);
+  });
+
+  it("requires replacement when plan approval changes pending implementation authority", () => {
+    const taskDigest = `sha256:${"a".repeat(64)}`;
+    const backendDigest = `sha256:${"b".repeat(64)}`;
+    const fingerprint = {
+      task_id: "202608171106-XFN696",
+      task_revision: 16,
+      worktree: "/repo/.agentplane/worktrees/task",
+      components: {
+        task: { digest: taskDigest },
+        backend_projection: { digest: backendDigest },
+      },
+    };
+    const decision = {
+      workflowStep: {
+        preconditionFingerprint: {
+          ...fingerprint,
+          task_revision: 19,
+          digest: `sha256:${"c".repeat(64)}`,
+        },
+      },
+    } as never;
+    const exchange = { purpose: "task_worktree_resolution" } as ExternalAgentExchange;
+    const workOrder = { state_fingerprint: fingerprint } as AgentWorkOrderV2;
+
+    expect(
+      requiresImplementationRecoveryReplacement({ decision, exchange, work_order: workOrder }),
+    ).toBe(true);
+    expect(
+      requiresImplementationRecoveryReplacement({
+        decision,
+        exchange: { purpose: "implementation_rework" } as ExternalAgentExchange,
+        work_order: workOrder,
+      }),
+    ).toBe(true);
+    expect(
+      requiresImplementationRecoveryReplacement({
+        decision: {
+          workflowStep: {
+            preconditionFingerprint: {
+              ...fingerprint,
+              digest: `sha256:${"d".repeat(64)}`,
+            },
+          },
+        } as never,
+        exchange,
+        work_order: workOrder,
+      }),
+    ).toBe(false);
+  });
+
+  it("lets implementation rework proceed past stale verification failures only", () => {
+    expect(
+      blockingImplementationAuthorityViolations([
+        "verification:verification-record:fail",
+        "repository_effect:ci",
+        "external_effect:network_read",
+      ]),
+    ).toEqual(["repository_effect:ci", "external_effect:network_read"]);
+  });
+
+  it("reopens a closed task only for state-bound implementation rework", () => {
+    expect(
+      requiresImplementationReworkReopen({
+        purpose: "implementation_rework",
+        task_status: "DONE",
+      }),
+    ).toBe(true);
+    expect(
+      requiresImplementationReworkReopen({
+        purpose: "implementation_rework",
+        task_status: "DOING",
+      }),
+    ).toBe(false);
+    expect(
+      requiresImplementationReworkReopen({ purpose: "implementation", task_status: "DONE" }),
+    ).toBe(false);
+  });
+
   it("retires a drifted result-less exchange and issues one exact-key replacement", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
@@ -306,6 +413,79 @@ describe("task advance effect recovery", () => {
           status: "intent",
           replacement_of_operation_key: failedOperation.operation_key,
         },
+      ],
+    });
+  });
+
+  it("refreshes a pending exact-key replacement after route state changes", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root);
+    const issued = await readAgentPacket(root, taskId);
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    const journal = validateSupervisorExecutionEpisodeJournal(await store.read());
+    const failedOperation = journal.operations.at(-1);
+    if (!failedOperation) throw new Error("expected issued operation");
+    await store.write(
+      completeSupervisorExecutionEpisode({
+        journal,
+        operation_key: failedOperation.operation_key,
+        result: { classification: "known_pre_result_failure" },
+        failed: true,
+      }),
+    );
+    expect(
+      await preparePersistedSupervisorReplacementAfterFailure({
+        git_root: root,
+        task_id: taskId,
+        state_fingerprint_digest: issued.state_fingerprint,
+      }),
+    ).toBe("prepared");
+
+    const doc = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "task",
+          "doc",
+          "set",
+          taskId,
+          "--section",
+          "Summary",
+          "--text",
+          "Changed after replacement reservation.",
+          "--updated-by",
+          "CODER",
+          "--root",
+          root,
+        ]),
+        doc.stderr,
+      ).toBe(0);
+    } finally {
+      doc.restore();
+    }
+
+    const replacement = captureStdIO();
+    try {
+      expect(
+        await runCli(["task", "advance", taskId, "--replacement", "--agent-json", "--root", root]),
+        replacement.stderr,
+      ).toBe(0);
+    } finally {
+      replacement.restore();
+    }
+    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
+      status: "running",
+      cursor: { phase: "intent_recorded" },
+      operations: [
+        { operation_key: failedOperation.operation_key, status: "failed" },
+        { status: "intent", replacement_of_operation_key: failedOperation.operation_key },
       ],
     });
   });

@@ -103,6 +103,7 @@ const WORKFLOW_OBSERVABILITY_SCHEMA = z
   .passthrough();
 
 const WORKFLOW_OPTIONAL_ROOT_SHAPE = {
+  authority: configShape.authority.unwrap().optional(),
   workspace: WORKFLOW_WORKSPACE_SCHEMA.optional(),
   paths: configShape.paths.unwrap().optional(),
   tasks: WORKFLOW_TASKS_SCHEMA.optional(),

@@ -58,6 +58,54 @@ behavior.
 These keys control project approval gates; they do not add or remove CLI capabilities. Explicit
 approval for force actions is fixed by the standard process policy.
 
+### authority
+
+`authority` controls whether AgentPlane may satisfy formal approval boundaries from repository
+policy instead of returning control to a user. The default is fail-closed:
+
+```yaml
+authority:
+  mode: manual
+  actor: POLICY:repository
+  allow_operations: []
+  deny_operations: []
+  ttl_minutes: 15
+```
+
+- `manual`: every protected external effect remains an operator boundary.
+- `policy`: only operation ids in `allow_operations` are authorized.
+- `all`: explicit repository YOLO mode for side-effect operations.
+- `deny_operations`: always wins over `policy` and `all`.
+- `actor`: must use a `POLICY:<id>` identity; policy execution cannot be recorded as `USER`.
+- `ttl_minutes`: limits each state-bound grant to 1-60 minutes.
+
+Policy mode does not bypass the authority protocol. AgentPlane still binds every grant to the exact
+operation digest, route fingerprint, and state-scope digest, writes the append-only audit entry, and
+recomputes the route before executing the effect. Primary plan approval and provider merge approval
+remain operator-owned.
+
+Example: allow routine PR publication while retaining explicit authority for integration:
+
+```yaml
+authority:
+  mode: policy
+  actor: POLICY:repository
+  allow_operations:
+    - pr.open
+    - pr.head.publish
+    - pr.artifacts.update
+    - pr.sync_or_verify
+    - provider.pr.refresh
+    - route.remote.refresh
+  deny_operations:
+    - integration.enqueue
+    - task.pre_merge_close
+  ttl_minutes: 10
+```
+
+To opt into the broadest repository-owned route, set `authority.mode=all`. Keep irreversible or
+high-risk operations in `deny_operations` when they must still stop for a person.
+
 ### workspace
 
 - `workspace.agents_dir`

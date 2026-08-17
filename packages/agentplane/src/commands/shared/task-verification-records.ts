@@ -308,6 +308,7 @@ async function assessCurrentVerification(
       verificationContractDigest: task.execution_contract?.verification.contract?.digest ?? null,
       workflowMode: targetContext.workflowMode ?? "direct",
       baseRef: targetContext.baseRef,
+      environment: recordedInput.environment.runtime,
       verificationDetails: typeof record.details === "string" ? record.details : null,
       evidenceRef: targetContext.evidenceRef,
     }).catch(() => null);

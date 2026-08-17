@@ -405,6 +405,9 @@ describe("typed WorkflowStep reducer", () => {
       wait.kind,
       terminal.kind,
     ]).toEqual(["cli_operation", "agent_episode", "approval", "human_input", "wait", "terminal"]);
+    expect(approval.compatibility.command).toBe(
+      `agentplane task plan approve ${task.id} --by USER`,
+    );
   });
 
   it("never substitutes an unrelated blocker for human-input or runner-wait authority", () => {

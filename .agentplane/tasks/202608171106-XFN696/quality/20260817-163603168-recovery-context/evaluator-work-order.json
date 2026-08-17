@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608171106-XFN696-3a0de99b47cdd6f72c1bc5de",
+  "prepared_at": "2026-08-17T16:36:03.168Z",
+  "task": {
+    "id": "202608171106-XFN696",
+    "revision": 34,
+    "objective": "Add policy-driven autonomous side-effect authority\n\nImplement a repository-configured AgentPlane authority provider with manual, policy allowlist, and explicit all/YOLO modes. Auto-grants must retain operation/state/scope digests, short TTL, durable audit, and a POLICY actor; default behavior remains manual. Fix task authority grant remote/local route drift so stale hosted authority requests return an actionable fresh-route diagnostic instead of incorrectly reporting that no grant is required. Keep model agents unable to impersonate USER and preserve human gates through an explicit deny list.",
+    "acceptance_criteria": [
+      "bun run lint:core",
+      "bun run typecheck",
+      "node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Implement a repository-configured AgentPlane authority provider with manual, policy allowlist, and explicit all/YOLO modes. Auto-grants must retain operation/state/scope digests, short TTL, durable audit, and a POLICY actor; default behavior remains manual. Fix task authority grant remote/local route drift so stale hosted authority requests return an actionable fresh-route diagnostic instead of incorrectly reporting that no grant is required. Keep model agents unable to impersonate USER and preserve human gates through an explicit deny list.\n- Out of scope: unrelated refactors not required for \"Add policy-driven autonomous side-effect authority\".",
+      "1. Add repository-local authority configuration with manual default, policy allowlist, and explicit all mode; validate POLICY actor, TTL, allow/deny lists, and denylist precedence; expose the contract through source and generated schemas.\n2. Resolve only side_effect approval steps after the mandatory user-approved primary plan, persist the existing operation digest, state fingerprint, scope digest, TTL, audit record, and POLICY actor, and never resolve plan approval or provider merge.\n3. Integrate configured authority into task advance and the managed branch supervisor; improve stale local/remote authority-grant diagnostics so they return the recomputed route and exact next diagnostic command.\n4. Cover manual, policy, all, denylist, mandatory plan approval, managed-supervisor, planning-checkout recovery, and stale-route behavior with focused tests; keep oversized-test budgets green.\n5. Regenerate and commit the compatibility candidate under scripts/baselines for the approved workflow-schema change, update its critical reproducibility expectations, and run lint, typecheck, schema, routing, formatting, targeted tests, and the full-fast pre-push gate.\n6. Document the Hermes flow as one explicit USER plan approval followed by autonomous LLM work and allowed formal side effects, stopping again only at drift, denylist, merge/destructive/credential boundaries, or unsafe authority reconstruction.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bunx vitest run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run lint:core`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `node .agentplane/policy/check-routing.mjs`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "8b3514f6075d10b0f5e5abfda0dbb0ffaf4a4499",
+  "diff_base_sha": "89f760183da24c5a768dfe97e6c4c2fb67bd1478",
+  "blueprint_digest": "b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608171106-XFN696/quality/20260817-163603168-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:41c3f78666aaef99816a62185e8913812912d50fd9541c7b6ac36d0419cf7e8e",
+    "prompt_path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/d6b5e1a2862908bd1d77ee9442c75f2db4b049213a219b3c5aec8b5de9e4f373.md",
+    "result_schema_path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608171106-XFN696/README.md",
+      "sha256": "sha256:6b21e72c5ec0995e1fe078d36b079359f396ef6a92bae9cef9f3118fe98de177",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/aca6bbb2f79c5ee86a9c2faa78f26139a7703ba075184feef93c24eb14652b20.patch",
+      "sha256": "sha256:aca6bbb2f79c5ee86a9c2faa78f26139a7703ba075184feef93c24eb14652b20",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/7307f79283d64d69b1d4995054449291ca7fd51fa817b0492e17785c895e6690.json",
+      "sha256": "sha256:7307f79283d64d69b1d4995054449291ca7fd51fa817b0492e17785c895e6690",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608171106-XFN696/verification/20260817163507633-b2f8a6262d6b46e1.json",
+      "sha256": "sha256:fa02e5cdb44bf577993ffd47f040e55b946127c69321fe3323da86297eb4e537",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/9ec02e52dfa2636d647519d27f790022fdb53b42534b30483571b7bb848e71d0.json",
+      "sha256": "sha256:9ec02e52dfa2636d647519d27f790022fdb53b42534b30483571b7bb848e71d0",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

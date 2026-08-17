@@ -81,6 +81,44 @@
             "minLength": 1
           }
         },
+        "authority": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "default": "manual",
+              "type": "string",
+              "enum": ["manual", "policy", "all"]
+            },
+            "actor": {
+              "default": "POLICY:repository",
+              "type": "string",
+              "pattern": "^POLICY:[A-Za-z0-9][A-Za-z0-9._-]*$"
+            },
+            "allow_operations": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "deny_operations": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "ttl_minutes": {
+              "default": 15,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60
+            }
+          },
+          "additionalProperties": false
+        },
         "workspace": {
           "type": "object",
           "properties": {
@@ -1002,6 +1040,44 @@
           },
           "required": ["require_plan", "require_verify", "require_network"],
           "additionalProperties": {}
+        },
+        "authority": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "default": "manual",
+              "type": "string",
+              "enum": ["manual", "policy", "all"]
+            },
+            "actor": {
+              "default": "POLICY:repository",
+              "type": "string",
+              "pattern": "^POLICY:[A-Za-z0-9][A-Za-z0-9._-]*$"
+            },
+            "allow_operations": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "deny_operations": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "ttl_minutes": {
+              "default": 15,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60
+            }
+          },
+          "additionalProperties": false
         },
         "workspace": {
           "type": "object",

@@ -15,6 +15,12 @@ import {
 } from "./workflow-step-factory.js";
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 
+export function planningCheckout(state: WorkflowRouteState): "base_checkout" | "task_worktree" {
+  return state.workflowMode === "branch_pr" && state.taskWorktree?.worktreePath
+    ? "task_worktree"
+    : "base_checkout";
+}
+
 export function reduceRouteState(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
   if (state.task.status === "DONE" && state.workflowMode !== "branch_pr") {
@@ -83,7 +89,7 @@ export function reduceRouteState(state: WorkflowRouteState): WorkflowStep {
       id: "agent.planning",
       code: "semantic_planning_required",
       phase: "semantic_planning_required",
-      checkout: "base_checkout",
+      checkout: planningCheckout(state),
       role: "PLANNER",
       purpose: "planning",
       summary:
@@ -109,10 +115,10 @@ export function reduceRouteState(state: WorkflowRouteState): WorkflowStep {
       id: "approval.plan",
       code: "approve_plan",
       phase: "needs_plan_approval",
-      checkout: "base_checkout",
+      checkout: planningCheckout(state),
       type: "plan_approval",
       summary: "approve the task plan before owner-scoped execution",
-      command: `agentplane task plan approve ${id} --by ORCHESTRATOR`,
+      command: `agentplane task plan approve ${id} --by USER`,
       selectedBlocker: routeBlockerFor(state, "plan_not_approved"),
     });
   }

@@ -369,6 +369,40 @@ describe("pre-merge closure route decisions", () => {
     );
   });
 
+  it("accepts the exact local authority grant emitted for remote refresh", async () => {
+    const { root, taskId, baseBranch, branchName } = await createClosedPreMergeTask();
+    await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
+    const checkoutParent = await mkdtemp(path.join(tmpdir(), "agentplane-pre-merge-worktree-"));
+    const checkout = path.join(checkoutParent, "task");
+    await execFileAsync("git", ["worktree", "add", checkout, branchName], { cwd: root });
+    const routeIo = captureStdIO();
+    let command = "";
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", checkout]);
+      if (code !== 0) process.stderr.write(routeIo.stderr);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(routeIo.stdout) as {
+        next_action: { code: string; command: string };
+      };
+      expect(parsed.next_action.code).toBe("refresh_remote_route");
+      command = parsed.next_action.command;
+    } finally {
+      routeIo.restore();
+    }
+
+    const grantIo = captureStdIO();
+    try {
+      const argv = command.trim().split(/\s+/u);
+      expect(argv.slice(0, 4)).toEqual(["agentplane", "task", "authority", "grant"]);
+      const code = await runCli([...argv.slice(1), "--root", checkout]);
+      if (code !== 0) process.stderr.write(grantIo.stderr);
+      expect(code).toBe(0);
+      expect(grantIo.stdout).toContain("task authority grant");
+    } finally {
+      grantIo.restore();
+    }
+  });
+
   it("publishes only after live provider state confirms an open PR at another head", async () => {
     const { root, taskId, branchName, branchHeadSha } = await createClosedPreMergeTask();
     await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {

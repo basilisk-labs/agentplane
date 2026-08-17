@@ -13,9 +13,9 @@
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
-      "workflow_schema": "4714ecc43f394109cd5807ec5e544716abe7c67c20ea18554f8f2b559bf97b21"
+      "workflow_schema": "e234ac9d25db50340f46a3fcc01c8f5443f85bee38ce8ec6243a5e525046aa6f"
     },
-    "surface_sha256": "eb329963bb076054c7c8f1340ba5eb9a086d399e0b1d0f8dd09d20322ae5ee1a"
+    "surface_sha256": "08bbdbf9131f3f264d91ef719da62795871b4a3e00acb50653ea252125d51802"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -2176,7 +2176,7 @@
       "section": "workflow_schema",
       "source_tasks": ["202607221846-4VB97J", "202608112213-NWJCBW"],
       "summary": "Replaces the v1-only schema with a v1-or-v2 input union, retaining the finite typed legacy v1 sections, requiring explicit v2 approval flags, preserving the public schema identity, and canonicalizing both versions on the standard execution profile while accepting legacy profile aliases during migration.",
-      "to_sha256": "4714ecc43f394109cd5807ec5e544716abe7c67c20ea18554f8f2b559bf97b21"
+      "to_sha256": "e234ac9d25db50340f46a3fcc01c8f5443f85bee38ce8ec6243a5e525046aa6f"
     },
     {
       "classification": "behavior_preserving_hardening",
@@ -2295,7 +2295,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "aa230065940bbeca341260cc7bfd453df7cae6b29f758f71c9d0f9286139268f",
+    "surface_sha256": "ad7fa7c9e4894234a38483791dfc762a7e66fbf384f5c1517910e90881a66132",
     "to_sha256": "ba86d65ec1fe45a4d31d19c537a863e802e8e7a7bbdb0d1b0a301d4c3e82b3ab",
     "to_version": "0.7.6"
   },
