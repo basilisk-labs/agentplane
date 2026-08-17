@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The new branch is narrower than the completed-operation stale-state reopening path and cannot turn an arbitrary failed or concurrent operation into an unbound retry.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/c8fa5cc9c1fa0e973639e80f6be7437551c1a232f7532765f37ceb0c4fd35b8a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The implementation follows the same refresh transition already used by evaluator replacement recovery and retains CAS protection before issuing the external intent.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/c8fa5cc9c1fa0e973639e80f6be7437551c1a232f7532765f37ceb0c4fd35b8a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The regression test covers the missing sequence: failed operation, exact-key replacement reservation, task route mutation, and successful replacement intent bound to the failed operation key.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/c8fa5cc9c1fa0e973639e80f6be7437551c1a232f7532765f37ceb0c4fd35b8a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The supervisor recorded verification result ok for implementation commit 8009dae228bae5d93aff35d647df592e7f5efa67; the focused recovery file independently passed 12 tests, and lint, typecheck, policy routing, and diff checks passed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/c8fa5cc9c1fa0e973639e80f6be7437551c1a232f7532765f37ceb0c4fd35b8a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Concurrent route changes after the refresh CAS but before successor intent CAS are rejected by the second compare-and-swap loop rather than silently accepted.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/c8fa5cc9c1fa0e973639e80f6be7437551c1a232f7532765f37ceb0c4fd35b8a.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The pending replacement reservation remains exact-key and the latest operation stays failed until the successor intent is recorded; the transition validator enforces this invariant."
+  ]
+}
