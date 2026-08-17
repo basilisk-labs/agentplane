@@ -27,6 +27,7 @@ import {
 } from "./external-agent-supervisor.js";
 import { recoverPendingExternalAgentResult } from "./external-agent-supervisor-recovery.js";
 import { executeExternalAgentVerification } from "./external-agent-verification.js";
+import { resolveConfiguredAuthority } from "./configured-authority.js";
 import type { TaskAdvanceParsed } from "./advance.spec.js";
 
 export function makeRunTaskAdvanceHandler(deps: {
@@ -107,6 +108,21 @@ export function makeRunTaskAdvanceHandler(deps: {
     let recovery: Parameters<typeof buildAgentActionPacket>[0]["recovery"];
     for (let operationCount = 0; operationCount < 32; operationCount += 1) {
       const step = current.workflowStep;
+      if (step.kind === "approval") {
+        const authorityCheckout = current.oracle?.authoritativeCheckoutPath ?? ctx.cwd;
+        const authorityCommand = await loadCommandContext({
+          cwd: authorityCheckout,
+          rootOverride: null,
+        });
+        const resolved = await resolveConfiguredAuthority({
+          command: authorityCommand,
+          decision: current,
+        });
+        if (resolved.state === "resolved") {
+          current = await decide(true);
+          continue;
+        }
+      }
       if (step.kind === "agent_episode" && step.episode.purpose === "verification") {
         const checkout = current.executionPacket.mustRunFrom ?? current.workspace.root;
         const verificationCommand = await loadCommandContext({ cwd: checkout, rootOverride: null });

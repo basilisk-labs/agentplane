@@ -126,6 +126,39 @@ const EVALUATOR_SKEPTICISM_LEVELS = ["standard", "strict", "paranoid"] as const;
 
 const ARTIFACTS_LANGUAGE = z.enum(["any", "en"]).default("any");
 
+const SIDE_EFFECT_AUTHORITY_DEFAULTS = {
+  mode: "manual" as const,
+  actor: "POLICY:repository",
+  allow_operations: [] as string[],
+  deny_operations: [] as string[],
+  ttl_minutes: 15,
+};
+
+const SIDE_EFFECT_AUTHORITY_SCHEMA = z
+  .object({
+    mode: z.enum(["manual", "policy", "all"]).default(SIDE_EFFECT_AUTHORITY_DEFAULTS.mode),
+    actor: z
+      .string()
+      .regex(/^POLICY:[A-Za-z0-9][A-Za-z0-9._-]*$/u, {
+        message: "Authority actor must be a POLICY:<id> identity and cannot impersonate USER.",
+      })
+      .default(SIDE_EFFECT_AUTHORITY_DEFAULTS.actor),
+    allow_operations: nonEmptyStringArray(SIDE_EFFECT_AUTHORITY_DEFAULTS.allow_operations),
+    deny_operations: nonEmptyStringArray(SIDE_EFFECT_AUTHORITY_DEFAULTS.deny_operations),
+    ttl_minutes: z
+      .number()
+      .int()
+      .min(1)
+      .max(60)
+      .default(SIDE_EFFECT_AUTHORITY_DEFAULTS.ttl_minutes),
+  })
+  .strict()
+  .default({
+    ...SIDE_EFFECT_AUTHORITY_DEFAULTS,
+    allow_operations: [...SIDE_EFFECT_AUTHORITY_DEFAULTS.allow_operations],
+    deny_operations: [...SIDE_EFFECT_AUTHORITY_DEFAULTS.deny_operations],
+  });
+
 const COMMENT_POLICY_SCHEMA = z
   .object({
     prefix: nonEmptyString(),
@@ -203,6 +236,7 @@ export const AgentplaneConfigSchema = z
     status_commit_policy: z.enum(["off", "warn", "confirm"]).default("warn"),
     commit_automation: z.enum(["manual", "finish_only"]).default("manual"),
     finish_auto_status_commit: z.boolean().default(false),
+    authority: SIDE_EFFECT_AUTHORITY_SCHEMA,
     close_commit: z
       .object({
         direct_dirty_policy: z

@@ -16,6 +16,7 @@ export {
 export type WorkflowMode = AgentplaneConfig["workflow_mode"];
 export type StatusCommitPolicy = AgentplaneConfig["status_commit_policy"];
 export type CommitAutomation = AgentplaneConfig["commit_automation"];
+export type SideEffectAuthorityConfig = AgentplaneConfig["authority"];
 export type ExecutionProfile = AgentplaneConfig["execution"]["profile"];
 export type ReasoningEffort = AgentplaneConfig["execution"]["reasoning_effort"];
 export type TextVerbosity = AgentplaneConfig["execution"]["text_verbosity"];

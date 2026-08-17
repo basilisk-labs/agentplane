@@ -9,6 +9,7 @@ import type { WorkflowSupervisorOperationResult } from "../shared/workflow-super
 import type { WorkflowOperation } from "../shared/workflow-step.js";
 import { executeProductionBranchEpisode } from "./branch-task-supervisor-episodes.js";
 import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
+import { resolveConfiguredAuthority } from "./configured-authority.js";
 import type { JournalProjection } from "./direct-task-supervisor-result.js";
 import { journalProjection } from "./direct-task-supervisor-result.js";
 
@@ -462,13 +463,24 @@ export async function superviseBranchTaskRun(
 ): Promise<BranchTaskSupervisorResult> {
   const routeCwd = input.ctx.cwd;
   const decide = async () => {
-    const routeCommand = await loadCommandContext({ cwd: routeCwd, rootOverride: null });
-    return await buildTaskRouteDecision({
-      ctx: routeCommand,
-      cwd: routeCwd,
-      rootOverride: null,
-      taskId: input.task_id,
-      includeRemote: true,
+    for (let authorityCount = 0; authorityCount < 8; authorityCount += 1) {
+      const routeCommand = await loadCommandContext({ cwd: routeCwd, rootOverride: null });
+      const decision = await buildTaskRouteDecision({
+        ctx: routeCommand,
+        cwd: routeCwd,
+        rootOverride: null,
+        taskId: input.task_id,
+        includeRemote: true,
+      });
+      const resolved = await resolveConfiguredAuthority({
+        command: routeCommand,
+        decision,
+      });
+      if (resolved.state !== "resolved") return decision;
+    }
+    throw new CliError({
+      code: "E_RUNTIME",
+      message: "Repository authority policy exceeded its bounded approval-resolution budget.",
     });
   };
 

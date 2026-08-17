@@ -118,12 +118,26 @@ export const taskAuthorityGrantSpec: CommandSpec<TaskAuthorityGrantParsed> = {
   }),
 };
 
-function requestedOperation(decision: Awaited<ReturnType<typeof buildTaskRouteDecision>>) {
+function currentRouteCommand(taskId: string, remote: boolean): string {
+  return `agentplane task next-action ${taskId}${remote ? " --remote" : ""} --explain`;
+}
+
+function requestedOperation(
+  decision: Awaited<ReturnType<typeof buildTaskRouteDecision>>,
+  parsed: Pick<TaskAuthorityGrantParsed, "taskId" | "remote">,
+) {
   const request = decision.workflowStep.kind === "approval" ? decision.workflowStep.request : null;
   if (request?.type !== "side_effect") {
     throw usageError({
       spec: taskAuthorityGrantSpec,
-      message: "The current task route does not require a side-effect authority grant.",
+      message:
+        "Authority request is stale: the recomputed " +
+        `${parsed.remote ? "hosted" : "local"} route is now ` +
+        `${decision.workflowStep.kind}:${decision.workflowStep.id} and no longer requests ` +
+        `side-effect authority. Inspect the current route with: ${currentRouteCommand(
+          parsed.taskId,
+          parsed.remote,
+        )}`,
     });
   }
   return request;
@@ -144,7 +158,7 @@ export function makeRunTaskAuthorityGrantHandler(session: {
       taskId: parsed.taskId,
       includeRemote: parsed.remote,
     });
-    const request = requestedOperation(decision);
+    const request = requestedOperation(decision, parsed);
     if (
       request.operationId !== parsed.operationId ||
       request.operationDigest !== parsed.operationDigest ||
@@ -154,7 +168,8 @@ export function makeRunTaskAuthorityGrantHandler(session: {
       throw usageError({
         spec: taskAuthorityGrantSpec,
         message:
-          "Authority grant inputs are stale or do not match the current task next-action; recompute the route.",
+          "Authority grant inputs are stale or do not match the recomputed task route. " +
+          `Inspect the current route with: ${currentRouteCommand(parsed.taskId, parsed.remote)}`,
       });
     }
     const now = new Date();

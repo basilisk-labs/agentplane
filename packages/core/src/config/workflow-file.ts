@@ -61,6 +61,7 @@ export function workflowFrontMatterToConfigRaw(
   const workspace = cloneRecord(normalized.workspace);
   const tasks = cloneRecord(normalized.tasks);
   const raw: Record<string, unknown> = { workflow_mode: workflow.mode };
+  if (normalized.authority !== undefined) raw.authority = normalized.authority;
   for (const key of [
     "status_commit_policy",
     "commit_automation",
@@ -175,6 +176,7 @@ export function configRawToWorkflowFrontMatter(
       ...cloneRecord(base.approvals),
       ...cloneRecord(agents.approvals),
     },
+    authority: config.authority ?? base.authority,
     workspace: {
       ...baseWorkspace,
       agents_dir: paths.agents_dir ?? baseWorkspace.agents_dir ?? ".agentplane/agents",

@@ -76,4 +76,30 @@ describe("task authority grant", () => {
       expect(getRemoteContext).toHaveBeenCalledTimes(testCase.remote ? 1 : 0);
     },
   );
+
+  it("explains hosted route drift when the requested authority boundary has already moved", async () => {
+    const commandContext = {} as CommandContext;
+    mocks.buildTaskRouteDecision.mockResolvedValue({
+      workflowStep: { kind: "cli_operation", id: "task.pre_merge_close" },
+    });
+    const run = makeRunTaskAuthorityGrantHandler({
+      getLocalContext: vi.fn(() => Promise.resolve(commandContext)),
+      getRemoteContext: vi.fn(() => Promise.resolve(commandContext)),
+    });
+
+    await expect(
+      run({ cwd: "/repo", rootOverride: null } as CommandCtx, {
+        taskId: "T-1",
+        operationId: "task.pre_merge_close",
+        operationDigest: "sha256:operation",
+        stateFingerprintDigest: "sha256:fingerprint",
+        stateScopeDigest: "sha256:scope",
+        by: "USER",
+        ttlMinutes: 15,
+        remote: true,
+      }),
+    ).rejects.toThrow(
+      /Authority request is stale:.*cli_operation:task\.pre_merge_close.*next-action T-1 --remote --explain/su,
+    );
+  });
 });

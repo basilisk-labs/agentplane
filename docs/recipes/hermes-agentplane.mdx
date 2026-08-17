@@ -106,3 +106,33 @@ complete transitions. The packet includes:
 
 The recipe does not make Hermes a task backend for Agentplane. Hermes board state is a projection.
 Agentplane task state remains canonical and Git-visible.
+
+## Unattended Hermes operation
+
+Hermes should keep performing the LLM work while AgentPlane remains the invisible formal control
+plane. After the user approves the primary plan, configure repository authority when a Hermes lane
+must progress through routine PR publication boundaries without showing lifecycle prompts:
+
+```yaml
+authority:
+  mode: policy
+  actor: POLICY:hermes
+  allow_operations:
+    - pr.open
+    - pr.head.publish
+    - pr.artifacts.update
+    - pr.sync_or_verify
+    - provider.pr.refresh
+    - route.remote.refresh
+  deny_operations:
+    - integration.enqueue
+    - task.pre_merge_close
+  ttl_minutes: 10
+```
+
+Hermes consumes fresh `task advance --agent-json` packets and performs only `agent_episode`
+objectives. AgentPlane resolves allowed policy boundaries internally, performs formal transitions,
+and returns the next semantic packet. The primary plan approval remains a mandatory user boundary.
+After that approval, Hermes surfaces another user action only when the current operation is absent
+from the allowlist, present in the denylist, is a provider merge decision, or the state-bound
+authority can no longer be reconstructed safely.
