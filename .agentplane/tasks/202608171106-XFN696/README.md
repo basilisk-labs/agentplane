@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 44
+revision: 45
 origin:
   system: "manual"
 depends_on: []
@@ -36,33 +36,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-17T16:52:53.530Z"
+  updated_at: "2026-08-17T17:16:25.949Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "8009dae228bae5d93aff35d647df592e7f5efa67"
+  evaluated_sha: "ce78a4544e1d4ed3f719c3cdb922ddc791670509"
   blueprint_digest: "b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7"
   evidence_refs:
-    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-165145697-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-165145697-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/2c3be1bc6a34c319a1dce11ae07815a3c24dcb0c599c1474ef6dde5583d027d2.md"
-    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-165145697-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-165145697-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-165145697-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-171543646-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-171543646-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/db677a346ea9ceb2ef724ea9236b9de63301cb3dcecf4ac3fef3576171609935.md"
+    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-171543646-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-171543646-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-171543646-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608171106-XFN696/README.md"
-    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/c8fa5cc9c1fa0e973639e80f6be7437551c1a232f7532765f37ceb0c4fd35b8a.patch"
-    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/340c9ddfd4813fe961e288e2645ea2e11095e6d0a87ade0dfd56284df9c6410d.json"
-    - ".agentplane/tasks/202608171106-XFN696/verification/20260817165126283-51f842a854213285.json"
+    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/a131898b31185883d2056d74fac822a8903cddcf218966eb225d7c756994084b.patch"
+    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/6aa7edd9f39aac831cce3ec33742b75d4c2d8e286c70eabd36be0531ce2ddfc9.json"
+    - ".agentplane/tasks/202608171106-XFN696/verification/20260817171533187-65f1fda8732a8458.json"
     - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/9ec02e52dfa2636d647519d27f790022fdb53b42534b30483571b7bb848e71d0.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The new branch is narrower than the completed-operation stale-state reopening path and cannot turn an arbitrary failed or concurrent operation into an unbound retry."
-    - "The implementation follows the same refresh transition already used by evaluator replacement recovery and retains CAS protection before issuing the external intent."
-    - "The regression test covers the missing sequence: failed operation, exact-key replacement reservation, task route mutation, and successful replacement intent bound to the failed operation key."
-    - "The supervisor recorded verification result ok for implementation commit 8009dae228bae5d93aff35d647df592e7f5efa67; the focused recovery file independently passed 12 tests, and lint, typecheck, policy routing, and diff checks passed."
-    - "Residual risk: Concurrent route changes after the refresh CAS but before successor intent CAS are rejected by the second compare-and-swap loop rather than silently accepted."
+    - "The change preserves the existing remote-validation path and does not authorize network access during a local route.remote.refresh grant."
+    - "The command session still requires route.local before independent context preparation, while the scoped proxy denies backend and Git mutations during validation."
+    - "Write context remains lazy and unreachable on stale route, digest, fingerprint, or scope mismatch."
+    - "Supervisor verification is ok for implementation commit ce78a4544e1d4ed3f719c3cdb922ddc791670509; full-fast CI completed 5/5 groups with ok=true."
+    - "Residual risk: Repository authority remains manual until an authority block is configured; installing the new binary alone does not change that default."
 token_usage:
   agent_runs: 12
   input_tokens: null
@@ -568,7 +568,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-17T17:15:35.601Z"
+doc_updated_at: "2026-08-17T17:16:25.980Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement a repository-configured AgentPlane authority provider with manual, policy allowlist, and explicit all/YOLO modes. Auto-grants must retain operation/state/scope digests, short TTL, durable audit, and a POLICY actor; default behavior remains manual. Fix task authority grant remote/local route drift so stale hosted authority requests return an actionable fresh-route diagnostic instead of incorrectly reporting that no grant is required. Keep model agents unable to impersonate USER and preserve human gates through an explicit deny list."
 sections:
