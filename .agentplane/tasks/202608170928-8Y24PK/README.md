@@ -4,7 +4,7 @@ title: "Upgrade the Hermes AgentPlane bridge protocol across the three approved 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +29,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-17T10:47:06.399Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-17T21:49:37.986Z"
+  updated_by: "USER"
+  note: "Rework required after AgentPlane autonomous-authority merge: update the Hermes bridge and plugin to consume signed approval receipts and execute policy-authorized post-plan side effects without user terminal commands; retain explicit primary-plan approval and operator-owned merge boundaries."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -144,7 +144,8 @@ execution_contract:
       - "packages/agentplane/src/commands/hermes"
       - "packages/agentplane/src/runner"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "docs"
       - "integrations"
@@ -188,6 +189,9 @@ execution_contract:
       -
         id: "recorded-check-7"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -337,9 +341,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "5164cfd3b09b77113b450156b459e01247d9e4f8"
-  message: "🚧 8Y24PK task: apply external agent result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -392,8 +395,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "verify"
+    at: "2026-08-17T21:49:37.986Z"
+    author: "USER"
+    state: "needs_rework"
+    note: "Rework required after AgentPlane autonomous-authority merge: update the Hermes bridge and plugin to consume signed approval receipts and execute policy-authorized post-plan side effects without user terminal commands; retain explicit primary-plan approval and operator-owned merge boundaries."
 doc_version: 3
-doc_updated_at: "2026-08-17T10:47:07.730Z"
+doc_updated_at: "2026-08-17T21:49:39.257Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 0.2.0, and current Hermes worker-lane dispatch. Scope roots are /Users/densmirnov/Github/agentplane, /Users/densmirnov/Github/agentplane-hermes-plugin, and /Users/densmirnov/Github/hermes-agent. Required effects include source, tests, docs, public API, schema, CI/release metadata, security boundary, network reads, hosted external writes, and publication through explicit authority. Prove PLANNER/approval/EXECUTOR/EVALUATOR, retry, stale-run, and terminal attestation without direct kanban.db writes. Existing D5MAJ3 and failed structured-intake DDW1J5 are superseded and must not be implemented or published."
 sections:
@@ -623,6 +632,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608170928-8Y24PK
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-17T21:49:37.986Z — VERIFY — needs_rework
+
+    By: USER
+
+    Note: Rework required after AgentPlane autonomous-authority merge: update the Hermes bridge and plugin to consume signed approval receipts and execute policy-authorized post-plan side effects without user terminal commands; retain explicit primary-plan approval and operator-owned merge boundaries.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8559ac20d950c1601ef1434555ed99c5da9a5c52304a4f16ad1abdb9862d0ce0, input_digest=sha256:d12ffab4aaa5e9b6835528225a9b759a7920ce559b8315bcd6401453027607d3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608170928-8Y24PK-upgrade-the-hermes-agentplane-bridge-protocol-ac/.agentplane/tasks/202608170928-8Y24PK/blueprint/resolved-snapshot.json
+    - old_digest: 4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb
+    - current_digest: 4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608170928-8Y24PK
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -876,6 +915,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608170928-8Y24PK
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-17T21:49:37.986Z — VERIFY — needs_rework
+
+By: USER
+
+Note: Rework required after AgentPlane autonomous-authority merge: update the Hermes bridge and plugin to consume signed approval receipts and execute policy-authorized post-plan side effects without user terminal commands; retain explicit primary-plan approval and operator-owned merge boundaries.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8559ac20d950c1601ef1434555ed99c5da9a5c52304a4f16ad1abdb9862d0ce0, input_digest=sha256:d12ffab4aaa5e9b6835528225a9b759a7920ce559b8315bcd6401453027607d3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608170928-8Y24PK-upgrade-the-hermes-agentplane-bridge-protocol-ac/.agentplane/tasks/202608170928-8Y24PK/blueprint/resolved-snapshot.json
+- old_digest: 4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb
+- current_digest: 4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608170928-8Y24PK
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

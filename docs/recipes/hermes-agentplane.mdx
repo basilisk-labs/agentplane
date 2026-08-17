@@ -73,6 +73,7 @@ AGENTPLANE_HERMES_LANE_REGISTRY=/opt/agentplane/lane-registry.json
 AGENTPLANE_HERMES_ALLOWED_ROOTS=/workspace/repo
 AGENTPLANE_HERMES_PLUGIN_PROTOCOL=agentplane.hermes.plugin.v2
 AGENTPLANE_HERMES_NATIVE_WORKER_LANE_API=1
+AGENTPLANE_HERMES_APPROVAL_RECEIPT_BRIDGE=1
 HERMES_KANBAN_TASK=<hermes-card-id>
 HERMES_KANBAN_BOARD=<board>
 HERMES_KANBAN_RUN_ID=<run-id>
@@ -81,7 +82,8 @@ HERMES_KANBAN_CLAIM_LOCK=<claim-lock>
 ```
 
 `agentplane hermes doctor --json` fails closed unless the v2 plugin capability, native lane API,
-lane registry, binaries, `branch_pr`, and non-empty root allowlist are proven. It separately reports
+trusted approval-receipt bridge, lane registry, binaries, `branch_pr`, and non-empty root allowlist
+are proven. It separately reports
 whether the current worker claim is complete. An empty root allowlist denies every workspace.
 Task-runner invocations also export `AGENTPLANE_RUNNER_TASK_ID` when the run target is an Agentplane
 task, so Hermes launchers can bind the external worker run back to the canonical task id.
@@ -114,3 +116,17 @@ The recipe does not make Hermes a task backend for Agentplane. Hermes board stat
 Agentplane task state remains canonical and Git-visible. The Hermes plugin performs all LLM work by
 consuming bounded PLANNER, EXECUTOR, and EVALUATOR `WorkOrder` episodes; it never synthesizes formal
 Agentplane transitions from prose.
+
+## Unattended operation after plan approval
+
+The primary plan always requires one explicit user approval. Hermes projects that decision into the
+conversation; a trusted plugin action, not the LLM, signs the current packet's
+`operator_action.approval_receipt.request`, inserts it into the exact `operator_action.argv`, runs
+that argv, and requests a fresh packet. This removes terminal copy/paste without weakening
+state-bound authority.
+
+Afterwards, configure `authority.mode=policy|all` for routine side effects. `policy` permits only
+`allow_operations`; `all` permits every side effect except `deny_operations`; the denylist wins.
+AgentPlane still stops for drift, denied operations, provider merge, destructive or credential
+boundaries, and authority that cannot be reconstructed safely. The bridge signing key is never
+forwarded to a Hermes LLM episode.

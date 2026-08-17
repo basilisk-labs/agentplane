@@ -380,6 +380,7 @@ export function makeRunHermesDoctorHandler(deps: {
       hermes_binary_available: hermesAvailability.available,
       plugin_protocol_v2: plugin.protocol_valid,
       native_worker_lane_api: plugin.native_worker_lane_api,
+      approval_receipt_bridge: plugin.approval_receipt_bridge,
       allowed_roots_fail_closed: plugin.allowed_roots_fail_closed,
     };
     const installationReady = Object.values(installationChecks).every(Boolean);

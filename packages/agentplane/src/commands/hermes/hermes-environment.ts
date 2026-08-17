@@ -32,6 +32,7 @@ export function hermesPluginContractSnapshot() {
     protocol,
     protocol_valid: protocol === HERMES_PLUGIN_PROTOCOL,
     native_worker_lane_api: process.env.AGENTPLANE_HERMES_NATIVE_WORKER_LANE_API?.trim() === "1",
+    approval_receipt_bridge: process.env.AGENTPLANE_HERMES_APPROVAL_RECEIPT_BRIDGE?.trim() === "1",
     allowed_roots: allowedRoots,
     allowed_roots_fail_closed: allowedRoots.length > 0,
   };

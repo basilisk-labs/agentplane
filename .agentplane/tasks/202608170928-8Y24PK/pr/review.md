@@ -12,8 +12,8 @@ Created: 2026-08-17T09:29:36.876Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework required after AgentPlane autonomous-authority merge: update the Hermes bridge and plugin to consume signed approval receipts and execute policy-authorized post-plan side effects without user terminal commands; retain explicit primary-plan approval and operator-owned merge boundaries.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,16 +29,16 @@ Created: 2026-08-17T09:29:36.876Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/recipes/hermes-agentplane.mdx                 |  18 +++-
- docs/workflow-guides/hermes-kanban.mdx             |  74 +++++++-------
- integrations/hermes-agentplane-plugin/README.md    |  77 ++++++++++-----
+ docs/recipes/hermes-agentplane.mdx                 |  34 +++++-
+ docs/workflow-guides/hermes-kanban.mdx             |  88 ++++++++--------
+ integrations/hermes-agentplane-plugin/README.md    | 102 +++++++++++++-----
  .../lane-registry.example.json                     |  19 ++++
- .../protocol-v2.schema.json                        |  24 +++++
- .../src/commands/hermes/hermes-environment.ts      |  41 +++++++-
+ .../protocol-v2.schema.json                        |  39 +++++++
+ .../src/commands/hermes/hermes-environment.ts      |  42 +++++++-
  .../src/commands/hermes/hermes-runtime.ts          |  35 ++++---
- .../src/commands/hermes/hermes.command.test.ts     | 108 ++++++++++++++++++++-
- .../src/commands/hermes/hermes.command.ts          |  48 ++++++++-
- 9 files changed, 351 insertions(+), 93 deletions(-)
+ .../src/commands/hermes/hermes.command.test.ts     | 115 ++++++++++++++++++++-
+ .../src/commands/hermes/hermes.command.ts          |  49 ++++++++-
+ 9 files changed, 426 insertions(+), 97 deletions(-)
 ```
 
 </details>

@@ -610,6 +610,7 @@ describe("hermes adapter commands", () => {
       "HERMES_BIN",
       "AGENTPLANE_HERMES_PLUGIN_PROTOCOL",
       "AGENTPLANE_HERMES_NATIVE_WORKER_LANE_API",
+      "AGENTPLANE_HERMES_APPROVAL_RECEIPT_BRIDGE",
       "AGENTPLANE_HERMES_ALLOWED_ROOTS",
     ] as const;
     const previous = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
@@ -619,6 +620,7 @@ describe("hermes adapter commands", () => {
       HERMES_BIN: binPath,
       AGENTPLANE_HERMES_PLUGIN_PROTOCOL: "agentplane.hermes.plugin.v2",
       AGENTPLANE_HERMES_NATIVE_WORKER_LANE_API: "1",
+      AGENTPLANE_HERMES_APPROVAL_RECEIPT_BRIDGE: "1",
       AGENTPLANE_HERMES_ALLOWED_ROOTS: root,
     });
     const io = captureStdIO();
@@ -629,13 +631,18 @@ describe("hermes adapter commands", () => {
         ok: boolean;
         installation_ready: boolean;
         worker_context_ready: boolean;
-        plugin_contract: { protocol_valid: boolean; allowed_roots_fail_closed: boolean };
+        plugin_contract: {
+          protocol_valid: boolean;
+          approval_receipt_bridge: boolean;
+          allowed_roots_fail_closed: boolean;
+        };
       };
       expect(payload.ok).toBe(true);
       expect(payload.installation_ready).toBe(true);
       expect(payload.worker_context_ready).toBe(false);
       expect(payload.plugin_contract).toMatchObject({
         protocol_valid: true,
+        approval_receipt_bridge: true,
         allowed_roots_fail_closed: true,
       });
     } finally {

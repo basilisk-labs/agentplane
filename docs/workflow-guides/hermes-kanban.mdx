@@ -120,8 +120,10 @@ explicit Agentplane binary path, local plugin install support, and a dispatcher 
 The plugin passes an explicit environment allowlist rather than inheriting the parent environment.
 `AGENTPLANE_HERMES_ALLOWED_ROOTS` is mandatory and empty means deny. It also asserts
 `AGENTPLANE_HERMES_PLUGIN_PROTOCOL=agentplane.hermes.plugin.v2` and
-`AGENTPLANE_HERMES_NATIVE_WORKER_LANE_API=1`; `agentplane hermes doctor --json` fails closed when
-any installation capability is missing.
+`AGENTPLANE_HERMES_NATIVE_WORKER_LANE_API=1`. It additionally asserts
+`AGENTPLANE_HERMES_APPROVAL_RECEIPT_BRIDGE=1` only when the trusted user-approval bridge is
+available; `agentplane hermes doctor --json` fails closed when any installation capability is
+missing.
 
 ### Optional MCP wrapper
 
@@ -174,12 +176,16 @@ agent:
 4. When it returns an agent episode, dispatch only the supplied semantic objective and authority.
 5. Write the typed result to `exchange.result_path` and resume with the exact
    `exchange.resume_argv`; `exchange.return_invocation` is compatibility-only.
-6. At approval, human, hosted/external, stale-state, or effect-in-doubt boundaries, stop and project
-   the boundary to Hermes without inventing progress.
-7. Write a structured Hermes comment with run id, previous revision, new revision, and evidence
+6. For a plan or non-policy approval, project the exact pending decision to Hermes. Only a
+   user-authenticated plugin action may sign the packet's approval receipt and execute its exact
+   `operator_action.argv`; the LLM cannot manufacture user authority. AgentPlane resolves eligible
+   post-plan `authority.mode=policy|all` side effects internally.
+7. At human, hosted/external, stale-state, effect-in-doubt, provider-merge, destructive, credential,
+   or denylisted boundaries, stop and project the boundary to Hermes without inventing progress.
+8. Write a structured Hermes comment with run id, previous revision, new revision, and evidence
    pointers.
-8. Request a fresh packet.
-9. Complete the root card only after Agentplane returns
+9. Request a fresh packet.
+10. Complete the root card only after Agentplane returns
    `agentplane.hermes.terminal-attestation.v1` with `terminal_outcome=done`.
 ```
 
