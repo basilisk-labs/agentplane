@@ -25,7 +25,7 @@ function normalizedPathList(value: string | undefined): string[] {
 }
 
 export function hermesPluginContractSnapshot() {
-  const protocol = process.env.AGENTPLANE_HERMES_PLUGIN_PROTOCOL?.trim() || null;
+  const protocol = process.env.AGENTPLANE_HERMES_PLUGIN_PROTOCOL?.trim() ?? null;
   const allowedRoots = normalizedPathList(process.env.AGENTPLANE_HERMES_ALLOWED_ROOTS);
   return {
     required_protocol: HERMES_PLUGIN_PROTOCOL,
