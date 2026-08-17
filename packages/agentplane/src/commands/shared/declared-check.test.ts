@@ -9,6 +9,7 @@ import {
 describe("declared task check contract", () => {
   it.each([
     ["bun test packages/agentplane/src/example.test.ts", "bun", ["test"]],
+    ["bunx vitest run packages/agentplane/src/example.test.ts", "bun", ["x", "vitest", "run"]],
     ["npm test", "npm", ["test"]],
     ["pnpm run test:unit", "pnpm", ["run", "test:unit"]],
     ["python -m pytest tests/unit", "python", ["-m", "pytest"]],

@@ -88,7 +88,7 @@ function parseReceipt(encoded: string): UserApprovalReceipt {
   let value: unknown;
   try {
     const decoded = Buffer.from(normalized, "base64url");
-    if (!decoded.length || decoded.toString("base64url") !== normalized.replace(/=+$/u, "")) {
+    if (decoded.length === 0 || decoded.toString("base64url") !== normalized.replace(/=+$/u, "")) {
       throw new Error("non-canonical base64url");
     }
     value = JSON.parse(decoded.toString("utf8"));

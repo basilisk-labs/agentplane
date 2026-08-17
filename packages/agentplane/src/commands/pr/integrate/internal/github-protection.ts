@@ -1,4 +1,5 @@
 import { resolveDefaultGithubRepo, runGhApiJson } from "../../internal/gh-api.js";
+import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 
 type GithubBranchProtection = {
@@ -44,7 +45,7 @@ export async function requiresPullRequestMergePath(opts: {
   const protection = await resolveGithubBasePullRequestProtection(opts);
   if (protection.state === "unavailable") {
     throw new CliError({
-      exitCode: 4,
+      exitCode: exitCodeForError("E_HANDOFF"),
       code: "E_HANDOFF",
       message:
         `Cannot determine GitHub protection for ${protection.baseBranch}; ` +

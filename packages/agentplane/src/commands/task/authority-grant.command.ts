@@ -9,6 +9,7 @@ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
   appendSideEffectAuthorityAudit,
   createSideEffectAuthorityRecord,
+  hasConsumedSideEffectAuthorityEvidence,
 } from "../shared/side-effect-authority.js";
 import {
   loadSideEffectAuthorityState,
@@ -256,7 +257,7 @@ export function makeRunTaskAuthorityGrantHandler(session: {
     }
     if (
       verifiedReceipt &&
-      loaded.state.grants.some((item) => item.evidenceDigest === verifiedReceipt.digest)
+      hasConsumedSideEffectAuthorityEvidence(loaded.state, verifiedReceipt.digest)
     ) {
       throw usageError({
         spec: taskAuthorityGrantSpec,

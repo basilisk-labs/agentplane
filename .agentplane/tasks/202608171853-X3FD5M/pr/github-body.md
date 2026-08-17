@@ -27,20 +27,36 @@ Recover the AgentPlane authority release after an unavailable GitHub protection 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/recipes/hermes-agentplane.mdx                 |  37 +++
  .../src/commands/pr/branch-publication.ts          |  23 +-
- .../pr/integrate/internal/github-protection.ts     |  15 ++
+ .../integrate/internal/github-protection.test.ts   |  58 +++++
+ .../pr/integrate/internal/github-protection.ts     |  16 ++
+ .../src/commands/shared/declared-check.test.ts     |   1 +
  .../src/commands/shared/declared-check.ts          |   6 +
- .../src/commands/shared/side-effect-authority.ts   |   5 +
+ .../agentplane/src/commands/shared/pr-meta.test.ts |   4 +-
+ .../commands/shared/side-effect-authority.test.ts  |  27 +++
+ .../src/commands/shared/side-effect-authority.ts   |  12 +
  .../shared/supervisor-execution-episode.ts         |   7 +-
+ .../src/commands/task/agent-action-packet.test.ts  |  74 +++++-
  .../src/commands/task/agent-action-packet.ts       |  79 +++++--
- .../src/commands/task/authority-grant.command.ts   |  70 +++++-
+ .../commands/task/authority-grant.command.test.ts  |  51 +++++
+ .../src/commands/task/authority-grant.command.ts   |  71 +++++-
  .../task/external-agent-supervisor-episode.ts      |   7 +-
  .../src/commands/task/plan-approve.command.ts      |  76 ++++++-
  packages/agentplane/src/commands/task/plan.ts      |  74 +++---
+ .../commands/task/user-approval-receipt.test.ts    | 186 +++++++++++++++
  .../src/commands/task/user-approval-receipt.ts     | 249 +++++++++++++++++++++
+ packages/core/schemas/config.schema.json           |  49 +++-
+ packages/core/schemas/workflow.schema.json         |  84 +++++++
+ packages/core/src/config/config.test.ts            |  35 +++
  packages/core/src/config/schema.impl.ts            |  32 +++
+ .../runner/supervisor-execution-episode.test.ts    |  84 +++++++
  .../src/runner/supervisor-execution-episode.ts     |  23 +-
- 13 files changed, 584 insertions(+), 82 deletions(-)
+ packages/spec/schemas/config.schema.json           |  49 +++-
+ packages/spec/schemas/workflow.schema.json         |  84 +++++++
+ schemas/config.schema.json                         |  49 +++-
+ schemas/workflow.schema.json                       |  84 +++++++
+ 29 files changed, 1541 insertions(+), 90 deletions(-)
 ```
 
 </details>
