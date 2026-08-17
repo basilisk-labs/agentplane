@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 89f760183da24c5a768dfe97e6c4c2fb67bd1478..af4dc232876377fa63f2bf9048b5d9f53fcd2ee2",
+      "command": "git diff --check 97cbf2d8ff7f0d92cd61a78e5216222f87024d3e..5164cfd3b09b77113b450156b459e01247d9e4f8",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,26 +13,11 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 89f760183da24c5a768dfe97e6c4c2fb67bd1478..af4dc232876377fa63f2bf9048b5d9f53fcd2ee2",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 97cbf2d8ff7f0d92cd61a78e5216222f87024d3e..5164cfd3b09b77113b450156b459e01247d9e4f8",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202608170928-8Y24PK/README.md",
-        "A\t.agentplane/tasks/202608170928-8Y24PK/blueprint/resolved-snapshot.json",
-        "A\t.agentplane/tasks/202608170928-8Y24PK/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202608170928-8Y24PK/pr/github-body.md",
-        "A\t.agentplane/tasks/202608170928-8Y24PK/pr/github-title.txt",
-        "A\t.agentplane/tasks/202608170928-8Y24PK/pr/meta.json",
-        "A\t.agentplane/tasks/202608170928-8Y24PK/pr/review.md",
-        "M\tdocs/recipes/hermes-agentplane.mdx",
-        "M\tdocs/workflow-guides/hermes-kanban.mdx",
-        "M\tintegrations/hermes-agentplane-plugin/README.md",
-        "A\tintegrations/hermes-agentplane-plugin/lane-registry.example.json",
-        "A\tintegrations/hermes-agentplane-plugin/protocol-v2.schema.json",
-        "M\tpackages/agentplane/src/commands/hermes/hermes-environment.ts",
-        "M\tpackages/agentplane/src/commands/hermes/hermes-runtime.ts",
-        "M\tpackages/agentplane/src/commands/hermes/hermes.command.test.ts",
-        "M\tpackages/agentplane/src/commands/hermes/hermes.command.ts"
+        "M\tpackages/agentplane/src/commands/hermes/hermes-environment.ts"
       ]
     },
     {
@@ -42,60 +27,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "89f760183da24c5a768dfe97e6c4c2fb67bd1478",
-  "implementation_commit": "af4dc232876377fa63f2bf9048b5d9f53fcd2ee2",
+  "execution_base_commit": "97cbf2d8ff7f0d92cd61a78e5216222f87024d3e",
+  "implementation_commit": "5164cfd3b09b77113b450156b459e01247d9e4f8",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      "?? .agentplane/tasks/202608170928-8Y24PK/README.md",
-      "?? .agentplane/tasks/202608170928-8Y24PK/blueprint/resolved-snapshot.json",
-      "?? .agentplane/tasks/202608170928-8Y24PK/pr/diffstat.txt",
-      "?? .agentplane/tasks/202608170928-8Y24PK/pr/github-body.md",
-      "?? .agentplane/tasks/202608170928-8Y24PK/pr/github-title.txt",
-      "?? .agentplane/tasks/202608170928-8Y24PK/pr/meta.json",
-      "?? .agentplane/tasks/202608170928-8Y24PK/pr/review.md"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608170928-8Y24PK/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608170928-8Y24PK/blueprint/resolved-snapshot.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608170928-8Y24PK/pr/diffstat.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608170928-8Y24PK/pr/github-body.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608170928-8Y24PK/pr/github-title.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608170928-8Y24PK/pr/meta.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608170928-8Y24PK/pr/review.md"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      "?? .agentplane/tasks/202608170928-8Y24PK/README.md",
-      "?? .agentplane/tasks/202608170928-8Y24PK/blueprint/resolved-snapshot.json",
-      "?? .agentplane/tasks/202608170928-8Y24PK/pr/diffstat.txt",
-      "?? .agentplane/tasks/202608170928-8Y24PK/pr/github-body.md",
-      "?? .agentplane/tasks/202608170928-8Y24PK/pr/github-title.txt",
-      "?? .agentplane/tasks/202608170928-8Y24PK/pr/meta.json",
-      "?? .agentplane/tasks/202608170928-8Y24PK/pr/review.md"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
