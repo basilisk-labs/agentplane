@@ -27,6 +27,8 @@ import type { WorkflowOperation } from "../shared/workflow-step.js";
 export {
   currentAgentplaneCommand,
   hermesEnvSnapshot,
+  hermesPluginContractSnapshot,
+  inspectCommandAvailability,
   loadLaneRegistry,
 } from "./hermes-environment.js";
 export { loadHermesStateSnapshot, reconcileHermesState } from "./hermes-state.js";
@@ -39,13 +41,22 @@ export type HermesLifecycleAction = (typeof HERMES_LIFECYCLE_ACTIONS)[number];
 
 export type HermesLocalProjection = Awaited<ReturnType<typeof routePacket>>;
 
-function taskTerminalForHermesComplete(task: {
-  status: string;
-  verification: string | null;
-}): boolean {
-  const statusDone = task.status.trim().toUpperCase() === "DONE";
-  const verificationState = task.verification?.trim().toLowerCase() ?? "";
-  return statusDone && verificationState === "ok";
+export function buildHermesTerminalAttestation(
+  decision: TaskRouteDecision,
+  taskRevision: number | null,
+) {
+  const workflowStep = decision.workflowStep;
+  const terminalDone = workflowStep.kind === "terminal" && workflowStep.outcome.type === "done";
+  return {
+    schema: "agentplane.hermes.terminal-attestation.v1",
+    hermes_root_complete_allowed: terminalDone,
+    terminal_outcome: workflowStep.kind === "terminal" ? workflowStep.outcome.type : null,
+    workflow_step_id: workflowStep.id,
+    precondition_fingerprint: workflowStep.preconditionFingerprint,
+    task_revision: taskRevision,
+    required_gate:
+      "AgentPlane route oracle workflowStep.kind=terminal and workflowStep.outcome.type=done",
+  };
 }
 
 async function runnerVisibilityPacket(opts: {
@@ -137,11 +148,7 @@ export async function prepareHermesRoute(opts: {
         taskId: opts.taskId,
       })
     : null;
-  const terminal = {
-    hermes_root_complete_allowed: taskTerminalForHermesComplete(decision.task),
-    required_gate:
-      "Agentplane DONE + verification ok + branch_pr finish/integration evidence + ACR validation",
-  };
+  const terminal = buildHermesTerminalAttestation(decision, fullTask.revision ?? null);
   const projectionBoundary = {
     hermes_authority: "dispatch_run_lifecycle",
     agentplane_authority: "engineering_task_lifecycle",
@@ -215,11 +222,11 @@ export function buildHermesLifecycleRecommendation(
 ) {
   const base = `agentplane hermes lifecycle`;
   if (packet.terminal.hermes_root_complete_allowed) {
-    const body = `Agentplane task ${packet.task.id} is DONE with verification ok.`;
+    const body = JSON.stringify(packet.terminal);
     return {
       action: "complete",
       command: `${base} complete --body ${JSON.stringify(body)}`,
-      reason: "Agentplane task truth is terminal and verified.",
+      reason: "AgentPlane route oracle emitted the canonical terminal.done attestation.",
       body,
     };
   }

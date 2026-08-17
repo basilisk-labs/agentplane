@@ -54,7 +54,8 @@ the `custom` runner adapter with `runner.custom.command=["hermes","agentplane","
 agentplane init --tool hermes --workflow branch_pr --yes
 agentplane hermes doctor --json
 agentplane hermes enqueue <task-id> --board <board> --assignee agentplane-coder --json
-agentplane hermes supervise <task-id> --execute-step --json
+hermes agentplane supervise --task-id <task-id> --root <repo>
+hermes agentplane approve --task-id <task-id> --root <repo>
 agentplane task run <task-id>
 agentplane hermes lifecycle comment --body '<structured projection>' --json
 agentplane hermes lifecycle complete --body 'Agentplane terminal evidence validated' --json
@@ -70,6 +71,10 @@ Hermes worker lanes must pass these variables to Agentplane-side commands:
 
 ```bash
 AGENTPLANE_HERMES_LANE_REGISTRY=/opt/agentplane/lane-registry.json
+AGENTPLANE_HERMES_ALLOWED_ROOTS=/workspace/repo
+AGENTPLANE_HERMES_PLUGIN_PROTOCOL=agentplane.hermes.plugin.v2
+AGENTPLANE_HERMES_NATIVE_WORKER_LANE_API=1
+AGENTPLANE_HERMES_APPROVAL_RECEIPT_BRIDGE=1
 HERMES_KANBAN_TASK=<hermes-card-id>
 HERMES_KANBAN_BOARD=<board>
 HERMES_KANBAN_RUN_ID=<run-id>
@@ -77,14 +82,23 @@ HERMES_KANBAN_WORKSPACE=<repo-workspace>
 HERMES_KANBAN_CLAIM_LOCK=<claim-lock>
 ```
 
-`agentplane hermes doctor --json` reports missing Hermes environment values and lane-registry
-state. The Agentplane side uses `AGENTPLANE_HERMES_LANE_REGISTRY` as the registry input.
+`agentplane hermes doctor --json` fails closed unless the v2 plugin capability, native lane API,
+trusted approval-receipt bridge, lane registry, binaries, `branch_pr`, and non-empty root allowlist
+are proven. It separately reports
+whether the current worker claim is complete. An empty root allowlist denies every workspace.
 Task-runner invocations also export `AGENTPLANE_RUNNER_TASK_ID` when the run target is an Agentplane
 task, so Hermes launchers can bind the external worker run back to the canonical task id.
 
+The trusted Hermes host reads the base64-encoded Ed25519 PKCS8 DER signing key from
+`AGENTPLANE_HERMES_APPROVAL_PRIVATE_KEY_PKCS8`; the plugin never forwards that variable to worker or
+LLM subprocesses and emits the bridge capability only after loading a valid key. Configure
+`approval_issuer`, `approval_subject`, and `approval_ttl_minutes` in the plugin settings, then pin
+the matching doctor-reported public key under
+`authority.approval_receipts.trusted_issuers` in Agentplane.
+
 ## Visibility contract
 
-`agentplane hermes enqueue` and `agentplane hermes supervise` return a
+`agentplane hermes enqueue` and the compatibility `agentplane hermes supervise` projection return a
 `hermes_comment_projection` packet. Hermes plugins should post that packet before block or
 complete transitions. The packet includes:
 
@@ -93,6 +107,8 @@ complete transitions. The packet includes:
 - Runner visibility commands: `agentplane task run status`, `inspect`, and event `logs`.
 - Evidence references for the task README, ACR, and runner artifacts.
 - The authority boundary that keeps Hermes status projection-only.
+- A canonical `agentplane.hermes.terminal-attestation.v1`; only `terminal/done` permits root-card
+  completion.
 
 ## Expected artifacts
 
@@ -105,7 +121,9 @@ complete transitions. The packet includes:
 ## Safety model
 
 The recipe does not make Hermes a task backend for Agentplane. Hermes board state is a projection.
-Agentplane task state remains canonical and Git-visible.
+Agentplane task state remains canonical and Git-visible. The Hermes plugin performs all LLM work by
+consuming bounded PLANNER, EXECUTOR, and EVALUATOR `WorkOrder` episodes; it never synthesizes formal
+Agentplane transitions from prose.
 
 ## Unattended Hermes operation
 

@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The replacement of logical OR with nullish coalescing is confined to the v2 protocol snapshot and preserves fail-closed validation for absent, empty, or mismatched protocol values.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/72e1d6b1983632c86624ab9d9b9dfa3ba6744f87ba525d17f598d2d22dc99efe.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The committed implementation remains aligned with the approved ownership model: Hermes performs semantic LLM episodes, while AgentPlane owns formal lifecycle, authority, verification, publication, and terminal attestation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/72e1d6b1983632c86624ab9d9b9dfa3ba6744f87ba525d17f598d2d22dc99efe.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Protocol docs, schema, doctor checks, terminal attestation, and focused tests remain mutually consistent after the rework.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/72e1d6b1983632c86624ab9d9b9dfa3ba6744f87ba525d17f598d2d22dc99efe.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: The provider CI matrix must rerun against the corrected committed SHA before integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/72e1d6b1983632c86624ab9d9b9dfa3ba6744f87ba525d17f598d2d22dc99efe.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

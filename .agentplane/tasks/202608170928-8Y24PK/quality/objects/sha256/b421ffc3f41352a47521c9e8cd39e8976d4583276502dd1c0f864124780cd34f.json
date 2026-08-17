@@ -1,0 +1,254 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "ci",
+        "documentation",
+        "public_api",
+        "release_metadata",
+        "repository_write",
+        "schema",
+        "security_boundary",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [
+        "external_write",
+        "network_read",
+        "publish"
+      ],
+      "components": [
+        "agentplane-recipes/recipes/hermes-agentplane",
+        "docs/recipes/hermes-agentplane.mdx",
+        "docs/workflow-guides/hermes-kanban.mdx",
+        "integrations/hermes-agentplane-plugin",
+        "packages/agentplane/src/cli/run-cli/commands/init",
+        "packages/agentplane/src/commands/hermes",
+        "packages/agentplane/src/runner"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "material",
+        "reversibility": "recovery_required"
+      },
+      "evidence_requirements": [
+        "external_effect:external_write",
+        "external_effect:network_read",
+        "external_effect:publish",
+        "hosted_integration",
+        "implementation_risk_validation",
+        "repository_effect:ci",
+        "repository_effect:documentation",
+        "repository_effect:public_api",
+        "repository_effect:release_metadata",
+        "repository_effect:repository_write",
+        "repository_effect:schema",
+        "repository_effect:security_boundary",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "documentation",
+        "repository_write",
+        "schema",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "docs",
+        "integrations",
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        "docs/recipes/hermes-agentplane.mdx",
+        "docs/workflow-guides/hermes-kanban.mdx",
+        "integrations/hermes-agentplane-plugin/README.md",
+        "integrations/hermes-agentplane-plugin/lane-registry.example.json",
+        "integrations/hermes-agentplane-plugin/protocol-v2.schema.json",
+        "packages/agentplane/src/commands/hermes/hermes-environment.ts",
+        "packages/agentplane/src/commands/hermes/hermes-runtime.ts",
+        "packages/agentplane/src/commands/hermes/hermes.command.test.ts",
+        "packages/agentplane/src/commands/hermes/hermes.command.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/agentplane/src/cli/run-cli/commands/init",
+      "effect_ci",
+      "effect_public_api",
+      "effect_release_metadata",
+      "effect_schema",
+      "effect_security_boundary",
+      "external_effect_requires_real_e2e",
+      "material_implementation_uncertainty",
+      "reversibility_recovery_required",
+      "unknown_path:integrations/hermes-agentplane-plugin/lane-registry.example.json"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": true,
+    "digest": "sha256:dd4da45c92dc327e3f30c5f18c3e27def1de3b973f012024e9fc3fcc1237ed46"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-17T10:39:21.486Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608170928-8Y24PK/verification/20260817103921486-6f4008b48b04b1bd.json",
+      "sha256": "sha256:dfc646839e2ed6c896813acc04348568192338fad6d5dd8ae65de8a21d40bb6e"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 89f760183da24c5a768dfe97e6c4c2fb67bd1478..af4dc232876377fa63f2bf9048b5d9f53fcd2ee2",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 89f760183da24c5a768dfe97e6c4c2fb67bd1478..af4dc232876377fa63f2bf9048b5d9f53fcd2ee2",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "A\t.agentplane/tasks/202608170928-8Y24PK/README.md",
+          "A\t.agentplane/tasks/202608170928-8Y24PK/blueprint/resolved-snapshot.json",
+          "A\t.agentplane/tasks/202608170928-8Y24PK/pr/diffstat.txt",
+          "A\t.agentplane/tasks/202608170928-8Y24PK/pr/github-body.md",
+          "A\t.agentplane/tasks/202608170928-8Y24PK/pr/github-title.txt",
+          "A\t.agentplane/tasks/202608170928-8Y24PK/pr/meta.json",
+          "A\t.agentplane/tasks/202608170928-8Y24PK/pr/review.md",
+          "M\tdocs/recipes/hermes-agentplane.mdx",
+          "M\tdocs/workflow-guides/hermes-kanban.mdx",
+          "M\tintegrations/hermes-agentplane-plugin/README.md",
+          "A\tintegrations/hermes-agentplane-plugin/lane-registry.example.json",
+          "A\tintegrations/hermes-agentplane-plugin/protocol-v2.schema.json",
+          "M\tpackages/agentplane/src/commands/hermes/hermes-environment.ts",
+          "M\tpackages/agentplane/src/commands/hermes/hermes-runtime.ts",
+          "M\tpackages/agentplane/src/commands/hermes/hermes.command.test.ts",
+          "M\tpackages/agentplane/src/commands/hermes/hermes.command.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "89f760183da24c5a768dfe97e6c4c2fb67bd1478",
+    "implementation_commit": "af4dc232876377fa63f2bf9048b5d9f53fcd2ee2",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        "?? .agentplane/tasks/202608170928-8Y24PK/README.md",
+        "?? .agentplane/tasks/202608170928-8Y24PK/blueprint/resolved-snapshot.json",
+        "?? .agentplane/tasks/202608170928-8Y24PK/pr/diffstat.txt",
+        "?? .agentplane/tasks/202608170928-8Y24PK/pr/github-body.md",
+        "?? .agentplane/tasks/202608170928-8Y24PK/pr/github-title.txt",
+        "?? .agentplane/tasks/202608170928-8Y24PK/pr/meta.json",
+        "?? .agentplane/tasks/202608170928-8Y24PK/pr/review.md"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608170928-8Y24PK/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608170928-8Y24PK/blueprint/resolved-snapshot.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608170928-8Y24PK/pr/diffstat.txt"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608170928-8Y24PK/pr/github-body.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608170928-8Y24PK/pr/github-title.txt"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608170928-8Y24PK/pr/meta.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608170928-8Y24PK/pr/review.md"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        "?? .agentplane/tasks/202608170928-8Y24PK/README.md",
+        "?? .agentplane/tasks/202608170928-8Y24PK/blueprint/resolved-snapshot.json",
+        "?? .agentplane/tasks/202608170928-8Y24PK/pr/diffstat.txt",
+        "?? .agentplane/tasks/202608170928-8Y24PK/pr/github-body.md",
+        "?? .agentplane/tasks/202608170928-8Y24PK/pr/github-title.txt",
+        "?? .agentplane/tasks/202608170928-8Y24PK/pr/meta.json",
+        "?? .agentplane/tasks/202608170928-8Y24PK/pr/review.md"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608170928-8Y24PK",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608170928-8Y24PK/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

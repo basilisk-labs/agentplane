@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608170928-8Y24PK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-17T22:43:10.557Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 4 typed finding(s).",
+  "evaluated_sha": "8f51cbeca603c2d2885d796f14e2bf767cb9df15",
+  "blueprint_digest": "4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb",
+  "findings": [
+    "The implementation preserves fail-closed equality checks against agentplane.hermes.plugin.v2 and does not alter environment forwarding, receipt validation, worker-lane dispatch, or terminal authority behavior.",
+    "The constant is not part of a package barrel or documented consumer contract; making it module-private removes an unused source-level export without changing the Hermes command surface.",
+    "The frozen implementation evidence shows a clean final repository state and the scoped Knip, Hermes command, and diff checks passed.",
+    "Residual risk: The current local rework commit has not yet been published and therefore has no hosted check result."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/e910f28ad658d135bbbf33670478639449fe17a5cd843514b28a9ad2ce5825e2.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

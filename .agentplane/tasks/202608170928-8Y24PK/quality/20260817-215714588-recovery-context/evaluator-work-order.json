@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608170928-8Y24PK-00ad2227591e53cf62a6849a",
+  "prepared_at": "2026-08-17T21:57:14.588Z",
+  "task": {
+    "id": "202608170928-8Y24PK",
+    "revision": 15,
+    "objective": "Upgrade the Hermes AgentPlane bridge protocol across the three approved repositories\n\nImplement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 0.2.0, and current Hermes worker-lane dispatch. Scope roots are /Users/densmirnov/Github/agentplane, /Users/densmirnov/Github/agentplane-hermes-plugin, and /Users/densmirnov/Github/hermes-agent. Required effects include source, tests, docs, public API, schema, CI/release metadata, security boundary, network reads, hosted external writes, and publication through explicit authority. Prove PLANNER/approval/EXECUTOR/EVALUATOR, retry, stale-run, and terminal attestation without direct kanban.db writes. Existing D5MAJ3 and failed structured-intake DDW1J5 are superseded and must not be implemented or published.",
+    "acceptance_criteria": [
+      "- In scope: Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 0.2.0, and current Hermes worker-lane dispatch. Scope roots are /Users/densmirnov/Github/agentplane, /Users/densmirnov/Github/agentplane-hermes-plugin, and /Users/densmirnov/Github/hermes-agent. Required effects include source, tests, docs, public API, schema, CI/release metadata, security boundary, network reads, hosted external writes, and publication through explicit authority. Prove PLANNER/approval/EXECUTOR/EVALUATOR, retry, stale-run, and terminal attestation without direct kanban.db writes. Existing D5MAJ3 and failed structured-intake DDW1J5 are superseded and must not be implemented or published.\n- Out of scope: unrelated refactors not required for \"Upgrade the Hermes AgentPlane bridge protocol across the three approved repositories\".",
+      "Implement the approved three-repository Hermes integration in dependency order: establish the AgentPlane 0.7.6 fail-closed bridge contract and terminal attestation; release an external plugin 0.2.0 that drives the canonical task advance exchange and managed runner result transport; refresh the Hermes worker-lane registry hook on current upstream main; then prove the installed-package PLANNER, approval, EXECUTOR, EVALUATOR, retry, stale-run, and terminal-completion paths without direct kanban.db writes. Preserve the obsolete D5MAJ3 worktree and failed DDW1J5 intake, and stop at every AgentPlane authority or external-provider boundary.",
+      "PLANNER fallback scaffold for \"Upgrade the Hermes AgentPlane bridge protocol across the three approved repositories\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Upgrade the Hermes AgentPlane bridge protocol across the three approved repositories\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "6c81acdd0cfd4b0442f77cf665dc68f6202670ce",
+  "diff_base_sha": "89f760183da24c5a768dfe97e6c4c2fb67bd1478",
+  "blueprint_digest": "4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-215714588-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:f17a15daa76b2e20c9dd832ca748d3d6f6287d985c60280f34701ecea6b0680e",
+    "prompt_path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/5355d5ac53657ea07951eef5a00f46d3768a6f7a215bb3c373edd113489a02a0.md",
+    "result_schema_path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608170928-8Y24PK/README.md",
+      "sha256": "sha256:deab357e387d9e5b283b27d34e0e40ccd06f9173463294d99b47277625a1c969",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/33e5b789b5b9b7d1354b2401744d658de34cf4a05a5e6076d90993b80864eb13.patch",
+      "sha256": "sha256:33e5b789b5b9b7d1354b2401744d658de34cf4a05a5e6076d90993b80864eb13",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/c4662279920b886397b2c137a3817934a465b6d92a65ff84cf219e784f8085c3.json",
+      "sha256": "sha256:c4662279920b886397b2c137a3817934a465b6d92a65ff84cf219e784f8085c3",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608170928-8Y24PK/verification/20260817215707329-0786bb1528075193.json",
+      "sha256": "sha256:373c448597ef06ea2484a37e6bc5b746c6518f8abcf65d94b768faa99ade2aca",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/9d4211df768252e341fc46edf87f511d30d4f4f08d289efc5570b595c38e2b08.json",
+      "sha256": "sha256:9d4211df768252e341fc46edf87f511d30d4f4f08d289efc5570b595c38e2b08",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

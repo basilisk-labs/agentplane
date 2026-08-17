@@ -8,10 +8,14 @@ import {
   recordCodexProviderUsageForResult,
 } from "../../runner/adapters/codex-result-transport.js";
 import * as taskRunUsecases from "../../runner/usecases/task-run.js";
-import { executeHermesWorkflowOperation, routeNeedsRunnerProjection } from "./hermes-runtime.js";
+import {
+  buildHermesTerminalAttestation,
+  executeHermesWorkflowOperation,
+  routeNeedsRunnerProjection,
+} from "./hermes-runtime.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { captureStdIO, mkGitRepoRoot, runCliSilent } from "@agentplane/testkit";
-import { mkdir, writeFile } from "node:fs/promises";
+import { chmod, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 async function createTask(root: string): Promise<string> {
@@ -89,6 +93,42 @@ async function createRunnableDirectTask(root: string): Promise<string> {
 }
 
 describe("hermes adapter commands", () => {
+  it("permits Hermes completion only for the canonical terminal.done route step", () => {
+    const baseStep = {
+      id: "terminal.done",
+      kind: "terminal",
+      outcome: { type: "done", summary: "complete" },
+      preconditionFingerprint: "sha256:terminal-proof",
+    };
+    const done = buildHermesTerminalAttestation(
+      { workflowStep: baseStep } as TaskRouteDecision,
+      17,
+    );
+    const attention = buildHermesTerminalAttestation(
+      {
+        workflowStep: {
+          ...baseStep,
+          id: "terminal.inspect_pr",
+          outcome: { type: "attention_required", summary: "inspect PR" },
+        },
+      } as TaskRouteDecision,
+      18,
+    );
+
+    expect(done).toMatchObject({
+      schema: "agentplane.hermes.terminal-attestation.v1",
+      hermes_root_complete_allowed: true,
+      terminal_outcome: "done",
+      precondition_fingerprint: "sha256:terminal-proof",
+      task_revision: 17,
+    });
+    expect(attention).toMatchObject({
+      hermes_root_complete_allowed: false,
+      terminal_outcome: "attention_required",
+      task_revision: 18,
+    });
+  });
+
   it("returns the typed nonzero exit code when runner cleanup remains incomplete", async () => {
     const executed = {
       invocation: {
@@ -527,26 +567,91 @@ describe("hermes adapter commands", () => {
     expect(routeNeedsRunnerProjection(decision)).toBe(true);
   });
 
-  it("doctor reports the local Agentplane side of the adapter contract", async () => {
+  it("doctor fails closed when the native plugin contract is not proven", async () => {
     const root = await mkGitRepoRoot();
     await runCliSilent(["init", "--yes", "--root", root]);
 
     const io = captureStdIO();
     try {
       const code = await runCli(["hermes", "doctor", "--json", "--root", root]);
-      expect(code).toBe(0);
+      expect(code).toBe(1);
       const payload = JSON.parse(io.stdout) as {
         ok: boolean;
         repo: string;
         adapter_status: string;
         missing_hermes_env: string[];
       };
-      expect(payload.ok).toBe(true);
+      expect(payload.ok).toBe(false);
       expect(payload.repo).toBe(root);
-      expect(payload.adapter_status).toContain("hermes_plugin_required");
+      expect(payload.adapter_status).toContain("not_ready");
       expect(payload.missing_hermes_env).toContain("task_id");
     } finally {
       io.restore();
+    }
+  });
+
+  it("doctor accepts a complete protocol-v2 installation contract", async () => {
+    const root = await mkGitRepoRoot();
+    await runCliSilent(["init", "--workflow", "branch_pr", "--yes", "--root", root]);
+    const registryPath = path.join(root, "registry", "lane-registry.json");
+    const binPath = path.join(root, "bin", "hermes-agentplane-test-bin");
+    await mkdir(path.dirname(registryPath), { recursive: true });
+    await mkdir(path.dirname(binPath), { recursive: true });
+    await writeFile(
+      registryPath,
+      JSON.stringify({ lanes: [{ name: "agentplane-coder", kind: "agentplane" }] }),
+    );
+    await writeFile(binPath, "#!/bin/sh\nexit 0\n");
+    await chmod(binPath, 0o755);
+
+    const keys = [
+      "AGENTPLANE_HERMES_LANE_REGISTRY",
+      "AGENTPLANE_BIN",
+      "HERMES_BIN",
+      "AGENTPLANE_HERMES_PLUGIN_PROTOCOL",
+      "AGENTPLANE_HERMES_NATIVE_WORKER_LANE_API",
+      "AGENTPLANE_HERMES_APPROVAL_RECEIPT_BRIDGE",
+      "AGENTPLANE_HERMES_ALLOWED_ROOTS",
+    ] as const;
+    const previous = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
+    Object.assign(process.env, {
+      AGENTPLANE_HERMES_LANE_REGISTRY: registryPath,
+      AGENTPLANE_BIN: binPath,
+      HERMES_BIN: binPath,
+      AGENTPLANE_HERMES_PLUGIN_PROTOCOL: "agentplane.hermes.plugin.v2",
+      AGENTPLANE_HERMES_NATIVE_WORKER_LANE_API: "1",
+      AGENTPLANE_HERMES_APPROVAL_RECEIPT_BRIDGE: "1",
+      AGENTPLANE_HERMES_ALLOWED_ROOTS: root,
+    });
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hermes", "doctor", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        ok: boolean;
+        installation_ready: boolean;
+        worker_context_ready: boolean;
+        plugin_contract: {
+          protocol_valid: boolean;
+          approval_receipt_bridge: boolean;
+          allowed_roots_fail_closed: boolean;
+        };
+      };
+      expect(payload.ok).toBe(true);
+      expect(payload.installation_ready).toBe(true);
+      expect(payload.worker_context_ready).toBe(false);
+      expect(payload.plugin_contract).toMatchObject({
+        protocol_valid: true,
+        approval_receipt_bridge: true,
+        allowed_roots_fail_closed: true,
+      });
+    } finally {
+      io.restore();
+      for (const key of keys) {
+        const value = previous[key];
+        if (value === undefined) delete process.env[key];
+        else process.env[key] = value;
+      }
     }
   });
 
@@ -577,7 +682,7 @@ describe("hermes adapter commands", () => {
     const io = captureStdIO();
     try {
       const code = await runCli(["hermes", "doctor", "--json", "--root", root]);
-      expect(code).toBe(0);
+      expect(code).toBe(1);
       const payload = JSON.parse(io.stdout) as {
         lane_registry: {
           path: string;
@@ -847,6 +952,44 @@ describe("hermes adapter commands", () => {
         delete process.env.HERMES_BIN;
       } else {
         process.env.HERMES_BIN = previousHermesBin;
+      }
+    }
+  });
+
+  it("rejects Hermes lifecycle mutations without the claimed board", async () => {
+    const keys = [
+      "HERMES_KANBAN_TASK",
+      "HERMES_KANBAN_BOARD",
+      "HERMES_KANBAN_RUN_ID",
+      "HERMES_KANBAN_CLAIM_LOCK",
+      "HERMES_KANBAN_WORKSPACE",
+    ] as const;
+    const previous = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
+    Object.assign(process.env, {
+      HERMES_KANBAN_TASK: "hk_123",
+      HERMES_KANBAN_RUN_ID: "run_123",
+      HERMES_KANBAN_CLAIM_LOCK: "claim_123",
+      HERMES_KANBAN_WORKSPACE: "/workspace/repo",
+    });
+    delete process.env.HERMES_KANBAN_BOARD;
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "hermes",
+        "lifecycle",
+        "comment",
+        "--body",
+        "claim-scoped update",
+        "--json",
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("HERMES_KANBAN_BOARD");
+    } finally {
+      io.restore();
+      for (const key of keys) {
+        const value = previous[key];
+        if (value === undefined) delete process.env[key];
+        else process.env[key] = value;
       }
     }
   });
