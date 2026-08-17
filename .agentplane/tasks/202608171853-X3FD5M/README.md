@@ -2,10 +2,10 @@
 id: "202608171853-X3FD5M"
 title: "Harden autonomous authority recovery and Hermes dialog approvals"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -30,7 +30,7 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-17T20:43:16.450Z"
+  updated_at: "2026-08-17T20:55:21.596Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
@@ -184,6 +184,7 @@ execution_contract:
       - "scripts/baselines/v0.7-compatibility-candidate.json"
       - "scripts/bench/capture-compatibility-candidate.mjs"
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
+      - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
     external_effects: []
     repository_effects:
       - "documentation"
@@ -261,7 +262,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:3db89fdae129f4117dddc33ca72beea8db700d2db9e2e6c9ce0795e8531f536f"
+      digest: "sha256:2a2e9fd1966abe9eab7763e78fe03fbcb10e22c7b485e8bba939e648985ac700"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli/command-catalog.test.ts"
@@ -341,6 +342,7 @@ execution_contract:
           - "scripts/baselines/v0.7-compatibility-candidate.json"
           - "scripts/bench/capture-compatibility-candidate.mjs"
           - "scripts/checks/check-compatibility-contract-baseline.mjs"
+          - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
         external_effects: []
         repository_effects:
           - "documentation"
@@ -389,8 +391,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "99febe396cafce24ce1f9b5055b28842c4482897"
-  message: "🚧 X3FD5M task: record external evaluator result"
+  hash: "b6698767ffbbff30558126ccf78e3c303e96ee6f"
+  message: "🚧 X3FD5M task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -428,6 +430,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: b6698767ffbb. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -569,9 +574,23 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "99febe396cafce24ce1f9b5055b28842c4482897"
+  -
+    type: "status"
+    at: "2026-08-17T20:54:44.668Z"
+    author: "SUPERVISOR"
+    from: "DONE"
+    to: "DOING"
+    note: "Implementation committed: b6698767ffbb. CLI accepted one state-bound external-agent semantic result."
+    commit: "b6698767ffbbff30558126ccf78e3c303e96ee6f"
+  -
+    type: "verify"
+    at: "2026-08-17T20:55:21.596Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-17T20:44:35.289Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-17T20:55:22.879Z"
+doc_updated_by: "SUPERVISOR"
 description: "Recover the AgentPlane authority release after an unavailable GitHub protection lookup selected a local merge; fail closed on unavailable provider protection, repair supervisor replay/concurrency regressions, and define a verifiable Hermes-to-AgentPlane user approval receipt so the user approves in dialogue while the integration layer executes exact state-bound commands. Preserve mandatory primary plan approval and operator-owned provider merge semantics."
 sections:
   Summary: |-
@@ -970,6 +989,78 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d3ea9d1b0233fc005c39c29e6fb1eb6ed23070236ccc66392cc78b2f652d61bc, input_digest=sha256:99c73cc078163e11459dbd9e6204d3a0d78e4c999ac185787e5bcc8d83c0d862
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171853-X3FD5M Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171853-X3FD5M Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171853-X3FD5M Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171853-X3FD5M Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171853-X3FD5M Verification Contract check hosted_integration
+
+    Check: real_e2e
+    Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171853-X3FD5M Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171853-X3FD5M Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171853-X3FD5M-harden-autonomous-authority-recovery-and-hermes/.agentplane/tasks/202608171853-X3FD5M/blueprint/resolved-snapshot.json
+    - old_digest: da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8
+    - current_digest: da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608171853-X3FD5M
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608171853-X3FD5M
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-17T20:55:21.596Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d3ea9d1b0233fc005c39c29e6fb1eb6ed23070236ccc66392cc78b2f652d61bc, input_digest=sha256:068f3b7cfd36c460cf32186a63dd3557c8e945d2e346f16ee0f84b7f83a3d826
 
     Details:
 
@@ -1454,6 +1545,78 @@ Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review i
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d3ea9d1b0233fc005c39c29e6fb1eb6ed23070236ccc66392cc78b2f652d61bc, input_digest=sha256:99c73cc078163e11459dbd9e6204d3a0d78e4c999ac185787e5bcc8d83c0d862
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171853-X3FD5M Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171853-X3FD5M Verification Contract check critical_paths
+
+Check: docs_contract
+Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171853-X3FD5M Verification Contract check docs_contract
+
+Check: full_regression
+Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171853-X3FD5M Verification Contract check full_regression
+
+Check: hosted_integration
+Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171853-X3FD5M Verification Contract check hosted_integration
+
+Check: real_e2e
+Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171853-X3FD5M Verification Contract check real_e2e
+
+Check: task_outcome
+Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171853-X3FD5M Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171853-X3FD5M-harden-autonomous-authority-recovery-and-hermes/.agentplane/tasks/202608171853-X3FD5M/blueprint/resolved-snapshot.json
+- old_digest: da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8
+- current_digest: da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608171853-X3FD5M
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608171853-X3FD5M
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-17T20:55:21.596Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d3ea9d1b0233fc005c39c29e6fb1eb6ed23070236ccc66392cc78b2f652d61bc, input_digest=sha256:068f3b7cfd36c460cf32186a63dd3557c8e945d2e346f16ee0f84b7f83a3d826
 
 Details:
 
