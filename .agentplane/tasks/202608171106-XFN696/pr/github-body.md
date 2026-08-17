@@ -15,13 +15,8 @@ Implement a repository-configured AgentPlane authority provider with manual, pol
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Authority recovery rework: execute the emitted local route.remote.refresh grant end to end and
-eliminate the WorkOrder route snapshot divergence that rejects it as agent.verification.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

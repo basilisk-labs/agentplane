@@ -12,8 +12,8 @@ Created: 2026-08-17T11:57:53.694Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Authority recovery rework: execute the emitted local route.remote.refresh grant end to end and eliminate the WorkOrder route snapshot divergence that rejects it as agent.verification.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
