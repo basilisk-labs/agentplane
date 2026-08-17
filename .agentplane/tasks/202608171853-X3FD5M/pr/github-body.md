@@ -15,8 +15,8 @@ Recover the AgentPlane authority release after an unavailable GitHub protection 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
