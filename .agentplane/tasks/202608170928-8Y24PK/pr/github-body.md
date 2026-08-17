@@ -15,8 +15,8 @@ Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 
 
 ## Verification
 
-- State: needs_rework
-- Note: Address all three unresolved PR review findings before integration.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

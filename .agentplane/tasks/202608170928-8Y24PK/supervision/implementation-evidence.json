@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 97429b3c3b99404bc68b53eca9684f1b4883d50d..8f51cbeca603c2d2885d796f14e2bf767cb9df15",
+      "command": "git diff --check ef28012ddd29c7ec8a8cf90bfce591a3b5e95bc1..96ba85f6d91318717e6bf32a58248941e8232877",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,16 +13,20 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 97429b3c3b99404bc68b53eca9684f1b4883d50d..8f51cbeca603c2d2885d796f14e2bf767cb9df15",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB ef28012ddd29c7ec8a8cf90bfce591a3b5e95bc1..96ba85f6d91318717e6bf32a58248941e8232877",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
         "M\t.agentplane/tasks/202608170928-8Y24PK/README.md",
+        "M\t.agentplane/tasks/202608170928-8Y24PK/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608170928-8Y24PK/pr/github-body.md",
+        "M\t.agentplane/tasks/202608170928-8Y24PK/pr/github-title.txt",
         "M\t.agentplane/tasks/202608170928-8Y24PK/pr/meta.json",
         "M\t.agentplane/tasks/202608170928-8Y24PK/pr/review.md",
-        "A\t.agentplane/tasks/202608170928-8Y24PK/verification/20260817224017419-ea24e80164cde652.json",
-        "M\tpackages/agentplane/src/commands/hermes/hermes-environment.ts"
+        "A\t.agentplane/tasks/202608170928-8Y24PK/verification/20260817225820396-7ea975260b5e89b0.json",
+        "M\tpackages/agentplane/src/commands/hermes/hermes-environment.ts",
+        "M\tpackages/agentplane/src/commands/hermes/hermes.command.test.ts",
+        "M\tpackages/agentplane/src/commands/hermes/hermes.command.ts"
       ]
     },
     {
@@ -32,16 +36,17 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "97429b3c3b99404bc68b53eca9684f1b4883d50d",
-  "implementation_commit": "8f51cbeca603c2d2885d796f14e2bf767cb9df15",
+  "execution_base_commit": "ef28012ddd29c7ec8a8cf90bfce591a3b5e95bc1",
+  "implementation_commit": "96ba85f6d91318717e6bf32a58248941e8232877",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202608170928-8Y24PK/README.md",
       " M .agentplane/tasks/202608170928-8Y24PK/pr/github-body.md",
+      " M .agentplane/tasks/202608170928-8Y24PK/pr/github-title.txt",
       " M .agentplane/tasks/202608170928-8Y24PK/pr/meta.json",
       " M .agentplane/tasks/202608170928-8Y24PK/pr/review.md",
-      "?? .agentplane/tasks/202608170928-8Y24PK/verification/20260817224017419-ea24e80164cde652.json"
+      "?? .agentplane/tasks/202608170928-8Y24PK/verification/20260817225820396-7ea975260b5e89b0.json"
     ],
     "classification": [
       {
@@ -54,6 +59,10 @@
       },
       {
         "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608170928-8Y24PK/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202608170928-8Y24PK/pr/meta.json"
       },
       {
@@ -62,7 +71,7 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608170928-8Y24PK/verification/20260817224017419-ea24e80164cde652.json"
+        "line": "?? .agentplane/tasks/202608170928-8Y24PK/verification/20260817225820396-7ea975260b5e89b0.json"
       }
     ],
     "final": [],
@@ -70,9 +79,10 @@
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202608170928-8Y24PK/README.md",
       " M .agentplane/tasks/202608170928-8Y24PK/pr/github-body.md",
+      " M .agentplane/tasks/202608170928-8Y24PK/pr/github-title.txt",
       " M .agentplane/tasks/202608170928-8Y24PK/pr/meta.json",
       " M .agentplane/tasks/202608170928-8Y24PK/pr/review.md",
-      "?? .agentplane/tasks/202608170928-8Y24PK/verification/20260817224017419-ea24e80164cde652.json"
+      "?? .agentplane/tasks/202608170928-8Y24PK/verification/20260817225820396-7ea975260b5e89b0.json"
     ],
     "unchanged_from_execution_baseline": []
   },
