@@ -15,15 +15,8 @@ Implement a repository-configured AgentPlane authority provider with manual, pol
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework: authority grant route validation still diverges from task next-action because the grant
-command evaluates the WorkOrder through a lifecycle/write-capable CommandContext. Validate the
-state-bound request through the same read-route capability projection as next-action, then use the
-write context only to persist the already-validated grant.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
