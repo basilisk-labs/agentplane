@@ -148,7 +148,11 @@ function requestedOperation(
 }
 
 export function makeRunTaskAuthorityGrantHandler(session: {
-  getLocalContext: (cmd: string) => Promise<CommandContext>;
+  getLocalContext: (
+    cmd: string,
+    cwd: string,
+    rootOverride: string | null,
+  ) => Promise<CommandContext>;
   getRemoteContext: (cmd: string) => Promise<CommandContext>;
   getLocalWriteContext: (cmd: string) => Promise<CommandContext>;
   getRemoteWriteContext: (cmd: string) => Promise<CommandContext>;
@@ -156,7 +160,7 @@ export function makeRunTaskAuthorityGrantHandler(session: {
   return async (ctx: CommandCtx, parsed: TaskAuthorityGrantParsed): Promise<number> => {
     const commandCtx = await (parsed.remote
       ? session.getRemoteContext("task authority grant")
-      : session.getLocalContext("task authority grant"));
+      : session.getLocalContext("task authority grant", ctx.cwd, ctx.rootOverride ?? null));
     const preparedWorkOrder = requirePreparedAgentWorkOrder(
       await prepareAgentWorkOrder({
         command_ctx: commandCtx,

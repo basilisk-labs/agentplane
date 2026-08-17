@@ -1,4 +1,4 @@
-import type { CommandContext } from "../../../commands/shared/task-backend.js";
+import { loadCommandContext, type CommandContext } from "../../../commands/shared/task-backend.js";
 import {
   commandModule,
   type CommandCapability,
@@ -64,8 +64,10 @@ function getTaskAuthorityRouteContexts(session: TaskRouteLifecycleSession) {
     return await session.require("provider", command);
   };
   return {
-    getLocalContext: async (command: string) =>
-      authorityValidationContext(await getLocalWriteContext(command)),
+    getLocalContext: async (command: string, cwd: string, rootOverride: string | null) => {
+      await session.require("route.local", command);
+      return authorityValidationContext(await loadCommandContext({ cwd, rootOverride }));
+    },
     getRemoteContext: async (command: string) => {
       return authorityValidationContext(await getRemoteWriteContext(command));
     },
