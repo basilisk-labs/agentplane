@@ -55,6 +55,7 @@ agentplane init --tool hermes --workflow branch_pr --yes
 agentplane hermes doctor --json
 agentplane hermes enqueue <task-id> --board <board> --assignee agentplane-coder --json
 hermes agentplane supervise --task-id <task-id> --root <repo>
+hermes agentplane approve --task-id <task-id> --root <repo>
 agentplane task run <task-id>
 agentplane hermes lifecycle comment --body '<structured projection>' --json
 agentplane hermes lifecycle complete --body 'Agentplane terminal evidence validated' --json
@@ -87,6 +88,13 @@ are proven. It separately reports
 whether the current worker claim is complete. An empty root allowlist denies every workspace.
 Task-runner invocations also export `AGENTPLANE_RUNNER_TASK_ID` when the run target is an Agentplane
 task, so Hermes launchers can bind the external worker run back to the canonical task id.
+
+The trusted Hermes host reads the base64-encoded Ed25519 PKCS8 DER signing key from
+`AGENTPLANE_HERMES_APPROVAL_PRIVATE_KEY_PKCS8`; the plugin never forwards that variable to worker or
+LLM subprocesses and emits the bridge capability only after loading a valid key. Configure
+`approval_issuer`, `approval_subject`, and `approval_ttl_minutes` in the plugin settings, then pin
+the matching doctor-reported public key under
+`authority.approval_receipts.trusted_issuers` in Agentplane.
 
 ## Visibility contract
 

@@ -23,7 +23,7 @@ The plugin exposes four native Hermes commands:
   `exchange.resume_argv`. It stops at human, external, recovery, or terminal boundaries. A
   repository-policy side-effect boundary is normally resolved by AgentPlane before it reaches the
   plugin.
-- `hermes agentplane approve --task-id <id> --root <repo> --subject <user>` consumes only the
+- `hermes agentplane approve --task-id <id> [--root <repo>]` consumes only the
   current `operator_action.approval_receipt.request`, signs it with the configured bridge identity,
   replaces the receipt placeholder in the exact `operator_action.argv`, executes that argv, and
   requests a fresh packet. Hermes also exposes this trusted operation as a user-invoked dialogue
@@ -47,9 +47,13 @@ AGENTPLANE_HERMES_ALLOWED_ROOTS=/workspace/repo-a:/workspace/repo-b
 An empty allowlist is an error. The plugin passes only an explicit environment allowlist plus the
 current Hermes claim fields; it never forwards the complete parent environment.
 
-The approval bridge reads its Ed25519 private key only in the trusted plugin process. The key path,
-key bytes, and receipt are excluded from the environment passed to AgentPlane LLM episodes. The
-corresponding public key must be configured under
+Configure the non-secret issuer, audited subject, and receipt TTL in the Hermes plugin settings as
+`approval_issuer`, `approval_subject`, and `approval_ttl_minutes`. The trusted Hermes host reads an
+Ed25519 PKCS8 DER private key from the base64-encoded secret environment variable
+`AGENTPLANE_HERMES_APPROVAL_PRIVATE_KEY_PKCS8`. The plugin never forwards that variable, even if it
+is named in `AGENTPLANE_HERMES_FORWARD_ENV`; it emits
+`AGENTPLANE_HERMES_APPROVAL_RECEIPT_BRIDGE=1` only after loading a valid key. Configure the matching
+doctor-reported `approval_bridge.public_key_spki` under
 `authority.approval_receipts.trusted_issuers` in the repository.
 
 `agentplane hermes doctor --json` reports `installation_ready=true` only when the v2 capability

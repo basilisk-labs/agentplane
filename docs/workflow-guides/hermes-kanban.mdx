@@ -125,6 +125,12 @@ The plugin passes an explicit environment allowlist rather than inheriting the p
 available; `agentplane hermes doctor --json` fails closed when any installation capability is
 missing.
 
+The trusted host loads its base64-encoded Ed25519 PKCS8 DER key only from
+`AGENTPLANE_HERMES_APPROVAL_PRIVATE_KEY_PKCS8`. The plugin strips that variable from every spawned
+worker and LLM environment even if a forwarding allowlist names it. Its configured issuer and the
+doctor-reported public key must match an Agentplane
+`authority.approval_receipts.trusted_issuers` entry.
+
 ### Optional MCP wrapper
 
 MCP is useful as a typed model tool surface, especially with allowlisted roots and tool filtering.

@@ -27,16 +27,16 @@ Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/recipes/hermes-agentplane.mdx                 |  34 +++++-
- docs/workflow-guides/hermes-kanban.mdx             |  88 ++++++++--------
- integrations/hermes-agentplane-plugin/README.md    | 102 +++++++++++++-----
+ docs/recipes/hermes-agentplane.mdx                 |  42 +++++++-
+ docs/workflow-guides/hermes-kanban.mdx             |  94 +++++++++--------
+ integrations/hermes-agentplane-plugin/README.md    | 106 ++++++++++++++-----
  .../lane-registry.example.json                     |  19 ++++
  .../protocol-v2.schema.json                        |  39 +++++++
  .../src/commands/hermes/hermes-environment.ts      |  42 +++++++-
  .../src/commands/hermes/hermes-runtime.ts          |  35 ++++---
  .../src/commands/hermes/hermes.command.test.ts     | 115 ++++++++++++++++++++-
  .../src/commands/hermes/hermes.command.ts          |  49 ++++++++-
- 9 files changed, 426 insertions(+), 97 deletions(-)
+ 9 files changed, 444 insertions(+), 97 deletions(-)
 ```
 
 </details>
