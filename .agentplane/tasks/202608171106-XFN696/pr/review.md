@@ -12,8 +12,8 @@ Created: 2026-08-17T11:57:53.694Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Recovery rework: refresh a pending exact-key replacement when the route fingerprint changes after its reservation; preserve failed-operation binding and avoid applying completed-operation stale-state recovery to latest=failed.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
