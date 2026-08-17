@@ -15,7 +15,7 @@ import {
 } from "./workflow-step-factory.js";
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 
-function planningCheckout(state: WorkflowRouteState): "base_checkout" | "task_worktree" {
+export function planningCheckout(state: WorkflowRouteState): "base_checkout" | "task_worktree" {
   return state.workflowMode === "branch_pr" && state.taskWorktree?.worktreePath
     ? "task_worktree"
     : "base_checkout";

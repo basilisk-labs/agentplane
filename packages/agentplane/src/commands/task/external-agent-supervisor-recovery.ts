@@ -45,6 +45,28 @@ export function requiresPlanningRecoveryReplacement(opts: {
   );
 }
 
+export function requiresImplementationRecoveryReplacement(opts: {
+  decision: TaskRouteDecision;
+  exchange: ExternalAgentExchange;
+  work_order: AgentWorkOrderV2;
+}): boolean {
+  if (
+    opts.exchange.purpose !== "implementation" &&
+    opts.exchange.purpose !== "task_worktree_resolution"
+  ) {
+    return false;
+  }
+  const expected = opts.work_order.state_fingerprint;
+  const current = opts.decision.workflowStep.preconditionFingerprint;
+  return (
+    current.task_id !== expected.task_id ||
+    current.task_revision !== expected.task_revision ||
+    current.worktree !== expected.worktree ||
+    current.components.task.digest !== expected.components.task.digest ||
+    current.components.backend_projection.digest !== expected.components.backend_projection.digest
+  );
+}
+
 function exchangePathsFromWorkOrderRef(workOrderRef: string): ExternalAgentExchangePaths {
   const directory = path.dirname(workOrderRef);
   return {
@@ -280,15 +302,28 @@ export async function recoverPendingExternalAgentResult(opts: {
   )
     return null;
 
+  const workOrder = await readExternalAgentWorkOrder(paths.work_order);
+  const planningRecoveryRequired = requiresPlanningRecoveryReplacement({
+    decision: opts.current_decision,
+    exchange,
+  });
+  const implementationRecoveryRequired = requiresImplementationRecoveryReplacement({
+    decision: opts.current_decision,
+    exchange,
+    work_order: workOrder,
+  });
+
   if (
     operation.status === "intent" &&
-    requiresPlanningRecoveryReplacement({ decision: opts.current_decision, exchange })
+    (planningRecoveryRequired || implementationRecoveryRequired)
   ) {
     const retired = retireSupervisorExecutionEpisodeIntentAfterStateDrift({
       journal,
       state_fingerprint_digest: opts.current_decision.workflowStep.preconditionFingerprint.digest,
       result: {
-        classification: "planning_recovery_state_fingerprint_drift",
+        classification: planningRecoveryRequired
+          ? "planning_recovery_state_fingerprint_drift"
+          : "implementation_authority_state_fingerprint_drift",
         transition_id: exchange.transition_id,
         previous_state_fingerprint: exchange.state_fingerprint,
         current_state_fingerprint:
@@ -299,7 +334,7 @@ export async function recoverPendingExternalAgentResult(opts: {
     if (!(await store.compareAndSwap(journal.digest, retired))) {
       throw new CliError({
         code: "E_RUNTIME",
-        message: "External-agent supervisor changed while retiring the stale planning recovery.",
+        message: "External-agent supervisor changed while retiring the stale result.",
       });
     }
     await writeExternalAgentExchange(paths.exchange, {
@@ -311,7 +346,9 @@ export async function recoverPendingExternalAgentResult(opts: {
     throw new CliError({
       code: "E_RUNTIME",
       message:
-        "The task returned to PLANNER after the pending external-agent result was issued. " +
+        (planningRecoveryRequired
+          ? "The task returned to PLANNER after the pending external-agent result was issued. "
+          : "The task authority changed after the pending external-agent result was issued. ") +
         `AgentPlane retired the stale result; run: agentplane task advance ${opts.task_id} ` +
         "--replacement --agent-json",
       context: {

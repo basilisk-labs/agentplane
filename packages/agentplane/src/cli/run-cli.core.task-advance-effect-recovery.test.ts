@@ -27,7 +27,10 @@ import {
   validateExternalAgentResultEnvelope,
   type ExternalAgentExchange,
 } from "../commands/task/external-agent-exchange.js";
-import { requiresPlanningRecoveryReplacement } from "../commands/task/external-agent-supervisor-recovery.js";
+import {
+  requiresImplementationRecoveryReplacement,
+  requiresPlanningRecoveryReplacement,
+} from "../commands/task/external-agent-supervisor-recovery.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
 import { readRouteFingerprint } from "./run-cli.core.task-advance.testkit.js";
@@ -139,6 +142,49 @@ describe("task advance effect recovery", () => {
         } as ExternalAgentExchange,
       }),
     ).toBe(true);
+  });
+
+  it("requires replacement when plan approval changes pending implementation authority", () => {
+    const taskDigest = `sha256:${"a".repeat(64)}`;
+    const backendDigest = `sha256:${"b".repeat(64)}`;
+    const fingerprint = {
+      task_id: "202608171106-XFN696",
+      task_revision: 16,
+      worktree: "/repo/.agentplane/worktrees/task",
+      components: {
+        task: { digest: taskDigest },
+        backend_projection: { digest: backendDigest },
+      },
+    };
+    const decision = {
+      workflowStep: {
+        preconditionFingerprint: {
+          ...fingerprint,
+          task_revision: 19,
+          digest: `sha256:${"c".repeat(64)}`,
+        },
+      },
+    } as never;
+    const exchange = { purpose: "task_worktree_resolution" } as ExternalAgentExchange;
+    const workOrder = { state_fingerprint: fingerprint } as AgentWorkOrderV2;
+
+    expect(
+      requiresImplementationRecoveryReplacement({ decision, exchange, work_order: workOrder }),
+    ).toBe(true);
+    expect(
+      requiresImplementationRecoveryReplacement({
+        decision: {
+          workflowStep: {
+            preconditionFingerprint: {
+              ...fingerprint,
+              digest: `sha256:${"d".repeat(64)}`,
+            },
+          },
+        } as never,
+        exchange,
+        work_order: workOrder,
+      }),
+    ).toBe(false);
   });
 
   it("retires a drifted result-less exchange and issues one exact-key replacement", async () => {

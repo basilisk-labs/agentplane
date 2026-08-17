@@ -186,9 +186,10 @@ function assertExternalImplementationReturnState(opts: {
     .filter((entry): entry is string => entry !== null);
   const taskPrefix = `.agentplane/tasks/${opts.exchange.task_id}/`;
   const forbidden = changed.filter((entry) => {
-    const protectedTaskArtifact =
-      entry.startsWith(taskPrefix) && !(resolvesDirtyWorktree && baselinePaths.has(entry));
-    return protectedTaskArtifact || !pathAllowed(entry, allowed);
+    const taskArtifact = entry.startsWith(taskPrefix);
+    const baselineTaskArtifact = taskArtifact && resolvesDirtyWorktree && baselinePaths.has(entry);
+    if (baselineTaskArtifact) return false;
+    return taskArtifact || !pathAllowed(entry, allowed);
   });
   if (forbidden.length > 0) {
     throw new CliError({

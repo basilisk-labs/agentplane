@@ -233,6 +233,12 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       cwd: taskWorktree,
     });
     await writeFile(path.join(taskWorktree, "intended-resolution.txt"), "keep\n", "utf8");
+    const pendingTaskReadme = path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md");
+    await writeFile(
+      pendingTaskReadme,
+      `${await readFile(pendingTaskReadme, "utf8")}\n<!-- pending baseline task metadata -->\n`,
+      "utf8",
+    );
 
     const taskCommand = await loadCommandContext({ cwd: taskWorktree, rootOverride: taskWorktree });
     const currentDecision = await buildTaskRouteDecision({
@@ -302,6 +308,7 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
     const exchange = JSON.parse(
       await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8"),
     ) as ExternalAgentExchange;
+    expect(exchange.baseline.changed_paths).toContain(` M .agentplane/tasks/${taskId}/README.md`);
     const accepted = await returnAgentResult(taskWorktree, taskId, resultPath);
     expect(accepted.code, accepted.stderr).toBe(0);
     expect(accepted.stderr).not.toMatch(/unsupported purpose|stale/iu);
