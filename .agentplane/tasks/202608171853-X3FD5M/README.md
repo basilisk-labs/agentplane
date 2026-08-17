@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 38
 origin:
   system: "manual"
 depends_on: []
@@ -35,35 +35,34 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-17T20:44:15.858Z"
+  updated_at: "2026-08-17T20:57:12.402Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "3cdaf96dadfd66bb7fbe92b5eb62a7451c9a527c"
+  note: "EVALUATOR returned rework with 3 typed finding(s)."
+  evaluated_sha: "b6698767ffbbff30558126ccf78e3c303e96ee6f"
   blueprint_digest: "da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8"
   evidence_refs:
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-204323153-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-204323153-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/832efd3def6108f9f7dfb2b8074ab57f024500751ff27e2dd42390c0d2578a79.md"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-204323153-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-204323153-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-204323153-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-205528423-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-205528423-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/e2d28bd2b7e2b49203b85c031ae2712e7ca6703a27ee7f7bc9cf364e13a612c2.md"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-205528423-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-205528423-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-205528423-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-205528423-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608171853-X3FD5M/README.md"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/0057c12f65eb16cbdb74016b45b34c6e73d880c70092edbeb6e0fb4dee1bb66f.patch"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/44f48b144be30f21bb6348d5e6f5197186f6e5f68c29576b4760b503fec026fd.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/verification/20260817204316450-1a0a45adb7fb7cc5.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/c8ae07741aaf4336340061d47b88855bf457d093e407c78bde6efd3980a459a4.patch"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/9d014a0baf605c4c04fb56c9a39d5e55c20fe18f3c688a80713e5b76397d8c2d.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/verification/20260817205521596-ca3f80cd0aaf478f.json"
     - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/d23e2ba91c6f8ade44113f76fba3d404cfff656145d05f891c1f8b3d8fd81b37.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "TASK_PLAN_APPROVAL_REQUIREMENTS is narrower than the lifecycle profile: it adds git.head, git.diff, and route.local to task write but excludes git.mutate, route.remote, and provider."
-    - "The typed loader and catalog both consume the dedicated profile, preventing the packaged runtime from denying prepareAgentWorkOrder at git.headCommit."
-    - "The regression test pins required and forbidden capabilities, directly covering the failure mode reported by packaged-mixed-scope-lifecycle."
-    - "Typecheck, 27 focused security/catalog tests, all 565 fast-suite files with 4161 passing tests, docs freshness, compatibility ratchets, formatting, and routing checks pass."
-    - "Residual risk: The clean-commit packaged-mixed-scope-lifecycle scenario must pass in hosted CI; local qualification correctly refused to package the active AgentPlane episode with uncommitted supervisor artifacts."
+    - "The clean packaged scenario reached fixture initialization and then failed with ENOENT for .agentplane/config.json."
+    - "AgentPlane loadConfig gives canonical WORKFLOW.md precedence and current init intentionally does not create legacy config.json, so the trusted issuer must be added to WORKFLOW frontmatter."
+    - "The repair should remain fixture setup state and must not weaken the harness prohibition on reading internal lifecycle evidence."
 token_usage:
   agent_runs: 14
   input_tokens: null
@@ -589,7 +588,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-17T20:55:22.879Z"
+doc_updated_at: "2026-08-17T20:57:12.427Z"
 doc_updated_by: "SUPERVISOR"
 description: "Recover the AgentPlane authority release after an unavailable GitHub protection lookup selected a local merge; fail closed on unavailable provider protection, repair supervisor replay/concurrency regressions, and define a verifiable Hermes-to-AgentPlane user approval receipt so the user approves in dialogue while the integration layer executes exact state-bound commands. Preserve mandatory primary plan approval and operator-owned provider merge semantics."
 sections:
