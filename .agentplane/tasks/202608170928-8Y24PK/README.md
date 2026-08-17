@@ -2,10 +2,10 @@
 id: "202608170928-8Y24PK"
 title: "Upgrade the Hermes AgentPlane bridge protocol across the three approved repositories"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -387,6 +387,18 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "USER"
+    body: "Recover verified open-PR conflict rework after the supervisor closed the task before provider mergeability was resolved."
+  -
+    author: "USER"
+    body: "Restore the pre-recovery status before recording the provider-conflict rework transition."
+  -
+    author: "USER"
+    body: "Normalize the interrupted task state before reopening verified provider-conflict rework."
+  -
+    author: "USER"
+    body: "start: reopen the verified task solely for bounded provider-conflict rework."
 events:
   -
     type: "status"
@@ -485,9 +497,37 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "849f1a7f9a66531dcfa033f82e1b110a1259559d"
+  -
+    type: "status"
+    at: "2026-08-17T22:25:53.495Z"
+    author: "USER"
+    from: "DONE"
+    to: "DOING"
+    note: "Recover verified open-PR conflict rework after the supervisor closed the task before provider mergeability was resolved."
+  -
+    type: "status"
+    at: "2026-08-17T22:26:34.282Z"
+    author: "USER"
+    from: "DOING"
+    to: "DONE"
+    note: "Restore the pre-recovery status before recording the provider-conflict rework transition."
+  -
+    type: "status"
+    at: "2026-08-17T22:26:44.967Z"
+    author: "USER"
+    from: "DONE"
+    to: "TODO"
+    note: "Normalize the interrupted task state before reopening verified provider-conflict rework."
+  -
+    type: "status"
+    at: "2026-08-17T22:26:51.194Z"
+    author: "USER"
+    from: "TODO"
+    to: "DOING"
+    note: "start: reopen the verified task solely for bounded provider-conflict rework."
 doc_version: 3
-doc_updated_at: "2026-08-17T22:23:07.233Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-17T22:26:51.228Z"
+doc_updated_by: "USER"
 description: "Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 0.2.0, and current Hermes worker-lane dispatch. Scope roots are /Users/densmirnov/Github/agentplane, /Users/densmirnov/Github/agentplane-hermes-plugin, and /Users/densmirnov/Github/hermes-agent. Required effects include source, tests, docs, public API, schema, CI/release metadata, security boundary, network reads, hosted external writes, and publication through explicit authority. Prove PLANNER/approval/EXECUTOR/EVALUATOR, retry, stale-run, and terminal attestation without direct kanban.db writes. Existing D5MAJ3 and failed structured-intake DDW1J5 are superseded and must not be implemented or published."
 sections:
   Summary: |-
