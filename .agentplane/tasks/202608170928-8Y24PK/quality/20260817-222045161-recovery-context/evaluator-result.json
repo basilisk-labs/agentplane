@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The plugin implementation validates the exact receipt request field set, signs canonical JSON with Ed25519, substitutes exactly one receipt placeholder in the supplied argv, executes no reconstructed command, and fetches a fresh supervisor packet afterward.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/fcb821901addee6f0cf4a7d95eb50edd9a0b52adc3394a9c2f0605fdefae54f7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The signing secret is forcibly removed from the spawned environment even when AGENTPLANE_HERMES_FORWARD_ENV explicitly names it; the bridge capability is true only after a valid Ed25519 key is loaded.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/fcb821901addee6f0cf4a7d95eb50edd9a0b52adc3394a9c2f0605fdefae54f7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Provider merge remains non-executable because packets without argv are rejected; plan approval remains an explicit user-authenticated slash or CLI action.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/fcb821901addee6f0cf4a7d95eb50edd9a0b52adc3394a9c2f0605fdefae54f7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The retained E2E repository records plan_approval.state=approved, updated_by=USER:denis@hermes-dialog, and a receipt digest before the first EXECUTOR episode.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/fcb821901addee6f0cf4a7d95eb50edd9a0b52adc3394a9c2f0605fdefae54f7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Plugin PR #2 is merged at 9a5cad82be0778fc08e7c9c56b6b2fe37a92c3a1 with green CI; Hermes PR #88346 publishes head fd3b69bc51c2c8e65d1e2f42b45ade884bf4709f and is mergeable.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/fcb821901addee6f0cf4a7d95eb50edd9a0b52adc3394a9c2f0605fdefae54f7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted AgentPlane CI and upstream Hermes review remain subsequent provider gates, not semantic implementation gaps.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/fcb821901addee6f0cf4a7d95eb50edd9a0b52adc3394a9c2f0605fdefae54f7.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The environment capability is installation diagnostics, not an authority primitive; actual approval still requires an AgentPlane-verified signed state-bound receipt."
+  ]
+}

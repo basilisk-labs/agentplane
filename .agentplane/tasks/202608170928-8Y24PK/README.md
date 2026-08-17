@@ -4,7 +4,7 @@ title: "Upgrade the Hermes AgentPlane bridge protocol across the three approved 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -35,37 +35,36 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-17T21:58:10.709Z"
+  updated_at: "2026-08-17T22:22:11.656Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 6 typed finding(s)."
-  evaluated_sha: "6c81acdd0cfd4b0442f77cf665dc68f6202670ce"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "c99c0af74efb9c5281b77305195454980a9be14d"
   blueprint_digest: "4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb"
   evidence_refs:
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-215714588-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-215714588-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/5355d5ac53657ea07951eef5a00f46d3768a6f7a215bb3c373edd113489a02a0.md"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-215714588-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-215714588-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-215714588-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-215714588-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-222045161-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-222045161-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/1f7e5e46ad3f6906774928a99f6b082389bfc3a600db9231ba72a17748090a82.md"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-222045161-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-222045161-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-222045161-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608170928-8Y24PK/README.md"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/33e5b789b5b9b7d1354b2401744d658de34cf4a05a5e6076d90993b80864eb13.patch"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/c4662279920b886397b2c137a3817934a465b6d92a65ff84cf219e784f8085c3.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/verification/20260817215707329-0786bb1528075193.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/fcb821901addee6f0cf4a7d95eb50edd9a0b52adc3394a9c2f0605fdefae54f7.patch"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/729a79fb1988f8863e6cdf6856a0b3a003c25a7c56339b67d84c57370907c915.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/verification/20260817222037648-5cc6be25d18e7138.json"
     - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/9d4211df768252e341fc46edf87f511d30d4f4f08d289efc5570b595c38e2b08.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The protocol schema now requires agentplane approve and approval_receipt_bridge, while the published plugin branch still exposes only doctor, run, and supervise and stops on approval_required."
-    - "The new doctor gate is fail-closed and preserves the primary-plan, denylist, provider-merge, destructive, credential, drift, TTL, audit, and state-binding boundaries."
-    - "The frozen observed checks contain only Git diff/status checks for this rework; required full regression, real E2E, hosted integration, external publication, and task-outcome evidence remain absent."
-    - "The trusted Hermes action must sign only the exact current operator_action.approval_receipt.request, substitute only the supplied argv placeholder, keep the Ed25519 private key out of LLM child environments, and fetch a fresh packet after execution."
-    - "Residual risk: Shipping the AgentPlane doctor gate before the plugin update would intentionally mark every existing protocol-v2 installation not ready."
-    - "Residual risk: Allowing the LLM or a model-controlled tool to invoke the signer would collapse the intended user-authority boundary."
+    - "The plugin implementation validates the exact receipt request field set, signs canonical JSON with Ed25519, substitutes exactly one receipt placeholder in the supplied argv, executes no reconstructed command, and fetches a fresh supervisor packet afterward."
+    - "The signing secret is forcibly removed from the spawned environment even when AGENTPLANE_HERMES_FORWARD_ENV explicitly names it; the bridge capability is true only after a valid Ed25519 key is loaded."
+    - "Provider merge remains non-executable because packets without argv are rejected; plan approval remains an explicit user-authenticated slash or CLI action."
+    - "The retained E2E repository records plan_approval.state=approved, updated_by=USER:denis@hermes-dialog, and a receipt digest before the first EXECUTOR episode."
+    - "Plugin PR #2 is merged at 9a5cad82be0778fc08e7c9c56b6b2fe37a92c3a1 with green CI; Hermes PR #88346 publishes head fd3b69bc51c2c8e65d1e2f42b45ade884bf4709f and is mergeable."
+    - "Residual risk: Hosted AgentPlane CI and upstream Hermes review remain subsequent provider gates, not semantic implementation gaps."
 execution_route:
   frozen: true
   reason_codes:
