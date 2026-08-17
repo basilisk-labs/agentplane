@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "requiresImplementationReworkReopen returns true only for implementation_rework combined with DONE.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/ab01bdf9defb8bd9fa3286d7c2efa620cdcc797a5ab56dc6537bf168eb14e9e5.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Both force and yes derive from the same narrow predicate, so no general task status bypass was introduced.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/ab01bdf9defb8bd9fa3286d7c2efa620cdcc797a5ab56dc6537bf168eb14e9e5.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Focused regression coverage includes implementation_rework plus DONE, implementation_rework plus DOING, and ordinary implementation plus DONE.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/ab01bdf9defb8bd9fa3286d7c2efa620cdcc797a5ab56dc6537bf168eb14e9e5.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Supervisor evidence records current verification ok for implementation commit 3d051ce0abf8a6f28a9e732109d4d1abe74756d9 and a clean final repository status.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/ab01bdf9defb8bd9fa3286d7c2efa620cdcc797a5ab56dc6537bf168eb14e9e5.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The earlier runtime-observer regression remains covered, including lifecycle-only commits after verification.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/ab01bdf9defb8bd9fa3286d7c2efa620cdcc797a5ab56dc6537bf168eb14e9e5.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted provider checks must still be rerun for the new PR head before integration can resume.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/ab01bdf9defb8bd9fa3286d7c2efa620cdcc797a5ab56dc6537bf168eb14e9e5.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The route reducer emits implementation_rework only after a concrete verification, hosted-check, conflict, or evaluator rework condition; this helper does not independently classify rework."
+  ]
+}

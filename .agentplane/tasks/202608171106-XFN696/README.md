@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 56
+revision: 57
 origin:
   system: "manual"
 depends_on: []
@@ -36,34 +36,34 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-17T17:31:53.061Z"
+  updated_at: "2026-08-17T18:01:19.202Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "d55e291c97f1d16ad3b48b3c1acbd503f12b62cf"
+  evaluated_sha: "3d051ce0abf8a6f28a9e732109d4d1abe74756d9"
   blueprint_digest: "b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7"
   evidence_refs:
-    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-172950405-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-172950405-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/2853af1bff0d17a6538a89bb45b00f6ef98912035b4c8d1afab2257a6779472e.md"
-    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-172950405-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-172950405-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-172950405-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-180027639-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-180027639-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/e1c4d71be3ade7d3e7fdbbaaeb6c036720c676ec3f0fcb2a0f2335ed14fe1a6c.md"
+    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-180027639-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-180027639-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-180027639-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608171106-XFN696/README.md"
-    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/58fef494751aa1d7dc81125e679940c764c904afd5af6d6573c1aed92767ab69.patch"
-    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/0097eb29c0cca81c0a6df74ea52541ea09d8c203bd685ce4891360fbba1f7712.json"
-    - ".agentplane/tasks/202608171106-XFN696/verification/20260817172934120-159d232264f72946.json"
+    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/ab01bdf9defb8bd9fa3286d7c2efa620cdcc797a5ab56dc6537bf168eb14e9e5.patch"
+    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/9f59515f3af1cd4bf0a4ce2fb4ae18b7559d672b3a74e8a28de52e2d208922f3.json"
+    - ".agentplane/tasks/202608171106-XFN696/verification/20260817180011257-c87b6b9ec0fd8041.json"
     - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/9ec02e52dfa2636d647519d27f790022fdb53b42534b30483571b7bb848e71d0.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The one-line assessment change supplies recordedInput.environment.runtime when recomputing the current verification identity, separating execution evidence from the observer process without weakening the recorded digest."
-    - "The regression test records a synthetic Node 999 and Bun 9 environment and proves that assessment from a different CLI runtime remains verification_current."
-    - "Existing verification-input coverage still proves explicit runtime-identity changes produce verification_environment_changed and dependency or verification-tool changes produce verification_context_changed."
-    - "Supervisor evidence records verification state ok for implementation d55e291c97f1d16ad3b48b3c1acbd503f12b62cf; lint, typecheck, targeted tests, routing checks, and the prior full regression evidence are present."
-    - "No plan-approval or provider-merge ownership boundary is changed by this recovery fix; the repository remains manual until authority configuration is deliberately added after release installation."
-    - "Residual risk: The repository authority default remains manual until a separately approved configuration task enables policy or all mode with the required denylist."
+    - "requiresImplementationReworkReopen returns true only for implementation_rework combined with DONE."
+    - "Both force and yes derive from the same narrow predicate, so no general task status bypass was introduced."
+    - "Focused regression coverage includes implementation_rework plus DONE, implementation_rework plus DOING, and ordinary implementation plus DONE."
+    - "Supervisor evidence records current verification ok for implementation commit 3d051ce0abf8a6f28a9e732109d4d1abe74756d9 and a clean final repository status."
+    - "The earlier runtime-observer regression remains covered, including lifecycle-only commits after verification."
+    - "Residual risk: Hosted provider checks must still be rerun for the new PR head before integration can resume."
 token_usage:
   agent_runs: 16
   input_tokens: null
@@ -654,7 +654,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-17T18:00:13.284Z"
+doc_updated_at: "2026-08-17T18:01:19.232Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement a repository-configured AgentPlane authority provider with manual, policy allowlist, and explicit all/YOLO modes. Auto-grants must retain operation/state/scope digests, short TTL, durable audit, and a POLICY actor; default behavior remains manual. Fix task authority grant remote/local route drift so stale hosted authority requests return an actionable fresh-route diagnostic instead of incorrectly reporting that no grant is required. Keep model agents unable to impersonate USER and preserve human gates through an explicit deny list."
 sections:
