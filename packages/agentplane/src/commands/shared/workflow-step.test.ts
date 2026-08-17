@@ -601,6 +601,40 @@ describe("typed WorkflowStep reducer", () => {
     ]);
   });
 
+  it("keeps replanning and plan approval in an existing task worktree", () => {
+    const pendingApproval = reduceRouteState(
+      routeState({
+        task: {
+          ...task,
+          plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        },
+      }),
+    );
+    const replanning = reduceRouteState(
+      routeState({
+        task: {
+          ...task,
+          doc: "## Plan\n\nPLANNER semantic plan required. Replace this placeholder with a task-specific implementation plan before approval.\n",
+          plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        },
+      }),
+    );
+
+    expect(pendingApproval).toMatchObject({
+      kind: "approval",
+      id: "approval.plan",
+      authoritativeCheckout: "task_worktree",
+      compatibility: {
+        command: `agentplane task plan approve ${task.id} --by USER`,
+      },
+    });
+    expect(replanning).toMatchObject({
+      kind: "agent_episode",
+      id: "agent.planning",
+      authoritativeCheckout: "task_worktree",
+    });
+  });
+
   it("stops for structured branch repair instead of synthesizing integration argv", () => {
     const openPr = prFlow("OPEN");
     const step = reduceRouteState(

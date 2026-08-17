@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608171106-XFN696/add-policy-driven-autonomous-side-effect-authori",
   "created_at": "2026-08-17T11:57:53.694Z",
-  "diffstat_sha256": "sha256:d34c9c472f3c9464b00e6005004c26b652504472992406bae7013d722933d7ab",
+  "diffstat_sha256": "sha256:62d7ecbfdf9aa985a310e35d94c6da4a7503bf2351bacfcd3032877481a1958d",
   "last_verified_at": "2026-08-17T12:54:55.481Z",
   "last_verified_diffstat_sha256": "sha256:d34c9c472f3c9464b00e6005004c26b652504472992406bae7013d722933d7ab",
   "schema_version": 1,

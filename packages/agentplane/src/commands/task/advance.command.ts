@@ -76,10 +76,12 @@ export function makeRunTaskAdvanceHandler(deps: {
         taskId: parsed.taskId,
       });
     } else {
+      const routed = await decide();
       current =
         (await recoverPendingExternalAgentResult({
           command,
           task_id: parsed.taskId,
+          current_decision: routed,
           accept_result: async ({ cwd, result_path }) =>
             await acceptExternalAgentResult({
               ctx: { cwd },
@@ -88,7 +90,7 @@ export function makeRunTaskAdvanceHandler(deps: {
               result_path,
               include_remote: parsed.remote,
             }),
-        })) ?? (await decide());
+        })) ?? routed;
     }
     let replacementPrepared = false;
     if (parsed.replacement) {
