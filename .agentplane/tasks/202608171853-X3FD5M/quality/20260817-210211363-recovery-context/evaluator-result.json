@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "A disposable init readback showed the published mapping order as clock_skew_seconds, max_ttl_minutes, trusted_issuers within approval_receipts, with quoted actor and mode fields.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/d0fbd45a5a85d6452119a7078b1aaf77575010ac9967528648a13407e4fb3986.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The unique indented trusted_issuers: [] line is the narrow stable mutation point; replacing only that line preserves the published policy and avoids dependence on key ordering.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/d0fbd45a5a85d6452119a7078b1aaf77575010ac9967528648a13407e4fb3986.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The disposable inspection fixture was removed after readback.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/d0fbd45a5a85d6452119a7078b1aaf77575010ac9967528648a13407e4fb3986.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Clean packaged-mixed-scope-lifecycle must pass after the order-independent trust-list replacement."
+  ],
+  "hidden_assumptions": [
+    "The previous implementation matched saveConfig output before workflow build normalized the published frontmatter."
+  ],
+  "recovery_context": "Rework required. Canonical workflow publication normalizes and sorts authority keys, so the fixture should replace the unique trusted_issuers empty-list line instead of matching the pre-publication field order."
+}

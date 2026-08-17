@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 43
+revision: 44
 origin:
   system: "manual"
 depends_on: []
@@ -37,32 +37,32 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-17T21:00:14.737Z"
+  updated_at: "2026-08-17T21:04:32.629Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 3 typed finding(s)."
-  evaluated_sha: "1a67d12daca9bde553ea064767907eb17860eea2"
+  evaluated_sha: "d687ecc0081fca3965a7860a9ace12577c4a5088"
   blueprint_digest: "da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8"
   evidence_refs:
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-205859851-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-205859851-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/1b2a133fb4c0c71d50e65299ad3794b2cae9a95f3170f2b94d7972b9483d85cb.md"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-205859851-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-205859851-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-205859851-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-205859851-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-210211363-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-210211363-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/a0e1c03d21932194d98c1b4c25f7141cb20c40a1b9c103d1db09d774f9aef44d.md"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-210211363-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-210211363-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-210211363-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-210211363-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608171853-X3FD5M/README.md"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/9ab760b9d00bb7a19aaa595660364bd22c7cc5d410997297a2c90aab7c1849a3.patch"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/7ecf87baae3e4d27d610cdd33a72e41bb44553ab6ff1e379b6e7c58e877840ef.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/verification/20260817205852990-f8a1ca45a4516e85.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/d0fbd45a5a85d6452119a7078b1aaf77575010ac9967528648a13407e4fb3986.patch"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/74a38342846303bbd00eba34236173a07c1a70685c6ee3721610b8162638d6c3.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/verification/20260817210203616-bc503ab5aa3cb32a.json"
     - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/d23e2ba91c6f8ade44113f76fba3d404cfff656145d05f891c1f8b3d8fd81b37.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The clean packaged run failed at the explicit fail-closed guard because WORKFLOW.md already contains authority from defaultConfig/saveConfig."
-    - "The narrow correction is to replace the canonical default approval_receipts mapping with the fixture issuer, preserving manual authority mode and every unrelated workflow field."
-    - "The replacement should require an exact single default marker and fail closed on any unexpected generated shape."
+    - "A disposable init readback showed the published mapping order as clock_skew_seconds, max_ttl_minutes, trusted_issuers within approval_receipts, with quoted actor and mode fields."
+    - "The unique indented trusted_issuers: [] line is the narrow stable mutation point; replacing only that line preserves the published policy and avoids dependence on key ordering."
+    - "The disposable inspection fixture was removed after readback."
 token_usage:
   agent_runs: 14
   input_tokens: null
@@ -622,7 +622,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-17T21:02:04.948Z"
+doc_updated_at: "2026-08-17T21:04:32.660Z"
 doc_updated_by: "SUPERVISOR"
 description: "Recover the AgentPlane authority release after an unavailable GitHub protection lookup selected a local merge; fail closed on unavailable provider protection, repair supervisor replay/concurrency regressions, and define a verifiable Hermes-to-AgentPlane user approval receipt so the user approves in dialogue while the integration layer executes exact state-bound commands. Preserve mandatory primary plan approval and operator-owned provider merge semantics."
 sections:
