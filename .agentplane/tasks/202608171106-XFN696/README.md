@@ -2,10 +2,10 @@
 id: "202608171106-XFN696"
 title: "Add policy-driven autonomous side-effect authority"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 51
+revision: 52
 origin:
   system: "manual"
 depends_on: []
@@ -65,9 +65,9 @@ quality_review:
     - "No plan-approval or provider-merge ownership boundary is changed by this recovery fix; the repository remains manual until authority configuration is deliberately added after release installation."
     - "Residual risk: The repository authority default remains manual until a separately approved configuration task enables policy or all mode with the required denylist."
 token_usage:
-  agent_runs: 14
+  agent_runs: 16
   input_tokens: null
-  journal_digest: "sha256:6fc0580e9e234dede429be6ed7032ac391ab3c98cf4b969e2faa302e07b66f1a"
+  journal_digest: "sha256:e71a46a092bc2002f8a46f132ac9ff00f9b9a1c7f6e2580533ffcc39abc01fd1"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -77,7 +77,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-17T17:20:05.460Z"
+  updated_at: "2026-08-17T17:36:03.847Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -378,8 +378,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "d55e291c97f1d16ad3b48b3c1acbd503f12b62cf"
-  message: "🚧 XFN696 task: apply external agent result"
+  hash: "b6a5ee7baa9619cc39bff0f97c6356e077a52a4b"
+  message: "🚧 XFN696 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -420,6 +420,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: d55e291c97f1. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -608,9 +611,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-17T17:36:03.847Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "b6a5ee7baa9619cc39bff0f97c6356e077a52a4b"
 doc_version: 3
-doc_updated_at: "2026-08-17T17:31:53.091Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-17T17:36:03.879Z"
+doc_updated_by: "CODER"
 description: "Implement a repository-configured AgentPlane authority provider with manual, policy allowlist, and explicit all/YOLO modes. Auto-grants must retain operation/state/scope digests, short TTL, durable audit, and a POLICY actor; default behavior remains manual. Fix task authority grant remote/local route drift so stale hosted authority requests return an actionable fresh-route diagnostic instead of incorrectly reporting that no grant is required. Keep model agents unable to impersonate USER and preserve human gates through an explicit deny list."
 sections:
   Summary: |-
@@ -1353,7 +1364,7 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "ce78a4544e1d4ed3f719c3cdb922ddc791670509"
+    hash: "d55e291c97f1d16ad3b48b3c1acbd503f12b62cf"
     message: "🚧 XFN696 task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "89f760183da24c5a768dfe97e6c4c2fb67bd1478"
@@ -2114,12 +2125,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/14` agent runs
+- Completeness: `0/16` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:6fc0580e9e234dede429be6ed7032ac391ab3c98cf4b969e2faa302e07b66f1a`
+- Journal digest: `sha256:e71a46a092bc2002f8a46f132ac9ff00f9b9a1c7f6e2580533ffcc39abc01fd1`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-17T17:20:05.460Z`
+- Updated at: `2026-08-17T17:36:03.847Z`
