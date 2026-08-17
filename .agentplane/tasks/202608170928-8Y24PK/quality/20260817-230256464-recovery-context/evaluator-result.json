@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Lifecycle mutations now require the board from the current native claim before any Hermes invocation, so a missing board cannot redirect a comment, block, heartbeat, or completion to the default board.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/a78d75c81ccd1d7ca413e899659ec29ca4ba1f3565a4a2cc4a43e1764a85b915.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Windows bare-command discovery expands PATHEXT deterministically after the literal candidate and tests the platform-specific path construction without executing a command.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/a78d75c81ccd1d7ca413e899659ec29ca4ba1f3565a4a2cc4a43e1764a85b915.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Doctor preserves its machine-readable not-ready payload while returning status 1, making shell and provisioning health gates fail closed; the ready installation path remains status 0.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/a78d75c81ccd1d7ca413e899659ec29ca4ba1f3565a4a2cc4a43e1764a85b915.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "All changes stay within the existing Hermes command/environment/test roots and add negative tests for both safety boundaries.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/a78d75c81ccd1d7ca413e899659ec29ca4ba1f3565a4a2cc4a43e1764a85b915.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: The reviewed implementation commit has not yet been published to GitHub and the review threads remain unresolved until the provider update is posted.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/a78d75c81ccd1d7ca413e899659ec29ca4ba1f3565a4a2cc4a43e1764a85b915.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

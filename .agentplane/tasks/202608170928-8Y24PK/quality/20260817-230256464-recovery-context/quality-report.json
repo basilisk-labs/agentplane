@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608170928-8Y24PK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-17T23:03:43.818Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "96ba85f6d91318717e6bf32a58248941e8232877",
+  "blueprint_digest": "4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb",
+  "findings": [
+    "Lifecycle mutations now require the board from the current native claim before any Hermes invocation, so a missing board cannot redirect a comment, block, heartbeat, or completion to the default board.",
+    "Windows bare-command discovery expands PATHEXT deterministically after the literal candidate and tests the platform-specific path construction without executing a command.",
+    "Doctor preserves its machine-readable not-ready payload while returning status 1, making shell and provisioning health gates fail closed; the ready installation path remains status 0.",
+    "All changes stay within the existing Hermes command/environment/test roots and add negative tests for both safety boundaries.",
+    "Residual risk: The reviewed implementation commit has not yet been published to GitHub and the review threads remain unresolved until the provider update is posted."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/a78d75c81ccd1d7ca413e899659ec29ca4ba1f3565a4a2cc4a43e1764a85b915.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

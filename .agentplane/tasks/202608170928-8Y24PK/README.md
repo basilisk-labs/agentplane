@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -38,32 +38,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-17T22:43:10.557Z"
+  updated_at: "2026-08-17T23:03:43.818Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 4 typed finding(s)."
-  evaluated_sha: "8f51cbeca603c2d2885d796f14e2bf767cb9df15"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "96ba85f6d91318717e6bf32a58248941e8232877"
   blueprint_digest: "4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb"
   evidence_refs:
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-224216135-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-224216135-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/53b22d6433b6d295726e0ed9a49c60e00c65d201e59530210c37913e589d6ad6.md"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-224216135-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-224216135-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-224216135-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-230256464-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-230256464-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/e18a7d13134607d27ab3d490bb82ce40e52e37a5875da63af4a623b4c3b73cb9.md"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-230256464-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-230256464-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-230256464-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608170928-8Y24PK/README.md"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/e910f28ad658d135bbbf33670478639449fe17a5cd843514b28a9ad2ce5825e2.patch"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/3341e6081b6cc28f0df54f070d6b8b2a9d3b3b86fe8ecf3498bf8db34deb3e54.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/verification/20260817224208229-08f6be0e6e532430.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/a78d75c81ccd1d7ca413e899659ec29ca4ba1f3565a4a2cc4a43e1764a85b915.patch"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/bd53f328d86cbb2e304f4549b21492c23c6fd2bd086498e479ce197a501706c5.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/verification/20260817230248265-9bc62fa07947dbab.json"
     - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/9d4211df768252e341fc46edf87f511d30d4f4f08d289efc5570b595c38e2b08.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The implementation preserves fail-closed equality checks against agentplane.hermes.plugin.v2 and does not alter environment forwarding, receipt validation, worker-lane dispatch, or terminal authority behavior."
-    - "The constant is not part of a package barrel or documented consumer contract; making it module-private removes an unused source-level export without changing the Hermes command surface."
-    - "The frozen implementation evidence shows a clean final repository state and the scoped Knip, Hermes command, and diff checks passed."
-    - "Residual risk: The current local rework commit has not yet been published and therefore has no hosted check result."
+    - "Lifecycle mutations now require the board from the current native claim before any Hermes invocation, so a missing board cannot redirect a comment, block, heartbeat, or completion to the default board."
+    - "Windows bare-command discovery expands PATHEXT deterministically after the literal candidate and tests the platform-specific path construction without executing a command."
+    - "Doctor preserves its machine-readable not-ready payload while returning status 1, making shell and provisioning health gates fail closed; the ready installation path remains status 0."
+    - "All changes stay within the existing Hermes command/environment/test roots and add negative tests for both safety boundaries."
+    - "Residual risk: The reviewed implementation commit has not yet been published to GitHub and the review threads remain unresolved until the provider update is posted."
 token_usage:
   agent_runs: 12
   input_tokens: null
@@ -587,7 +588,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-17T23:02:49.323Z"
+doc_updated_at: "2026-08-17T23:03:43.845Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 0.2.0, and current Hermes worker-lane dispatch. Scope roots are /Users/densmirnov/Github/agentplane, /Users/densmirnov/Github/agentplane-hermes-plugin, and /Users/densmirnov/Github/hermes-agent. Required effects include source, tests, docs, public API, schema, CI/release metadata, security boundary, network reads, hosted external writes, and publication through explicit authority. Prove PLANNER/approval/EXECUTOR/EVALUATOR, retry, stale-run, and terminal attestation without direct kanban.db writes. Existing D5MAJ3 and failed structured-intake DDW1J5 are superseded and must not be implemented or published."
 sections:
