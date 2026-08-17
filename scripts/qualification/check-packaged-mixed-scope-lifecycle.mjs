@@ -112,7 +112,7 @@ function signedApprovalArgv(operatorAction, signer) {
     fail("missing_approval_request", "approval packet omitted its receipt request or exact argv");
   }
   const issuedAt = new Date();
-  const receipt = {
+  const unsigned = {
     schema_version: 1,
     kind: "agentplane.user_approval_receipt",
     receipt_id: `qualification-${issuedAt.getTime()}`,
@@ -128,14 +128,15 @@ function signedApprovalArgv(operatorAction, signer) {
     state_scope_digest: request.state_scope_digest ?? null,
     issued_at: issuedAt.toISOString(),
     expires_at: new Date(issuedAt.getTime() + 5 * 60_000).toISOString(),
-    signature: "pending",
   };
-  const { signature: _signature, ...unsigned } = receipt;
-  receipt.signature = sign(
-    null,
-    Buffer.from(JSON.stringify(canonicalizeJson(unsigned)), "utf8"),
-    signer.privateKey,
-  ).toString("base64url");
+  const receipt = {
+    ...unsigned,
+    signature: sign(
+      null,
+      Buffer.from(JSON.stringify(canonicalizeJson(unsigned)), "utf8"),
+      signer.privateKey,
+    ).toString("base64url"),
+  };
   const encoded = Buffer.from(JSON.stringify(receipt), "utf8").toString("base64url");
   return operatorAction.argv.map((arg) => (arg === "<base64url-receipt>" ? encoded : arg));
 }
