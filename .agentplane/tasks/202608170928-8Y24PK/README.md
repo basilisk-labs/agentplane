@@ -4,7 +4,7 @@ title: "Upgrade the Hermes AgentPlane bridge protocol across the three approved 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -35,35 +35,34 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-17T10:44:05.819Z"
+  updated_at: "2026-08-17T10:48:00.851Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 4 typed finding(s)."
-  evaluated_sha: "af4dc232876377fa63f2bf9048b5d9f53fcd2ee2"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "5164cfd3b09b77113b450156b459e01247d9e4f8"
   blueprint_digest: "4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb"
   evidence_refs:
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-103939922-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-103939922-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/460977450c3a061d773bb2b76516e17afca5ef4fff2c214cc88efe7435a6f6df.md"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-103939922-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-103939922-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-103939922-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-103939922-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-104714199-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-104714199-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/41f7ae7db5b387262f15c6752ce734947abcf7e927c282024251e0c2221de78c.md"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-104714199-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-104714199-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-104714199-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608170928-8Y24PK/README.md"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/d18b63a1ba8962a889c0073593207182dca35e83877aa9e3b161c6b06cfdba7c.patch"
-    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/b421ffc3f41352a47521c9e8cd39e8976d4583276502dd1c0f864124780cd34f.json"
-    - ".agentplane/tasks/202608170928-8Y24PK/verification/20260817103921486-6f4008b48b04b1bd.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/72e1d6b1983632c86624ab9d9b9dfa3ba6744f87ba525d17f598d2d22dc99efe.patch"
+    - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/40f9cea200523a4b6742737b87f06deba0eef5989e07bb711a9971ed390eaa6b.json"
+    - ".agentplane/tasks/202608170928-8Y24PK/verification/20260817104706399-6f2bd3d48da7983e.json"
     - ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/9d4211df768252e341fc46edf87f511d30d4f4f08d289efc5570b595c38e2b08.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "GitHub Actions Core CI job verify-static fails in packages/agentplane/src/commands/hermes/hermes-environment.ts:28:74 because @typescript-eslint/prefer-nullish-coalescing rejects logical OR in the protocol snapshot fallback."
-    - "The required change is scoped and mechanical: replace the fallback expression with nullish coalescing, then rerun lint and the Hermes command tests before republishing the task head."
-    - "The plugin PR is independently green, and the Hermes upstream PR is mergeable; those hosted facts do not override the failing AgentPlane quality gate."
-    - "Residual risk: The remaining in-progress hosted jobs must complete successfully on the corrected head."
+    - "The replacement of logical OR with nullish coalescing is confined to the v2 protocol snapshot and preserves fail-closed validation for absent, empty, or mismatched protocol values."
+    - "The committed implementation remains aligned with the approved ownership model: Hermes performs semantic LLM episodes, while AgentPlane owns formal lifecycle, authority, verification, publication, and terminal attestation."
+    - "Protocol docs, schema, doctor checks, terminal attestation, and focused tests remain mutually consistent after the rework."
+    - "Residual risk: The provider CI matrix must rerun against the corrected committed SHA before integration."
 execution_route:
   frozen: true
   reason_codes:
