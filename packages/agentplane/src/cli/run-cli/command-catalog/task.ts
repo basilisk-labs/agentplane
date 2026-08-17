@@ -87,6 +87,7 @@ import {
 } from "./kernel.js";
 import {
   TASK_LIFECYCLE_REQUIREMENTS,
+  TASK_PLAN_APPROVAL_REQUIREMENTS,
   TASK_READ_REQUIREMENTS,
   TASK_ROUTE_LOCAL_REQUIREMENTS,
   TASK_ROUTE_LIFECYCLE_REQUIREMENTS,
@@ -526,7 +527,7 @@ export const TASK_COMMANDS = [
   }),
   declareSessionCommand(taskPlanApproveSpec, {
     load: loadTaskPlanApproveSpec,
-    requirements: TASK_WRITE_REQUIREMENTS,
+    requirements: TASK_PLAN_APPROVAL_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["task", "plan", "approve"]),
   }),
   declareSessionCommand(taskPlanRejectSpec, {
