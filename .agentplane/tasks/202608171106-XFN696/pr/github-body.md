@@ -15,14 +15,21 @@ Implement a repository-configured AgentPlane authority provider with manual, pol
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note:
+
+```text
+Rework: authority grant route validation still diverges from task next-action because the grant
+command evaluates the WorkOrder through a lifecycle/write-capable CommandContext. Validate the
+state-bound request through the same read-route capability projection as next-action, then use the
+write context only to persist the already-validated grant.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-17T11:57:53.694Z
+- Updated: 2026-08-17T16:05:50.153Z
 - Branch: task/202608171106-XFN696/add-policy-driven-autonomous-side-effect-authori
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -32,12 +39,13 @@ Implement a repository-configured AgentPlane authority provider with manual, pol
  ...n-cli.core.task-advance-effect-recovery.test.ts |  85 ++++++++++++++++
  ...i.core.task-advance.worktree-resolution.test.ts |   7 ++
  ...-cli.critical.agent-efficiency-baseline.test.ts |   4 +-
+ .../src/cli/run-cli/command-loaders/task.ts        |  27 +++++-
  .../shared/workflow-step-planning-checkout.test.ts |  33 +++++++
  .../src/commands/shared/workflow-step-reducer.ts   |  12 ++-
  .../src/commands/shared/workflow-step.test.ts      |   3 +
  .../src/commands/task/advance.command.ts           |  20 +++-
- .../commands/task/authority-grant.command.test.ts  |  79 ++++++++++++++-
- .../src/commands/task/authority-grant.command.ts   |  46 ++++++---
+ .../commands/task/authority-grant.command.test.ts  |  95 ++++++++++++++++--
+ .../src/commands/task/authority-grant.command.ts   |  59 ++++++++---
  .../src/commands/task/branch-task-supervisor.ts    |  26 +++--
  .../src/commands/task/configured-authority.test.ts |  56 +++++++++++
  .../src/commands/task/configured-authority.ts      | 108 +++++++++++++++++++++
@@ -58,7 +66,7 @@ Implement a repository-configured AgentPlane authority provider with manual, pol
  schemas/config.schema.json                         |  45 +++++++++
  schemas/workflow.schema.json                       |  76 +++++++++++++++
  .../baselines/v0.7-compatibility-candidate.json    |   8 +-
- 31 files changed, 1127 insertions(+), 40 deletions(-)
+ 32 files changed, 1175 insertions(+), 48 deletions(-)
 ```
 
 </details>
