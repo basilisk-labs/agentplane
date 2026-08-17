@@ -1,0 +1,1681 @@
+diff --git a/docs/recipes/hermes-agentplane.mdx b/docs/recipes/hermes-agentplane.mdx
+index c0e0ade8d..76f5442e9 100644
+--- a/docs/recipes/hermes-agentplane.mdx
++++ b/docs/recipes/hermes-agentplane.mdx
+@@ -106,3 +106,33 @@ complete transitions. The packet includes:
+ 
+ The recipe does not make Hermes a task backend for Agentplane. Hermes board state is a projection.
+ Agentplane task state remains canonical and Git-visible.
++
++## Unattended Hermes operation
++
++Hermes should keep performing the LLM work while AgentPlane remains the invisible formal control
++plane. After the user approves the primary plan, configure repository authority when a Hermes lane
++must progress through routine PR publication boundaries without showing lifecycle prompts:
++
++```yaml
++authority:
++  mode: policy
++  actor: POLICY:hermes
++  allow_operations:
++    - pr.open
++    - pr.head.publish
++    - pr.artifacts.update
++    - pr.sync_or_verify
++    - provider.pr.refresh
++    - route.remote.refresh
++  deny_operations:
++    - integration.enqueue
++    - task.pre_merge_close
++  ttl_minutes: 10
++```
++
++Hermes consumes fresh `task advance --agent-json` packets and performs only `agent_episode`
++objectives. AgentPlane resolves allowed policy boundaries internally, performs formal transitions,
++and returns the next semantic packet. The primary plan approval remains a mandatory user boundary.
++After that approval, Hermes surfaces another user action only when the current operation is absent
++from the allowlist, present in the denylist, is a provider merge decision, or the state-bound
++authority can no longer be reconstructed safely.
+diff --git a/docs/user/configuration.mdx b/docs/user/configuration.mdx
+index f3b75fc6c..28197e057 100644
+--- a/docs/user/configuration.mdx
++++ b/docs/user/configuration.mdx
+@@ -58,6 +58,54 @@ behavior.
+ These keys control project approval gates; they do not add or remove CLI capabilities. Explicit
+ approval for force actions is fixed by the standard process policy.
+ 
++### authority
++
++`authority` controls whether AgentPlane may satisfy formal approval boundaries from repository
++policy instead of returning control to a user. The default is fail-closed:
++
++```yaml
++authority:
++  mode: manual
++  actor: POLICY:repository
++  allow_operations: []
++  deny_operations: []
++  ttl_minutes: 15
++```
++
++- `manual`: every protected external effect remains an operator boundary.
++- `policy`: only operation ids in `allow_operations` are authorized.
++- `all`: explicit repository YOLO mode for side-effect operations.
++- `deny_operations`: always wins over `policy` and `all`.
++- `actor`: must use a `POLICY:<id>` identity; policy execution cannot be recorded as `USER`.
++- `ttl_minutes`: limits each state-bound grant to 1-60 minutes.
++
++Policy mode does not bypass the authority protocol. AgentPlane still binds every grant to the exact
++operation digest, route fingerprint, and state-scope digest, writes the append-only audit entry, and
++recomputes the route before executing the effect. Primary plan approval and provider merge approval
++remain operator-owned.
++
++Example: allow routine PR publication while retaining explicit authority for integration:
++
++```yaml
++authority:
++  mode: policy
++  actor: POLICY:repository
++  allow_operations:
++    - pr.open
++    - pr.head.publish
++    - pr.artifacts.update
++    - pr.sync_or_verify
++    - provider.pr.refresh
++    - route.remote.refresh
++  deny_operations:
++    - integration.enqueue
++    - task.pre_merge_close
++  ttl_minutes: 10
++```
++
++To opt into the broadest repository-owned route, set `authority.mode=all`. Keep irreversible or
++high-risk operations in `deny_operations` when they must still stop for a person.
++
+ ### workspace
+ 
+ - `workspace.agents_dir`
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+index b2965c5d9..f6dd65ba2 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+@@ -27,6 +27,11 @@ import {
+   validateExternalAgentResultEnvelope,
+   type ExternalAgentExchange,
+ } from "../commands/task/external-agent-exchange.js";
++import {
++  requiresImplementationRecoveryReplacement,
++  requiresPlanningRecoveryReplacement,
++} from "../commands/task/external-agent-supervisor-recovery.js";
++import { blockingImplementationAuthorityViolations } from "../commands/task/external-agent-implementation-authority.js";
+ import { defaultConfig } from "./core-imports.js";
+ import { runCli } from "./run-cli.js";
+ import { readRouteFingerprint } from "./run-cli.core.task-advance.testkit.js";
+@@ -120,6 +125,86 @@ async function writePlanningResult(packet: AgentPacket, summary: string): Promis
+ }
+ 
+ describe("task advance effect recovery", () => {
++  it("requires replacement when a non-planning result predates an explicit PLANNER reset", () => {
++    const stateFingerprint = `sha256:${"a".repeat(64)}`;
++    const planningFingerprint = `sha256:${"b".repeat(64)}`;
++    expect(
++      requiresPlanningRecoveryReplacement({
++        decision: {
++          workflowStep: {
++            kind: "agent_episode",
++            episode: { purpose: "planning" },
++            preconditionFingerprint: { digest: planningFingerprint },
++          },
++        } as never,
++        exchange: {
++          purpose: "implementation",
++          state_fingerprint: stateFingerprint,
++        } as ExternalAgentExchange,
++      }),
++    ).toBe(true);
++  });
++
++  it("requires replacement when plan approval changes pending implementation authority", () => {
++    const taskDigest = `sha256:${"a".repeat(64)}`;
++    const backendDigest = `sha256:${"b".repeat(64)}`;
++    const fingerprint = {
++      task_id: "202608171106-XFN696",
++      task_revision: 16,
++      worktree: "/repo/.agentplane/worktrees/task",
++      components: {
++        task: { digest: taskDigest },
++        backend_projection: { digest: backendDigest },
++      },
++    };
++    const decision = {
++      workflowStep: {
++        preconditionFingerprint: {
++          ...fingerprint,
++          task_revision: 19,
++          digest: `sha256:${"c".repeat(64)}`,
++        },
++      },
++    } as never;
++    const exchange = { purpose: "task_worktree_resolution" } as ExternalAgentExchange;
++    const workOrder = { state_fingerprint: fingerprint } as AgentWorkOrderV2;
++
++    expect(
++      requiresImplementationRecoveryReplacement({ decision, exchange, work_order: workOrder }),
++    ).toBe(true);
++    expect(
++      requiresImplementationRecoveryReplacement({
++        decision,
++        exchange: { purpose: "implementation_rework" } as ExternalAgentExchange,
++        work_order: workOrder,
++      }),
++    ).toBe(true);
++    expect(
++      requiresImplementationRecoveryReplacement({
++        decision: {
++          workflowStep: {
++            preconditionFingerprint: {
++              ...fingerprint,
++              digest: `sha256:${"d".repeat(64)}`,
++            },
++          },
++        } as never,
++        exchange,
++        work_order: workOrder,
++      }),
++    ).toBe(false);
++  });
++
++  it("lets implementation rework proceed past stale verification failures only", () => {
++    expect(
++      blockingImplementationAuthorityViolations([
++        "verification:verification-record:fail",
++        "repository_effect:ci",
++        "external_effect:network_read",
++      ]),
++    ).toEqual(["repository_effect:ci", "external_effect:network_read"]);
++  });
++
+   it("retires a drifted result-less exchange and issues one exact-key replacement", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
+index fae53becb..2c2faac0d 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
+@@ -233,6 +233,12 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () =>
+       cwd: taskWorktree,
+     });
+     await writeFile(path.join(taskWorktree, "intended-resolution.txt"), "keep\n", "utf8");
++    const pendingTaskReadme = path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md");
++    await writeFile(
++      pendingTaskReadme,
++      `${await readFile(pendingTaskReadme, "utf8")}\n<!-- pending baseline task metadata -->\n`,
++      "utf8",
++    );
+ 
+     const taskCommand = await loadCommandContext({ cwd: taskWorktree, rootOverride: taskWorktree });
+     const currentDecision = await buildTaskRouteDecision({
+@@ -302,6 +308,7 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () =>
+     const exchange = JSON.parse(
+       await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8"),
+     ) as ExternalAgentExchange;
++    expect(exchange.baseline.changed_paths).toContain(` M .agentplane/tasks/${taskId}/README.md`);
+     const accepted = await returnAgentResult(taskWorktree, taskId, resultPath);
+     expect(accepted.code, accepted.stderr).toBe(0);
+     expect(accepted.stderr).not.toMatch(/unsupported purpose|stale/iu);
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index af269d41d..60f7fc80e 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -218,7 +218,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202608112259-T3ZDDM",
+         ],
+         candidate: {
+-          surface_sha256: "eb329963bb076054c7c8f1340ba5eb9a086d399e0b1d0f8dd09d20322ae5ee1a",
++          surface_sha256: "08bbdbf9131f3f264d91ef719da62795871b4a3e00acb50653ea252125d51802",
+           section_digests: {
+             agent_facing_context_contracts:
+               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+@@ -227,7 +227,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+             package_manifests: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
+             tarball_policy: "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
+-            workflow_schema: "4714ecc43f394109cd5807ec5e544716abe7c67c20ea18554f8f2b559bf97b21",
++            workflow_schema: "e234ac9d25db50340f46a3fcc01c8f5443f85bee38ce8ec6243a5e525046aa6f",
+           },
+         },
+         pre_release_package_delta: {
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-planning-checkout.test.ts b/packages/agentplane/src/commands/shared/workflow-step-planning-checkout.test.ts
+new file mode 100644
+index 000000000..a57b9f756
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/workflow-step-planning-checkout.test.ts
+@@ -0,0 +1,33 @@
++import { describe, expect, it } from "vitest";
++
++import { planningCheckout } from "./workflow-step-reducer.js";
++
++describe("planning checkout", () => {
++  it("uses an existing branch task worktree for replanning and plan approval", () => {
++    expect(
++      planningCheckout({
++        workflowMode: "branch_pr",
++        taskWorktree: {
++          state: "dirty",
++          branch: "task/202608171106-XFN696/recovery",
++          worktreePath: "/repo/.agentplane/worktrees/202608171106-XFN696-recovery",
++          changedPaths: [".agentplane/tasks/202608171106-XFN696/README.md"],
++        },
++      } as never),
++    ).toBe("task_worktree");
++  });
++
++  it("keeps initial planning in the base checkout before a worktree exists", () => {
++    expect(
++      planningCheckout({
++        workflowMode: "branch_pr",
++        taskWorktree: {
++          state: "not_present",
++          branch: "task/202608171106-XFN696/recovery",
++          worktreePath: null,
++          changedPaths: [],
++        },
++      } as never),
++    ).toBe("base_checkout");
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-reducer.ts b/packages/agentplane/src/commands/shared/workflow-step-reducer.ts
+index ed60463b2..76b52d86e 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-reducer.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-reducer.ts
+@@ -15,6 +15,12 @@ import {
+ } from "./workflow-step-factory.js";
+ import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
+ 
++export function planningCheckout(state: WorkflowRouteState): "base_checkout" | "task_worktree" {
++  return state.workflowMode === "branch_pr" && state.taskWorktree?.worktreePath
++    ? "task_worktree"
++    : "base_checkout";
++}
++
+ export function reduceRouteState(state: WorkflowRouteState): WorkflowStep {
+   const id = state.task.id;
+   if (state.task.status === "DONE" && state.workflowMode !== "branch_pr") {
+@@ -83,7 +89,7 @@ export function reduceRouteState(state: WorkflowRouteState): WorkflowStep {
+       id: "agent.planning",
+       code: "semantic_planning_required",
+       phase: "semantic_planning_required",
+-      checkout: "base_checkout",
++      checkout: planningCheckout(state),
+       role: "PLANNER",
+       purpose: "planning",
+       summary:
+@@ -109,10 +115,10 @@ export function reduceRouteState(state: WorkflowRouteState): WorkflowStep {
+       id: "approval.plan",
+       code: "approve_plan",
+       phase: "needs_plan_approval",
+-      checkout: "base_checkout",
++      checkout: planningCheckout(state),
+       type: "plan_approval",
+       summary: "approve the task plan before owner-scoped execution",
+-      command: `agentplane task plan approve ${id} --by ORCHESTRATOR`,
++      command: `agentplane task plan approve ${id} --by USER`,
+       selectedBlocker: routeBlockerFor(state, "plan_not_approved"),
+     });
+   }
+diff --git a/packages/agentplane/src/commands/shared/workflow-step.test.ts b/packages/agentplane/src/commands/shared/workflow-step.test.ts
+index 5338e1f2b..588189014 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step.test.ts
+@@ -405,6 +405,9 @@ describe("typed WorkflowStep reducer", () => {
+       wait.kind,
+       terminal.kind,
+     ]).toEqual(["cli_operation", "agent_episode", "approval", "human_input", "wait", "terminal"]);
++    expect(approval.compatibility.command).toBe(
++      `agentplane task plan approve ${task.id} --by USER`,
++    );
+   });
+ 
+   it("never substitutes an unrelated blocker for human-input or runner-wait authority", () => {
+diff --git a/packages/agentplane/src/commands/task/advance.command.ts b/packages/agentplane/src/commands/task/advance.command.ts
+index e9358be44..4fd6fe490 100644
+--- a/packages/agentplane/src/commands/task/advance.command.ts
++++ b/packages/agentplane/src/commands/task/advance.command.ts
+@@ -27,6 +27,7 @@ import {
+ } from "./external-agent-supervisor.js";
+ import { recoverPendingExternalAgentResult } from "./external-agent-supervisor-recovery.js";
+ import { executeExternalAgentVerification } from "./external-agent-verification.js";
++import { resolveConfiguredAuthority } from "./configured-authority.js";
+ import type { TaskAdvanceParsed } from "./advance.spec.js";
+ 
+ export function makeRunTaskAdvanceHandler(deps: {
+@@ -75,10 +76,12 @@ export function makeRunTaskAdvanceHandler(deps: {
+         taskId: parsed.taskId,
+       });
+     } else {
++      const routed = await decide();
+       current =
+         (await recoverPendingExternalAgentResult({
+           command,
+           task_id: parsed.taskId,
++          current_decision: routed,
+           accept_result: async ({ cwd, result_path }) =>
+             await acceptExternalAgentResult({
+               ctx: { cwd },
+@@ -87,7 +90,7 @@ export function makeRunTaskAdvanceHandler(deps: {
+               result_path,
+               include_remote: parsed.remote,
+             }),
+-        })) ?? (await decide());
++        })) ?? routed;
+     }
+     let replacementPrepared = false;
+     if (parsed.replacement) {
+@@ -107,6 +110,21 @@ export function makeRunTaskAdvanceHandler(deps: {
+     let recovery: Parameters<typeof buildAgentActionPacket>[0]["recovery"];
+     for (let operationCount = 0; operationCount < 32; operationCount += 1) {
+       const step = current.workflowStep;
++      if (step.kind === "approval") {
++        const authorityCheckout = current.oracle?.authoritativeCheckoutPath ?? ctx.cwd;
++        const authorityCommand = await loadCommandContext({
++          cwd: authorityCheckout,
++          rootOverride: null,
++        });
++        const resolved = await resolveConfiguredAuthority({
++          command: authorityCommand,
++          decision: current,
++        });
++        if (resolved.state === "resolved") {
++          current = await decide(true);
++          continue;
++        }
++      }
+       if (step.kind === "agent_episode" && step.episode.purpose === "verification") {
+         const checkout = current.executionPacket.mustRunFrom ?? current.workspace.root;
+         const verificationCommand = await loadCommandContext({ cwd: checkout, rootOverride: null });
+diff --git a/packages/agentplane/src/commands/task/authority-grant.command.test.ts b/packages/agentplane/src/commands/task/authority-grant.command.test.ts
+index 515ae5fa2..29a85d0a3 100644
+--- a/packages/agentplane/src/commands/task/authority-grant.command.test.ts
++++ b/packages/agentplane/src/commands/task/authority-grant.command.test.ts
+@@ -2,15 +2,17 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+ import { parseCommandArgv } from "../../cli/spec/parse.js";
+ import type { CommandCtx } from "../../cli/spec/spec.js";
++import type * as AgentWorkOrderModule from "../../runner/usecases/agent-work-order.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ 
+ const mocks = vi.hoisted(() => ({
+-  buildTaskRouteDecision: vi.fn(),
++  prepareAgentWorkOrder: vi.fn(),
+ }));
+ 
+-vi.mock("../shared/route-decision.js", () => ({
+-  buildTaskRouteDecision: mocks.buildTaskRouteDecision,
+-}));
++vi.mock("../../runner/usecases/agent-work-order.js", async (importOriginal) => {
++  const actual = await importOriginal<typeof AgentWorkOrderModule>();
++  return { ...actual, prepareAgentWorkOrder: mocks.prepareAgentWorkOrder };
++});
+ 
+ import {
+   makeRunTaskAuthorityGrantHandler,
+@@ -20,7 +22,7 @@ import {
+ describe("task authority grant", () => {
+   beforeEach(() => {
+     vi.clearAllMocks();
+-    mocks.buildTaskRouteDecision.mockRejectedValue(new Error("stop after context selection"));
++    mocks.prepareAgentWorkOrder.mockRejectedValue(new Error("stop after context selection"));
+   });
+ 
+   it("preserves the explicit hosted-route context emitted by task next-action", () => {
+@@ -74,6 +76,73 @@ describe("task authority grant", () => {
+ 
+       expect(getLocalContext).toHaveBeenCalledTimes(testCase.remote ? 0 : 1);
+       expect(getRemoteContext).toHaveBeenCalledTimes(testCase.remote ? 1 : 0);
++      expect(mocks.prepareAgentWorkOrder).toHaveBeenCalledWith({
++        command_ctx: commandContext,
++        cwd: "/repo",
++        root_override: null,
++        task_id: "T-1",
++        ...(testCase.remote ? { include_remote: true } : {}),
++      });
+     },
+   );
++
++  it("rebuilds authority from the same canonical WorkOrder route as task next-action", async () => {
++    const commandContext = {} as CommandContext;
++    mocks.prepareAgentWorkOrder.mockResolvedValue({
++      status: "prepared",
++      value: {
++        route_decision: {
++          workflowStep: { kind: "cli_operation", id: "task.pre_merge_close" },
++        },
++      },
++    });
++    const run = makeRunTaskAuthorityGrantHandler({
++      getLocalContext: vi.fn(() => Promise.resolve(commandContext)),
++      getRemoteContext: vi.fn(() => Promise.resolve(commandContext)),
++    });
++
++    await expect(
++      run({ cwd: "/repo", rootOverride: null } as CommandCtx, {
++        taskId: "T-1",
++        operationId: "pr.open",
++        operationDigest: "sha256:operation",
++        stateFingerprintDigest: "sha256:fingerprint",
++        stateScopeDigest: "sha256:scope",
++        by: "USER",
++        ttlMinutes: 15,
++        remote: false,
++      }),
++    ).rejects.toThrow(/recomputed local route.*cli_operation:task\.pre_merge_close/su);
++  });
++
++  it("explains hosted route drift when the requested authority boundary has already moved", async () => {
++    const commandContext = {} as CommandContext;
++    mocks.prepareAgentWorkOrder.mockResolvedValue({
++      status: "prepared",
++      value: {
++        route_decision: {
++          workflowStep: { kind: "cli_operation", id: "task.pre_merge_close" },
++        },
++      },
++    });
++    const run = makeRunTaskAuthorityGrantHandler({
++      getLocalContext: vi.fn(() => Promise.resolve(commandContext)),
++      getRemoteContext: vi.fn(() => Promise.resolve(commandContext)),
++    });
++
++    await expect(
++      run({ cwd: "/repo", rootOverride: null } as CommandCtx, {
++        taskId: "T-1",
++        operationId: "task.pre_merge_close",
++        operationDigest: "sha256:operation",
++        stateFingerprintDigest: "sha256:fingerprint",
++        stateScopeDigest: "sha256:scope",
++        by: "USER",
++        ttlMinutes: 15,
++        remote: true,
++      }),
++    ).rejects.toThrow(
++      /Authority request is stale:.*cli_operation:task\.pre_merge_close.*next-action T-1 --remote --explain/su,
++    );
++  });
+ });
+diff --git a/packages/agentplane/src/commands/task/authority-grant.command.ts b/packages/agentplane/src/commands/task/authority-grant.command.ts
+index 564ba89e8..bc42c1d81 100644
+--- a/packages/agentplane/src/commands/task/authority-grant.command.ts
++++ b/packages/agentplane/src/commands/task/authority-grant.command.ts
+@@ -1,7 +1,11 @@
+ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
+ import { usageError } from "../../cli/spec/errors.js";
+ import { createCliEmitter } from "../../cli/output.js";
+-import { buildTaskRouteDecision } from "../shared/route-decision.js";
++import {
++  prepareAgentWorkOrder,
++  requirePreparedAgentWorkOrder,
++} from "../../runner/usecases/agent-work-order.js";
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+ import {
+   appendSideEffectAuthorityAudit,
+   createSideEffectAuthorityRecord,
+@@ -118,12 +122,26 @@ export const taskAuthorityGrantSpec: CommandSpec<TaskAuthorityGrantParsed> = {
+   }),
+ };
+ 
+-function requestedOperation(decision: Awaited<ReturnType<typeof buildTaskRouteDecision>>) {
++function currentRouteCommand(taskId: string, remote: boolean): string {
++  return `agentplane task next-action ${taskId}${remote ? " --remote" : ""} --explain`;
++}
++
++function requestedOperation(
++  decision: TaskRouteDecision,
++  parsed: Pick<TaskAuthorityGrantParsed, "taskId" | "remote">,
++) {
+   const request = decision.workflowStep.kind === "approval" ? decision.workflowStep.request : null;
+   if (request?.type !== "side_effect") {
+     throw usageError({
+       spec: taskAuthorityGrantSpec,
+-      message: "The current task route does not require a side-effect authority grant.",
++      message:
++        "Authority request is stale: the recomputed " +
++        `${parsed.remote ? "hosted" : "local"} route is now ` +
++        `${decision.workflowStep.kind}:${decision.workflowStep.id} and no longer requests ` +
++        `side-effect authority. Inspect the current route with: ${currentRouteCommand(
++          parsed.taskId,
++          parsed.remote,
++        )}`,
+     });
+   }
+   return request;
+@@ -137,14 +155,17 @@ export function makeRunTaskAuthorityGrantHandler(session: {
+     const commandCtx = await (parsed.remote
+       ? session.getRemoteContext("task authority grant")
+       : session.getLocalContext("task authority grant"));
+-    const decision = await buildTaskRouteDecision({
+-      ctx: commandCtx,
+-      cwd: ctx.cwd,
+-      rootOverride: ctx.rootOverride ?? null,
+-      taskId: parsed.taskId,
+-      includeRemote: parsed.remote,
+-    });
+-    const request = requestedOperation(decision);
++    const preparedWorkOrder = requirePreparedAgentWorkOrder(
++      await prepareAgentWorkOrder({
++        command_ctx: commandCtx,
++        cwd: ctx.cwd,
++        root_override: ctx.rootOverride ?? null,
++        task_id: parsed.taskId,
++        ...(parsed.remote ? { include_remote: true } : {}),
++      }),
++    );
++    const decision = preparedWorkOrder.route_decision;
++    const request = requestedOperation(decision, parsed);
+     if (
+       request.operationId !== parsed.operationId ||
+       request.operationDigest !== parsed.operationDigest ||
+@@ -154,7 +175,8 @@ export function makeRunTaskAuthorityGrantHandler(session: {
+       throw usageError({
+         spec: taskAuthorityGrantSpec,
+         message:
+-          "Authority grant inputs are stale or do not match the current task next-action; recompute the route.",
++          "Authority grant inputs are stale or do not match the recomputed task route. " +
++          `Inspect the current route with: ${currentRouteCommand(parsed.taskId, parsed.remote)}`,
+       });
+     }
+     const now = new Date();
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor.ts b/packages/agentplane/src/commands/task/branch-task-supervisor.ts
+index aa656bd65..4f4e21446 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor.ts
+@@ -9,6 +9,7 @@ import type { WorkflowSupervisorOperationResult } from "../shared/workflow-super
+ import type { WorkflowOperation } from "../shared/workflow-step.js";
+ import { executeProductionBranchEpisode } from "./branch-task-supervisor-episodes.js";
+ import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
++import { resolveConfiguredAuthority } from "./configured-authority.js";
+ import type { JournalProjection } from "./direct-task-supervisor-result.js";
+ import { journalProjection } from "./direct-task-supervisor-result.js";
+ 
+@@ -462,13 +463,24 @@ export async function superviseBranchTaskRun(
+ ): Promise<BranchTaskSupervisorResult> {
+   const routeCwd = input.ctx.cwd;
+   const decide = async () => {
+-    const routeCommand = await loadCommandContext({ cwd: routeCwd, rootOverride: null });
+-    return await buildTaskRouteDecision({
+-      ctx: routeCommand,
+-      cwd: routeCwd,
+-      rootOverride: null,
+-      taskId: input.task_id,
+-      includeRemote: true,
++    for (let authorityCount = 0; authorityCount < 8; authorityCount += 1) {
++      const routeCommand = await loadCommandContext({ cwd: routeCwd, rootOverride: null });
++      const decision = await buildTaskRouteDecision({
++        ctx: routeCommand,
++        cwd: routeCwd,
++        rootOverride: null,
++        taskId: input.task_id,
++        includeRemote: true,
++      });
++      const resolved = await resolveConfiguredAuthority({
++        command: routeCommand,
++        decision,
++      });
++      if (resolved.state !== "resolved") return decision;
++    }
++    throw new CliError({
++      code: "E_RUNTIME",
++      message: "Repository authority policy exceeded its bounded approval-resolution budget.",
+     });
+   };
+ 
+diff --git a/packages/agentplane/src/commands/task/configured-authority.test.ts b/packages/agentplane/src/commands/task/configured-authority.test.ts
+new file mode 100644
+index 000000000..f669bd4a4
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/configured-authority.test.ts
+@@ -0,0 +1,56 @@
++import { describe, expect, it } from "vitest";
++
++import type { SideEffectAuthorityConfig } from "@agentplaneorg/core/config";
++
++import type { CommandContext } from "../shared/task-backend.js";
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import {
++  isOperationAuthorizedByPolicy,
++  resolveConfiguredAuthority,
++} from "./configured-authority.js";
++
++function authority(overrides: Partial<SideEffectAuthorityConfig>): SideEffectAuthorityConfig {
++  return {
++    mode: "manual",
++    actor: "POLICY:repository",
++    allow_operations: [],
++    deny_operations: [],
++    ttl_minutes: 15,
++    ...overrides,
++  };
++}
++
++describe("configured repository authority", () => {
++  it("never resolves primary plan approval from repository policy", async () => {
++    const result = await resolveConfiguredAuthority({
++      command: {} as CommandContext,
++      decision: {
++        workflowStep: {
++          kind: "approval",
++          request: { type: "plan_approval" },
++        },
++      } as TaskRouteDecision,
++    });
++
++    expect(result).toEqual({
++      state: "not_applicable",
++      reason: "semantic approvals remain operator-owned",
++    });
++  });
++
++  it("keeps manual mode closed", () => {
++    expect(isOperationAuthorizedByPolicy(authority({}), "pr.open")).toBe(false);
++  });
++
++  it("allows only explicitly listed operations in policy mode", () => {
++    const config = authority({ mode: "policy", allow_operations: ["pr.open"] });
++    expect(isOperationAuthorizedByPolicy(config, "pr.open")).toBe(true);
++    expect(isOperationAuthorizedByPolicy(config, "pr.head.publish")).toBe(false);
++  });
++
++  it("lets deny rules override explicit all mode", () => {
++    const config = authority({ mode: "all", deny_operations: ["integration.enqueue"] });
++    expect(isOperationAuthorizedByPolicy(config, "pr.open")).toBe(true);
++    expect(isOperationAuthorizedByPolicy(config, "integration.enqueue")).toBe(false);
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/configured-authority.ts b/packages/agentplane/src/commands/task/configured-authority.ts
+new file mode 100644
+index 000000000..ae0f16a4f
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/configured-authority.ts
+@@ -0,0 +1,108 @@
++import type { SideEffectAuthorityConfig } from "@agentplaneorg/core/config";
++
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import {
++  appendSideEffectAuthorityAudit,
++  createSideEffectAuthorityRecord,
++} from "../shared/side-effect-authority.js";
++import {
++  loadSideEffectAuthorityState,
++  persistSideEffectAuthorityState,
++} from "../shared/side-effect-authority-store.js";
++import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
++
++export type ConfiguredAuthorityResolution =
++  | { state: "not_applicable"; reason: string }
++  | { state: "resolved"; actor: string; boundary: "side_effect" };
++
++export function isOperationAuthorizedByPolicy(
++  config: SideEffectAuthorityConfig,
++  operationId: string,
++): boolean {
++  if (config.mode === "manual" || config.deny_operations.includes(operationId)) return false;
++  if (config.mode === "all") return true;
++  return config.allow_operations.includes(operationId);
++}
++
++/**
++ * Resolve an approval boundary only when repository policy explicitly owns it.
++ * The resulting grant is the same state-bound, expiring authority record used
++ * by the manual command; policy mode changes who may issue it, not its scope.
++ */
++export async function resolveConfiguredAuthority(opts: {
++  command: CommandContext;
++  decision: TaskRouteDecision;
++}): Promise<ConfiguredAuthorityResolution> {
++  const step = opts.decision.workflowStep;
++  if (step.kind !== "approval") {
++    return { state: "not_applicable", reason: "current route is not an approval boundary" };
++  }
++
++  if (step.request.type !== "side_effect") {
++    return { state: "not_applicable", reason: "semantic approvals remain operator-owned" };
++  }
++  const config = opts.command.config.authority;
++  if (!isOperationAuthorizedByPolicy(config, step.request.operationId)) {
++    return {
++      state: "not_applicable",
++      reason: `operation ${step.request.operationId} is not authorized by repository policy`,
++    };
++  }
++
++  const task = await loadTaskFromContext({
++    ctx: opts.command,
++    taskId: step.request.taskId,
++    preferBranchSnapshot: opts.command.config.workflow_mode === "branch_pr",
++  });
++  const loaded = await loadSideEffectAuthorityState({
++    gitRoot: opts.command.resolvedProject.gitRoot,
++    taskId: step.request.taskId,
++    task,
++  });
++  if (!loaded.state) {
++    return {
++      state: "not_applicable",
++      reason: "persisted side-effect authority state is malformed",
++    };
++  }
++
++  const issuedAt = new Date().toISOString();
++  const expiresAt = new Date(Date.parse(issuedAt) + config.ttl_minutes * 60_000).toISOString();
++  const grant = createSideEffectAuthorityRecord({
++    actor: config.actor,
++    operation: step.request.operation,
++    fingerprint: step.preconditionFingerprint,
++    issuedAt,
++    expiresAt,
++  });
++  if (
++    grant.operationDigest !== step.request.operationDigest ||
++    grant.stateFingerprintDigest !== step.request.stateFingerprintDigest ||
++    grant.stateScopeDigest !== step.request.stateScopeDigest
++  ) {
++    return {
++      state: "not_applicable",
++      reason: "reconstructed policy authority no longer matches the current route",
++    };
++  }
++
++  const audited = appendSideEffectAuthorityAudit({
++    state: {
++      schemaVersion: 1,
++      grants: [...loaded.state.grants, grant],
++      audit: loaded.state.audit,
++    },
++    at: issuedAt,
++    actor: config.actor,
++    operation: step.request.operation,
++    fingerprint: step.preconditionFingerprint,
++    authority: grant,
++    outcome: "approved",
++  });
++  await persistSideEffectAuthorityState({
++    gitRoot: opts.command.resolvedProject.gitRoot,
++    taskId: step.request.taskId,
++    state: audited,
++  });
++  return { state: "resolved", actor: config.actor, boundary: "side_effect" };
++}
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+index 0d057f0df..ec3999e27 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+@@ -186,9 +186,10 @@ function assertExternalImplementationReturnState(opts: {
+     .filter((entry): entry is string => entry !== null);
+   const taskPrefix = `.agentplane/tasks/${opts.exchange.task_id}/`;
+   const forbidden = changed.filter((entry) => {
+-    const protectedTaskArtifact =
+-      entry.startsWith(taskPrefix) && !(resolvesDirtyWorktree && baselinePaths.has(entry));
+-    return protectedTaskArtifact || !pathAllowed(entry, allowed);
++    const taskArtifact = entry.startsWith(taskPrefix);
++    const baselineTaskArtifact = taskArtifact && resolvesDirtyWorktree && baselinePaths.has(entry);
++    if (baselineTaskArtifact) return false;
++    return taskArtifact || !pathAllowed(entry, allowed);
+   });
+   if (forbidden.length > 0) {
+     throw new CliError({
+@@ -244,6 +245,10 @@ export async function applyExternalReadOnlyWorktreeObservation(opts: {
+   if (exitCode !== 0) throw new Error(`External worktree observation commit exited ${exitCode}.`);
+ }
+ 
++export function blockingImplementationAuthorityViolations(violations: readonly string[]): string[] {
++  return violations.filter((violation) => !violation.startsWith("verification:"));
++}
++
+ export async function applyExternalImplementationResult(opts: {
+   command: CommandContext;
+   decision: TaskRouteDecision;
+@@ -400,8 +405,9 @@ export async function applyExternalImplementationResult(opts: {
+     changed_paths: implementation.evidence.changed_paths,
+     preserved_commit: implementation.evidence.implementation_commit,
+   });
+-  const authorityViolations =
+-    reconciliation.task.execution_contract?.observed.authority_violations ?? [];
++  const authorityViolations = blockingImplementationAuthorityViolations(
++    reconciliation.task.execution_contract?.observed.authority_violations ?? [],
++  );
+   if (authorityViolations.length > 0 && !reconciliation.escalated) {
+     throw new CliError({
+       code: "E_VALIDATION",
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts b/packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts
+index 7e72b8d68..7975d4d59 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts
+@@ -32,6 +32,42 @@ export type RecoverableExternalAgentExchange = {
+   work_order: AgentWorkOrderV2;
+ };
+ 
++export function requiresPlanningRecoveryReplacement(opts: {
++  decision: TaskRouteDecision;
++  exchange: ExternalAgentExchange;
++}): boolean {
++  const step = opts.decision.workflowStep;
++  return (
++    step.kind === "agent_episode" &&
++    step.episode.purpose === "planning" &&
++    opts.exchange.purpose !== "planning" &&
++    step.preconditionFingerprint.digest !== opts.exchange.state_fingerprint
++  );
++}
++
++export function requiresImplementationRecoveryReplacement(opts: {
++  decision: TaskRouteDecision;
++  exchange: ExternalAgentExchange;
++  work_order: AgentWorkOrderV2;
++}): boolean {
++  if (
++    opts.exchange.purpose !== "implementation" &&
++    opts.exchange.purpose !== "implementation_rework" &&
++    opts.exchange.purpose !== "task_worktree_resolution"
++  ) {
++    return false;
++  }
++  const expected = opts.work_order.state_fingerprint;
++  const current = opts.decision.workflowStep.preconditionFingerprint;
++  return (
++    current.task_id !== expected.task_id ||
++    current.task_revision !== expected.task_revision ||
++    current.worktree !== expected.worktree ||
++    current.components.task.digest !== expected.components.task.digest ||
++    current.components.backend_projection.digest !== expected.components.backend_projection.digest
++  );
++}
++
+ function exchangePathsFromWorkOrderRef(workOrderRef: string): ExternalAgentExchangePaths {
+   const directory = path.dirname(workOrderRef);
+   return {
+@@ -239,6 +275,7 @@ export async function superviseExternalAgentIssuance(opts: {
+ export async function recoverPendingExternalAgentResult(opts: {
+   command: CommandContext;
+   task_id: string;
++  current_decision: TaskRouteDecision;
+   accept_result: (input: { cwd: string; result_path: string }) => Promise<TaskRouteDecision>;
+ }): Promise<TaskRouteDecision | null> {
+   const commonGitDir = await resolveCommandGitCommonDir(opts.command);
+@@ -266,6 +303,69 @@ export async function recoverPendingExternalAgentResult(opts: {
+   )
+     return null;
+ 
++  const workOrder = await readExternalAgentWorkOrder(paths.work_order);
++  const planningRecoveryRequired = requiresPlanningRecoveryReplacement({
++    decision: opts.current_decision,
++    exchange,
++  });
++  const implementationRecoveryRequired = requiresImplementationRecoveryReplacement({
++    decision: opts.current_decision,
++    exchange,
++    work_order: workOrder,
++  });
++
++  if (
++    operation.status === "intent" &&
++    (planningRecoveryRequired || implementationRecoveryRequired)
++  ) {
++    const retired = retireSupervisorExecutionEpisodeIntentAfterStateDrift({
++      journal,
++      state_fingerprint_digest: opts.current_decision.workflowStep.preconditionFingerprint.digest,
++      result: {
++        classification: planningRecoveryRequired
++          ? "planning_recovery_state_fingerprint_drift"
++          : "implementation_authority_state_fingerprint_drift",
++        transition_id: exchange.transition_id,
++        previous_state_fingerprint: exchange.state_fingerprint,
++        current_state_fingerprint:
++          opts.current_decision.workflowStep.preconditionFingerprint.digest,
++      },
++    });
++    const store = createSupervisorEpisodeStore(journalPath);
++    if (!(await store.compareAndSwap(journal.digest, retired))) {
++      throw new CliError({
++        code: "E_RUNTIME",
++        message: "External-agent supervisor changed while retiring the stale result.",
++      });
++    }
++    await writeExternalAgentExchange(paths.exchange, {
++      ...exchange,
++      status: "retired",
++      postcondition_fingerprint: opts.current_decision.workflowStep.preconditionFingerprint.digest,
++      updated_at: new Date().toISOString(),
++    });
++    throw new CliError({
++      code: "E_RUNTIME",
++      message:
++        (planningRecoveryRequired
++          ? "The task returned to PLANNER after the pending external-agent result was issued. "
++          : "The task authority changed after the pending external-agent result was issued. ") +
++        `AgentPlane retired the stale result; run: agentplane task advance ${opts.task_id} ` +
++        "--replacement --agent-json",
++      context: {
++        task_id: opts.task_id,
++        exact_argv: [
++          "agentplane",
++          "task",
++          "advance",
++          opts.task_id,
++          "--replacement",
++          "--agent-json",
++        ],
++      },
++    });
++  }
++
+   if (exchange.status === "result_received" || exchange.status === "accepted") {
+     if (!exchange.result || !exchange.result_digest) {
+       throw new CliError({
+diff --git a/packages/agentplane/src/runtime/task-routing/resolve.test.ts b/packages/agentplane/src/runtime/task-routing/resolve.test.ts
+index 0466c85d0..d2ec5912d 100644
+--- a/packages/agentplane/src/runtime/task-routing/resolve.test.ts
++++ b/packages/agentplane/src/runtime/task-routing/resolve.test.ts
+@@ -620,6 +620,42 @@ describe("task execution route", () => {
+     );
+   });
+ 
++  it("clears a superseded verification failure after the same check passes", () => {
++    const config = defaultConfig();
++    const initial = resolveTaskExecutionContract({
++      config,
++      task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
++      declaration: {
++        schema_version: 1,
++        preferred_mode: "branch_pr",
++        scope_roots: ["packages/app"],
++        repository_effects: ["repository_write", "source_code"],
++        external_effects: [],
++        uncertainty: "bounded",
++        reversibility: "reversible",
++        rationale: ["verification recovery"],
++      },
++    });
++    const failed = reconcileTaskExecutionContract({
++      contract: initial,
++      changed_paths: ["packages/app/src/feature.ts"],
++      verification_results: [{ id: "unit-tests", result: "fail" }],
++    });
++    const recovered = reconcileTaskExecutionContract({
++      contract: failed.contract,
++      changed_paths: ["packages/app/src/feature.ts"],
++      verification_results: [{ id: "unit-tests", result: "pass" }],
++    });
++
++    expect(recovered.contract.observed.verification_results).toContainEqual({
++      id: "unit-tests",
++      result: "pass",
++    });
++    expect(recovered.contract.observed.authority_violations).not.toContain(
++      "verification:unit-tests:fail",
++    );
++  });
++
+   it("records path authority drift even when the observed effect category was declared", () => {
+     const config = defaultConfig();
+     config.workflow_mode = "direct";
+diff --git a/packages/agentplane/src/runtime/task-routing/resolve.ts b/packages/agentplane/src/runtime/task-routing/resolve.ts
+index 0c9397307..ed9324242 100644
+--- a/packages/agentplane/src/runtime/task-routing/resolve.ts
++++ b/packages/agentplane/src/runtime/task-routing/resolve.ts
+@@ -483,7 +483,9 @@ export function reconcileTaskExecutionContract(opts: {
+     (effect) => !opts.contract.authority.allowed_external_effects.includes(effect),
+   );
+   const authorityViolations = uniqueSorted([
+-    ...opts.contract.observed.authority_violations,
++    ...opts.contract.observed.authority_violations.filter(
++      (violation) => !violation.startsWith("verification:"),
++    ),
+     ...undeclaredRepositoryEffects.map((effect) => `repository_effect:${effect}`),
+     ...outOfScopePaths.map((changedPath) => `writable_scope:${changedPath}`),
+     ...unauthorizedExternalEffects.map((effect) => `external_effect:${effect}`),
+diff --git a/packages/core/schemas/config.schema.json b/packages/core/schemas/config.schema.json
+index 86a1e9cef..738fbe071 100644
+--- a/packages/core/schemas/config.schema.json
++++ b/packages/core/schemas/config.schema.json
+@@ -28,6 +28,51 @@
+       "default": false,
+       "type": "boolean"
+     },
++    "authority": {
++      "default": {
++        "mode": "manual",
++        "actor": "POLICY:repository",
++        "allow_operations": [],
++        "deny_operations": [],
++        "ttl_minutes": 15
++      },
++      "type": "object",
++      "properties": {
++        "mode": {
++          "default": "manual",
++          "type": "string",
++          "enum": ["manual", "policy", "all"]
++        },
++        "actor": {
++          "default": "POLICY:repository",
++          "type": "string",
++          "pattern": "^POLICY:[A-Za-z0-9][A-Za-z0-9._-]*$"
++        },
++        "allow_operations": {
++          "default": [],
++          "type": "array",
++          "items": {
++            "type": "string",
++            "minLength": 1
++          }
++        },
++        "deny_operations": {
++          "default": [],
++          "type": "array",
++          "items": {
++            "type": "string",
++            "minLength": 1
++          }
++        },
++        "ttl_minutes": {
++          "default": 15,
++          "type": "integer",
++          "minimum": 1,
++          "maximum": 60
++        }
++      },
++      "additionalProperties": false
++    },
+     "close_commit": {
+       "default": {
+         "direct_dirty_policy": "allow_other_task_readmes"
+diff --git a/packages/core/schemas/workflow.schema.json b/packages/core/schemas/workflow.schema.json
+index 0157af102..419e33950 100644
+--- a/packages/core/schemas/workflow.schema.json
++++ b/packages/core/schemas/workflow.schema.json
+@@ -81,6 +81,44 @@
+             "minLength": 1
+           }
+         },
++        "authority": {
++          "type": "object",
++          "properties": {
++            "mode": {
++              "default": "manual",
++              "type": "string",
++              "enum": ["manual", "policy", "all"]
++            },
++            "actor": {
++              "default": "POLICY:repository",
++              "type": "string",
++              "pattern": "^POLICY:[A-Za-z0-9][A-Za-z0-9._-]*$"
++            },
++            "allow_operations": {
++              "default": [],
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "deny_operations": {
++              "default": [],
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "ttl_minutes": {
++              "default": 15,
++              "type": "integer",
++              "minimum": 1,
++              "maximum": 60
++            }
++          },
++          "additionalProperties": false
++        },
+         "workspace": {
+           "type": "object",
+           "properties": {
+@@ -1003,6 +1041,44 @@
+           "required": ["require_plan", "require_verify", "require_network"],
+           "additionalProperties": {}
+         },
++        "authority": {
++          "type": "object",
++          "properties": {
++            "mode": {
++              "default": "manual",
++              "type": "string",
++              "enum": ["manual", "policy", "all"]
++            },
++            "actor": {
++              "default": "POLICY:repository",
++              "type": "string",
++              "pattern": "^POLICY:[A-Za-z0-9][A-Za-z0-9._-]*$"
++            },
++            "allow_operations": {
++              "default": [],
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "deny_operations": {
++              "default": [],
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "ttl_minutes": {
++              "default": 15,
++              "type": "integer",
++              "minimum": 1,
++              "maximum": 60
++            }
++          },
++          "additionalProperties": false
++        },
+         "workspace": {
+           "type": "object",
+           "properties": {
+diff --git a/packages/core/src/config/config.test.ts b/packages/core/src/config/config.test.ts
+index b2c77d761..22bff4bc6 100644
+--- a/packages/core/src/config/config.test.ts
++++ b/packages/core/src/config/config.test.ts
+@@ -55,6 +55,50 @@ describe("config", () => {
+     });
+   });
+ 
++  it("defaults repository side-effect authority to manual", () => {
++    expect(defaultConfig().authority).toEqual({
++      mode: "manual",
++      actor: "POLICY:repository",
++      allow_operations: [],
++      deny_operations: [],
++      ttl_minutes: 15,
++    });
++  });
++
++  it("validates explicit policy and all authority modes", () => {
++    const policy = makeConfigRecord();
++    policy.authority = {
++      mode: "policy",
++      actor: "POLICY:trusted-ci",
++      allow_operations: ["pr.open", "pr.head.publish"],
++      deny_operations: ["integration.enqueue"],
++      ttl_minutes: 5,
++    };
++    expect(validateConfig(policy).authority).toEqual(policy.authority);
++
++    const all = makeConfigRecord();
++    all.authority = {
++      mode: "all",
++      actor: "POLICY:yolo",
++      allow_operations: [],
++      deny_operations: [],
++      ttl_minutes: 15,
++    };
++    expect(validateConfig(all).authority.mode).toBe("all");
++  });
++
++  it("rejects authority actors that could impersonate a user", () => {
++    const raw = makeConfigRecord();
++    raw.authority = {
++      mode: "all",
++      actor: "USER",
++      allow_operations: [],
++      deny_operations: [],
++      ttl_minutes: 15,
++    };
++    expect(() => validateConfig(raw)).toThrow(/POLICY/);
++  });
++
+   it("spec example config validates at runtime", async () => {
+     const exampleUrl = new URL("../../../spec/examples/config.json", import.meta.url);
+     const text = await readFile(fileURLToPath(exampleUrl), "utf8");
+diff --git a/packages/core/src/config/config.ts b/packages/core/src/config/config.ts
+index cc558db58..11b460561 100644
+--- a/packages/core/src/config/config.ts
++++ b/packages/core/src/config/config.ts
+@@ -16,6 +16,7 @@ export {
+ export type WorkflowMode = AgentplaneConfig["workflow_mode"];
+ export type StatusCommitPolicy = AgentplaneConfig["status_commit_policy"];
+ export type CommitAutomation = AgentplaneConfig["commit_automation"];
++export type SideEffectAuthorityConfig = AgentplaneConfig["authority"];
+ export type ExecutionProfile = AgentplaneConfig["execution"]["profile"];
+ export type ReasoningEffort = AgentplaneConfig["execution"]["reasoning_effort"];
+ export type TextVerbosity = AgentplaneConfig["execution"]["text_verbosity"];
+diff --git a/packages/core/src/config/index.ts b/packages/core/src/config/index.ts
+index b84ccffec..e2a182f04 100644
+--- a/packages/core/src/config/index.ts
++++ b/packages/core/src/config/index.ts
+@@ -10,6 +10,7 @@ export {
+   type ExecutionProfile,
+   type LoadedConfig,
+   type ReasoningEffort,
++  type SideEffectAuthorityConfig,
+   type TextVerbosity,
+   type RunnerAdapterId,
+   type RunnerCustomConfig,
+diff --git a/packages/core/src/config/schema.impl.ts b/packages/core/src/config/schema.impl.ts
+index 5c6016568..05a77fbea 100644
+--- a/packages/core/src/config/schema.impl.ts
++++ b/packages/core/src/config/schema.impl.ts
+@@ -126,6 +126,39 @@ const EVALUATOR_SKEPTICISM_LEVELS = ["standard", "strict", "paranoid"] as const;
+ 
+ const ARTIFACTS_LANGUAGE = z.enum(["any", "en"]).default("any");
+ 
++const SIDE_EFFECT_AUTHORITY_DEFAULTS = {
++  mode: "manual" as const,
++  actor: "POLICY:repository",
++  allow_operations: [] as string[],
++  deny_operations: [] as string[],
++  ttl_minutes: 15,
++};
++
++const SIDE_EFFECT_AUTHORITY_SCHEMA = z
++  .object({
++    mode: z.enum(["manual", "policy", "all"]).default(SIDE_EFFECT_AUTHORITY_DEFAULTS.mode),
++    actor: z
++      .string()
++      .regex(/^POLICY:[A-Za-z0-9][A-Za-z0-9._-]*$/u, {
++        message: "Authority actor must be a POLICY:<id> identity and cannot impersonate USER.",
++      })
++      .default(SIDE_EFFECT_AUTHORITY_DEFAULTS.actor),
++    allow_operations: nonEmptyStringArray(SIDE_EFFECT_AUTHORITY_DEFAULTS.allow_operations),
++    deny_operations: nonEmptyStringArray(SIDE_EFFECT_AUTHORITY_DEFAULTS.deny_operations),
++    ttl_minutes: z
++      .number()
++      .int()
++      .min(1)
++      .max(60)
++      .default(SIDE_EFFECT_AUTHORITY_DEFAULTS.ttl_minutes),
++  })
++  .strict()
++  .default({
++    ...SIDE_EFFECT_AUTHORITY_DEFAULTS,
++    allow_operations: [...SIDE_EFFECT_AUTHORITY_DEFAULTS.allow_operations],
++    deny_operations: [...SIDE_EFFECT_AUTHORITY_DEFAULTS.deny_operations],
++  });
++
+ const COMMENT_POLICY_SCHEMA = z
+   .object({
+     prefix: nonEmptyString(),
+@@ -203,6 +236,7 @@ export const AgentplaneConfigSchema = z
+     status_commit_policy: z.enum(["off", "warn", "confirm"]).default("warn"),
+     commit_automation: z.enum(["manual", "finish_only"]).default("manual"),
+     finish_auto_status_commit: z.boolean().default(false),
++    authority: SIDE_EFFECT_AUTHORITY_SCHEMA,
+     close_commit: z
+       .object({
+         direct_dirty_policy: z
+diff --git a/packages/core/src/config/workflow-contract.ts b/packages/core/src/config/workflow-contract.ts
+index a8990c9ee..8adb556fd 100644
+--- a/packages/core/src/config/workflow-contract.ts
++++ b/packages/core/src/config/workflow-contract.ts
+@@ -103,6 +103,7 @@ const WORKFLOW_OBSERVABILITY_SCHEMA = z
+   .passthrough();
+ 
+ const WORKFLOW_OPTIONAL_ROOT_SHAPE = {
++  authority: configShape.authority.unwrap().optional(),
+   workspace: WORKFLOW_WORKSPACE_SCHEMA.optional(),
+   paths: configShape.paths.unwrap().optional(),
+   tasks: WORKFLOW_TASKS_SCHEMA.optional(),
+diff --git a/packages/core/src/config/workflow-file.ts b/packages/core/src/config/workflow-file.ts
+index aeab832aa..4f2ab91eb 100644
+--- a/packages/core/src/config/workflow-file.ts
++++ b/packages/core/src/config/workflow-file.ts
+@@ -61,6 +61,7 @@ export function workflowFrontMatterToConfigRaw(
+   const workspace = cloneRecord(normalized.workspace);
+   const tasks = cloneRecord(normalized.tasks);
+   const raw: Record<string, unknown> = { workflow_mode: workflow.mode };
++  if (normalized.authority !== undefined) raw.authority = normalized.authority;
+   for (const key of [
+     "status_commit_policy",
+     "commit_automation",
+@@ -175,6 +176,7 @@ export function configRawToWorkflowFrontMatter(
+       ...cloneRecord(base.approvals),
+       ...cloneRecord(agents.approvals),
+     },
++    authority: config.authority ?? base.authority,
+     workspace: {
+       ...baseWorkspace,
+       agents_dir: paths.agents_dir ?? baseWorkspace.agents_dir ?? ".agentplane/agents",
+diff --git a/packages/spec/schemas/config.schema.json b/packages/spec/schemas/config.schema.json
+index 86a1e9cef..738fbe071 100644
+--- a/packages/spec/schemas/config.schema.json
++++ b/packages/spec/schemas/config.schema.json
+@@ -28,6 +28,51 @@
+       "default": false,
+       "type": "boolean"
+     },
++    "authority": {
++      "default": {
++        "mode": "manual",
++        "actor": "POLICY:repository",
++        "allow_operations": [],
++        "deny_operations": [],
++        "ttl_minutes": 15
++      },
++      "type": "object",
++      "properties": {
++        "mode": {
++          "default": "manual",
++          "type": "string",
++          "enum": ["manual", "policy", "all"]
++        },
++        "actor": {
++          "default": "POLICY:repository",
++          "type": "string",
++          "pattern": "^POLICY:[A-Za-z0-9][A-Za-z0-9._-]*$"
++        },
++        "allow_operations": {
++          "default": [],
++          "type": "array",
++          "items": {
++            "type": "string",
++            "minLength": 1
++          }
++        },
++        "deny_operations": {
++          "default": [],
++          "type": "array",
++          "items": {
++            "type": "string",
++            "minLength": 1
++          }
++        },
++        "ttl_minutes": {
++          "default": 15,
++          "type": "integer",
++          "minimum": 1,
++          "maximum": 60
++        }
++      },
++      "additionalProperties": false
++    },
+     "close_commit": {
+       "default": {
+         "direct_dirty_policy": "allow_other_task_readmes"
+diff --git a/packages/spec/schemas/workflow.schema.json b/packages/spec/schemas/workflow.schema.json
+index 0157af102..419e33950 100644
+--- a/packages/spec/schemas/workflow.schema.json
++++ b/packages/spec/schemas/workflow.schema.json
+@@ -81,6 +81,44 @@
+             "minLength": 1
+           }
+         },
++        "authority": {
++          "type": "object",
++          "properties": {
++            "mode": {
++              "default": "manual",
++              "type": "string",
++              "enum": ["manual", "policy", "all"]
++            },
++            "actor": {
++              "default": "POLICY:repository",
++              "type": "string",
++              "pattern": "^POLICY:[A-Za-z0-9][A-Za-z0-9._-]*$"
++            },
++            "allow_operations": {
++              "default": [],
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "deny_operations": {
++              "default": [],
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "ttl_minutes": {
++              "default": 15,
++              "type": "integer",
++              "minimum": 1,
++              "maximum": 60
++            }
++          },
++          "additionalProperties": false
++        },
+         "workspace": {
+           "type": "object",
+           "properties": {
+@@ -1003,6 +1041,44 @@
+           "required": ["require_plan", "require_verify", "require_network"],
+           "additionalProperties": {}
+         },
++        "authority": {
++          "type": "object",
++          "properties": {
++            "mode": {
++              "default": "manual",
++              "type": "string",
++              "enum": ["manual", "policy", "all"]
++            },
++            "actor": {
++              "default": "POLICY:repository",
++              "type": "string",
++              "pattern": "^POLICY:[A-Za-z0-9][A-Za-z0-9._-]*$"
++            },
++            "allow_operations": {
++              "default": [],
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "deny_operations": {
++              "default": [],
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "ttl_minutes": {
++              "default": 15,
++              "type": "integer",
++              "minimum": 1,
++              "maximum": 60
++            }
++          },
++          "additionalProperties": false
++        },
+         "workspace": {
+           "type": "object",
+           "properties": {
+diff --git a/schemas/config.schema.json b/schemas/config.schema.json
+index 86a1e9cef..738fbe071 100644
+--- a/schemas/config.schema.json
++++ b/schemas/config.schema.json
+@@ -28,6 +28,51 @@
+       "default": false,
+       "type": "boolean"
+     },
++    "authority": {
++      "default": {
++        "mode": "manual",
++        "actor": "POLICY:repository",
++        "allow_operations": [],
++        "deny_operations": [],
++        "ttl_minutes": 15
++      },
++      "type": "object",
++      "properties": {
++        "mode": {
++          "default": "manual",
++          "type": "string",
++          "enum": ["manual", "policy", "all"]
++        },
++        "actor": {
++          "default": "POLICY:repository",
++          "type": "string",
++          "pattern": "^POLICY:[A-Za-z0-9][A-Za-z0-9._-]*$"
++        },
++        "allow_operations": {
++          "default": [],
++          "type": "array",
++          "items": {
++            "type": "string",
++            "minLength": 1
++          }
++        },
++        "deny_operations": {
++          "default": [],
++          "type": "array",
++          "items": {
++            "type": "string",
++            "minLength": 1
++          }
++        },
++        "ttl_minutes": {
++          "default": 15,
++          "type": "integer",
++          "minimum": 1,
++          "maximum": 60
++        }
++      },
++      "additionalProperties": false
++    },
+     "close_commit": {
+       "default": {
+         "direct_dirty_policy": "allow_other_task_readmes"
+diff --git a/schemas/workflow.schema.json b/schemas/workflow.schema.json
+index 0157af102..419e33950 100644
+--- a/schemas/workflow.schema.json
++++ b/schemas/workflow.schema.json
+@@ -81,6 +81,44 @@
+             "minLength": 1
+           }
+         },
++        "authority": {
++          "type": "object",
++          "properties": {
++            "mode": {
++              "default": "manual",
++              "type": "string",
++              "enum": ["manual", "policy", "all"]
++            },
++            "actor": {
++              "default": "POLICY:repository",
++              "type": "string",
++              "pattern": "^POLICY:[A-Za-z0-9][A-Za-z0-9._-]*$"
++            },
++            "allow_operations": {
++              "default": [],
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "deny_operations": {
++              "default": [],
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "ttl_minutes": {
++              "default": 15,
++              "type": "integer",
++              "minimum": 1,
++              "maximum": 60
++            }
++          },
++          "additionalProperties": false
++        },
+         "workspace": {
+           "type": "object",
+           "properties": {
+@@ -1003,6 +1041,44 @@
+           "required": ["require_plan", "require_verify", "require_network"],
+           "additionalProperties": {}
+         },
++        "authority": {
++          "type": "object",
++          "properties": {
++            "mode": {
++              "default": "manual",
++              "type": "string",
++              "enum": ["manual", "policy", "all"]
++            },
++            "actor": {
++              "default": "POLICY:repository",
++              "type": "string",
++              "pattern": "^POLICY:[A-Za-z0-9][A-Za-z0-9._-]*$"
++            },
++            "allow_operations": {
++              "default": [],
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "deny_operations": {
++              "default": [],
++              "type": "array",
++              "items": {
++                "type": "string",
++                "minLength": 1
++              }
++            },
++            "ttl_minutes": {
++              "default": 15,
++              "type": "integer",
++              "minimum": 1,
++              "maximum": 60
++            }
++          },
++          "additionalProperties": false
++        },
+         "workspace": {
+           "type": "object",
+           "properties": {
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 6c40445a3..f9ef077b4 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -13,9 +13,9 @@
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
+       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
+-      "workflow_schema": "4714ecc43f394109cd5807ec5e544716abe7c67c20ea18554f8f2b559bf97b21"
++      "workflow_schema": "e234ac9d25db50340f46a3fcc01c8f5443f85bee38ce8ec6243a5e525046aa6f"
+     },
+-    "surface_sha256": "eb329963bb076054c7c8f1340ba5eb9a086d399e0b1d0f8dd09d20322ae5ee1a"
++    "surface_sha256": "08bbdbf9131f3f264d91ef719da62795871b4a3e00acb50653ea252125d51802"
+   },
+   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
+   "contract_artifacts": {
+@@ -2176,7 +2176,7 @@
+       "section": "workflow_schema",
+       "source_tasks": ["202607221846-4VB97J", "202608112213-NWJCBW"],
+       "summary": "Replaces the v1-only schema with a v1-or-v2 input union, retaining the finite typed legacy v1 sections, requiring explicit v2 approval flags, preserving the public schema identity, and canonicalizing both versions on the standard execution profile while accepting legacy profile aliases during migration.",
+-      "to_sha256": "4714ecc43f394109cd5807ec5e544716abe7c67c20ea18554f8f2b559bf97b21"
++      "to_sha256": "e234ac9d25db50340f46a3fcc01c8f5443f85bee38ce8ec6243a5e525046aa6f"
+     },
+     {
+       "classification": "behavior_preserving_hardening",
+@@ -2295,7 +2295,7 @@
+     "from_version": "0.6.24",
+     "section": "package_manifests",
+     "source_task": "202608082119-P6SHBN",
+-    "surface_sha256": "aa230065940bbeca341260cc7bfd453df7cae6b29f758f71c9d0f9286139268f",
++    "surface_sha256": "ad7fa7c9e4894234a38483791dfc762a7e66fbf384f5c1517910e90881a66132",
+     "to_sha256": "ba86d65ec1fe45a4d31d19c537a863e802e8e7a7bbdb0d1b0a301d4c3e82b3ab",
+     "to_version": "0.7.6"
+   },
