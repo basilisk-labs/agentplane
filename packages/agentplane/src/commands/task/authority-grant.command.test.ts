@@ -2,15 +2,17 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { parseCommandArgv } from "../../cli/spec/parse.js";
 import type { CommandCtx } from "../../cli/spec/spec.js";
+import type * as AgentWorkOrderModule from "../../runner/usecases/agent-work-order.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 const mocks = vi.hoisted(() => ({
-  buildTaskRouteDecision: vi.fn(),
+  prepareAgentWorkOrder: vi.fn(),
 }));
 
-vi.mock("../shared/route-decision.js", () => ({
-  buildTaskRouteDecision: mocks.buildTaskRouteDecision,
-}));
+vi.mock("../../runner/usecases/agent-work-order.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof AgentWorkOrderModule>();
+  return { ...actual, prepareAgentWorkOrder: mocks.prepareAgentWorkOrder };
+});
 
 import {
   makeRunTaskAuthorityGrantHandler,
@@ -20,7 +22,7 @@ import {
 describe("task authority grant", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.buildTaskRouteDecision.mockRejectedValue(new Error("stop after context selection"));
+    mocks.prepareAgentWorkOrder.mockRejectedValue(new Error("stop after context selection"));
   });
 
   it("preserves the explicit hosted-route context emitted by task next-action", () => {
@@ -74,13 +76,54 @@ describe("task authority grant", () => {
 
       expect(getLocalContext).toHaveBeenCalledTimes(testCase.remote ? 0 : 1);
       expect(getRemoteContext).toHaveBeenCalledTimes(testCase.remote ? 1 : 0);
+      expect(mocks.prepareAgentWorkOrder).toHaveBeenCalledWith({
+        command_ctx: commandContext,
+        cwd: "/repo",
+        root_override: null,
+        task_id: "T-1",
+        ...(testCase.remote ? { include_remote: true } : {}),
+      });
     },
   );
 
+  it("rebuilds authority from the same canonical WorkOrder route as task next-action", async () => {
+    const commandContext = {} as CommandContext;
+    mocks.prepareAgentWorkOrder.mockResolvedValue({
+      status: "prepared",
+      value: {
+        route_decision: {
+          workflowStep: { kind: "cli_operation", id: "task.pre_merge_close" },
+        },
+      },
+    });
+    const run = makeRunTaskAuthorityGrantHandler({
+      getLocalContext: vi.fn(() => Promise.resolve(commandContext)),
+      getRemoteContext: vi.fn(() => Promise.resolve(commandContext)),
+    });
+
+    await expect(
+      run({ cwd: "/repo", rootOverride: null } as CommandCtx, {
+        taskId: "T-1",
+        operationId: "pr.open",
+        operationDigest: "sha256:operation",
+        stateFingerprintDigest: "sha256:fingerprint",
+        stateScopeDigest: "sha256:scope",
+        by: "USER",
+        ttlMinutes: 15,
+        remote: false,
+      }),
+    ).rejects.toThrow(/recomputed local route.*cli_operation:task\.pre_merge_close/su);
+  });
+
   it("explains hosted route drift when the requested authority boundary has already moved", async () => {
     const commandContext = {} as CommandContext;
-    mocks.buildTaskRouteDecision.mockResolvedValue({
-      workflowStep: { kind: "cli_operation", id: "task.pre_merge_close" },
+    mocks.prepareAgentWorkOrder.mockResolvedValue({
+      status: "prepared",
+      value: {
+        route_decision: {
+          workflowStep: { kind: "cli_operation", id: "task.pre_merge_close" },
+        },
+      },
     });
     const run = makeRunTaskAuthorityGrantHandler({
       getLocalContext: vi.fn(() => Promise.resolve(commandContext)),
