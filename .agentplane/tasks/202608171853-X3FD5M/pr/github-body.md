@@ -15,14 +15,8 @@ Recover the AgentPlane authority release after an unavailable GitHub protection 
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Hosted Core CI Compatibility baseline failed because the reviewed v0.7 compatibility candidate and
-ratchet did not include the signed approval-receipt CLI/schema delta; preserve the three scoped
-repair files and re-run verification.
-```
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
