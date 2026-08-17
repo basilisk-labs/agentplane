@@ -16,13 +16,13 @@ Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-17T09:29:36.876Z
+- Updated: 2026-08-17T10:38:22.317Z
 - Branch: task/202608170928-8Y24PK/upgrade-the-hermes-agentplane-bridge-protocol-ac
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

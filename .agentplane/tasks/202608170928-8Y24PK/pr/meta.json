@@ -3,11 +3,14 @@
   "branch": "task/202608170928-8Y24PK/upgrade-the-hermes-agentplane-bridge-protocol-ac",
   "created_at": "2026-08-17T09:29:36.876Z",
   "diffstat_sha256": "sha256:e77df7b394fe85ce60a7b34df3cbae482d1cdbbfb1669baf1199db4156ea35e5",
-  "last_verified_at": "2026-08-17T09:41:21.911Z",
+  "last_verified_at": "2026-08-17T10:39:21.486Z",
   "last_verified_diffstat_sha256": "sha256:e77df7b394fe85ce60a7b34df3cbae482d1cdbbfb1669baf1199db4156ea35e5",
+  "pr_number": 4837,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4837",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202608170928-8Y24PK",
-  "updated_at": "2026-08-17T09:29:36.876Z",
+  "updated_at": "2026-08-17T10:38:22.317Z",
   "verify": {
     "status": "pass"
   }
