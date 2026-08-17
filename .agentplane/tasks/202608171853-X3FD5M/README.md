@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -37,36 +37,35 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-17T19:57:54.943Z"
+  updated_at: "2026-08-17T20:21:30.689Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 8 typed finding(s)."
-  evaluated_sha: "03b46b67e67b48caa0d1409d9afb18cd29c08f98"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "807dc2b6f39caf505efcc1a2cceb8b525fe15f54"
   blueprint_digest: "da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8"
   evidence_refs:
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-195650566-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-195650566-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/378bd3dc79aefb1303b015296c66a7a1d0597c19f2b6a9486e28dc0d4f2284b5.md"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-195650566-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-195650566-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-195650566-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-202026438-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-202026438-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/5d84c2e5611c8ee66e730a8c98c44d563135012c1949e41ee8b51d428fd32fb5.md"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-202026438-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-202026438-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-202026438-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608171853-X3FD5M/README.md"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/e85d7eb326984a00e40c8c99e6560b5f701066c97aedbca6427e15836c0c8744.patch"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/e9e31d2efa649e6f0d266de1b94713942425971a911088ecef5607b037e22d98.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/verification/20260817195639103-8dbdf9e6dc29c2aa.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/fed4d4c88a63777d39702a1579f8d4f864163a7ac8e324ed26d6603237a994b7.patch"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/91ff8039d98cb7e96c269d2bc0519b6965c63034ff9a8b35fbe1daf3bb22c8b9.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/verification/20260817202008660-d8ea5999b7d80ab8.json"
     - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/d23e2ba91c6f8ade44113f76fba3d404cfff656145d05f891c1f8b3d8fd81b37.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The packet contract now carries an exact signed-receipt request and receipt-backed argv for plan and side-effect approval; provider merge remains explicit with argv=null and cannot be converted into a generic side-effect grant."
-    - "Receipt validation is bound to issuer trust, Ed25519 signature, task and authority reference, state fingerprint, operation digest, scope digest, TTL, expiry, and single-use evidence digest. Negative tests cover the required forged, untrusted, stale, wrong-scope, expired, excessive-TTL, and replay cases."
-    - "GitHub protection lookup distinguishes confirmed unprotected state from provider unavailability and raises canonical E_HANDOFF on unavailable state, preventing accidental local integration."
-    - "Supervisor replacement refresh and legacy stale-failure recovery have dedicated regression tests, and bunx declarations are safely normalized to bun x with downstream process-contract coverage."
-    - "Published config and workflow schemas are synchronized, and the Hermes recipe defines authenticated dialogue capture, bridge signing, exact argv execution, fresh-packet replay behavior, audit identity, and the policy/all boundary."
-    - "Supervisor verification is recorded for implementation 03b46b67e, the full fast suite reports 565 passing files and 4161 passing tests with one expected skip, and an independent focused rerun passed 88 tests across six changed security and recovery surfaces."
-    - "Residual risk: End-to-end behavior depends on the follow-on Hermes plugin consuming operator_action.approval_receipt exactly and requesting a fresh packet after every accepted receipt."
-    - "Residual risk: Provider merge remains intentionally outside the generic receipt-backed side-effect command and requires a dedicated operator/provider executor implementation."
+    - "The reviewed candidate contains both new approval-receipt options, the task plan approve --by required-to-optional mutation, updated CLI and workflow digests, and exact source-task provenance."
+    - "The checker independently pins every new descriptor, option, mutation, digest, and provenance entry; unreviewed future surface drift still fails closed."
+    - "The candidate generator refreshes only computed CLI evidence while preserving the manually reviewed addition_sources mapping, so generation does not silently approve provenance."
+    - "The critical reproducibility test was updated consistently to 851 options, the new candidate hashes, and source-task inventory."
+    - "Observed verification is complete: compatibility candidate and ratchet pass, focused suites pass, typecheck and policy routing pass, and the full fast suite reports 565 files and 4161 passing tests with one expected skip."
+    - "Residual risk: The hosted Core CI run must still confirm the refreshed candidate from the published head before integration."
+    - "Residual risk: Hermes must consume the signed approval-receipt contract exactly in the follow-on plugin task; this AgentPlane change only defines and verifies the receiving boundary."
 token_usage:
   agent_runs: 6
   input_tokens: null
@@ -480,7 +479,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-17T20:20:10.003Z"
+doc_updated_at: "2026-08-17T20:21:30.718Z"
 doc_updated_by: "SUPERVISOR"
 description: "Recover the AgentPlane authority release after an unavailable GitHub protection lookup selected a local merge; fail closed on unavailable provider protection, repair supervisor replay/concurrency regressions, and define a verifiable Hermes-to-AgentPlane user approval receipt so the user approves in dialogue while the integration layer executes exact state-bound commands. Preserve mandatory primary plan approval and operator-owned provider merge semantics."
 sections:
