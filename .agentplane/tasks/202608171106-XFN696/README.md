@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 50
+revision: 51
 origin:
   system: "manual"
 depends_on: []
@@ -36,33 +36,34 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-17T17:16:25.949Z"
+  updated_at: "2026-08-17T17:31:53.061Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "ce78a4544e1d4ed3f719c3cdb922ddc791670509"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "d55e291c97f1d16ad3b48b3c1acbd503f12b62cf"
   blueprint_digest: "b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7"
   evidence_refs:
-    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-171543646-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-171543646-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/db677a346ea9ceb2ef724ea9236b9de63301cb3dcecf4ac3fef3576171609935.md"
-    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-171543646-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-171543646-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-171543646-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-172950405-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-172950405-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/2853af1bff0d17a6538a89bb45b00f6ef98912035b4c8d1afab2257a6779472e.md"
+    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-172950405-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-172950405-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608171106-XFN696/quality/20260817-172950405-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608171106-XFN696/README.md"
-    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/a131898b31185883d2056d74fac822a8903cddcf218966eb225d7c756994084b.patch"
-    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/6aa7edd9f39aac831cce3ec33742b75d4c2d8e286c70eabd36be0531ce2ddfc9.json"
-    - ".agentplane/tasks/202608171106-XFN696/verification/20260817171533187-65f1fda8732a8458.json"
+    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/58fef494751aa1d7dc81125e679940c764c904afd5af6d6573c1aed92767ab69.patch"
+    - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/0097eb29c0cca81c0a6df74ea52541ea09d8c203bd685ce4891360fbba1f7712.json"
+    - ".agentplane/tasks/202608171106-XFN696/verification/20260817172934120-159d232264f72946.json"
     - ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/9ec02e52dfa2636d647519d27f790022fdb53b42534b30483571b7bb848e71d0.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The change preserves the existing remote-validation path and does not authorize network access during a local route.remote.refresh grant."
-    - "The command session still requires route.local before independent context preparation, while the scoped proxy denies backend and Git mutations during validation."
-    - "Write context remains lazy and unreachable on stale route, digest, fingerprint, or scope mismatch."
-    - "Supervisor verification is ok for implementation commit ce78a4544e1d4ed3f719c3cdb922ddc791670509; full-fast CI completed 5/5 groups with ok=true."
-    - "Residual risk: Repository authority remains manual until an authority block is configured; installing the new binary alone does not change that default."
+    - "The one-line assessment change supplies recordedInput.environment.runtime when recomputing the current verification identity, separating execution evidence from the observer process without weakening the recorded digest."
+    - "The regression test records a synthetic Node 999 and Bun 9 environment and proves that assessment from a different CLI runtime remains verification_current."
+    - "Existing verification-input coverage still proves explicit runtime-identity changes produce verification_environment_changed and dependency or verification-tool changes produce verification_context_changed."
+    - "Supervisor evidence records verification state ok for implementation d55e291c97f1d16ad3b48b3c1acbd503f12b62cf; lint, typecheck, targeted tests, routing checks, and the prior full regression evidence are present."
+    - "No plan-approval or provider-merge ownership boundary is changed by this recovery fix; the repository remains manual until authority configuration is deliberately added after release installation."
+    - "Residual risk: The repository authority default remains manual until a separately approved configuration task enables policy or all mode with the required denylist."
 token_usage:
   agent_runs: 14
   input_tokens: null
@@ -608,7 +609,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-17T17:29:38.634Z"
+doc_updated_at: "2026-08-17T17:31:53.091Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement a repository-configured AgentPlane authority provider with manual, policy allowlist, and explicit all/YOLO modes. Auto-grants must retain operation/state/scope digests, short TTL, durable audit, and a POLICY actor; default behavior remains manual. Fix task authority grant remote/local route drift so stale hosted authority requests return an actionable fresh-route diagnostic instead of incorrectly reporting that no grant is required. Keep model agents unable to impersonate USER and preserve human gates through an explicit deny list."
 sections:
