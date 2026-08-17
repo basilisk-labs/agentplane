@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The clean packaged scenario reached fixture initialization and then failed with ENOENT for .agentplane/config.json.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/c8ae07741aaf4336340061d47b88855bf457d093e407c78bde6efd3980a459a4.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "AgentPlane loadConfig gives canonical WORKFLOW.md precedence and current init intentionally does not create legacy config.json, so the trusted issuer must be added to WORKFLOW frontmatter.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/c8ae07741aaf4336340061d47b88855bf457d093e407c78bde6efd3980a459a4.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The repair should remain fixture setup state and must not weaken the harness prohibition on reading internal lifecycle evidence.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/c8ae07741aaf4336340061d47b88855bf457d093e407c78bde6efd3980a459a4.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A clean execution of node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs must pass after configuring the signer in canonical WORKFLOW.md."
+  ],
+  "hidden_assumptions": [
+    "The initial implementation assumed init still emitted legacy .agentplane/config.json."
+  ],
+  "recovery_context": "Rework required. The signer and exact request-bound receipt construction are correct, but the fixture trust bootstrap targets legacy .agentplane/config.json while current init emits canonical .agentplane/WORKFLOW.md only."
+}
