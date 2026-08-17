@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentplane.dev/schemas/hermes-plugin-protocol-v2.json",
+  "title": "AgentPlane Hermes plugin protocol v2 capability",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "protocol", "commands", "native_worker_lane_api"],
+  "properties": {
+    "schema": { "const": "agentplane.hermes.plugin-capabilities.v1" },
+    "protocol": { "const": "agentplane.hermes.plugin.v2" },
+    "native_worker_lane_api": { "const": true },
+    "commands": {
+      "type": "array",
+      "minItems": 3,
+      "uniqueItems": true,
+      "items": { "enum": ["agentplane doctor", "agentplane run", "agentplane supervise"] },
+      "allOf": [
+        { "contains": { "const": "agentplane doctor" } },
+        { "contains": { "const": "agentplane run" } },
+        { "contains": { "const": "agentplane supervise" } }
+      ]
+    }
+  }
+}

@@ -20,14 +20,9 @@ Hermes owns queueing, assignees, claims, retries, crash detection, comments, das
 human handoff. Agentplane owns task README/frontmatter, plan approval, route decisions, worktree and
 branch_pr boundaries, verification, PR artifacts, integration, terminal semantics, and ACR evidence.
 
-This is a design target, not a turnkey Hermes extension point. Hermes documents a worker-lane
-contract and a plugin-provided spawn path for non-Hermes lanes, but an Agentplane integration must
-ship the missing glue: lane registration, process spawning, lifecycle API calls, workspace mapping,
-auth/policy handling, idempotency, and reconcile/doctor behavior.
-
-Keep the first implementation in this repository, not in a separate repository. The Agentplane
-side and the reference Hermes spawn adapter should version together until the Hermes worker-lane
-API is stable enough to publish a standalone package.
+Protocol v2 uses Hermes' native worker-lane API. The executable plugin is released separately while
+the versioned capability and terminal-attestation contracts remain pinned under
+`integrations/hermes-agentplane-plugin/` in this repository.
 
 ## Why the adapter owns completion
 
@@ -38,14 +33,10 @@ Agents should take tasks to completion, but completion has two levels:
 | Root task card   | The Agentplane task reached terminal engineering evidence. |
 | Phase/run card   | One dispatch phase or worker attempt completed.            |
 
-The root card may complete only after the Agentplane terminal gate passes:
-
-1. Agentplane task status is `DONE`.
-2. Required verification is recorded.
-3. `branch_pr` integration and finish evidence are complete when the repo uses `branch_pr`.
-4. ACR validation passes when the workflow requires ACR evidence.
-5. The Hermes run id is still current.
-6. The final Hermes comment contains evidence pointers, not raw secrets or logs.
+The root card may complete only when the canonical Agentplane route returns a
+`terminal/done` workflow step. That route-owned decision already incorporates the applicable
+verification, provider, integration, finish, ACR, and cleanup gates. The plugin must also prove that
+the Hermes run id and claim are still current before posting the attestation.
 
 Hermes may block or complete a dispatch run. Hermes must not directly complete an Agentplane task.
 
@@ -76,17 +67,16 @@ The repo-local Agentplane side exposes a small integration surface:
 
 ```bash
 agentplane hermes enqueue <task-id> --json
-agentplane hermes supervise <task-id> --execute-step --json
+agentplane hermes supervise <task-id> --json
 agentplane hermes reconcile [--task-id <task-id>] --json
 agentplane hermes doctor --json
 ```
 
 - `enqueue` renders the provider-safe card projection that a Hermes plugin should create
   idempotently.
-- `supervise` returns the next route-gated Agentplane action packet. With `--execute-step`, it can
-  execute one allowlisted Agentplane argv step, including the same-task
-  `agentplane task run <task-id>` launch step. It does not blindly execute raw shell text from a
-  route string.
+- `supervise` is a compatibility and diagnostic projection. The production plugin uses the compact
+  `task advance --agent-json` protocol directly, so role episodes and approval boundaries remain
+  identical to other external agents.
 - `reconcile` is read-only diagnostics for stale, duplicate, or false-complete projections.
 - `doctor` checks the local Agentplane side of the adapter contract.
 
@@ -100,25 +90,20 @@ assignee: agentplane-supervisor | agentplane-coder | agentplane-reviewer | agent
 spawn_fn(task, workspace, board) -> pid
 ```
 
-The spawn function should launch:
+The spawn function launches:
 
 ```bash
-hermes-agentplane-spawn \
-  --agentplane-task-id <agentplane-task-id> \
-  --repo <repo-root> \
-  --hermes-task-id <kanban-card-id> \
-  --board <board-id> \
-  --run-id <hermes-run-id> \
-  --workspace <workspace-root>
+hermes agentplane supervise \
+  --task-id <agentplane-task-id> \
+  --root <repo-root>
 ```
 
 The live plugin source of truth is
 [`basilisk-labs/agentplane-hermes-plugin`](https://github.com/basilisk-labs/agentplane-hermes-plugin).
-The repo-local `integrations/hermes-agentplane-plugin/` directory is documentation-only and must not
-ship a second dispatcher shim. The plugin is deliberately a thin native worker-lane adapter over
-`agentplane hermes supervise <task-id> --root <repo> --execute-step --json`; it does not write the
-Hermes database, publish PRs, merge branches, or infer Agentplane task completion from Hermes card
-status.
+The repo-local `integrations/hermes-agentplane-plugin/` directory contains the co-versioned protocol
+schema and registry example, not a second dispatcher. The plugin drives fresh Agentplane supervisor
+packets, while Hermes performs every LLM episode. It does not write the Hermes database, publish
+PRs, merge branches, or infer Agentplane completion from board status.
 
 For production, use a Hermes image with the first-class worker-lane registry:
 
@@ -126,11 +111,17 @@ For production, use a Hermes image with the first-class worker-lane registry:
 ctx.register_worker_lane(match="agentplane-*", spawn_fn=spawn_fn, profile_exists=True)
 ```
 
-The minimum image/runtime contract is: `/opt/hermes/bin` on `PATH`, plugin-aware dispatch in
+The minimum image/runtime contract is: Hermes on `PATH`, plugin-aware dispatch in
 gateway/CLI/dashboard paths, registered external lanes treated as spawnable assignees, supported
 Kanban lifecycle client calls for plugins, structured card metadata access, stale-run guards, an
 explicit Agentplane binary path, local plugin install support, and a dispatcher test that proves an
 `agentplane-*` assignee reaches the registered spawn function.
+
+The plugin passes an explicit environment allowlist rather than inheriting the parent environment.
+`AGENTPLANE_HERMES_ALLOWED_ROOTS` is mandatory and empty means deny. It also asserts
+`AGENTPLANE_HERMES_PLUGIN_PROTOCOL=agentplane.hermes.plugin.v2` and
+`AGENTPLANE_HERMES_NATIVE_WORKER_LANE_API=1`; `agentplane hermes doctor --json` fails closed when
+any installation capability is missing.
 
 ### Optional MCP wrapper
 
@@ -179,7 +170,7 @@ agent:
 ```text
 1. Read the Hermes root card.
 2. Resolve or create the Agentplane task id.
-3. Run `agentplane task advance <task-id> --agent-json`.
+3. Run `ap task advance <task-id> --agent-json`.
 4. When it returns an agent episode, dispatch only the supplied semantic objective and authority.
 5. Write the typed result to `exchange.result_path` and resume with the exact
    `exchange.resume_argv`; `exchange.return_invocation` is compatibility-only.
@@ -188,7 +179,8 @@ agent:
 7. Write a structured Hermes comment with run id, previous revision, new revision, and evidence
    pointers.
 8. Request a fresh packet.
-9. Complete the root card only after Agentplane returns terminal engineering evidence.
+9. Complete the root card only after Agentplane returns
+   `agentplane.hermes.terminal-attestation.v1` with `terminal_outcome=done`.
 ```
 
 Never execute a raw route string as shell. Use typed action fields and exact argv supplied by
@@ -232,8 +224,8 @@ not needed.
 - Do not expose arbitrary repository paths to a model-controlled MCP server.
 - Do not put secrets, raw logs, OAuth material, or full ACR payloads in Hermes comments or metadata.
 
-## Current scaffold
+## Protocol artifacts
 
-The initial Agentplane side is intentionally local and read-oriented. It establishes the command
-contract and machine-readable packets that a Hermes plugin can consume. The live Hermes plugin,
-Kanban API client, and board mutation path are follow-up implementation surfaces.
+The live executable is the external plugin. Agentplane keeps the capability schema, lane-registry
+example, doctor checks, route projection, and canonical terminal attestation in lockstep with the
+runner contract.

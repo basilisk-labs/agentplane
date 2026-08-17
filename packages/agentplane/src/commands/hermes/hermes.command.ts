@@ -18,6 +18,8 @@ import {
   HERMES_LIFECYCLE_ACTIONS,
   hermesCliCommand,
   hermesEnvSnapshot,
+  hermesPluginContractSnapshot,
+  inspectCommandAvailability,
   loadHermesStateSnapshot,
   loadLaneRegistry,
   prepareHermesRoute,
@@ -309,6 +311,17 @@ async function runHermesLifecycleCommand(
       message: `--body is required for Hermes lifecycle action: ${action}`,
     });
   }
+  if (
+    !parsed.dryRun &&
+    (!env.task_id || !env.run_id || !env.claim_lock_present || !env.workspace)
+  ) {
+    throw new CliError({
+      code: "E_USAGE",
+      message:
+        "Hermes lifecycle mutation requires the current native worker claim " +
+        "(HERMES_KANBAN_TASK, HERMES_KANBAN_RUN_ID, HERMES_KANBAN_CLAIM_LOCK, and HERMES_KANBAN_WORKSPACE).",
+    });
+  }
   const result = await runHermesLifecycle(action, {
     board: env.board,
     taskId: env.task_id,
@@ -354,8 +367,29 @@ export function makeRunHermesDoctorHandler(deps: {
         ? rawAgentplaneBin
         : currentAgentplaneCommand().command;
     const hermesBin = hermesCliCommand();
+    const [agentplaneAvailability, hermesAvailability] = await Promise.all([
+      inspectCommandAvailability(agentplaneBin),
+      inspectCommandAvailability(hermesBin),
+    ]);
+    const plugin = hermesPluginContractSnapshot();
+    const installationChecks = {
+      branch_pr_workflow: loadedConfig.config.workflow_mode === "branch_pr",
+      lane_registry_loaded: registry.loaded && registry.error === null,
+      agentplane_lane_registered: registry.agentplane_lanes.length > 0,
+      agentplane_binary_available: agentplaneAvailability.available,
+      hermes_binary_available: hermesAvailability.available,
+      plugin_protocol_v2: plugin.protocol_valid,
+      native_worker_lane_api: plugin.native_worker_lane_api,
+      allowed_roots_fail_closed: plugin.allowed_roots_fail_closed,
+    };
+    const installationReady = Object.values(installationChecks).every(Boolean);
+    const workerContextReady =
+      installationReady &&
+      Boolean(env.task_id && env.board && env.run_id && env.workspace && env.claim_lock_present);
     const payload = {
-      ok: registry.error === null,
+      ok: installationReady,
+      installation_ready: installationReady,
+      worker_context_ready: workerContextReady,
       repo: project.gitRoot,
       workflow_mode: loadedConfig.config.workflow_mode,
       recommended_workflow_for_multi_agent: "branch_pr",
@@ -365,17 +399,25 @@ export function makeRunHermesDoctorHandler(deps: {
         .filter(([key, value]) => key !== "claim_lock_present" && value === null)
         .map(([key]) => key),
       lane_registry: registry,
+      plugin_contract: plugin,
+      checks: installationChecks,
       binaries: {
         agentplane: agentplaneBin,
         agentplane_configured: Boolean(process.env.AGENTPLANE_BIN?.trim()),
+        agentplane_available: agentplaneAvailability.available,
+        agentplane_resolved_path: agentplaneAvailability.resolved_path,
         hermes: hermesBin,
         hermes_configured: Boolean(process.env.HERMES_BIN?.trim()),
+        hermes_available: hermesAvailability.available,
+        hermes_resolved_path: hermesAvailability.resolved_path,
       },
       lifecycle_client: {
         command: hermesBin,
         actions: [...HERMES_LIFECYCLE_ACTIONS],
       },
-      adapter_status: "agentplane_side_ready; hermes_plugin_required_for_live_board_mutation",
+      adapter_status: installationReady
+        ? "ready_for_agentplane_work_orders"
+        : "not_ready; inspect checks and plugin_contract",
     };
     if (parsed.json) {
       output.json(payload);
@@ -384,6 +426,8 @@ export function makeRunHermesDoctorHandler(deps: {
         { label: "repo", value: payload.repo },
         { label: "workflow_mode", value: payload.workflow_mode },
         { label: "branch_pr_ready", value: payload.branch_pr_ready },
+        { label: "installation_ready", value: payload.installation_ready },
+        { label: "worker_context_ready", value: payload.worker_context_ready },
         { label: "adapter_status", value: payload.adapter_status },
       ]);
     }
