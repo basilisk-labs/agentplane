@@ -19,8 +19,8 @@ Implement a repository-configured AgentPlane authority provider with manual, pol
 - Note:
 
 ```text
-Authority grant recomputes a different route fingerprint than task next-action for the same
-state-bound pr.open request.
+Implementation closeout must not treat the expected verification_recovery failure observation as a
+repository authority violation before replacement verification runs.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -34,7 +34,7 @@ state-bound pr.open request.
 ```text
  docs/recipes/hermes-agentplane.mdx                 |  30 ++++++
  docs/user/configuration.mdx                        |  48 +++++++++
- ...n-cli.core.task-advance-effect-recovery.test.ts |  67 +++++++++++++
+ ...n-cli.core.task-advance-effect-recovery.test.ts |  85 ++++++++++++++++
  ...i.core.task-advance.worktree-resolution.test.ts |   7 ++
  ...-cli.critical.agent-efficiency-baseline.test.ts |   4 +-
  .../shared/workflow-step-planning-checkout.test.ts |  33 +++++++
@@ -46,8 +46,10 @@ state-bound pr.open request.
  .../src/commands/task/branch-task-supervisor.ts    |  26 +++--
  .../src/commands/task/configured-authority.test.ts |  56 +++++++++++
  .../src/commands/task/configured-authority.ts      | 108 +++++++++++++++++++++
- .../external-agent-implementation-authority.ts     |   7 +-
- .../task/external-agent-supervisor-recovery.ts     |  99 +++++++++++++++++++
+ .../external-agent-implementation-authority.ts     |  16 ++-
+ .../task/external-agent-supervisor-recovery.ts     | 100 +++++++++++++++++++
+ .../src/runtime/task-routing/resolve.test.ts       |  36 +++++++
+ .../agentplane/src/runtime/task-routing/resolve.ts |   4 +-
  packages/core/schemas/config.schema.json           |  45 +++++++++
  packages/core/schemas/workflow.schema.json         |  76 +++++++++++++++
  packages/core/src/config/config.test.ts            |  44 +++++++++
@@ -61,7 +63,7 @@ state-bound pr.open request.
  schemas/config.schema.json                         |  45 +++++++++
  schemas/workflow.schema.json                       |  76 +++++++++++++++
  .../baselines/v0.7-compatibility-candidate.json    |   8 +-
- 29 files changed, 1062 insertions(+), 37 deletions(-)
+ 31 files changed, 1127 insertions(+), 40 deletions(-)
 ```
 
 </details>

@@ -52,6 +52,7 @@ export function requiresImplementationRecoveryReplacement(opts: {
 }): boolean {
   if (
     opts.exchange.purpose !== "implementation" &&
+    opts.exchange.purpose !== "implementation_rework" &&
     opts.exchange.purpose !== "task_worktree_resolution"
   ) {
     return false;

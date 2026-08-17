@@ -31,6 +31,7 @@ import {
   requiresImplementationRecoveryReplacement,
   requiresPlanningRecoveryReplacement,
 } from "../commands/task/external-agent-supervisor-recovery.js";
+import { blockingImplementationAuthorityViolations } from "../commands/task/external-agent-implementation-authority.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
 import { readRouteFingerprint } from "./run-cli.core.task-advance.testkit.js";
@@ -173,6 +174,13 @@ describe("task advance effect recovery", () => {
     ).toBe(true);
     expect(
       requiresImplementationRecoveryReplacement({
+        decision,
+        exchange: { purpose: "implementation_rework" } as ExternalAgentExchange,
+        work_order: workOrder,
+      }),
+    ).toBe(true);
+    expect(
+      requiresImplementationRecoveryReplacement({
         decision: {
           workflowStep: {
             preconditionFingerprint: {
@@ -185,6 +193,16 @@ describe("task advance effect recovery", () => {
         work_order: workOrder,
       }),
     ).toBe(false);
+  });
+
+  it("lets implementation rework proceed past stale verification failures only", () => {
+    expect(
+      blockingImplementationAuthorityViolations([
+        "verification:verification-record:fail",
+        "repository_effect:ci",
+        "external_effect:network_read",
+      ]),
+    ).toEqual(["repository_effect:ci", "external_effect:network_read"]);
   });
 
   it("retires a drifted result-less exchange and issues one exact-key replacement", async () => {
