@@ -1,33 +1,34 @@
- docs/recipes/hermes-agentplane.mdx                 |  30 ++++++
- docs/user/configuration.mdx                        |  48 +++++++++
- ...n-cli.core.task-advance-effect-recovery.test.ts |  85 ++++++++++++++++
- ...i.core.task-advance.worktree-resolution.test.ts |   7 ++
+ docs/recipes/hermes-agentplane.mdx                 |  30 ++++
+ docs/user/configuration.mdx                        |  48 +++++++
+ ...n-cli.core.task-advance-effect-recovery.test.ts | 159 +++++++++++++++++++++
+ ...i.core.task-advance.worktree-resolution.test.ts |   7 +
  ...-cli.critical.agent-efficiency-baseline.test.ts |   4 +-
- .../src/cli/run-cli/command-loaders/task.ts        |  27 +++++-
- .../shared/workflow-step-planning-checkout.test.ts |  33 +++++++
- .../src/commands/shared/workflow-step-reducer.ts   |  12 ++-
+ .../src/cli/run-cli/command-loaders/task.ts        |  27 +++-
+ .../shared/workflow-step-planning-checkout.test.ts |  33 +++++
+ .../src/commands/shared/workflow-step-reducer.ts   |  12 +-
  .../src/commands/shared/workflow-step.test.ts      |   3 +
- .../src/commands/task/advance.command.ts           |  20 +++-
- .../commands/task/authority-grant.command.test.ts  |  95 ++++++++++++++++--
- .../src/commands/task/authority-grant.command.ts   |  59 ++++++++---
- .../src/commands/task/branch-task-supervisor.ts    |  26 +++--
- .../src/commands/task/configured-authority.test.ts |  56 +++++++++++
- .../src/commands/task/configured-authority.ts      | 108 +++++++++++++++++++++
+ .../src/commands/task/advance.command.ts           |  20 ++-
+ .../commands/task/authority-grant.command.test.ts  |  95 +++++++++++-
+ .../src/commands/task/authority-grant.command.ts   |  59 +++++---
+ .../src/commands/task/branch-task-supervisor.ts    |  26 +++-
+ .../src/commands/task/configured-authority.test.ts |  56 ++++++++
+ .../src/commands/task/configured-authority.ts      | 108 ++++++++++++++
  .../external-agent-implementation-authority.ts     |  16 ++-
- .../task/external-agent-supervisor-recovery.ts     | 100 +++++++++++++++++++
- .../src/runtime/task-routing/resolve.test.ts       |  36 +++++++
+ .../task/external-agent-supervisor-episode.ts      |  15 ++
+ .../task/external-agent-supervisor-recovery.ts     | 100 +++++++++++++
+ .../src/runtime/task-routing/resolve.test.ts       |  36 +++++
  .../agentplane/src/runtime/task-routing/resolve.ts |   4 +-
- packages/core/schemas/config.schema.json           |  45 +++++++++
- packages/core/schemas/workflow.schema.json         |  76 +++++++++++++++
- packages/core/src/config/config.test.ts            |  44 +++++++++
+ packages/core/schemas/config.schema.json           |  45 ++++++
+ packages/core/schemas/workflow.schema.json         |  76 ++++++++++
+ packages/core/src/config/config.test.ts            |  44 ++++++
  packages/core/src/config/config.ts                 |   1 +
  packages/core/src/config/index.ts                  |   1 +
- packages/core/src/config/schema.impl.ts            |  34 +++++++
+ packages/core/src/config/schema.impl.ts            |  34 +++++
  packages/core/src/config/workflow-contract.ts      |   1 +
  packages/core/src/config/workflow-file.ts          |   2 +
- packages/spec/schemas/config.schema.json           |  45 +++++++++
- packages/spec/schemas/workflow.schema.json         |  76 +++++++++++++++
- schemas/config.schema.json                         |  45 +++++++++
- schemas/workflow.schema.json                       |  76 +++++++++++++++
+ packages/spec/schemas/config.schema.json           |  45 ++++++
+ packages/spec/schemas/workflow.schema.json         |  76 ++++++++++
+ schemas/config.schema.json                         |  45 ++++++
+ schemas/workflow.schema.json                       |  76 ++++++++++
  .../baselines/v0.7-compatibility-candidate.json    |   8 +-
- 32 files changed, 1175 insertions(+), 48 deletions(-)
+ 33 files changed, 1264 insertions(+), 48 deletions(-)
