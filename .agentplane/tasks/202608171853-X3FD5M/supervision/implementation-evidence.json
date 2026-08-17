@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 1d4b940a89237ea7d41c81c89f054d218d174aa9..b6698767ffbbff30558126ccf78e3c303e96ee6f",
+      "command": "git diff --check 76308eef76c190b79fe254946c20a31d967fa65b..1a67d12daca9bde553ea064767907eb17860eea2",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 1d4b940a89237ea7d41c81c89f054d218d174aa9..b6698767ffbbff30558126ccf78e3c303e96ee6f",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 76308eef76c190b79fe254946c20a31d967fa65b..1a67d12daca9bde553ea064767907eb17860eea2",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -31,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "1d4b940a89237ea7d41c81c89f054d218d174aa9",
-  "implementation_commit": "b6698767ffbbff30558126ccf78e3c303e96ee6f",
+  "execution_base_commit": "76308eef76c190b79fe254946c20a31d967fa65b",
+  "implementation_commit": "1a67d12daca9bde553ea064767907eb17860eea2",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
