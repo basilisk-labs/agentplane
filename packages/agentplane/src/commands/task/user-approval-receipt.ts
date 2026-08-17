@@ -31,7 +31,7 @@ const RECEIPT_KEYS = [
   "task_id",
 ] as const;
 
-export type UserApprovalType = "plan_approval" | "side_effect" | "provider_merge";
+type UserApprovalType = "plan_approval" | "side_effect" | "provider_merge";
 
 export type UserApprovalReceipt = {
   schema_version: 1;
