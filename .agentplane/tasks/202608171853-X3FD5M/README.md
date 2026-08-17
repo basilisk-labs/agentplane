@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 50
+revision: 51
 origin:
   system: "manual"
 depends_on: []
@@ -37,32 +37,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-17T21:07:39.105Z"
+  updated_at: "2026-08-17T21:16:29.019Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 4 typed finding(s)."
-  evaluated_sha: "4dc5d47aa948ef10162cd7f7bebdf0e686261d73"
+  evaluated_sha: "4a1149a80793003aa9a34b957fc82b009f581e2e"
   blueprint_digest: "da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8"
   evidence_refs:
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-210646053-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-210646053-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/5fcdabbd5d8bbc1ac3480af0b477afd64c2a52f5cb0a9956128bbabb100224d2.md"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-210646053-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-210646053-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-210646053-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-211528281-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-211528281-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/6bbf0e65733ac64a86fb72383b94142f52753a99bafc6d35cb610eb9834f9813.md"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-211528281-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-211528281-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-211528281-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608171853-X3FD5M/README.md"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/e8a67add792cf25913659f7a1542ad9e83c8c570c3c889ca38c0ce0805d55af9.patch"
-    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/f2a60212f9fc1333ad253d42f25a26b8d5a5cc13d1181dd98f17c6f8a1448998.json"
-    - ".agentplane/tasks/202608171853-X3FD5M/verification/20260817210639035-5aab8ae6679bfec7.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/2cc2e02d8dd14a249ee40cd417dd1b0f2a5796e8da5579b538abd47e00c58834.patch"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/37ff1e2742c63bed391867c9fe32930655919e8d23d9d6e6b98ddd373d9e1c24.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/verification/20260817211519645-8e60846b2964c82d.json"
     - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/d23e2ba91c6f8ade44113f76fba3d404cfff656145d05f891c1f8b3d8fd81b37.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The clean packaged scenario passed with an explicit 5080-byte primary plan, signed request-bound approval receipt, stale-envelope rejection status 3, real product commit, and complete temporary cleanup."
-    - "The fixture trust mutation replaces exactly one empty trusted_issuers leaf, preserving manual authority mode and all unrelated canonical workflow policy."
-    - "Typecheck, qualification contract tests, syntax, formatting, and whitespace checks pass; the prior complete fast suite remains applicable to the unchanged production implementation."
-    - "Residual risk: Hosted CI must rerun the same packaged scenario against the published PR head before integration."
+    - "Focused ESLint reports no findings for the qualification script."
+    - "The clean packaged lifecycle passes with explicit plan approval, signed request binding, stale exchange rejection, real task commit, and complete temporary cleanup."
+    - "The refactor does not change canonical receipt payload bytes or the exact encoded receipt field set."
+    - "Residual risk: Hosted CI must validate the published committed head before integration."
 token_usage:
   agent_runs: 22
   input_tokens: null
@@ -667,7 +667,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-17T21:15:21.590Z"
+doc_updated_at: "2026-08-17T21:16:29.050Z"
 doc_updated_by: "SUPERVISOR"
 description: "Recover the AgentPlane authority release after an unavailable GitHub protection lookup selected a local merge; fail closed on unavailable provider protection, repair supervisor replay/concurrency regressions, and define a verifiable Hermes-to-AgentPlane user approval receipt so the user approves in dialogue while the integration layer executes exact state-bound commands. Preserve mandatory primary plan approval and operator-owned provider merge semantics."
 sections:
