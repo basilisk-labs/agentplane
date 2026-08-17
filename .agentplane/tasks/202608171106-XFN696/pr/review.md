@@ -12,8 +12,8 @@ Created: 2026-08-17T11:57:53.694Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Authority grant recomputes a different route fingerprint than task next-action for the same state-bound pr.open request.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -38,8 +38,8 @@ Created: 2026-08-17T11:57:53.694Z
  .../src/commands/shared/workflow-step-reducer.ts   |  12 ++-
  .../src/commands/shared/workflow-step.test.ts      |   3 +
  .../src/commands/task/advance.command.ts           |  20 +++-
- .../commands/task/authority-grant.command.test.ts  |  26 +++++
- .../src/commands/task/authority-grant.command.ts   |  23 ++++-
+ .../commands/task/authority-grant.command.test.ts  |  79 ++++++++++++++-
+ .../src/commands/task/authority-grant.command.ts   |  46 ++++++---
  .../src/commands/task/branch-task-supervisor.ts    |  26 +++--
  .../src/commands/task/configured-authority.test.ts |  56 +++++++++++
  .../src/commands/task/configured-authority.ts      | 108 +++++++++++++++++++++
@@ -58,7 +58,7 @@ Created: 2026-08-17T11:57:53.694Z
  schemas/config.schema.json                         |  45 +++++++++
  schemas/workflow.schema.json                       |  76 +++++++++++++++
  .../baselines/v0.7-compatibility-candidate.json    |   8 +-
- 29 files changed, 999 insertions(+), 24 deletions(-)
+ 29 files changed, 1062 insertions(+), 37 deletions(-)
 ```
 
 </details>

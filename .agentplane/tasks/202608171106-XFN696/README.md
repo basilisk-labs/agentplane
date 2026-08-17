@@ -4,7 +4,7 @@ title: "Add policy-driven autonomous side-effect authority"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +27,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-17T14:46:25.691Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-17T14:52:07.936Z"
+  updated_by: "CODER"
+  note: "Authority grant recomputes a different route fingerprint than task next-action for the same state-bound pr.open request."
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -97,7 +97,8 @@ execution_contract:
       - "schemas"
       - "scripts/baselines"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "docs"
       - "packages/agentplane"
@@ -161,6 +162,9 @@ execution_contract:
       -
         id: "recorded-check-6"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_schema"
@@ -306,9 +310,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "e237ad7b80c390b6dae9d114e339ebaf5368fdd6"
-  message: "🚧 XFN696 task: apply external agent result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -372,8 +375,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "verify"
+    at: "2026-08-17T14:52:07.936Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "Authority grant recomputes a different route fingerprint than task next-action for the same state-bound pr.open request."
 doc_version: 3
-doc_updated_at: "2026-08-17T14:46:31.821Z"
+doc_updated_at: "2026-08-17T14:52:10.564Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement a repository-configured AgentPlane authority provider with manual, policy allowlist, and explicit all/YOLO modes. Auto-grants must retain operation/state/scope digests, short TTL, durable audit, and a POLICY actor; default behavior remains manual. Fix task authority grant remote/local route drift so stale hosted authority requests return an actionable fresh-route diagnostic instead of incorrectly reporting that no grant is required. Keep model agents unable to impersonate USER and preserve human gates through an explicit deny list."
 sections:
@@ -580,6 +589,36 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks
     Scope: branch_pr task 202608171106-XFN696 Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171106-XFN696-add-policy-driven-autonomous-side-effect-authori/.agentplane/tasks/202608171106-XFN696/blueprint/resolved-snapshot.json
+    - old_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+    - current_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608171106-XFN696
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-17T14:52:07.936Z — VERIFY — needs_rework
+
+    By: CODER
+
+    Note: Authority grant recomputes a different route fingerprint than task next-action for the same state-bound pr.open request.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c454ee01251f11e191d3b390e64ff163e8f938e58ca7c9d2bdfef02d14185016, input_digest=sha256:f22e1a45861b1b84571aedcbf906e23d80e750b0675e4cb44dd24f205cdcf653
+
+    Details:
 
     BlueprintSnapshotRef:
     - state: current
@@ -823,6 +862,36 @@ Command: bun run lint:core && bun run typecheck && node node_modules/vitest/vite
 Result: pass
 Evidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks
 Scope: branch_pr task 202608171106-XFN696 Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171106-XFN696-add-policy-driven-autonomous-side-effect-authori/.agentplane/tasks/202608171106-XFN696/blueprint/resolved-snapshot.json
+- old_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+- current_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608171106-XFN696
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-17T14:52:07.936Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: Authority grant recomputes a different route fingerprint than task next-action for the same state-bound pr.open request.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c454ee01251f11e191d3b390e64ff163e8f938e58ca7c9d2bdfef02d14185016, input_digest=sha256:f22e1a45861b1b84571aedcbf906e23d80e750b0675e4cb44dd24f205cdcf653
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current

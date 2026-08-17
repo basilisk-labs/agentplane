@@ -15,8 +15,13 @@ Implement a repository-configured AgentPlane authority provider with manual, pol
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note:
+
+```text
+Authority grant recomputes a different route fingerprint than task next-action for the same
+state-bound pr.open request.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -36,8 +41,8 @@ Implement a repository-configured AgentPlane authority provider with manual, pol
  .../src/commands/shared/workflow-step-reducer.ts   |  12 ++-
  .../src/commands/shared/workflow-step.test.ts      |   3 +
  .../src/commands/task/advance.command.ts           |  20 +++-
- .../commands/task/authority-grant.command.test.ts  |  26 +++++
- .../src/commands/task/authority-grant.command.ts   |  23 ++++-
+ .../commands/task/authority-grant.command.test.ts  |  79 ++++++++++++++-
+ .../src/commands/task/authority-grant.command.ts   |  46 ++++++---
  .../src/commands/task/branch-task-supervisor.ts    |  26 +++--
  .../src/commands/task/configured-authority.test.ts |  56 +++++++++++
  .../src/commands/task/configured-authority.ts      | 108 +++++++++++++++++++++
@@ -56,7 +61,7 @@ Implement a repository-configured AgentPlane authority provider with manual, pol
  schemas/config.schema.json                         |  45 +++++++++
  schemas/workflow.schema.json                       |  76 +++++++++++++++
  .../baselines/v0.7-compatibility-candidate.json    |   8 +-
- 29 files changed, 999 insertions(+), 24 deletions(-)
+ 29 files changed, 1062 insertions(+), 37 deletions(-)
 ```
 
 </details>

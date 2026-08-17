@@ -1,7 +1,11 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { createCliEmitter } from "../../cli/output.js";
-import { buildTaskRouteDecision } from "../shared/route-decision.js";
+import {
+  prepareAgentWorkOrder,
+  requirePreparedAgentWorkOrder,
+} from "../../runner/usecases/agent-work-order.js";
+import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
   appendSideEffectAuthorityAudit,
   createSideEffectAuthorityRecord,
@@ -123,7 +127,7 @@ function currentRouteCommand(taskId: string, remote: boolean): string {
 }
 
 function requestedOperation(
-  decision: Awaited<ReturnType<typeof buildTaskRouteDecision>>,
+  decision: TaskRouteDecision,
   parsed: Pick<TaskAuthorityGrantParsed, "taskId" | "remote">,
 ) {
   const request = decision.workflowStep.kind === "approval" ? decision.workflowStep.request : null;
@@ -151,13 +155,16 @@ export function makeRunTaskAuthorityGrantHandler(session: {
     const commandCtx = await (parsed.remote
       ? session.getRemoteContext("task authority grant")
       : session.getLocalContext("task authority grant"));
-    const decision = await buildTaskRouteDecision({
-      ctx: commandCtx,
-      cwd: ctx.cwd,
-      rootOverride: ctx.rootOverride ?? null,
-      taskId: parsed.taskId,
-      includeRemote: parsed.remote,
-    });
+    const preparedWorkOrder = requirePreparedAgentWorkOrder(
+      await prepareAgentWorkOrder({
+        command_ctx: commandCtx,
+        cwd: ctx.cwd,
+        root_override: ctx.rootOverride ?? null,
+        task_id: parsed.taskId,
+        ...(parsed.remote ? { include_remote: true } : {}),
+      }),
+    );
+    const decision = preparedWorkOrder.route_decision;
     const request = requestedOperation(decision, parsed);
     if (
       request.operationId !== parsed.operationId ||
