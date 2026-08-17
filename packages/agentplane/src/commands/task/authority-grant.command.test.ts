@@ -84,6 +84,9 @@ describe("task authority grant", () => {
 
       expect(getLocalContext).toHaveBeenCalledTimes(testCase.remote ? 0 : 1);
       expect(getRemoteContext).toHaveBeenCalledTimes(testCase.remote ? 1 : 0);
+      if (!testCase.remote) {
+        expect(getLocalContext).toHaveBeenCalledWith("task authority grant", "/repo", null);
+      }
       expect(getLocalWriteContext).not.toHaveBeenCalled();
       expect(getRemoteWriteContext).not.toHaveBeenCalled();
       expect(mocks.prepareAgentWorkOrder).toHaveBeenCalledWith({

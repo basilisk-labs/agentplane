@@ -12,8 +12,8 @@ Created: 2026-08-17T11:57:53.694Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Authority recovery rework: execute the emitted local route.remote.refresh grant end to end and eliminate the WorkOrder route snapshot divergence that rejects it as agent.verification.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,16 +31,17 @@ Created: 2026-08-17T11:57:53.694Z
 ```text
  docs/recipes/hermes-agentplane.mdx                 |  30 ++++
  docs/user/configuration.mdx                        |  48 +++++++
+ .../run-cli.core.route-decision.pre-merge.test.ts  |  34 +++++
  ...n-cli.core.task-advance-effect-recovery.test.ts | 159 +++++++++++++++++++++
  ...i.core.task-advance.worktree-resolution.test.ts |   7 +
  ...-cli.critical.agent-efficiency-baseline.test.ts |   4 +-
- .../src/cli/run-cli/command-loaders/task.ts        |  27 +++-
+ .../src/cli/run-cli/command-loaders/task.ts        |  31 +++-
  .../shared/workflow-step-planning-checkout.test.ts |  33 +++++
  .../src/commands/shared/workflow-step-reducer.ts   |  12 +-
  .../src/commands/shared/workflow-step.test.ts      |   3 +
  .../src/commands/task/advance.command.ts           |  20 ++-
- .../commands/task/authority-grant.command.test.ts  |  95 +++++++++++-
- .../src/commands/task/authority-grant.command.ts   |  59 +++++---
+ .../commands/task/authority-grant.command.test.ts  |  98 ++++++++++++-
+ .../src/commands/task/authority-grant.command.ts   |  67 ++++++---
  .../src/commands/task/branch-task-supervisor.ts    |  26 +++-
  .../src/commands/task/configured-authority.test.ts |  56 ++++++++
  .../src/commands/task/configured-authority.ts      | 108 ++++++++++++++
@@ -62,7 +63,7 @@ Created: 2026-08-17T11:57:53.694Z
  schemas/config.schema.json                         |  45 ++++++
  schemas/workflow.schema.json                       |  76 ++++++++++
  .../baselines/v0.7-compatibility-candidate.json    |   8 +-
- 33 files changed, 1264 insertions(+), 48 deletions(-)
+ 34 files changed, 1310 insertions(+), 51 deletions(-)
 ```
 
 </details>
