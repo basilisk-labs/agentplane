@@ -1,0 +1,9 @@
+ .../pr/integrate/internal/github-protection.ts     |  15 ++
+ .../src/commands/shared/side-effect-authority.ts   |   5 +
+ .../src/commands/task/agent-action-packet.ts       |  79 +++++--
+ .../src/commands/task/authority-grant.command.ts   |  70 +++++-
+ .../src/commands/task/plan-approve.command.ts      |  76 ++++++-
+ packages/agentplane/src/commands/task/plan.ts      |  74 +++---
+ .../src/commands/task/user-approval-receipt.ts     | 249 +++++++++++++++++++++
+ packages/core/src/config/schema.impl.ts            |  32 +++
+ 8 files changed, 535 insertions(+), 65 deletions(-)

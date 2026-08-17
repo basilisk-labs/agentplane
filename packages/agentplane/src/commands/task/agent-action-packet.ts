@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+import { userApprovalReceiptRequestForStep } from "./user-approval-receipt.js";
 
 // The packet stays compact, but must fit a normal exchange envelope plus a typed
 // execution declaration after context refs have been removed.
@@ -45,6 +46,19 @@ export type AgentActionPacket = {
     cwd: string | null;
     argv: string[] | null;
     authority_reference: string;
+    approval_receipt: {
+      schema_version: 1;
+      format: "base64url-json+ed25519";
+      request: {
+        approval_type: "plan_approval" | "side_effect" | "provider_merge";
+        task_id: string;
+        authority_reference: string;
+        state_fingerprint: string;
+        operation_id: string | null;
+        operation_digest: string | null;
+        state_scope_digest: string | null;
+      };
+    };
   };
   exchange?: {
     directory: string;
@@ -115,39 +129,65 @@ function operatorActionFor(opts: {
   const step = opts.decision.workflowStep;
   if (step.kind !== "approval") return undefined;
   const cwd = opts.decision.oracle?.authoritativeCheckoutPath ?? null;
+  const receiptRequest = userApprovalReceiptRequestForStep(step);
+  const approvalReceipt = () => ({
+    schema_version: 1 as const,
+    format: "base64url-json+ed25519" as const,
+    request: {
+      approval_type: receiptRequest.approvalType,
+      task_id: receiptRequest.taskId,
+      authority_reference: receiptRequest.authorityReference,
+      state_fingerprint: receiptRequest.stateFingerprint,
+      operation_id: receiptRequest.operationId ?? null,
+      operation_digest: receiptRequest.operationDigest ?? null,
+      state_scope_digest: receiptRequest.stateScopeDigest ?? null,
+    },
+  });
   if (step.request.type === "plan_approval") {
+    const argv = [
+      "agentplane",
+      "task",
+      "plan",
+      "approve",
+      step.request.taskId,
+      "--approval-receipt",
+      "<base64url-receipt>",
+    ];
     return {
       kind: "approve_plan",
       required_role: "USER",
       cwd,
-      argv: ["agentplane", "task", "plan", "approve", step.request.taskId, "--by", "USER"],
+      argv,
       authority_reference: step.request.authorityRef,
+      approval_receipt: approvalReceipt(),
     };
   }
   if (step.request.type === "side_effect") {
+    const argv = [
+      "agentplane",
+      "task",
+      "authority",
+      "grant",
+      step.request.taskId,
+      ...(opts.remote ? ["--remote"] : []),
+      "--operation",
+      step.request.operationId,
+      "--operation-digest",
+      step.request.operationDigest,
+      "--state-fingerprint",
+      step.request.stateFingerprintDigest,
+      "--state-scope-digest",
+      step.request.stateScopeDigest,
+      "--approval-receipt",
+      "<base64url-receipt>",
+    ];
     return {
       kind: "grant_side_effect_authority",
       required_role: "USER",
       cwd,
-      argv: [
-        "agentplane",
-        "task",
-        "authority",
-        "grant",
-        step.request.taskId,
-        ...(opts.remote ? ["--remote"] : []),
-        "--operation",
-        step.request.operationId,
-        "--operation-digest",
-        step.request.operationDigest,
-        "--state-fingerprint",
-        step.request.stateFingerprintDigest,
-        "--state-scope-digest",
-        step.request.stateScopeDigest,
-        "--by",
-        "USER",
-      ],
+      argv,
       authority_reference: step.request.authorityRef,
+      approval_receipt: approvalReceipt(),
     };
   }
   return {
@@ -156,6 +196,7 @@ function operatorActionFor(opts: {
     cwd,
     argv: null,
     authority_reference: step.request.authorityRef,
+    approval_receipt: approvalReceipt(),
   };
 }
 

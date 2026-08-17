@@ -103,6 +103,7 @@ export type SideEffectAuthorityRecord = {
   stateScopeDigest: string;
   issuedAt: string;
   expiresAt: string;
+  evidenceDigest?: string;
   digest: string;
 };
 
@@ -183,6 +184,7 @@ function parseGrant(value: unknown): SideEffectAuthorityRecord | null {
     !isDigest(value.stateScopeDigest) ||
     !isIsoDate(value.issuedAt) ||
     !isIsoDate(value.expiresAt) ||
+    (value.evidenceDigest !== undefined && !isDigest(value.evidenceDigest)) ||
     !isDigest(value.digest)
   ) {
     return null;
@@ -199,6 +201,7 @@ function parseGrant(value: unknown): SideEffectAuthorityRecord | null {
     stateScopeDigest: value.stateScopeDigest,
     issuedAt: value.issuedAt,
     expiresAt: value.expiresAt,
+    ...(typeof value.evidenceDigest === "string" ? { evidenceDigest: value.evidenceDigest } : {}),
     digest: value.digest,
   };
   const { digest: _digest, ...unsigned } = record;
@@ -331,6 +334,7 @@ export function createSideEffectAuthorityRecord(opts: {
   fingerprint: StateFingerprint;
   issuedAt: string;
   expiresAt: string;
+  evidenceDigest?: string;
   id?: string;
 }): SideEffectAuthorityRecord {
   const requirement = workflowOperationAuthorityRequirement(opts.operation.id);
@@ -355,6 +359,7 @@ export function createSideEffectAuthorityRecord(opts: {
     stateScopeDigest: workflowAuthorityStateScopeDigest(opts.fingerprint),
     issuedAt: opts.issuedAt,
     expiresAt: opts.expiresAt,
+    ...(opts.evidenceDigest ? { evidenceDigest: opts.evidenceDigest } : {}),
   };
   if (!record.actor) throw new Error("Authority actor must be non-empty.");
   return { ...record, digest: grantDigest(record) };

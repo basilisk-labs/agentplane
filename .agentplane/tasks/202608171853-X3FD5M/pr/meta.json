@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608171853-X3FD5M/harden-autonomous-authority-recovery-and-hermes",
+  "created_at": "2026-08-17T18:59:25.035Z",
+  "diffstat_sha256": "sha256:79c5eb9a964c244fe5afd900a9887fdeb2a01999a0a7e18c8115255df5199c56",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608171853-X3FD5M",
+  "updated_at": "2026-08-17T18:59:25.035Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
