@@ -1,10 +1,10 @@
 ---
 id: "202608170928-8Y24PK"
 title: "Upgrade the Hermes AgentPlane bridge protocol across the three approved repositories"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -361,6 +361,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 6c81acdd0cfd. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The remaining evaluator findings require implementation and publication in the separately versioned executable plugin and Hermes host repositories, which are outside this packet's writable roots and external-side-effect authority. Recommended action: Create or resume executable tasks in the two approved external repositories, implement and publish the bridge there, then resume this AgentPlane task with fresh cross-repository evidence. Agentplane receipt: external-agent-blocker/tr_a9fb230674b5d85fb33fc0f82499cd02/sha256:395183b1313200eaa7c0f423171defd08f44a5bbe042dbe2b5dad64533d8e147."
 events:
   -
     type: "status"
@@ -423,8 +426,15 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-17T21:59:10.907Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The remaining evaluator findings require implementation and publication in the separately versioned executable plugin and Hermes host repositories, which are outside this packet's writable roots and external-side-effect authority. Recommended action: Create or resume executable tasks in the two approved external repositories, implement and publish the bridge there, then resume this AgentPlane task with fresh cross-repository evidence. Agentplane receipt: external-agent-blocker/tr_a9fb230674b5d85fb33fc0f82499cd02/sha256:395183b1313200eaa7c0f423171defd08f44a5bbe042dbe2b5dad64533d8e147."
 doc_version: 3
-doc_updated_at: "2026-08-17T21:57:08.314Z"
+doc_updated_at: "2026-08-17T21:59:10.907Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 0.2.0, and current Hermes worker-lane dispatch. Scope roots are /Users/densmirnov/Github/agentplane, /Users/densmirnov/Github/agentplane-hermes-plugin, and /Users/densmirnov/Github/hermes-agent. Required effects include source, tests, docs, public API, schema, CI/release metadata, security boundary, network reads, hosted external writes, and publication through explicit authority. Prove PLANNER/approval/EXECUTOR/EVALUATOR, retry, stale-run, and terminal attestation without direct kanban.db writes. Existing D5MAJ3 and failed structured-intake DDW1J5 are superseded and must not be implemented or published."
 sections:
