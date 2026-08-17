@@ -4,7 +4,7 @@ title: "Add policy-driven autonomous side-effect authority"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -28,10 +28,10 @@ plan_approval:
   note: null
 verification:
   state: "needs_rework"
-  updated_at: "2026-08-17T14:52:07.936Z"
+  updated_at: "2026-08-17T15:12:03.088Z"
   updated_by: "CODER"
-  note: "Authority grant recomputes a different route fingerprint than task next-action for the same state-bound pr.open request."
-  attempts: 1
+  note: "Implementation closeout must not treat the expected verification_recovery failure observation as a repository authority violation before replacement verification runs."
+  attempts: 2
 execution_route:
   frozen: true
   reason_codes:
@@ -311,7 +311,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "a6b8374dd1dda53dd650eb453be3a04558dc9aa6"
+  message: "🚧 XFN696 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -325,6 +327,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: e237ad7b80c3. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a6b8374dd1dd. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a6b8374dd1dd. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -381,8 +389,30 @@ events:
     author: "CODER"
     state: "needs_rework"
     note: "Authority grant recomputes a different route fingerprint than task next-action for the same state-bound pr.open request."
+  -
+    type: "status"
+    at: "2026-08-17T15:10:47.928Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a6b8374dd1dd. CLI accepted one state-bound external-agent semantic result."
+    commit: "a6b8374dd1dda53dd650eb453be3a04558dc9aa6"
+  -
+    type: "verify"
+    at: "2026-08-17T15:12:03.088Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "Implementation closeout must not treat the expected verification_recovery failure observation as a repository authority violation before replacement verification runs."
+  -
+    type: "status"
+    at: "2026-08-17T15:12:08.706Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a6b8374dd1dd. CLI accepted one state-bound external-agent semantic result."
+    commit: "a6b8374dd1dda53dd650eb453be3a04558dc9aa6"
 doc_version: 3
-doc_updated_at: "2026-08-17T14:52:10.564Z"
+doc_updated_at: "2026-08-17T15:12:08.706Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement a repository-configured AgentPlane authority provider with manual, policy allowlist, and explicit all/YOLO modes. Auto-grants must retain operation/state/scope digests, short TTL, durable audit, and a POLICY actor; default behavior remains manual. Fix task authority grant remote/local route drift so stale hosted authority requests return an actionable fresh-route diagnostic instead of incorrectly reporting that no grant is required. Keep model agents unable to impersonate USER and preserve human gates through an explicit deny list."
 sections:
@@ -617,6 +647,36 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c454ee01251f11e191d3b390e64ff163e8f938e58ca7c9d2bdfef02d14185016, input_digest=sha256:f22e1a45861b1b84571aedcbf906e23d80e750b0675e4cb44dd24f205cdcf653
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171106-XFN696-add-policy-driven-autonomous-side-effect-authori/.agentplane/tasks/202608171106-XFN696/blueprint/resolved-snapshot.json
+    - old_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+    - current_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608171106-XFN696
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-17T15:12:03.088Z — VERIFY — needs_rework
+
+    By: CODER
+
+    Note: Implementation closeout must not treat the expected verification_recovery failure observation as a repository authority violation before replacement verification runs.
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c454ee01251f11e191d3b390e64ff163e8f938e58ca7c9d2bdfef02d14185016, input_digest=sha256:69b3eef31a7d060492bfda9cb244c031bbd27213da79df8d040f8247141d540b
 
     Details:
 
@@ -890,6 +950,36 @@ Note: Authority grant recomputes a different route fingerprint than task next-ac
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c454ee01251f11e191d3b390e64ff163e8f938e58ca7c9d2bdfef02d14185016, input_digest=sha256:f22e1a45861b1b84571aedcbf906e23d80e750b0675e4cb44dd24f205cdcf653
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171106-XFN696-add-policy-driven-autonomous-side-effect-authori/.agentplane/tasks/202608171106-XFN696/blueprint/resolved-snapshot.json
+- old_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+- current_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608171106-XFN696
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-17T15:12:03.088Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: Implementation closeout must not treat the expected verification_recovery failure observation as a repository authority violation before replacement verification runs.
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c454ee01251f11e191d3b390e64ff163e8f938e58ca7c9d2bdfef02d14185016, input_digest=sha256:69b3eef31a7d060492bfda9cb244c031bbd27213da79df8d040f8247141d540b
 
 Details:
 

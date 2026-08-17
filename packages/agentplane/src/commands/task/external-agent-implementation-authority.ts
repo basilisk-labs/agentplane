@@ -245,6 +245,10 @@ export async function applyExternalReadOnlyWorktreeObservation(opts: {
   if (exitCode !== 0) throw new Error(`External worktree observation commit exited ${exitCode}.`);
 }
 
+export function blockingImplementationAuthorityViolations(violations: readonly string[]): string[] {
+  return violations.filter((violation) => !violation.startsWith("verification:"));
+}
+
 export async function applyExternalImplementationResult(opts: {
   command: CommandContext;
   decision: TaskRouteDecision;
@@ -401,8 +405,9 @@ export async function applyExternalImplementationResult(opts: {
     changed_paths: implementation.evidence.changed_paths,
     preserved_commit: implementation.evidence.implementation_commit,
   });
-  const authorityViolations =
-    reconciliation.task.execution_contract?.observed.authority_violations ?? [];
+  const authorityViolations = blockingImplementationAuthorityViolations(
+    reconciliation.task.execution_contract?.observed.authority_violations ?? [],
+  );
   if (authorityViolations.length > 0 && !reconciliation.escalated) {
     throw new CliError({
       code: "E_VALIDATION",
