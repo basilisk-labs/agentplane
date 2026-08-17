@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608171853-X3FD5M",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-17T21:27:34.692Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 4 typed finding(s).",
+  "evaluated_sha": "33e46aa3bc171dbd4b2dafbb5a75eb8b06b70b75",
+  "blueprint_digest": "da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8",
+  "findings": [
+    "Knip passes with AgentPlane CLI total=0/0 and the reviewed repository baseline unchanged.",
+    "Typecheck and all 27 focused receipt, authority, and command-catalog tests pass.",
+    "UserApprovalType has no external imports and remains available module-locally where needed.",
+    "Residual risk: Hosted static and full test gates must confirm the published committed head."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/a5b0649c8767be6972ae4ef14746e35da11495b280d01ad228ef687ba0a1b2bf.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
