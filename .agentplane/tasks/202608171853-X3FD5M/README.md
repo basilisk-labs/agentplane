@@ -2,10 +2,10 @@
 id: "202608171853-X3FD5M"
 title: "Harden autonomous authority recovery and Hermes dialog approvals"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 47
+revision: 48
 origin:
   system: "manual"
 depends_on: []
@@ -64,9 +64,9 @@ quality_review:
     - "Typecheck, qualification contract tests, syntax, formatting, and whitespace checks pass; the prior complete fast suite remains applicable to the unchanged production implementation."
     - "Residual risk: Hosted CI must rerun the same packaged scenario against the published PR head before integration."
 token_usage:
-  agent_runs: 14
+  agent_runs: 22
   input_tokens: null
-  journal_digest: "sha256:1a64bd9f9dad66d3581e69013ff0b74b3763c4c7e445308263781e97b49258f3"
+  journal_digest: "sha256:5fe050ee242cb30fdaf10f831531620a4b4f796da4d1f913671702e61eae210f"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -76,7 +76,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-17T20:44:35.260Z"
+  updated_at: "2026-08-17T21:08:00.809Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -390,8 +390,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "4dc5d47aa948ef10162cd7f7bebdf0e686261d73"
-  message: "🚧 X3FD5M task: apply external agent result"
+  hash: "312827040fc58aa6a9734a8b028c5b8c84f0aef4"
+  message: "🚧 X3FD5M task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -441,6 +441,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 4dc5d47aa948. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -638,9 +641,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-17T21:08:00.809Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "312827040fc58aa6a9734a8b028c5b8c84f0aef4"
 doc_version: 3
-doc_updated_at: "2026-08-17T21:07:39.132Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-17T21:08:00.836Z"
+doc_updated_by: "CODER"
 description: "Recover the AgentPlane authority release after an unavailable GitHub protection lookup selected a local merge; fail closed on unavailable provider protection, repair supervisor replay/concurrency regressions, and define a verifiable Hermes-to-AgentPlane user approval receipt so the user approves in dialogue while the integration layer executes exact state-bound commands. Preserve mandatory primary plan approval and operator-owned provider merge semantics."
 sections:
   Summary: |-
@@ -1398,7 +1409,7 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "3cdaf96dadfd66bb7fbe92b5eb62a7451c9a527c"
+    hash: "4dc5d47aa948ef10162cd7f7bebdf0e686261d73"
     message: "🚧 X3FD5M task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "e22f17ffad89f8fe9c3e41abc9c483c2c5fc2c78"
@@ -2175,12 +2186,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/14` agent runs
+- Completeness: `0/22` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:1a64bd9f9dad66d3581e69013ff0b74b3763c4c7e445308263781e97b49258f3`
+- Journal digest: `sha256:5fe050ee242cb30fdaf10f831531620a4b4f796da4d1f913671702e61eae210f`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-17T20:44:35.260Z`
+- Updated at: `2026-08-17T21:08:00.809Z`
