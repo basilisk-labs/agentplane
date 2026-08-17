@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608171853-X3FD5M",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-17T21:00:14.737Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
+  "evaluated_sha": "1a67d12daca9bde553ea064767907eb17860eea2",
+  "blueprint_digest": "da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8",
+  "findings": [
+    "The clean packaged run failed at the explicit fail-closed guard because WORKFLOW.md already contains authority from defaultConfig/saveConfig.",
+    "The narrow correction is to replace the canonical default approval_receipts mapping with the fixture issuer, preserving manual authority mode and every unrelated workflow field.",
+    "The replacement should require an exact single default marker and fail closed on any unexpected generated shape."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/9ab760b9d00bb7a19aaa595660364bd22c7cc5d410997297a2c90aab7c1849a3.patch"
+  ],
+  "missing_tests": [
+    "Clean packaged-mixed-scope-lifecycle must pass with the default authority block updated in place."
+  ],
+  "hidden_assumptions": [
+    "The previous correction assumed current init omitted authority when it only omitted legacy config.json."
+  ],
+  "residual_risks": [
+    "Rework required. Current init already persists the default authority section, so the fixture must replace its empty approval_receipts trust list rather than reject or duplicate authority."
+  ]
+}
